@@ -1,0 +1,31 @@
+---
+obsidianUIMode: preview
+cssclass: 5e-race
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+
+- **Ability Score Increase**: {resource.ability}
+- **Size**: {resource.size}
+- **Speed**: {resource.speed}
+{#if resource.skills}
+- **Skills**: {resource.skills}
+{/if}
+{#if resource.spellAbility}
+- **Innate Spellcasting ability**: {resource.spellAbility}
+{/if}
+{#for modifier in resource.modifiers}
+- **{modifier.category}**: {modifier.value}
+{/for}
+{#for trait in resource.trait}
+
+## {trait.name}
+
+{trait.text}
+{/for}

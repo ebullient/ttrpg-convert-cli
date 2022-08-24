@@ -1,0 +1,38 @@
+---
+obsidianUIMode: preview
+cssclass: 5e-item
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+{#if resource.detail }*{resource.detail}*{/if}
+
+{#if resource.isArmor }
+- **Base Armor Class**: {resource.armorClass}
+{#else if resource.isWeapon }{#if resource.isVersatile }
+- **Damage**:
+  - One-handed: {resource.damage}
+  - Two-handed: {resource.damage2H}
+{#else}
+- **Damage**: {resource.damage}
+{/if}{#if resource.isRanged }
+- **Range**: {resource.range}
+{/if}{/if}{#for modifier in resource.modifiers}
+- **{modifier.category}**: {modifier.value}
+{/for}{#if resource.properties }
+- **Properties**: {resource.propertiesString}
+{/if}{#if resource.strengthRequirement }
+- **Stealth**: Requires {resource.strengthRequirement} STR.
+{/if}{#if resource.stealthPenalty }
+- **Stealth**: The wearer has disadvantage on Stealth (DEX) checks.
+{/if}
+- **Cost**: {#if resource.cost }{resource.cost} gp{#else}—{/if}
+- **Weight**: {#if resource.weight }{resource.weight} lbs.{#else}—{/if}
+
+{resource.text}
+

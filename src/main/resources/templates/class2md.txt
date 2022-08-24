@@ -1,0 +1,40 @@
+---
+obsidianUIMode: preview
+cssclass: 5e-class
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+
+## Hit Points
+
+{#if resource.hitDice }
+- **Hit Dice**: 1d{resource.hitDice} per {resource.name} level
+- **Hit Points at First Level:** {resource.hitDice} + CON
+- **Hit Points at Higher Levels:** add {resource.hitRollAverage} OR 1d{resource.hitDice} + CON  (minimum of 1)
+{#else}
+- **Hit Dice**: *x* = hit dice specified in the sidekick's statblock (huaman, gnome, kobold, etc.)
+- **Hit Points at First Level:** *x* + CON
+- **Hit Points at Higher Levels:** add 1d*x* + CON (minimum of 1)
+{/if}
+
+## Proficiencies
+
+- **Armor**: {resource.armor}
+- **Weapons**: {resource.weapons}
+- **Tools**: {resource.tools}
+- **Saving Throws**: {resource.savingThrows}
+- **Skills**: Choose {resource.numSkills} of {resource.skills}
+{#for section in resource.sections}
+
+{section.depth} {section.title}{#if section.level} (Level {section.level}){/if}
+{#if section.text }
+
+{section.text}
+{/if}
+{/for}

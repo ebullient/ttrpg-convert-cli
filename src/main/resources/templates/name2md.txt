@@ -1,0 +1,18 @@
+---
+obsidianUIMode: preview
+cssclass: 5e-names
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*Source: {resource.source}*
+{#for table in resource.tables}
+
+## {table.name}
+
+| dice: d{table.diceType} | Name |
+|------------|----------------------|
+{#for row in table.rows}
+| {row.range} | {row.result} |
+{/for}
+^{table.blockId}
+{/for}

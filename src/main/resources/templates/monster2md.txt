@@ -1,0 +1,73 @@
+---
+obsidianUIMode: preview
+cssclass: 5e-monster
+aliases: ["{resource.name}"]
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+---
+# {resource.name}
+{#if resource.description }
+{resource.description}
+
+{/if}
+```ad-statblock
+title: {resource.name}
+*{resource.size} {resource.fullType}, {resource.alignment}*
+
+- **Armor Class** {resource.ac} {#if resource.acText }({resource.acText}){/if}
+- **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if}
+- **Speed** {resource.speed}
+
+|STR|DEX|CON|INT|WIS|CHA|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|{resource.scoreString}|
+
+- **Saving Throws** {#if resource.saves }{#for save in resource.saves}{save.key} {save.value}{#if save_hasNext}, {/if}{/for}{#else}—{/if}
+- **Skills**  {#if resource.skills }{#for skill in resource.skills}{skill.key} {skill.value}{#if skill_hasNext}, {/if}{/for}{#else}—{/if}
+- **Senses** {#if resource.senses }{resource.senses}{#else}—{/if}, passive Perception {resource.passive}
+{#if resource.vulnerable }
+- **Damage Vulnerabilities** {resource.vulnerable}
+{/if}{#if resource.resist}
+- **Damage Resistances** {resource.resist}
+{/if}{#if resource.immune}
+- **Damage Immunities** {resource.immune}
+{/if}{#if resource.conditionImmune}
+- **Condition Immunities** {resource.conditionImmune}
+{/if}
+- **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}
+- **Challenge** {resource.cr}
+{#if resource.trait}
+
+## Traits
+{#for trait in resource.trait}
+
+***{trait.name}.*** {trait.text}
+{/for}{/if}{#if resource.action}
+
+## Actions
+{#for action in resource.action}
+
+***{action.name}.*** {action.text}
+{/for}{/if}{#if resource.reaction}
+
+## Reactions
+{#for reaction in resource.reaction}
+
+***{reaction.name}.*** {reaction.text}
+{/for}{/if}{#if resource.legendary}
+
+## Legendary Actions
+{#for legendary in resource.legendary}
+
+{#if legendary.text}{#if legendary.name}***{legendary.name}.*** {/if}{legendary.text}{#else}## {legendary.name}{/if}
+{/for}{/if}
+```
+^statblock
+
+## Environment
+
+{resource.environment}

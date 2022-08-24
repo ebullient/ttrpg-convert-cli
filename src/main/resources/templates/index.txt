@@ -1,0 +1,8 @@
+---
+obsidianUIMode: preview
+---
+# Index of {name}
+
+{#for mapping in resources}
+- [{mapping.title}]({mapping.fileName})
+{/for}

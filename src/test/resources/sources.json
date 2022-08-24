@@ -1,0 +1,13 @@
+{
+  "from": [
+    "TCE"
+  ],
+  "exclude": [
+    "monster|expert|dc",
+    "monster|expert|sdw",
+    "monster|expert|slw"
+  ],
+  "excludePattern": [
+    "race|.*|dmg"
+  ]
+}
