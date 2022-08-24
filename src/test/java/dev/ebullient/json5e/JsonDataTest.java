@@ -107,4 +107,17 @@ public class JsonDataTest {
                     .writeFiles(IndexType.background, "Backgrounds");
         }
     }
+
+    @Test
+    public void testSpellList() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui);
+            TestUtils.fullIndex(index, TOOLS_PATH);
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.spell, "Spells");
+        }
+    }
 }

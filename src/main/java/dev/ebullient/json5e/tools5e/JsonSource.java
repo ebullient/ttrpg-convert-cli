@@ -905,6 +905,10 @@ public interface JsonSource {
                     appendInset(text, node);
                     break;
                 }
+                case "quote": {
+                    appendQuote(text, node);
+                    break;
+                }
                 default:
                     tui().errorf("Unknown entry object type %s from %s: %s", objectType, getSources(), node.toPrettyString());
             }
@@ -1012,6 +1016,17 @@ public interface JsonSource {
         maybeAddBlankLine(text);
         insetText.forEach(x -> text.add("> " + x));
         text.add("^" + tui().slugify(name));
+        maybeAddBlankLine(text);
+    }
+
+    default void appendQuote(List<String> text, JsonNode entry) {
+        List<String> quoteText = new ArrayList<>();
+        String by = entry.get("by").asText();
+        quoteText.add("[!quote]- A quote from " + by);
+        appendEntryToText(quoteText, entry.get("entries"), null);
+
+        maybeAddBlankLine(text);
+        quoteText.forEach(x -> text.add("> " + x));
         maybeAddBlankLine(text);
     }
 

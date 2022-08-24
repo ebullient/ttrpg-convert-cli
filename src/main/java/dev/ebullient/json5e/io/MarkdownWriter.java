@@ -14,6 +14,7 @@ import dev.ebullient.json5e.qute.QuteBackground;
 import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteSource;
+import dev.ebullient.json5e.qute.QuteSpell;
 import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
@@ -59,8 +60,8 @@ public class MarkdownWriter {
                     //     break;
                     // case "monsters":
                     //     QuteMonster m = (QuteMonster) x;
-                    //     dirName = "bestiary/" + ((QuteMonster) x).type;
-                    //     fileMap = new FileMap(x.getName(), slugifier().slugify(x.getName()), dirName);
+                    //     dirName = "bestiary/" + m.type;
+                    //     fileMap = new FileMap(m.getName(), slugifier().slugify(m.getName()), dirName);
                     //     writeFile(fileMap, dirName, templates.renderMonster(m));
                     //     break;
                     case "names":
@@ -69,9 +70,9 @@ public class MarkdownWriter {
                     // case "races":
                     //     writeFile(fileMap, dirName, templates.renderRace((QuteRace) x));
                     //     break;
-                    // case "spells":
-                    //     writeFile(fileMap, dirName, templates.renderSpell((QuteSpell) x));
-                    //     break;
+                    case "spells":
+                        writeFile(fileMap, dirName, templates.renderSpell((QuteSpell) x));
+                        break;
                 }
             } catch (IOException e) {
                 throw new WrappedIOException(e);

@@ -14,11 +14,11 @@ aliases: ["{resource.name}"]
 
 - **Casting time:** {resource.time}{#if resource.ritual} unless cast as a ritual{/if}
 - **Range:** {resource.range}
-- **Duration:** {resource.duration}
 - **Components:** {resource.components}
+- **Duration:** {resource.duration}
 
 {resource.text}
 
-### Classes
+**Classes**: {resource.classes}
 
-{resource.classes}
+Source: {resource.source}

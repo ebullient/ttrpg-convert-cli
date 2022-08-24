@@ -60,6 +60,8 @@ public class Json2MarkdownConverter {
                 return new Json2QuteFeat(index, type, jsonNode).build();
             case namelist:
                 return new Json2QuteName(index, jsonNode).build();
+            case spell:
+                return new Json2QuteSpell(index, type, jsonNode).build();
             default:
                 throw new IllegalArgumentException("Unsupported type " + type);
         }
