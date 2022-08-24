@@ -1,5 +1,8 @@
 package dev.ebullient.json5e.tools5e;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
@@ -33,6 +36,12 @@ public abstract class Json2QuteCommon implements JsonSource {
     @Override
     public JsonIndex index() {
         return index;
+    }
+
+    public String getText() {
+        List<String> text = new ArrayList<>();
+        appendEntryToText(text, node, "##");
+        return String.join("\n", text);
     }
 
     public abstract QuteSource build();

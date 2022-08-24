@@ -810,6 +810,8 @@ public interface JsonSource {
 
     default String levelToText(String level) {
         switch (level) {
+            case "0":
+                return "cantrip";
             case "1":
                 return "1st level";
             case "2":
@@ -858,7 +860,7 @@ public interface JsonSource {
             switch (objectType) {
                 case "section":
                 case "entries": {
-                    if ( heading == null ) {
+                    if (heading == null) {
                         List<String> inner = new ArrayList<>();
                         appendEntryToText(inner, node.get("entries"), null);
                         if (prependField(node, "name", inner)) {
@@ -981,19 +983,19 @@ public interface JsonSource {
         table.append(header.replaceAll("[^|]", "-")).append("\n");
 
         entry.withArray("rows").forEach(r -> table
-            .append("| ")
-            .append(StreamSupport.stream(r.spliterator(), false)
-                    .map(x -> replaceText(x.asText()))
-                    .collect(Collectors.joining(" | ")))
-            .append(" |\n"));
+                .append("| ")
+                .append(StreamSupport.stream(r.spliterator(), false)
+                        .map(x -> replaceText(x.asText()))
+                        .collect(Collectors.joining(" | ")))
+                .append(" |\n"));
 
         if (!caption.isBlank()) {
             table.append("^").append(tui().slugify(caption));
         } else {
             String blockid = header.replaceAll("dice: d[0-9]+", "")
-                .replace("|", "")
-                .replaceAll("\\s+", " ")
-                .trim();
+                    .replace("|", "")
+                    .replaceAll("\\s+", " ")
+                    .trim();
             table.append("^").append(tui().slugify(blockid));
         }
 

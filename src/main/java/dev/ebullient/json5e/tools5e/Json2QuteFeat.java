@@ -20,19 +20,16 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
     @Override
     public QuteSource build() {
-        List<String> text = new ArrayList<>();
-        appendEntryToText(text, node, "##");
-
         String prerequisite = listPrerequisites();
         String level = null;
 
         return new QuteFeat(
-            decoratedTypeName(sources),
-            sources.getSourceText(),
-            prerequisite,
-            level,
-            String.join("\n", text),
-            List.of("feat/" + tui().slugify(sources.primarySource())));
+                decoratedTypeName(sources),
+                sources.getSourceText(),
+                prerequisite,
+                level,
+                getText(),
+                List.of("feat/" + tui().slugify(sources.primarySource())));
     }
 
     String listPrerequisites() {
