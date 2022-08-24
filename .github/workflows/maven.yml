@@ -1,0 +1,82 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.xml'
+      - 'src/**'
+      - 'ide-config'
+  pull_request:
+    paths:
+      - '**.xml'
+      - 'src/**'
+      - 'ide-config'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.mvn-build.outputs.version }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: 11
+        distribution: 'temurin'
+
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y-%m")"
+      shell: bash
+
+    - name: Cache Maven Repository
+      id: cache-maven
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        # refresh cache every month to avoid unlimited growth
+        key: maven-repo-${{ runner.os }}-${{ steps.get-date.outputs.date }}
+
+    - name: Build with Maven
+      id: mvn-build
+      run: |
+        mvn -B formatter:validate install --file pom.xml
+        VERSION=$(./mvnw -B --no-transfer-progress help:evaluate -Dexpression=project.version | grep -v INFO)
+        echo "::set-output name=version::$VERSION"
+
+    # Temporarily disable native builds
+    # - name: Build in native
+    #  run: mvn -B -Dnative verify --file pom.xml
+
+  update-snapshot:
+    # Only run for successful build of the main branch
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update tag
+        env:
+          VERSION: ${{needs.build.outputs.version}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
+        shell: bash
+        run: |
+          echo $VERSION
+          if [[ $VERSION == [.0-9]*-SNAPSHOT ]]; then
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+            echo "Update tag for $VERSION"
+            git push origin :refs/tags/$VERSION
+            git tag -f $VERSION
+            git push --tags
+            echo "Delete JitPack artifacts for tag"
+            curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/fc5-convert-cli/$VERSION
+          fi
