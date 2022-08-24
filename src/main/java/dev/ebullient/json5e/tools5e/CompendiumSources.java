@@ -125,11 +125,11 @@ public class CompendiumSources {
     static {
         abvToName.put("AAG", "Astral Adventurer's Guide");
         abvToName.put("AI", "Acquisitions Incorporated");
-        abvToName.put("AitFR_AVT", AitFR_NAME + ": A Verdant Tomb");
-        abvToName.put("AitFR_DN", AitFR_NAME + ": Deepest Night");
-        abvToName.put("AitFR_FCD", AitFR_NAME + ": From Cyan Depths");
-        abvToName.put("AitFR_ISF", AitFR_NAME + ": In Scarlet Flames");
-        abvToName.put("AitFR_THP", AitFR_NAME + ": The Hidden Page");
+        abvToName.put("AitFR-AVT", AitFR_NAME + ": A Verdant Tomb");
+        abvToName.put("AitFR-DN", AitFR_NAME + ": Deepest Night");
+        abvToName.put("AitFR-FCD", AitFR_NAME + ": From Cyan Depths");
+        abvToName.put("AitFR-ISF", AitFR_NAME + ": In Scarlet Flames");
+        abvToName.put("AitFR-THP", AitFR_NAME + ": The Hidden Page");
         abvToName.put("AitFR", AitFR_NAME);
         abvToName.put("AL", "Adventurers' League");
         abvToName.put("ALCoS", AL_PREFIX + "Curse of Strahd");
@@ -244,6 +244,7 @@ public class CompendiumSources {
         abvToName.put("UA2020SC5", UA_PREFIX + "2020 Subclasses, Part 5");
         abvToName.put("UA2020SCR", UA_PREFIX + "2020 Subclasses Revisited");
         abvToName.put("UA2020SMT", UA_PREFIX + "2020 Spells and Magic Tattoos");
+        abvToName.put("UA2020SpellsAndMagicTattoos", UA_PREFIX + "2020 Spells and Magic Tattoos");
         abvToName.put("UA2021DO", UA_PREFIX + "2021 Draconic Options");
         abvToName.put("UA2021DraconicOptions", UA_PREFIX + "2021 Draconic Options");
         abvToName.put("UA2021FF", UA_PREFIX + "2021 Folk of the Feywild");
@@ -261,6 +262,7 @@ public class CompendiumSources {
         abvToName.put("UA3PE", UA_PREFIX + "Three-Pillar Experience");
         abvToName.put("UAA", UA_PREFIX + "Artificer");
         abvToName.put("UAAR", UA_PREFIX + "Artificer Revisited");
+        abvToName.put("UAArtificerRevisited", UA_PREFIX + "Artificer Revisited");
         abvToName.put("UAATOSC", UA_PREFIX + "A Trio of Subclasses");
         abvToName.put("UABAM", UA_PREFIX + "Barbarian and Monk");
         abvToName.put("UABAP", UA_PREFIX + "Bard and Paladin");
@@ -295,6 +297,7 @@ public class CompendiumSources {
         abvToName.put("UAMAC", UA_PREFIX + "Mass Combat");
         abvToName.put("UAMC", UA_PREFIX + "Modifying Classes");
         abvToName.put("UAMDM", UA_PREFIX + "Modern Magic");
+        abvToName.put("UAModernMagic", UA_PREFIX + "Modern Magic");
         abvToName.put("UAOD", UA_PREFIX + "Order Domain");
         abvToName.put("UAOSS", UA_PREFIX + "Of Ships and the Sea");
         abvToName.put("UAP", UA_PREFIX + "Paladin");
@@ -307,11 +310,14 @@ public class CompendiumSources {
         abvToName.put("UARSC", UA_PREFIX + "Revised Subclasses");
         abvToName.put("UAS", UA_PREFIX + "Sorcerer");
         abvToName.put("UASAW", UA_PREFIX + "Sorcerer and Warlock");
+        abvToName.put("UASorcererAndWarlock", UA_PREFIX + "Sorcerer and Warlock");
         abvToName.put("UASIK", UA_PREFIX + "Sidekicks");
         abvToName.put("UASSP", UA_PREFIX + "Starter Spells");
+        abvToName.put("UAStarterSpells", UA_PREFIX + "Starter Spells");
         abvToName.put("UATF", UA_PREFIX + "The Faithful");
         abvToName.put("UATMC", UA_PREFIX + "The Mystic Class");
         abvToName.put("UATOBM", UA_PREFIX + "That Old Black Magic");
+        abvToName.put("UAThatOldBlackMagic", UA_PREFIX + "That Old Black Magic");
         abvToName.put("UATRR", UA_PREFIX + "The Ranger, Revised");
         abvToName.put("UATSC", UA_PREFIX + "Three Subclasses");
         abvToName.put("UAVR", UA_PREFIX + "Variant Rules");
@@ -331,10 +337,10 @@ public class CompendiumSources {
 
     public void checkKnown(Json5eTui tui, Set<String> missing) {
         bookSources.forEach(s -> {
-            if ( abvToName.containsKey(s) ) {
+            if (abvToName.containsKey(s)) {
                 return;
             }
-            if ( missing.add(s) ) {
+            if (missing.add(s)) {
                 tui.warnf("Source %s is unknown", s);
             }
         });
