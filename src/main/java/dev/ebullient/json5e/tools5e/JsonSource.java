@@ -140,7 +140,7 @@ public interface JsonSource {
     }
 
     default JsonNode handleCopy(IndexType type, JsonNode jsonSource) {
-        if ( type == IndexType.race ) {
+        if (type == IndexType.race) {
             return copyAndMergeRace(jsonSource);
         }
         JsonNode _copy = jsonSource.get("_copy");
@@ -213,7 +213,7 @@ public interface JsonSource {
         JsonNode _preserve = _copy == null ? null : _copy.get("_preserve");
         JsonNode overwrite = _copy == null ? null : _copy.get("overwrite");
 
-        if (_preserve == null || !_preserve.has("reprintedAs") ) {
+        if (_preserve == null || !_preserve.has("reprintedAs")) {
             target.remove("reprintedAs");
         }
 
@@ -819,15 +819,23 @@ public interface JsonSource {
     }
 
     default String sizeToString(String size) {
-        switch(size) {
-            case "T": return "Tiny";
-            case "S": return "Small";
-            case "M": return "Medium";
-            case "L": return "Large";
-            case "H": return "Huge";
-            case "G": return "Gargantuan";
-            case "V": return "Varies";
-            case "SM": return "Small or Medium";
+        switch (size) {
+            case "T":
+                return "Tiny";
+            case "S":
+                return "Small";
+            case "M":
+                return "Medium";
+            case "L":
+                return "Large";
+            case "H":
+                return "Huge";
+            case "G":
+                return "Gargantuan";
+            case "V":
+                return "Varies";
+            case "SM":
+                return "Small or Medium";
         }
         return "Unknown";
     }
@@ -837,7 +845,7 @@ public interface JsonSource {
         try {
             if (speed == null) {
                 return "30 ft.";
-            } else if  (speed.isTextual()) {
+            } else if (speed.isTextual()) {
                 return speed.asText();
             } else if (speed.isIntegralNumber()) {
                 return speed.asText() + " ft.";
@@ -846,7 +854,7 @@ public interface JsonSource {
                 speed.fields().forEachRemaining(f -> {
                     if (f.getValue().isIntegralNumber()) {
                         list.add(String.format("%s: %s ft.",
-                            f.getKey(), f.getValue().asText()));
+                                f.getKey(), f.getValue().asText()));
                     } else if (f.getValue().isBoolean()) {
                         list.add(f.getKey() + " equal to your walking speed");
                     }
@@ -1102,11 +1110,11 @@ public interface JsonSource {
     default void appendInset(List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
         String id = null;
-        if ( entry.has("name")) {
+        if (entry.has("name")) {
             id = entry.get("name").asText();
             insetText.add("[!excerpt]- " + id);
             appendEntryToText(insetText, entry.get("entries"), null);
-        } else if ( getSources().type == IndexType.race) {
+        } else if (getSources().type == IndexType.race) {
             appendEntryToText(insetText, entry.get("entries"), null);
             id = insetText.remove(0);
             insetText.add(0, "[!excerpt]- " + id);
@@ -1118,7 +1126,7 @@ public interface JsonSource {
 
         maybeAddBlankLine(text);
         insetText.forEach(x -> text.add("> " + x));
-        if ( id != null ) {
+        if (id != null) {
             text.add("^" + tui().slugify(id));
         }
     }
