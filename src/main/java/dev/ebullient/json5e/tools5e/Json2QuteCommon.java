@@ -15,7 +15,7 @@ public abstract class Json2QuteCommon implements JsonSource {
 
     Json2QuteCommon(JsonIndex index, IndexType type, JsonNode jsonNode) {
         this.index = index;
-        this.node = handleCopy(type, jsonNode);
+        this.node = jsonNode;
         this.sources = index.constructSources(type, jsonNode);
     }
 

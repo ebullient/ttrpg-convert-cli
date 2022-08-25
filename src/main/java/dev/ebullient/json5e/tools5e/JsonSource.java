@@ -143,6 +143,9 @@ public interface JsonSource {
         if (type == IndexType.race) {
             return copyAndMergeRace(jsonSource);
         }
+        if (type == IndexType.classtype) {
+            return copyAndMergeClass(jsonSource);
+        }
         JsonNode _copy = jsonSource.get("_copy");
         if (_copy != null) {
             // Fix infinite loop: self-referencing copy
@@ -176,6 +179,17 @@ public interface JsonSource {
                     getTextOrDefault(jsonNode, "raceSource", null));
         }
         return jsonNode;
+    }
+
+    default JsonNode copyAndMergeClass(JsonNode jsonSource) {
+        if (jsonSource.has("className") || jsonSource.has("_copy")) {
+            CompendiumSources sources = index().constructSources(IndexType.classtype, jsonSource);
+            jsonSource = index().cloneOrCopy(sources.getKey(),
+                    jsonSource, IndexType.classtype,
+                    getTextOrDefault(jsonSource, "className", null),
+                    getTextOrDefault(jsonSource, "classSource", null));
+        }
+        return jsonSource;
     }
 
     default JsonNode cloneOrCopy(String originKey, JsonNode value, IndexType parentType, String parentName,

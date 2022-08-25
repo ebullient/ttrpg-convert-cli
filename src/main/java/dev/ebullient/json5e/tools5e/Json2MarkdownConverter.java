@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -29,13 +30,20 @@ public class Json2MarkdownConverter {
                 .filter(e -> e.getKey().startsWith(prefix))
                 .flatMap(e -> findVariants(type, e.getKey(), e.getValue()))
                 .filter(e -> index.keyIsIncluded(e.getKey()))
-                .filter(e -> !JsonSource.isReprinted(index, e.getKey(), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         List<QuteSource> nodes = new ArrayList<>();
+        JsonSourceCopier copier = new JsonSourceCopier(index);
 
-        for (JsonNode e : variants.values()) {
-            QuteSource converted = json2qute(type, e);
+        for (Entry<String, JsonNode> e : variants.entrySet()) {
+            JsonNode jsonSource = copier.handleCopy(type, e.getValue());
+
+            // check for reprints after merge/copy
+            if (JsonSource.isReprinted(index, e.getKey(), jsonSource)) {
+                continue;
+            }
+
+            QuteSource converted = json2qute(type, jsonSource);
             if (converted != null) {
                 nodes.add(converted);
             }
@@ -51,20 +59,12 @@ public class Json2MarkdownConverter {
 
     Stream<Map.Entry<String, JsonNode>> findVariants(IndexType type, String key, JsonNode jsonSource) {
         if (type == IndexType.race) {
-            CompendiumSources sources = index.constructSources(type, jsonSource);
             Map<String, JsonNode> variants = new HashMap<>();
-            if (index.keyIsIncluded(sources.getKey())) {
-                variants.put(key, jsonSource);
-            } else {
-                index.tui().debugf("Excluded %s", sources);
-            }
+            variants.put(key, jsonSource);
+            CompendiumSources sources = index.constructSources(type, jsonSource);
             index.subraces(sources).forEach(sr -> {
                 CompendiumSources srSources = index.constructSources(IndexType.subrace, sr);
-                if (index.sourceIncluded(srSources)) {
-                    variants.put(srSources.getKey(), sr);
-                } else {
-                    index.tui().debugf("Excluded %s", sources);
-                }
+                variants.put(srSources.getKey(), sr);
             });
             return variants.entrySet().stream();
         }
@@ -75,8 +75,12 @@ public class Json2MarkdownConverter {
         switch (type) {
             case background:
                 return new Json2QuteBackground(index, type, jsonNode).build();
+            case classtype:
+                return new Json2QuteClass(index, type, jsonNode).build();
             case feat:
                 return new Json2QuteFeat(index, type, jsonNode).build();
+            // case item:
+            // case monster:
             case namelist:
                 return new Json2QuteName(index, jsonNode).build();
             case race:
