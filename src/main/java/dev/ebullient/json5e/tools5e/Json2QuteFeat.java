@@ -28,7 +28,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 sources.getSourceText(),
                 prerequisite,
                 level,
-                getText(),
+                getText("##"),
                 List.of("feat/" + tui().slugify(sources.primarySource())));
     }
 

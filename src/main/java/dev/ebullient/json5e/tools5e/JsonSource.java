@@ -45,15 +45,15 @@ public interface JsonSource {
     static boolean isReprinted(JsonIndex index, String finalKey, JsonNode jsonSource) {
         if (jsonSource.has("reprintedAs")) {
             for (Iterator<JsonNode> i = jsonSource.withArray("reprintedAs").elements(); i.hasNext();) {
-                String ra = i.next().asText();
-                if (index.sourceIncluded(ra.substring(ra.lastIndexOf("|") + 1))) {
-                    index.tui().debugf("Skipping %s in favor of %s", finalKey, ra);
+                String[] ra = i.next().asText().split("\\|");
+                if (index.sourceIncluded(ra[1])) {
+                    index.tui().verbosef("🔹 Skipping %s; Reprinted as %s in %s%n", finalKey, ra[0], ra[1]);
                     return true; // the reprint will be used instead (stop parsing this one)
                 }
             }
         }
         if (jsonSource.has("isReprinted")) {
-            index.tui().debugf("Skipping %s (has been reprinted)", finalKey);
+            index.tui().verbosef("🔹 Skipping %s (has been reprinted)%n", finalKey);
             return true; // the reprint will be used instead of this one.
         }
         return false;
@@ -140,6 +140,9 @@ public interface JsonSource {
     }
 
     default JsonNode handleCopy(IndexType type, JsonNode jsonSource) {
+        if ( type == IndexType.race ) {
+            return copyAndMergeRace(jsonSource);
+        }
         JsonNode _copy = jsonSource.get("_copy");
         if (_copy != null) {
             // Fix infinite loop: self-referencing copy
@@ -164,6 +167,17 @@ public interface JsonSource {
         return jsonSource;
     }
 
+    default JsonNode copyAndMergeRace(JsonNode jsonNode) {
+        if (jsonNode.has("raceName") || jsonNode.has("_copy")) {
+            CompendiumSources sources = index().constructSources(IndexType.race, jsonNode);
+            jsonNode = cloneOrCopy(sources.getKey(),
+                    jsonNode, IndexType.race,
+                    getTextOrDefault(jsonNode, "raceName", null),
+                    getTextOrDefault(jsonNode, "raceSource", null));
+        }
+        return jsonNode;
+    }
+
     default JsonNode cloneOrCopy(String originKey, JsonNode value, IndexType parentType, String parentName,
             String parentSource) {
         JsonNode parentNode = parentName == null ? null : index().getNode(parentType, parentName, parentSource);
@@ -186,23 +200,26 @@ public interface JsonSource {
         return value;
     }
 
-    default JsonNode mergeNodes(String originKey, JsonNode baseNode, JsonNode childNode) {
+    default JsonNode mergeNodes(String originKey, JsonNode baseNode, JsonNode overlayNode) {
         ObjectNode target = (ObjectNode) copyNode(baseNode);
         target.put("merged", true);
         target.remove("srd");
         target.remove("basicRules");
-        target.remove("reprintedAs");
         target.remove("_versions");
         target.remove("_copy");
 
-        JsonNode _copy = childNode.get("_copy");
+        JsonNode _copy = overlayNode.get("_copy");
         JsonNode _mod = _copy == null ? null : _copy.get("_mod");
         JsonNode _preserve = _copy == null ? null : _copy.get("_preserve");
         JsonNode overwrite = _copy == null ? null : _copy.get("overwrite");
 
-        for (Iterator<String> it = childNode.fieldNames(); it.hasNext();) {
+        if (_preserve == null || !_preserve.has("reprintedAs") ) {
+            target.remove("reprintedAs");
+        }
+
+        for (Iterator<String> it = overlayNode.fieldNames(); it.hasNext();) {
             String f = it.next();
-            JsonNode childField = childNode.get(f);
+            JsonNode overlayField = overlayNode.get(f);
             switch (f) {
                 case "_copy":
                 case "_mod":
@@ -210,22 +227,24 @@ public interface JsonSource {
                     // skip -- do not copy
                     break;
                 case "ability":
-                    if ((overwrite != null && overwrite.has("ability"))
+                    if (overlayNode.has("raceName")) {
+                        target.set("ability", copyNode(overlayField));
+                    } else if ((overwrite != null && overwrite.has("ability"))
                             || !baseNode.has("ability")) {
-                        target.set("ability", copyNode(childField));
+                        target.set("ability", copyNode(overlayField));
                     } else {
                         ArrayNode cpyAbility = target.withArray("ability");
                         if (cpyAbility.size() == 0) {
-                            target.set("ability", copyNode(childField));
+                            target.set("ability", copyNode(overlayField));
                             break;
                         }
-                        if (cpyAbility.size() != childField.size()) {
+                        if (cpyAbility.size() != overlayField.size()) {
                             tui().errorf("Copy/Merge: Ability array lengths did not match (from %s):%nBASE:%n%s%nCOPY:%n%s",
-                                    originKey, cpyAbility.toPrettyString(), childField.toPrettyString());
+                                    originKey, cpyAbility.toPrettyString(), overlayField.toPrettyString());
                             continue;
                         }
-                        for (int i = 0; i < childField.size(); i++) {
-                            mergeFields(originKey, childField.get(i), (ObjectNode) cpyAbility.get(i));
+                        for (int i = 0; i < overlayField.size(); i++) {
+                            mergeFields(originKey, overlayField.get(i), (ObjectNode) cpyAbility.get(i));
                         }
                     }
                     break;
@@ -233,13 +252,17 @@ public interface JsonSource {
                 case "weaponProficiencies":
                 case "armorProficiencies":
                 case "languageProficiencies": {
-                    ArrayNode cpyArray = target.withArray(f);
-                    if ((overwrite != null && overwrite.has(f)) || cpyArray.isEmpty()) {
-                        target.set(f, copyNode(childField));
+                    if (overlayNode.has("raceName")) {
+                        target.set(f, copyNode(overlayField));
                     } else {
-                        // usually size of one... so just append fields
-                        for (int i = 0; i < childField.size(); i++) {
-                            mergeFields(originKey, childField.get(i), (ObjectNode) cpyArray.get(i));
+                        ArrayNode cpyArray = target.withArray(f);
+                        if ((overwrite != null && overwrite.has(f)) || cpyArray.isEmpty()) {
+                            target.set(f, copyNode(overlayField));
+                        } else {
+                            // usually size of one... so just append fields
+                            for (int i = 0; i < overlayField.size(); i++) {
+                                mergeFields(originKey, overlayField.get(i), (ObjectNode) cpyArray.get(i));
+                            }
                         }
                     }
                     break;
@@ -247,14 +270,14 @@ public interface JsonSource {
                 case "entries":
                     if (_mod == null) {
                         ArrayNode targetEntries = target.withArray("entries");
-                        appendToArray(targetEntries, childField);
+                        appendToArray(targetEntries, overlayField);
                     }
                     break;
                 default:
-                    if (childField == null) {
+                    if (overlayField == null) {
                         target.remove(f);
                     } else if (_preserve == null || !_preserve.has(f)) {
-                        target.replace(f, copyNode(childField));
+                        target.replace(f, copyNode(overlayField));
                     } else {
                         tui().debugf("Copy/Merge: Skip field %s (from %s)", f, originKey);
                     }
@@ -314,12 +337,12 @@ public interface JsonSource {
 
     default void mergeFields(String originKey, JsonNode sourceNode, ObjectNode targetNode) {
         sourceNode.fields().forEachRemaining(f -> {
-            if ("choose".equals(f.getKey()) && targetNode.has("choose")) {
-                tui().errorf("Merging choose is not supported (target %s from %s)", targetNode.toPrettyString(), originKey);
-            } else {
-                targetNode.set(f.getKey(), copyNode(f.getValue()));
-            }
+            targetNode.set(f.getKey(), copyNode(f.getValue()));
         });
+    }
+
+    default boolean sameValue(JsonNode source, JsonNode target) {
+        return source.toString().equals(target.toString());
     }
 
     default void handleModifications(String originKey, String prop, JsonNode modInfo, JsonNode target) {
@@ -777,6 +800,65 @@ public interface JsonSource {
         throw new IllegalArgumentException("Unknown skill: " + skill);
     }
 
+    default String getSize(JsonNode value) {
+        JsonNode size = value.get("size");
+        if (size == null) {
+            throw new IllegalArgumentException("Missing size attribute from " + getSources());
+        }
+        try {
+            if (size.isTextual()) {
+                return sizeToString(size.asText());
+            } else if (size.isArray()) {
+                String merged = streamOf((ArrayNode) size).map(JsonNode::asText).collect(Collectors.joining());
+                return sizeToString(merged);
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+        tui().errorf("Unable to parse size for %s from %s", getSources(), size.toPrettyString());
+        return "Unknown";
+    }
+
+    default String sizeToString(String size) {
+        switch(size) {
+            case "T": return "Tiny";
+            case "S": return "Small";
+            case "M": return "Medium";
+            case "L": return "Large";
+            case "H": return "Huge";
+            case "G": return "Gargantuan";
+            case "V": return "Varies";
+            case "SM": return "Small or Medium";
+        }
+        return "Unknown";
+    }
+
+    default String getSpeed(JsonNode value) {
+        JsonNode speed = value.get("speed");
+        try {
+            if (speed == null) {
+                return "30 ft.";
+            } else if  (speed.isTextual()) {
+                return speed.asText();
+            } else if (speed.isIntegralNumber()) {
+                return speed.asText() + " ft.";
+            } else if (speed.isObject()) {
+                List<String> list = new ArrayList<>();
+                speed.fields().forEachRemaining(f -> {
+                    if (f.getValue().isIntegralNumber()) {
+                        list.add(String.format("%s: %s ft.",
+                            f.getKey(), f.getValue().asText()));
+                    } else if (f.getValue().isBoolean()) {
+                        list.add(f.getKey() + " equal to your walking speed");
+                    }
+                });
+                return String.join("; ", list);
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+        tui().errorf("Unable to parse speed for %s from %s", getSources(), speed);
+        return "30 ft.";
+    }
+
     default String raceToText(JsonNode race) {
         StringBuilder str = new StringBuilder();
         str.append(race.get("name").asText());
@@ -873,7 +955,7 @@ public interface JsonSource {
                         text.add("");
                         appendEntryToText(text, node.get("entries"), "#" + heading);
                     } else {
-                        appendEntryToText(text, node.get("entries"), "#" + heading);
+                        appendEntryToText(text, node.get("entries"), heading);
                     }
                     break;
                 }
@@ -901,7 +983,8 @@ public interface JsonSource {
                     appendTable(text, node);
                     break;
                 }
-                case "inset": {
+                case "inset":
+                case "insetReadaloud": {
                     appendInset(text, node);
                     break;
                 }
@@ -922,8 +1005,17 @@ public interface JsonSource {
         if (node.has("entries")) {
             appendEntryToText(text, node.get("entries"), heading);
         }
+
         if (node.has("additionalEntries")) {
-            appendEntryToText(text, node.get("additionalEntries"), heading);
+            String altSource = getSources().alternateSource();
+            node.withArray("additionalEntries").forEach(entry -> {
+                if (entry.has("source") && !index().sourceIncluded(entry.get("source").asText())) {
+                    return;
+                } else if (!index().sourceIncluded(altSource)) {
+                    return;
+                }
+                appendEntryToText(text, entry, heading);
+            });
         }
     }
 
@@ -1009,14 +1101,26 @@ public interface JsonSource {
 
     default void appendInset(List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
-        String name = entry.get("name").asText();
-        insetText.add("[!info]- " + name);
-        appendEntryToText(insetText, entry.get("entries"), null);
+        String id = null;
+        if ( entry.has("name")) {
+            id = entry.get("name").asText();
+            insetText.add("[!excerpt]- " + id);
+            appendEntryToText(insetText, entry.get("entries"), null);
+        } else if ( getSources().type == IndexType.race) {
+            appendEntryToText(insetText, entry.get("entries"), null);
+            id = insetText.remove(0);
+            insetText.add(0, "[!excerpt]- " + id);
+        } else {
+            id = entry.get("id").asText();
+            insetText.add("[!excerpt]- ...");
+            appendEntryToText(insetText, entry.get("entries"), null);
+        }
 
         maybeAddBlankLine(text);
         insetText.forEach(x -> text.add("> " + x));
-        text.add("^" + tui().slugify(name));
-        maybeAddBlankLine(text);
+        if ( id != null ) {
+            text.add("^" + tui().slugify(id));
+        }
     }
 
     default void appendQuote(List<String> text, JsonNode entry) {
@@ -1147,13 +1251,12 @@ public interface JsonSource {
 
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
-                    String[] lines = match.group(2).split("\n");
-                    StringBuilder builder = new StringBuilder();
-                    builder.append("> [!note]\n");
-                    for (String line : lines) {
-                        builder.append("> ").append(line).append("\n");
+                    List<String> text = new ArrayList<>();
+                    text.add("> [!note]");
+                    for (String line : match.group(2).split("\n")) {
+                        text.add("> " + line);
                     }
-                    return builder.toString();
+                    return String.join("\n", text);
                 });
 
         result = result

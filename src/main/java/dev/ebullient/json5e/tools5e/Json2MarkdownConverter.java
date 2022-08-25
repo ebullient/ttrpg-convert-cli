@@ -2,6 +2,7 @@ package dev.ebullient.json5e.tools5e;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +50,24 @@ public class Json2MarkdownConverter {
     }
 
     Stream<Map.Entry<String, JsonNode>> findVariants(IndexType type, String key, JsonNode jsonSource) {
+        if (type == IndexType.race) {
+            CompendiumSources sources = index.constructSources(type, jsonSource);
+            Map<String, JsonNode> variants = new HashMap<>();
+            if (index.keyIsIncluded(sources.getKey())) {
+                variants.put(key, jsonSource);
+            } else {
+                index.tui().debugf("Excluded %s", sources);
+            }
+            index.subraces(sources).forEach(sr -> {
+                CompendiumSources srSources = index.constructSources(IndexType.subrace, sr);
+                if (index.sourceIncluded(srSources)) {
+                    variants.put(srSources.getKey(), sr);
+                } else {
+                    index.tui().debugf("Excluded %s", sources);
+                }
+            });
+            return variants.entrySet().stream();
+        }
         return Map.of(key, jsonSource).entrySet().stream();
     }
 
@@ -60,6 +79,8 @@ public class Json2MarkdownConverter {
                 return new Json2QuteFeat(index, type, jsonNode).build();
             case namelist:
                 return new Json2QuteName(index, jsonNode).build();
+            case race:
+                return new Json2QuteRace(index, type, jsonNode).build();
             case spell:
                 return new Json2QuteSpell(index, type, jsonNode).build();
             default:

@@ -38,10 +38,26 @@ public abstract class Json2QuteCommon implements JsonSource {
         return index;
     }
 
-    public String getText() {
+    public String getText(String heading) {
+        String altSource = getSources().alternateSource();
+
         List<String> text = new ArrayList<>();
-        appendEntryToText(text, node, "##");
-        return String.join("\n", text);
+        appendEntryToText(text, node, heading);
+        return text.isEmpty() ? null : String.join("\n", text);
+    }
+
+    public String getFluffDescription(IndexType fluffType, String heading) {
+        List<String> text = new ArrayList<>();
+        if (booleanOrDefault(node, "hasFluff", false)) {
+            JsonNode fluffNode = index.getNode(fluffType, node);
+            if (fluffNode != null) {
+                fluffNode = index.handleCopy(fluffType, fluffNode);
+                if (fluffNode.has("entries")) {
+                    appendEntryToText(text, fluffNode.get("entries"), heading);
+                }
+            }
+        }
+        return text.isEmpty() ? null : String.join("\n", text);
     }
 
     public abstract QuteSource build();

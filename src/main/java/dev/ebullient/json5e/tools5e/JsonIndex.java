@@ -139,7 +139,7 @@ public class JsonIndex implements JsonSource {
             // node.withArray("item").forEach(x -> addToIndex(IndexType.item, x));
             // node.withArray("monster").forEach(x -> addToIndex(IndexType.monster, x));
             node.withArray("name").forEach(x -> addToIndex(IndexType.namelist, x));
-            // node.withArray("race").forEach(x -> addToIndex(IndexType.race, x));
+            node.withArray("race").forEach(x -> addToIndex(IndexType.race, x));
             node.withArray("spell").forEach(x -> addToIndex(IndexType.spell, x));
         }
 

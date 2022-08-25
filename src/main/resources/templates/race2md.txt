@@ -10,22 +10,23 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
+*Source: {resource.source}*
 
-- **Ability Score Increase**: {resource.ability}
+- **Ability Scores**: {resource.ability}
+{#if resource.type}
+- **Creature Type**: {resource.type}
+{/if}
 - **Size**: {resource.size}
 - **Speed**: {resource.speed}
-{#if resource.skills}
-- **Skills**: {resource.skills}
+{#if resource.spellcasting}
+- **Spellcasting**: {resource.spellcasting}
 {/if}
-{#if resource.spellAbility}
-- **Innate Spellcasting ability**: {resource.spellAbility}
+
+## Traits
+
+{resource.traits}
+{#if resource.description}
+## Description
+
+{resource.description}
 {/if}
-{#for modifier in resource.modifiers}
-- **{modifier.category}**: {modifier.value}
-{/for}
-{#for trait in resource.trait}
-
-## {trait.name}
-
-{trait.text}
-{/for}

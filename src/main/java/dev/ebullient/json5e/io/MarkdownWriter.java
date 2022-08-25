@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import dev.ebullient.json5e.qute.QuteBackground;
 import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteName;
+import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.qute.QuteSource;
 import dev.ebullient.json5e.qute.QuteSpell;
 import io.quarkus.qute.TemplateData;
@@ -67,9 +68,9 @@ public class MarkdownWriter {
                     case "names":
                         writeFile(fileMap, dirName, templates.renderName((QuteName) x));
                         break;
-                    // case "races":
-                    //     writeFile(fileMap, dirName, templates.renderRace((QuteRace) x));
-                    //     break;
+                    case "races":
+                        writeFile(fileMap, dirName, templates.renderRace((QuteRace) x));
+                        break;
                     case "spells":
                         writeFile(fileMap, dirName, templates.renderSpell((QuteSpell) x));
                         break;

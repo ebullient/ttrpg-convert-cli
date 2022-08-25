@@ -20,7 +20,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
         return new QuteBackground(
                 decoratedTypeName(backgroundName, sources),
                 sources.getSourceText(),
-                getText(),
+                getText("##"),
                 List.of("background/" + tui().slugify(sources.primarySource())));
     }
 

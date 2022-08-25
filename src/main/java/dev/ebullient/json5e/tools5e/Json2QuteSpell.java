@@ -44,7 +44,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 spellComponents(),
                 spellDuration(),
                 String.join(", ", classes),
-                getText(),
+                getText("##"),
                 tags);
     }
 

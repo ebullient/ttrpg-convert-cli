@@ -120,4 +120,18 @@ public class JsonDataTest {
                     .writeFiles(IndexType.spell, "Spells");
         }
     }
+
+    @Test
+    public void testRaceList() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui)
+                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("races.json")))
+                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("fluff-races.json")));
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.race, "Races");
+        }
+    }
 }
