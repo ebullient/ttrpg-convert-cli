@@ -1,5 +1,6 @@
 package dev.ebullient.json5e.tools5e;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,12 +17,14 @@ public class Json2QuteBackground extends Json2QuteCommon {
     @Override
     public QuteSource build() {
         String backgroundName = decoratedBackgroundName(sources.getName());
+        List<String> tags = new ArrayList<>();
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
 
         return new QuteBackground(
                 decoratedTypeName(backgroundName, sources),
                 sources.getSourceText(),
                 getText("##"),
-                List.of("background/" + tui().slugify(sources.primarySource())));
+                tags);
     }
 
     String decoratedBackgroundName(String name) {

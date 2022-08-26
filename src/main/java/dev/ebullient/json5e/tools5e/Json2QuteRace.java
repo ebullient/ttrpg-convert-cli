@@ -18,7 +18,7 @@ public class Json2QuteRace extends Json2QuteCommon {
     public QuteRace build() {
         String name = decoratedRaceName();
         List<String> tags = new ArrayList<>();
-        tags.add("race/" + tui().slugify(sources.primarySource()));
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
 
         String[] split = name.split("\\(");
         for (int i = 0; i < split.length; i++) {

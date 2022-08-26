@@ -22,6 +22,8 @@ public class Json2QuteFeat extends Json2QuteCommon {
     public QuteSource build() {
         String prerequisite = listPrerequisites();
         String level = null;
+        List<String> tags = new ArrayList<>();
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
 
         return new QuteFeat(
                 decoratedTypeName(sources),
@@ -29,7 +31,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 prerequisite,
                 level,
                 getText("##"),
-                List.of("feat/" + tui().slugify(sources.primarySource())));
+                tags);
     }
 
     String listPrerequisites() {
