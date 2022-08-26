@@ -135,7 +135,6 @@ public class JsonDataTest {
         }
     }
 
-
     @Test
     public void testClassList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
@@ -146,6 +145,22 @@ public class JsonDataTest {
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.classtype, "Classes");
+        }
+    }
+
+    @Test
+    public void testItemList() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui)
+                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("items-base.json")))
+                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("items.json")))
+                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("fluff-items.json")));
+            // TODO: objects, vehicles, magicvariants
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.item, "Items");
         }
     }
 }

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import dev.ebullient.json5e.qute.QuteBackground;
 import dev.ebullient.json5e.qute.QuteClass;
 import dev.ebullient.json5e.qute.QuteFeat;
+import dev.ebullient.json5e.qute.QuteItem;
 import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.qute.QuteSource;
@@ -57,9 +58,9 @@ public class MarkdownWriter {
                     case "feats":
                         writeFile(fileMap, dirName, templates.renderFeat((QuteFeat) x));
                         break;
-                    // case "items":
-                    //     writeFile(fileMap, dirName, templates.renderItem((QuteItem) x));
-                    //     break;
+                    case "items":
+                        writeFile(fileMap, dirName, templates.renderItem((QuteItem) x));
+                        break;
                     // case "monsters":
                     //     QuteMonster m = (QuteMonster) x;
                     //     dirName = "bestiary/" + m.type;
@@ -103,7 +104,6 @@ public class MarkdownWriter {
         Path target = targetDir.resolve(fileMap.fileName);
 
         Files.write(target, content.getBytes(StandardCharsets.UTF_8));
-        tui.debugf("      %s", target);
     }
 
     @TemplateData

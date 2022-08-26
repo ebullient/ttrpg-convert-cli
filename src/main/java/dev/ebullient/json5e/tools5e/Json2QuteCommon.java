@@ -45,6 +45,11 @@ public abstract class Json2QuteCommon implements JsonSource {
     }
 
     public String getFluffDescription(IndexType fluffType, String heading) {
+        List<String> text = getFluff(fluffType, heading);
+        return text.isEmpty() ? null : String.join("\n", text);
+    }
+
+    public List<String> getFluff(IndexType fluffType, String heading) {
         List<String> text = new ArrayList<>();
         if (booleanOrDefault(node, "hasFluff", false)) {
             JsonNode fluffNode = index.getNode(fluffType, node);
@@ -55,7 +60,7 @@ public abstract class Json2QuteCommon implements JsonSource {
                 }
             }
         }
-        return text.isEmpty() ? null : String.join("\n", text);
+        return text;
     }
 
     public abstract QuteSource build();
