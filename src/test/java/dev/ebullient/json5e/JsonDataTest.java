@@ -134,4 +134,18 @@ public class JsonDataTest {
                     .writeFiles(IndexType.race, "Races");
         }
     }
+
+
+    @Test
+    public void testClassList() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui);
+            TestUtils.fullIndex(index, TOOLS_PATH);
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.classtype, "Classes");
+        }
+    }
 }
