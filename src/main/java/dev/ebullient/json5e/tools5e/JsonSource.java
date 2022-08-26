@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,11 +41,17 @@ public interface JsonSource {
     final static int CR_UNKNOWN = 100001;
     final static int CR_CUSTOM = 100000;
 
-    Json5eTui tui();
-
     JsonIndex index();
 
     CompendiumSources getSources();
+
+    default Json5eTui tui() {
+        return index().tui;
+    }
+
+    default String slugify(String s) {
+        return index().tui.slugify(s);
+    }
 
     static boolean isReprinted(JsonIndex index, String finalKey, JsonNode jsonSource) {
         if (jsonSource.has("reprintedAs")) {
@@ -1130,13 +1135,13 @@ public interface JsonSource {
                 .append(" |\n"));
 
         if (!caption.isBlank()) {
-            table.append("^").append(tui().slugify(caption));
+            table.append("^").append(slugify(caption));
         } else {
             String blockid = header.replaceAll("dice: d[0-9]+", "")
                     .replace("|", "")
                     .replaceAll("\\s+", " ")
                     .trim();
-            table.append("^").append(tui().slugify(blockid));
+            table.append("^").append(slugify(blockid));
         }
 
         maybeAddBlankLine(text);
@@ -1181,7 +1186,7 @@ public interface JsonSource {
         maybeAddBlankLine(text);
         insetText.forEach(x -> text.add("> " + x));
         if (id != null) {
-            text.add("^" + tui().slugify(id));
+            text.add("^" + slugify(id));
         }
     }
 
@@ -1292,7 +1297,6 @@ public interface JsonSource {
 
     default String replaceText(String input) {
         String result = input;
-        Matcher m;
 
         // "{@atk mw} {@hit 1} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4 ‒1}) piercing damage."
         // "{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4+2}) slashing damage."
@@ -1384,10 +1388,10 @@ public interface JsonSource {
     }
 
     default String linkify(String text, String base) {
-        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, tui().slugify(text));
+        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, slugify(text));
     }
 
     default String linkify(String text, String file, String base) {
-        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, tui().slugify(file));
+        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, slugify(file));
     }
 }

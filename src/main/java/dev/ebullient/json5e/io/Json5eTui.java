@@ -25,7 +25,7 @@ public class Json5eTui {
 
     private static Slugify slugify;
 
-    private static Slugify slugifier() {
+    static Slugify slugifier() {
         Slugify s = slugify;
         if (s == null) {
             slugify = s = Slugify.builder()

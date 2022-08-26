@@ -18,7 +18,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
     public QuteSource build() {
         String backgroundName = decoratedBackgroundName(sources.getName());
         List<String> tags = new ArrayList<>();
-        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + slugify(x)));
 
         return new QuteBackground(
                 decoratedTypeName(backgroundName, sources),

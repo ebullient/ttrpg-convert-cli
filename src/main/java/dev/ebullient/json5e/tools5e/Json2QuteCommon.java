@@ -29,11 +29,6 @@ public abstract class Json2QuteCommon implements JsonSource {
     }
 
     @Override
-    public Json5eTui tui() {
-        return index.tui();
-    }
-
-    @Override
     public JsonIndex index() {
         return index;
     }

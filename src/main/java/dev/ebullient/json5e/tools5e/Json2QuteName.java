@@ -36,7 +36,7 @@ public class Json2QuteName extends Json2QuteCommon {
         for (Iterator<JsonNode> j = tables.elements(); j.hasNext();) {
             JsonNode t_element = j.next();
             String tableName = t_element.get("option").asText();
-            String blockId = index.tui().slugify(tableName);
+            String blockId = index.slugify(tableName);
             String diceType = t_element.get("diceType").asText();
 
             List<LookupTableRow> rows = new ArrayList<>();

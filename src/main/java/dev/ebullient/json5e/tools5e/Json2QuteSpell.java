@@ -26,9 +26,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
         Collection<String> classes = spellClasses(school);
 
         List<String> tags = new ArrayList<>();
-        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + slugify(x)));
 
-        tags.add("spell/school/" + tui().slugify(school.name()));
+        tags.add("spell/school/" + slugify(school.name()));
         tags.add("spell/level/" + (level.equals("0") ? "cantrip" : level));
         if (ritual) {
             tags.add("spell/ritual");
@@ -36,7 +36,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         for (String c : classes) {
             String[] split = c.split("\\(");
             for (int i = 0; i < split.length; i++) {
-                split[i] = tui().slugify(split[i].trim());
+                split[i] = slugify(split[i].trim());
             }
             tags.add("spell/class/" + String.join("/", split));
         }
