@@ -51,7 +51,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             tags.add("class/" + tui().slugify(getName()));
         } else {
             String root = "class/" + tui().slugify(getName()) + "/";
-            for(Subclass sc : subclasses) {
+            for (Subclass sc : subclasses) {
                 tags.add(root + tui().slugify(sc.shortName));
             }
         }
@@ -83,14 +83,14 @@ public class Json2QuteClass extends Json2QuteCommon {
         });
 
         return new QuteClass(
-            decoratedTypeName(getName(), getSources()),
-            getSources().getSourceText(),
-            startingTextIntOrDefault("hd", 0),
-            buildClassProgression(),
-            buildStartingEquipment(),
-            buildStartMulticlassing(),
-            String.join("\n", text),
-            tags);
+                decoratedTypeName(getName(), getSources()),
+                getSources().getSourceText(),
+                startingTextIntOrDefault("hd", 0),
+                buildClassProgression(),
+                buildStartingEquipment(),
+                buildStartMulticlassing(),
+                String.join("\n", text),
+                tags);
     }
 
     String buildClassProgression() {
@@ -102,11 +102,12 @@ public class Json2QuteClass extends Json2QuteCommon {
         List<String> classProgression = new ArrayList<>();
 
         List<List<String>> row_levels = new ArrayList<>(21);
-        for(int i = 0; i < 21; i++) {
+        for (int i = 0; i < 21; i++) {
             row_levels.add(new ArrayList<>());
         }
 
-        Map<Object, List<ClassFeature>> levelToFeature = classFeatures.stream().collect(Collectors.groupingBy(x -> Integer.valueOf(x.level)));
+        Map<Object, List<ClassFeature>> levelToFeature = classFeatures.stream()
+                .collect(Collectors.groupingBy(x -> Integer.valueOf(x.level)));
 
         // Headings are in row 0
         row_levels.get(0).add("Level");
@@ -122,8 +123,8 @@ public class Json2QuteClass extends Json2QuteCommon {
                 row_levels.get(level).add("⏤");
             } else {
                 row_levels.get(level).add(features.stream()
-                    .map(x -> markdownLinkify(x.name))
-                    .collect(Collectors.joining(", ")));
+                        .map(x -> markdownLinkify(x.name))
+                        .collect(Collectors.joining(", ")));
             }
         }
 
@@ -131,7 +132,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 List.of("- PB: Proficiency Bonus"), "feature-progression"));
         classProgression.add("");
 
-        for(int i = 0; i < 21; i++) {
+        for (int i = 0; i < 21; i++) {
             row_levels.get(i).clear();
             if (i == 0) {
                 row_levels.get(i).add("Level");
@@ -154,17 +155,15 @@ public class Json2QuteClass extends Json2QuteCommon {
             // Values
             if (table.has("rows")) {
                 ArrayNode rows = table.withArray("rows");
-                for(int i = 0; i < rows.size(); i++) {
-                    int level = i+1;
-                    rows.get(i).forEach(c ->
-                            row_levels.get(level).add(columnValue(c.asText())));
+                for (int i = 0; i < rows.size(); i++) {
+                    int level = i + 1;
+                    rows.get(i).forEach(c -> row_levels.get(level).add(columnValue(c.asText())));
                 }
             } else if (table.has("rowsSpellProgression")) {
                 ArrayNode rows = table.withArray("rowsSpellProgression");
-                for(int i = 0; i < rows.size(); i++) {
-                    int level = i+1;
-                    rows.get(i).forEach(c ->
-                            row_levels.get(level).add(columnValue(c.asText())));
+                for (int i = 0; i < rows.size(); i++) {
+                    int level = i + 1;
+                    rows.get(i).forEach(c -> row_levels.get(level).add(columnValue(c.asText())));
                 }
             }
         });
@@ -178,7 +177,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     List<String> convertRowsToTable(List<List<String>> row_levels, String title, List<String> footer, String blockid) {
         List<String> text = new ArrayList<>();
         // Convert each row to markdown columns
-        row_levels.forEach(r -> text.add("| " + String.join(" | ", r)  + " |"));
+        row_levels.forEach(r -> text.add("| " + String.join(" | ", r) + " |"));
 
         // insert a header delimiting row (copy row 0, replace everything not a "|" with a "-")
         text.add(1, text.get(0).replaceAll("[^|]", "-"));
@@ -189,7 +188,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
 
         // Move everything into a callout box
-        for(int i = 0; i < text.size(); i++) {
+        for (int i = 0; i < text.size(); i++) {
             text.set(i, "> " + text.get(i));
         }
 
@@ -231,7 +230,8 @@ public class Json2QuteClass extends Json2QuteCommon {
             String wealth = startingTextJoinOrDefault("wealth", "");
             if (!wealth.isEmpty()) {
                 maybeAddBlankLine(startingEquipment);
-                startingEquipment.add(String.format("Alternatively, you may start with %s gp and choose your own equipment.", startingTextJoinOrDefault("wealth", "3d4 x 10")));
+                startingEquipment.add(String.format("Alternatively, you may start with %s gp and choose your own equipment.",
+                        startingTextJoinOrDefault("wealth", "3d4 x 10")));
             }
         }
         return String.join("\n", startingEquipment);
@@ -250,9 +250,8 @@ public class Json2QuteClass extends Json2QuteCommon {
         JsonNode requirements = multiclassing.with("requirements");
         if (requirements.has("or")) {
             List<String> options = new ArrayList<>();
-            requirements.get("or").get(0).fields().forEachRemaining(ability ->
-                    options.add(String.format("%s %s",
-                            asAbilityEnum(ability.getKey()), ability.getValue().asText())));
+            requirements.get("or").get(0).fields().forEachRemaining(ability -> options.add(String.format("%s %s",
+                    asAbilityEnum(ability.getKey()), ability.getValue().asText())));
             startMulticlass.add("- " + String.join(", or ", options));
         } else {
             requirements.fields().forEachRemaining(
@@ -309,13 +308,14 @@ public class Json2QuteClass extends Json2QuteCommon {
 
             // Subclass features
             s.withArray("subclassFeatures").forEach(f -> {
-                ClassFeature scf = lookupSubclassFeature(IndexType.subclassfeature, f.asText(), "####", sc.sources.primarySource());
+                ClassFeature scf = lookupSubclassFeature(IndexType.subclassfeature, f.asText(), "####",
+                        sc.sources.primarySource());
                 if (scf != null) {
                     sc.features.add(scf);
                 }
             });
 
-            // TODO: Subclass spellcasting?
+            // TODO: Subclass spellcasting !!
             subclasses.add(sc);
         });
     }
@@ -507,7 +507,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         if (text == null || text.isEmpty()) {
             return value;
         }
-        if ( text.size() > 1) {
+        if (text.size() > 1) {
             throw new IllegalArgumentException("Unable to parse int from starting text field: " + text);
         }
         return Integer.parseInt(text.get(0));
@@ -563,7 +563,8 @@ public class Json2QuteClass extends Json2QuteCommon {
                 // A class feature already uses this name. Add the level.
                 name += " (Level " + level + ")";
             }
-            boolean optional = type == IndexType.optionalfeature || booleanOrDefault(featureJson, "isClassFeatureVariant", false);
+            boolean optional = type == IndexType.optionalfeature
+                    || booleanOrDefault(featureJson, "isClassFeatureVariant", false);
 
             List<String> text = new ArrayList<>();
             replaceElementRefs(featureJson, "entries", text, heading, featureSources.primarySource());
@@ -583,9 +584,10 @@ public class Json2QuteClass extends Json2QuteCommon {
             this.text = text;
         }
 
-        void replaceElementRefs(JsonNode featureJson, String fieldName, List<String> text, String heading, String parentSource) {
+        void replaceElementRefs(JsonNode featureJson, String fieldName, List<String> text, String heading,
+                String parentSource) {
             JsonNode field = featureJson.get(fieldName);
-            if ( field == null ) {
+            if (field == null) {
                 return;
             }
             if (containsReference(field.toString())) {
@@ -604,55 +606,78 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
 
         IndexType referenceType(String referenceType) {
-            switch(referenceType) {
-                case "refSubclassFeature": return IndexType.subclassfeature;
-                case "refOptionalfeature": return IndexType.optionalfeature;
-                case "refClassFeature": return IndexType.classfeature;
-                default: return null;
+            switch (referenceType) {
+                case "refSubclassFeature":
+                    return IndexType.subclassfeature;
+                case "refOptionalfeature":
+                    return IndexType.optionalfeature;
+                case "refClassFeature":
+                    return IndexType.classfeature;
+                default:
+                    return null;
             }
         }
 
         String referenceField(String referenceType) {
-            switch(referenceType) {
-                case "refSubclassFeature": return "subclassFeature";
-                case "refOptionalfeature": return "optionalfeature";
-                case "refClassFeature": return "classFeature";
-                default: return null;
+            switch (referenceType) {
+                case "refSubclassFeature":
+                    return "subclassFeature";
+                case "refOptionalfeature":
+                    return "optionalfeature";
+                case "refClassFeature":
+                    return "classFeature";
+                default:
+                    return null;
             }
         }
 
         void replaceNodes(ArrayNode copy, String parentSource) {
-            for(int i = 0; i < copy.size(); i++) {
+            for (int i = 0; i < copy.size(); i++) {
                 if (copy.get(i).isObject() && copy.get(i).has("type")) {
                     String typeField = getTextOrEmpty(copy.get(i), "type");
                     final IndexType refType = referenceType(typeField);
                     final String refField = referenceField(typeField);
-                    if ( refField != null ) {
+                    if (refField != null) {
                         // replace refClassFeature with class feature entries
                         String refKey = index.getRefKey(refType, copy.get(i).get(refField).asText());
                         JsonNode refJson = index.resolveClassFeatureNode(refKey);
                         String source = refJson.get("source").asText();
 
+                        // Recurse...
+                        ArrayNode replaceEntries = (ArrayNode) copyNode(refJson.get("entries"));
+                        replaceNodes(replaceEntries, source);
+
                         ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
                         replace.remove(refField);
                         replace.set("type", new TextNode("entries"));
                         replace.set("name", refJson.get("name"));
-                        replace.set("entries", refJson.get("entries"));
+                        replace.set("entries", replaceEntries);
+
+                        // Add a source entry if this feature comes from a different source than the parent
                         if (!source.equals(parentSource)) {
                             CompendiumSources sources = index().constructSources(refType, refJson);
                             replace.set("entry", new TextNode("_Source: " + sources.getSourceText() + "_"));
                         }
                         copy.set(i, replace);
                     } else if (typeField.equals("options")) {
-                        ArrayNode copyEntries = (ArrayNode) copyNode(copy.get(i).get("entries"));
-                        replaceNodes(copyEntries, parentSource);
+                        ArrayNode replaceEntries = (ArrayNode) copyNode(copy.get(i).get("entries"));
+                        replaceNodes(replaceEntries, parentSource);
+
                         ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
-                        replace.set("entries", copyEntries);
+                        replace.set("entries", replaceEntries);
+                        copy.set(i, replace);
+                    } else if (typeField.equals("list")) {
+                        ArrayNode replaceEntries = (ArrayNode) copyNode(copy.get(i).get("items"));
+                        replaceNodes(replaceEntries, parentSource);
+
+                        ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
+                        replace.set("items", replaceEntries);
                         copy.set(i, replace);
                     } else if (typeField.equals("entries")) {
                         // Nested entries object
                         ArrayNode copyEntries = (ArrayNode) copyNode(copy.get(i).get("entries"));
                         replaceNodes(copyEntries, parentSource);
+
                         ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
                         replace.set("entries", copyEntries);
                         copy.set(i, replace);
@@ -665,13 +690,13 @@ public class Json2QuteClass extends Json2QuteCommon {
     String markdownLinkify(String x) {
         return String.format("[%s](#%s)", x,
                 x.replace(" ", "%20")
-                    .replace(":", "")
-                    .replace(".", ""));
+                        .replace(":", "")
+                        .replace(".", ""));
     }
 
     String columnValue(Object c) {
         String x = c == null ? null : c.toString();
-        if ( x == null || x.isEmpty() || "0".equals(x) ) {
+        if (x == null || x.isEmpty() || "0".equals(x)) {
             return "⏤";
         }
         return replaceText(x);
