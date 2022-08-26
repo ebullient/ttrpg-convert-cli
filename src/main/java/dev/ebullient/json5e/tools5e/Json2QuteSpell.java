@@ -26,13 +26,19 @@ public class Json2QuteSpell extends Json2QuteCommon {
         Collection<String> classes = spellClasses(school);
 
         List<String> tags = new ArrayList<>();
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
+
         tags.add("spell/school/" + tui().slugify(school.name()));
         tags.add("spell/level/" + (level.equals("0") ? "cantrip" : level));
         if (ritual) {
             tags.add("spell/ritual");
         }
         for (String c : classes) {
-            tags.add("spell/class/" + tui().slugify(c));
+            String[] split = c.split("\\(");
+            for (int i = 0; i < split.length; i++) {
+                split[i] = tui().slugify(split[i].trim());
+            }
+            tags.add("spell/class/" + String.join("/", split));
         }
 
         return new QuteSpell(getName(), sources.getSourceText(),
