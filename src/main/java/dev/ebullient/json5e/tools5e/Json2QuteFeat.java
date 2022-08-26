@@ -23,7 +23,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
         String prerequisite = listPrerequisites();
         String level = null;
         List<String> tags = new ArrayList<>();
-        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + slugify(x)));
 
         return new QuteFeat(
                 decoratedTypeName(sources),

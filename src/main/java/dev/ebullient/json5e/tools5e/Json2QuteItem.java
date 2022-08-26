@@ -31,7 +31,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 .collect(Collectors.toList()));
 
         List<String> tags = new ArrayList<>();
-        sources.bookSources.forEach(x -> tags.add("compendium/src/" + tui().slugify(x)));
+        sources.bookSources.forEach(x -> tags.add("compendium/src/" + slugify(x)));
 
         tags.add(itemType.getItemTag(propertyEnums, tui()));
         for (PropertyEnum p : propertyEnums) {

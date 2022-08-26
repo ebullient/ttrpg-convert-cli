@@ -1,18 +1,11 @@
 package dev.ebullient.json5e.tools5e;
 
-import dev.ebullient.json5e.io.Json5eTui;
-
 public class JsonSourceCopier implements JsonSource {
 
     final JsonIndex index;
 
     JsonSourceCopier(JsonIndex index) {
         this.index = index;
-    }
-
-    @Override
-    public Json5eTui tui() {
-        return index.tui();
     }
 
     @Override
