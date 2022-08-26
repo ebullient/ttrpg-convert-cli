@@ -13,7 +13,6 @@ import dev.ebullient.json5e.qute.QuteSource;
 
 public class Json2QuteItem extends Json2QuteCommon {
 
-    int ac;
     final ItemEnum itemType;
 
     Json2QuteItem(JsonIndex index, IndexType type, JsonNode jsonNode) {
@@ -145,8 +144,12 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     String armorClass() {
+        if (!node.has("ac")) {
+            return null;
+        }
+
         StringBuilder result = new StringBuilder();
-        result.append(ac);
+        result.append(node.get("ac").asText());
         // - If you wear light armor, you add your Dexterity modifier to the base number from your armor type to determine your Armor Class.
         // - If you wear medium armor, you add your Dexterity modifier, to a maximum of +2, to the base number from your armor type to determine your Armor Class.
         // - Heavy armor doesn’t let you add your Dexterity modifier to your Armor Class, but it also doesn’t penalize you if your Dexterity modifier is negative.
