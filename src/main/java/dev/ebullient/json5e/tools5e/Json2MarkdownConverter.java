@@ -79,7 +79,8 @@ public class Json2MarkdownConverter {
                 return new Json2QuteClass(index, type, jsonNode).build();
             case feat:
                 return new Json2QuteFeat(index, type, jsonNode).build();
-            // case item:
+            case item:
+                return new Json2QuteItem(index, type, jsonNode).build();
             // case monster:
             case namelist:
                 return new Json2QuteName(index, jsonNode).build();

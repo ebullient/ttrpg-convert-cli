@@ -22,8 +22,14 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.json5e.io.Json5eTui;
 
 public interface JsonSource {
-    static final Pattern itemPattern = Pattern.compile("\\{@item ([^|}]+)\\|?([^|}]*)\\|?([^|}]*)?\\}");
+    static final Pattern backgroundPattern = Pattern.compile("\\{@background ([^|}]+)\\|?[^}]*}");
+    static final Pattern classPattern1 = Pattern.compile("\\{@class ([^|}]+)\\|[^|]*\\|?([^|}]*)\\|?[^}]*}");
+    static final Pattern classPattern2 = Pattern.compile("\\{@class ([^|}]+)}");
+    static final Pattern featPattern = Pattern.compile("\\{@feat ([^|}]+)\\|?[^}]*}");
+    static final Pattern itemPattern = Pattern.compile("\\{@item ([^|}]+)\\|?[^}]*}");
+    static final Pattern racePattern = Pattern.compile("\\{@race ([^|}]+)\\|?[^}]*}");
     static final Pattern spellPattern = Pattern.compile("\\{@spell ([^|}]+)\\|?([^|}]*)\\|?([^|}]*)?\\}");
+
     static final Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^|}]+)[^}]*\\}");
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)\\}");
     static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
@@ -1181,8 +1187,12 @@ public interface JsonSource {
 
     default void appendQuote(List<String> text, JsonNode entry) {
         List<String> quoteText = new ArrayList<>();
-        String by = entry.get("by").asText();
-        quoteText.add("[!quote]- A quote from " + by);
+        if (entry.has("by")) {
+            String by = replaceText(entry.get("by").asText());
+            quoteText.add("[!quote]- A quote from " + by + "  ");
+        } else {
+            quoteText.add("[!quote]-  ");
+        }
         appendEntryToText(quoteText, entry.get("entries"), null);
 
         maybeAddBlankLine(text);
@@ -1292,15 +1302,28 @@ public interface JsonSource {
         result = chancePattern.matcher(result)
                 .replaceAll((match) -> match.group(1) + "% chance");
 
-        // {@item Ball Bearings (Bag of 1,000)|phb|bag of ball bearings}
-        // {@item sphere of annihilation}
-        // {@item spellbook|phb}
-        result = itemPattern.matcher(result)
-                .replaceAll((match) -> match.group(1));
+        result = backgroundPattern.matcher(result)
+                .replaceAll((match) -> linkify(match.group(1), "backgrounds"));
 
+        result = classPattern1.matcher(result)
+                .replaceAll((match) -> linkify(match.group(2), match.group(1), "classes"));
+
+        result = classPattern2.matcher(result)
+                .replaceAll((match) -> linkify(match.group(1), "classes"));
+
+        result = featPattern.matcher(result)
+                .replaceAll((match) -> linkify(match.group(1), "feats"));
+
+        result = itemPattern.matcher(result)
+                .replaceAll((match) -> linkify(match.group(1), "items"));
+
+        result = racePattern.matcher(result)
+                .replaceAll((match) -> linkify(match.group(1), "races"));
+
+        // {@spell friends}
+        // {@spell encode thoughts|GGR}
         result = spellPattern.matcher(result)
-                .replaceAll((match) -> match.group(1)
-                        + (match.groupCount() > 2 && match.group(2).length() > 0 ? '*' : ""));
+                .replaceAll((match) -> "_" + linkify(match.group(1), "spells") + "_");
 
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
@@ -1356,31 +1379,15 @@ public interface JsonSource {
                 .replaceAll("\\{@condition ([^|}]+)\\|?[^}]*}", "[$1](" + index().rulesRoot() + "conditions.md#$1)")
                 .replaceAll("\\{@sense ([^}]+)}", "[$1](" + index().rulesRoot() + "senses.md#$1))");
 
-        m = Pattern.compile("\\{@background ([^|}]+)\\|?[^}]*}").matcher(result);
-        result = m.replaceAll((match) -> String.format("[%s](%sbackgrounds/%s.md)",
-                match.group(1), index().compendiumRoot(), tui().slugify(match.group(1))));
-
-        m = Pattern.compile("\\{@class ([^|}]+)\\|[^|]*\\|?([^|}]*)\\|?[^}]*}").matcher(result);
-        result = m.replaceAll((match) -> String.format("[%s](%sclasses/%s.md)",
-                match.group(2), index().compendiumRoot(), tui().slugify(match.group(1))));
-
-        m = Pattern.compile("\\{@class ([^|}]+)}").matcher(result);
-        result = m.replaceAll((match) -> String.format("[%s](%sclasses/%s.md)",
-                match.group(1), index().compendiumRoot(), tui().slugify(match.group(1))));
-
-        m = Pattern.compile("\\{@feat ([^|}]+)\\|?[^}]*}").matcher(result);
-        result = m.replaceAll((match) -> String.format("[%s](%sfeats/%s.md)",
-                match.group(1), index().compendiumRoot(), tui().slugify(match.group(1))));
-
-        m = Pattern.compile("\\{@item ([^|}]+)\\|?[^}]*}").matcher(result);
-        result = m.replaceAll((match) -> String.format("[%s](%sitems/%s.md)",
-                match.group(1), index().compendiumRoot(), tui().slugify(match.group(1))));
-
-        m = Pattern.compile("\\{@race ([^|}]+)\\|?[^}]*}").matcher(result);
-        result = m.replaceAll((match) -> String.format("[%s](%sraces/%s.md)",
-                match.group(1), index().compendiumRoot(), tui().slugify(match.group(1))));
-
         // after other replacements
         return result.replaceAll("\\{@adventure ([^|}]+)\\|[^}]*}", "$1");
+    }
+
+    default String linkify(String text, String base) {
+        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, tui().slugify(text));
+    }
+
+    default String linkify(String text, String file, String base) {
+        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, tui().slugify(file));
     }
 }
