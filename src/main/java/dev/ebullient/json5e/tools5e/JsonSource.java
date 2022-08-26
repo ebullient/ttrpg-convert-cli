@@ -742,7 +742,7 @@ public interface JsonSource {
 
     default int levelToPb(int level) {
         //2 + (¼  * (Level – 1))
-        return 2 + ((int) (.25 * (level -1)));
+        return 2 + ((int) (.25 * (level - 1)));
     }
 
     default int crToPb(JsonNode cr) {

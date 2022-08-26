@@ -13,17 +13,17 @@ public class QuteClass implements QuteSource {
     public final List<String> tags;
 
     public QuteClass(String name, String source,
-        int hitDice, String classProgression,
-        String startingEquipment, String multiclassing,
-        String text, List<String> tags) {
-            this.name = name;
-            this.source = source;
-            this.hitDice = hitDice;
-            this.classProgression = classProgression;
-            this.startingEquipment = startingEquipment;
-            this.multiclassing = multiclassing;
-            this.text = text;
-            this.tags = tags == null ? List.of() : tags;
+            int hitDice, String classProgression,
+            String startingEquipment, String multiclassing,
+            String text, List<String> tags) {
+        this.name = name;
+        this.source = source;
+        this.hitDice = hitDice;
+        this.classProgression = classProgression;
+        this.startingEquipment = startingEquipment;
+        this.multiclassing = multiclassing;
+        this.text = text;
+        this.tags = tags == null ? List.of() : tags;
     }
 
     @Override
