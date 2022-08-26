@@ -13,11 +13,11 @@ aliases: ["{resource.name}"]
 {#if resource.detail }*{resource.detail}*{/if}
 
 {#if resource.armorClass }
-- **Base Armor Class**: {resource.armorClass}
-{#else if resource.damage }{#if resource.damage2H }
+- **Armor Class**: {resource.armorClass}
+{#else if resource.damage }{#if resource.damage2h }
 - **Damage**:
   - One-handed: {resource.damage}
-  - Two-handed: {resource.damage2H}
+  - Two-handed: {resource.damage2h}
 {#else}
 - **Damage**: {resource.damage}
 {/if}{#if resource.range }
