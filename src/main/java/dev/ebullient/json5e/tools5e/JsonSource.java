@@ -740,6 +740,11 @@ public interface JsonSource {
         return -1;
     }
 
+    default int levelToPb(int level) {
+        //2 + (¼  * (Level – 1))
+        return 2 + ((int) (.25 * (level -1)));
+    }
+
     default int crToPb(JsonNode cr) {
         if (cr == null || cr.isTextual() && cr.asText().equals("Unknown")) {
             return 0;
@@ -917,13 +922,13 @@ public interface JsonSource {
             case "0":
                 return "cantrip";
             case "1":
-                return "1st level";
+                return "1st-level";
             case "2":
-                return "2nd level";
+                return "2nd-level";
             case "3":
-                return "3rd level";
+                return "3rd-level";
             default:
-                return level + "th level";
+                return level + "th-level";
         }
     }
 
@@ -940,8 +945,8 @@ public interface JsonSource {
             text.add(replaceText(node.asText()));
         } else if (node.isArray()) {
             node.elements().forEachRemaining(f -> {
-                appendEntryToText(text, f, heading);
                 maybeAddBlankLine(text);
+                appendEntryToText(text, f, heading);
             });
         } else if (node.isObject()) {
             appendEntryObjectToText(text, node, heading);
@@ -1005,6 +1010,9 @@ public interface JsonSource {
                     appendTable(text, node);
                     break;
                 }
+                case "options":
+                    appendOptions(text, node);
+                    break;
                 case "inset":
                 case "insetReadaloud": {
                     appendInset(text, node);
@@ -1014,6 +1022,14 @@ public interface JsonSource {
                     appendQuote(text, node);
                     break;
                 }
+                case "abilityDc":
+                    text.add(String.format("**Spell save DC**: 8 + your proficiency bonus + your %s modifier",
+                            asAbilityEnum(node.withArray("attributes").get(0))));
+                    break;
+                case "abilityAttackMod":
+                    text.add(String.format("**Spell attack modifier**: your proficiency bonus + your %s modifier",
+                            asAbilityEnum(node.withArray("attributes").get(0))));
+                    break;
                 default:
                     tui().errorf("Unknown entry object type %s from %s: %s", objectType, getSources(), node.toPrettyString());
             }
@@ -1121,6 +1137,24 @@ public interface JsonSource {
         text.add(table.toString());
     }
 
+    default void appendOptions(List<String> text, JsonNode entry) {
+        List<String> list = new ArrayList<>();
+        entry.withArray("entries").forEach(e -> {
+            List<String> item = new ArrayList<>();
+            appendEntryToText(item, e, null);
+            if (item.size() > 0) {
+                list.add("- " + String.join("\n    ", item)); // preserve line items
+            }
+        });
+        if (list.size() > 0) {
+            maybeAddBlankLine(text);
+            int count = intOrDefault(entry, "count", 0);
+            text.add(String.format("Options%s:",
+                    count > 0 ? " (choose " + count + ")" : ""));
+            text.addAll(list);
+        }
+    }
+
     default void appendInset(List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
         String id = null;
@@ -1170,7 +1204,7 @@ public interface JsonSource {
         return name;
     }
 
-    default String decoratedFeatureTypeName(CompendiumSources valueSources, String subclassTitle, JsonNode value) {
+    default String decoratedFeatureTypeName(CompendiumSources valueSources, JsonNode value) {
         String name = decoratedTypeName(value.get("name").asText(), valueSources);
         String type = getTextOrEmpty(value, "featureType");
 
@@ -1221,9 +1255,6 @@ public interface JsonSource {
             }
         }
 
-        if (subclassTitle != null && !subclassTitle.isBlank()) {
-            return subclassTitle + ": " + name;
-        }
         return name;
     }
 

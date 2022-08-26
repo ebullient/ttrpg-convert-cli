@@ -276,6 +276,7 @@ public class CompendiumSources {
         abvToName.put("UACDD", UA_PREFIX + "Cleric: Divine Domains");
         abvToName.put("UACDW", UA_PREFIX + "Cleric, Druid, and Wizard");
         abvToName.put("UACFV", UA_PREFIX + "Class Feature Variants");
+        abvToName.put("UAClassFeatureVariants", UA_PREFIX + "Class Feature Variants");
         abvToName.put("UAD", UA_PREFIX + "Druid");
         abvToName.put("UAEAG", UA_PREFIX + "Eladrin and Gith");
         abvToName.put("UAEladrinAndGith", UA_PREFIX + "Eladrin and Gith");
@@ -301,6 +302,7 @@ public class CompendiumSources {
         abvToName.put("UAGSS", UA_PREFIX + "Giant Soul Sorcerer");
         abvToName.put("UAKOO", UA_PREFIX + "Kits of Old");
         abvToName.put("UALDR", UA_PREFIX + "Light, Dark, Underdark!");
+        abvToName.put("UALightDarkUnderdark", UA_PREFIX + "Light, Dark, Underdark!");
         abvToName.put("UAM", UA_PREFIX + "Monk");
         abvToName.put("UAMAC", UA_PREFIX + "Mass Combat");
         abvToName.put("UAMC", UA_PREFIX + "Modifying Classes");
@@ -311,6 +313,7 @@ public class CompendiumSources {
         abvToName.put("UAP", UA_PREFIX + "Paladin");
         abvToName.put("UAPCRM", UA_PREFIX + "Prestige Classes and Rune Magic");
         abvToName.put("UAR", UA_PREFIX + "Ranger");
+        abvToName.put("UARanger", UA_PREFIX + "Ranger");
         abvToName.put("UARAR", UA_PREFIX + "Ranger and Rogue");
         abvToName.put("UARCO", UA_PREFIX + "Revised Class Options");
         abvToName.put("UARoE", UA_PREFIX + "Races of Eberron");

@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import dev.ebullient.json5e.qute.QuteBackground;
+import dev.ebullient.json5e.qute.QuteClass;
 import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteRace;
@@ -50,9 +51,9 @@ public class MarkdownWriter {
                     case "backgrounds":
                         writeFile(fileMap, dirName, templates.renderBackground((QuteBackground) x));
                         break;
-                    // case "classes":
-                    //     writeFile(fileMap, dirName, templates.renderClass((QuteClass) x));
-                    //     break;
+                    case "classes":
+                        writeFile(fileMap, dirName, templates.renderClass((QuteClass) x));
+                        break;
                     case "feats":
                         writeFile(fileMap, dirName, templates.renderFeat((QuteFeat) x));
                         break;
