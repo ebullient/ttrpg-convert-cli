@@ -35,6 +35,7 @@ public class Templates {
 
     public void setCustomTemplates(TemplatePaths templatePaths) {
         this.templatePaths = templatePaths;
+        this.templates.clear();
     }
 
     private Template customTemplateOrDefault(String id, Template defaultTemplate) {
