@@ -14,6 +14,7 @@ import dev.ebullient.json5e.qute.QuteBackground;
 import dev.ebullient.json5e.qute.QuteClass;
 import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteItem;
+import dev.ebullient.json5e.qute.QuteMonster;
 import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.qute.QuteSource;
@@ -61,12 +62,12 @@ public class MarkdownWriter {
                     case "items":
                         writeFile(fileMap, dirName, templates.renderItem((QuteItem) x));
                         break;
-                    // case "monsters":
-                    //     QuteMonster m = (QuteMonster) x;
-                    //     dirName = "bestiary/" + m.type;
-                    //     fileMap = new FileMap(m.getName(), slugifier().slugify(m.getName()), dirName);
-                    //     writeFile(fileMap, dirName, templates.renderMonster(m));
-                    //     break;
+                    case "monsters":
+                        QuteMonster m = (QuteMonster) x;
+                        dirName = "bestiary/" + m.type;
+                        fileMap = new FileMap(m.getName(), Json5eTui.slugifier().slugify(m.getName()), dirName);
+                        writeFile(fileMap, dirName, templates.renderMonster(m));
+                        break;
                     case "names":
                         writeFile(fileMap, dirName, templates.renderName((QuteName) x));
                         break;

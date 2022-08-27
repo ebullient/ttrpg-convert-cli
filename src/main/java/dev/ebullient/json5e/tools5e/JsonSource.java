@@ -1305,27 +1305,27 @@ public interface JsonSource {
                 .replaceAll((match) -> match.group(1) + "% chance");
 
         result = backgroundPattern.matcher(result)
-                .replaceAll((match) -> linkify(match.group(1), "backgrounds"));
+                .replaceAll((match) -> match.group(1));
 
         result = classPattern1.matcher(result)
-                .replaceAll((match) -> linkify(match.group(2), match.group(1), "classes"));
+                .replaceAll((match) -> match.group(2));
 
         result = classPattern2.matcher(result)
-                .replaceAll((match) -> linkify(match.group(1), "classes"));
+                .replaceAll((match) -> match.group(1));
 
         result = featPattern.matcher(result)
-                .replaceAll((match) -> linkify(match.group(1), "feats"));
+                .replaceAll((match) -> match.group(1));
 
         result = itemPattern.matcher(result)
-                .replaceAll((match) -> linkify(match.group(1), "items"));
+                .replaceAll((match) -> match.group(1));
 
         result = racePattern.matcher(result)
-                .replaceAll((match) -> linkify(match.group(1), "races"));
+                .replaceAll((match) -> match.group(1));
 
         // {@spell friends}
         // {@spell encode thoughts|GGR}
         result = spellPattern.matcher(result)
-                .replaceAll((match) -> "_" + linkify(match.group(1), "spells") + "_");
+                .replaceAll((match) -> match.group(1));
 
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {

@@ -120,7 +120,7 @@ public class JsonIndex implements JsonSource {
             node.withArray("backgroundFluff").forEach(x -> addToIndex(IndexType.backgroundfluff, x));
             node.withArray("itemEntry").forEach(x -> addToIndex(IndexType.itementry, x));
             node.withArray("itemFluff").forEach(x -> addToIndex(IndexType.itemfluff, x));
-            // node.withArray("variant").forEach(x -> addToIndex(IndexType.itemvariant, x));
+            // TODO: node.withArray("variant").forEach(x -> addToIndex(IndexType.itemvariant, x));
             node.withArray("monsterFluff").forEach(x -> addToIndex(IndexType.monsterfluff, x));
             node.withArray("raceFluff").forEach(x -> addToIndex(IndexType.racefluff, x));
             node.withArray("spellFluff").forEach(x -> addToIndex(IndexType.spellfluff, x));
@@ -139,7 +139,7 @@ public class JsonIndex implements JsonSource {
             node.withArray("item").forEach(x -> addToIndex(IndexType.item, x));
             // TODO: node.withArray("object").forEach(x -> addToIndex(IndexType.item, x));
             // TODO: node.withArray("vehicle").forEach(x -> addToIndex(IndexType.item, x));
-            // node.withArray("monster").forEach(x -> addToIndex(IndexType.monster, x));
+            node.withArray("monster").forEach(x -> addToIndex(IndexType.monster, x));
             node.withArray("name").forEach(x -> addToIndex(IndexType.namelist, x));
             node.withArray("race").forEach(x -> addToIndex(IndexType.race, x));
             node.withArray("spell").forEach(x -> addToIndex(IndexType.spell, x));
@@ -452,7 +452,6 @@ public class JsonIndex implements JsonSource {
 
     public JsonNode resolveClassFeatureNode(String finalKey, JsonNode featureNode) {
         if (keyIsExcluded(finalKey)) {
-            tui.debugf("Source of %s is excluded (referenced from %s)", finalKey, getSources());
             return null; // skip this
         }
         // TODO: Handle copies or other fill-in / fluff?
@@ -495,11 +494,6 @@ public class JsonIndex implements JsonSource {
         Json5eTui.MAPPER.writer()
                 .with(pp)
                 .writeValue(outputFile.toFile(), Map.of("keys", keys));
-    }
-
-    @Override
-    public Json5eTui tui() {
-        return tui;
     }
 
     @Override

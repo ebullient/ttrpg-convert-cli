@@ -4,12 +4,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.io.MarkdownWriter;
+import dev.ebullient.json5e.io.TemplatePaths;
 import dev.ebullient.json5e.io.Templates;
 import dev.ebullient.json5e.tools5e.IndexType;
 import dev.ebullient.json5e.tools5e.Json2MarkdownConverter;
@@ -39,6 +41,11 @@ public class JsonDataTest {
         // inject application scoped beans..
         tui = Arc.container().instance(Json5eTui.class).get();
         templates = Arc.container().instance(Templates.class).get();
+    }
+
+    @AfterEach
+    public void cleanup() {
+        templates.setCustomTemplates(null);
     }
 
     @Test
@@ -161,6 +168,55 @@ public class JsonDataTest {
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.item, "Items");
+        }
+    }
+
+    @Test
+    public void testMonsterList() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui);
+            TestUtils.fullIndex(index, TOOLS_PATH);
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.monster, "monsters");
+        }
+    }
+
+    @Test
+    public void testMonsterYamlHeader() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui);
+            TestUtils.fullIndex(index, TOOLS_PATH);
+
+            TemplatePaths templatePaths = new TemplatePaths();
+            templatePaths.setCustomTemplate("monster2md.txt",
+                    PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
+            templates.setCustomTemplates(templatePaths);
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH.resolve("yaml-header"), templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.monster, "monsters");
+        }
+    }
+
+    @Test
+    public void testMonsterYamlBody() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui);
+            TestUtils.fullIndex(index, TOOLS_PATH);
+
+            TemplatePaths templatePaths = new TemplatePaths();
+            templatePaths.setCustomTemplate("monster2md.txt",
+                    PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
+            templates.setCustomTemplates(templatePaths);
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH.resolve("yaml-body"), templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.monster, "monsters");
         }
     }
 }

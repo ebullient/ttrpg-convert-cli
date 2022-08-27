@@ -1,0 +1,635 @@
+package dev.ebullient.json5e.tools5e;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+
+import dev.ebullient.json5e.io.Json5eTui;
+import dev.ebullient.json5e.qute.AbilityScores;
+import dev.ebullient.json5e.qute.QuteMonster;
+import dev.ebullient.json5e.qute.QuteMonster.Spellcasting;
+import dev.ebullient.json5e.qute.QuteMonster.Spells;
+import dev.ebullient.json5e.qute.QuteMonster.Trait;
+import dev.ebullient.json5e.qute.QuteSource;
+
+public class Json2QuteMonster extends Json2QuteCommon {
+
+    String type;
+    String subtype;
+    Integer ac;
+    String acText;
+    Integer hp;
+    String hpText;
+    String hitDice;
+
+    Json2QuteMonster(JsonIndex index, IndexType type, JsonNode jsonNode) {
+        super(index, type, jsonNode);
+        findType();
+        findAc();
+        findHp();
+    }
+
+    @Override
+    public QuteSource build() {
+        String size = getSize(node);
+        String environment = joinAndReplace(node, "environment");
+
+        List<String> tags = new ArrayList<>();
+        tags.addAll(sources.getSourceTags());
+
+        tags.add("monster/size/" + slugify(size));
+        if (subtype == null || subtype.isEmpty()) {
+            tags.add("monster/type/" + slugify(type));
+        } else {
+            String root = "monster/type/" + slugify(type) + "/";
+            for (String detail : subtype.split("\\s*,\\s*")) {
+                tags.add(root + slugify(detail));
+            }
+        }
+        if (!environment.isBlank()) {
+            for (String env : environment.split("\\s*,\\s*")) {
+                tags.add("monster/environment/" + slugify(env));
+            }
+        }
+
+        return new QuteMonster(decorateMonsterName(), sources.getSourceText(),
+                size, type, subtype, monsterAlignment(),
+                ac, acText, hp, hpText, hitDice,
+                monsterSpeed(), monsterScores(),
+                getModifierMap("save"),
+                getModifierMap("skill"),
+                joinAndReplace(node, "senses"),
+                intOrDefault(node, "passive", 10),
+                monsterImmunities("vulnerable"),
+                monsterImmunities("resist"),
+                monsterImmunities("immune"),
+                monsterImmunities("conditionImmune"),
+                joinAndReplace(node, "languages"),
+                monsterCr(),
+                monsterTraits("trait"), monsterTraits("action"),
+                monsterTraits("bonus"), monsterTraits("reaction"),
+                monsterTraits("legendary"),
+                monsterSpellcasting(),
+                getFluffDescription(IndexType.monsterfluff, null),
+                environment,
+                tags);
+    }
+
+    String decorateMonsterName() {
+        String revised = getSources().getName().replace("\"", "");
+        if (booleanOrDefault(node, "isNpc", false)) {
+            return revised + " (NPC)";
+        }
+        return revised;
+    }
+
+    void findType() {
+        JsonNode typeNode = node.get("type");
+        if (typeNode == null) {
+            tui().warn("Empty type for " + getSources());
+        }
+        if (typeNode.isTextual()) {
+            type = typeNode.asText();
+            return;
+        }
+
+        // We have an object: type + tags
+        type = typeNode.get("type").asText();
+        List<String> tags = new ArrayList<>();
+        typeNode.withArray("tags").forEach(tag -> {
+            if (tag.isTextual()) {
+                tags.add(tag.asText());
+            } else {
+                tags.add(String.format("%s %s",
+                        tag.get("prefix").asText(),
+                        tag.get("tag").asText()));
+            }
+        });
+        if (!tags.isEmpty()) {
+            subtype = String.join(", ", tags);
+        }
+    }
+
+    void findAc() {
+        JsonNode acNode = node.get("ac");
+        if (acNode.isIntegralNumber()) {
+            ac = acNode.asInt();
+        } else if (acNode.isArray()) {
+            List<String> details = new ArrayList<>();
+            acNode.forEach(acValue -> {
+                if (ac == null && details.isEmpty()) { // first time
+                    if (acValue.isIntegralNumber()) {
+                        ac = acValue.asInt();
+                    } else if (acValue.isObject()) {
+                        if (acValue.has("ac")) {
+                            ac = acValue.get("ac").asInt();
+                        }
+                        if (acValue.has("special")) {
+                            details.add(acValue.get("special").asText());
+                        } else if (acValue.has("from")) {
+                            details.add(joinAndReplace(acValue.withArray("from")));
+                        }
+                    }
+                } else { // nth time: conditional AC. Append to acText
+                    StringBuilder value = new StringBuilder();
+                    value.append(acValue.get("ac").asText());
+                    if (acValue.has("from")) {
+                        value.append(" from ").append(joinAndReplace(acValue.withArray("from")));
+                    }
+                    if (acValue.has("condition")) {
+                        value.append(" ").append(acValue.get("condition").asText());
+                    }
+                    details.add(value.toString());
+                }
+            });
+            if (!details.isEmpty()) {
+                acText = String.join("; ", details);
+            }
+        } else {
+            tui().errorf("Unknown armor class in monster %s: %s", sources.key, acNode.toPrettyString());
+        }
+    }
+
+    void findHp() {
+        JsonNode health = node.get("hp");
+        if (health.has("special")) {
+            JsonNode special = health.get("special");
+            if (special.isNumber()) {
+                hp = special.asInt();
+
+                if (health.has("original")) {
+                    hpText = health.get("original").asText();
+                }
+            } else {
+                hpText = special.asText();
+            }
+        } else {
+            if (health.has("average")) {
+                hp = health.get("average").asInt();
+            }
+            if (health.has("formula")) {
+                hitDice = health.get("formula").asText();
+            }
+        }
+
+        if (hpText == null && hitDice == null && hp == null) {
+            tui().errorf("Unknown hp from %s: %s", getSources(), health.toPrettyString());
+            throw new IllegalArgumentException("Unknown hp from " + getSources());
+        }
+    }
+
+    String monsterSpeed() {
+        List<String> speed = new ArrayList<>();
+        node.get("speed").fields().forEachRemaining(f -> {
+            if (f.getValue().isNumber()) {
+                speed.add(String.format("%s %s ft.", f.getKey(), f.getValue().asText()));
+            } else if (f.getValue().has("number")) {
+                speed.add(String.format("%s %s ft.%s",
+                        f.getKey(),
+                        f.getValue().get("number").asText(),
+                        f.getValue().has("condition")
+                                ? " " + f.getValue().get("condition").asText()
+                                : ""));
+            }
+        });
+        return replaceText(String.join(", ", speed));
+    }
+
+    AbilityScores monsterScores() {
+        return new AbilityScores(
+                intOrDefault(node, "str", 10),
+                intOrDefault(node, "dex", 10),
+                intOrDefault(node, "con", 10),
+                intOrDefault(node, "int", 10),
+                intOrDefault(node, "wis", 10),
+                intOrDefault(node, "cha", 10));
+    }
+
+    String monsterCr() {
+        if (node.has("cr")) {
+            JsonNode crNode = node.get("cr");
+            if (crNode.isTextual()) {
+                return crNode.asText();
+            } else if (crNode.has("cr")) {
+                return crNode.get("cr").asText();
+            } else {
+                tui().errorf("Unable to parse cr value of %s: %s", sources.getKey(), crNode.toPrettyString());
+            }
+        }
+        return null;
+    }
+
+    Map<String, Integer> getModifierMap(String field) {
+        if (!node.has(field)) {
+            return null;
+        }
+        Map<String, Integer> values = new HashMap<>();
+        node.get(field).fields().forEachRemaining(f -> {
+            values.put(f.getKey(), f.getValue().asInt());
+        });
+        return values;
+    }
+
+    String monsterImmunities(String field) {
+        if (node.has(field) && node.get(field).isArray()) {
+            List<String> immunities = new ArrayList<>();
+            StringBuilder separator = new StringBuilder();
+            node.withArray(field).forEach(immunity -> {
+                if (immunity.isTextual()) {
+                    immunities.add(immunity.asText());
+                } else {
+                    StringBuilder str = new StringBuilder();
+                    str.append(joinAndReplace(immunity, field));
+                    if (immunity.has("note")) {
+                        str.append(" ")
+                                .append(immunity.get("note").asText());
+                    }
+
+                    if (separator.length() == 0) {
+                        separator.append(";");
+                    }
+                    immunities.add(str.toString());
+                }
+            });
+            if (separator.length() == 0) {
+                separator.append(",");
+            }
+            return String.join(separator.toString(), immunities);
+        }
+        return null;
+    }
+
+    String monsterAlignment() {
+        ArrayNode a1 = node.withArray("alignment");
+        if (a1.size() == 0) {
+            return "Unaligned";
+        }
+        if (a1.size() == 1 && a1.get(0).has("special")) {
+            return a1.get(0).get("special").asText();
+        }
+
+        String choices = a1.toString();
+        if (choices.contains("note")) {
+            List<String> notes = new ArrayList<>(List.of(choices.split("\\},\\{")));
+            for (int i = 0; i < notes.size(); i++) {
+                int pos = notes.get(i).indexOf("note");
+                String alignment = mapAlignmentToString(toAlignmentCharacters(notes.get(i).substring(0, pos)));
+                String note = notes.get(i).substring(pos + 4).replaceAll("[^A-Za-z ]+", "");
+                notes.set(i, String.format("%s (%s)", alignment, note));
+            }
+            return String.join(", ", notes);
+        } else {
+            choices = toAlignmentCharacters(choices);
+            return mapAlignmentToString(choices);
+        }
+    }
+
+    String toAlignmentCharacters(String src) {
+        return src.replaceAll("\"[A-Z]*[a-z ]+\"", "") // remove notes
+                .replaceAll("[^LCNEGAUXY]", ""); // keep only alignment characters
+    }
+
+    String mapAlignmentToString(String a) {
+        switch (a) {
+            case "A":
+                return "Any alignment";
+            case "C":
+                return "Chaotic";
+            case "CE":
+                return "Chaotic Evil";
+            case "CELENE":
+            case "LNXCE":
+                return "Any Evil Alignment";
+            case "CG":
+                return "Chaotic Good";
+            case "CGNE":
+                return "Chaotic Good or Neutral Evil";
+            case "CGNYE":
+                return "Any Chaotic alignment";
+            case "CN":
+                return "Chaotic Neutral";
+            case "N":
+            case "NX":
+            case "NY":
+                return "Neutral";
+            case "NE":
+                return "Neutral Evil";
+            case "NG":
+                return "Neutral Good";
+            case "NGNE":
+            case "NENG":
+                return "Neutral Good or Neutral Evil";
+            case "NNXNYN":
+            case "NXCGNYE":
+                return "Any Non-Lawful alignment";
+            case "L":
+                return "Lawful";
+            case "LE":
+                return "Lawful Evil";
+            case "LG":
+                return "Lawful Good";
+            case "LN":
+                return "Lawful Neutral";
+            case "LNXCNYE":
+                return "Any Non-Good alignment";
+            case "E":
+                return "Any Evil alignment";
+            case "G":
+                return "Any Good alignment";
+            case "U":
+                return "Unaligned";
+        }
+        tui().errorf("What alignment is this? %s (from %s)", a, getSources());
+        return "Unknown";
+    }
+
+    List<Spellcasting> monsterSpellcasting() {
+        JsonNode array = node.get("spellcasting");
+        if (array == null || array.isNull()) {
+            return null;
+        } else if (array.isObject()) {
+            tui().errorf("Unknown spellcasting for %s: %s", sources.getKey(), array.toPrettyString());
+            throw new IllegalArgumentException("Unknown spellcasting: " + getSources());
+        }
+
+        List<Spellcasting> casting = new ArrayList<>();
+        array.forEach(scNode -> {
+            Spellcasting spellcasting = new Spellcasting();
+            spellcasting.name = getTextOrEmpty(scNode, "name");
+
+            spellcasting.headerEntries = new ArrayList<>();
+            appendEntryToText(spellcasting.headerEntries, scNode.get("headerEntries"), null);
+
+            spellcasting.footerEntries = new ArrayList<>();
+            appendEntryToText(spellcasting.footerEntries, scNode.get("footerEntries"), null);
+
+            if (scNode.has("will")) {
+                spellcasting.will = getSpells(scNode.get("will"));
+            }
+            if (scNode.has("daily")) {
+                spellcasting.daily = new TreeMap<>();
+                scNode.with("daily").fields().forEachRemaining(f -> {
+                    spellcasting.daily.put(f.getKey(), getSpells(f.getValue()));
+                });
+            }
+            if (scNode.has("spells")) {
+                spellcasting.spells = new TreeMap<>();
+                scNode.with("spells").fields().forEachRemaining(f -> {
+                    JsonNode spellNode = f.getValue();
+                    Spells spells = new Spells();
+                    if (spellNode.isArray()) {
+                        spells.spells = getSpells(spellNode);
+                    } else {
+                        spells.slots = intOrDefault(spellNode, "slots", 0);
+                        spells.spells = getSpells(spellNode.get("spells"));
+                    }
+                    spellcasting.spells.put(f.getKey(), spells);
+                });
+            }
+            casting.add(spellcasting);
+        });
+        return casting;
+    }
+
+    List<String> getSpells(JsonNode source) {
+        if (source == null) {
+            tui().errorf("Null spells from %s", sources.getKey());
+        }
+        List<String> spells = new ArrayList<>();
+        source.forEach(s -> spells.add(replaceText(s.asText())));
+        return spells;
+    }
+
+    List<Trait> monsterTraits(String field) {
+        JsonNode array = node.get(field);
+        if (array == null || array.isNull()) {
+            return null;
+        } else if (array.isObject()) {
+            tui().errorf("Unknown %s for %s: %s", field, sources.getKey(), array.toPrettyString());
+            throw new IllegalArgumentException("Unknown field: " + getSources());
+        }
+
+        List<Trait> traits = new ArrayList<>();
+        node.withArray(field).forEach(e -> {
+            String name = null;
+            if (e.has("name")) {
+                name = replaceText(e.get("name").asText()).replaceAll(":$", "");
+            }
+
+            List<String> text = new ArrayList<>();
+            appendEntryToText(text, e.get("entry"), null);
+            appendEntryToText(text, e.get("entries"), null);
+            traits.add(new Trait(name, String.join("\n", text)));
+        });
+        return traits;
+    }
+
+    public static Stream<Map.Entry<String, JsonNode>> findConjuredMonsterVariants(JsonIndex index, IndexType type,
+            String key, JsonNode jsonSource) {
+        final Pattern variantPattern = Pattern.compile("(\\d+) \\((.*?)\\)");
+        int startLevel = jsonSource.get("summonedBySpellLevel").asInt();
+
+        String name = jsonSource.get("name").asText();
+        String hpString = jsonSource.get("hp").get("special").asText();
+        String acString = jsonSource.get("ac").get(0).get("special").asText();
+
+        Map<String, JsonNode> variants = new HashMap<>();
+        for (int i = startLevel; i < 10; i++) {
+            if (hpString.contains(" or ")) {
+                // "50 (Demon only) or 40 (Devil only) or 60 (Yugoloth only) + 15 for each spell
+                // level above 6th"
+                // "30 (Ghostly and Putrid only) or 20 (Skeletal only) + 10 for each spell level
+                // above 3rd"
+                String[] parts = hpString.split(" \\+ ");
+                String[] variantGroups = parts[0].split(" or ");
+                for (String group : variantGroups) {
+                    Matcher m = variantPattern.matcher(group);
+                    if (m.find()) {
+                        String amount = m.group(1);
+                        String variant = m.group(2);
+
+                        if (variant.contains(" and ")) {
+                            for (String v : variant.split(" and ")) {
+                                String variantName = String.format("%s (%s, %s-Level Spell)",
+                                        name, v.replace(" only", ""), levelToString(i));
+                                createVariant(index, variants, jsonSource, type, variantName, i,
+                                        amount + " + " + parts[1], acString);
+                            }
+                        } else {
+                            String variantName = String.format("%s (%s, %s-Level Spell)",
+                                    name, variant.replace(" only", ""), levelToString(i));
+                            createVariant(index, variants, jsonSource, type, variantName, i,
+                                    amount + " + " + parts[1], acString);
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Unknown HP variant: " + hpString);
+                    }
+                }
+            } else {
+                String variantName = String.format("%s (%s-level Spell)", name, levelToString(i));
+                createVariant(index, variants, jsonSource, type, variantName, i, hpString, acString);
+            }
+        }
+        return variants.entrySet().stream();
+    }
+
+    static void createVariant(JsonIndex index,
+            Map<String, JsonNode> variants,
+            JsonNode jsonSource, IndexType type,
+            String variantName, int level, String hpString, String acString) {
+
+        ConjuredMonster fixed = new ConjuredMonster(level, variantName, hpString, acString, jsonSource);
+
+        ObjectNode adjustedSource = (ObjectNode) index.copyNode(jsonSource);
+        adjustedSource.set("name", fixed.getName());
+        adjustedSource.set("ac", fixed.getAc());
+        adjustedSource.set("hp", fixed.getHp());
+
+        String newKey = index.getKey(type, adjustedSource);
+        variants.put(newKey, adjustedSource);
+    }
+
+    static String levelToString(int level) {
+        switch (level) {
+            case 1:
+                return "1st";
+            case 2:
+                return "2nd";
+            case 3:
+                return "3rd";
+            default:
+                return level + "th";
+        }
+    }
+
+    public static class ConjuredMonster {
+
+        final String name;
+        final MonsterAC monsterAc;
+        final MonsterHp monsterHp;
+
+        public ConjuredMonster(int level, String name, String hpString, String acString, JsonNode jsonSource) {
+            this.name = name;
+            this.monsterAc = new MonsterAC(level, acString);
+            this.monsterHp = new MonsterHp(level, hpString, jsonSource);
+        }
+
+        public JsonNode getName() {
+            return new TextNode(name);
+        }
+
+        public JsonNode getAc() {
+            MonsterAC[] result = new MonsterAC[] { monsterAc };
+            return Json5eTui.MAPPER.valueToTree(result);
+        }
+
+        public JsonNode getHp() {
+            return Json5eTui.MAPPER.valueToTree(monsterHp);
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public static class MonsterAC {
+        public final int ac;
+        public final String[] from;
+        public final String original;
+
+        // "ac": [
+        // {
+        // "ac": 19,
+        // "from": [
+        // "natural armor"
+        // ]
+        // }
+        // ],
+        public MonsterAC(int level, String acString) {
+            this.original = acString;
+            if (acString.contains(" + ")) {
+                String[] parts = acString.split(" \\+ ");
+                int value = Integer.parseInt(parts[0]);
+                String armor = null;
+                // "11 + the level of the spell (natural armor)"
+                // "13 + PB (natural armor)"
+                if (parts[1].contains("the level of the spell")) {
+                    value += level;
+                    armor = parts[1]
+                            .replace("the level of the spell", "")
+                            .replace("(", "")
+                            .replace(")", "")
+                            .trim();
+                } else if (parts[1].contains("PB")) {
+                    armor = parts[1]
+                            .replace("PB", "")
+                            .replace("(", "")
+                            .replace(")", "")
+                            .trim()
+                            + " + caster proficiency bonus";
+                }
+                this.ac = value;
+                this.from = armor == null ? null : new String[] { armor };
+            } else {
+                throw new IllegalArgumentException("Unknown AC pattern: " + acString);
+            }
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class MonsterHp {
+        static final Pattern hpPattern = Pattern
+                .compile("(\\d+) \\+ (\\d+) for each spell level above (\\d)(nd|rd|th|st) ?\\(?(.*?)?\\)?");
+
+        public final String special;
+        public final String original;
+
+        // Want to go from:
+        // "40 + 10 for each spell level above 4th"
+        // "50 + 10 for each spell level above 5th (the dragon has a number of Hit Dice
+        // [d10s] equal to the level of the spell)"
+        // TO:
+        // "hp": {
+        // "average": 195,
+        // "formula": "17d12 + 85"
+        // },
+        // OR
+        // "hp": {
+        // "special": "195",
+        // },
+        public MonsterHp(int level, String hpString, JsonNode jsonSource) {
+            this.original = hpString;
+
+            Integer value = null;
+            if (hpString.contains("Constitution modifier")) {
+                // "equal the undead's Constitution modifier + your spellcasting ability
+                // modifier + ten times the spell's level"
+                int con = jsonSource.get("con").asInt();
+                value = con + (10 * level);
+            } else if (hpString.contains("half the hit point maximum of its summoner")) {
+                // nothing we can do
+            } else if (hpString.contains(" + ")) {
+                Matcher m = hpPattern.matcher(hpString);
+                if (m.find()) {
+                    value = Integer.parseInt(m.group(1));
+                    int scale = level - Integer.parseInt(m.group(3));
+                    value += Integer.parseInt(m.group(2)) * scale;
+                } else {
+                    throw new IllegalArgumentException("Unknown HP pattern: " + hpString);
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown HP pattern: " + hpString);
+            }
+
+            this.special = value == null ? "" : value + "";
+        }
+    }
+}

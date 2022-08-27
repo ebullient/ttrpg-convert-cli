@@ -67,6 +67,8 @@ public class Json2MarkdownConverter {
                 variants.put(srSources.getKey(), sr);
             });
             return variants.entrySet().stream();
+        } else if (type == IndexType.monster && jsonSource.has("summonedBySpellLevel")) {
+            return Json2QuteMonster.findConjuredMonsterVariants(index, type, key, jsonSource);
         }
         return Map.of(key, jsonSource).entrySet().stream();
     }
@@ -81,7 +83,8 @@ public class Json2MarkdownConverter {
                 return new Json2QuteFeat(index, type, jsonNode).build();
             case item:
                 return new Json2QuteItem(index, type, jsonNode).build();
-            // case monster:
+            case monster:
+                return new Json2QuteMonster(index, type, jsonNode).build();
             case namelist:
                 return new Json2QuteName(index, jsonNode).build();
             case race:

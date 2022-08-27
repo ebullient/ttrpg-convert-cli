@@ -1,15 +1,17 @@
 ---
 obsidianUIMode: preview
 cssclass: 5e-monster
-aliases: ["{resource.name}"]
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}
 - {tag}
 {/for}
 {/if}
+aliases: ["{resource.name}"]
 ---
 # {resource.name}
+*Source: {resource.source}*
+
 {#if resource.description }
 {resource.description}
 
@@ -18,17 +20,17 @@ tags:
 title: {resource.name}
 *{resource.size} {resource.fullType}, {resource.alignment}*
 
-- **Armor Class** {resource.ac} {#if resource.acText }({resource.acText}){/if}
-- **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if}
+- **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }{resource.acText}{/if}
+- **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if} {#if resource.hpText }{resource.hpText}{/if}
 - **Speed** {resource.speed}
 
 |STR|DEX|CON|INT|WIS|CHA|
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |{resource.scoreString}|
 
-- **Saving Throws** {#if resource.saves }{#for save in resource.saves}{save.key} {save.value}{#if save_hasNext}, {/if}{/for}{#else}—{/if}
-- **Skills**  {#if resource.skills }{#for skill in resource.skills}{skill.key} {skill.value}{#if skill_hasNext}, {/if}{/for}{#else}—{/if}
-- **Senses** {#if resource.senses }{resource.senses}{#else}—{/if}, passive Perception {resource.passive}
+- **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
+- **Skills** {#if resource.skills }{resource.skills}{#else}⏤{/if}
+- **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
 {#if resource.vulnerable }
 - **Damage Vulnerabilities** {resource.vulnerable}
 {/if}{#if resource.resist}
@@ -45,29 +47,37 @@ title: {resource.name}
 ## Traits
 {#for trait in resource.trait}
 
-***{trait.name}.*** {trait.text}
+{#if trait.name }***{trait.name}.*** {/if}{trait.desc}
 {/for}{/if}{#if resource.action}
 
 ## Actions
 {#for action in resource.action}
 
-***{action.name}.*** {action.text}
+{#if action.name }***{action.name}.*** {/if}{action.desc}
+{/for}{/if}{#if resource.bonusAction}
+
+## Bonus Actions
+{#for bonusAction in resource.bonusAction}
+
+{#if bonusAction.name }***{bonusAction.name}.*** {/if}{bonusAction.desc}
 {/for}{/if}{#if resource.reaction}
 
 ## Reactions
 {#for reaction in resource.reaction}
 
-***{reaction.name}.*** {reaction.text}
+{#if reaction.name }***{reaction.name}.*** {/if}{reaction.desc}
 {/for}{/if}{#if resource.legendary}
 
 ## Legendary Actions
 {#for legendary in resource.legendary}
 
-{#if legendary.text}{#if legendary.name}***{legendary.name}.*** {/if}{legendary.text}{#else}## {legendary.name}{/if}
+{#if legendary.name }***{legendary.name}.*** {/if}{legendary.desc}
 {/for}{/if}
 ```
 ^statblock
+{#if resource.environment }
 
 ## Environment
 
 {resource.environment}
+{/if}
