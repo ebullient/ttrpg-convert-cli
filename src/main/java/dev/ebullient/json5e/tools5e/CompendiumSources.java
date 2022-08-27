@@ -2,8 +2,8 @@ package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +18,7 @@ public class CompendiumSources {
     final IndexType type;
     final String key;
     final String name;
-    final Set<String> bookSources = new HashSet<>();
+    final Set<String> bookSources = new LinkedHashSet<>();
     final String sourceText;
 
     public CompendiumSources(IndexType type, String key, JsonNode jsonElement) {
@@ -30,6 +30,10 @@ public class CompendiumSources {
 
     public String getSourceText() {
         return sourceText;
+    }
+
+    public List<String> getSourceTags() {
+        return List.of("compendium/src/" + primarySource());
     }
 
     private String findSourceText(JsonNode jsonElement) {

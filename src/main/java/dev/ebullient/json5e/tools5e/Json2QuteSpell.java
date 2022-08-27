@@ -26,7 +26,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         Collection<String> classes = spellClasses(school);
 
         List<String> tags = new ArrayList<>();
-        sources.bookSources.forEach(x -> tags.add("compendium/src/" + slugify(x)));
+        tags.addAll(sources.getSourceTags());
 
         tags.add("spell/school/" + slugify(school.name()));
         tags.add("spell/level/" + (level.equals("0") ? "cantrip" : level));
