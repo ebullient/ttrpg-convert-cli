@@ -47,7 +47,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     @Override
     public QuteSource build() {
         List<String> tags = new ArrayList<>();
-        sources.bookSources.forEach(x -> tags.add("compendium/src/" + slugify(x)));
+        tags.addAll(sources.getSourceTags());
 
         if (subclasses.isEmpty()) {
             tags.add("class/" + slugify(getName()));

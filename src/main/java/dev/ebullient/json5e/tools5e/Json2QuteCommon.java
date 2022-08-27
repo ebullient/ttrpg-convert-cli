@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.qute.QuteSource;
 
 public abstract class Json2QuteCommon implements JsonSource {

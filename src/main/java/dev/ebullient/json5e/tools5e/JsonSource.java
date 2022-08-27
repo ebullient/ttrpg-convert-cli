@@ -968,10 +968,8 @@ public interface JsonSource {
 
     default void appendEntryObjectToText(List<String> text, JsonNode node, String heading) {
         if (node.has("source") && !index().sourceIncluded(node.get("source").asText())) {
-            tui().debugf("Excluded by source %s: %s", getSources(), node.toPrettyString());
             return;
         } else if (!index().sourceIncluded(getSources().alternateSource())) {
-            tui().debugf("Excluded by alternate source %s: %s", getSources(), node.toPrettyString());
             return;
         }
 
