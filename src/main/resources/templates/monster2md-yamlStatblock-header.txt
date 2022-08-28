@@ -11,7 +11,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*
+*Source: {resource.source}*  
 
 {#if resource.description }
 {resource.description}

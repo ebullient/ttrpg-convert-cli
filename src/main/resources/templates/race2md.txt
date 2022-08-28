@@ -10,7 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*
+*Source: {resource.source}*  
 
 - **Ability Scores**: {resource.ability}
 {#if resource.type}

@@ -10,7 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*{resource.level}, {resource.school}{#if resource.ritual} (ritual){/if}*
+*{resource.level}, {resource.school}{#if resource.ritual} (ritual){/if}*  
 
 - **Casting time:** {resource.time}{#if resource.ritual} unless cast as a ritual{/if}
 - **Range:** {resource.range}

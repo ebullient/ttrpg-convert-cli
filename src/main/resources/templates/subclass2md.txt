@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: 5e-background
+cssclass: 5e-class
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}
@@ -10,6 +10,12 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
+*{resource.parentClass}: {resource.subclassTitle}*  
 *Source: {resource.source}*  
+
+{#if resource.classProgression }
+{resource.classProgression}
+
+{/if}
 
 {resource.text}

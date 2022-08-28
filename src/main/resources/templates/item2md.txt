@@ -10,7 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-{#if resource.detail }*{resource.detail}*{/if}
+{#if resource.detail }*{resource.detail}*  {/if}
 
 {#if resource.armorClass }
 - **Armor Class**: {resource.armorClass}
