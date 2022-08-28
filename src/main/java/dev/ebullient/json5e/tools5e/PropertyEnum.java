@@ -55,7 +55,6 @@ public enum PropertyEnum {
     private final String longName;
     private final String encodedValue;
     private final String tagValue;
-    private final boolean stdProperty; // used in json and xml
     private final boolean weapon; // can apply to weapons
     private final boolean rarity; // can apply to weapons
 
@@ -63,14 +62,9 @@ public enum PropertyEnum {
         this.longName = longName;
         this.encodedValue = ev;
         this.tagValue = tagValue;
-        this.stdProperty = ordinal() < 11;
-        this.weapon = stdProperty || ev.equals("-") || ev.equals("*"); // std properties or silvered or cursed
+        this.weapon = ordinal() < 11 || ev.equals("-") || ev.equals("*"); // std properties or silvered or cursed
         this.rarity = !weapon && ev.length() > 0 && (Character.isDigit(ev.charAt(0))); // exclude 2H
     }
-
-    public static final List<PropertyEnum> weaponProperties = Stream.of(PropertyEnum.values())
-            .filter(x -> x.weapon)
-            .collect(Collectors.toList());
 
     public static final List<PropertyEnum> tierProperties = List.of(MAJOR, MINOR);
 
@@ -80,10 +74,6 @@ public enum PropertyEnum {
 
     public String value() {
         return longName.toLowerCase();
-    }
-
-    public String getEncodedValue() {
-        return encodedValue;
     }
 
     public String tagValue() {

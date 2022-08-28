@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,22 +22,17 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.json5e.io.Json5eTui;
 
 public interface JsonSource {
-    static final Pattern backgroundPattern = Pattern.compile("\\{@background ([^|}]+)\\|?[^}]*}");
-    static final Pattern classPattern1 = Pattern.compile("\\{@class ([^|}]+)\\|[^|]*\\|?([^|}]*)\\|?[^}]*}");
-    static final Pattern classPattern2 = Pattern.compile("\\{@class ([^|}]+)}");
-    static final Pattern featPattern = Pattern.compile("\\{@feat ([^|}]+)\\|?[^}]*}");
-    static final Pattern itemPattern = Pattern.compile("\\{@item ([^|}]+)\\|?[^}]*}");
-    static final Pattern racePattern = Pattern.compile("\\{@race ([^|}]+)\\|?[^}]*}");
-    static final Pattern spellPattern = Pattern.compile("\\{@spell ([^|}]+)\\|?([^|}]*)\\|?([^|}]*)?\\}");
+    static final Pattern backgroundPattern = Pattern.compile("\\{@(background) ([^}]+)}");
+    static final Pattern classPattern1 = Pattern.compile("\\{@(class) ([^}]+)}");
+    static final Pattern featPattern = Pattern.compile("\\{@(feat) ([^}]+)}");
+    static final Pattern itemPattern = Pattern.compile("\\{@(item) ([^}]+)}");
+    static final Pattern racePattern = Pattern.compile("\\{@(race) ([^}]+)}");
+    static final Pattern spellPattern = Pattern.compile("\\{@(spell) ([^}]+)}");
+    static final Pattern creaturePattern = Pattern.compile("\\{@(creature) ([^}]+)}");
 
     static final Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^|}]+)[^}]*\\}");
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)\\}");
     static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
-
-    String damage = "\\(([0-9d+ -]+)\\)";
-    String onlyDamage = ".*?" + damage + ".*";
-    String additive = damage + "[a-z, ]+plus [0-9 ]+" + damage;
-    Pattern alternate = Pattern.compile(damage + "[a-z, ]+or [0-9 ]+" + damage + " (.*)");
 
     final static int CR_UNKNOWN = 100001;
     final static int CR_CUSTOM = 100000;
@@ -943,6 +939,19 @@ public interface JsonSource {
         }
     }
 
+    static String levelToString(int level) {
+        switch (level) {
+            case 1:
+                return "1st";
+            case 2:
+                return "2nd";
+            case 3:
+                return "3rd";
+            default:
+                return level + "th";
+        }
+    }
+
     default void maybeAddBlankLine(List<String> text) {
         if (text.size() > 0 && !text.get(text.size() - 1).isBlank()) {
             text.add("");
@@ -1100,11 +1109,11 @@ public interface JsonSource {
     default void appendList(List<String> text, ArrayNode itemArray) {
         maybeAddBlankLine(text);
         itemArray.forEach(e -> {
-            List<String> listText = new ArrayList<>();
-            appendEntryToText(listText, e, null);
-            if (listText.size() > 0) {
-                prependText("- ", listText);
-                text.addAll(listText);
+            List<String> item = new ArrayList<>();
+            appendEntryToText(item, e, null);
+            if (item.size() > 0) {
+                prependText("- ", item);
+                text.add(String.join("  \n    ", item)); // preserve line items
             }
         });
     }
@@ -1152,7 +1161,8 @@ public interface JsonSource {
             List<String> item = new ArrayList<>();
             appendEntryToText(item, e, null);
             if (item.size() > 0) {
-                list.add("- " + String.join("\n    ", item)); // preserve line items
+                prependText("- ", item);
+                list.add(String.join("  \n    ", item)); // preserve line items
             }
         });
         if (list.size() > 0) {
@@ -1160,6 +1170,7 @@ public interface JsonSource {
             int count = intOrDefault(entry, "count", 0);
             text.add(String.format("Options%s:",
                     count > 0 ? " (choose " + count + ")" : ""));
+            maybeAddBlankLine(text);
             text.addAll(list);
         }
     }
@@ -1305,27 +1316,25 @@ public interface JsonSource {
                 .replaceAll((match) -> match.group(1) + "% chance");
 
         result = backgroundPattern.matcher(result)
-                .replaceAll((match) -> match.group(1));
+                .replaceAll((match) -> linkify(match));
 
         result = classPattern1.matcher(result)
-                .replaceAll((match) -> match.group(2));
+                .replaceAll((match) -> linkify(match));
 
-        result = classPattern2.matcher(result)
-                .replaceAll((match) -> match.group(1));
+        result = creaturePattern.matcher(result)
+                .replaceAll((match) -> linkify(match));
 
         result = featPattern.matcher(result)
-                .replaceAll((match) -> match.group(1));
+                .replaceAll((match) -> linkify(match));
 
         result = itemPattern.matcher(result)
-                .replaceAll((match) -> match.group(1));
+                .replaceAll((match) -> linkify(match));
 
         result = racePattern.matcher(result)
-                .replaceAll((match) -> match.group(1));
+                .replaceAll((match) -> linkify(match));
 
-        // {@spell friends}
-        // {@spell encode thoughts|GGR}
         result = spellPattern.matcher(result)
-                .replaceAll((match) -> match.group(1));
+                .replaceAll((match) -> linkify(match));
 
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
@@ -1343,8 +1352,6 @@ public interface JsonSource {
                 .replaceAll("\\{@5etools ([^}|]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@area ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@action ([^}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@creature([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@condition ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@disease ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@hazard ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
@@ -1363,6 +1370,9 @@ public interface JsonSource {
                 .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
+                .replaceAll("\\{@condition ([^|}]+)\\|?[^}]*}", "[$1](" + index().rulesRoot() + "conditions.md#$1)")
+                .replaceAll("\\{@skill ([^}]+)}", "[$1](" + index().rulesRoot() + "skills.md#$1)")
+                .replaceAll("\\{@sense ([^}]+)}", "[$1](" + index().rulesRoot() + "senses.md#$1)")
                 .replaceAll("\\{@hit ([^}]+)}", "+$1")
                 .replaceAll("\\{@h}", "Hit: ")
                 .replaceAll("\\{@atk m}", "*Melee Attack:*")
@@ -1372,24 +1382,142 @@ public interface JsonSource {
                 .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
                 .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
                 .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
-                .replaceAll("\\{@skill ([^}]+)}", "$1");
-
-        result = result
                 .replaceAll("\\{@b ([^}]+?)}", "**$1**")
                 .replaceAll("\\{@i ([^}]+?)}", "_$1_")
-                .replaceAll("\\{@italic ([^}]+)}", "_$1_")
-                .replaceAll("\\{@condition ([^|}]+)\\|?[^}]*}", "[$1](" + index().rulesRoot() + "conditions.md#$1)")
-                .replaceAll("\\{@sense ([^}]+)}", "[$1](" + index().rulesRoot() + "senses.md#$1))");
+                .replaceAll("\\{@italic ([^}]+)}", "_$1_");
 
         // after other replacements
         return result.replaceAll("\\{@adventure ([^|}]+)\\|[^}]*}", "$1");
     }
 
-    default String linkify(String text, String base) {
-        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, slugify(text));
+    default String linkify(MatchResult match) {
+        switch (match.group(1)) {
+            case "background":
+                // "Backgrounds:
+                // {@background Charlatan} assumes PHB by default,
+                // {@background Anthropologist|toa} can have sources added with a pipe,
+                // {@background Anthropologist|ToA|and optional link text added with another pipe}.",
+                return linkifyType(IndexType.background, match.group(2), "backgrounds");
+            case "creature":
+                // "Creatures:
+                // {@creature goblin} assumes MM by default,
+                // {@creature cow|vgm} can have sources added with a pipe,
+                // {@creature cow|vgm|and optional link text added with another pipe}.",
+                return linkifyCreature(match.group(2));
+            case "class":
+                return linkifyClass(match.group(2));
+            case "feat":
+                // "Feats:
+                // {@feat Alert} assumes PHB by default,
+                // {@feat Elven Accuracy|xge} can have sources added with a pipe,
+                // {@feat Elven Accuracy|xge|and optional link text added with another pipe}.",
+                return linkifyType(IndexType.feat, match.group(2), "feats");
+            case "item":
+                // "Items:
+                // {@item alchemy jug} assumes DMG by default,
+                // {@item longsword|phb} can have sources added with a pipe,
+                // {@item longsword|phb|and optional link text added with another pipe}.",
+                return linkifyType(IndexType.item, match.group(2), "items", "dmg");
+            case "race":
+                // "Races:
+                // {@race Human} assumes PHB by default,
+                // {@race Aarakocra|eepc} can have sources added with a pipe,
+                // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
+                return linkifyType(IndexType.race, match.group(2), "races");
+            case "spell":
+                // "Spells:
+                // {@spell acid splash} assumes PHB by default,
+                // {@spell tiny servant|xge} can have sources added with a pipe,
+                // {@spell tiny servant|xge|and optional link text added with another pipe}.",
+                return linkifyType(IndexType.spell, match.group(2), "spells");
+        }
+        throw new IllegalArgumentException("Unknown group to linkify: " + match.group(1));
     }
 
-    default String linkify(String text, String file, String base) {
-        return String.format("[%s](%s%s/%s.md)", text, index().compendiumRoot(), base, slugify(file));
+    default String linkOrText(String linkText, String key, String dirName, String resourceName) {
+        return index().keyIsIncluded(key)
+                ? String.format("[%s](%s%s/%s.md)",
+                        linkText, index().compendiumRoot(), dirName, slugify(resourceName))
+                : linkText;
+    }
+
+    default String linkifyType(IndexType type, String match, String dirName) {
+        return linkifyType(type, match, dirName, "phb");
+    }
+
+    default String linkifyType(IndexType type, String match, String dirName, String defaultSource) {
+        String[] parts = match.split("\\|");
+        String linkText = parts[0];
+        String source = defaultSource;
+        if (parts.length > 2) {
+            linkText = parts[2];
+        }
+        if (parts.length > 1) {
+            source = parts[1].isBlank() ? source : parts[1];
+        }
+        String key = index().createSimpleKey(type, parts[0], source);
+        return linkOrText(linkText, key, dirName, parts[0]);
+    }
+
+    default String linkifyClass(String match) {
+        // "Classes:
+        // {@class fighter} assumes PHB by default,
+        // {@class artificer|uaartificer} can have sources added with a pipe,
+        // {@class fighter|phb|optional link text added with another pipe},
+        // {@class fighter|phb|subclasses added|Eldritch Knight} with another pipe,
+        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with another pipe
+        //    (first number is level index (0-19), second number is feature index (0-n)).",
+        String[] parts = match.split("\\|");
+        String className = parts[0];
+        String classSource = "phb";
+        String linkText = className;
+        String subclass = null;
+        String subclassSource = null;
+        if (parts.length > 4) {
+            subclassSource = parts[4];
+        }
+        if (parts.length > 3) {
+            subclass = parts[3];
+        }
+        if (parts.length > 2) {
+            linkText = parts[2];
+        }
+        if (parts.length > 1) {
+            classSource = parts[1];
+        }
+        if (subclass != null && subclassSource == null) {
+            subclassSource = classSource;
+        }
+
+        if (subclass != null) {
+            String key = index().getSubclassKey(subclass, className, classSource);
+            return linkOrText(linkText, key, "classes", className + "-" + subclass);
+        } else {
+            String key = index().getClassKey(className, classSource);
+            return linkOrText(linkText, key, "classes", className);
+        }
+    }
+
+    default String linkifyCreature(String match) {
+        // "Creatures:
+        // {@creature goblin} assumes MM by default,
+        // {@creature cow|vgm} can have sources added with a pipe,
+        // {@creature cow|vgm|and optional link text added with another pipe}.",
+        String[] parts = match.trim().split("\\|");
+        String linkText = parts[0];
+        String source = "mm";
+        if (parts.length > 2) {
+            linkText = parts[2];
+        }
+        if (parts.length > 1) {
+            source = parts[1].isBlank() ? source : parts[1];
+        }
+        String key = index().createSimpleKey(IndexType.monster, parts[0], source);
+        JsonNode jsonSource = index().getNode(key);
+        String type = jsonSource == null ? null : getTextOrEmpty(jsonSource, "type");
+        if (index().keyIsExcluded(key) || type == null) {
+            return linkText;
+        }
+        return linkOrText(linkText, key, "bestiary/" + slugify(type), parts[0]);
     }
 }

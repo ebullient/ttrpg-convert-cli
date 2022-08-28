@@ -181,14 +181,14 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
         MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
         tui.outPrintln("💡 Writing files to " + output);
         new Json2MarkdownConverter(index, writer)
-                .writeFiles(IndexType.background, "Backgrounds")
-                .writeFiles(IndexType.classtype, "Classes")
-                .writeFiles(IndexType.feat, "Feats")
-                .writeFiles(IndexType.item, "Items")
-                .writeFiles(IndexType.monster, "Monsters")
-                .writeFiles(IndexType.namelist, "Names")
-                .writeFiles(IndexType.race, "Races")
-                .writeFiles(IndexType.spell, "Spells");
+                .writeFiles(IndexType.background)
+                .writeFiles(IndexType.classtype)
+                .writeFiles(IndexType.feat)
+                .writeFiles(IndexType.item)
+                .writeFiles(IndexType.monster)
+                .writeFiles(IndexType.namelist)
+                .writeFiles(IndexType.race)
+                .writeFiles(IndexType.spell);
 
         return allOk ? ExitCode.OK : ExitCode.SOFTWARE;
     }

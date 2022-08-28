@@ -216,6 +216,10 @@ public class JsonIndex implements JsonSource {
                 .map(Entry::getValue);
     }
 
+    public String createSimpleKey(IndexType type, String name, String source) {
+        return String.format("%s|%s|%s", type, name, source).toLowerCase();
+    }
+
     public String getClassKey(String className, String classSource) {
         return String.format("%s|%s|%s",
                 IndexType.classtype, className, classSource).toLowerCase();
@@ -371,17 +375,6 @@ public class JsonIndex implements JsonSource {
         return allSources || allowedSources.contains(source.toLowerCase());
     }
 
-    public boolean sourceIncluded(CompendiumSources subraceSources) {
-        if (allSources) {
-            return true;
-        }
-        return subraceSources.bookSources.stream().anyMatch(x -> allowedSources.contains(x.toLowerCase()));
-    }
-
-    public boolean excludeElement(JsonNode element, CompendiumSources sources) {
-        return keyIsExcluded(sources.key) || sources.bookSources.stream().noneMatch(x -> allowedSources.contains(x));
-    }
-
     public boolean excludeItem(JsonNode itemSource, boolean isSRD) {
         if (allSources) {
             return false;
@@ -483,8 +476,8 @@ public class JsonIndex implements JsonSource {
         }
         List<String> keys = getKeys().stream()
                 .filter(this::keyIsIncluded)
+                .sorted()
                 .collect(Collectors.toList());
-        Collections.sort(keys);
         writeFilterIndex(outputFile, keys);
     }
 

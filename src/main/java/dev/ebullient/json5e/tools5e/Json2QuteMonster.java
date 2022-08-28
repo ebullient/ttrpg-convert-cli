@@ -45,8 +45,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String size = getSize(node);
         String environment = joinAndReplace(node, "environment");
 
-        List<String> tags = new ArrayList<>();
-        tags.addAll(sources.getSourceTags());
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         tags.add("monster/size/" + slugify(size));
         if (subtype == null || subtype.isEmpty()) {
@@ -98,6 +97,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         JsonNode typeNode = node.get("type");
         if (typeNode == null) {
             tui().warn("Empty type for " + getSources());
+            return;
         }
         if (typeNode.isTextual()) {
             type = typeNode.asText();
@@ -235,9 +235,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
             return null;
         }
         Map<String, Integer> values = new HashMap<>();
-        node.get(field).fields().forEachRemaining(f -> {
-            values.put(f.getKey(), f.getValue().asInt());
-        });
+        node.get(field).fields().forEachRemaining(f -> values.put(f.getKey(), f.getValue().asInt()));
         return values;
     }
 
@@ -281,7 +279,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         String choices = a1.toString();
         if (choices.contains("note")) {
-            List<String> notes = new ArrayList<>(List.of(choices.split("\\},\\{")));
+            List<String> notes = new ArrayList<>(List.of(choices.split("},\\{")));
             for (int i = 0; i < notes.size(); i++) {
                 int pos = notes.get(i).indexOf("note");
                 String alignment = mapAlignmentToString(toAlignmentCharacters(notes.get(i).substring(0, pos)));
@@ -379,9 +377,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
             if (scNode.has("daily")) {
                 spellcasting.daily = new TreeMap<>();
-                scNode.with("daily").fields().forEachRemaining(f -> {
-                    spellcasting.daily.put(f.getKey(), getSpells(f.getValue()));
-                });
+                scNode.with("daily").fields()
+                        .forEachRemaining(f -> spellcasting.daily.put(f.getKey(), getSpells(f.getValue())));
             }
             if (scNode.has("spells")) {
                 spellcasting.spells = new TreeMap<>();
@@ -405,6 +402,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     List<String> getSpells(JsonNode source) {
         if (source == null) {
             tui().errorf("Null spells from %s", sources.getKey());
+            return List.of();
         }
         List<String> spells = new ArrayList<>();
         source.forEach(s -> spells.add(replaceText(s.asText())));
@@ -462,22 +460,22 @@ public class Json2QuteMonster extends Json2QuteCommon {
                         if (variant.contains(" and ")) {
                             for (String v : variant.split(" and ")) {
                                 String variantName = String.format("%s (%s, %s-Level Spell)",
-                                        name, v.replace(" only", ""), levelToString(i));
+                                        name, v.replace(" only", ""), JsonSource.levelToString(i));
                                 createVariant(index, variants, jsonSource, type, variantName, i,
                                         amount + " + " + parts[1], acString);
                             }
                         } else {
                             String variantName = String.format("%s (%s, %s-Level Spell)",
-                                    name, variant.replace(" only", ""), levelToString(i));
+                                    name, variant.replace(" only", ""), JsonSource.levelToString(i));
                             createVariant(index, variants, jsonSource, type, variantName, i,
                                     amount + " + " + parts[1], acString);
                         }
                     } else {
-                        throw new IllegalArgumentException("Unknown HP variant: " + hpString);
+                        index.tui().errorf("Unknown HP variant from %s: %s", key, hpString);
                     }
                 }
             } else {
-                String variantName = String.format("%s (%s-level Spell)", name, levelToString(i));
+                String variantName = String.format("%s (%s-level Spell)", name, JsonSource.levelToString(i));
                 createVariant(index, variants, jsonSource, type, variantName, i, hpString, acString);
             }
         }
@@ -498,19 +496,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         String newKey = index.getKey(type, adjustedSource);
         variants.put(newKey, adjustedSource);
-    }
-
-    static String levelToString(int level) {
-        switch (level) {
-            case 1:
-                return "1st";
-            case 2:
-                return "2nd";
-            case 3:
-                return "3rd";
-            default:
-                return level + "th";
-        }
     }
 
     public static class ConjuredMonster {

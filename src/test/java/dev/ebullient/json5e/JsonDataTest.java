@@ -84,7 +84,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.namelist, "Names");
+                    .writeFiles(IndexType.namelist);
         }
     }
 
@@ -97,7 +97,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.feat, "Feats");
+                    .writeFiles(IndexType.feat);
         }
     }
 
@@ -111,7 +111,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.background, "Backgrounds");
+                    .writeFiles(IndexType.background);
         }
     }
 
@@ -124,7 +124,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.spell, "Spells");
+                    .writeFiles(IndexType.spell);
         }
     }
 
@@ -138,7 +138,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.race, "Races");
+                    .writeFiles(IndexType.race);
         }
     }
 
@@ -151,7 +151,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.classtype, "Classes");
+                    .writeFiles(IndexType.classtype);
         }
     }
 
@@ -167,7 +167,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.item, "Items");
+                    .writeFiles(IndexType.item);
         }
     }
 
@@ -180,7 +180,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.monster, "monsters");
+                    .writeFiles(IndexType.monster);
         }
     }
 
@@ -198,7 +198,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH.resolve("yaml-header"), templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.monster, "monsters");
+                    .writeFiles(IndexType.monster);
         }
     }
 
@@ -216,7 +216,7 @@ public class JsonDataTest {
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH.resolve("yaml-body"), templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.monster, "monsters");
+                    .writeFiles(IndexType.monster);
         }
     }
 }

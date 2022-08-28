@@ -36,29 +36,15 @@ public enum SkillOrAbility {
     private final String longValue;
     private final String lowerValue;
     private final boolean isSkill;
-    private final boolean isAbility;
 
     SkillOrAbility(String longValue, boolean isSkill) {
         this.longValue = longValue;
         this.lowerValue = longValue.toLowerCase();
         this.isSkill = isSkill;
-        this.isAbility = !isSkill && !longValue.equals("None") && !longValue.equals("Any") && !longValue.equals("Varies");
-    }
-
-    public boolean isAbility() {
-        return isAbility;
-    }
-
-    public boolean isSkill() {
-        return isSkill;
     }
 
     public String value() {
         return longValue;
-    }
-
-    public static String properValue(String v) {
-        return fromTextValue(v).value();
     }
 
     public static SkillOrAbility fromTextValue(String v) {
@@ -78,35 +64,4 @@ public enum SkillOrAbility {
             .filter(x -> x.isSkill)
             .map(x -> x.longValue)
             .collect(Collectors.toList());
-
-    public static final List<String> allAbilities = Stream.of(SkillOrAbility.values())
-            .filter(x -> x.isAbility)
-            .map(x -> x.longValue)
-            .collect(Collectors.toList());
-
-    public static boolean isSkill(String v) {
-        if (v == null || v.isBlank()) {
-            return false;
-        }
-        String lower = v.toLowerCase();
-        for (SkillOrAbility s : SkillOrAbility.values()) {
-            if (s.isSkill && s.lowerValue.equals(lower)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isAbility(String v) {
-        if (v == null || v.isBlank()) {
-            return false;
-        }
-        String lower = v.toLowerCase();
-        for (SkillOrAbility s : SkillOrAbility.values()) {
-            if (s.isAbility && s.lowerValue.equals(lower)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

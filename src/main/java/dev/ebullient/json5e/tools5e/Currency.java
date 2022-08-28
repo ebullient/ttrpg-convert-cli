@@ -4,25 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Currency {
-    cp(new double[] { 1, 0.10, 0.02, 0.01, 0.001 }),
-    sp(new double[] { 10, 1, 0.2, 0.1, 0.01 }),
-    ep(new double[] { 50, 5, 1, 0.5, 0.05 }),
-    gp(new double[] { 100, 10, 2, 1, 0.1 }),
-    pp(new double[] { 1000, 100, 20, 10, 1 });
+    sp(10),
+    gp(100);
 
-    public final double cpEx, spEx, epEx, gpEx, ppEx;
+    public final double cpEx;
 
-    Currency(double[] exchangeRates) {
-        cpEx = exchangeRates[0];
-        spEx = exchangeRates[1];
-        epEx = exchangeRates[2];
-        gpEx = exchangeRates[3];
-        ppEx = exchangeRates[4];
+    Currency(double cpEx) {
+        this.cpEx = cpEx;
     }
 
     public static String coinValue(int cpValue) {
-        int gp = 0;
-        int sp = 0;
+        int gp;
+        int sp;
 
         List<String> coinValue = new ArrayList<>();
 

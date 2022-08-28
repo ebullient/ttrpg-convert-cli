@@ -33,7 +33,7 @@ public class CompendiumSources {
     }
 
     public List<String> getSourceTags() {
-        return List.of("compendium/src/" + primarySource());
+        return List.of("compendium/src/" + primarySource().toLowerCase());
     }
 
     private String findSourceText(JsonNode jsonElement) {
@@ -56,13 +56,13 @@ public class CompendiumSources {
         srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
                 .filter(x -> !x.get("source").asText().equals(copySrc))
                 .peek(x -> this.bookSources.add(x.get("source").asText()))
-                .map(x -> sourceAndPage(x))
+                .map(this::sourceAndPage)
                 .collect(Collectors.toList()));
 
         srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
                 .filter(x -> !x.get("source").asText().equals(copySrc))
                 .peek(x -> this.bookSources.add(x.get("source").asText()))
-                .map(x -> sourceAndPage(x))
+                .map(this::sourceAndPage)
                 .collect(Collectors.toList()));
 
         return String.join(", ", srcText);
@@ -224,6 +224,7 @@ public class CompendiumSources {
         abvToName.put("SCREEN", "Dungeon Master's Screen");
         abvToName.put("SDW", "Sleeping Dragon's Wake");
         abvToName.put("SjA", "Spelljammer Academy");
+        abvToName.put("SJA", "Spelljammer Academy");
         abvToName.put("SKT", "Storm King's Thunder");
         abvToName.put("SLW", "Storm Lord's Wrath");
         abvToName.put("TCE", "Tasha's Cauldron of Everything");

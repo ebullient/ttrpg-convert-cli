@@ -53,7 +53,7 @@ public enum ItemEnum {
     private final String encodedValue;
     private final String specializedType;
 
-    private ItemEnum(String genericType, String encodedValue, String specializedType) {
+    ItemEnum(String genericType, String encodedValue, String specializedType) {
         this.genericType = genericType;
         this.lower = genericType.toLowerCase();
         this.encodedValue = encodedValue;
@@ -62,10 +62,6 @@ public enum ItemEnum {
 
     public String getSpecializedType() {
         return specializedType.isBlank() ? genericType : specializedType;
-    }
-
-    public String getSpecializedLower() {
-        return getSpecializedType().toLowerCase();
     }
 
     public String value() {
@@ -96,10 +92,6 @@ public enum ItemEnum {
 
     public boolean isGear() {
         return this.lower.equals("adventuring gear");
-    }
-
-    public boolean isConsumable() {
-        return this == POTION || this == SCROLL;
     }
 
     public boolean isMoney() {
@@ -152,7 +144,7 @@ public enum ItemEnum {
         } else if (isGear()) {
             tag.append("/gear");
             if (!this.specializedType.isEmpty()) {
-                tag.append("/" + tui.slugify(this.specializedType));
+                tag.append("/").append(tui.slugify(this.specializedType));
             }
             if (properties.contains(PropertyEnum.POISON)) {
                 tag.append("/poison");
@@ -160,20 +152,10 @@ public enum ItemEnum {
                 tag.append("/cursed");
             }
         } else if (isWondrousItem()) {
-            tag.append("/wondrous" + (this == WONDROUS ? "" : "/" + tui.slugify(genericType)));
+            tag.append("/wondrous").append(this == WONDROUS ? "" : "/").append(tui.slugify(genericType));
         } else if (isMoney()) {
             tag.append("/wealth");
         }
         return tag.toString();
-    }
-
-    static boolean suggestsMeleeWeapon(String name) {
-        String lower = name.toLowerCase();
-        return lower.matches(".*(dagger|sword|axe|mace|mornigstar|scimitar|axe|hammer).*");
-    }
-
-    static boolean suggestsRangedWeapon(String name) {
-        String lower = name.toLowerCase();
-        return lower.matches(".*(shortbow|longbow|crossbow).*");
     }
 }
