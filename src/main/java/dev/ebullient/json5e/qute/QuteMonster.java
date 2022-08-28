@@ -1,10 +1,19 @@
 package dev.ebullient.json5e.qute;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import dev.ebullient.json5e.io.Json5eTui;
 
 public class QuteMonster implements QuteSource {
+
+    public static String getSubdir(QuteMonster m) {
+        return "bestiary/" + (m.getName().contains("NPC") ? "npc" : m.type);
+    }
+
     final String name;
     public final String source;
 
@@ -117,8 +126,93 @@ public class QuteMonster implements QuteSource {
         return savesSkills.skills;
     }
 
+    public String get5eInitiativeYaml() {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        addUnlessEmpty(map, "name", name);
+        addIntegerUnlessEmpty(map, "ac", ac);
+        addIntegerUnlessEmpty(map, "hp", hp);
+        addUnlessEmpty(map, "hit_dice", hitDice);
+        addUnlessEmpty(map, "cr", cr);
+        addUnlessEmpty(map, "cr", cr);
+        map.put("stats", scores.toArray()); // for initiative
+        return Json5eTui.plainYaml().dump(map).trim();
+    }
+
     public String get5eStatblockYaml() {
-        return null;
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        addUnlessEmpty(map, "name", name);
+        addUnlessEmpty(map, "size", size);
+        addUnlessEmpty(map, "type", type);
+        addUnlessEmpty(map, "subtype", subtype);
+        addUnlessEmpty(map, "alignment", alignment);
+
+        addIntegerUnlessEmpty(map, "ac", ac);
+        addIntegerUnlessEmpty(map, "hp", hp);
+        addUnlessEmpty(map, "hit_dice", hitDice);
+
+        map.put("stats", scores.toArray());
+        addUnlessEmpty(map, "speed", speed);
+        if (savesSkills != null) {
+            if (!savesSkills.saveMap.isEmpty()) {
+                map.put("saves", savesSkills.saveMap);
+            }
+            if (!savesSkills.skillMap.isEmpty()) {
+                map.put("skillsaves", savesSkills.skillMap);
+            }
+        }
+        addUnlessEmpty(map, "damage_vulnerabilities", vulnerable);
+        addUnlessEmpty(map, "damage_resistances", resist);
+        addUnlessEmpty(map, "damage_immunities", immune);
+        addUnlessEmpty(map, "condition_immunities", conditionImmune);
+        map.put("senses", (senses.isBlank() ? "" : senses + ", ") + "passive Perception " + passive);
+        map.put("languages", languages);
+        addUnlessEmpty(map, "cr", cr);
+
+        List<Trait> yamlTraits = new ArrayList<>(spellcastingToTraits());
+        if (trait != null) {
+            yamlTraits.addAll(trait);
+        }
+        addUnlessEmpty(map, "traits", yamlTraits);
+        addUnlessEmpty(map, "actions", action);
+        addUnlessEmpty(map, "bonus_actions", bonusAction);
+        addUnlessEmpty(map, "reactions", reaction);
+        addUnlessEmpty(map, "legendary_actions", legendary);
+
+        return Json5eTui.quotedYaml().dump(map).trim();
+    }
+
+    void addIntegerUnlessEmpty(Map<String, Object> map, String key, Integer value) {
+        if (value != null) {
+            map.put(key, value);
+        }
+    }
+
+    void addUnlessEmpty(Map<String, Object> map, String key, String value) {
+        if (value != null && !value.isBlank()) {
+            map.put(key, value);
+        }
+    }
+
+    protected void addUnlessEmpty(Map<String, Object> map, String key, List<Trait> value) {
+        if (value != null && !value.isEmpty()) {
+            map.put(key, value);
+        }
+    }
+
+    List<Trait> spellcastingToTraits() {
+        if (spellcasting == null) {
+            return List.of();
+        }
+        return spellcasting.stream()
+                .map(s -> new Trait(spellcastingToTraitName(s.name), s.getDesc()))
+                .collect(Collectors.toList());
+    }
+
+    String spellcastingToTraitName(String name) {
+        if (name.contains("Innate")) {
+            return "innate";
+        }
+        return "spells";
     }
 
     public static class Trait {

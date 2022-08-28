@@ -69,7 +69,9 @@ public class MarkdownWriter {
                         break;
                     case "QuteMonster":
                         QuteMonster m = (QuteMonster) x;
-                        fileMap = new FileMap(m.getName(), tui.slugify(m.getName()), "bestiary/" + m.type);
+                        fileMap = new FileMap(m.getName().replace(" (NPC)", ""),
+                                tui.slugify(m.getName()),
+                                QuteMonster.getSubdir(m));
                         writeFile(fileMap, templates.renderMonster(m));
                         break;
                     case "QuteName":
@@ -88,7 +90,7 @@ public class MarkdownWriter {
                         QuteSubclass s = (QuteSubclass) x;
                         String title = s.parentClass + ": " + s.getName();
                         fileMap = new FileMap(title, tui.slugify(title), "classes");
-                        writeFile(fileMap, templates.renderSubclass((QuteSubclass) x));
+                        writeFile(fileMap, templates.renderSubclass(s));
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown file type:" + type);
