@@ -9,6 +9,9 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 ## Recommended plugins 
 
 - **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: One of the templates for rendering monsters uses the code-style format supported by the admonitions plugin to render human-readable text (and avoid blockquote line wrapping).
+  - Create a custom admonition called `statblock`
+  - Either set the appearance/icon for the style in the plugin, or use/modify [this snippet](css-css-snippets/admonition_callout.css) to style the admonition itself
+  - The [statblock css snippet](css-snippets/statblock.css) defines styles for the contents of the statblock. 
 
 - **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read only. Specifically, I ensure the plugin has the following options enabled: "Ignore open files" (so that if I have toggled to edit mode, it doesn't fight with me over it), and "Ignore force view when not in front matter" (so that the setting isn't applied to documents that don't have the front matter tag).
 
@@ -24,6 +27,10 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 - **File names** To avoid conflicts and issues with different operating systems, all file names are slugified (all lower case, symbols stripped, and spaces replaced by dashes). This is a familiar convention for those used to jekyll, hugo, or other blogging systems.
 
 - **Organization** Files are generated in two roots: `compendium` and `rules`. The location of these roots is configurable (see below). The following directories may be created in the `compendium` directory depending on what sources you have enabled: `backgrounds`, `bestiary` (with contents organized by monster type), `classes` (separate documents for classes and subclasses), `feats`, `items`, `names`, `races`, and `spells`.
+
+- **Styles** 
+  - `css-snippets` has some snippets you can use to customize `statblock` admontions.
+  - Every document has a `cssclass` attribute that you can use to further tweak how page elements render: `5e-background`, `5e-monster`, `5e-class`, `5e-feat`, `5e-item`, `5e-names`, `5e-race`, and `5e-spell`.
 
 ## To run without building yourself
 
