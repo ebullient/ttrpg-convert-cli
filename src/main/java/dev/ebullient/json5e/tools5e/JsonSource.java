@@ -34,6 +34,11 @@ public interface JsonSource {
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)\\}");
     static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
 
+    static final Pattern condPattern  = Pattern.compile("\\{@condition ([^|}]+)\\|?[^}]*}");
+    static final Pattern skillPattern = Pattern.compile("\\{@skill ([^}]+)}");
+    static final Pattern sensePattern = Pattern.compile("\\{@sense ([^}]+)}");
+
+
     final static int CR_UNKNOWN = 100001;
     final static int CR_CUSTOM = 100000;
 
@@ -1336,6 +1341,15 @@ public interface JsonSource {
         result = spellPattern.matcher(result)
                 .replaceAll((match) -> linkify(match));
 
+        result = condPattern.matcher(result)
+                .replaceAll((match) -> linkifyRules(match.group(1), "conditions"));
+
+        result = skillPattern.matcher(result)
+                .replaceAll((match) -> linkifyRules(match.group(1), "skills"));
+
+        result = sensePattern.matcher(result)
+                .replaceAll((match) -> linkifyRules(match.group(1), "senses"));
+
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
                     List<String> text = new ArrayList<>();
@@ -1370,9 +1384,6 @@ public interface JsonSource {
                 .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
-                .replaceAll("\\{@condition ([^|}]+)\\|?[^}]*}", "[$1](" + index().rulesRoot() + "conditions.md#$1)")
-                .replaceAll("\\{@skill ([^}]+)}", "[$1](" + index().rulesRoot() + "skills.md#$1)")
-                .replaceAll("\\{@sense ([^}]+)}", "[$1](" + index().rulesRoot() + "senses.md#$1)")
                 .replaceAll("\\{@hit ([^}]+)}", "+$1")
                 .replaceAll("\\{@h}", "Hit: ")
                 .replaceAll("\\{@atk m}", "*Melee Attack:*")
@@ -1388,6 +1399,13 @@ public interface JsonSource {
 
         // after other replacements
         return result.replaceAll("\\{@adventure ([^|}]+)\\|[^}]*}", "$1");
+    }
+
+    default String linkifyRules(String text, String rules) {
+        return String.format("[%s](%s%s.md#%s)",
+                text, index().rulesRoot(), rules,
+                text.replace(" ", "%20")
+                    .replace(".", ""));
     }
 
     default String linkify(MatchResult match) {
