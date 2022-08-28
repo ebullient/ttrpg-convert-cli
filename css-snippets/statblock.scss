@@ -1,0 +1,43 @@
+.theme-dark {
+  --statblock-section-line: #c93c3c;
+}
+.theme-light {
+  --statblock-section-line: #c93c3c;
+}
+.markdown-rendered,
+.markdown-preview-section {
+  // ------------------------------------------------------
+  // Monster Statblocks
+  // ------------------------------------------------------
+  .admonition-statblock {
+    .admonition-content h1,
+    .admonition-content h2,
+    .admonition-content h3 {
+      font-family: var(--default-font);
+      font-variant: common-ligatures small-caps;
+    }
+    .admonition-content h1 {
+      font-size: 1.4em;
+      line-height: 1.4em;
+      margin: 0;
+      padding: 0;
+    }
+    .admonition-content h2,
+    .admonition-content h3 {
+      font-size: 1.2em;
+      line-height: 1.2em;
+      padding: .5em 0 0 0;
+      margin-top: .2em;
+      margin-bottom: .3em;
+      border-bottom: 1px solid var(--statblock-section-line);
+    }
+    .admonition-content p {
+      line-height: 1.2em;
+      margin-block-start: .5em;
+    }
+    .admonition-content li {
+      line-height: 1.2em;
+      margin-block-start: .5em;
+    }
+  }
+}
