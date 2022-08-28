@@ -31,6 +31,7 @@ public enum SkillOrAbility {
     Survival("Survival", true),
     Any("Any", false),
     Varies("Varies", false),
+    SidekickSpellcasting("Spellcasting", true),
     None("None", false);
 
     private final String longValue;
