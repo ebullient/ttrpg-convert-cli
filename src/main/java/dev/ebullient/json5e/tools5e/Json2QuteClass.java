@@ -60,11 +60,16 @@ public class Json2QuteClass extends Json2QuteCommon {
             text.addAll(cf.text);
         });
 
+        List<String> progression = new ArrayList<>();
+        buildFeatureProgression(progression);
+        maybeAddBlankLine(progression);
+        buildClassProgression(node, progression, "classTableGroups");
+
         return new QuteClass(
                 decoratedName,
                 getSources().getSourceText(),
                 startingHitDice(),
-                buildClassProgression(),
+                String.join("\n", progression),
                 buildStartingEquipment(),
                 buildStartMulticlassing(),
                 String.join("\n", text),
@@ -79,7 +84,6 @@ public class Json2QuteClass extends Json2QuteCommon {
             tags.add("class/" + slugify(getName()) + "/" + slugify(sc.shortName));
 
             List<String> text = new ArrayList<>();
-            maybeAddBlankLine(text);
 
             sc.features.forEach(scf -> {
                 maybeAddBlankLine(text);
@@ -93,7 +97,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             quteSc.add(new QuteSubclass(sc.name,
                     sc.sources.getSourceText(),
                     getName(),
-                    String.format("[%s](%s)", decoratedName, slugify(decoratedName)),
+                    String.format("[%s](%s.md)", decoratedName, slugify(decoratedName)),
                     subclassTitle,
                     sc.subclassProgression,
                     String.join("\n", text),
@@ -103,12 +107,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         return quteSc;
     }
 
-    String buildClassProgression() {
-        if (!node.has("classTableGroups")) {
-            return null;
-        }
-        ArrayNode classTableGroups = node.withArray("classTableGroups");
-
+    void buildFeatureProgression(List<String> progression) {
         List<List<String>> row_levels = new ArrayList<>(21);
         for (int i = 0; i < 21; i++) {
             row_levels.add(new ArrayList<>());
@@ -136,13 +135,22 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
         }
 
-        List<String> classProgression = new ArrayList<>(
+        progression.addAll(
                 convertRowsToTable(row_levels, "Feature progression",
-                        List.of("- PB: Proficiency Bonus"), "feature-progression"));
-        classProgression.add("");
+                        List.of("- PB: Proficiency Bonus"),
+                        "feature-progression"));
+        maybeAddBlankLine(progression);
+    }
 
+    void buildClassProgression(JsonNode node, List<String> progression, String field) {
+        if (!node.has(field)) {
+            return;
+        }
+        ArrayNode classTableGroups = node.withArray(field);
+
+        List<List<String>> row_levels = new ArrayList<>(21);
         for (int i = 0; i < 21; i++) {
-            row_levels.get(i).clear();
+            row_levels.add(new ArrayList<>());
             if (i == 0) {
                 row_levels.get(i).add("Level");
             } else {
@@ -177,10 +185,8 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
         });
 
-        classProgression.addAll(convertRowsToTable(row_levels, "Class progression",
+        progression.addAll(convertRowsToTable(row_levels, "Class progression",
                 List.of("- 1st-9th: Spell slots per level"), "class-progression"));
-
-        return String.join("\n", classProgression);
     }
 
     List<String> convertRowsToTable(List<List<String>> row_levels, String title, List<String> footer, String blockid) {
@@ -273,7 +279,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             maybeAddBlankLine(startMulticlass);
 
             startMulticlass.add(String.format("- **Armor:** %s",
-                    startingTextJoinOrDefault(gained, "armor", s -> s.replace("shield", "shields"))));
+                    startingTextJoinOrDefault(gained, "armor")));
             startMulticlass.add(String.format("- **Weapons:** %s",
                     startingTextJoinOrDefault(gained, "weapons")));
             startMulticlass.add(String.format("- **Tools:** %s",
@@ -309,8 +315,8 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
 
             Subclass sc = new Subclass();
-            sc.name = s.get("name").asText();
-            sc.shortName = s.get("shortName").asText();
+            sc.name = resolved.get("name").asText();
+            sc.shortName = resolved.get("shortName").asText();
             sc.sources = index.constructSources(IndexType.subclass, resolved);
 
             // Subclass features
@@ -322,7 +328,10 @@ public class Json2QuteClass extends Json2QuteCommon {
                 }
             });
 
-            // TODO: Subclass spellcasting !!
+            List<String> progression = new ArrayList<>();
+            buildClassProgression(resolved, progression, "subclassTableGroups");
+            sc.subclassProgression = String.join("\n", progression);
+
             subclasses.add(sc);
         });
     }
@@ -353,7 +362,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         if (featureJson == null) {
             return null; // skipped or not found
         }
-        return new ClassFeature(finalKey, featureJson, IndexType.subclassfeature, "###", source);
+        return new ClassFeature(finalKey, featureJson, IndexType.subclassfeature, "##", source);
     }
 
     void findStartingEquipment() {
@@ -378,7 +387,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             tui().errorf("%s has no starting proficiencies", sources);
         } else {
             if (startingProf.has("armor")) {
-                put("armor", findAndReplace(startingProf, "armor", s -> s.replace("shield", "shields")));
+                put("armor", findAndReplace(startingProf, "armor"));
             }
             if (startingProf.has("weapons")) {
                 put("weapons", findAndReplace(startingProf, "weapons"));
@@ -708,7 +717,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
         } else if (c.isObject()) {
             String type = getTextOrEmpty(c, "type");
-            switch(type) {
+            switch (type) {
                 case "dice":
                     JsonNode toRoll = c.get("toRoll");
                     List<String> rolls = new ArrayList<>();
@@ -723,5 +732,4 @@ public class Json2QuteClass extends Json2QuteCommon {
             throw new IllegalArgumentException("Unknown column value: " + c.toPrettyString());
         }
     }
-
 }
