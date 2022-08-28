@@ -34,10 +34,9 @@ public interface JsonSource {
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)\\}");
     static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
 
-    static final Pattern condPattern  = Pattern.compile("\\{@condition ([^|}]+)\\|?[^}]*}");
+    static final Pattern condPattern = Pattern.compile("\\{@condition ([^|}]+)\\|?[^}]*}");
     static final Pattern skillPattern = Pattern.compile("\\{@skill ([^}]+)}");
     static final Pattern sensePattern = Pattern.compile("\\{@sense ([^}]+)}");
-
 
     final static int CR_UNKNOWN = 100001;
     final static int CR_CUSTOM = 100000;
@@ -405,6 +404,9 @@ public interface JsonSource {
             case "addSpells":
                 doAddSpells(originKey, modItem, modFieldName, target);
                 break;
+            case "removeSpells":
+                doRemoveSpells(originKey, modItem, modFieldName, target);
+                break;
             case "replaceSpells":
                 doReplaceSpells(originKey, modItem, modFieldName, target);
                 break;
@@ -414,53 +416,93 @@ public interface JsonSource {
         }
     }
 
-    default void doReplaceSpells(String originKey, JsonNode modItem, String modFieldName, JsonNode target) {
+    default void doRemoveSpells(String originKey, JsonNode modItem, String modFieldName, JsonNode target) {
         if (!target.has("spellcasting")) {
-            throw new IllegalStateException("Can't add spells to a monster without spellcasting: " + originKey);
+            throw new IllegalStateException("Can't remove spells from a monster without spellcasting: " + originKey);
         }
 
-        JsonNode targetSpellcasting = target.get("spellcasting").get(0);
-        if (modItem.has("spells")) {
-            JsonNode spells = modItem.get("spells");
-            ObjectNode targetSpells = targetSpellcasting.with("spells");
-            spells.fields().forEachRemaining(ss -> {
-                if (targetSpells.has(ss.getKey())) {
-                    JsonNode levelMetas = ss.getValue();
-                    ObjectNode targetLevel = targetSpells.with(ss.getKey());
-                    ArrayNode targetLevelSpells = targetLevel.withArray("spells");
-                    levelMetas.forEach(x -> replaceArray(originKey, x, targetLevelSpells,
-                            x.get("replace"), x.get("with")));
-                    targetSpells.set(ss.getKey(), sortArrayNode(targetLevelSpells));
+        JsonNode arrayNode = target.get("spellcasting");
+        arrayNode.forEach(targetSpellcasting -> {
+            List.of("rest", "daily", "weekly", "yearly").forEach(prop -> {
+                if (!modItem.has(prop)) {
+                    return;
+                }
+                ObjectNode targetGroup = targetSpellcasting.with(prop);
+                for (int i = 1; i <= 9; ++i) {
+                    String key = i + "";
+                    if (modItem.get(prop).has(key)) {
+                        ArrayNode tgtArray = targetGroup.withArray(key);
+                        modItem.withArray(key).forEach(spell -> {
+                            int index = findIndexByName(originKey, tgtArray, spell.asText());
+                            if (index >= 0) {
+                                tgtArray.remove(index);
+                            }
+                        });
+                        targetGroup.set(key, tgtArray);
+                    }
+
+                    String e = i + "e";
+                    if (modItem.get(prop).has(e)) {
+                        ArrayNode tgtArray = targetGroup.withArray(e);
+                        modItem.withArray(e).forEach(spell -> {
+                            int index = findIndexByName(originKey, tgtArray, spell.asText());
+                            if (index >= 0) {
+                                tgtArray.remove(index);
+                            }
+                        });
+                        targetGroup.set(key, tgtArray);
+                    }
                 }
             });
-
-        }
-        List.of("rest", "daily", "weekly", "yearly").forEach(prop -> {
-            if (!modItem.has(prop)) {
-                return;
-            }
-            ObjectNode targetGroup = targetSpellcasting.with(prop);
-            for (int i = 1; i <= 9; ++i) {
-                String key = i + "";
-                if (modItem.get(prop).has(key)) {
-                    modItem.get(prop).get(key).forEach(
-                            sp -> replaceArray(originKey, sp, targetGroup.withArray(key),
-                                    sp.get("replace"), sp.get("with")));
-                    targetGroup.set(key, sortArrayNode(targetGroup.withArray(key)));
-                }
-
-                String e = i + "e";
-                if (modItem.get(prop).has(e)) {
-                    modItem.get(prop).get(e).forEach(
-                            sp -> replaceArray(originKey, sp, targetGroup.withArray(e),
-                                    sp.get("replace"), sp.get("with")));
-                    targetGroup.set(e, sortArrayNode(targetGroup.withArray(e)));
-                }
-            }
-
         });
+    }
 
-        tui().debugf("Replace spells %s", originKey);
+    default void doReplaceSpells(String originKey, JsonNode modItem, String modFieldName, JsonNode target) {
+        if (!target.has("spellcasting")) {
+            throw new IllegalStateException("Can't replace spells for a monster without spellcasting: " + originKey);
+        }
+
+        JsonNode arrayNode = target.get("spellcasting");
+        arrayNode.forEach(targetSpellcasting -> {
+            if (modItem.has("spells")) {
+                JsonNode spells = modItem.get("spells");
+                ObjectNode targetSpells = targetSpellcasting.with("spells");
+                spells.fields().forEachRemaining(ss -> {
+                    if (targetSpells.has(ss.getKey())) {
+                        JsonNode levelMetas = ss.getValue();
+                        ObjectNode targetLevel = targetSpells.with(ss.getKey());
+                        ArrayNode targetLevelSpells = targetLevel.withArray("spells");
+                        levelMetas.forEach(x -> replaceArray(originKey, x, targetLevelSpells,
+                                x.get("replace"), x.get("with")));
+                        targetSpells.set(ss.getKey(), sortArrayNode(targetLevelSpells));
+                    }
+                });
+            }
+
+            List.of("rest", "daily", "weekly", "yearly").forEach(prop -> {
+                if (!modItem.has(prop)) {
+                    return;
+                }
+                ObjectNode targetGroup = targetSpellcasting.with(prop);
+                for (int i = 1; i <= 9; ++i) {
+                    String key = i + "";
+                    if (modItem.get(prop).has(key)) {
+                        modItem.get(prop).get(key).forEach(
+                                sp -> replaceArray(originKey, sp, targetGroup.withArray(key),
+                                        sp.get("replace"), sp.get("with")));
+                        targetGroup.set(key, sortArrayNode(targetGroup.withArray(key)));
+                    }
+
+                    String e = i + "e";
+                    if (modItem.get(prop).has(e)) {
+                        modItem.get(prop).get(e).forEach(
+                                sp -> replaceArray(originKey, sp, targetGroup.withArray(e),
+                                        sp.get("replace"), sp.get("with")));
+                        targetGroup.set(e, sortArrayNode(targetGroup.withArray(e)));
+                    }
+                }
+            });
+        });
     }
 
     default void doAddSpells(String originKey, JsonNode modItem, String modFieldName, JsonNode target) {
@@ -1053,6 +1095,9 @@ public interface JsonSource {
                     text.add(String.format("**Spell attack modifier**: your proficiency bonus + your %s modifier",
                             asAbilityEnum(node.withArray("attributes").get(0))));
                     break;
+                case "image":
+                    // TODO: maybe someday?
+                    break;
                 default:
                     tui().errorf("Unknown entry object type %s from %s: %s", objectType, getSources(), node.toPrettyString());
             }
@@ -1405,7 +1450,7 @@ public interface JsonSource {
         return String.format("[%s](%s%s.md#%s)",
                 text, index().rulesRoot(), rules,
                 text.replace(" ", "%20")
-                    .replace(".", ""));
+                        .replace(".", ""));
     }
 
     default String linkify(MatchResult match) {
