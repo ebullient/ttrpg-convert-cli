@@ -1,8 +1,8 @@
 package dev.ebullient.json5e.qute;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class QuteMonster implements QuteSource {
     final String name;
@@ -21,8 +21,7 @@ public class QuteMonster implements QuteSource {
     public final String speed;
 
     protected final AbilityScores scores;
-    public final Map<String, Integer> saves;
-    public final Map<String, Integer> skills;
+    protected final SavesAndSkills savesSkills;
 
     public final String senses;
     public final int passive;
@@ -32,13 +31,14 @@ public class QuteMonster implements QuteSource {
     public final String conditionImmune;
     public final String languages;
     public final String cr;
+    public final String pb;
 
     public final List<Trait> trait;
     public final List<Trait> action;
     public final List<Trait> bonusAction;
     public final List<Trait> reaction;
     public final List<Trait> legendary;
-    final List<Spellcasting> spellcasting;
+    public final List<Spellcasting> spellcasting;
 
     public final String description;
     public final String environment;
@@ -47,8 +47,8 @@ public class QuteMonster implements QuteSource {
 
     public QuteMonster(String name, String source, String size, String type, String subtype, String alignment,
             Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed, AbilityScores scores,
-            Map<String, Integer> saves, Map<String, Integer> skills, String senses, int passive, String vulnerable,
-            String resist, String immune, String conditionImmune, String languages, String cr, List<Trait> trait,
+            SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
+            String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
             List<Spellcasting> spellcasting, String description, String environment, List<String> tags) {
         this.name = name;
@@ -64,8 +64,7 @@ public class QuteMonster implements QuteSource {
         this.hitDice = hitDice;
         this.speed = speed;
         this.scores = scores;
-        this.saves = saves;
-        this.skills = skills;
+        this.savesSkills = savesSkills;
         this.senses = senses;
         this.passive = passive;
         this.vulnerable = vulnerable;
@@ -74,6 +73,7 @@ public class QuteMonster implements QuteSource {
         this.conditionImmune = conditionImmune;
         this.languages = languages;
         this.cr = cr;
+        this.pb = pb;
         this.trait = trait;
         this.action = action;
         this.bonusAction = bonusAction;
@@ -104,21 +104,17 @@ public class QuteMonster implements QuteSource {
     }
 
     public String getSavingThrows() {
-        if (saves == null) {
+        if (savesSkills == null) {
             return null;
         }
-        return saves.entrySet().stream()
-                .map(e -> e.getKey() + " " + (e.getValue() > 0 ? "+" : "") + e.getValue())
-                .collect(Collectors.joining(", "));
+        return savesSkills.saves;
     }
 
     public String getSkills() {
-        if (skills == null) {
+        if (savesSkills == null) {
             return null;
         }
-        return skills.entrySet().stream()
-                .map(e -> e.getKey() + " " + (e.getValue() > 0 ? "+" : "") + e.getValue())
-                .collect(Collectors.joining(", "));
+        return savesSkills.skills;
     }
 
     public String get5eStatblockYaml() {
@@ -143,10 +139,102 @@ public class QuteMonster implements QuteSource {
         public Map<String, Spells> spells;
         public List<String> footerEntries;
         public String ability;
+
+        public String getDesc() {
+            List<String> text = new ArrayList<>(headerEntries);
+
+            appendList(text, "At will", will);
+            if (daily != null && !daily.isEmpty()) {
+                daily.forEach((k, v) -> {
+                    appendList(text, innateKeyToTitle(k), v);
+                });
+            }
+            if (spells != null && !spells.isEmpty()) {
+                spells.forEach((k, v) -> {
+                    appendList(text, spellToTitle(k, v), v.spells);
+                });
+            }
+
+            text.addAll(footerEntries);
+            return String.join("\n", text);
+        }
+
+        String spellToTitle(String key, Spells spells) {
+            if ("0".equals(key)) {
+                return "Cantrips (at will)";
+            }
+            if (spells.lowerBound > 0) {
+                return String.format("%s-%s level%s",
+                        levelToString(spells.lowerBound + ""),
+                        levelToString(key),
+                        spellSlots(key, spells));
+            } else {
+                return String.format("%s level%s",
+                        levelToString(key),
+                        spellSlots(key, spells));
+            }
+        }
+
+        String spellSlots(String key, Spells spells) {
+            if (spells.slots > 0) {
+                return String.format(" (%s %s-level slots)",
+                        spells.slots, levelToString(key));
+            }
+            return "";
+        }
+
+        String innateKeyToTitle(String key) {
+            switch (key) {
+                case "1":
+                case "2":
+                case "3":
+                    return String.format("%s/day", key);
+                case "1e":
+                case "2e":
+                case "3e":
+                    return String.format("%s/day each", key);
+            }
+            return "Unknown";
+        }
+
+        void appendList(List<String> text, String title, List<String> spells) {
+            if (spells == null || spells.isEmpty()) {
+                return;
+            }
+            maybeAddBlankLine(text);
+            text.add(String.format("**%s**: %s", title, String.join(", ", spells)));
+        }
+
+        void maybeAddBlankLine(List<String> text) {
+            if (text.size() > 0 && !text.get(text.size() - 1).isBlank()) {
+                text.add("");
+            }
+        }
+
+        String levelToString(String level) {
+            switch (level) {
+                case "1":
+                    return "1st";
+                case "2":
+                    return "2nd";
+                case "3":
+                    return "3rd";
+                default:
+                    return level + "th";
+            }
+        }
     }
 
     public static class Spells {
         public int slots;
+        public int lowerBound;
         public List<String> spells;
+    }
+
+    public static class SavesAndSkills {
+        public Map<String, Integer> saveMap;
+        public Map<String, Integer> skillMap;
+        public String saves;
+        public String skills;
     }
 }

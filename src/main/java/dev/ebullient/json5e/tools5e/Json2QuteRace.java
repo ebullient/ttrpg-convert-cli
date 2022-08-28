@@ -67,7 +67,7 @@ public class Json2QuteRace extends Json2QuteCommon {
                 if (ability.has("choose")) {
                     List<String> abilities = new ArrayList<>();
                     ability.withArray("choose")
-                            .forEach(x -> abilities.add(asAbilityEnum(x.asText())));
+                            .forEach(x -> abilities.add(SkillOrAbility.format(x.asText())));
                     return "Choose one of " + String.join(", ", abilities);
                 } else {
                     return asAbilityEnum(ability);
@@ -96,7 +96,7 @@ public class Json2QuteRace extends Json2QuteCommon {
                 if (f.getKey().equals("choose")) {
                     inner.add(skillChoices(f.getValue()));
                 } else {
-                    inner.add(String.format("%s %s", asAbilityEnum(f.getKey()), decoratedAmount(f.getValue().asInt())));
+                    inner.add(String.format("%s %s", SkillOrAbility.format(f.getKey()), decoratedAmount(f.getValue().asInt())));
                 }
             });
             list.add(String.join(", ", inner));
@@ -113,7 +113,7 @@ public class Json2QuteRace extends Json2QuteCommon {
                 : 1;
         ArrayNode from = skillBonus.withArray("from");
         List<String> choices = new ArrayList<>();
-        from.forEach(s -> choices.add(asAbilityEnum(s.asText())));
+        from.forEach(s -> choices.add(SkillOrAbility.format(s.asText())));
         return String.format("Apply %s to %s of %s",
                 decoratedAmount(amount),
                 count == 1 ? "one" : count + " (distinct)",

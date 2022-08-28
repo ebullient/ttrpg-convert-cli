@@ -44,7 +44,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
             Map<String, List<String>> abilityScores = new HashMap<>();
             entry.withArray("ability").forEach(a -> a.fields().forEachRemaining(score -> abilityScores.computeIfAbsent(
                     score.getValue().asText(),
-                    k -> new ArrayList<>()).add(asAbilityEnum(score.getKey()))));
+                    k -> new ArrayList<>()).add(SkillOrAbility.format(score.getKey()))));
             abilityScores.forEach(
                     (k, v) -> prereqs.add(String.format("%s %s or higher", String.join(" or ", v), k)));
 

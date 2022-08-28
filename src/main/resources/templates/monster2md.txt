@@ -28,6 +28,7 @@ title: {resource.name}
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |{resource.scoreString}|
 
+- **Proficiency Bonus** {resource.pb}
 - **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
 - **Skills** {#if resource.skills }{resource.skills}{#else}⏤{/if}
 - **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
@@ -48,6 +49,9 @@ title: {resource.name}
 {#for trait in resource.trait}
 
 {#if trait.name }***{trait.name}.*** {/if}{trait.desc}
+{/for}{/if}{#if resource.spellcasting}{#for spellcasting in resource.spellcasting}
+
+***{spellcasting.name}.*** {spellcasting.desc}
 {/for}{/if}{#if resource.action}
 
 ## Actions
