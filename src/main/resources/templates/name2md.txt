@@ -4,7 +4,7 @@ cssclass: 5e-names
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*
+*Source: {resource.source}*  
 {#for table in resource.tables}
 
 ## {table.name}

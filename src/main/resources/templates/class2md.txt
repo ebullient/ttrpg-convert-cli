@@ -10,7 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*
+*Source: {resource.source}*  
 
 {#if resource.classProgression }
 {resource.classProgression}
@@ -37,4 +37,5 @@ aliases: ["{resource.name}"]
 
 {resource.multiclassing}
 {/if}
+
 {resource.text}
