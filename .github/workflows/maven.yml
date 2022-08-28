@@ -4,9 +4,9 @@ on:
   push:
     branches: [ main ]
     paths:
+      - .github/**
       - '**.xml'
       - 'src/**'
-      - 'ide-config'
   pull_request:
     paths:
       - '**.xml'
@@ -78,5 +78,5 @@ jobs:
             git tag -f $VERSION
             git push --tags
             echo "Delete JitPack artifacts for tag"
-            curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/fc5-convert-cli/$VERSION
+            curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/json5e-convert-cli/$VERSION
           fi
