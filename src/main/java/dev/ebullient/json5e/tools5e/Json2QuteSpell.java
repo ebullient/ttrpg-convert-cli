@@ -25,8 +25,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
         Collection<String> classes = spellClasses(school);
 
-        List<String> tags = new ArrayList<>();
-        tags.addAll(sources.getSourceTags());
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         tags.add("spell/school/" + slugify(school.name()));
         tags.add("spell/level/" + (level.equals("0") ? "cantrip" : level));
@@ -239,55 +238,5 @@ public class Json2QuteSpell extends Json2QuteCommon {
     private boolean includeSubclass(String className, String classSource, String subclassName) {
         String finalKey = index().getSubclassKey(subclassName.trim(), className.trim(), classSource.trim());
         return index().keyIsIncluded(finalKey);
-    }
-
-    public enum SchoolEnum {
-        Abjuration("A"),
-        Conjuration("C"),
-        Divination("D"),
-        Enchantment("EN"),
-        Evocation("EV"),
-        Illusion("I"),
-        Necromancy("N"),
-        Transmutation("T"),
-        None("");
-
-        private final String shortcode;
-
-        private SchoolEnum(String shortcode) {
-            this.shortcode = shortcode;
-        }
-
-        public String getShortcode() {
-            return shortcode;
-        }
-
-        public static SchoolEnum fromShortcode(String v) {
-            if (v == null || v.isBlank()) {
-                return None;
-            }
-            switch (v) {
-                case "A":
-                    return Abjuration;
-                case "C":
-                    return Conjuration;
-                case "D":
-                    return Divination;
-                case "E":
-                case "EN":
-                    return Enchantment;
-                case "V":
-                case "EV":
-                    return Evocation;
-                case "I":
-                    return Illusion;
-                case "N":
-                    return Necromancy;
-                case "T":
-                    return Transmutation;
-                default:
-                    throw new IllegalArgumentException("Invalid/Unknown school " + v);
-            }
-        }
     }
 }

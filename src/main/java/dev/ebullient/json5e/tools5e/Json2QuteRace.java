@@ -1,7 +1,10 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,8 +20,7 @@ public class Json2QuteRace extends Json2QuteCommon {
     @Override
     public QuteRace build() {
         String name = decoratedRaceName();
-        List<String> tags = new ArrayList<>();
-        tags.addAll(sources.getSourceTags());
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         String[] split = name.split("\\(");
         for (int i = 0; i < split.length; i++) {
@@ -123,5 +125,17 @@ public class Json2QuteRace extends Json2QuteCommon {
             return "+" + amount;
         }
         return amount + "";
+    }
+
+    public static Stream<Map.Entry<String, JsonNode>> findRaceVariants(JsonIndex index, IndexType type,
+            String key, JsonNode jsonSource) {
+        Map<String, JsonNode> variants = new HashMap<>();
+        variants.put(key, jsonSource);
+        CompendiumSources sources = index.constructSources(type, jsonSource);
+        index.subraces(sources).forEach(sr -> {
+            CompendiumSources srSources = index.constructSources(IndexType.subrace, sr);
+            variants.put(srSources.getKey(), sr);
+        });
+        return variants.entrySet().stream();
     }
 }

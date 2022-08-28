@@ -24,14 +24,14 @@ public class Json2QuteItem extends Json2QuteCommon {
     public QuteSource build() {
         List<PropertyEnum> propertyEnums = new ArrayList<>();
         findProperties(propertyEnums);
+        String text = itemText(propertyEnums);
 
         String detail = itemDetail(propertyEnums);
-        String properties = String.join(", ", propertyEnums.stream()
+        String properties = propertyEnums.stream()
                 .map(x -> x.getMarkdownLink(index))
-                .collect(Collectors.toList()));
+                .collect(Collectors.joining(", "));
 
-        List<String> tags = new ArrayList<>();
-        tags.addAll(sources.getSourceTags());
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         tags.add(itemType.getItemTag(propertyEnums, tui()));
         for (PropertyEnum p : propertyEnums) {
@@ -69,7 +69,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 damage, damage2h,
                 range, properties,
                 strength, stealthPenalty, gpValue(), weight,
-                itemText(),
+                text,
                 tags);
     }
 
@@ -93,16 +93,15 @@ public class Json2QuteItem extends Json2QuteCommon {
         return getSources().getName();
     }
 
-    String itemText() {
-        List<String> text = new ArrayList<>();
-        text.addAll(getFluff(IndexType.itemfluff, "##"));
+    String itemText(List<PropertyEnum> propertyEnums) {
+        List<String> text = new ArrayList<>(getFluff(IndexType.itemfluff, "##"));
         if (node.has("entries")) {
             maybeAddBlankLine(text);
             node.withArray("entries").forEach(entry -> {
                 if (entry.isTextual()) {
                     String input = entry.asText();
                     if (input.startsWith("{#itemEntry ")) {
-                        insertItemRefText(text, input, "##");
+                        insertItemRefText(text, input);
                     } else {
                         maybeAddBlankLine(text);
                         text.add(replaceText(input));
@@ -112,19 +111,20 @@ public class Json2QuteItem extends Json2QuteCommon {
                 }
             });
         }
+        PropertyEnum.findAdditionalProperties(getName(),
+                itemType, propertyEnums, s -> text.stream().anyMatch(l -> l.matches(s)));
 
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
-    void insertItemRefText(List<String> text, String input, String heading) {
-        String finalKey = index.getRefKey(IndexType.itementry, input.replaceAll("\\{#itemEntry (.*)\\}", "$1"));
+    void insertItemRefText(List<String> text, String input) {
+        String finalKey = index.getRefKey(IndexType.itementry, input.replaceAll("\\{#itemEntry (.*)}", "$1"));
         if (index.keyIsExcluded(finalKey)) {
             return;
         }
         JsonNode ref = index.getNode(finalKey);
         if (ref == null) {
             tui().errorf("Could not find %s from %s", finalKey, getSources());
-            return;
         } else if (index.sourceIncluded(ref.get("source").asText())) {
             try {
                 String entriesTemplate = Json5eTui.MAPPER.writeValueAsString(ref.get("entriesTemplate"));
@@ -136,7 +136,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                     entriesTemplate = entriesTemplate.replaceAll("\\{\\{item.resist}}",
                             joinAndReplace(node, "resist"));
                 }
-                appendEntryToText(text, Json5eTui.MAPPER.readTree(entriesTemplate), heading);
+                appendEntryToText(text, Json5eTui.MAPPER.readTree(entriesTemplate), "##");
             } catch (JsonProcessingException e) {
                 tui().errorf(e, "Unable to insert item element text for %s from %s", input, getSources());
             }
@@ -152,7 +152,7 @@ public class Json2QuteItem extends Json2QuteCommon {
         result.append(node.get("ac").asText());
         // - If you wear light armor, you add your Dexterity modifier to the base number from your armor type to determine your Armor Class.
         // - If you wear medium armor, you add your Dexterity modifier, to a maximum of +2, to the base number from your armor type to determine your Armor Class.
-        // - Heavy armor doesn’t let you add your Dexterity modifier to your Armor Class, but it also doesn’t penalize you if your Dexterity modifier is negative.
+        // - Heavy armor does not let you add your Dexterity modifier to your Armor Class, but it also does not penalize you if your Dexterity modifier is negative.
         if (itemType == ItemEnum.LIGHT_ARMOR) {
             result.append(" + DEX");
         } else if (itemType == ItemEnum.MEDIUM_ARMOR) {
@@ -190,9 +190,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     void findProperties(List<PropertyEnum> propertyEnums) {
         JsonNode property = node.get("property");
         if (property != null && property.isArray()) {
-            property.forEach(x -> {
-                propertyEnums.add(PropertyEnum.fromEncodedType(x.asText()));
-            });
+            property.forEach(x -> propertyEnums.add(PropertyEnum.fromEncodedType(x.asText())));
         }
         String category = getTextOrEmpty(node, "weaponCategory");
         if ("martial".equals(category)) {
@@ -200,6 +198,10 @@ public class Json2QuteItem extends Json2QuteCommon {
         }
     }
 
+    /**
+     * @param propertyEnums Item properties -- ensure non-null & modifiable: side-effect, will set magic properties
+     * @return String containing formatted item text
+     */
     String itemDetail(List<PropertyEnum> propertyEnums) {
         String tier = getTextOrDefault(node, "tier", "");
         if (!tier.isEmpty()) {
@@ -219,9 +221,8 @@ public class Json2QuteItem extends Json2QuteCommon {
     /**
      * @param attunement blank if false, "true" for default string, "optional" if attunement is optional, or some other specific
      *        string
-     * @param type Item type
      * @param properties Item properties -- ensure non-null & modifiable: side-effect, will set magic properties
-     * @return
+     * @return detail string
      */
     String createDetail(String attunement, List<PropertyEnum> properties) {
         StringBuilder replacement = new StringBuilder();

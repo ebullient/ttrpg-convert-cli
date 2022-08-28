@@ -19,6 +19,7 @@ import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.qute.QuteSource;
 import dev.ebullient.json5e.qute.QuteSpell;
+import dev.ebullient.json5e.qute.QuteSubclass;
 import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
@@ -33,7 +34,7 @@ public class MarkdownWriter {
         this.templates = templates;
     }
 
-    public <T extends QuteSource> void writeFiles(List<T> elements, String typeName) throws IOException {
+    public <T extends QuteSource> void writeFiles(List<T> elements) throws IOException {
         if (elements.isEmpty()) {
             return;
         }
@@ -44,53 +45,67 @@ public class MarkdownWriter {
             return a.dirName.compareTo(b.dirName);
         });
 
-        tui.outPrintln("⏱ Writing " + typeName);
+        tui.outPrintln("⏱ Writing files");
         elements.forEach(x -> {
-            String dirName = typeName.toLowerCase();
-            FileMap fileMap = new FileMap(x.getName(), tui.slugify(x.getName()), dirName);
+            String type = x.getClass().getSimpleName();
+            FileMap fileMap = new FileMap(x.getName(), tui.slugify(x.getName()));
             try {
-                switch (dirName) {
-                    case "backgrounds":
-                        writeFile(fileMap, dirName, templates.renderBackground((QuteBackground) x));
+                switch (type) {
+                    case "QuteBackground":
+                        fileMap.dirName = "backgrounds";
+                        writeFile(fileMap, templates.renderBackground((QuteBackground) x));
                         break;
-                    case "classes":
-                        writeFile(fileMap, dirName, templates.renderClass((QuteClass) x));
+                    case "QuteClass":
+                        fileMap.dirName = "classes";
+                        writeFile(fileMap, templates.renderClass((QuteClass) x));
                         break;
-                    case "feats":
-                        writeFile(fileMap, dirName, templates.renderFeat((QuteFeat) x));
+                    case "QuteFeat":
+                        fileMap.dirName = "feats";
+                        writeFile(fileMap, templates.renderFeat((QuteFeat) x));
                         break;
-                    case "items":
-                        writeFile(fileMap, dirName, templates.renderItem((QuteItem) x));
+                    case "QuteItem":
+                        fileMap.dirName = "items";
+                        writeFile(fileMap, templates.renderItem((QuteItem) x));
                         break;
-                    case "monsters":
+                    case "QuteMonster":
                         QuteMonster m = (QuteMonster) x;
-                        dirName = "bestiary/" + m.type;
-                        fileMap = new FileMap(m.getName(), Json5eTui.slugifier().slugify(m.getName()), dirName);
-                        writeFile(fileMap, dirName, templates.renderMonster(m));
+                        fileMap = new FileMap(m.getName(), tui.slugify(m.getName()), "bestiary/" + m.type);
+                        writeFile(fileMap, templates.renderMonster(m));
                         break;
-                    case "names":
-                        writeFile(fileMap, dirName, templates.renderName((QuteName) x));
+                    case "QuteName":
+                        fileMap.dirName = "names";
+                        writeFile(fileMap, templates.renderName((QuteName) x));
                         break;
-                    case "races":
-                        writeFile(fileMap, dirName, templates.renderRace((QuteRace) x));
+                    case "QuteRace":
+                        fileMap.dirName = "races";
+                        writeFile(fileMap, templates.renderRace((QuteRace) x));
                         break;
-                    case "spells":
-                        writeFile(fileMap, dirName, templates.renderSpell((QuteSpell) x));
+                    case "QuteSpell":
+                        fileMap.dirName = "spells";
+                        writeFile(fileMap, templates.renderSpell((QuteSpell) x));
                         break;
+                    case "QuteSubclass":
+                        QuteSubclass s = (QuteSubclass) x;
+                        String title = s.parentClass + ": " + s.getName();
+                        fileMap = new FileMap(title, tui.slugify(title), "classes");
+                        writeFile(fileMap, templates.renderSubclass((QuteSubclass) x));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown file type:" + type);
                 }
+                fileMappings.add(fileMap);
             } catch (IOException e) {
                 throw new WrappedIOException(e);
             }
-            fileMappings.add(fileMap);
         });
         fileMappings.stream()
                 .collect(Collectors.groupingBy(fm -> fm.dirName))
                 .forEach((dirName, value) -> {
                     int lastIndex = dirName.lastIndexOf("/");
                     String fileName = lastIndex > 0 ? dirName.substring(lastIndex + 1) : dirName;
-                    String title = lastIndex > 0 ? fileName.substring(0, 1).toUpperCase() + fileName.substring(1) : typeName;
+                    String title = fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
                     try {
-                        writeFile(new FileMap(title, fileName, dirName), dirName, templates.renderIndex(title, value));
+                        writeFile(new FileMap(title, fileName, dirName), templates.renderIndex(title, value));
                     } catch (IOException ex) {
                         throw new WrappedIOException(ex);
                     }
@@ -98,8 +113,8 @@ public class MarkdownWriter {
         tui.outPrintln("  ✅ " + (fileMappings.size() + 1) + " files.");
     }
 
-    void writeFile(FileMap fileMap, String type, String content) throws IOException {
-        Path targetDir = Paths.get(output.toString(), type);
+    void writeFile(FileMap fileMap, String content) throws IOException {
+        Path targetDir = Paths.get(output.toString(), fileMap.dirName);
         targetDir.toFile().mkdirs();
 
         Path target = targetDir.resolve(fileMap.fileName);
@@ -109,26 +124,19 @@ public class MarkdownWriter {
 
     @TemplateData
     public static class FileMap {
-        final String title;
-        final String fileName;
-        final String dirName;
+        public String title;
+        public String fileName;
+        public String dirName;
 
-        FileMap(String title, String fileName, String dirName) {
+        public FileMap(String title, String fileName) {
             this.title = title;
-            this.fileName = fileName + ".md";
+            this.fileName = fileName + (fileName.endsWith(".md") ? "" : ".md");
+        }
+
+        public FileMap(String title, String fileName, String dirName) {
+            this.title = title;
+            this.fileName = fileName + (fileName.endsWith(".md") ? "" : ".md");
             this.dirName = dirName;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        public String getDirName() {
-            return dirName;
         }
     }
 

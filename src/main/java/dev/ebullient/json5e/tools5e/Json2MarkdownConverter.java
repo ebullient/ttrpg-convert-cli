@@ -2,7 +2,6 @@ package dev.ebullient.json5e.tools5e;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,7 +23,7 @@ public class Json2MarkdownConverter {
         this.writer = writer;
     }
 
-    public Json2MarkdownConverter writeFiles(IndexType type, String title) {
+    public Json2MarkdownConverter writeFiles(IndexType type) {
         String prefix = type + "|";
         Map<String, JsonNode> variants = StreamSupport.stream(index.elements().spliterator(), false)
                 .filter(e -> e.getKey().startsWith(prefix))
@@ -43,30 +42,32 @@ public class Json2MarkdownConverter {
                 continue;
             }
 
-            QuteSource converted = json2qute(type, jsonSource);
-            if (converted != null) {
-                nodes.add(converted);
+            if (type == IndexType.classtype) {
+                Json2QuteClass jsonClass = new Json2QuteClass(index, type, jsonSource);
+                QuteSource converted = jsonClass.build();
+                if (converted != null) {
+                    nodes.add(converted);
+                    nodes.addAll(jsonClass.buildSubclasses());
+                }
+            } else {
+                QuteSource converted = json2qute(type, jsonSource);
+                if (converted != null) {
+                    nodes.add(converted);
+                }
             }
         }
 
         try {
-            writer.writeFiles(nodes, title);
+            writer.writeFiles(nodes);
         } catch (IOException e) {
-            index.tui().error("⛔️ Exception: " + e.getCause().getMessage());
+            index.tui().error("Exception: " + e.getCause().getMessage());
         }
         return this;
     }
 
     Stream<Map.Entry<String, JsonNode>> findVariants(IndexType type, String key, JsonNode jsonSource) {
         if (type == IndexType.race) {
-            Map<String, JsonNode> variants = new HashMap<>();
-            variants.put(key, jsonSource);
-            CompendiumSources sources = index.constructSources(type, jsonSource);
-            index.subraces(sources).forEach(sr -> {
-                CompendiumSources srSources = index.constructSources(IndexType.subrace, sr);
-                variants.put(srSources.getKey(), sr);
-            });
-            return variants.entrySet().stream();
+            return Json2QuteRace.findRaceVariants(index, type, key, jsonSource);
         } else if (type == IndexType.monster && jsonSource.has("summonedBySpellLevel")) {
             return Json2QuteMonster.findConjuredMonsterVariants(index, type, key, jsonSource);
         }
@@ -77,8 +78,6 @@ public class Json2MarkdownConverter {
         switch (type) {
             case background:
                 return new Json2QuteBackground(index, type, jsonNode).build();
-            case classtype:
-                return new Json2QuteClass(index, type, jsonNode).build();
             case feat:
                 return new Json2QuteFeat(index, type, jsonNode).build();
             case item:

@@ -19,6 +19,7 @@ import dev.ebullient.json5e.qute.QuteMonster;
 import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.qute.QuteSpell;
+import dev.ebullient.json5e.qute.QuteSubclass;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.Template;
 
@@ -135,6 +136,16 @@ public class Templates {
 
     public String renderSpell(QuteSpell resource) {
         Template tpl = templates.computeIfAbsent("spell2md.txt", k -> customTemplateOrDefault(k, spell2md));
+        return tpl
+                .data("resource", resource)
+                .render().trim();
+    }
+
+    @Inject
+    public Template subclass2md;
+
+    public String renderSubclass(QuteSubclass resource) {
+        Template tpl = templates.computeIfAbsent("subclass2md.txt", k -> customTemplateOrDefault(k, subclass2md));
         return tpl
                 .data("resource", resource)
                 .render().trim();

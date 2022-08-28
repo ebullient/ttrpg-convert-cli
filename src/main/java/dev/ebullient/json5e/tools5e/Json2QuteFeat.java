@@ -21,15 +21,13 @@ public class Json2QuteFeat extends Json2QuteCommon {
     @Override
     public QuteSource build() {
         String prerequisite = listPrerequisites();
-        String level = null;
-        List<String> tags = new ArrayList<>();
-        tags.addAll(sources.getSourceTags());
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         return new QuteFeat(
                 decoratedTypeName(sources),
                 sources.getSourceText(),
                 prerequisite,
-                level,
+                null, // Level coming someday..
                 getText("##"),
                 tags);
     }

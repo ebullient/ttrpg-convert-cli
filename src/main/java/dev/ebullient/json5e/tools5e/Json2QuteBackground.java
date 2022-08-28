@@ -17,8 +17,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
     @Override
     public QuteSource build() {
         String backgroundName = decoratedBackgroundName(sources.getName());
-        List<String> tags = new ArrayList<>();
-        tags.addAll(sources.getSourceTags());
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         return new QuteBackground(
                 decoratedTypeName(backgroundName, sources),
