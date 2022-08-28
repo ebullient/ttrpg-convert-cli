@@ -64,4 +64,8 @@ public enum SkillOrAbility {
             .filter(x -> x.isSkill)
             .map(x -> x.longValue)
             .collect(Collectors.toList());
+
+    public static String format(String key) {
+        return fromTextValue(key).value();
+    }
 }

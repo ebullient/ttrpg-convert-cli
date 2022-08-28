@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.qute.AbilityScores;
 import dev.ebullient.json5e.qute.QuteMonster;
+import dev.ebullient.json5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.json5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.json5e.qute.QuteMonster.Spells;
 import dev.ebullient.json5e.qute.QuteMonster.Trait;
@@ -44,6 +45,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
     public QuteSource build() {
         String size = getSize(node);
         String environment = joinAndReplace(node, "environment");
+        String cr = monsterCr(node);
+        String pb = monsterPb(cr);
 
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
@@ -66,8 +69,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 size, type, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
                 monsterSpeed(), monsterScores(),
-                getModifierMap("save"),
-                getModifierMap("skill"),
+                monsterSavesAndSkills(),
                 joinAndReplace(node, "senses"),
                 intOrDefault(node, "passive", 10),
                 monsterImmunities("vulnerable"),
@@ -75,7 +77,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterImmunities("immune"),
                 monsterImmunities("conditionImmune"),
                 joinAndReplace(node, "languages"),
-                monsterCr(),
+                cr, pb,
                 monsterTraits("trait"), monsterTraits("action"),
                 monsterTraits("bonus"), monsterTraits("reaction"),
                 monsterTraits("legendary"),
@@ -216,27 +218,61 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 intOrDefault(node, "cha", 10));
     }
 
-    String monsterCr() {
-        if (node.has("cr")) {
-            JsonNode crNode = node.get("cr");
-            if (crNode.isTextual()) {
-                return crNode.asText();
-            } else if (crNode.has("cr")) {
-                return crNode.get("cr").asText();
-            } else {
-                tui().errorf("Unable to parse cr value of %s: %s", sources.getKey(), crNode.toPrettyString());
-            }
+    String monsterPb(String cr) {
+        if (cr != null) {
+            return "+" + crToPb(cr);
         }
-        return null;
+        return "+2";
     }
 
-    Map<String, Integer> getModifierMap(String field) {
+    SavesAndSkills monsterSavesAndSkills() {
+        SavesAndSkills savesSkills = new SavesAndSkills();
+        savesSkills.saveMap = new HashMap<>();
+        savesSkills.saves = getModifiers("save", savesSkills.saveMap);
+        savesSkills.skillMap = new HashMap<>();
+        savesSkills.skills = getModifiers("skill", savesSkills.skillMap);
+        return savesSkills;
+    }
+
+
+    String getModifiers(String field, Map<String, Integer> values) {
         if (!node.has(field)) {
             return null;
         }
-        Map<String, Integer> values = new HashMap<>();
-        node.get(field).fields().forEachRemaining(f -> values.put(f.getKey(), f.getValue().asInt()));
-        return values;
+        List<String> text = new ArrayList<>();
+        StringBuilder separator = new StringBuilder();
+        node.get(field).fields().forEachRemaining(f -> {
+            if (f.getKey().equals("other")) {
+                f.getValue().forEach(e -> {
+                    if (e.has("oneOf")) {
+                        List<String> nested = new ArrayList<>();
+                        e.get("oneOf").fields().forEachRemaining(x -> {
+                            nested.add(getModifier(x.getKey(), x.getValue(), values));
+                        });
+                        text.add("_One of_ " + String.join(", ", nested));
+                        if (separator.length() == 0) {
+                            separator.append("; ");
+                        }
+                    } else {
+                        tui().errorf("What is this (from %s): %s", sources.getKey());
+                    }
+                });
+            } else {
+                text.add(getModifier(f.getKey(), f.getValue(), values));
+            }
+        });
+        if (separator.length() == 0) {
+            separator.append(", ");
+        }
+        return String.join(separator.toString(), text);
+    }
+
+    String getModifier(String key, JsonNode value, Map<String, Integer> values) {
+        String ability = SkillOrAbility.format(key);
+        int modifier = value.asInt();
+        values.put(ability, modifier);
+
+        return String.format("%s %s%s", ability, modifier > 0 ? "+" : "", modifier);
     }
 
     String monsterImmunities(String field) {
@@ -255,13 +291,13 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     }
 
                     if (separator.length() == 0) {
-                        separator.append(";");
+                        separator.append("; ");
                     }
                     immunities.add(str.toString());
                 }
             });
             if (separator.length() == 0) {
-                separator.append(",");
+                separator.append(", ");
             }
             return String.join(separator.toString(), immunities);
         }
@@ -389,6 +425,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                         spells.spells = getSpells(spellNode);
                     } else {
                         spells.slots = intOrDefault(spellNode, "slots", 0);
+                        spells.lowerBound = intOrDefault(spellNode, "lower", 0);
                         spells.spells = getSpells(spellNode.get("spells"));
                     }
                     spellcasting.spells.put(f.getKey(), spells);

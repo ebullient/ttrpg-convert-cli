@@ -579,7 +579,8 @@ public interface JsonSource {
             String skill = e.getKey();
             String ability = getAbilityForSkill(skill);
             int score = target.get(ability).asInt();
-            double total = mode * crToPb(target.get("cr")) + getAbilityModNumber(score);
+            String cr = monsterCr(target);
+            double total = mode * crToPb(cr) + getAbilityModNumber(score);
             String totalAsText = (total >= 0 ? "+" : "") + ((int) total);
 
             if (targetSkills.has(skill)) {
@@ -799,11 +800,21 @@ public interface JsonSource {
         return 2 + ((int) (.25 * (level - 1)));
     }
 
-    default int crToPb(JsonNode cr) {
-        if (cr == null || cr.isTextual() && cr.asText().equals("Unknown")) {
-            return 0;
+    default String monsterCr(JsonNode monster) {
+        if (monster.has("cr")) {
+            JsonNode crNode = monster.get("cr");
+            if (crNode.isTextual()) {
+                return crNode.asText();
+            } else if (crNode.has("cr")) {
+                return crNode.get("cr").asText();
+            } else {
+                tui().errorf("Unable to parse cr value from %s", crNode.toPrettyString());
+            }
         }
-        String crValue = (cr.isTextual() ? cr.asText() : cr.get("cr").asText());
+        return null;
+    }
+
+    default int crToPb(String crValue) {
         double crDouble = crToNumber(crValue);
         if (crDouble < 5)
             return 2;
@@ -1333,25 +1344,7 @@ public interface JsonSource {
     }
 
     default String asAbilityEnum(JsonNode textNode) {
-        return asAbilityEnum(textNode.asText());
-    }
-
-    default String asAbilityEnum(String ability) {
-        switch (ability) {
-            case "str":
-                return "Strength";
-            case "dex":
-                return "Dexterity";
-            case "con":
-                return "Constitution";
-            case "int":
-                return "Intelligence";
-            case "wis":
-                return "Wisdom";
-            case "cha":
-                return "Charisma";
-        }
-        return ability;
+        return SkillOrAbility.format(textNode.asText());
     }
 
     default String replaceText(String input) {

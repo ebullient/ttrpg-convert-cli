@@ -264,12 +264,12 @@ public class Json2QuteClass extends Json2QuteCommon {
         if (requirements.has("or")) {
             List<String> options = new ArrayList<>();
             requirements.get("or").get(0).fields().forEachRemaining(ability -> options.add(String.format("%s %s",
-                    asAbilityEnum(ability.getKey()), ability.getValue().asText())));
+                    SkillOrAbility.format(ability.getKey()), ability.getValue().asText())));
             startMulticlass.add("- " + String.join(", or ", options));
         } else {
             requirements.fields().forEachRemaining(
                     ability -> startMulticlass.add(String.format("- %s %s",
-                            asAbilityEnum(ability.getKey()), ability.getValue().asText())));
+                            SkillOrAbility.format(ability.getKey()), ability.getValue().asText())));
         }
 
         JsonNode gained = multiclassing.get("proficienciesGained");
