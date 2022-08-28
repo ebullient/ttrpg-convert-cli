@@ -234,7 +234,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return savesSkills;
     }
 
-
     String getModifiers(String field, Map<String, Integer> values) {
         if (!node.has(field)) {
             return null;

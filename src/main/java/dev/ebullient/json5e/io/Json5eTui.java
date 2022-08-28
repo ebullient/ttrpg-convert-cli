@@ -37,15 +37,28 @@ public class Json5eTui {
         return s;
     }
 
-    private static Yaml yaml;
+    private static Yaml plainYaml;
 
-    private static Yaml getYaml() {
-        Yaml y = yaml;
+    public static Yaml plainYaml() {
+        Yaml y = plainYaml;
+        if (y == null) {
+            DumperOptions options = new DumperOptions();
+            options.setDefaultScalarStyle(ScalarStyle.PLAIN);
+            options.setPrettyFlow(true);
+            y = plainYaml = new Yaml(options);
+        }
+        return y;
+    }
+
+    private static Yaml quotedYaml;
+
+    public static Yaml quotedYaml() {
+        Yaml y = quotedYaml;
         if (y == null) {
             DumperOptions options = new DumperOptions();
             options.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED);
             options.setPrettyFlow(true);
-            y = yaml = new Yaml(options);
+            y = quotedYaml = new Yaml(options);
         }
         return y;
     }
@@ -103,7 +116,7 @@ public class Json5eTui {
 
     public void debug(String output) {
         if (isDebug()) {
-            out.println(ansi.new Text("@|faint " + output + "|@", colors));
+            out.println(ansi.new Text("@|faint 🔧" + output + "|@", colors));
         }
     }
 
