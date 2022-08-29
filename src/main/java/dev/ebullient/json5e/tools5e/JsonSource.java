@@ -1313,6 +1313,14 @@ public interface JsonSource {
         maybeAddBlankLine(text);
     }
 
+    default String decorateMonsterName(JsonNode jsonSource, CompendiumSources sources) {
+        String revised = sources.getName().replace("\"", "");
+        if (booleanOrDefault(jsonSource, "isNpc", false)) {
+            return revised + " (NPC)";
+        }
+        return revised;
+    }
+
     default String decoratedTypeName(CompendiumSources sources) {
         return decoratedTypeName(sources.name, sources);
     }
@@ -1553,7 +1561,13 @@ public interface JsonSource {
             source = parts[1].isBlank() ? source : parts[1];
         }
         String key = index().createSimpleKey(type, parts[0], source);
-        return linkOrText(linkText, key, dirName, parts[0]);
+        if (!index().isIndexed(key) || index().keyIsExcluded(key)) {
+            return linkText;
+        }
+        JsonNode jsonSource = index().getNode(key);
+        CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
+        String resourceName = type == IndexType.item ? parts[0] : decoratedTypeName(sources);
+        return linkOrText(linkText, key, dirName, resourceName);
     }
 
     default String linkifyClass(String match) {
@@ -1610,10 +1624,12 @@ public interface JsonSource {
             source = parts[1].isBlank() ? source : parts[1];
         }
         String key = index().createSimpleKey(IndexType.monster, parts[0], source);
-        JsonNode jsonSource = index().getNode(key);
         if (!index().isIndexed(key) || index().keyIsExcluded(key)) {
             return linkText;
         }
+        JsonNode jsonSource = index().getNode(key);
+        CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
+        String resourceName = decorateMonsterName(jsonSource, sources);
         final String subdir;
         if (booleanOrDefault(jsonSource, "isNpc", false)) {
             subdir = "npc";
@@ -1624,6 +1640,6 @@ public interface JsonSource {
             }
             subdir = slugify(type);
         }
-        return linkOrText(linkText, key, "bestiary/" + subdir, parts[0]);
+        return linkOrText(linkText, key, "bestiary/" + subdir, resourceName);
     }
 }
