@@ -65,7 +65,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
-        return new QuteMonster(decorateMonsterName(),
+        return new QuteMonster(decorateMonsterName(node, sources),
                 sources.getSourceText(index.srdOnly()),
                 size, type, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
@@ -86,14 +86,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 getFluffDescription(IndexType.monsterfluff, null),
                 environment,
                 tags);
-    }
-
-    String decorateMonsterName() {
-        String revised = getSources().getName().replace("\"", "");
-        if (booleanOrDefault(node, "isNpc", false)) {
-            return revised + " (NPC)";
-        }
-        return revised;
     }
 
     void findType() {
