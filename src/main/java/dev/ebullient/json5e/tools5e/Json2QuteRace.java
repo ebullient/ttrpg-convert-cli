@@ -30,7 +30,7 @@ public class Json2QuteRace extends Json2QuteCommon {
 
         return new QuteRace(
                 name,
-                sources.getSourceText(),
+                sources.getSourceText(index.srdOnly()),
                 getRaceAbility(),
                 creatureTypes(),
                 getSize(node),

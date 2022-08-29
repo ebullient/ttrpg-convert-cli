@@ -55,6 +55,8 @@ public class Json2QuteName extends Json2QuteCommon {
             }
             lookupTables.add(new LookupTable(tableName, diceType, blockId, rows));
         }
-        return new QuteName(sources.getName(), sources.getSourceText(), lookupTables);
+        return new QuteName(sources.getName(),
+                sources.getSourceText(index.srdOnly()),
+                lookupTables);
     }
 }

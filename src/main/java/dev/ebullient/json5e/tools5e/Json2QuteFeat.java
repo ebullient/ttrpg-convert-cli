@@ -25,7 +25,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
         return new QuteFeat(
                 decoratedTypeName(sources),
-                sources.getSourceText(),
+                sources.getSourceText(index.srdOnly()),
                 prerequisite,
                 null, // Level coming someday..
                 getText("##"),
