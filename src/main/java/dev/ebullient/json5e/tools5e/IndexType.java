@@ -20,6 +20,8 @@ public enum IndexType {
     subclassfeature,
     subrace,
     optionalfeature,
+    table,
     trait,
+    sourceless,
     namelist
 }

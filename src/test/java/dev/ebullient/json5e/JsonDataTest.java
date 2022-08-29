@@ -167,10 +167,8 @@ public class JsonDataTest {
         if (TOOLS_PATH.toFile().exists()) {
             List<String> source = List.of("*");
             JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("items-base.json")))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("items.json")))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("fluff-items.json")));
+                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
+            TestUtils.fullIndex(index, TOOLS_PATH);
             // TODO: objects, vehicles, magicvariants
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
@@ -228,6 +226,20 @@ public class JsonDataTest {
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH.resolve("yaml-body"), templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.monster);
+        }
+    }
+
+    @Test
+    public void testRules() throws Exception {
+        if (TOOLS_PATH.toFile().exists()) {
+            List<String> source = List.of("*");
+            JsonIndex index = new JsonIndex(source, tui)
+                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
+            TestUtils.fullIndex(index, TOOLS_PATH);
+
+            MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeRulesAndTables();
         }
     }
 }

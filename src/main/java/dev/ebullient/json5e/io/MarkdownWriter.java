@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -16,6 +17,7 @@ import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteItem;
 import dev.ebullient.json5e.qute.QuteMonster;
 import dev.ebullient.json5e.qute.QuteName;
+import dev.ebullient.json5e.qute.QuteNote;
 import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.qute.QuteSource;
 import dev.ebullient.json5e.qute.QuteSpell;
@@ -122,6 +124,24 @@ public class MarkdownWriter {
         Path target = targetDir.resolve(fileMap.fileName);
 
         Files.write(target, content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void writeNotes(String dirName, Collection<QuteNote> notes) throws IOException {
+        Path targetDir = Paths.get(output.toString(), dirName);
+        targetDir.toFile().mkdirs();
+
+        notes.forEach(n -> {
+            String fileName = tui.slugify(n.getName()) + ".md";
+            Path target = targetDir.resolve(fileName);
+            String content = templates.renderNote(n);
+
+            try {
+                Files.write(target, content.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                throw new WrappedIOException(e);
+            }
+        });
+        tui.outPrintln("  ✅ " + notes.size() + " files.");
     }
 
     @TemplateData

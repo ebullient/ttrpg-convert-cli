@@ -12,6 +12,7 @@ import java.util.stream.StreamSupport;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.json5e.io.MarkdownWriter;
+import dev.ebullient.json5e.qute.QuteNote;
 import dev.ebullient.json5e.qute.QuteSource;
 
 public class Json2MarkdownConverter {
@@ -92,6 +93,69 @@ public class Json2MarkdownConverter {
                 return new Json2QuteSpell(index, type, jsonNode).build();
             default:
                 throw new IllegalArgumentException("Unsupported type " + type);
+        }
+    }
+
+    public Json2MarkdownConverter writeRulesAndTables() {
+        List<QuteNote> nodes = new ArrayList<>();
+        List<JsonNode> tableToRule = new ArrayList<>();
+
+        JsonNode table = index.getRules("table");
+        if (table != null) {
+            table.forEach(t -> {
+                if (t.get("name").asText().equals("Damage Types")) {
+                    tableToRule.add(t);
+                    return;
+                }
+                nodes.add(new Table2QuteNote(index, t).build());
+            });
+        }
+
+        addLootGroup(nodes, index.getRules("magicItems"), "Magic Item Tables");
+        addLootGroup(nodes, index.getRules("artObjects"), "Art Objects");
+        addLootGroup(nodes, index.getRules("gems"), "Gems");
+
+        try {
+            writer.writeNotes(index.compendiumRoot() + "tables/", nodes);
+        } catch (IOException e) {
+            index.tui().error("Exception: " + e.getCause().getMessage());
+        }
+        nodes.clear();
+
+        tableToRule.forEach(t -> nodes.add(new Table2QuteNote(index, t).buildRules()));
+
+        addRule(nodes, index.getRules("disease"), "Diseases");
+        addRule(nodes, index.getRules("skill"), "Skills");
+        addRule(nodes, index.getRules("sense"), "Senses");
+        addRule(nodes, index.getRules("condition"), "Conditions");
+        addRule(nodes, index.getRules("status"), "Status");
+
+        try {
+            writer.writeNotes(index.rulesRoot(), nodes);
+        } catch (IOException e) {
+            index.tui().error("Exception: " + e.getCause().getMessage());
+        }
+
+        return this;
+    }
+
+    private void addLootGroup(List<QuteNote> nodes, JsonNode element, String title) {
+        if (element == null || element.isNull()) {
+            return;
+        }
+        QuteNote note = new Sourceless2QuteNote(index, element, title).buildLoot();
+        if (note != null) {
+            nodes.add(note);
+        }
+    }
+
+    private void addRule(List<QuteNote> nodes, JsonNode element, String title) {
+        if (element == null || element.isNull()) {
+            return;
+        }
+        QuteNote note = new Sourceless2QuteNote(index, element, title).build();
+        if (note != null) {
+            nodes.add(note);
         }
     }
 }

@@ -1,6 +1,7 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,7 @@ public interface JsonSource {
     static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
 
     static final Pattern condPattern = Pattern.compile("\\{@condition ([^|}]+)\\|?[^}]*}");
+    static final Pattern diseasePattern = Pattern.compile("\\{@disease ([^|}]+)\\|?[^}]*}");
     static final Pattern skillPattern = Pattern.compile("\\{@skill ([^}]+)}");
     static final Pattern sensePattern = Pattern.compile("\\{@sense ([^}]+)}");
 
@@ -1106,6 +1108,11 @@ public interface JsonSource {
                     text.add(String.format("**Spell attack modifier**: your proficiency bonus + your %s modifier",
                             asAbilityEnum(node.withArray("attributes").get(0))));
                     break;
+                case "inline":
+                    List<String> inner = new ArrayList<>();
+                    appendEntryToText(inner, node.get("entries"), null);
+                    text.add(String.join("", inner));
+                    break;
                 case "image":
                     // TODO: maybe someday?
                     break;
@@ -1182,14 +1189,36 @@ public interface JsonSource {
     default void appendTable(List<String> text, JsonNode entry) {
         StringBuilder table = new StringBuilder();
 
+        String header;
+        String blockid = "";
         String caption = getTextOrEmpty(entry, "caption");
+
         if (!caption.isBlank()) {
             table.append("**").append(caption).append("**\n\n");
+            blockid = slugify(caption);
         }
 
-        String header = StreamSupport.stream(entry.withArray("colLabels").spliterator(), false)
-                .map(x -> replaceText(x.asText()))
-                .collect(Collectors.joining(" | "));
+        if (entry.has("colLabels")) {
+            header = StreamSupport.stream(entry.withArray("colLabels").spliterator(), false)
+                    .map(x -> replaceText(x.asText()))
+                    .collect(Collectors.joining(" | "));
+
+            if (blockid == null) {
+                blockid = slugify(header.replaceAll("d[0-9]+", "")
+                        .replace("|", "")
+                        .replaceAll("\\s+", " ")
+                        .trim());
+            }
+        } else if (entry.has("colStyles")) {
+            header = StreamSupport.stream(entry.withArray("colStyles").spliterator(), false)
+                    .map(x -> "  ")
+                    .collect(Collectors.joining(" | "));
+        } else {
+            int length = entry.withArray("rows").size();
+            String[] array = new String[length];
+            Arrays.fill(array, " ");
+            header = "|" + String.join(" | ", array) + " |";
+        }
 
         header = "| " + header.replaceAll("^(d[0-9]+.*)", "dice: $1") + " |";
         table.append(header).append("\n");
@@ -1202,18 +1231,12 @@ public interface JsonSource {
                         .collect(Collectors.joining(" | ")))
                 .append(" |\n"));
 
-        if (!caption.isBlank()) {
-            table.append("^").append(slugify(caption));
-        } else {
-            String blockid = header.replaceAll("dice: d[0-9]+", "")
-                    .replace("|", "")
-                    .replaceAll("\\s+", " ")
-                    .trim();
-            table.append("^").append(slugify(blockid));
+        if (!blockid.isBlank()) {
+            table.append("^").append(blockid);
         }
 
         maybeAddBlankLine(text);
-        text.add(table.toString());
+        text.addAll(List.of(table.toString().split("\n")));
     }
 
     default void appendOptions(List<String> text, JsonNode entry) {
@@ -1382,11 +1405,14 @@ public interface JsonSource {
         result = condPattern.matcher(result)
                 .replaceAll((match) -> linkifyRules(match.group(1), "conditions"));
 
-        result = skillPattern.matcher(result)
-                .replaceAll((match) -> linkifyRules(match.group(1), "skills"));
+        result = diseasePattern.matcher(result)
+                .replaceAll((match) -> linkifyRules(match.group(1), "diseases"));
 
         result = sensePattern.matcher(result)
                 .replaceAll((match) -> linkifyRules(match.group(1), "senses"));
+
+        result = skillPattern.matcher(result)
+                .replaceAll((match) -> linkifyRules(match.group(1), "skills"));
 
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
@@ -1404,7 +1430,6 @@ public interface JsonSource {
                 .replaceAll("\\{@5etools ([^}|]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@area ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@action ([^}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@disease ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@hazard ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
                 .replaceAll("\\{@dc ([^}]+)}", "DC $1")
@@ -1432,6 +1457,7 @@ public interface JsonSource {
                 .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
                 .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
                 .replaceAll("\\{@b ([^}]+?)}", "**$1**")
+                .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
                 .replaceAll("\\{@i ([^}]+?)}", "_$1_")
                 .replaceAll("\\{@italic ([^}]+)}", "_$1_");
 
@@ -1491,7 +1517,7 @@ public interface JsonSource {
     }
 
     default String linkOrText(String linkText, String key, String dirName, String resourceName) {
-        return index().keyIsIncluded(key)
+        return index().isIndexed(key) && index().keyIsIncluded(key)
                 ? String.format("[%s](%s%s/%s.md)",
                         linkText, index().compendiumRoot(), dirName, slugify(resourceName))
                 : linkText;

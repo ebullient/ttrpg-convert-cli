@@ -17,6 +17,7 @@ import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteItem;
 import dev.ebullient.json5e.qute.QuteMonster;
 import dev.ebullient.json5e.qute.QuteName;
+import dev.ebullient.json5e.qute.QuteNote;
 import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.qute.QuteSpell;
 import dev.ebullient.json5e.qute.QuteSubclass;
@@ -122,6 +123,16 @@ public class Templates {
     }
 
     @Inject
+    public Template note2md;
+
+    public String renderNote(QuteNote resource) {
+        Template tpl = templates.computeIfAbsent("note2md.txt", k -> customTemplateOrDefault(k, note2md));
+        return tpl
+                .data("resource", resource)
+                .render().trim();
+    }
+
+    @Inject
     public Template race2md;
 
     public String renderRace(QuteRace resource) {
@@ -153,8 +164,22 @@ public class Templates {
 
     @Override
     public String toString() {
-        return "Templates [background2md=" + background2md + ", class2md=" + class2md + ", feat2md=" + feat2md
-                + ", index=" + index + ", item2md=" + item2md + ", monster2md=" + monster2md + ", name2md=" + name2md
-                + ", race2md=" + race2md + ", spell2md=" + spell2md + ", templates=" + templates + "]";
+        return "Templates{" +
+                "templates=" + templates +
+                ", templatePaths=" + templatePaths +
+                ", tui=" + tui +
+                ", engine=" + engine +
+                ", index=" + index +
+                ", background2md=" + background2md +
+                ", class2md=" + class2md +
+                ", feat2md=" + feat2md +
+                ", item2md=" + item2md +
+                ", monster2md=" + monster2md +
+                ", name2md=" + name2md +
+                ", note2md=" + note2md +
+                ", race2md=" + race2md +
+                ", spell2md=" + spell2md +
+                ", subclass2md=" + subclass2md +
+                '}';
     }
 }
