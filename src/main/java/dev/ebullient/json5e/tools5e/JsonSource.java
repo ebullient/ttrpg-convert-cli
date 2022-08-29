@@ -1614,10 +1614,16 @@ public interface JsonSource {
         if (!index().isIndexed(key) || index().keyIsExcluded(key)) {
             return linkText;
         }
-        String type = getMonsterType(jsonSource); // may be missing for partial index
-        if (type == null) {
-            return linkText;
+        final String subdir;
+        if (booleanOrDefault(jsonSource, "isNpc", false)) {
+            subdir = "npc";
+        } else {
+            String type = getMonsterType(jsonSource); // may be missing for partial index
+            if (type == null) {
+                return linkText;
+            }
+            subdir = slugify(type);
         }
-        return linkOrText(linkText, key, "bestiary/" + slugify(type), parts[0]);
+        return linkOrText(linkText, key, "bestiary/" + subdir, parts[0]);
     }
 }
