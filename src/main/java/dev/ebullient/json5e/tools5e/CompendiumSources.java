@@ -28,7 +28,10 @@ public class CompendiumSources {
         this.sourceText = findSourceText(jsonElement);
     }
 
-    public String getSourceText() {
+    public String getSourceText(boolean useSrd) {
+        if (useSrd) {
+            return "SRD / Basic Rules";
+        }
         return sourceText;
     }
 

@@ -67,7 +67,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         return new QuteClass(
                 decoratedName,
-                getSources().getSourceText(),
+                getSources().getSourceText(index.srdOnly()),
                 startingHitDice(),
                 String.join("\n", progression),
                 buildStartingEquipment(),
@@ -95,7 +95,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             });
 
             quteSc.add(new QuteSubclass(sc.name,
-                    sc.sources.getSourceText(),
+                    sc.sources.getSourceText(index.srdOnly()),
                     getName(),
                     String.format("[%s](%s.md)", decoratedName, slugify(decoratedName)),
                     subclassTitle,
@@ -307,7 +307,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     void findSubclasses() {
-        index().classElementsMatching(IndexType.subclass, getSources().getName(), classSource).forEach(s -> {
+        index().classElementsMatching(IndexType.subclass, getSources().getName()).forEach(s -> {
             String scKey = index.getKey(IndexType.subclass, s);
             JsonNode resolved = index.resolveClassFeatureNode(scKey, s);
             if (resolved == null) {
@@ -585,7 +585,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
             if (!parentSource.equals(featureSources.primarySource())) {
                 maybeAddBlankLine(text);
-                text.add("_Source: " + featureSources.getSourceText() + "_");
+                text.add("_Source: " + featureSources.getSourceText(index.srdOnly()) + "_");
             }
 
             if (isSidekick() && "1".equals(level) && name.equals("Bonus Proficiencies")) {
@@ -669,7 +669,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         // Add a source entry if this feature comes from a different source than the parent
                         if (!source.equals(parentSource)) {
                             CompendiumSources sources = index().constructSources(refType, refJson);
-                            replace.set("entry", new TextNode("_Source: " + sources.getSourceText() + "_"));
+                            replace.set("entry", new TextNode("_Source: " + sources.getSourceText(index.srdOnly()) + "_"));
                         }
                         copy.set(i, replace);
                     } else if (typeField.equals("options")) {

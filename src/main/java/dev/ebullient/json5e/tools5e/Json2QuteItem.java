@@ -63,7 +63,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
         return new QuteItem(
                 itemName(),
-                sources.getSourceText(),
+                sources.getSourceText(index.srdOnly()),
                 itemType.getSpecializedType() + (detail.isBlank() ? "" : ", " + detail),
                 armorClass(),
                 damage, damage2h,

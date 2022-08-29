@@ -21,8 +21,8 @@ import dev.ebullient.json5e.qute.QuteMonster;
 import dev.ebullient.json5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.json5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.json5e.qute.QuteMonster.Spells;
-import dev.ebullient.json5e.qute.QuteMonster.Trait;
 import dev.ebullient.json5e.qute.QuteSource;
+import dev.ebullient.json5e.qute.Trait;
 
 public class Json2QuteMonster extends Json2QuteCommon {
 
@@ -65,7 +65,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
-        return new QuteMonster(decorateMonsterName(), sources.getSourceText(),
+        return new QuteMonster(decorateMonsterName(),
+                sources.getSourceText(index.srdOnly()),
                 size, type, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
                 monsterSpeed(), monsterScores(),
