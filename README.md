@@ -35,12 +35,16 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 ## To run without building yourself
 
 1. Install JBang: https://www.jbang.dev/documentation/guide/latest/installation.html
+
 2. Install the snapshot jar: 
-    ```
+
+    ```shell
     jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.0-SNAPSHOT/json5e-convert-cli-1.0.0-SNAPSHOT-runner.jar
     ```
+
 3. Run the command: 
-    ```
+
+    ```shell
     5e-convert --help
     ```
 
@@ -56,7 +60,8 @@ To run commands listed below, either:
 
 - Replace `5e-convert` with `java -jar target/json5e-convert-cli-1.0.0-SNAPSHOT-runner.jar`, or
 - Use JBang to create an alias that points to the built jar: 
-    ```
+
+    ```shell
     jbang app install --name 5e-convert --force --fresh ~/.m2/repository/dev/ebullient/json5e-convert-cli/1.0.0-SNAPSHOT/json5e-convert-cli-1.0.0-SNAPSHOT-runner.jar
     ```
 
@@ -64,29 +69,46 @@ To run commands listed below, either:
 
 ## Starting with 5eTools JSON data
 
-An example invocation (based on sources I own): 
+1. Create a shallow clone of the 5etools mirror (which can/should be deleted afterwards):
 
-```
-5e-convert \
-  --index \
-  -o dm \
-  dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
-```
+    ```shell
+    git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
+    ```
 
-- `--index` Create `all-index.json` containing all of the touched artifact ids, and `src-index.json` that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
-- `-o dm` The target output directory. Files will be created in this directory.
+2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content:
 
-The rest of the command-line specifies input files: 
+    ```shell
+    5e-convert \
+      --index \
+      -o dm \
+      5etools-mirror-1.github.io/data
+    ```
 
-- `dm-sources.json` Additional parameters (shown in detail below)
-- `~/git/dnd/5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone of a mirror repo)
-- `my-items.json` Custom items that I've created for my campaign.
+    - `--index` Create all-index.json containing all of the touched artifact ids, and src-index.json that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
+    - `-o dm` The target output directory. Files will be created in this directory.
+
+    The rest of the command-line specifies input files: 
+
+    - `~/git/dnd/5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone of a mirror repo)
+
+3. Invoke the command again, this time including sources and custom items:
+
+    ```shell
+    5e-convert \
+    --index \
+    -o dm \
+    -s PHB,DMG,SCAG \
+    5etools-mirror-1.github.io/data \
+    my-items.json dm-sources.json
+    ```
+    
+    - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. Source abbreviations are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/55fe9139fe56a27b3148f8faa0834f3e34aa95ec/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L130).
+    - `my-items.json` Custom items that I've created for my campaign that follow 5etools JSON format.
+    - `dm-sources.json` Additional parameters (shown in detail below)
 
 ### Additional parameters
 
-I use a json file to provide detailed configuration for sources, as doing so with command line arguments becomes tedious and error-prone.
-
-I use something like this (for sources that I own): 
+I use a json file to provide detailed configuration for sources, as doing so with command line arguments becomes tedious and error-prone. I use something like this:
 
 ```json
 {
@@ -118,10 +140,11 @@ I use something like this (for sources that I own):
 }
 ```
 
-- `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD. 
-  - **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/55fe9139fe56a27b3148f8faa0834f3e34aa95ec/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L130)
+- `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.  
 
-- `paths` allows you to specify a paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
+    - **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/55fe9139fe56a27b3148f8faa0834f3e34aa95ec/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L130)
+
+- `paths` allows you to redefine vault paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
 
     ```json
     "paths": {
@@ -133,83 +156,83 @@ I use something like this (for sources that I own):
 
 - `exclude`, and `excludePattern` work against the identifiers (listed in the generated index files). They allow you to further tweak/constrain what is emitted as formatted markdown. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. I own both of these books, but I don't want those creatures in the formatted bestiary.
 
-To generate player-focused reference content for a Wild Beyond the Witchlight campaign, I've constrained things further. I am pulling from a much smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but then added exclude patterns to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners):
+    For example, to generate player-focused reference content for a Wild Beyond the Witchlight campaign, I've constrained things further: I am pulling from a much smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but then added exclude patterns to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners). My JSON looks like this:
 
-```json
-{
-  "from": [
-    "PHB",
-    "DMG",
-    "XGE",
-    "TCE",
-    "EEPC",
-    "WBtW",
-    "VGM"
-  ],
-  "includeGroups": [
-    "familiars"
-  ],
-  "excludePattern": [
-    ".*sidekick.*",
-    "race|.*|dmg",
-    "race|(?!tabaxi).*|vgm",
-    "subrace|.*|aasimar|vgm",
-    "item|.*|vgm",
-    "monster|.*|tce",
-    "monster|.*|dmg",
-    "monster|.*|vgm",
-    "monster|.*|wbtw",
-    "monster|animated object.*|phb"
-  ],
-  "exclude": [
-    "race|aarakocra|eepc",
-    "feat|actor|phb",
-    "feat|artificer initiate|tce",
-    "feat|athlete|phb",
-    "feat|bountiful luck|xge",
-    "feat|chef|tce",
-    "feat|dragon fear|xge",
-    "feat|dragon hide|xge",
-    "feat|drow high magic|xge",
-    "feat|durable|phb",
-    "feat|dwarven fortitude|xge",
-    "feat|elven accuracy|xge",
-    "feat|fade away|xge",
-    "feat|fey teleportation|xge",
-    "feat|fey touched|tce",
-    "feat|flames of phlegethos|xge",
-    "feat|gunner|tce",
-    "feat|heavily armored|phb",
-    "feat|heavy armor master|phb",
-    "feat|infernal constitution|xge",
-    "feat|keen mind|phb",
-    "feat|lightly armored|phb",
-    "feat|linguist|phb",
-    "feat|lucky|phb",
-    "feat|medium armor master|phb",
-    "feat|moderately armored|phb",
-    "feat|mounted combatant|phb",
-    "feat|observant|phb",
-    "feat|orcish fury|xge",
-    "feat|piercer|tce",
-    "feat|poisoner|tce",
-    "feat|polearm master|phb",
-    "feat|prodigy|xge",
-    "feat|resilient|phb",
-    "feat|second chance|xge",
-    "feat|shadow touched|tce",
-    "feat|skill expert|tce",
-    "feat|slasher|tce",
-    "feat|squat nimbleness|xge",
-    "feat|tavern brawler|phb",
-    "feat|telekinetic|tce",
-    "feat|telepathic|tce",
-    "feat|weapon master|phb",
-    "feat|wood elf magic|xge",
-    "item|iggwilv's cauldron|wbtw"
-  ]
-}
-```
+    ```json
+    {
+    "from": [
+        "PHB",
+        "DMG",
+        "XGE",
+        "TCE",
+        "EEPC",
+        "WBtW",
+        "VGM"
+    ],
+    "includeGroups": [
+        "familiars"
+    ],
+    "excludePattern": [
+        ".*sidekick.*",
+        "race|.*|dmg",
+        "race|(?!tabaxi).*|vgm",
+        "subrace|.*|aasimar|vgm",
+        "item|.*|vgm",
+        "monster|.*|tce",
+        "monster|.*|dmg",
+        "monster|.*|vgm",
+        "monster|.*|wbtw",
+        "monster|animated object.*|phb"
+    ],
+    "exclude": [
+        "race|aarakocra|eepc",
+        "feat|actor|phb",
+        "feat|artificer initiate|tce",
+        "feat|athlete|phb",
+        "feat|bountiful luck|xge",
+        "feat|chef|tce",
+        "feat|dragon fear|xge",
+        "feat|dragon hide|xge",
+        "feat|drow high magic|xge",
+        "feat|durable|phb",
+        "feat|dwarven fortitude|xge",
+        "feat|elven accuracy|xge",
+        "feat|fade away|xge",
+        "feat|fey teleportation|xge",
+        "feat|fey touched|tce",
+        "feat|flames of phlegethos|xge",
+        "feat|gunner|tce",
+        "feat|heavily armored|phb",
+        "feat|heavy armor master|phb",
+        "feat|infernal constitution|xge",
+        "feat|keen mind|phb",
+        "feat|lightly armored|phb",
+        "feat|linguist|phb",
+        "feat|lucky|phb",
+        "feat|medium armor master|phb",
+        "feat|moderately armored|phb",
+        "feat|mounted combatant|phb",
+        "feat|observant|phb",
+        "feat|orcish fury|xge",
+        "feat|piercer|tce",
+        "feat|poisoner|tce",
+        "feat|polearm master|phb",
+        "feat|prodigy|xge",
+        "feat|resilient|phb",
+        "feat|second chance|xge",
+        "feat|shadow touched|tce",
+        "feat|skill expert|tce",
+        "feat|slasher|tce",
+        "feat|squat nimbleness|xge",
+        "feat|tavern brawler|phb",
+        "feat|telekinetic|tce",
+        "feat|telepathic|tce",
+        "feat|weapon master|phb",
+        "feat|wood elf magic|xge",
+        "item|iggwilv's cauldron|wbtw"
+    ]
+    }
+    ```
 
 ## Templates
 
