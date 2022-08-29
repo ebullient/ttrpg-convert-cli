@@ -3,11 +3,7 @@ package dev.ebullient.json5e.tools5e;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -25,21 +21,16 @@ public class Json2MarkdownConverter {
     }
 
     public Json2MarkdownConverter writeFiles(IndexType type) {
-        String prefix = type + "|";
-        Map<String, JsonNode> variants = StreamSupport.stream(index.elements().spliterator(), false)
-                .filter(e -> e.getKey().startsWith(prefix))
-                .flatMap(e -> findVariants(type, e.getKey(), e.getValue()))
-                .filter(e -> index.keyIsIncluded(e.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (index.notPrepared()) {
+            throw new IllegalStateException("Index must be prepared before writing files");
+        }
 
         List<QuteSource> nodes = new ArrayList<>();
-        JsonSourceCopier copier = new JsonSourceCopier(index);
+        for (Entry<String, JsonNode> e : index.includedEntries()) {
+            IndexType nodeType = IndexType.getTypeFromKey(e.getKey());
+            JsonNode jsonSource = e.getValue();
 
-        for (Entry<String, JsonNode> e : variants.entrySet()) {
-            JsonNode jsonSource = copier.handleCopy(type, e.getValue());
-
-            // check for reprints after merge/copy
-            if (JsonSource.isReprinted(index, e.getKey(), jsonSource)) {
+            if (nodeType != type) {
                 continue;
             }
 
@@ -64,15 +55,6 @@ public class Json2MarkdownConverter {
             index.tui().error("Exception: " + e.getCause().getMessage());
         }
         return this;
-    }
-
-    Stream<Map.Entry<String, JsonNode>> findVariants(IndexType type, String key, JsonNode jsonSource) {
-        if (type == IndexType.race) {
-            return Json2QuteRace.findRaceVariants(index, type, key, jsonSource);
-        } else if (type == IndexType.monster && jsonSource.has("summonedBySpellLevel")) {
-            return Json2QuteMonster.findConjuredMonsterVariants(index, type, key, jsonSource);
-        }
-        return Map.of(key, jsonSource).entrySet().stream();
     }
 
     private QuteSource json2qute(IndexType type, JsonNode jsonNode) {

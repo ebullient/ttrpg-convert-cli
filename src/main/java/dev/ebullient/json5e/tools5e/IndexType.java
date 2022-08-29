@@ -23,5 +23,10 @@ public enum IndexType {
     table,
     trait,
     sourceless,
-    namelist
+    namelist;
+
+    public static IndexType getTypeFromKey(String key) {
+        String typeKey = key.substring(0, key.indexOf("|"));
+        return valueOf(typeKey);
+    }
 }

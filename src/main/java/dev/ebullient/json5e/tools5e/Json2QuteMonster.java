@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,6 +22,7 @@ import dev.ebullient.json5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.json5e.qute.QuteMonster.Spells;
 import dev.ebullient.json5e.qute.QuteSource;
 import dev.ebullient.json5e.qute.Trait;
+import dev.ebullient.json5e.tools5e.JsonIndex.Tuple;
 
 public class Json2QuteMonster extends Json2QuteCommon {
 
@@ -67,6 +67,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         return new QuteMonster(decorateMonsterName(node, sources),
                 sources.getSourceText(index.srdOnly()),
+                booleanOrDefault(node, "isNpc", false),
                 size, type, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
                 monsterSpeed(), monsterScores(),
@@ -462,7 +463,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return traits;
     }
 
-    public static Stream<Map.Entry<String, JsonNode>> findConjuredMonsterVariants(JsonIndex index, IndexType type,
+    public static List<Tuple> findConjuredMonsterVariants(JsonIndex index, IndexType type,
             String key, JsonNode jsonSource) {
         final Pattern variantPattern = Pattern.compile("(\\d+) \\((.*?)\\)");
         int startLevel = jsonSource.get("summonedBySpellLevel").asInt();
@@ -471,7 +472,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String hpString = jsonSource.get("hp").get("special").asText();
         String acString = jsonSource.get("ac").get(0).get("special").asText();
 
-        Map<String, JsonNode> variants = new HashMap<>();
+        List<Tuple> variants = new ArrayList<>();
         for (int i = startLevel; i < 10; i++) {
             if (hpString.contains(" or ")) {
                 // "50 (Demon only) or 40 (Devil only) or 60 (Yugoloth only) + 15 for each spell
@@ -508,11 +509,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 createVariant(index, variants, jsonSource, type, variantName, i, hpString, acString);
             }
         }
-        return variants.entrySet().stream();
+        return variants;
     }
 
-    static void createVariant(JsonIndex index,
-            Map<String, JsonNode> variants,
+    static void createVariant(JsonIndex index, List<Tuple> variants,
             JsonNode jsonSource, IndexType type,
             String variantName, int level, String hpString, String acString) {
 
@@ -524,7 +524,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         adjustedSource.set("hp", fixed.getHp());
 
         String newKey = index.getKey(type, adjustedSource);
-        variants.put(newKey, adjustedSource);
+        variants.add(new Tuple(newKey, adjustedSource));
     }
 
     public static class ConjuredMonster {

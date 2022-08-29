@@ -7,6 +7,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.json5e.qute.QuteNote;
 
@@ -45,10 +47,11 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
 
     private void appendElement(JsonNode entry, List<String> text, Set<String> tags) {
         currentSource = index.constructSources(IndexType.sourceless, entry);
-        if (index.keyIsIncluded(currentSource.key)) {
+        String name = entry.get("name").asText();
+        if (!index.rulesSourceExcluded(entry, name)) {
             tags.addAll(currentSource.getSourceTags());
             maybeAddBlankLine(text);
-            text.add("## " + replaceText(entry.get("name").asText()));
+            text.add("## " + replaceText(name));
             maybeAddBlankLine(text);
             appendEntryToText(text, entry, "###");
             maybeAddBlankLine(text);
@@ -61,9 +64,11 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         List<String> text = new ArrayList<>();
 
         node.forEach(entry -> {
-            currentSource = index.constructSources(IndexType.sourceless, entry);
             PropertyEnum propertyEnum = PropertyEnum.fromEncodedType(entry.get("abbreviation").asText());
-            if (index.keyIsIncluded(currentSource.key)) {
+            ObjectNode node = (ObjectNode) copyNode(entry);
+            node.set("name", new TextNode(propertyEnum.longName));
+            currentSource = index.constructSources(IndexType.sourceless, node);
+            if (!index.rulesSourceExcluded(node, propertyEnum.longName)) {
                 tags.addAll(currentSource.getSourceTags());
                 maybeAddBlankLine(text);
                 text.add("## " + propertyEnum.longName);
@@ -97,8 +102,8 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
 
     private void appendLootElement(JsonNode entry, List<String> text, Set<String> tags) {
         currentSource = index.constructSources(IndexType.sourceless, entry);
-        if (index.keyIsIncluded(currentSource.key)) {
-            String name = entry.get("name").asText();
+        String name = entry.get("name").asText();
+        if (!index.rulesSourceExcluded(entry, name)) {
             String blockid = slugify(name);
             maybeAddBlankLine(text);
             text.add("## " + name);

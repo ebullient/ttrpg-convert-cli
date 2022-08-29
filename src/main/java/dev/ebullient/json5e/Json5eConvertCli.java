@@ -83,8 +83,8 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
     @Option(names = { "-d", "--debug" }, description = "Enable debug output", scope = ScopeType.INHERIT)
     boolean debug;
 
-    @Option(names = { "-b", "--brief" }, description = "Brief output", scope = ScopeType.INHERIT)
-    boolean brief;
+    @Option(names = { "-v", "--verbose" }, description = "Verbose output", scope = ScopeType.INHERIT)
+    boolean verbose;
 
     @Option(names = "-s", description = "Source Books%n  Comma-separated list or multiple declarations (PHB,DMG,...)")
     List<String> source = Collections.emptyList();
@@ -205,7 +205,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
     }
 
     private void init(ParseResult parseResult) {
-        tui.init(spec, debug, !brief);
+        tui.init(spec, debug, verbose);
     }
 
     private void shutdown() {

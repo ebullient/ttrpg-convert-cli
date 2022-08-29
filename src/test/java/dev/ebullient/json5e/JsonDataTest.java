@@ -28,62 +28,60 @@ public class JsonDataTest {
     // for compile/test purposes. Must clone/sync separately.
     final static Path TOOLS_PATH = PROJECT_PATH.resolve("5etools-mirror-1.github.io/data");
 
+    protected static Json5eTui tui;
+    protected static Templates templates;
+    protected static JsonIndex index;
+
     @BeforeAll
-    public static void setupDir() {
+    public static void setupDir() throws Exception {
         OUTPUT_PATH.toFile().mkdirs();
-    }
 
-    protected Json5eTui tui;
-    protected Templates templates;
-
-    @BeforeEach
-    public void before() {
         // inject application scoped beans..
         tui = Arc.container().instance(Json5eTui.class).get();
         templates = Arc.container().instance(Templates.class).get();
+        tui.init(null, true, true);
+        if (TOOLS_PATH.toFile().exists()) {
+            index = new JsonIndex(List.of("*"), tui)
+                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
+            TestUtils.fullIndex(index, TOOLS_PATH, tui);
+            index.prepare();
+        }
+    }
+
+    @BeforeEach
+    public void before() throws Exception {
+
     }
 
     @AfterEach
     public void cleanup() {
         templates.setCustomTemplates(null);
+        tui.close();
     }
 
     @Test
     public void testKeyIndex() throws Exception {
-        tui.init(null, true, true);
         if (TOOLS_PATH.toFile().exists()) {
-            JsonIndex index1 = new JsonIndex(List.of("*"), tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index1, TOOLS_PATH);
-
             Path p1Full = OUTPUT_PATH.resolve("allIndex.json");
-            index1.writeIndex(p1Full);
+            index.writeIndex(p1Full);
             Path p1Source = OUTPUT_PATH.resolve("allSourceIndex.json");
-            index1.writeSourceIndex(p1Source);
+            index.writeSourceIndex(p1Source);
 
-            TestUtils.assertContents(p1Full, p1Source, true); // all sources
+            // JsonIndex index2 = new JsonIndex(List.of("PHB", "DMG", "XGE"), tui);
+            // TestUtils.fullIndex(index2, TOOLS_PATH, tui);
 
-            JsonIndex index2 = new JsonIndex(List.of("PHB", "DMG", "XGE"), tui);
-            TestUtils.fullIndex(index2, TOOLS_PATH);
+            // Path p2Full = OUTPUT_PATH.resolve("some-Index.json");
+            // index2.writeIndex(p2Full);
+            // Path p2Source = OUTPUT_PATH.resolve("some-SourceIndex.json");
+            // index2.writeSourceIndex(p2Source);
 
-            Path p2Full = OUTPUT_PATH.resolve("some-Index.json");
-            index2.writeIndex(p2Full);
-            Path p2Source = OUTPUT_PATH.resolve("some-SourceIndex.json");
-            index2.writeSourceIndex(p2Source);
-
-            TestUtils.assertContents(p1Full, p2Full, true); // all sources
-            TestUtils.assertContents(p2Full, p2Source, false); // filtered
+            // TestUtils.assertContents(p2Full, p2Source, false); // filtered
         }
     }
 
     @Test
     public void testNameList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("names.json")));
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.namelist);
@@ -93,11 +91,6 @@ public class JsonDataTest {
     @Test
     public void testFeatList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("feats.json")));
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.feat);
@@ -107,12 +100,6 @@ public class JsonDataTest {
     @Test
     public void testBackgroundList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("backgrounds.json")))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("fluff-backgrounds.json")));
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.background);
@@ -122,10 +109,6 @@ public class JsonDataTest {
     @Test
     public void testSpellList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui);
-            TestUtils.fullIndex(index, TOOLS_PATH);
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.spell);
@@ -135,11 +118,6 @@ public class JsonDataTest {
     @Test
     public void testRaceList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH);
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.race);
@@ -149,11 +127,6 @@ public class JsonDataTest {
     @Test
     public void testClassList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH);
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.classtype);
@@ -163,10 +136,6 @@ public class JsonDataTest {
     @Test
     public void testItemList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH);
             // TODO: objects, vehicles, magicvariants
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
@@ -178,11 +147,6 @@ public class JsonDataTest {
     @Test
     public void testMonsterList() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH);
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.monster);
@@ -192,11 +156,6 @@ public class JsonDataTest {
     @Test
     public void testMonsterYamlHeader() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH);
-
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
                     PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
@@ -211,11 +170,6 @@ public class JsonDataTest {
     @Test
     public void testMonsterYamlBody() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH);
-
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
                     PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
@@ -230,11 +184,6 @@ public class JsonDataTest {
     @Test
     public void testRules() throws Exception {
         if (TOOLS_PATH.toFile().exists()) {
-            List<String> source = List.of("*");
-            JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH);
-
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeRulesAndTables();
