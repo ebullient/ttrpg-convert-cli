@@ -1,15 +1,13 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.json5e.qute.QuteRace;
+import dev.ebullient.json5e.tools5e.JsonIndex.Tuple;
 
 public class Json2QuteRace extends Json2QuteCommon {
 
@@ -127,15 +125,16 @@ public class Json2QuteRace extends Json2QuteCommon {
         return amount + "";
     }
 
-    public static Stream<Map.Entry<String, JsonNode>> findRaceVariants(JsonIndex index, IndexType type,
+    public static List<Tuple> findRaceVariants(JsonIndex index, IndexType type,
             String key, JsonNode jsonSource) {
-        Map<String, JsonNode> variants = new HashMap<>();
-        variants.put(key, jsonSource);
+        List<Tuple> variants = new ArrayList<>();
+        variants.add(new Tuple(key, jsonSource));
         CompendiumSources sources = index.constructSources(type, jsonSource);
         index.subraces(sources).forEach(sr -> {
-            CompendiumSources srSources = index.constructSources(IndexType.subrace, sr);
-            variants.put(srSources.getKey(), sr);
+            JsonNode newNode = index.copier.handleCopy(type, sr);
+            CompendiumSources srSources = index.constructSources(IndexType.subrace, newNode);
+            variants.add(new Tuple(srSources.getKey(), newNode));
         });
-        return variants.entrySet().stream();
+        return variants;
     }
 }

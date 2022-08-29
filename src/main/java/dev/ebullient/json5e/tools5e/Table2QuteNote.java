@@ -17,7 +17,7 @@ public class Table2QuteNote extends Json2QuteCommon {
 
     @Override
     public QuteNote build() {
-        if (index.keyIsExcluded(sources.getKey())) {
+        if (index.rulesSourceExcluded(node, getName())) {
             return null;
         }
 
@@ -44,7 +44,7 @@ public class Table2QuteNote extends Json2QuteCommon {
     }
 
     public QuteNote buildRules() {
-        if (index.keyIsExcluded(sources.getKey())) {
+        if (index.rulesSourceExcluded(node, getName())) {
             return null;
         }
         Set<String> tags = new HashSet<>(sources.getSourceTags());

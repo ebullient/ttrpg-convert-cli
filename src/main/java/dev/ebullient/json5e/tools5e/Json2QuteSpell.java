@@ -233,11 +233,11 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
     private boolean includeClass(String className, String classSource) {
         String finalKey = index().getClassKey(className, classSource);
-        return index().keyIsIncluded(finalKey);
+        return index().isIncluded(finalKey);
     }
 
     private boolean includeSubclass(String className, String classSource, String subclassName) {
         String finalKey = index().getSubclassKey(subclassName.trim(), className.trim(), classSource.trim());
-        return index().keyIsIncluded(finalKey);
+        return index().isIncluded(finalKey);
     }
 }

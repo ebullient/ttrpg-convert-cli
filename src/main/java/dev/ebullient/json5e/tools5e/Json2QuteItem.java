@@ -119,7 +119,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     void insertItemRefText(List<String> text, String input) {
         String finalKey = index.getRefKey(IndexType.itementry, input.replaceAll("\\{#itemEntry (.*)}", "$1"));
-        if (index.keyIsExcluded(finalKey)) {
+        if (index.isExcluded(finalKey)) {
             return;
         }
         JsonNode ref = index.getNode(finalKey);

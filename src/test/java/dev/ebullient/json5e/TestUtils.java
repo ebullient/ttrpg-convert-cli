@@ -96,24 +96,28 @@ public class TestUtils {
         }
     }
 
-    static void fullIndex(JsonIndex index, Path resourcePath) throws Exception {
+    static void fullIndex(JsonIndex index, Path resourcePath, Json5eTui tui) throws Exception {
         try (Stream<Path> stream = Files.list(resourcePath)) {
             stream
-                    .filter(p -> !p.toFile().getName().startsWith("foundry"))
-                    .filter(p -> !p.toFile().getName().startsWith("roll20"))
+                    .filter(p -> !p.getFileName().toString().startsWith("adventure"))
+                    .filter(p -> !p.getFileName().toString().startsWith("foundry"))
+                    .filter(p -> !p.getFileName().toString().startsWith("gen"))
+                    .filter(p -> !p.getFileName().toString().startsWith("roll20"))
                     .forEach(p -> {
                         File f = p.toFile();
                         if (f.isDirectory()) {
                             try {
-                                fullIndex(index, p);
+                                fullIndex(index, p, tui);
                             } catch (Exception e) {
-                                Import5eToolsConvertTest.tui.errorf(e, "Error parsing %s", p.toString());
+                                tui.errorf(e, "Error parsing %s", p);
+                                throw new RuntimeException(e);
                             }
                         } else if (f.getName().endsWith(".json")) {
                             try {
                                 index.importTree(doParse(p));
                             } catch (Exception e) {
-                                Import5eToolsConvertTest.tui.errorf(e, "Error parsing %s", p.toString());
+                                tui.errorf(e, "Error parsing %s", p);
+                                throw new RuntimeException(e);
                             }
                         }
                     });

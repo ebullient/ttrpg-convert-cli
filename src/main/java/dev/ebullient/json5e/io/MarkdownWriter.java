@@ -71,7 +71,7 @@ public class MarkdownWriter {
                         break;
                     case "QuteMonster":
                         QuteMonster m = (QuteMonster) x;
-                        fileMap = new FileMap(m.getName().replace(" (NPC)", ""),
+                        fileMap = new FileMap(m.getName(),
                                 tui.slugify(m.getName()),
                                 QuteMonster.getSubdir(m));
                         writeFile(fileMap, templates.renderMonster(m));

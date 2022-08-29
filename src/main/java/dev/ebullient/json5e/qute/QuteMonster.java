@@ -11,9 +11,10 @@ import dev.ebullient.json5e.io.Json5eTui;
 public class QuteMonster extends QuteNote {
 
     public static String getSubdir(QuteMonster m) {
-        return "bestiary/" + (m.getName().contains("NPC") ? "npc" : m.type);
+        return "bestiary/" + (m.isNpc ? "npc" : m.type);
     }
 
+    public final boolean isNpc;
     public final String size;
     public final String type;
     public final String subtype;
@@ -49,7 +50,7 @@ public class QuteMonster extends QuteNote {
     public final String description;
     public final String environment;
 
-    public QuteMonster(String name, String source, String size, String type, String subtype, String alignment,
+    public QuteMonster(String name, String source, boolean isNpc, String size, String type, String subtype, String alignment,
             Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed, AbilityScores scores,
             SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
             String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
@@ -58,6 +59,7 @@ public class QuteMonster extends QuteNote {
 
         super(name, source, null, tags);
 
+        this.isNpc = isNpc;
         this.size = size;
         this.type = type;
         this.subtype = subtype;

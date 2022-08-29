@@ -126,13 +126,13 @@ public class Json5eTui {
 
     public void verbosef(String format, Object... params) {
         if (isVerbose()) {
-            outPrintf(format, params);
+            verbose(String.format(format, params));
         }
     }
 
     public void verbose(String output) {
         if (isVerbose()) {
-            outPrintln(output.trim());
+            out.println(ansi.new Text("@|faint 🔹 " + output + "|@", colors));
         }
     }
 

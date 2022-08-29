@@ -48,7 +48,8 @@ public abstract class Json2QuteCommon implements JsonSource {
         if (booleanOrDefault(node, "hasFluff", false)) {
             JsonNode fluffNode = index.getNode(fluffType, node);
             if (fluffNode != null) {
-                fluffNode = index.handleCopy(fluffType, fluffNode);
+                JsonSourceCopier copier = new JsonSourceCopier(index);
+                fluffNode = copier.handleCopy(fluffType, fluffNode);
                 if (fluffNode.has("entries")) {
                     appendEntryToText(text, fluffNode.get("entries"), heading);
                 }
