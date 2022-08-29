@@ -116,7 +116,7 @@ public class Json5eTui {
 
     public void debug(String output) {
         if (isDebug()) {
-            out.println(ansi.new Text("@|faint 🔧" + output + "|@", colors));
+            out.println(ansi.new Text("@|faint 🔧 " + output + "|@", colors));
         }
     }
 
