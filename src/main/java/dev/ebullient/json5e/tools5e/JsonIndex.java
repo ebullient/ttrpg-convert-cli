@@ -35,6 +35,7 @@ public class JsonIndex implements JsonSource {
 
     final Json5eTui tui;
     private final boolean allSources;
+    private final Map<String, JsonNode> rules = new HashMap<>();
     private final Set<String> allowedSources = new HashSet<>();
     private final Set<String> excludedKeys = new HashSet<>();
     private final Set<Pattern> excludedPatterns = new HashSet<>();
@@ -93,20 +94,44 @@ public class JsonIndex implements JsonSource {
         }
     }
 
+    void addRulesIfPresent(JsonNode node, String rule) {
+        if (node.has(rule)) {
+            rules.put(rule, node.get(rule));
+        }
+    }
+
     public JsonIndex importTree(JsonNode node) {
         if (!node.isObject()) {
             return this;
         }
-        if (node.has("data")) {
 
-        } else if (node.has("paths")) {
+        addRulesIfPresent(node, "condition");
+        addRulesIfPresent(node, "disease");
+        addRulesIfPresent(node, "status");
+        addRulesIfPresent(node, "skill");
+        addRulesIfPresent(node, "sense");
+
+        addRulesIfPresent(node, "itemProperty");
+        addRulesIfPresent(node, "itemType");
+        addRulesIfPresent(node, "table");
+        addRulesIfPresent(node, "magicItems");
+        addRulesIfPresent(node, "artObjects");
+        addRulesIfPresent(node, "gems");
+
+        if (node.has("paths")) {
             node.get("paths").fields().forEachRemaining(e -> {
                 switch (e.getKey()) {
                     case "rules":
-                        this.rulesPath = e.getValue().asText();
+                        rulesPath = e.getValue().asText();
+                        if (!rulesPath.endsWith("/")) {
+                            rulesPath += "/";
+                        }
                         break;
                     case "compendium":
-                        this.compendiumPath = e.getValue().asText();
+                        compendiumPath = e.getValue().asText();
+                        if (!compendiumPath.endsWith("/")) {
+                            compendiumPath += "/";
+                        }
                         break;
                 }
             });
@@ -208,7 +233,7 @@ public class JsonIndex implements JsonSource {
                 .map(Entry::getValue);
     }
 
-    public Stream<JsonNode> classElementsMatching(IndexType type, String className, String classSource) {
+    public Stream<JsonNode> classElementsMatching(IndexType type, String className) {
         String pattern = String.format("%s\\|[^|]+\\|%s\\|.*", type, className)
                 .toLowerCase();
         return nodeIndex.entrySet().stream()
@@ -371,6 +396,10 @@ public class JsonIndex implements JsonSource {
         return nodeIndex.get(target.get(0)).get("name").asText();
     }
 
+    public boolean srdOnly() {
+        return allowedSources.isEmpty();
+    }
+
     public boolean sourceIncluded(String source) {
         return allSources || allowedSources.contains(source.toLowerCase());
     }
@@ -420,6 +449,10 @@ public class JsonIndex implements JsonSource {
         }
 
         return allowedSources.stream().anyMatch(source -> key.contains("|" + source));
+    }
+
+    boolean isIndexed(String key) {
+        return nodeIndex.containsKey(key);
     }
 
     JsonNode getSubresourceNode(String key) {
@@ -498,4 +531,9 @@ public class JsonIndex implements JsonSource {
     public CompendiumSources getSources() {
         return null;
     }
+
+    public JsonNode getRules(String key) {
+        return rules.get(key);
+    }
+
 }

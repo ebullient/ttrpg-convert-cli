@@ -1,0 +1,9 @@
+---
+obsidianUIMode: preview
+cssclass: 5e-note
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+{#if resource.source }*Source: {resource.source}* {/if}
+
+{resource.text}
