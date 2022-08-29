@@ -30,7 +30,6 @@ public class JsonDataTest {
 
     @BeforeAll
     public static void setupDir() {
-        TestUtils.deleteDir(OUTPUT_PATH);
         OUTPUT_PATH.toFile().mkdirs();
     }
 
@@ -138,9 +137,8 @@ public class JsonDataTest {
         if (TOOLS_PATH.toFile().exists()) {
             List<String> source = List.of("*");
             JsonIndex index = new JsonIndex(source, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("races.json")))
-                    .importTree(TestUtils.doParse(TOOLS_PATH.resolve("fluff-races.json")));
+                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
+            TestUtils.fullIndex(index, TOOLS_PATH);
 
             MarkdownWriter writer = new MarkdownWriter(OUTPUT_PATH, templates, tui);
             new Json2MarkdownConverter(index, writer)

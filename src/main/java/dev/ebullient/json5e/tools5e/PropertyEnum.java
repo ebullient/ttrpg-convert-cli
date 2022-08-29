@@ -29,7 +29,7 @@ public enum PropertyEnum {
     CURSED("Cursed Item", "*", "property/cursed"),
 
     // Additional properties
-    AMMUNITION_FUTURISTIC("Ammunition (Futuristic)", "AF", "property/ammunition"),
+    AMMUNITION_FIREARM("Ammunition (Firearm)", "AF", "property/ammunition/firearm"),
     BURST_FIRE("Burst Fire", "BF", "property/burst-fire"),
     RELOAD("Reload", "RLD", "property/reload"),
 
@@ -52,18 +52,16 @@ public enum PropertyEnum {
     REQ_ATTUNEMENT("Requires Attunement", "#", "attunement/required"),
     OPT_ATTUNEMENT("Optional Attunement", "$", "attunement/optional");
 
-    private final String longName;
+    public final String longName;
     private final String encodedValue;
     private final String tagValue;
-    private final boolean weapon; // can apply to weapons
     private final boolean rarity; // can apply to weapons
 
     PropertyEnum(String longName, String ev, String tagValue) {
         this.longName = longName;
         this.encodedValue = ev;
         this.tagValue = tagValue;
-        this.weapon = ordinal() < 11 || ev.equals("-") || ev.equals("*"); // std properties or silvered or cursed
-        this.rarity = !weapon && ev.length() > 0 && (Character.isDigit(ev.charAt(0))); // exclude 2H
+        this.rarity = ordinal() > 16; // exclude 2H
     }
 
     public static final List<PropertyEnum> tierProperties = List.of(MAJOR, MINOR);
@@ -81,6 +79,9 @@ public enum PropertyEnum {
     }
 
     public String getMarkdownLink(JsonIndex index) {
+        if (rarity) {
+            return longName;
+        }
         return String.format("[%s](%s)", longName,
                 index.rulesRoot() + "item-properties.md#" + longName.replaceAll(" ", "%20"));
     }

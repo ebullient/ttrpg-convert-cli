@@ -24,7 +24,9 @@ public class CompendiumSources {
     public CompendiumSources(IndexType type, String key, JsonNode jsonElement) {
         this.type = type;
         this.key = key;
-        this.name = jsonElement.get("name").asText();
+        this.name = jsonElement.has("name")
+                ? jsonElement.get("name").asText()
+                : jsonElement.get("abbreviation").asText();
         this.sourceText = findSourceText(jsonElement);
     }
 

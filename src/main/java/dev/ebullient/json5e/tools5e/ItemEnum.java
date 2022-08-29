@@ -15,7 +15,7 @@ public enum ItemEnum {
     EXPLOSIVE("Ranged Weapon", "EXP", "Explosive"),
     RANGED_WEAPON("Ranged Weapon", "R", ""),
     AMMUNITION("Ammunition", "A", ""),
-    AMMUNITION_FUTURISTIC("Ammunition", "AF", "Ammunition (Futuristic)"),
+    AMMUNITION_FIREARM("Ammunition", "AF", "Ammunition (Firearm)"),
 
     ROD("Rod", "RD", ""),
     STAFF("Staff", "ST", ""),
@@ -129,8 +129,8 @@ public enum ItemEnum {
                 tag.append("ranged/explosive");
             } else if (this == AMMUNITION) {
                 tag.append("ammunition");
-            } else if (this == AMMUNITION_FUTURISTIC) {
-                tag.append("ammunition/futuristic");
+            } else if (this == AMMUNITION_FIREARM) {
+                tag.append("ammunition/firearm");
             }
         } else if (isVehicle()) {
             tag.append("/vehicle");
