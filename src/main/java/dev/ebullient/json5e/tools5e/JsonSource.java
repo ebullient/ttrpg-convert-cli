@@ -953,6 +953,21 @@ public interface JsonSource {
         return "30 ft.";
     }
 
+    default String getMonsterType(JsonNode node) {
+        if (node == null || !node.has("type")) {
+            tui().warn("Empty type for " + getSources());
+            return null;
+        }
+        JsonNode typeNode = node.get("type");
+        if (typeNode.isTextual()) {
+            return typeNode.asText();
+        } else if (typeNode.has("type")) {
+            // We have an object: type + tags
+            return typeNode.get("type").asText();
+        }
+        return null;
+    }
+
     default String raceToText(JsonNode race) {
         StringBuilder str = new StringBuilder();
         str.append(race.get("name").asText());
@@ -1596,8 +1611,11 @@ public interface JsonSource {
         }
         String key = index().createSimpleKey(IndexType.monster, parts[0], source);
         JsonNode jsonSource = index().getNode(key);
-        String type = jsonSource == null ? null : getTextOrEmpty(jsonSource, "type");
-        if (index().keyIsExcluded(key) || type == null) {
+        if (!index().isIndexed(key) || index().keyIsExcluded(key)) {
+            return linkText;
+        }
+        String type = getMonsterType(jsonSource); // may be missing for partial index
+        if (type == null) {
             return linkText;
         }
         return linkOrText(linkText, key, "bestiary/" + slugify(type), parts[0]);

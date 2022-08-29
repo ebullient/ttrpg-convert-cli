@@ -129,6 +129,7 @@ public class Json2MarkdownConverter {
         addRule(nodes, index.getRules("sense"), "Senses");
         addRule(nodes, index.getRules("condition"), "Conditions");
         addRule(nodes, index.getRules("status"), "Status");
+        addItemProperties(nodes, index.getRules("itemProperty"));
 
         try {
             writer.writeNotes(index.rulesRoot(), nodes);
@@ -154,6 +155,16 @@ public class Json2MarkdownConverter {
             return;
         }
         QuteNote note = new Sourceless2QuteNote(index, element, title).build();
+        if (note != null) {
+            nodes.add(note);
+        }
+    }
+
+    private void addItemProperties(List<QuteNote> nodes, JsonNode element) {
+        if (element == null || element.isNull()) {
+            return;
+        }
+        QuteNote note = new Sourceless2QuteNote(index, element, "Item Properties").buildItemProperties();
         if (note != null) {
             nodes.add(note);
         }

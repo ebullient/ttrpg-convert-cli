@@ -56,6 +56,33 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         }
     }
 
+    public QuteNote buildItemProperties() {
+        Set<String> tags = new HashSet<>();
+        List<String> text = new ArrayList<>();
+
+        node.forEach(entry -> {
+            currentSource = index.constructSources(IndexType.sourceless, entry);
+            PropertyEnum propertyEnum = PropertyEnum.fromEncodedType(entry.get("abbreviation").asText());
+            if (index.keyIsIncluded(currentSource.key)) {
+                tags.addAll(currentSource.getSourceTags());
+                maybeAddBlankLine(text);
+                text.add("## " + propertyEnum.longName);
+                maybeAddBlankLine(text);
+                entry.withArray("entries").forEach(e -> {
+                    appendEntryToText(text, e.get("entries"), null);
+                });
+                if (propertyEnum == PropertyEnum.SPECIAL) {
+                    text.add(
+                            "A weapon with the special property has unusual rules governing its use, which are explained in the weapon's description.");
+                }
+                maybeAddBlankLine(text);
+                text.add(String.format("_Source: %s_", currentSource.getSourceText(index.srdOnly())));
+            }
+        });
+
+        return new QuteNote(title, null, String.join("\n", text), tags);
+    }
+
     public QuteNote buildLoot() {
         Set<String> tags = new HashSet<>();
         List<String> text = new ArrayList<>();
