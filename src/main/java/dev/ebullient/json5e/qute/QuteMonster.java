@@ -8,14 +8,11 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.json5e.io.Json5eTui;
 
-public class QuteMonster implements QuteSource {
+public class QuteMonster extends QuteNote {
 
     public static String getSubdir(QuteMonster m) {
         return "bestiary/" + (m.getName().contains("NPC") ? "npc" : m.type);
     }
-
-    final String name;
-    public final String source;
 
     public final String size;
     public final String type;
@@ -52,16 +49,15 @@ public class QuteMonster implements QuteSource {
     public final String description;
     public final String environment;
 
-    public final List<String> tags;
-
     public QuteMonster(String name, String source, String size, String type, String subtype, String alignment,
             Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed, AbilityScores scores,
             SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
             String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
             List<Spellcasting> spellcasting, String description, String environment, List<String> tags) {
-        this.name = name;
-        this.source = source;
+
+        super(name, source, null, tags);
+
         this.size = size;
         this.type = type;
         this.subtype = subtype;
@@ -91,7 +87,6 @@ public class QuteMonster implements QuteSource {
         this.spellcasting = spellcasting;
         this.description = description;
         this.environment = environment;
-        this.tags = tags;
     }
 
     @Override
@@ -213,16 +208,6 @@ public class QuteMonster implements QuteSource {
             return "innate";
         }
         return "spells";
-    }
-
-    public static class Trait {
-        public final String name;
-        public final String desc;
-
-        public Trait(String name, String desc) {
-            this.name = name;
-            this.desc = desc;
-        }
     }
 
     public static class Spellcasting {
