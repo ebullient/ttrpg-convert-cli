@@ -32,7 +32,6 @@ public class Import5eToolsConvertTest {
     }
 
     /**
-     * @param result
      */
     @Test
     @Launch({ "--help" })

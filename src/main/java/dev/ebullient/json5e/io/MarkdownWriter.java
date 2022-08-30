@@ -36,7 +36,7 @@ public class MarkdownWriter {
         this.templates = templates;
     }
 
-    public <T extends QuteSource> void writeFiles(List<T> elements) throws IOException {
+    public <T extends QuteSource> void writeFiles(List<T> elements) {
         if (elements.isEmpty()) {
             return;
         }
@@ -126,11 +126,11 @@ public class MarkdownWriter {
         Files.write(target, content.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void writeNotes(String dirName, Collection<QuteNote> notes) throws IOException {
+    public void writeNotes(String dirName, Collection<QuteNote> notes) {
         Path targetDir = Paths.get(output.toString(), dirName);
         targetDir.toFile().mkdirs();
 
-        notes.forEach(n -> {
+        for (QuteNote n : notes) {
             String fileName = tui.slugify(n.getName()) + ".md";
             Path target = targetDir.resolve(fileName);
             String content = templates.renderNote(n);
@@ -140,14 +140,15 @@ public class MarkdownWriter {
             } catch (IOException e) {
                 throw new WrappedIOException(e);
             }
-        });
+        }
+
         tui.outPrintln("  ✅ " + notes.size() + " files.");
     }
 
     @TemplateData
     public static class FileMap {
-        public String title;
-        public String fileName;
+        public final String title;
+        public final String fileName;
         public String dirName;
 
         public FileMap(String title, String fileName) {

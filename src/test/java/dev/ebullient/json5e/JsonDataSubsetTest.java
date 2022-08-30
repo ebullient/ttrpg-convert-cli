@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class JsonDataTest {
+public class JsonDataSubsetTest {
 
     static CommonDataTests commonTests;
     static final Path outputPath = CommonDataTests.OUTPUT_ROOT.resolve("all");
@@ -18,7 +18,7 @@ public class JsonDataTest {
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
-        commonTests = new CommonDataTests(List.of("*"));
+        commonTests = new CommonDataTests(List.of("PHB", "DMG", "XGE", "TCE"));
     }
 
     @AfterEach

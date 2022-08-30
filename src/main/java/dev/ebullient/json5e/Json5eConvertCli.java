@@ -32,6 +32,7 @@ import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.ScopeType;
 import picocli.CommandLine.Spec;
 
+@SuppressWarnings("CanBeFinal")
 @QuarkusMain
 @Command(name = "5e-convert", mixinStandardHelpOptions = true, header = "Convert 5etools data to markdown", subcommands = {
         Completion.class,
@@ -213,7 +214,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
     }
 
     @Override
-    public int run(String... args) throws Exception {
+    public int run(String... args) {
         return new CommandLine(this, factory)
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .setExecutionStrategy(this::executionStrategy)

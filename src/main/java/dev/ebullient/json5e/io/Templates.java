@@ -26,7 +26,7 @@ import io.quarkus.qute.Template;
 
 @ApplicationScoped
 public class Templates {
-    Map<String, Template> templates = new HashMap<>();
+    final Map<String, Template> templates = new HashMap<>();
     TemplatePaths templatePaths = null;
 
     @Inject

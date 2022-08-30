@@ -226,14 +226,10 @@ public class QuteMonster extends QuteNote {
 
             appendList(text, "At will", will);
             if (daily != null && !daily.isEmpty()) {
-                daily.forEach((k, v) -> {
-                    appendList(text, innateKeyToTitle(k), v);
-                });
+                daily.forEach((k, v) -> appendList(text, innateKeyToTitle(k), v));
             }
             if (spells != null && !spells.isEmpty()) {
-                spells.forEach((k, v) -> {
-                    appendList(text, spellToTitle(k, v), v.spells);
-                });
+                spells.forEach((k, v) -> appendList(text, spellToTitle(k, v), v.spells));
             }
 
             text.addAll(footerEntries);

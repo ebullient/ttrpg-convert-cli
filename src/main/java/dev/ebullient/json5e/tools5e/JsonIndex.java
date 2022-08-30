@@ -74,7 +74,7 @@ public class JsonIndex implements JsonSource {
         tui().debugf("🔖 Finished reading %s\n", p);
     }
 
-    public void readDirectory(Path dir) throws IOException {
+    public void readDirectory(Path dir) {
         String basename = dir.getFileName().toString();
         tui().debugf("📁 %s\n", dir);
         try (Stream<Path> stream = Files.list(dir)) {
@@ -273,7 +273,7 @@ public class JsonIndex implements JsonSource {
         // Exclude items after we've created variants and handled copies
         filteredIndex = variantIndex.entrySet().stream()
                 .filter(e -> !isReprinted(e.getKey(), e.getValue()))
-                .filter(e -> keyIsIncluded(e.getKey()))
+                .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -311,7 +311,7 @@ public class JsonIndex implements JsonSource {
                             return false;
                         }
                     }
-                    tui().verbosef("Skipping %s; Reprinted as %s", finalKey, reprintKey);
+                    tui().debugf("Skipping %s; Reprinted as %s", finalKey, reprintKey);
                     // the reprint will be used instead (exclude this one)
                     // include an alias mapping the old key to the reprinted key
                     addAlias(finalKey, reprintKey);
@@ -321,7 +321,7 @@ public class JsonIndex implements JsonSource {
         }
         // This true/false flag tends to comes from UA resources (when printed in official source
         if (booleanOrDefault(jsonSource, "isReprinted", false)) {
-            tui().verbosef("Skipping %s (has been reprinted)", finalKey);
+            tui().debugf("Skipping %s (has been reprinted)", finalKey);
             return true; // the reprint will be used instead of this one.
         }
         return false;
@@ -450,28 +450,6 @@ public class JsonIndex implements JsonSource {
         return filteredIndex.get(finalKey);
     }
 
-    public JsonNode getVariant(String finalKey) {
-        if (finalKey == null) {
-            return null;
-        }
-        return variantIndex.get(finalKey);
-    }
-
-    /**
-     * Construct a simple key (for most elements) using the
-     * type, name, and source.
-     *
-     * @param type Type of object
-     * @param name name of the object
-     * @param source Class sources
-     * @return JsonNode or null
-     */
-    public JsonNode getNode(IndexType type, String name, String source) {
-        String key = String.format("%s|%s|%s", type, name, source)
-                .toLowerCase();
-        return filteredIndex.get(key);
-    }
-
     public JsonNode getOrigin(IndexType type, String name, String source) {
         String key = String.format("%s|%s|%s", type, name, source)
                 .toLowerCase();
@@ -558,7 +536,7 @@ public class JsonIndex implements JsonSource {
         return false;
     }
 
-    private boolean keyIsIncluded(String key) {
+    private boolean keyIsIncluded(String key, JsonNode node) {
         if (excludedKeys.contains(key) ||
                 excludedPatterns.stream().anyMatch(x -> x.matcher(key).matches())) {
             return false;
@@ -579,12 +557,6 @@ public class JsonIndex implements JsonSource {
             return true;
         }
         if (key.startsWith("subrace|") || key.startsWith("subclass") || key.startsWith("optionalfeature|")) {
-            // The key isn't enough on its own.. it doesn't contain the subrace/subclass source.
-            JsonNode node = getSubresourceNode(key);
-            if (node == null) {
-                tui.debugf("Unable to find subclass for " + key);
-                return false;
-            }
             String rs = node.get("source").asText().toLowerCase();
             return allowedSources.contains(rs) || allowedSources.stream().anyMatch(source -> key.contains("|" + source));
         }
@@ -607,18 +579,10 @@ public class JsonIndex implements JsonSource {
         return filteredIndex.entrySet();
     }
 
-    JsonNode getSubresourceNode(String key) {
-        JsonNode node = getNode(key);
-        if (node == null) {
-            node = getNode(aliases.get(key));
-        }
-        return node;
-    }
-
-    public JsonNode resolveClassFeatureNode(String finalKey) {
+    public JsonNode resolveClassFeatureNode(String finalKey, String originClassKey) {
         JsonNode featureNode = getNode(finalKey);
         if (featureNode == null) {
-            tui.debugf("%s not found (referenced from %s)", finalKey, getSources());
+            tui.debugf("%s: %s not found or excluded", originClassKey, finalKey);
             return null; // skip this
         }
         return resolveClassFeatureNode(finalKey, featureNode);

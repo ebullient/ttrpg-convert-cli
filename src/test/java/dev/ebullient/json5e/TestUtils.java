@@ -52,7 +52,7 @@ public class TestUtils {
 
     static void assertFileContent(Path p) throws IOException {
         List<String> errors = new ArrayList<>();
-        Files.readAllLines(p).stream()
+        Files.readAllLines(p)
                 .forEach(l -> {
                     if (l.contains("{@")) {
                         errors.add(String.format("Found {@ in %s: %s", p, l));
