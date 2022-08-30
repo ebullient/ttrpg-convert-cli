@@ -36,7 +36,7 @@ public class MarkdownWriter {
         this.templates = templates;
     }
 
-    public <T extends QuteSource> void writeFiles(List<T> elements) {
+    public <T extends QuteSource> void writeFiles(List<T> elements, String kind) {
         if (elements.isEmpty()) {
             return;
         }
@@ -47,7 +47,6 @@ public class MarkdownWriter {
             return a.dirName.compareTo(b.dirName);
         });
 
-        tui.outPrintln("⏱ Writing files");
         elements.forEach(x -> {
             String type = x.getClass().getSimpleName();
             FileMap fileMap = new FileMap(x.getName(), tui.slugify(x.getName()));
@@ -114,7 +113,7 @@ public class MarkdownWriter {
                         throw new WrappedIOException(ex);
                     }
                 });
-        tui.outPrintln("  ✅ " + (fileMappings.size() + 1) + " files.");
+        tui.outPrintf("✅ Wrote %s %s files.%n", (fileMappings.size() + 1), kind == null ? "markdown" : kind);
     }
 
     void writeFile(FileMap fileMap, String content) throws IOException {
@@ -142,7 +141,7 @@ public class MarkdownWriter {
             }
         }
 
-        tui.outPrintln("  ✅ " + notes.size() + " files.");
+        tui.outPrintf("✅ Wrote %s notes (rules and tables).%n", notes.size());
     }
 
     @TemplateData

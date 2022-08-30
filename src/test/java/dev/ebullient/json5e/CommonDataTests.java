@@ -1,7 +1,6 @@
 package dev.ebullient.json5e;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import dev.ebullient.json5e.io.Json5eTui;
@@ -14,13 +13,6 @@ import dev.ebullient.json5e.tools5e.JsonIndex;
 import io.quarkus.arc.Arc;
 
 public class CommonDataTests {
-    final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
-
-    // for compile/test purposes. Must clone/sync separately.
-    final static Path TOOLS_PATH = PROJECT_PATH.resolve("5etools-mirror-1.github.io/data");
-    final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
-    final static Path OUTPUT_ROOT = CommonDataTests.PROJECT_PATH.resolve("target/test-data");
-
     protected final Json5eTui tui;
     protected final Templates templates;
     protected JsonIndex index;
@@ -30,10 +22,10 @@ public class CommonDataTests {
         templates = Arc.container().instance(Templates.class).get();
         tui.init(null, true, true);
 
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             index = new JsonIndex(sources, tui)
-                    .importTree(TestUtils.doParse(TEST_PATH_JSON));
-            TestUtils.fullIndex(index, TOOLS_PATH, tui);
+                    .importTree(TestUtils.doParse(TestUtils.TEST_PATH_JSON));
+            TestUtils.fullIndex(index, TestUtils.TOOLS_PATH, tui);
             index.prepare();
         }
     }
@@ -44,7 +36,7 @@ public class CommonDataTests {
     }
 
     public void testKeyIndex(Path outputPath) throws Exception {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             Path p1Full = outputPath.resolve("allIndex.json");
             index.writeIndex(p1Full);
             Path p1Source = outputPath.resolve("allSourceIndex.json");
@@ -63,7 +55,7 @@ public class CommonDataTests {
     }
 
     public void testNameList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.namelist);
@@ -71,7 +63,7 @@ public class CommonDataTests {
     }
 
     public void testFeatList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.feat);
@@ -79,7 +71,7 @@ public class CommonDataTests {
     }
 
     public void testBackgroundList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.background);
@@ -87,7 +79,7 @@ public class CommonDataTests {
     }
 
     public void testSpellList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.spell);
@@ -95,7 +87,7 @@ public class CommonDataTests {
     }
 
     public void testRaceList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.race);
@@ -103,7 +95,7 @@ public class CommonDataTests {
     }
 
     public void testClassList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.classtype);
@@ -111,7 +103,7 @@ public class CommonDataTests {
     }
 
     public void testItemList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             // TODO: objects, vehicles, magicvariants
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -121,7 +113,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterList(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.monster);
@@ -129,10 +121,10 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlHeader(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
-                    PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
+                    TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
             templates.setCustomTemplates(templatePaths);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath.resolve("yaml-header"), templates, tui);
@@ -142,10 +134,10 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlBody(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
-                    PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
+                    TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(templatePaths);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath.resolve("yaml-body"), templates, tui);
@@ -155,7 +147,7 @@ public class CommonDataTests {
     }
 
     public void testRules(Path outputPath) {
-        if (TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeRulesAndTables();

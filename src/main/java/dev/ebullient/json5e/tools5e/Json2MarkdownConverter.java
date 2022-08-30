@@ -48,7 +48,7 @@ public class Json2MarkdownConverter {
             }
         }
 
-        writer.writeFiles(nodes);
+        writer.writeFiles(nodes, type.toString());
         return this;
     }
 

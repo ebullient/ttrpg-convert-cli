@@ -161,14 +161,13 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
                 tui.error(e, "  Exception: " + e.getMessage());
                 allOk = false;
             }
-            tui.outPrintln("✅ finished reading 5etools data.");
         }
+        tui.outPrintln("✅ finished reading 5etools data.");
+        index.prepare();
 
         tui.debugf("Custom templates: %s", paths.customTemplates.toString());
         tpl.setCustomTemplates(paths);
         tui.debugf("Defined templates: %s", tpl);
-
-        tui.outPrintln("💡 Writing files to " + output);
 
         if (filterIndex) {
             try {
