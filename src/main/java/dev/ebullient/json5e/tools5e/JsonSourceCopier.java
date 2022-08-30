@@ -659,37 +659,24 @@ public class JsonSourceCopier implements JsonSource {
             case "athletics":
                 return "str";
             case "acrobatics":
-                return "dex";
             case "sleight of hand":
-                return "dex";
             case "stealth":
                 return "dex";
             case "arcana":
-                return "int";
             case "history":
-                return "int";
             case "investigation":
-                return "int";
             case "nature":
-                return "int";
             case "religion":
                 return "int";
             case "animal handling":
-                return "wis";
             case "insight":
-                return "wis";
             case "medicine":
-                return "wis";
             case "perception":
-                return "wis";
             case "survival":
                 return "wis";
             case "deception":
-                return "cha";
             case "intimidation":
-                return "cha";
             case "performance":
-                return "cha";
             case "persuasion":
                 return "cha";
         }

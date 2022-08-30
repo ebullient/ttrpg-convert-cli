@@ -10,7 +10,7 @@ public class QuteSpell extends QuteNote {
     public final String range;
     public final String components;
     public final String duration;
-    public String classes;
+    public final String classes;
 
     public QuteSpell(String name, String source, String level,
             String school, boolean ritual, String time, String range,

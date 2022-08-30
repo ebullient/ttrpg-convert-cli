@@ -126,8 +126,7 @@ public enum PropertyEnum {
     public static void findAdditionalProperties(String name, ItemEnum type, List<PropertyEnum> properties,
             Predicate<String> matches) {
         if (type.isWeapon() && name.toLowerCase(Locale.ROOT).contains("silvered")) {
-            List<PropertyEnum> result = new ArrayList<>(properties);
-            result.add(SILVERED);
+            properties.add(SILVERED);
         }
         if (matches.test("^Curse: .*")) {
             properties.add(PropertyEnum.CURSED);

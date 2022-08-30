@@ -1,6 +1,5 @@
 package dev.ebullient.json5e.tools5e;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -49,11 +48,7 @@ public class Json2MarkdownConverter {
             }
         }
 
-        try {
-            writer.writeFiles(nodes);
-        } catch (IOException e) {
-            index.tui().error("Exception: " + e.getCause().getMessage());
-        }
+        writer.writeFiles(nodes);
         return this;
     }
 
@@ -89,7 +84,7 @@ public class Json2MarkdownConverter {
                     tableToRule.add(t);
                     return;
                 }
-                nodes.add(new Table2QuteNote(index, t).build());
+                addTable(nodes, t);
             });
         }
 
@@ -97,11 +92,7 @@ public class Json2MarkdownConverter {
         addLootGroup(nodes, index.getRules("artObjects"), "Art Objects");
         addLootGroup(nodes, index.getRules("gems"), "Gems");
 
-        try {
-            writer.writeNotes(index.compendiumRoot() + "tables/", nodes);
-        } catch (IOException e) {
-            index.tui().error("Exception: " + e.getCause().getMessage());
-        }
+        writer.writeNotes(index.compendiumRoot() + "tables/", nodes);
         nodes.clear();
 
         tableToRule.forEach(t -> nodes.add(new Table2QuteNote(index, t).buildRules()));
@@ -113,13 +104,19 @@ public class Json2MarkdownConverter {
         addRule(nodes, index.getRules("status"), "Status");
         addItemProperties(nodes, index.getRules("itemProperty"));
 
-        try {
-            writer.writeNotes(index.rulesRoot(), nodes);
-        } catch (IOException e) {
-            index.tui().error("Exception: " + e.getCause().getMessage());
-        }
+        writer.writeNotes(index.rulesRoot(), nodes);
 
         return this;
+    }
+
+    private void addTable(List<QuteNote> nodes, JsonNode table) {
+        if (table == null || table.isNull()) {
+            return;
+        }
+        QuteNote n = new Table2QuteNote(index, table).build();
+        if (n != null) {
+            nodes.add(n);
+        }
     }
 
     private void addLootGroup(List<QuteNote> nodes, JsonNode element, String title) {

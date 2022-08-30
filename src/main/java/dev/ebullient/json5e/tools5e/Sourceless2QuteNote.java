@@ -14,7 +14,7 @@ import dev.ebullient.json5e.qute.QuteNote;
 
 public class Sourceless2QuteNote extends Json2QuteCommon {
 
-    String title;
+    final String title;
     CompendiumSources currentSource;
 
     Sourceless2QuteNote(JsonIndex index, JsonNode jsonNode, String title) {
@@ -73,9 +73,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
                 maybeAddBlankLine(text);
                 text.add("## " + propertyEnum.longName);
                 maybeAddBlankLine(text);
-                entry.withArray("entries").forEach(e -> {
-                    appendEntryToText(text, e.get("entries"), null);
-                });
+                entry.withArray("entries").forEach(e -> appendEntryToText(text, e.get("entries"), null));
                 if (propertyEnum == PropertyEnum.SPECIAL) {
                     text.add(
                             "A weapon with the special property has unusual rules governing its use, which are explained in the weapon's description.");

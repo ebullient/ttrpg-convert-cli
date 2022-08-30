@@ -239,9 +239,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 f.getValue().forEach(e -> {
                     if (e.has("oneOf")) {
                         List<String> nested = new ArrayList<>();
-                        e.get("oneOf").fields().forEachRemaining(x -> {
-                            nested.add(getModifier(x.getKey(), x.getValue(), values));
-                        });
+                        e.get("oneOf").fields()
+                                .forEachRemaining(x -> nested.add(getModifier(x.getKey(), x.getValue(), values)));
                         text.add("_One of_ " + String.join(", ", nested));
                         if (separator.length() == 0) {
                             separator.append("; ");

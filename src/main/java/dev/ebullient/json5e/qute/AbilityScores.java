@@ -1,12 +1,12 @@
 package dev.ebullient.json5e.qute;
 
 public class AbilityScores {
-    int strength;
-    int dexterity;
-    int constitution;
-    int intelligence;
-    int wisdom;
-    int charisma;
+    final int strength;
+    final int dexterity;
+    final int constitution;
+    final int intelligence;
+    final int wisdom;
+    final int charisma;
 
     public AbilityScores(int strength, int dexterity, int constitution, int intelligence, int wisdom, int charisma) {
         this.strength = strength;

@@ -22,14 +22,14 @@ import dev.ebullient.json5e.qute.QuteSubclass;
 
 public class Json2QuteClass extends Json2QuteCommon {
 
-    Map<String, List<String>> startingText = new HashMap<>();
-    Set<String> featureNames = new HashSet<>();
-    List<ClassFeature> classFeatures = new ArrayList<>();
-    List<Subclass> subclasses = new ArrayList<>();
+    final Map<String, List<String>> startingText = new HashMap<>();
+    final Set<String> featureNames = new HashSet<>();
+    final List<ClassFeature> classFeatures = new ArrayList<>();
+    final List<Subclass> subclasses = new ArrayList<>();
     boolean additionalFromBackground;
-    String classSource;
-    String subclassTitle;
-    String decoratedName;
+    final String classSource;
+    final String subclassTitle;
+    final String decoratedName;
 
     Json2QuteClass(JsonIndex index, IndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
@@ -349,7 +349,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     private void lookupClassFeature(String lookup) {
         String finalKey = index.getRefKey(IndexType.classfeature, lookup);
-        JsonNode featureJson = index.resolveClassFeatureNode(finalKey);
+        JsonNode featureJson = index.resolveClassFeatureNode(finalKey, getSources().getKey());
         if (featureJson == null) {
             return; // skipped or not found
         }
@@ -358,7 +358,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     private ClassFeature lookupSubclassFeature(String lookup, String source) {
         String finalKey = index.getRefKey(IndexType.subclassfeature, lookup);
-        JsonNode featureJson = index.resolveClassFeatureNode(finalKey);
+        JsonNode featureJson = index.resolveClassFeatureNode(finalKey, getSources().getKey());
         if (featureJson == null) {
             return null; // skipped or not found
         }
@@ -559,7 +559,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         String subclassProgression;
         CompendiumSources sources;
-        List<ClassFeature> features = new ArrayList<>();
+        final List<ClassFeature> features = new ArrayList<>();
     }
 
     class ClassFeature {
@@ -581,7 +581,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     || booleanOrDefault(featureJson, "isClassFeatureVariant", false);
 
             List<String> text = new ArrayList<>();
-            replaceElementRefs(featureJson, text, heading, featureSources.primarySource());
+            replaceElementRefs(featureJson, text, heading, featureSources);
 
             if (!parentSource.equals(featureSources.primarySource())) {
                 maybeAddBlankLine(text);
@@ -598,14 +598,14 @@ public class Json2QuteClass extends Json2QuteCommon {
             this.text = text;
         }
 
-        void replaceElementRefs(JsonNode featureJson, List<String> text, String heading, String parentSource) {
+        void replaceElementRefs(JsonNode featureJson, List<String> text, String heading, CompendiumSources parentSource) {
             JsonNode field = featureJson.get("entries");
             if (field == null) {
                 return;
             }
             if (containsReference(field.toString())) {
                 ArrayNode copy = (ArrayNode) copyNode(field);
-                replaceNodes(copy, parentSource);
+                replaceNodes((ArrayNode) field, copy, parentSource.primarySource(), parentSource.getKey());
                 appendEntryToText(text, copy, heading);
             } else {
                 appendEntryToText(text, field, heading);
@@ -644,21 +644,26 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
         }
 
-        void replaceNodes(ArrayNode copy, String parentSource) {
-            for (int i = 0; i < copy.size(); i++) {
-                if (copy.get(i).isObject() && copy.get(i).has("type")) {
-                    String typeField = getTextOrEmpty(copy.get(i), "type");
+        void replaceNodes(ArrayNode origin, ArrayNode copy, String parentSource, String parentKey) {
+            // work backwards to preserve index values
+            for (int i = origin.size() - 1; i >= 0; i--) {
+                if (origin.get(i).isObject() && origin.get(i).has("type")) {
+                    String typeField = getTextOrEmpty(origin.get(i), "type");
                     final IndexType refType = referenceType(typeField);
                     final String refField = referenceField(typeField);
                     if (refField != null) {
                         // replace refClassFeature with class feature entries
                         String refKey = index.getRefKey(refType, copy.get(i).get(refField).asText());
-                        JsonNode refJson = index.resolveClassFeatureNode(refKey);
-                        String source = refJson.get("source").asText();
+                        JsonNode refJson = index.resolveClassFeatureNode(refKey, parentKey);
+                        if (refJson == null) {
+                            copy.remove(i);
+                            continue; // skipped. Not included
+                        }
+                        String refSource = refJson.get("source").asText();
 
                         // Recurse...
                         ArrayNode replaceEntries = (ArrayNode) copyNode(refJson.get("entries"));
-                        replaceNodes(replaceEntries, source);
+                        replaceNodes(refJson.withArray("entries"), replaceEntries, refSource, refKey);
 
                         ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
                         replace.remove(refField);
@@ -667,32 +672,24 @@ public class Json2QuteClass extends Json2QuteCommon {
                         replace.set("entries", replaceEntries);
 
                         // Add a source entry if this feature comes from a different source than the parent
-                        if (!source.equals(parentSource)) {
+                        if (!refSource.equals(parentSource)) {
                             CompendiumSources sources = index().constructSources(refType, refJson);
                             replace.set("entry", new TextNode("_Source: " + sources.getSourceText(index.srdOnly()) + "_"));
                         }
                         copy.set(i, replace);
-                    } else if (typeField.equals("options")) {
+                    } else if (typeField.equals("options") || typeField.equals("entries")) {
                         ArrayNode replaceEntries = (ArrayNode) copyNode(copy.get(i).get("entries"));
-                        replaceNodes(replaceEntries, parentSource);
+                        replaceNodes(copy.get(i).withArray("entries"), replaceEntries, parentSource, parentKey);
 
                         ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
                         replace.set("entries", replaceEntries);
                         copy.set(i, replace);
                     } else if (typeField.equals("list")) {
                         ArrayNode replaceEntries = (ArrayNode) copyNode(copy.get(i).get("items"));
-                        replaceNodes(replaceEntries, parentSource);
+                        replaceNodes(copy.get(i).withArray("items"), replaceEntries, parentSource, parentKey);
 
                         ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
                         replace.set("items", replaceEntries);
-                        copy.set(i, replace);
-                    } else if (typeField.equals("entries")) {
-                        // Nested entries object
-                        ArrayNode copyEntries = (ArrayNode) copyNode(copy.get(i).get("entries"));
-                        replaceNodes(copyEntries, parentSource);
-
-                        ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
-                        replace.set("entries", copyEntries);
                         copy.set(i, replace);
                     }
                 }
