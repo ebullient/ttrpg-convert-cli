@@ -84,12 +84,12 @@ To run commands listed below, either:
       5etools-mirror-1.github.io/data
     ```
 
-    - `--index` Create all-index.json containing all of the touched artifact ids, and src-index.json that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
+    - `--index` Create `all-index.json` containing all of the touched artifact ids, and `src-index.json` that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
     - `-o dm` The target output directory. Files will be created in this directory.
 
     The rest of the command-line specifies input files: 
 
-    - `~/git/dnd/5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone of a mirror repo)
+    - `~/git/dnd/5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone or release of the mirror repo)
 
 3. Invoke the command again, this time including sources and custom items:
 
@@ -156,83 +156,83 @@ I use a json file to provide detailed configuration for sources, as doing so wit
 
 - `exclude`, and `excludePattern` work against the identifiers (listed in the generated index files). They allow you to further tweak/constrain what is emitted as formatted markdown. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. I own both of these books, but I don't want those creatures in the formatted bestiary.
 
-    For example, to generate player-focused reference content for a Wild Beyond the Witchlight campaign, I've constrained things further: I am pulling from a much smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but then added exclude patterns to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners). My JSON looks like this:
+For example, to generate player-focused reference content for a Wild Beyond the Witchlight campaign, I've constrained things further: I am pulling from a much smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but then added exclude patterns to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners). My JSON looks like this:
 
-    ```json
-    {
-    "from": [
-        "PHB",
-        "DMG",
-        "XGE",
-        "TCE",
-        "EEPC",
-        "WBtW",
-        "VGM"
-    ],
-    "includeGroups": [
-        "familiars"
-    ],
-    "excludePattern": [
-        ".*sidekick.*",
-        "race|.*|dmg",
-        "race|(?!tabaxi).*|vgm",
-        "subrace|.*|aasimar|vgm",
-        "item|.*|vgm",
-        "monster|.*|tce",
-        "monster|.*|dmg",
-        "monster|.*|vgm",
-        "monster|.*|wbtw",
-        "monster|animated object.*|phb"
-    ],
-    "exclude": [
-        "race|aarakocra|eepc",
-        "feat|actor|phb",
-        "feat|artificer initiate|tce",
-        "feat|athlete|phb",
-        "feat|bountiful luck|xge",
-        "feat|chef|tce",
-        "feat|dragon fear|xge",
-        "feat|dragon hide|xge",
-        "feat|drow high magic|xge",
-        "feat|durable|phb",
-        "feat|dwarven fortitude|xge",
-        "feat|elven accuracy|xge",
-        "feat|fade away|xge",
-        "feat|fey teleportation|xge",
-        "feat|fey touched|tce",
-        "feat|flames of phlegethos|xge",
-        "feat|gunner|tce",
-        "feat|heavily armored|phb",
-        "feat|heavy armor master|phb",
-        "feat|infernal constitution|xge",
-        "feat|keen mind|phb",
-        "feat|lightly armored|phb",
-        "feat|linguist|phb",
-        "feat|lucky|phb",
-        "feat|medium armor master|phb",
-        "feat|moderately armored|phb",
-        "feat|mounted combatant|phb",
-        "feat|observant|phb",
-        "feat|orcish fury|xge",
-        "feat|piercer|tce",
-        "feat|poisoner|tce",
-        "feat|polearm master|phb",
-        "feat|prodigy|xge",
-        "feat|resilient|phb",
-        "feat|second chance|xge",
-        "feat|shadow touched|tce",
-        "feat|skill expert|tce",
-        "feat|slasher|tce",
-        "feat|squat nimbleness|xge",
-        "feat|tavern brawler|phb",
-        "feat|telekinetic|tce",
-        "feat|telepathic|tce",
-        "feat|weapon master|phb",
-        "feat|wood elf magic|xge",
-        "item|iggwilv's cauldron|wbtw"
-    ]
-    }
-    ```
+```json
+{
+  "from": [
+    "PHB",
+    "DMG",
+    "XGE",
+    "TCE",
+    "EEPC",
+    "WBtW",
+    "VGM"
+  ],
+  "includeGroups": [
+    "familiars"
+  ],
+  "excludePattern": [
+    ".*sidekick.*",
+    "race|.*|dmg",
+    "race|(?!tabaxi).*|vgm",
+    "subrace|.*|aasimar|vgm",
+    "item|.*|vgm",
+    "monster|.*|tce",
+    "monster|.*|dmg",
+    "monster|.*|vgm",
+    "monster|.*|wbtw",
+    "monster|animated object.*|phb"
+  ],
+  "exclude": [
+    "race|aarakocra|eepc",
+    "feat|actor|phb",
+    "feat|artificer initiate|tce",
+    "feat|athlete|phb",
+    "feat|bountiful luck|xge",
+    "feat|chef|tce",
+    "feat|dragon fear|xge",
+    "feat|dragon hide|xge",
+    "feat|drow high magic|xge",
+    "feat|durable|phb",
+    "feat|dwarven fortitude|xge",
+    "feat|elven accuracy|xge",
+    "feat|fade away|xge",
+    "feat|fey teleportation|xge",
+    "feat|fey touched|tce",
+    "feat|flames of phlegethos|xge",
+    "feat|gunner|tce",
+    "feat|heavily armored|phb",
+    "feat|heavy armor master|phb",
+    "feat|infernal constitution|xge",
+    "feat|keen mind|phb",
+    "feat|lightly armored|phb",
+    "feat|linguist|phb",
+    "feat|lucky|phb",
+    "feat|medium armor master|phb",
+    "feat|moderately armored|phb",
+    "feat|mounted combatant|phb",
+    "feat|observant|phb",
+    "feat|orcish fury|xge",
+    "feat|piercer|tce",
+    "feat|poisoner|tce",
+    "feat|polearm master|phb",
+    "feat|prodigy|xge",
+    "feat|resilient|phb",
+    "feat|second chance|xge",
+    "feat|shadow touched|tce",
+    "feat|skill expert|tce",
+    "feat|slasher|tce",
+    "feat|squat nimbleness|xge",
+    "feat|tavern brawler|phb",
+    "feat|telekinetic|tce",
+    "feat|telepathic|tce",
+    "feat|weapon master|phb",
+    "feat|wood elf magic|xge",
+    "item|iggwilv's cauldron|wbtw"
+  ]
+}
+```
 
 ## Templates
 
