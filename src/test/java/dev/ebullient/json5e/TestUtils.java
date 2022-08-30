@@ -11,6 +11,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -123,4 +124,10 @@ public class TestUtils {
                     });
         }
     }
+
+    final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
+    // for compile/test purposes. Must clone/sync separately.
+    final static Path TOOLS_PATH = PROJECT_PATH.resolve("5etools-mirror-1.github.io/data");
+    final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
+    final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
 }
