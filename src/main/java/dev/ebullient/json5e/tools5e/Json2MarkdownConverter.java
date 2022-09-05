@@ -1,7 +1,9 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -74,78 +76,135 @@ public class Json2MarkdownConverter {
     }
 
     public Json2MarkdownConverter writeRulesAndTables() {
-        List<QuteNote> nodes = new ArrayList<>();
-        List<JsonNode> tableToRule = new ArrayList<>();
+        Map<String, QuteNote> adventures = new HashMap<>();
+        Map<String, QuteNote> books = new HashMap<>();
+        List<QuteNote> rules = new ArrayList<>();
+        List<QuteNote> tables = new ArrayList<>();
+        List<QuteNote> variants = new ArrayList<>();
 
-        JsonNode table = index.getRules("table");
-        if (table != null) {
-            table.forEach(t -> {
-                if (t.get("name").asText().equals("Damage Types")) {
-                    tableToRule.add(t);
-                    return;
+        for (Entry<String, JsonNode> entry : index.getRules().entrySet()) {
+            String key = entry.getKey();
+            JsonNode node = entry.getValue();
+            if (node.isNull()) {
+                continue;
+            }
+            if (key.startsWith("book-")) {
+                addReference(books, key, node);
+            } else if (key.startsWith("adventure-")) {
+                addReference(adventures, key, node);
+            } else if (key.equals("table")) {
+                node.forEach(t -> {
+                    if (t.get("name").asText().equals("Damage Types")) {
+                        rules.add(new Table2QuteNote(index, t).buildRules());
+                        return;
+                    }
+                    addTable(tables, t);
+                });
+            } else if (key.equals("variantrule")) {
+                node.forEach(vr -> {
+                    String title = index.replaceText(vr.get("name").asText());
+                    QuteNote note = new Sourceless2QuteNote(index, vr, title).buildVariant();
+                    if (note != null) {
+                        variants.add(note);
+                    }
+                });
+            } else {
+                switch (key) {
+                    case "action":
+                        addActions(rules, node);
+                        break;
+                    case "itemProperty":
+                        addItemProperties(rules, node);
+                        break;
+                    case "magicItems":
+                        addLootGroup(tables, node, "Magic Item Tables");
+                        break;
+                    case "artObjects":
+                        addLootGroup(tables, node, "Art Objects");
+                        break;
+                    case "gems":
+                        addLootGroup(tables, node, "Gems");
+                        break;
+                    case "condition":
+                        addRule(rules, node, "Conditions");
+                        break;
+                    case "disease":
+                        addRule(rules, node, "Diseases");
+                        break;
+                    case "sense":
+                        addRule(rules, node, "Senses");
+                        break;
+                    case "skill":
+                        addRule(rules, node, "Skills");
+                        break;
+                    case "status":
+                        addRule(rules, node, "Status");
+                        break;
                 }
-                addTable(nodes, t);
-            });
+            }
         }
 
-        addLootGroup(nodes, index.getRules("magicItems"), "Magic Item Tables");
-        addLootGroup(nodes, index.getRules("artObjects"), "Art Objects");
-        addLootGroup(nodes, index.getRules("gems"), "Gems");
-
-        writer.writeNotes(index.compendiumRoot() + "tables/", nodes);
-        nodes.clear();
-
-        tableToRule.forEach(t -> nodes.add(new Table2QuteNote(index, t).buildRules()));
-
-        addRule(nodes, index.getRules("disease"), "Diseases");
-        addRule(nodes, index.getRules("skill"), "Skills");
-        addRule(nodes, index.getRules("sense"), "Senses");
-        addRule(nodes, index.getRules("condition"), "Conditions");
-        addRule(nodes, index.getRules("status"), "Status");
-        addItemProperties(nodes, index.getRules("itemProperty"));
-
-        writer.writeNotes(index.rulesRoot(), nodes);
-
+        if (!adventures.isEmpty()) {
+            writer.writeNotes(index.compendiumRoot() + "adventures/", adventures);
+        }
+        if (!books.isEmpty()) {
+            writer.writeNotes(index.compendiumRoot() + "books/", books);
+        }
+        writer.writeNotes(index.compendiumRoot() + "tables/", tables);
+        writer.writeNotes(index.rulesRoot(), rules);
+        writer.writeNotes(index.rulesRoot() + "variant-rules/", variants);
         return this;
     }
 
-    private void addTable(List<QuteNote> nodes, JsonNode table) {
-        if (table == null || table.isNull()) {
-            return;
-        }
-        QuteNote n = new Table2QuteNote(index, table).build();
-        if (n != null) {
-            nodes.add(n);
-        }
-    }
-
-    private void addLootGroup(List<QuteNote> nodes, JsonNode element, String title) {
-        if (element == null || element.isNull()) {
-            return;
-        }
-        QuteNote note = new Sourceless2QuteNote(index, element, title).buildLoot();
+    private void addActions(List<QuteNote> notes, JsonNode element) {
+        QuteNote note = new Sourceless2QuteNote(index, element, "Actions").buildActions();
         if (note != null) {
-            nodes.add(note);
+            notes.add(note);
         }
     }
 
-    private void addRule(List<QuteNote> nodes, JsonNode element, String title) {
-        if (element == null || element.isNull()) {
-            return;
-        }
-        QuteNote note = new Sourceless2QuteNote(index, element, title).build();
-        if (note != null) {
-            nodes.add(note);
-        }
-    }
-
-    private void addItemProperties(List<QuteNote> nodes, JsonNode element) {
-        if (element == null || element.isNull()) {
-            return;
-        }
+    private void addItemProperties(List<QuteNote> notes, JsonNode element) {
         QuteNote note = new Sourceless2QuteNote(index, element, "Item Properties").buildItemProperties();
         if (note != null) {
-            nodes.add(note);
+            notes.add(note);
         }
     }
+
+    private void addLootGroup(List<QuteNote> notes, JsonNode element, String title) {
+        QuteNote note = new Sourceless2QuteNote(index, element, title).buildLoot();
+        if (note != null) {
+            notes.add(note);
+        }
+    }
+
+    private void addReference(Map<String, QuteNote> notes, String key, JsonNode element) {
+        String indexKey = index.getDataKey(key);
+        JsonNode metadata = index.getNode(indexKey);
+        if (!element.has("data")) {
+            index.tui().errorf("No data for %s", key);
+            return;
+        }
+        if (metadata == null) {
+            index.tui().errorf("Unable to find metadata for %s", indexKey);
+            return;
+        }
+        String title = index.replaceText(metadata.get("name").asText());
+        Map<String, QuteNote> contents = new Sourceless2QuteNote(index, metadata, title).buildReference(element.get("data"));
+        notes.putAll(contents);
+    }
+
+    private void addRule(List<QuteNote> notes, JsonNode element, String title) {
+        QuteNote note = new Sourceless2QuteNote(index, element, title).build();
+        if (note != null) {
+            notes.add(note);
+        }
+    }
+
+    private void addTable(List<QuteNote> notes, JsonNode table) {
+        QuteNote n = new Table2QuteNote(index, table).build();
+        if (n != null) {
+            notes.add(n);
+        }
+    }
+
 }

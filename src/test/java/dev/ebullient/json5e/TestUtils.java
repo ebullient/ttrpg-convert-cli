@@ -101,6 +101,7 @@ public class TestUtils {
         try (Stream<Path> stream = Files.list(resourcePath)) {
             stream
                     .filter(p -> !p.getFileName().toString().startsWith("adventure"))
+                    .filter(p -> !p.getFileName().toString().startsWith("book"))
                     .filter(p -> !p.getFileName().toString().startsWith("foundry"))
                     .filter(p -> !p.getFileName().toString().startsWith("gen"))
                     .filter(p -> !p.getFileName().toString().startsWith("roll20"))
@@ -115,7 +116,7 @@ public class TestUtils {
                             }
                         } else if (f.getName().endsWith(".json")) {
                             try {
-                                index.importTree(doParse(p));
+                                index.importTree(f.getName(), doParse(p));
                             } catch (Exception e) {
                                 tui.errorf(e, "Error parsing %s", p);
                                 throw new RuntimeException(e);
