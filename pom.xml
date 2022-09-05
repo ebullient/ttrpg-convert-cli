@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.ebullient</groupId>
     <artifactId>json5e-convert-cli</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
