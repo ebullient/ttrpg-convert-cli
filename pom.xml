@@ -41,7 +41,7 @@
         <!-- Quarkus -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>2.11.3.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.12.0.Final</quarkus.platform.version>
         <!-- Libraries -->
         <assertj.version>3.23.1</assertj.version>
         <github-slugify.version>3.0.2</github-slugify.version>
