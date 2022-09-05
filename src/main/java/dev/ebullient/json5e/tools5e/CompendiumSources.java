@@ -114,6 +114,10 @@ public class CompendiumSources {
         return type;
     }
 
+    public static String sourceToLongName(String src) {
+        return abvToName.getOrDefault(src, src);
+    }
+
     @Override
     public String toString() {
         return "sources[" + key + ']';

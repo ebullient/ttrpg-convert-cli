@@ -70,7 +70,7 @@ public class JsonIndex implements JsonSource {
     public void readFile(Path p) throws IOException {
         File f = p.toFile();
         JsonNode node = Json5eTui.MAPPER.readTree(f);
-        importTree(node);
+        importTree(f.getName(), node);
         tui().debugf("🔖 Finished reading %s\n", p);
     }
 
@@ -100,31 +100,32 @@ public class JsonIndex implements JsonSource {
         }
     }
 
-    public JsonIndex importTree(JsonNode node) {
+    public JsonIndex importTree(String filename, JsonNode node) {
         if (!node.isObject()) {
             return this;
         }
 
         addConfigIfPresent(node);
 
+        addRulesIfPresent(node, "action");
+        addRulesIfPresent(node, "artObjects");
         addRulesIfPresent(node, "condition");
         addRulesIfPresent(node, "disease");
-        addRulesIfPresent(node, "status");
-        addRulesIfPresent(node, "skill");
-        addRulesIfPresent(node, "sense");
-
+        addRulesIfPresent(node, "gems");
         addRulesIfPresent(node, "itemProperty");
         addRulesIfPresent(node, "itemType");
-        addRulesIfPresent(node, "table");
+        addRulesIfPresent(node, "itemTypeAdditionalEntry");
         addRulesIfPresent(node, "magicItems");
-        addRulesIfPresent(node, "artObjects");
-        addRulesIfPresent(node, "gems");
+        addRulesIfPresent(node, "sense");
+        addRulesIfPresent(node, "skill");
+        addRulesIfPresent(node, "status");
+        addRulesIfPresent(node, "table");
+        addRulesIfPresent(node, "variantrule");
 
         // Reference/Internal Types
         node.withArray("backgroundFluff").forEach(x -> addToIndex(IndexType.backgroundfluff, x));
         node.withArray("itemEntry").forEach(x -> addToIndex(IndexType.itementry, x));
         node.withArray("itemFluff").forEach(x -> addToIndex(IndexType.itemfluff, x));
-        // TODO: node.withArray("variant").forEach(x -> addToIndex(IndexType.itemvariant, x));
         node.withArray("monsterFluff").forEach(x -> addToIndex(IndexType.monsterfluff, x));
         node.withArray("raceFluff").forEach(x -> addToIndex(IndexType.racefluff, x));
         node.withArray("spellFluff").forEach(x -> addToIndex(IndexType.spellfluff, x));
@@ -134,6 +135,7 @@ public class JsonIndex implements JsonSource {
         node.withArray("classFeature").forEach(x -> addToIndex(IndexType.classfeature, x));
         node.withArray("optionalfeature").forEach(x -> addToIndex(IndexType.optionalfeature, x));
         node.withArray("subclassFeature").forEach(x -> addToIndex(IndexType.subclassfeature, x));
+        // TODO: node.withArray("variant").forEach(x -> addToIndex(IndexType.itemvariant, x));
 
         // Output Types
         node.withArray("background").forEach(x -> addToIndex(IndexType.background, x));
@@ -154,7 +156,20 @@ public class JsonIndex implements JsonSource {
             }
         }
 
+        node.withArray("adventure").forEach(x -> addReferenceToIndex(x, "adventure"));
+        node.withArray("book").forEach(x -> addReferenceToIndex(x, "book"));
+        if (node.has("data") && !filename.isEmpty()) {
+            int slash = filename.indexOf('/');
+            int dot = filename.indexOf('.');
+            rules.put(filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot), node);
+        }
+
         return this;
+    }
+
+    private void addReferenceToIndex(JsonNode node, String type) {
+        String key = getDataKey(type, node.get("id").asText());
+        nodeIndex.put(key, node);
     }
 
     void addToIndex(IndexType type, JsonNode node) {
@@ -164,6 +179,13 @@ public class JsonIndex implements JsonSource {
             String lookupKey = getSubclassKey(node.get("shortName").asText().trim(),
                     node.get("className").asText(), node.get("classSource").asText());
             // add subclass to alias. Referenced from spells
+            addAlias(lookupKey, key);
+        }
+        if (type == IndexType.subrace) {
+            // {@race Aasimar (Fallen)|VGM}
+            String[] parts = key.split("\\|");
+            String lookupKey = String.format("race|%s (%s)|%s",
+                    parts[2], parts[1], parts[3]).toLowerCase();
             addAlias(lookupKey, key);
         }
 
@@ -435,6 +457,21 @@ public class JsonIndex implements JsonSource {
                 .replaceAll("\\|tce\\|8\\|tce", "|tce|8");
     }
 
+    public String getDataKey(String value) {
+        return String.format("%s|%s", IndexType.reference, value)
+                .toLowerCase();
+    }
+
+    public String getDataKey(String type, String id) {
+        return String.format("%s|%s-%s",
+                IndexType.reference, type, id)
+                .toLowerCase();
+    }
+
+    public String getAlias(String key) {
+        return aliases.get(key);
+    }
+
     /**
      * For subclasses, class features, and subclass features,
      * cross references come directly from the class definition
@@ -565,7 +602,8 @@ public class JsonIndex implements JsonSource {
     }
 
     boolean isIncluded(String key) {
-        return filteredIndex.containsKey(key);
+        String alias = getAlias(key);
+        return filteredIndex.containsKey(key) || (alias != null && filteredIndex.containsKey(alias));
     }
 
     public boolean isExcluded(String key) {
@@ -608,9 +646,12 @@ public class JsonIndex implements JsonSource {
         if (notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing indexes");
         }
+        Map<String, Object> allKeys = new HashMap<>();
         List<String> keys = new ArrayList<>(variantIndex.keySet());
         Collections.sort(keys);
-        writeFile(outputFile, keys);
+        allKeys.put("keys", keys);
+        allKeys.put("mapping", aliases);
+        writeFile(outputFile, allKeys);
     }
 
     public void writeSourceIndex(Path outputFile) throws IOException {
@@ -619,15 +660,15 @@ public class JsonIndex implements JsonSource {
         }
         List<String> keys = new ArrayList<>(filteredIndex.keySet());
         Collections.sort(keys);
-        writeFile(outputFile, keys);
+        writeFile(outputFile, Map.of("keys", keys));
     }
 
-    private void writeFile(Path outputFile, List<String> keys) throws IOException {
+    private void writeFile(Path outputFile, Map<String, Object> keys) throws IOException {
         DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
         pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
         Json5eTui.MAPPER.writer()
                 .with(pp)
-                .writeValue(outputFile.toFile(), Map.of("keys", keys));
+                .writeValue(outputFile.toFile(), keys);
     }
 
     @Override
@@ -640,8 +681,8 @@ public class JsonIndex implements JsonSource {
         return null;
     }
 
-    public JsonNode getRules(String key) {
-        return rules.get(key);
+    public Map<String, JsonNode> getRules() {
+        return rules;
     }
 
     static class Tuple {

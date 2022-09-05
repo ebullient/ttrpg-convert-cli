@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -131,17 +132,34 @@ public class MarkdownWriter {
 
         for (QuteNote n : notes) {
             String fileName = tui.slugify(n.getName()) + ".md";
-            Path target = targetDir.resolve(fileName);
-            String content = templates.renderNote(n);
-
-            try {
-                Files.write(target, content.getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                throw new WrappedIOException(e);
-            }
+            writeNote(targetDir, fileName, n);
         }
 
         tui.outPrintf("✅ Wrote %s notes (rules and tables).%n", notes.size());
+    }
+
+    public void writeNotes(String dirName, Map<String, QuteNote> notes) {
+        Path rootDir = Paths.get(output.toString(), dirName);
+
+        notes.forEach((k, v) -> {
+            Path fullPath = rootDir.resolve(k);
+            Path targetDir = fullPath.getParent();
+            String fileName = fullPath.getFileName().toString();
+            targetDir.toFile().mkdirs();
+            writeNote(targetDir, fileName, v);
+        });
+
+        tui.outPrintf("✅ Wrote %s notes (rules and tables).%n", notes.size());
+    }
+
+    public void writeNote(Path targetDir, String fileName, QuteNote n) {
+        Path target = targetDir.resolve(fileName);
+        String content = templates.renderNote(n);
+        try {
+            Files.write(target, content.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new WrappedIOException(e);
+        }
     }
 
     @TemplateData

@@ -807,6 +807,7 @@ public interface JsonSource {
             case "race":
                 // "Races:
                 // {@race Human} assumes PHB by default,
+                // {@race Aasimar (Fallen)|VGM}
                 // {@race Aarakocra|eepc} can have sources added with a pipe,
                 // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
                 return linkifyType(IndexType.race, match.group(2), "races");
@@ -845,8 +846,8 @@ public interface JsonSource {
         if (index().isExcluded(key)) {
             return linkText;
         }
-        JsonNode jsonSource = index().getNode(key);
-        CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
+        JsonNode jsonSource = getJsonNodeForKey(key);
+        CompendiumSources sources = index().constructSources(type, jsonSource);
         String resourceName = type == IndexType.item ? parts[0] : decoratedTypeName(sources);
         return linkOrText(linkText, key, dirName, resourceName);
     }
@@ -902,7 +903,7 @@ public interface JsonSource {
         if (index().isExcluded(key)) {
             return linkText;
         }
-        JsonNode jsonSource = index().getNode(key);
+        JsonNode jsonSource = getJsonNodeForKey(key);
         CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
         String resourceName = decorateMonsterName(jsonSource, sources);
         final String subdir;
@@ -916,5 +917,16 @@ public interface JsonSource {
             subdir = slugify(type);
         }
         return linkOrText(linkText, key, "bestiary/" + subdir, resourceName);
+    }
+
+    default JsonNode getJsonNodeForKey(String key) {
+        JsonNode jsonSource = index().getNode(key);
+        if (jsonSource == null) {
+            String alias = index().getAlias(key);
+            if (alias != null) {
+                jsonSource = index().getNode(alias);
+            }
+        }
+        return jsonSource;
     }
 }

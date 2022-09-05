@@ -1,9 +1,12 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,8 +20,15 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     final String title;
     CompendiumSources currentSource;
 
+    static IndexType getType(JsonNode jsonNode) {
+        if (jsonNode.has("source")) {
+            return IndexType.note;
+        }
+        return IndexType.sourceless;
+    }
+
     Sourceless2QuteNote(JsonIndex index, JsonNode jsonNode, String title) {
-        super(index, IndexType.sourceless, jsonNode);
+        super(index, getType(jsonNode), jsonNode);
         this.title = title;
     }
 
@@ -57,6 +67,58 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             maybeAddBlankLine(text);
             text.add(String.format("_Source: %s_", currentSource.getSourceText(index.srdOnly())));
         }
+    }
+
+    public QuteNote buildVariant() {
+        currentSource = sources;
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
+
+        return new QuteNote(title,
+                sources.getSourceText(index.srdOnly()),
+                getText("##"),
+                tags);
+    }
+
+    public Map<String, QuteNote> buildReference(JsonNode data) {
+        currentSource = sources;
+        if (index().rulesSourceExcluded(node, title)) {
+            return Map.of();
+        }
+        List<String> tags = new ArrayList<>(sources.getSourceTags());
+
+        Map<String, QuteNote> notes = new HashMap<>();
+
+        AtomicInteger prefix = new AtomicInteger(1);
+        String pFormat;
+        if (data.size() + 1 > 10) {
+            pFormat = "%02d";
+        } else {
+            pFormat = "%01d";
+        }
+
+        data.forEach(x -> {
+            List<String> text = new ArrayList<>();
+            appendEntryToText(text, x.get("entries"), "##");
+            String content = String.join("\n", text);
+            if (!content.isBlank()) {
+                String titlePage = title;
+                if (x.has("page")) {
+                    String page = x.get("page").asText();
+                    titlePage = title + ", p. " + page;
+                }
+                String name = x.get("name").asText();
+                QuteNote note = new QuteNote(name, titlePage, content, tags);
+                notes.put(String.format("%s/%s-%s.md",
+                        slugify(title),
+                        String.format(pFormat, prefix.get()),
+                        slugify(name)),
+                        note);
+                prefix.incrementAndGet();
+            }
+        });
+
+        return notes;
+
     }
 
     public QuteNote buildItemProperties() {
@@ -153,5 +215,79 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             return joinAndReplace(choose.withArray("fromGeneric"));
         }
         throw new IllegalArgumentException("What kind of item to choose? " + choose.toPrettyString());
+    }
+
+    public QuteNote buildActions() {
+        Set<String> tags = new HashSet<>();
+        List<String> text = new ArrayList<>();
+        Map<String, String> actionDuration = new HashMap<>();
+
+        node.forEach(entry -> appendAction(entry, text, actionDuration, tags));
+        if (text.isEmpty()) {
+            return null;
+        }
+
+        return new QuteNote(title, null, String.join("\n", text), tags);
+    }
+
+    private void appendAction(JsonNode entry, List<String> text, Map<String, String> actionDuration, Set<String> tags) {
+        currentSource = index.constructSources(IndexType.sourceless, entry);
+        String name = entry.get("name").asText();
+
+        if (index.rulesSourceExcluded(entry, name)) {
+            tui().debugf("Skilling action %s (excluded)", name);
+            return;
+        }
+
+        String revisedName = replaceText(name);
+        String duration = flattenActionTime(entry.get("time"));
+
+        maybeAddBlankLine(text);
+        text.add("## " + revisedName);
+
+        if (!duration.isEmpty()) {
+            actionDuration.put(revisedName, duration);
+            maybeAddBlankLine(text);
+            text.add("- **Duration:** " + duration);
+        }
+
+        maybeAddBlankLine(text);
+        appendEntryToText(text, entry, "###");
+
+        if (node.has("fromVariant")) {
+            maybeAddBlankLine(text);
+            text.add("This action is an optional addition to the game, from the optional/variant rule "
+                    + linkifyVariant(node.get("fromVariant").asText(), currentSource) + ".");
+        }
+
+        maybeAddBlankLine(text);
+        text.add(String.format("_Source: %s_", currentSource.getSourceText(index.srdOnly())));
+        tags.addAll(currentSource.getSourceTags());
+    }
+
+    private String flattenActionTime(JsonNode node) {
+        if (node == null || node.isNull()) {
+            return "";
+        } else if (node.isTextual()) {
+            return node.asText();
+        } else if (node.isObject()) {
+            return String.format("%s %s", node.get("number").asText(), node.get("unit").asText());
+        } else {
+            List<String> elements = new ArrayList<>();
+            node.forEach(x -> elements.add(flattenActionTime(x)));
+            return String.join(", ", elements);
+        }
+    }
+
+    private String linkifyVariant(String variant, CompendiumSources currentSource2) {
+        // "fromVariant": "Action Options",
+        // "fromVariant": "Spellcasting|XGE",
+        String[] parts = variant.trim().split("\\|");
+        if (parts.length > 1 && !index().sourceIncluded(parts[1])) {
+            return variant + " from " + CompendiumSources.sourceToLongName(parts[1]);
+        } else {
+            return String.format("[%s](%svariant-rules/%s.md)",
+                    variant, index().rulesRoot(), slugify(variant));
+        }
     }
 }
