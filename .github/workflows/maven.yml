@@ -76,7 +76,7 @@ jobs:
         git commit -m "🔖 $NEXT"
         git push
 
-        git tag $VERSION
+        git tag $NEXT
         git push --tags
         
         sed -i -r "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
