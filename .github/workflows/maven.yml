@@ -18,9 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.mvn-build.outputs.version }}
-
+      release: ${{ steps.filter.outputs.release }}
+       
     steps:
     - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          release:
+            - '.github/project.yml'
 
     - name: Set up JDK 11
       uses: actions/setup-java@v2
@@ -42,7 +49,43 @@ jobs:
         # refresh cache every month to avoid unlimited growth
         key: maven-repo-${{ runner.os }}-${{ steps.get-date.outputs.date }}
 
+    - name: yq - portable yaml processor
+      uses: mikefarah/yq@v4.27.3
+
+
+    - name: Maven release ${{steps.metadata.outputs.current-version}}
+      if: steps.filter.outputs.release == 'true'
+      id: mvn-build-release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |        
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        
+        # Messy and not maven-y, but whatever.
+        CURRENT=$(yq '.release.current-version' .github/project.yml )   
+        NEXT=$(yq '.release.next-version' .github/project.yml)
+        SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
+        echo $CURRENT $NEXT $SNAPSHOT
+        echo "::set-output name=version::$NEXT"
+
+        sed -i -r "s/$CURRENT/$NEXT/" README.md
+        sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
+        mvn -B clean package
+        git add README.md pom.xml
+        git commit -m "🔖 $NEXT"
+        git push
+
+        git tag $VERSION
+        git push --tags
+        
+        sed -i -r "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
+        git add pom.xml
+        git commit -m "🔧 Prepare for next release"
+        git push
+
     - name: Build with Maven
+      if: steps.filter.outputs.release == 'false'
       id: mvn-build
       run: |
         mvn -B formatter:validate install --file pom.xml

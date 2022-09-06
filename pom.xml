@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.ebullient</groupId>
     <artifactId>json5e-convert-cli</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -29,6 +29,7 @@
         </repository>
     </distributionManagement>
     <properties>
+        <revision>1.0.1-SNAPSHOT</revision>
         <!-- Build -->
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <maven.compiler.release>11</maven.compiler.release>
