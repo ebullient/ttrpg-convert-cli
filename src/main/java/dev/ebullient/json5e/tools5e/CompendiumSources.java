@@ -353,7 +353,7 @@ public class CompendiumSources {
         abvToName.put("UAOD", UA_PREFIX + "Order Domain");
         abvToName.put("UAOrderDomain", UA_PREFIX + "Order Domain");
         abvToName.put("UAOSS", UA_PREFIX + "Of Ships and the Sea");
-        abvToName.put("UAOfShipsAndTheSea", UA_PREFIX + "Of Ships and the Sea");
+        abvToName.put("UAOfShipsAndSea", UA_PREFIX + "Of Ships and the Sea");
         abvToName.put("UAP", UA_PREFIX + "Paladin");
         abvToName.put("UAPaladin", UA_PREFIX + "Paladin");
         abvToName.put("UAPCRM", UA_PREFIX + "Prestige Classes and Rune Magic");
