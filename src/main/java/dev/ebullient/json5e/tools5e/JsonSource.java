@@ -62,7 +62,8 @@ public interface JsonSource {
             return List.of(replaceText(node.asText()));
         } else if (node.isObject()) {
             throw new IllegalArgumentException(
-                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node, getSources()));
+                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node,
+                            getSources()));
         }
         return streamOf(jsonSource.withArray(field))
                 .map(x -> replaceText(x.asText()).trim())
@@ -79,7 +80,8 @@ public interface JsonSource {
             return node.asText();
         } else if (node.isObject()) {
             throw new IllegalArgumentException(
-                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node, getSources()));
+                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node,
+                            getSources()));
         }
         return joinAndReplace((ArrayNode) node);
     }
@@ -142,7 +144,7 @@ public interface JsonSource {
     }
 
     default int levelToPb(int level) {
-        //2 + (¼  * (Level – 1))
+        // 2 + (¼ * (Level – 1))
         return 2 + ((int) (.25 * (level - 1)));
     }
 
@@ -401,6 +403,15 @@ public interface JsonSource {
                     appendTable(text, node);
                     break;
                 }
+                case "tableGroup": {
+                    List<String> inner = new ArrayList<>();
+                    maybeAddBlankLine(text);
+                    inner.add("[!example] " + replaceText(node.get("name").asText()));
+                    appendEntryToText(inner, node.get("tables"), "###");
+                    inner.forEach(x -> text.add("> " + x));
+                    maybeAddBlankLine(text);
+                    break;
+                }
                 case "options":
                     appendOptions(text, node);
                     break;
@@ -422,15 +433,19 @@ public interface JsonSource {
                             asAbilityEnum(node.withArray("attributes").get(0))));
                     break;
                 case "inline":
+                case "inlineBlock": {
                     List<String> inner = new ArrayList<>();
                     appendEntryToText(inner, node.get("entries"), null);
                     text.add(String.join("", inner));
                     break;
+                }
+                case "gallery":
                 case "image":
                     // TODO: maybe someday?
                     break;
                 default:
-                    tui().errorf("Unknown entry object type %s from %s: %s", objectType, getSources(), node.toPrettyString());
+                    tui().errorf("Unknown entry object type %s from %s: %s", objectType, getSources(),
+                            node.toPrettyString());
             }
             // any entry/entries handled by type..
             return;
@@ -690,81 +705,95 @@ public interface JsonSource {
     default String replaceText(String input) {
         String result = input;
 
-        // "{@atk mw} {@hit 1} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4 ‒1}) piercing damage."
-        // "{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4+2}) slashing damage."
-        // "{@atk mw} {@hit 14} to hit, one target. {@h}22 ({@damage 3d8}) piercing damage. Target must make a {@dc 19} Dexterity save, or be swallowed by the worm!"
-        result = dicePattern.matcher(result)
-                .replaceAll((match) -> match.group(2));
-        result = chancePattern.matcher(result)
-                .replaceAll((match) -> match.group(1) + "% chance");
+        // "{@atk mw} {@hit 1} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4 ‒1})
+        // piercing damage."
+        // "{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4+2})
+        // slashing damage."
+        // "{@atk mw} {@hit 14} to hit, one target. {@h}22 ({@damage 3d8}) piercing
+        // damage. Target must make a {@dc 19} Dexterity save, or be swallowed by the
+        // worm!"
+        try {
+            result = result
+                    .replace("#$prompt_number:title=Enter Alert Level$#", "Alert Level")
+                    .replace("#$prompt_number:title=Enter Charisma Modifier$#", "Charisma modifier")
+                    .replace("#$prompt_number:title=Enter Lifestyle Modifier$#", "Charisma modifier")
+                    .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
+                    .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)");
+            result = dicePattern.matcher(result)
+                    .replaceAll((match) -> match.group(2));
+            result = chancePattern.matcher(result)
+                    .replaceAll((match) -> match.group(1) + "% chance");
 
-        result = backgroundPattern.matcher(result).replaceAll(this::linkify);
-        result = classPattern1.matcher(result).replaceAll(this::linkify);
-        result = creaturePattern.matcher(result).replaceAll(this::linkify);
-        result = featPattern.matcher(result).replaceAll(this::linkify);
-        result = itemPattern.matcher(result).replaceAll(this::linkify);
-        result = racePattern.matcher(result).replaceAll(this::linkify);
-        result = spellPattern.matcher(result).replaceAll(this::linkify);
+            result = backgroundPattern.matcher(result).replaceAll(this::linkify);
+            result = classPattern1.matcher(result).replaceAll(this::linkify);
+            result = creaturePattern.matcher(result).replaceAll(this::linkify);
+            result = featPattern.matcher(result).replaceAll(this::linkify);
+            result = itemPattern.matcher(result).replaceAll(this::linkify);
+            result = racePattern.matcher(result).replaceAll(this::linkify);
+            result = spellPattern.matcher(result).replaceAll(this::linkify);
 
-        result = condPattern.matcher(result)
-                .replaceAll((match) -> linkifyRules(match.group(1), "conditions"));
+            result = condPattern.matcher(result)
+                    .replaceAll((match) -> linkifyRules(match.group(1), "conditions"));
 
-        result = diseasePattern.matcher(result)
-                .replaceAll((match) -> linkifyRules(match.group(1), "diseases"));
+            result = diseasePattern.matcher(result)
+                    .replaceAll((match) -> linkifyRules(match.group(1), "diseases"));
 
-        result = sensePattern.matcher(result)
-                .replaceAll((match) -> linkifyRules(match.group(1), "senses"));
+            result = sensePattern.matcher(result)
+                    .replaceAll((match) -> linkifyRules(match.group(1), "senses"));
 
-        result = skillPattern.matcher(result)
-                .replaceAll((match) -> linkifyRules(match.group(1), "skills"));
+            result = skillPattern.matcher(result)
+                    .replaceAll((match) -> linkifyRules(match.group(1), "skills"));
 
-        result = notePattern.matcher(result)
-                .replaceAll((match) -> {
-                    List<String> text = new ArrayList<>();
-                    text.add("> [!note]");
-                    for (String line : match.group(2).split("\n")) {
-                        text.add("> " + line);
-                    }
-                    return String.join("\n", text);
-                });
+            result = notePattern.matcher(result)
+                    .replaceAll((match) -> {
+                        List<String> text = new ArrayList<>();
+                        text.add("> [!note]");
+                        for (String line : match.group(2).split("\n")) {
+                            text.add("> " + line);
+                        }
+                        return String.join("\n", text);
+                    });
 
-        result = result
-                .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
-                .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
-                .replaceAll("\\{@5etools ([^}|]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@area ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@action ([^}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@hazard ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@dc ([^}]+)}", "DC $1")
-                .replaceAll("\\{@d20 ([^}]+?)}", "$1")
-                .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
-                .replaceAll("\\{@recharge}", "(Recharge 6)")
-                .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@classFeature ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@optfeature ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
-                .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
-                .replaceAll("\\{@deity ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@quickref ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
-                .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
-                .replaceAll("\\{@hit ([^}]+)}", "+$1")
-                .replaceAll("\\{@h}", "Hit: ")
-                .replaceAll("\\{@atk m}", "*Melee Attack:*")
-                .replaceAll("\\{@atk mw}", "*Melee Weapon Attack:*")
-                .replaceAll("\\{@atk rw}", "*Ranged Weapon Attack:*")
-                .replaceAll("\\{@atk mw,rw}", "*Melee or Ranged Weapon Attack:*")
-                .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
-                .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
-                .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
-                .replaceAll("\\{@b ([^}]+?)}", "**$1**")
-                .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
-                .replaceAll("\\{@i ([^}]+?)}", "_$1_")
-                .replaceAll("\\{@italic ([^}]+)}", "_$1_");
+            result = result
+                    .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
+                    .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
+                    .replaceAll("\\{@5etools ([^}|]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@area ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@action ([^}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@hazard ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@dc ([^}]+)}", "DC $1")
+                    .replaceAll("\\{@d20 ([^}]+?)}", "$1")
+                    .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
+                    .replaceAll("\\{@recharge}", "(Recharge 6)")
+                    .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@classFeature ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@optfeature ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
+                    .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
+                    .replaceAll("\\{@deity ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@quickref ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
+                    .replaceAll("\\{@hit ([^}]+)}", "+$1")
+                    .replaceAll("\\{@h}", "Hit: ")
+                    .replaceAll("\\{@atk m}", "*Melee Attack:*")
+                    .replaceAll("\\{@atk mw}", "*Melee Weapon Attack:*")
+                    .replaceAll("\\{@atk rw}", "*Ranged Weapon Attack:*")
+                    .replaceAll("\\{@atk mw,rw}", "*Melee or Ranged Weapon Attack:*")
+                    .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
+                    .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
+                    .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
+                    .replaceAll("\\{@b ([^}]+?)}", "**$1**")
+                    .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
+                    .replaceAll("\\{@i ([^}]+?)}", "_$1_")
+                    .replaceAll("\\{@italic ([^}]+)}", "_$1_");
 
+        } catch (Exception e) {
+            tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
+        }
         // after other replacements
         return result.replaceAll("\\{@adventure ([^|}]+)\\|[^}]*}", "$1");
     }
@@ -782,7 +811,8 @@ public interface JsonSource {
                 // "Backgrounds:
                 // {@background Charlatan} assumes PHB by default,
                 // {@background Anthropologist|toa} can have sources added with a pipe,
-                // {@background Anthropologist|ToA|and optional link text added with another pipe}.",
+                // {@background Anthropologist|ToA|and optional link text added with another
+                // pipe}.",
                 return linkifyType(IndexType.background, match.group(2), "backgrounds");
             case "creature":
                 // "Creatures:
@@ -858,8 +888,9 @@ public interface JsonSource {
         // {@class artificer|uaartificer} can have sources added with a pipe,
         // {@class fighter|phb|optional link text added with another pipe},
         // {@class fighter|phb|subclasses added|Eldritch Knight} with another pipe,
-        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with another pipe
-        //    (first number is level index (0-19), second number is feature index (0-n)).",
+        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with
+        // another pipe
+        // (first number is level index (0-19), second number is feature index (0-n)).",
         String[] parts = match.split("\\|");
         String className = parts[0];
         String classSource = "phb";

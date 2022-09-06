@@ -25,7 +25,7 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             index = new JsonIndex(sources, tui)
                     .importTree("", TestUtils.doParse(TestUtils.TEST_PATH_JSON));
-            for (String x : List.of("adventures.json", "books.json", "adventure/adventure-lmop.json", "book/book-vgm.json")) {
+            for (String x : List.of("adventures.json", "books.json", "adventure/adventure-wdh.json", "book/book-vgm.json")) {
                 index.importTree(x, TestUtils.doParse(TestUtils.TOOLS_PATH.resolve(x)));
             }
             TestUtils.fullIndex(index, TestUtils.TOOLS_PATH, tui);
