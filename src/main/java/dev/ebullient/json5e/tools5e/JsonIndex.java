@@ -487,6 +487,10 @@ public class JsonIndex implements JsonSource {
         return filteredIndex.get(finalKey);
     }
 
+    public JsonNode getOrigin(String finalKey) {
+        return nodeIndex.get(finalKey);
+    }
+
     public JsonNode getOrigin(IndexType type, String name, String source) {
         String key = String.format("%s|%s|%s", type, name, source)
                 .toLowerCase();

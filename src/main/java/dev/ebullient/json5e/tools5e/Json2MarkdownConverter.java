@@ -178,12 +178,16 @@ public class Json2MarkdownConverter {
     }
 
     private void addReference(Map<String, QuteNote> notes, String key, JsonNode element) {
-        String indexKey = index.getDataKey(key);
-        JsonNode metadata = index.getNode(indexKey);
         if (!element.has("data")) {
             index.tui().errorf("No data for %s", key);
             return;
         }
+        String indexKey = index.getDataKey(key);
+        if (index.isExcluded(indexKey)) {
+            index.tui().debugf("%s is excluded", indexKey);
+            return;
+        }
+        JsonNode metadata = index.getOrigin(indexKey);
         if (metadata == null) {
             index.tui().errorf("Unable to find metadata for %s", indexKey);
             return;
