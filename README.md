@@ -54,7 +54,7 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 
 1. Clone this repository
 2. Build this project: `quarkus build` or `./mvnw install`
-3. `java -jar target/json5e-convert-cli-199-SNAPSHOT-runner.jar --help`
+3. Verify the build: `java -jar target/json5e-convert-cli-199-SNAPSHOT-runner.jar --help`
 
 To run commands listed below, either: 
 
@@ -69,7 +69,7 @@ To run commands listed below, either:
 
 ## Starting with 5eTools JSON data
 
-1. Create a shallow clone of the 5etools mirror (which can/should be deleted afterwards):
+1. Download a release of the 5e tools mirror, or create a shallow clone of the repo (which can/should be deleted afterwards):
 
     ```shell
     git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
@@ -142,7 +142,7 @@ I use a json file to provide detailed configuration for sources, as doing so wit
 
 - `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.  
 
-    - **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/55fe9139fe56a27b3148f8faa0834f3e34aa95ec/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L130)
+    - **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
 
 - `paths` allows you to redefine vault paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
 

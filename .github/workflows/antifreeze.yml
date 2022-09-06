@@ -1,0 +1,50 @@
+# Avoid SNAPSHOT being frozen by jitpack
+
+name: antifreeze
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  schedule:
+    - cron: "5 3 */3 * *"
+
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  clear:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: 11
+        distribution: 'temurin'
+
+    - name: yq - portable yaml processor
+      uses: mikefarah/yq@v4.27.3
+
+    - name: Project metadata
+      id: metadata
+      run: |
+        SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
+        ARTIFACT=$(yq '.artifact' .github/project.yml)
+        echo $SNAPSHOT $ARTIFACT
+
+        echo "::set-output name=snapshot::${SNAPSHOT}"
+        echo "::set-output name=artifact::${ARTIFACT}"
+
+    - name: Delete Jitpack resource
+      id: jitpack-antifreeze
+      env:
+        JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
+        SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
+        ARTIFACT: ${{ steps.metadata.outputs.artifact }}
+      shell: bash
+      run: |
+        echo "Delete JitPack artifacts for tag"
+        curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/$ARTIFACT/$SNAPSHOT
