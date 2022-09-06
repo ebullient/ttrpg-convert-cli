@@ -145,14 +145,14 @@ public class Json2MarkdownConverter {
         }
 
         if (!adventures.isEmpty()) {
-            writer.writeNotes(index.compendiumRoot() + "adventures/", adventures);
+            writer.writeNotes("adventures/", adventures);
         }
         if (!books.isEmpty()) {
-            writer.writeNotes(index.compendiumRoot() + "books/", books);
+            writer.writeNotes("books/", books);
         }
-        writer.writeNotes(index.compendiumRoot() + "tables/", tables);
-        writer.writeNotes(index.rulesRoot(), rules);
-        writer.writeNotes(index.rulesRoot() + "variant-rules/", variants);
+        writer.writeNotes("tables/", tables);
+        writer.writeNotes("rules/", rules);
+        writer.writeNotes("rules/variant-rules/", variants);
         return this;
     }
 
