@@ -7,6 +7,7 @@ on:
       - .github/**
       - '**.xml'
       - 'src/**'
+      - 'ide-config'
   pull_request:
     paths:
       - '**.xml'
@@ -17,17 +18,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.mvn-build.outputs.version }}
-      release: ${{ steps.filter.outputs.release }}
-       
+      current: ${{ steps.metadata.outputs.current }}
+      next: ${{ steps.metadata.outputs.next }}
+      snapshot: ${{ steps.metadata.outputs.snapshot }}
+      artifact: ${{ steps.metadata.outputs.artifact }}
+
     steps:
     - uses: actions/checkout@v2
     - uses: dorny/paths-filter@v2
       id: filter
       with:
         filters: |
-          release:
+          project:
             - '.github/project.yml'
+
+    # Fetches all tags for the repo
+    - name: Fetch tags
+      run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
     - name: Set up JDK 11
       uses: actions/setup-java@v2
@@ -52,49 +59,93 @@ jobs:
     - name: yq - portable yaml processor
       uses: mikefarah/yq@v4.27.3
 
+    - name: Project metadata
+      id: metadata
+      run: |
+        CURRENT=$(yq '.release.current-version' .github/project.yml )
+        NEXT=$(yq '.release.next-version' .github/project.yml)
+        SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
+        ARTIFACT=$(yq '.artifact' .github/project.yml)
+        echo $CURRENT $NEXT $SNAPSHOT $ARTIFACT
 
-    - name: Maven release ${{steps.metadata.outputs.current-version}}
-      if: steps.filter.outputs.release == 'true'
+        echo "::set-output name=current::${CURRENT}"
+        echo "::set-output name=next::${NEXT}"
+        echo "::set-output name=snapshot::${SNAPSHOT}"
+        echo "::set-output name=artifact::${ARTIFACT}"
+
+    - name: Maven release
+      if: steps.filter.outputs.project == 'true'
       id: mvn-build-release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |        
+        CURRENT: ${{ steps.metadata.outputs.current }}
+        NEXT: ${{ steps.metadata.outputs.next }}
+        SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
+        ARTIFACT: ${{ steps.metadata.outputs.artifact }}
+      run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        
-        # Messy and not maven-y, but whatever.
-        CURRENT=$(yq '.release.current-version' .github/project.yml )   
-        NEXT=$(yq '.release.next-version' .github/project.yml)
-        SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
-        echo $CURRENT $NEXT $SNAPSHOT
-        echo "::set-output name=version::$NEXT"
 
-        sed -i -r "s/$CURRENT/$NEXT/" README.md
-        sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
-        mvn -B clean package
-        git add README.md pom.xml
-        git commit -m "🔖 $NEXT"
-        git push
+        git show-ref --tags $NEXT
+        if git show-ref --tags $NEXT --quiet; then
+          echo Tagged release alreay exists
+          mvn -B formatter:validate install --file pom.xml
+          echo "::set-output name=release::false"
+        else
+          # Messy and not maven-y, but whatever.
+          sed -i -r "s/$CURRENT/$NEXT/g" README.md
+          sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
+          mvn -B clean package
 
-        git tag $NEXT
-        git push --tags
-        
-        sed -i -r "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
-        git add pom.xml
-        git commit -m "🔧 Prepare for next release"
-        git push
+          git add README.md pom.xml
+          git commit -m "🔖 $NEXT"
+          git push
+
+          git tag $NEXT
+          git push --tags
+
+          sed -i -r "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
+          git add pom.xml
+          git commit -m "🔧 Prepare for next release"
+          git push
+          echo "::set-output name=release::true"
+        fi
 
     - name: Build with Maven
-      if: steps.filter.outputs.release == 'false'
+      if: steps.filter.outputs.project == 'false'
       id: mvn-build
       run: |
         mvn -B formatter:validate install --file pom.xml
-        VERSION=$(./mvnw -B --no-transfer-progress help:evaluate -Dexpression=project.version | grep -v INFO)
-        echo "::set-output name=version::$VERSION"
 
     # Temporarily disable native builds
     # - name: Build in native
+    #  if: steps.filter.outputs.project == 'false'
     #  run: mvn -B -Dnative verify --file pom.xml
+
+    # Create the release on github
+    - name: Create Release
+      if: steps.mvn-build-release.outputs.release == 'true'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.metadata.outputs.next }}
+        release_name: Release ${{ steps.metadata.outputs.next }}
+        draft: false
+        prerelease: false
+
+    - name: Upload runner.jar
+      if: steps.mvn-build-release.outputs.release == 'true'
+      id: upload-jar
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
+        asset_name: ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
+        asset_content_type: application/java-archive
 
   update-snapshot:
     # Only run for successful build of the main branch
@@ -107,19 +158,17 @@ jobs:
 
       - name: Update tag
         env:
-          VERSION: ${{needs.build.outputs.version}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
+          SNAPSHOT: ${{needs.build.outputs.snapshot}}
+          ARTIFACT: ${{needs.build.outputs.artifact}}
         shell: bash
         run: |
-          echo $VERSION
-          if [[ $VERSION == [.0-9]*-SNAPSHOT ]]; then
-            git config user.name "${GITHUB_ACTOR}"
-            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-            echo "Update tag for $VERSION"
-            git push origin :refs/tags/$VERSION
-            git tag -f $VERSION
-            git push --tags
-            echo "Delete JitPack artifacts for tag"
-            curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/json5e-convert-cli/$VERSION
-          fi
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          echo "Update tag for $SNAPSHOT"
+          git push origin :refs/tags/$SNAPSHOT
+          git tag -f $SNAPSHOT
+          git push --tags
+          echo "Delete JitPack artifacts for tag"
+          curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/$ARTIFACT/$SNAPSHOT
