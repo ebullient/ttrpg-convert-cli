@@ -36,10 +36,10 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 
 1. Install JBang: https://www.jbang.dev/documentation/guide/latest/installation.html
 
-2. Install the snapshot jar: 
+2. Install the pre-built jar: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.1/json5e-convert-cli-1.0.1-SNAPSHOT-runner.jar
+    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.1/json5e-convert-cli-1.0.1-runner.jar
     ```
 
 3. Run the command: 
@@ -54,15 +54,15 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 
 1. Clone this repository
 2. Build this project: `quarkus build` or `./mvnw install`
-3. `java -jar target/json5e-convert-cli-1.0.1-runner.jar --help`
+3. `java -jar target/json5e-convert-cli-199-SNAPSHOT-runner.jar --help`
 
 To run commands listed below, either: 
 
-- Replace `5e-convert` with `java -jar target/json5e-convert-cli-1.0.1-runner.jar`, or
+- Replace `5e-convert` with `java -jar target/json5e-convert-cli-199-SNAPSHOT-runner.jar`, or
 - Use JBang to create an alias that points to the built jar: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh ~/.m2/repository/dev/ebullient/json5e-convert-cli/1.0.1/json5e-convert-cli-1.0.1-SNAPSHOT-runner.jar
+    jbang app install --name 5e-convert --force --fresh ~/.m2/repository/dev/ebullient/json5e-convert-cli/199-SNAPSHOT/json5e-convert-cli-199-SNAPSHOT-runner.jar
     ```
 
     > Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
