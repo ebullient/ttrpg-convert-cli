@@ -399,6 +399,21 @@ public interface JsonSource {
                     appendList(text, node.withArray("items"));
                     break;
                 }
+                case "abilityGeneric": {
+                    List<String> abilities = new ArrayList<>();
+                    node.withArray("attributes").forEach(x -> abilities.add(asAbilityEnum(x)));
+
+                    List<String> inner = new ArrayList<>();
+                    inner.add(node.get("name").asText());
+                    inner.add(node.get("text").asText());
+                    inner.add(String.join(", ", abilities));
+                    inner.add("modifier");
+
+                    maybeAddBlankLine(text);
+                    text.add(String.join(" ", inner));
+                    maybeAddBlankLine(text);
+                    break;
+                }
                 case "table": {
                     appendTable(text, node);
                     break;
