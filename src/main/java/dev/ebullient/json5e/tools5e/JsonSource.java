@@ -531,7 +531,7 @@ public interface JsonSource {
                     .map(x -> replaceText(x.asText()))
                     .collect(Collectors.joining(" | "));
 
-            if (blockid == null) {
+            if (blockid.isEmpty()) {
                 blockid = slugify(header.replaceAll("d\\d+", "")
                         .replace("|", "")
                         .replaceAll("\\s+", " ")
