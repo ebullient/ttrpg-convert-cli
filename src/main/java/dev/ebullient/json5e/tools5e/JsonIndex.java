@@ -597,12 +597,19 @@ public class JsonIndex implements JsonSource {
                 && includeGroups.contains("familiars") && familiarKeys.contains(key)) {
             return true;
         }
+
         if (key.startsWith("subrace|") || key.startsWith("subclass") || key.startsWith("optionalfeature|")) {
             String rs = node.get("source").asText().toLowerCase();
             return allowedSources.contains(rs) || allowedSources.stream().anyMatch(source -> key.contains("|" + source));
         }
 
-        return allowedSources.stream().anyMatch(source -> key.contains("|" + source));
+        CompendiumSources sources = constructSources(IndexType.getTypeFromKey(key), node);
+        for (String s : sources.bookSources) {
+            if (allowedSources.contains(s.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean isIncluded(String key) {

@@ -18,7 +18,8 @@ public class JsonDataSubsetTest {
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
-        commonTests = new CommonDataTests(List.of("PHB", "DMG", "XGE", "TCE"));
+        // A Tree Blight is from CoS, but appears in WbtW. It is listed in "otherSources" (should pull that entry in)
+        commonTests = new CommonDataTests(List.of("PHB", "DMG", "XGE", "TCE", "WbtW"));
     }
 
     @AfterEach
