@@ -160,15 +160,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
     void findHp() {
         JsonNode health = node.get("hp");
         if (health.has("special")) {
-            JsonNode special = health.get("special");
-            if (special.isNumber()) {
-                hp = special.asInt();
-
+            String special = health.get("special").asText();
+            if (special.matches("^[\\d\"]+$")) {
+                hp = Integer.parseInt(special.replace("\"", ""));
                 if (health.has("original")) {
                     hpText = health.get("original").asText();
                 }
             } else {
-                hpText = special.asText();
+                hpText = special;
             }
         } else {
             if (health.has("average")) {
