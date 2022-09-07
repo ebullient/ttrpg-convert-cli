@@ -26,7 +26,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        fetch-depth: 0 
+        fetch-depth: 0
 
     - uses: dorny/paths-filter@v2
       id: filter
@@ -86,36 +86,37 @@ jobs:
         SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
         ARTIFACT: ${{ steps.metadata.outputs.artifact }}
       run: |
-        # PRESENT-$(git show-ref --tags $NEXT)
-        # if git show-ref --tags $NEXT --quiet; then
-        #   echo "🔹 Tagged release alreay exists"
-        #   mvn -B formatter:validate install --file pom.xml
-        #   echo "::set-output name=release::false"
-        # else
-        echo "🔹 Creating new release"
+        t=$(git describe --tags `git rev-list --tags --max-count=1`)
         
-        # Messy and not maven-y, but whatever.
-        sed -i -r "s/$CURRENT/$NEXT/g" README.md
-        sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
+        if [ "$t" == "$NEXT" ]; then
+          echo "🔹 Tagged release alreay exists"
+          mvn -B formatter:validate install --file pom.xml
+          echo "::set-output name=release::false"
+        else
+          echo "🔹 Creating new release"
+          
+          # Messy and not maven-y, but whatever.
+          sed -i -r "s/$CURRENT/$NEXT/g" README.md
+          sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
 
-        mvn -B clean package
+          mvn -B clean package
 
-        git config user.name github-actions
-        git config user.email github-actions@github.com
+          git config user.name github-actions
+          git config user.email github-actions@github.com
 
-        git add README.md pom.xml
-        git commit -m "🔖 $NEXT"
-        git push
+          git add README.md pom.xml
+          git commit -m "🔖 $NEXT"
+          git push
 
-        git tag $NEXT
-        git push --tags
+          git tag $NEXT
+          git push --tags
 
-        sed -i -r "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
-        git add pom.xml
-        git commit -m "🔧 Prepare for next release"
-        git push
-        echo "::set-output name=release::true"
-        # fi
+          sed -i -r "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
+          git add pom.xml
+          git commit -m "🔧 Prepare for next release"
+          git push
+          echo "::set-output name=release::true"
+        fi
 
     - name: Build with Maven
       if: steps.filter.outputs.project == 'false'
