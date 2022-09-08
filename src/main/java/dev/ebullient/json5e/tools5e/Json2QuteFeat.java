@@ -81,7 +81,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 if ("weapon".equals(key)) {
                     key += "s";
                 }
-                profs.add(String.format("%s %s", key, field.getValue().asText()));
+                profs.add(String.format("%s %s", field.getValue().asText(), key));
             }));
             if (!profs.isEmpty()) {
                 prereqs.add(String.format("Proficiency with %s", String.join(" or ", profs)));
