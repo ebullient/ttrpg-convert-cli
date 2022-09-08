@@ -31,7 +31,9 @@ public class Json2MarkdownConverter {
             IndexType nodeType = IndexType.getTypeFromKey(e.getKey());
             JsonNode jsonSource = e.getValue();
 
-            if (nodeType != type) {
+            if (type == IndexType.race && nodeType == IndexType.subrace) {
+                // include these, too
+            } else if (nodeType != type) {
                 continue;
             }
 
@@ -41,6 +43,11 @@ public class Json2MarkdownConverter {
                 if (converted != null) {
                     nodes.add(converted);
                     nodes.addAll(jsonClass.buildSubclasses());
+                }
+            } else if (type == IndexType.race || type == IndexType.subrace) {
+                QuteSource converted = new Json2QuteRace(index, type, jsonSource).build();
+                if (converted != null) {
+                    nodes.add(converted);
                 }
             } else {
                 QuteSource converted = json2qute(type, jsonSource);
@@ -54,22 +61,20 @@ public class Json2MarkdownConverter {
         return this;
     }
 
-    private QuteSource json2qute(IndexType type, JsonNode jsonNode) {
+    private QuteSource json2qute(IndexType type, JsonNode jsonSource) {
         switch (type) {
             case background:
-                return new Json2QuteBackground(index, type, jsonNode).build();
+                return new Json2QuteBackground(index, type, jsonSource).build();
             case feat:
-                return new Json2QuteFeat(index, type, jsonNode).build();
+                return new Json2QuteFeat(index, type, jsonSource).build();
             case item:
-                return new Json2QuteItem(index, type, jsonNode).build();
+                return new Json2QuteItem(index, type, jsonSource).build();
             case monster:
-                return new Json2QuteMonster(index, type, jsonNode).build();
+                return new Json2QuteMonster(index, type, jsonSource).build();
             case namelist:
-                return new Json2QuteName(index, jsonNode).build();
-            case race:
-                return new Json2QuteRace(index, type, jsonNode).build();
+                return new Json2QuteName(index, jsonSource).build();
             case spell:
-                return new Json2QuteSpell(index, type, jsonNode).build();
+                return new Json2QuteSpell(index, type, jsonSource).build();
             default:
                 throw new IllegalArgumentException("Unsupported type " + type);
         }

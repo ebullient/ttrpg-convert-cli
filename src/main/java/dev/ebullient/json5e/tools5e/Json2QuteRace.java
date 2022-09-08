@@ -130,7 +130,7 @@ public class Json2QuteRace extends Json2QuteCommon {
         List<Tuple> variants = new ArrayList<>();
         variants.add(new Tuple(key, jsonSource));
         CompendiumSources sources = index.constructSources(type, jsonSource);
-        index.subraces(sources).forEach(sr -> {
+        index.originSubraces(sources).forEach(sr -> {
             JsonNode newNode = index.copier.handleCopy(type, sr);
             CompendiumSources srSources = index.constructSources(IndexType.subrace, newNode);
             variants.add(new Tuple(srSources.getKey(), newNode));
