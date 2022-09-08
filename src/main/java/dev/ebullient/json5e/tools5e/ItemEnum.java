@@ -152,7 +152,10 @@ public enum ItemEnum {
                 tag.append("/cursed");
             }
         } else if (isWondrousItem()) {
-            tag.append("/wondrous").append(this == WONDROUS ? "" : "/").append(tui.slugify(genericType));
+            tag.append("/wondrous");
+            if (this != WONDROUS) {
+                tag.append("/").append(tui.slugify(genericType));
+            }
         } else if (isMoney()) {
             tag.append("/wealth");
         }
