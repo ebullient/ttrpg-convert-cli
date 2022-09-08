@@ -58,17 +58,21 @@ public class CompendiumSources {
             srcText.add(String.format("Derived from %s (%s)", copyOf, copySrc));
         }
 
-        srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
-                .filter(x -> !x.get("source").asText().equals(copySrc))
-                .peek(x -> this.bookSources.add(x.get("source").asText()))
-                .map(this::sourceAndPage)
-                .collect(Collectors.toList()));
+        if (jsonElement.has("additionalSources")) {
+            srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
+                    .filter(x -> !x.get("source").asText().equals(copySrc))
+                    .peek(x -> this.bookSources.add(x.get("source").asText()))
+                    .map(this::sourceAndPage)
+                    .collect(Collectors.toList()));
+        }
 
-        srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
-                .filter(x -> !x.get("source").asText().equals(copySrc))
-                .peek(x -> this.bookSources.add(x.get("source").asText()))
-                .map(this::sourceAndPage)
-                .collect(Collectors.toList()));
+        if (jsonElement.has("otherSources")) {
+            srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
+                    .filter(x -> !x.get("source").asText().equals(copySrc))
+                    .peek(x -> this.bookSources.add(x.get("source").asText()))
+                    .map(this::sourceAndPage)
+                    .collect(Collectors.toList()));
+        }
 
         return String.join(", ", srcText);
     }
@@ -165,6 +169,10 @@ public class CompendiumSources {
         abvToName.put("EEPC", "Elemental Evil Player's Companion");
         abvToName.put("EET", "Elemental Evil: Trinkets");
         abvToName.put("EFR", "Eberron: Forgotten Relics");
+        abvToName.put("DD", "Dangerous Designs");
+        abvToName.put("FS", "Frozen Sick");
+        abvToName.put("ToR", "Tide of Retribution");
+        abvToName.put("US", "Unwelcome Spirits");
         abvToName.put("EGW_DD", "Dangerous Designs");
         abvToName.put("EGW_FS", "Frozen Sick");
         abvToName.put("EGW_ToR", "Tide of Retribution");
@@ -223,13 +231,20 @@ public class CompendiumSources {
         abvToName.put("SADS", "Sapphire Anniversary Dice Set");
         abvToName.put("SAiS", "Spelljammer: Adventures in Space");
         abvToName.put("SCAG", "Sword Coast Adventurer's Guide");
+        abvToName.put("SCC-ARiR", "A Reckoning in Ruins");
+        abvToName.put("SCC-CK", "Campus Kerfuffle");
+        abvToName.put("SCC-HfMT", "Hunt for Mage Tower");
+        abvToName.put("SCC-TMM", "The Magister's Masquerade");
         abvToName.put("SCC_ARiR", "A Reckoning in Ruins");
         abvToName.put("SCC_CK", "Campus Kerfuffle");
         abvToName.put("SCC_HfMT", "Hunt for Mage Tower");
         abvToName.put("SCC_TMM", "The Magister's Masquerade");
         abvToName.put("SCC", "Strixhaven: A Curriculum of Chaos");
+        abvToName.put("ScreenDungeonKit", "Dungeon Master's Screen: Dungeon Kit");
         abvToName.put("SCREEN_DUNGEON_KIT", "Dungeon Master's Screen: Dungeon Kit");
+        abvToName.put("ScreenWildernessKit", "Dungeon Master's Screen: Wilderness Kit");
         abvToName.put("SCREEN_WILDERNESS_KIT", "Dungeon Master's Screen: Wilderness Kit");
+        abvToName.put("Screen", "Dungeon Master's Screen");
         abvToName.put("SCREEN", "Dungeon Master's Screen");
         abvToName.put("SDW", "Sleeping Dragon's Wake");
         abvToName.put("SjA", "Spelljammer Academy");
@@ -242,6 +257,13 @@ public class CompendiumSources {
         abvToName.put("ToD", "Tyranny of Dragons");
         abvToName.put("TTP", "The Tortle Package");
         abvToName.put("TftYP", TftYP_NAME);
+        abvToName.put("TftYP-AtG", TftYP_NAME + ": Against the Giants");
+        abvToName.put("TftYP-DiT", TftYP_NAME + ": Dead in Thay");
+        abvToName.put("TftYP-TFoF", TftYP_NAME + ": The Forge of Fury");
+        abvToName.put("TftYP-THSoT", TftYP_NAME + ": The Hidden Shrine of Tamoachan");
+        abvToName.put("TftYP-ToH", TftYP_NAME + ": Tomb of Horrors");
+        abvToName.put("TftYP-TSC", TftYP_NAME + ": The Sunless Citadel");
+        abvToName.put("TftYP-WPM", TftYP_NAME + ": White Plume Mountain");
         abvToName.put("TYP", TftYP_NAME);
         abvToName.put("TYP_AtG", TftYP_NAME + ": Against the Giants");
         abvToName.put("TYP_DiT", TftYP_NAME + ": Dead in Thay");
