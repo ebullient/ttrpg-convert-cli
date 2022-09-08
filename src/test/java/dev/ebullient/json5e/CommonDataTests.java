@@ -17,14 +17,19 @@ public class CommonDataTests {
     protected final Templates templates;
     protected JsonIndex index;
 
-    public CommonDataTests(List<String> sources) throws Exception {
+    public CommonDataTests(boolean useSources) throws Exception {
         tui = Arc.container().instance(Json5eTui.class).get();
         templates = Arc.container().instance(Templates.class).get();
         tui.init(null, true, true);
 
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            index = new JsonIndex(sources, tui)
-                    .importTree("", TestUtils.doParse(TestUtils.TEST_PATH_JSON));
+            if (useSources) {
+                index = new JsonIndex(List.of(), tui)
+                        .importTree("", TestUtils.doParse(TestUtils.TEST_SOURCES_JSON));
+            } else {
+                index = new JsonIndex(List.of("*"), tui);
+            }
+            index.importTree("", TestUtils.doParse(TestUtils.TEST_PATH_JSON));
             for (String x : List.of("adventures.json", "books.json", "adventure/adventure-wdh.json", "book/book-vgm.json")) {
                 index.importTree(x, TestUtils.doParse(TestUtils.TOOLS_PATH.resolve(x)));
             }

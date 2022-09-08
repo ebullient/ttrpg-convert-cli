@@ -27,6 +27,12 @@ import dev.ebullient.json5e.tools5e.JsonIndex;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
+    final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
+    // for compile/test purposes. Must clone/sync separately.
+    final static Path TOOLS_PATH = PROJECT_PATH.resolve("5etools-mirror-1.github.io/data");
+    final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
+    final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
+    final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
 
     static void assertContents(Path path1, Path path2, boolean areEqual) throws IOException {
         try (RandomAccessFile randomAccessFile1 = new RandomAccessFile(path1.toFile(), "r");
@@ -126,9 +132,4 @@ public class TestUtils {
         }
     }
 
-    final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
-    // for compile/test purposes. Must clone/sync separately.
-    final static Path TOOLS_PATH = PROJECT_PATH.resolve("5etools-mirror-1.github.io/data");
-    final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
-    final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
 }

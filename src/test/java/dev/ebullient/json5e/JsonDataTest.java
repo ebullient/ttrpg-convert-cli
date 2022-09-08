@@ -1,7 +1,6 @@
 package dev.ebullient.json5e;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,7 +17,7 @@ public class JsonDataTest {
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
-        commonTests = new CommonDataTests(List.of("*"));
+        commonTests = new CommonDataTests(false);
     }
 
     @AfterEach

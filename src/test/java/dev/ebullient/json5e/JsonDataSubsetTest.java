@@ -1,7 +1,6 @@
 package dev.ebullient.json5e;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,7 +18,7 @@ public class JsonDataSubsetTest {
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
         // A Tree Blight is from CoS, but appears in WbtW. It is listed in "otherSources" (should pull that entry in)
-        commonTests = new CommonDataTests(List.of("PHB", "DMG", "XGE", "TCE", "WbtW"));
+        commonTests = new CommonDataTests(true);
     }
 
     @AfterEach

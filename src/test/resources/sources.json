@@ -1,6 +1,10 @@
 {
   "from": [
-    "TCE"
+    "PHB", 
+    "DMG", 
+    "XGE", 
+    "TCE",
+    "WbtW"
   ],
   "exclude": [
     "monster|expert|dc",
