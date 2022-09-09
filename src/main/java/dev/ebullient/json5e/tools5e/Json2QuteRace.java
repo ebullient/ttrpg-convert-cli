@@ -17,7 +17,7 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     @Override
     public QuteRace build() {
-        String name = decoratedRaceName();
+        String name = decoratedRaceName(node, sources);
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         String[] split = name.split("\\(");
@@ -37,15 +37,6 @@ public class Json2QuteRace extends Json2QuteCommon {
                 getText("###"),
                 getFluffDescription(IndexType.racefluff, "###"),
                 tags);
-    }
-
-    String decoratedRaceName() {
-        String raceName = getSources().getName();
-        JsonNode raceNameNode = node.get("raceName");
-        if (raceNameNode != null) {
-            raceName = String.format("%s (%s)", raceNameNode.asText(), raceName);
-        }
-        return decoratedTypeName(raceName.replace("Variant; ", ""), getSources());
     }
 
     String creatureTypes() {

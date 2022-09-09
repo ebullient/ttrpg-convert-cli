@@ -641,6 +641,15 @@ public interface JsonSource {
         maybeAddBlankLine(text);
     }
 
+    default String decoratedRaceName(JsonNode jsonSource, CompendiumSources sources) {
+        String raceName = sources.getName();
+        JsonNode raceNameNode = jsonSource.get("raceName");
+        if (raceNameNode != null) {
+            raceName = String.format("%s (%s)", raceNameNode.asText(), raceName);
+        }
+        return decoratedTypeName(raceName.replace("Variant; ", ""), getSources());
+    }
+
     default String decorateMonsterName(JsonNode jsonSource, CompendiumSources sources) {
         return sources.getName().replace("\"", "");
     }
@@ -855,6 +864,7 @@ public interface JsonSource {
                 // {@race Aasimar (Fallen)|VGM}
                 // {@race Aarakocra|eepc} can have sources added with a pipe,
                 // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
+                // {@race dwarf (hill)||Dwarf, hill}
                 return linkifyType(IndexType.race, match.group(2), "races");
             case "spell":
                 // "Spells:
@@ -893,8 +903,12 @@ public interface JsonSource {
         }
         JsonNode jsonSource = getJsonNodeForKey(key);
         CompendiumSources sources = index().constructSources(type, jsonSource);
-        String resourceName = type == IndexType.item ? parts[0] : decoratedTypeName(sources);
-        return linkOrText(linkText, key, dirName, resourceName);
+        if (type == IndexType.item) {
+            return linkOrText(linkText, key, dirName, parts[0]);
+        } else if (type == IndexType.race) {
+            return linkOrText(linkText, key, dirName, decoratedRaceName(jsonSource, sources));
+        }
+        return linkOrText(linkText, key, dirName, decoratedTypeName(sources));
     }
 
     default String linkifyClass(String match) {
@@ -966,13 +980,10 @@ public interface JsonSource {
     }
 
     default JsonNode getJsonNodeForKey(String key) {
-        JsonNode jsonSource = index().getNode(key);
-        if (jsonSource == null) {
-            String alias = index().getAlias(key);
-            if (alias != null) {
-                jsonSource = index().getNode(alias);
-            }
+        String alias = index().getAlias(key);
+        if (alias != null) {
+            return index().getNode(alias);
         }
-        return jsonSource;
+        return index().getNode(key);
     }
 }
