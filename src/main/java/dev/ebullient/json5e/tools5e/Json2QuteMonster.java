@@ -26,6 +26,16 @@ import dev.ebullient.json5e.tools5e.JsonIndex.Tuple;
 
 public class Json2QuteMonster extends Json2QuteCommon {
 
+    public static boolean isNpc(JsonNode source) {
+        if (source.has("isNpc")) {
+            return source.get("isNpc").asBoolean(false);
+        }
+        if (source.has("isNamedCreature")) {
+            return source.get("isNamedCreature").asBoolean(false);
+        }
+        return false;
+    }
+
     String type;
     String subtype;
     Integer ac;
@@ -65,9 +75,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
+        List<String> fluff = getFluff(IndexType.monsterfluff, "##");
+
         return new QuteMonster(decorateMonsterName(node, sources),
                 sources.getSourceText(index.srdOnly()),
-                booleanOrDefault(node, "isNpc", false),
+                isNpc(node),
                 size, type, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
                 monsterSpeed(), monsterScores(),

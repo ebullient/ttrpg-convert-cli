@@ -967,7 +967,7 @@ public interface JsonSource {
         CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
         String resourceName = decorateMonsterName(jsonSource, sources);
         final String subdir;
-        if (booleanOrDefault(jsonSource, "isNpc", false)) {
+        if (Json2QuteMonster.isNpc(jsonSource)) {
             subdir = "npc";
         } else {
             String type = getMonsterType(jsonSource); // may be missing for partial index

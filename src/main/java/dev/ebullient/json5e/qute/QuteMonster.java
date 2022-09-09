@@ -269,7 +269,7 @@ public class QuteMonster extends QuteNote {
                 case "1e":
                 case "2e":
                 case "3e":
-                    return String.format("%s/day each", key);
+                    return String.format("%s/day each", key.charAt(0));
             }
             return "Unknown";
         }
