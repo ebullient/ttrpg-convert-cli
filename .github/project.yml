@@ -1,7 +1,7 @@
 name: Json 5e convert CLI
 artifact: json5e-convert-cli
 release:
-  current-version: 1.0.1
-  next-version: 1.0.2
+  current-version: 1.0.2
+  next-version: 1.0.3
   snapshot-version: 199-SNAPSHOT
 toggle: true
