@@ -24,7 +24,6 @@ public enum IndexType {
     trait,
     sourceless,
     note,
-    namelist,
     reference;
 
     public static IndexType getTypeFromKey(String key) {

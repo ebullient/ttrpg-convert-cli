@@ -76,10 +76,6 @@ public class MarkdownWriter {
                                 QuteMonster.getSubdir(m));
                         writeFile(fileMap, templates.renderMonster(m));
                         break;
-                    case "QuteName":
-                        fileMap.dirName = "names";
-                        writeFile(fileMap, templates.renderName((QuteName) x));
-                        break;
                     case "QuteRace":
                         fileMap.dirName = "races";
                         writeFile(fileMap, templates.renderRace((QuteRace) x));
@@ -140,6 +136,7 @@ public class MarkdownWriter {
 
     public void writeNotes(String dirName, Map<String, QuteNote> notes) {
         Path rootDir = Paths.get(output.toString(), dirName);
+        rootDir.toFile().mkdirs();
 
         notes.forEach((k, v) -> {
             Path fullPath = rootDir.resolve(k);
@@ -160,6 +157,22 @@ public class MarkdownWriter {
         } catch (IOException e) {
             throw new WrappedIOException(e);
         }
+    }
+
+    public void writeNames(String dirName, Collection<QuteName> names) {
+        Path rootDir = Paths.get(output.toString(), dirName);
+        rootDir.toFile().mkdirs();
+
+        names.forEach(n -> {
+            Path target = rootDir.resolve("names-" + tui.slugify(n.getName()) + ".md");
+            String content = templates.renderName(n);
+            try {
+                Files.write(target, content.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                throw new WrappedIOException(e);
+            }
+        });
+        tui.outPrintf("✅ Wrote %s name tables.%n", names.size());
     }
 
     @TemplateData

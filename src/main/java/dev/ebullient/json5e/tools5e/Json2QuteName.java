@@ -13,7 +13,7 @@ import dev.ebullient.json5e.qute.QuteName.LookupTableRow;
 public class Json2QuteName extends Json2QuteCommon {
 
     public Json2QuteName(JsonIndex index, JsonNode jsonNode) {
-        super(index, IndexType.namelist, jsonNode);
+        super(index, IndexType.note, jsonNode);
     }
 
     @Override

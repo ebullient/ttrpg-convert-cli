@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
 
@@ -152,7 +153,7 @@ public class JsonIndex implements JsonSource {
         if (node.has("name") && node.get("name").isArray()) {
             ArrayNode names = node.withArray("name");
             if (names.get(0).isObject() && names.get(0).has("tables")) {
-                names.forEach(table -> addToIndex(IndexType.namelist, table));
+                names.forEach(nt -> rules.put("names-" + slugify(nt.get("name").asText()), nt));
             }
         }
 
@@ -305,6 +306,11 @@ public class JsonIndex implements JsonSource {
             return Json2QuteRace.findRaceVariants(this, type, key, jsonSource);
         } else if (type == IndexType.monster && jsonSource.has("summonedBySpellLevel")) {
             return Json2QuteMonster.findConjuredMonsterVariants(this, type, key, jsonSource);
+        } else if (key.contains("splugoth the returned")) {
+            // Fix.
+            ObjectNode copy = (ObjectNode) copier.copyNode(jsonSource);
+            copy.put("isNpc", true);
+            return List.of(new Tuple(key, copy));
         }
         return List.of(new Tuple(key, jsonSource));
     }
