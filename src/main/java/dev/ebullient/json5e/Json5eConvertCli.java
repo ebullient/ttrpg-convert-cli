@@ -141,7 +141,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
                     List<String> inputs = List.of(
                             "bestiary", "class", "spells",
                             "adventures.json", "books.json",
-                            "actions.json", "conditionsdiseases.json", "skills.json", "loot.json",
+                            "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
                             "backgrounds.json", "fluff-backgrounds.json",
                             "feats.json", "optionalfeatures.json",
                             "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
@@ -188,7 +188,6 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
                 .writeFiles(IndexType.feat)
                 .writeFiles(IndexType.item)
                 .writeFiles(IndexType.monster)
-                .writeFiles(IndexType.namelist)
                 .writeFiles(IndexType.race)
                 .writeFiles(IndexType.spell)
                 .writeRulesAndTables();

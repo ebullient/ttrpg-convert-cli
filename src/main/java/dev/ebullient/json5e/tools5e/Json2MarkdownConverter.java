@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.json5e.io.MarkdownWriter;
+import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteNote;
 import dev.ebullient.json5e.qute.QuteSource;
 
@@ -71,8 +72,6 @@ public class Json2MarkdownConverter {
                 return new Json2QuteItem(index, type, jsonSource).build();
             case monster:
                 return new Json2QuteMonster(index, type, jsonSource).build();
-            case namelist:
-                return new Json2QuteName(index, jsonSource).build();
             case spell:
                 return new Json2QuteSpell(index, type, jsonSource).build();
             default:
@@ -83,6 +82,7 @@ public class Json2MarkdownConverter {
     public Json2MarkdownConverter writeRulesAndTables() {
         Map<String, QuteNote> adventures = new HashMap<>();
         Map<String, QuteNote> books = new HashMap<>();
+        List<QuteName> names = new ArrayList<>();
         List<QuteNote> rules = new ArrayList<>();
         List<QuteNote> tables = new ArrayList<>();
         List<QuteNote> variants = new ArrayList<>();
@@ -97,6 +97,8 @@ public class Json2MarkdownConverter {
                 addReference(books, key, node);
             } else if (key.startsWith("adventure-")) {
                 addReference(adventures, key, node);
+            } else if (key.startsWith("names-")) {
+                addNames(names, key, node);
             } else if (key.equals("table")) {
                 node.forEach(t -> {
                     if (t.get("name").asText().equals("Damage Types")) {
@@ -149,6 +151,9 @@ public class Json2MarkdownConverter {
             }
         }
 
+        if (!names.isEmpty()) {
+            writer.writeNames("tables/", names);
+        }
         if (!adventures.isEmpty()) {
             writer.writeNotes("adventures/", adventures);
         }
@@ -200,6 +205,13 @@ public class Json2MarkdownConverter {
         String title = index.replaceText(metadata.get("name").asText());
         Map<String, QuteNote> contents = new Sourceless2QuteNote(index, metadata, title).buildReference(element.get("data"));
         notes.putAll(contents);
+    }
+
+    private void addNames(List<QuteName> names, String key, JsonNode element) {
+        QuteName nameTable = new Json2QuteName(index, element).build();
+        if (nameTable != null) {
+            names.add(nameTable);
+        }
     }
 
     private void addRule(List<QuteNote> notes, JsonNode element, String title) {

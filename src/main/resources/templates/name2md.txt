@@ -1,9 +1,9 @@
 ---
 obsidianUIMode: preview
 cssclass: 5e-names
-aliases: ["{resource.name}"]
+aliases: ["{resource.name} Names"]
 ---
-# {resource.name}
+# {resource.name} Names
 *Source: {resource.source}*  
 {#for table in resource.tables}
 

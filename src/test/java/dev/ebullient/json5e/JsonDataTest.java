@@ -31,11 +31,6 @@ public class JsonDataTest {
     }
 
     @Test
-    public void testNameList() {
-        commonTests.testNameList(outputPath);
-    }
-
-    @Test
     public void testFeatList() {
         commonTests.testFeatList(outputPath);
     }
