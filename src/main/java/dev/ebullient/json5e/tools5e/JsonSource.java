@@ -530,16 +530,11 @@ public interface JsonSource {
     }
 
     default void appendTable(List<String> text, JsonNode entry) {
-        StringBuilder table = new StringBuilder();
+        List<String> table = new ArrayList<>();
 
         String header;
         String blockid = "";
         String caption = getTextOrEmpty(entry, "caption");
-
-        if (!caption.isBlank()) {
-            table.append("**").append(caption).append("**\n\n");
-            blockid = slugify(caption);
-        }
 
         if (entry.has("colLabels")) {
             header = StreamSupport.stream(entry.withArray("colLabels").spliterator(), false)
@@ -563,23 +558,41 @@ public interface JsonSource {
             header = "|" + String.join(" | ", array) + " |";
         }
 
+        entry.withArray("rows").forEach(r -> {
+            StringBuilder row = new StringBuilder()
+                    .append("| ")
+                    .append(StreamSupport.stream(r.spliterator(), false)
+                            .map(x -> replaceText(x.asText()))
+                            .collect(Collectors.joining(" | ")))
+                    .append(" |");
+            table.add(row.toString());
+        });
+
+        if (blockid.equals("personality-trait")) {
+            Json2QuteBackground.traits.addAll(table);
+        } else if (blockid.equals("ideal")) {
+            Json2QuteBackground.ideals.addAll(table);
+        } else if (blockid.equals("bond")) {
+            Json2QuteBackground.bonds.addAll(table);
+        } else if (blockid.equals("flaw")) {
+            Json2QuteBackground.flaws.addAll(table);
+        }
+
         header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
-        table.append(header).append("\n");
-        table.append(header.replaceAll("[^|]", "-")).append("\n");
+        table.add(0, header.replaceAll("[^|]", "-"));
+        table.add(0, header);
 
-        entry.withArray("rows").forEach(r -> table
-                .append("| ")
-                .append(StreamSupport.stream(r.spliterator(), false)
-                        .map(x -> replaceText(x.asText()))
-                        .collect(Collectors.joining(" | ")))
-                .append(" |\n"));
-
+        if (!caption.isBlank()) {
+            table.add(0, "");
+            table.add(0, "**" + caption + "**");
+            blockid = slugify(caption);
+        }
         if (!blockid.isBlank()) {
-            table.append("^").append(blockid);
+            table.add("^" + blockid);
         }
 
         maybeAddBlankLine(text);
-        text.addAll(List.of(table.toString().split("\n")));
+        text.addAll(table);
     }
 
     default void appendOptions(List<String> text, JsonNode entry) {
@@ -607,15 +620,15 @@ public interface JsonSource {
         String id;
         if (entry.has("name")) {
             id = entry.get("name").asText();
-            insetText.add("[!excerpt]- " + id);
+            insetText.add("[!quote] " + id);
             appendEntryToText(insetText, entry.get("entries"), null);
         } else if (getSources().type == IndexType.race) {
             appendEntryToText(insetText, entry.get("entries"), null);
             id = insetText.remove(0);
-            insetText.add(0, "[!excerpt]- " + id);
+            insetText.add(0, "[!quote] " + id);
         } else {
             id = entry.get("id").asText();
-            insetText.add("[!excerpt]- ...");
+            insetText.add("[!quote] ...");
             appendEntryToText(insetText, entry.get("entries"), null);
         }
 
