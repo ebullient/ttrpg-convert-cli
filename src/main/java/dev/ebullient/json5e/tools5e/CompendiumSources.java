@@ -78,12 +78,12 @@ public class CompendiumSources {
     }
 
     private String sourceAndPage(JsonNode source) {
+        String src = source.get("source").asText();
+        String book = abvToName.getOrDefault(src, src);
         if (source.has("page")) {
-            String src = source.get("source").asText();
-            String book = abvToName.getOrDefault(src, src);
             return String.format("%s p. %s", book, source.get("page").asText());
         }
-        return source.get("source").asText();
+        return book;
     }
 
     public boolean isPrimarySource(String source) {

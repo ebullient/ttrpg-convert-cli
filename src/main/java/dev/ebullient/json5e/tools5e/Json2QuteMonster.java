@@ -96,6 +96,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterSpellcasting(),
                 getFluffDescription(IndexType.monsterfluff, null),
                 environment,
+                new ArrayList<>(sources.bookSources),
                 tags);
     }
 
