@@ -46,6 +46,7 @@ public class QuteMonster extends QuteNote {
     public final List<Trait> reaction;
     public final List<Trait> legendary;
     public final List<Spellcasting> spellcasting;
+    public final List<String> books;
 
     public final String description;
     public final String environment;
@@ -55,7 +56,8 @@ public class QuteMonster extends QuteNote {
             SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
             String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
-            List<Spellcasting> spellcasting, String description, String environment, List<String> tags) {
+            List<Spellcasting> spellcasting, String description, String environment, List<String> books,
+            List<String> tags) {
 
         super(name, source, null, tags);
 
@@ -89,6 +91,7 @@ public class QuteMonster extends QuteNote {
         this.spellcasting = spellcasting;
         this.description = description;
         this.environment = environment;
+        this.books = books; // for YAML
     }
 
     @Override
@@ -132,6 +135,7 @@ public class QuteMonster extends QuteNote {
         addUnlessEmpty(map, "cr", cr);
         addUnlessEmpty(map, "cr", cr);
         map.put("stats", scores.toArray()); // for initiative
+        addUnlessEmpty(map, "source", books);
         return Json5eTui.plainYaml().dump(map).trim();
     }
 
@@ -174,6 +178,7 @@ public class QuteMonster extends QuteNote {
         addUnlessEmpty(map, "bonus_actions", bonusAction);
         addUnlessEmpty(map, "reactions", reaction);
         addUnlessEmpty(map, "legendary_actions", legendary);
+        addUnlessEmpty(map, "source", books);
 
         return Json5eTui.quotedYaml().dump(map).trim();
     }
@@ -190,7 +195,7 @@ public class QuteMonster extends QuteNote {
         }
     }
 
-    protected void addUnlessEmpty(Map<String, Object> map, String key, List<Trait> value) {
+    protected void addUnlessEmpty(Map<String, Object> map, String key, List<?> value) {
         if (value != null && !value.isEmpty()) {
             map.put(key, value);
         }
