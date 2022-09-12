@@ -22,6 +22,7 @@ jobs:
       next: ${{ steps.metadata.outputs.next }}
       snapshot: ${{ steps.metadata.outputs.snapshot }}
       artifact: ${{ steps.metadata.outputs.artifact }}
+      group: ${{ steps.metadata.outputs.group }}
 
     steps:
     - uses: actions/checkout@v2
@@ -44,20 +45,7 @@ jobs:
       with:
         java-version: 11
         distribution: 'temurin'
-
-    - name: Get Date
-      id: get-date
-      run: |
-        echo "::set-output name=date::$(/bin/date -u "+%Y-%m")"
-      shell: bash
-
-    - name: Cache Maven Repository
-      id: cache-maven
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        # refresh cache every month to avoid unlimited growth
-        key: maven-repo-${{ runner.os }}-${{ steps.get-date.outputs.date }}
+        cache: maven
 
     - name: yq - portable yaml processor
       uses: mikefarah/yq@v4.27.3
@@ -68,13 +56,21 @@ jobs:
         CURRENT=$(yq '.release.current-version' .github/project.yml )
         NEXT=$(yq '.release.next-version' .github/project.yml)
         SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
-        ARTIFACT=$(yq '.artifact' .github/project.yml)
-        echo $CURRENT $NEXT $SNAPSHOT $ARTIFACT
+        ARTIFACT=$(yq '.jitpack.artifact' .github/project.yml)
+        GROUP=$(yq '.jitpack.group' .github/project.yml)
+        echo $CURRENT $NEXT $SNAPSHOT $GROUP $ARTIFACT
+
+        if git rev-parse "refs/tags/$NEXT" 2>&1; then
+          echo "Next tag exists"
+        else
+          echo "Tag does not exist yet"
+        fi
 
         echo "::set-output name=current::${CURRENT}"
         echo "::set-output name=next::${NEXT}"
         echo "::set-output name=snapshot::${SNAPSHOT}"
         echo "::set-output name=artifact::${ARTIFACT}"
+        echo "::set-output name=group::${GROUP}"
 
     - name: Maven release
       if: steps.filter.outputs.project == 'true'
@@ -86,15 +82,13 @@ jobs:
         SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
         ARTIFACT: ${{ steps.metadata.outputs.artifact }}
       run: |
-        t=$(git describe --tags `git rev-list --tags --max-count=1`)
-        
-        if [ "$t" == "$NEXT" ]; then
+        if git rev-parse "refs/tags/$NEXT" >/dev/null 2>&1; then
           echo "🔹 Tagged release alreay exists"
           mvn -B formatter:validate install --file pom.xml
           echo "::set-output name=release::false"
         else
           echo "🔹 Creating new release"
-          
+
           # Messy and not maven-y, but whatever.
           sed -i -r "s/$CURRENT/$NEXT/g" README.md
           sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
@@ -166,9 +160,7 @@ jobs:
       - name: Update tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
           SNAPSHOT: ${{needs.build.outputs.snapshot}}
-          ARTIFACT: ${{needs.build.outputs.artifact}}
         shell: bash
         run: |
           git config user.name "${GITHUB_ACTOR}"
@@ -177,5 +169,17 @@ jobs:
           git push origin :refs/tags/$SNAPSHOT
           git tag -f $SNAPSHOT
           git push --tags
+
+      - name: Delete Jitpack resource
+        id: jitpack-antifreeze
+        env:
+          JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
+          SNAPSHOT: ${{ needs.build.outputs.snapshot }}
+          ARTIFACT: ${{ needs.build.outputs.artifact }}
+          GROUP:    ${{ needs.build.outputs.group }}
+        shell: bash
+        run: |
           echo "Delete JitPack artifacts for tag"
-          curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/$ARTIFACT/$SNAPSHOT
+          curl https://jitpack.io/api/builds/$GROUP/$ARTIFACT
+          curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/$GROUP/$ARTIFACT/$SNAPSHOT
+          curl https://jitpack.io/api/builds/$GROUP/$ARTIFACT

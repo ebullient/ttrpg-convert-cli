@@ -32,11 +32,13 @@ jobs:
       id: metadata
       run: |
         SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
-        ARTIFACT=$(yq '.artifact' .github/project.yml)
-        echo $SNAPSHOT $ARTIFACT
+        ARTIFACT=$(yq '.jitpack.artifact' .github/project.yml)
+        GROUP=$(yq '.jitpack.group' .github/project.yml)
+        echo $GROUP $ARTIFACT $SNAPSHOT
 
         echo "::set-output name=snapshot::${SNAPSHOT}"
         echo "::set-output name=artifact::${ARTIFACT}"
+        echo "::set-output name=group::${GROUP}"
 
     - name: Delete Jitpack resource
       id: jitpack-antifreeze
@@ -44,7 +46,10 @@ jobs:
         JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
         SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
         ARTIFACT: ${{ steps.metadata.outputs.artifact }}
+        GROUP: ${{ steps.metadata.outputs.group }}
       shell: bash
       run: |
         echo "Delete JitPack artifacts for tag"
-        curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/dev.ebullient/$ARTIFACT/$SNAPSHOT
+        curl https://jitpack.io/api/builds/$GROUP/$ARTIFACT
+        curl -X "DELETE" -u${JITPACK_TOKEN} https://jitpack.io/api/builds/$GROUP/$ARTIFACT/$SNAPSHOT
+        curl https://jitpack.io/api/builds/$GROUP/$ARTIFACT
