@@ -74,7 +74,8 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.background);
+                    .writeFiles(IndexType.background)
+                    .writeRulesAndTables();
         }
     }
 

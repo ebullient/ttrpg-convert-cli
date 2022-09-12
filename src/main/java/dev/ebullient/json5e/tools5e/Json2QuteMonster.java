@@ -75,8 +75,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
-        List<String> fluff = getFluff(IndexType.monsterfluff, "##");
-
         return new QuteMonster(decorateMonsterName(node, sources),
                 sources.getSourceText(index.srdOnly()),
                 isNpc(node),

@@ -151,6 +151,10 @@ public class Json2MarkdownConverter {
             }
         }
 
+        if (!Json2QuteBackground.traits.isEmpty()) {
+            List<QuteNote> notes = new BackgroundTraits2Note(index).buildNotes();
+            tables.addAll(notes);
+        }
         if (!names.isEmpty()) {
             writer.writeNames("tables/", names);
         }
