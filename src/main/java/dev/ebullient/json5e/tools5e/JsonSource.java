@@ -645,7 +645,7 @@ public interface JsonSource {
 
     default void appendInset(List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
-        String id;
+        String id = null;
         if (entry.has("name")) {
             id = entry.get("name").asText();
             insetText.add("[!quote] " + id);
@@ -655,7 +655,9 @@ public interface JsonSource {
             id = insetText.remove(0);
             insetText.add(0, "[!quote] " + id);
         } else {
-            id = entry.get("id").asText();
+            if (entry.has("id")) {
+                id = entry.get("id").asText();
+            }
             insetText.add("[!quote] ...");
             appendEntryToText(insetText, entry.get("entries"), null);
         }

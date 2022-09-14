@@ -45,6 +45,7 @@ public class QuteMonster extends QuteNote {
     public final List<Trait> bonusAction;
     public final List<Trait> reaction;
     public final List<Trait> legendary;
+    public final Map<String, Trait> legendaryGroup;
     public final List<Spellcasting> spellcasting;
     public final List<String> books;
 
@@ -56,6 +57,7 @@ public class QuteMonster extends QuteNote {
             SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
             String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
+            Map<String, Trait> legendaryGroup,
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
             List<String> tags) {
 
@@ -88,6 +90,7 @@ public class QuteMonster extends QuteNote {
         this.bonusAction = bonusAction;
         this.reaction = reaction;
         this.legendary = legendary;
+        this.legendaryGroup = legendaryGroup;
         this.spellcasting = spellcasting;
         this.description = description;
         this.environment = environment;

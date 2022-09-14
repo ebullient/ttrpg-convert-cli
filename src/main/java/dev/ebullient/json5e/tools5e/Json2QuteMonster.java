@@ -26,6 +26,8 @@ import dev.ebullient.json5e.tools5e.JsonIndex.Tuple;
 
 public class Json2QuteMonster extends Json2QuteCommon {
 
+    private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|[0-9]+)");
+
     public static boolean isNpc(JsonNode source) {
         if (source.has("isNpc")) {
             return source.get("isNpc").asBoolean(false);
@@ -93,6 +95,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterTraits("trait"), monsterTraits("action"),
                 monsterTraits("bonus"), monsterTraits("reaction"),
                 monsterTraits("legendary"),
+                legendaryGroup(),
                 monsterSpellcasting(),
                 getFluffDescription(IndexType.monsterfluff, null),
                 environment,
@@ -446,6 +449,38 @@ public class Json2QuteMonster extends Json2QuteCommon {
         List<String> spells = new ArrayList<>();
         source.forEach(s -> spells.add(replaceText(s.asText())));
         return spells;
+    }
+
+    Map<String, Trait> legendaryGroup() {
+        JsonNode group = node.get("legendaryGroup");
+        if (group == null) {
+            return null;
+        }
+        String key = index.getKey(IndexType.legendarygroup, group);
+        if (!index.sourceIncluded(group.get("source").asText())) {
+            tui().debugf("Legendary group %s source excluded", key);
+        }
+        JsonNode content = index.getOrigin(key);
+        if (content == null) {
+            tui().debugf("No legendary group content for %s", key);
+            return null;
+        }
+        Map<String, Trait> map = new HashMap<>();
+        content.fields().forEachRemaining(field -> {
+            String fieldName = field.getKey();
+            if ("name".equals(fieldName) || "source".equals(fieldName) || "additionalSources".equals(fieldName)) {
+                return;
+            }
+            fieldName = fieldName.substring(0, 1).toUpperCase()
+                    + UPPERCASE_LETTER.matcher(fieldName.substring(1))
+                            .replaceAll(matchResult -> " " + (matchResult.group(1).toLowerCase()));
+
+            List<String> text = new ArrayList<>();
+            appendEntryToText(text, field.getValue(), null);
+            map.put(fieldName, new Trait(null, String.join("\n", text)));
+        });
+
+        return map;
     }
 
     List<Trait> monsterTraits(String field) {
