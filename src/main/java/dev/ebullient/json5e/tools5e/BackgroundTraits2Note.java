@@ -154,7 +154,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         maybeAddBlankLine(text);
         text.addAll(tableSection("Neutral Ideals", neutral));
         maybeAddBlankLine(text);
-        text.addAll(tableSection("Universal Ideals (Any)", neutral));
+        text.addAll(tableSection("Universal Ideals (Any)", any));
 
         notes.add(new QuteNote("Ideals", null,
                 String.join("\n", text),
