@@ -149,6 +149,10 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
                             "names.json", "variantrules.json", "bestiary/traits.json", "bestiary/legendarygroups.json");
                     for (String input : inputs) {
                         Path p = inputPath.resolve(input);
+                        if (!p.toFile().exists()) {
+                            tui.debugf("Unable to find 5eTools data: %s", p.toString());
+                            continue;
+                        }
                         if (p.toFile().isFile()) {
                             index.readFile(p);
                         } else {
@@ -166,7 +170,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
         tui.outPrintln("✅ finished reading 5etools data.");
         index.prepare();
 
-        tui.debugf("Custom templates: %s", paths.customTemplates.toString());
+        tui.verbosef("Custom templates: %s", paths.customTemplates.toString());
         tpl.setCustomTemplates(paths);
         tui.debugf("Defined templates: %s", tpl);
 
