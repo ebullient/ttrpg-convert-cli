@@ -66,6 +66,11 @@ public enum SkillOrAbility {
             .map(x -> x.longValue)
             .collect(Collectors.toList());
 
+    public static final List<String> allSaves = Stream.of(SkillOrAbility.values())
+            .filter(x -> !x.isSkill)
+            .map(x -> x.longValue)
+            .collect(Collectors.toList());
+
     public static String format(String key) {
         return fromTextValue(key).value();
     }

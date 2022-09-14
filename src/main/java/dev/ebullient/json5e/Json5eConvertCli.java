@@ -146,7 +146,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
                             "feats.json", "optionalfeatures.json",
                             "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
                             "races.json", "fluff-races.json",
-                            "names.json", "variantrules.json");
+                            "names.json", "variantrules.json", "bestiary/traits.json", "bestiary/legendarygroups.json");
                     for (String input : inputs) {
                         Path p = inputPath.resolve(input);
                         if (p.toFile().isFile()) {

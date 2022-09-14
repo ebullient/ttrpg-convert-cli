@@ -38,21 +38,21 @@ public class Import5eToolsConvertTest {
     void testCommandLiveData(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             // SRD
-            LaunchResult result = launcher.launch("--index",
+            LaunchResult result = launcher.launch("--index", "-v",
                     "-o", outputPath.resolve("srd-index").toString(), TestUtils.TOOLS_PATH.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
             // Subset
-            result = launcher.launch("--index", "-s", "PHB,DMG,XGE,SCAG",
+            result = launcher.launch("--index", "-s", "PHB,DMG,XGE,SCAG", "-v",
                     "-o", outputPath.resolve("subset-index").toString(), TestUtils.TOOLS_PATH.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
             // All
-            result = launcher.launch("--index", "-s", "*",
+            result = launcher.launch("--index", "-s", "*", "-v",
                     "-o", outputPath.resolve("all-index").toString(), TestUtils.TOOLS_PATH.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
