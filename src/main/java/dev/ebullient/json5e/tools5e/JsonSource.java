@@ -373,9 +373,9 @@ public interface JsonSource {
 
     default void appendEntryObjectToText(List<String> text, JsonNode node, String heading) {
         if (node.has("source") && !index().sourceIncluded(node.get("source").asText())) {
-            return;
-        } else if (!index().sourceIncluded(getSources().alternateSource())) {
-            return;
+            if (!index().sourceIncluded(getSources().alternateSource())) {
+                return;
+            }
         }
 
         if (node.has("type")) {

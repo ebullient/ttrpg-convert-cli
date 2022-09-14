@@ -59,4 +59,16 @@ public class Import5eToolsConvertTest {
                     .isEqualTo(0);
         }
     }
+
+    @Test
+    void testCommandLiveDataOneSource(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            // No basics
+            LaunchResult result = launcher.launch("-s", "ERLW", "-v",
+                    "-o", outputPath.resolve("erlw").toString(), TestUtils.TOOLS_PATH.toString());
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+        }
+    }
 }
