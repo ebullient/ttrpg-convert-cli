@@ -273,15 +273,12 @@ public class JsonIndex implements JsonSource {
 
         nodeIndex.forEach((key, node) -> {
             IndexType type = IndexType.getTypeFromKey(key);
-            if (type == IndexType.trait || type == IndexType.legendarygroup) {
-                // traits are used by monsters
-                return;
-            }
-
             JsonNode jsonSource = copier.handleCopy(type, node);
 
-            if (type == IndexType.subrace) {
+            if (type == IndexType.trait || type == IndexType.subrace || type == IndexType.legendarygroup) {
                 // subraces are pulled in by races
+                // traits and legendary groups are pulled in my monsters
+                // check for / manage copies first.
                 return;
             }
 

@@ -24,7 +24,7 @@ title: {resource.name}
 *{resource.size} {resource.fullType}, {resource.alignment}*
 
 - **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }{resource.acText}{/if}
-- **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if} {#if resource.hpText }({resource.hpText}){/if}
+- **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if} {#if resource.hpText }{resource.hpText}{/if}
 - **Speed** {resource.speed}
 
 |STR|DEX|CON|INT|WIS|CHA|
@@ -79,6 +79,11 @@ title: {resource.name}
 {#for legendary in resource.legendary}
 
 {#if legendary.name }***{legendary.name}.*** {/if}{legendary.desc}
+{/for}{/if}{#if resource.legendaryGroup}{#for group in resource.legendaryGroup}
+
+## {group.key}
+
+{#if group.value.name }***{group.value.name}.*** {/if}{group.value.desc}
 {/for}{/if}
 ```
 ^statblock
