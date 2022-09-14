@@ -72,7 +72,7 @@ public class JsonIndex implements JsonSource {
         File f = p.toFile();
         JsonNode node = Json5eTui.MAPPER.readTree(f);
         importTree(f.getName(), node);
-        tui().debugf("🔖 Finished reading %s\n", p);
+        tui().verbosef("🔖 Finished reading %s", p);
     }
 
     public void readDirectory(Path dir) {
