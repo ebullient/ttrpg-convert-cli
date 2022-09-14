@@ -1,8 +1,11 @@
 package dev.ebullient.json5e.tools5e;
 
+import static java.util.Map.entry;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -160,6 +163,24 @@ public interface JsonSource {
             }
         }
         return null;
+    }
+
+    default int crToXp(JsonNode cr) {
+        if (cr != null && cr.has("xp")) {
+            return cr.get("xp").asInt();
+        }
+        if (cr.has("cr")) {
+            cr = cr.get("cr");
+        }
+        String crKey = cr.asText();
+        return XP_CHART_ALT.get(crKey);
+    }
+
+    default int crToPb(JsonNode cr) {
+        if (cr.isTextual()) {
+            return crToPb(cr.asText());
+        }
+        return crToPb(cr.get("cr").asText());
     }
 
     default int crToPb(String crValue) {
@@ -404,8 +425,8 @@ public interface JsonSource {
                     node.withArray("attributes").forEach(x -> abilities.add(asAbilityEnum(x)));
 
                     List<String> inner = new ArrayList<>();
-                    inner.add(node.get("name").asText());
-                    inner.add(node.get("text").asText());
+                    appendUnlessEmpty(inner, node, "name");
+                    appendUnlessEmpty(inner, node, "text");
                     inner.add(String.join(", ", abilities));
                     inner.add("modifier");
 
@@ -515,6 +536,13 @@ public interface JsonSource {
 
     default String prependText(String prefix, String text) {
         return text.startsWith(prefix) ? text : prefix + text;
+    }
+
+    default void appendUnlessEmpty(List<String> text, JsonNode node, String field) {
+        String value = getTextOrEmpty(node, field);
+        if (!value.isEmpty()) {
+            text.add(value);
+        }
     }
 
     default void appendList(List<String> text, ArrayNode itemArray) {
@@ -999,4 +1027,40 @@ public interface JsonSource {
         }
         return index().getNode(key);
     }
+
+    static final Map<String, Integer> XP_CHART_ALT = Map.ofEntries(
+            entry("0", 10),
+            entry("1/8", 25),
+            entry("1/4", 50),
+            entry("1/2", 100),
+            entry("1", 200),
+            entry("2", 450),
+            entry("3", 700),
+            entry("4", 1100),
+            entry("5", 1800),
+            entry("6", 2300),
+            entry("7", 2900),
+            entry("8", 3900),
+            entry("9", 5000),
+            entry("10", 5900),
+            entry("11", 7200),
+            entry("12", 8400),
+            entry("13", 10000),
+            entry("14", 11500),
+            entry("15", 13000),
+            entry("16", 15000),
+            entry("17", 18000),
+            entry("18", 20000),
+            entry("19", 22000),
+            entry("20", 25000),
+            entry("21", 33000),
+            entry("22", 41000),
+            entry("23", 50000),
+            entry("24", 62000),
+            entry("25", 75000),
+            entry("26", 90000),
+            entry("27", 105000),
+            entry("28", 120000),
+            entry("29", 135000),
+            entry("30", 155000));
 }
