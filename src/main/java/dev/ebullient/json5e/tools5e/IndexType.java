@@ -10,6 +10,7 @@ public enum IndexType {
     itementry,
     itemfluff,
     itemvariant,
+    legendarygroup,
     monster,
     monsterfluff,
     race,

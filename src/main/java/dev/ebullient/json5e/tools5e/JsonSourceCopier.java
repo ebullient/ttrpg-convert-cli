@@ -1,16 +1,21 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
@@ -118,10 +123,17 @@ public class JsonSourceCopier implements JsonSource {
         JsonNode _copy = overlayNode.get("_copy");
         JsonNode _mod = _copy == null ? null : _copy.get("_mod");
         JsonNode _preserve = _copy == null ? null : _copy.get("_preserve");
+        JsonNode _trait = _copy == null ? null : _copy.get("_trait");
         JsonNode overwrite = _copy == null ? null : _copy.get("overwrite");
 
         if (_preserve == null || !_preserve.has("reprintedAs")) {
             target.remove("reprintedAs");
+        }
+        if (_preserve == null || !_preserve.has("otherSources")) {
+            target.remove("otherSources");
+        }
+        if (_preserve == null || !_preserve.has("additionalSources")) {
+            target.remove("additionalSources");
         }
 
         for (Iterator<String> it = overlayNode.fieldNames(); it.hasNext();) {
@@ -146,7 +158,8 @@ public class JsonSourceCopier implements JsonSource {
                             break;
                         }
                         if (cpyAbility.size() != overlayField.size()) {
-                            tui().errorf("Copy/Merge: Ability array lengths did not match (from %s):%nBASE:%n%s%nCOPY:%n%s",
+                            tui().errorf(
+                                    "Copy/Merge: Ability array lengths did not match (from %s):%nBASE:%n%s%nCOPY:%n%s",
                                     originKey, cpyAbility.toPrettyString(), overlayField.toPrettyString());
                             continue;
                         }
@@ -192,10 +205,136 @@ public class JsonSourceCopier implements JsonSource {
             }
         }
 
+        if (_trait != null) {
+            String key = index.getKey(IndexType.trait, _trait);
+            JsonNode trait = index.getOrigin(key);
+            if (trait == null) {
+                tui().warn("Unable to find trait for " + key);
+            } else {
+                JsonNode apply = trait.get("apply");
+                if (apply != null) {
+                    if (apply.has("_root")) {
+                        apply.get("_root").fields().forEachRemaining(field -> {
+                            target.replace(field.getKey(), copyNode(field.getValue()));
+                        });
+                    }
+                    handleMod(originKey, target, apply.get("_mod"));
+                }
+            }
+        }
+
+        handleMod(originKey, target, _mod);
+
+        final Pattern spell_dc_subst = Pattern.compile("<\\$spell_dc__([^$]+)\\$>");
+        final Pattern to_hit_subst = Pattern.compile("<$\\to_hit__([^$]+)\\$>");
+        final Pattern dmg_mod_subst = Pattern.compile("<\\$damage_mod__([^$]+)\\$>");
+        final Pattern dmg_avg_subst = Pattern.compile("<\\$damage_avg__([0-9.,])([-+/*])([^$]+)\\$>");
+
+        String targetString = target.toString()
+                .replace("<$name$>", baseNode.get("name").asText())
+                .replace("<$title_short_name$>", getShortName(target, true))
+                .replace("<$short_name$>", getShortName(target, false));
+
+        targetString = spell_dc_subst.matcher(targetString)
+                .replaceAll((match) -> getSpellDc(target, match.group(1)));
+
+        targetString = to_hit_subst.matcher(targetString)
+                .replaceAll((match) -> getToHitString(target, match.group(1)));
+
+        targetString = dmg_mod_subst.matcher(targetString)
+                .replaceAll((match) -> getDamageMod(target, match.group(1)));
+
+        targetString = dmg_avg_subst.matcher(targetString)
+                .replaceAll((match) -> getDamageAvg(target, match.group(1), match.group(2), match.group(3)));
+
+        try {
+            return Json5eTui.MAPPER.readTree(targetString);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return target;
+        }
+    }
+
+    private String getSpellDc(JsonNode target, String ability) {
+        int mod = getAbilityModNumber(target.get(ability).asInt());
+        int pb = crToPb(target.get("cr"));
+        return (8 + mod + pb) + "";
+    }
+
+    private String getDamageMod(JsonNode target, String ability) {
+        int mod = getAbilityModNumber(target.get(ability).asInt());
+        return mod == 0
+                ? ""
+                : (mod >= 0 ? "+" : "") + mod;
+    }
+
+    private String getDamageAvg(JsonNode target, String amount, String op, String ability) {
+        int mod = getAbilityModNumber(target.get(ability).asInt());
+        if ("+".equals(op)) {
+            double total = Double.parseDouble(amount) + mod;
+            return (total >= 0 ? "+" : "") + Math.floor(total);
+        }
+        throw new IllegalArgumentException("Unknown damage average operation: " + op + " for " + target.get("name").asText());
+    }
+
+    private String getToHitString(JsonNode target, String ability) {
+        int pb = crToPb(target.get("cr"));
+        int mod = getAbilityModNumber(target.get(ability).asInt());
+        int total = pb + mod;
+        return (total >= 0 ? "+" : "") + total;
+    }
+
+    private String getShortName(JsonNode target, boolean isTitleCase) {
+        String name = target.get("name").asText();
+        JsonNode shortName = target.get("shortName");
+        boolean isNamedCreature = target.has("isNamedCreature");
+        String prefix = isNamedCreature
+                ? ""
+                : isTitleCase ? "The " : "the ";
+
+        if (shortName != null) {
+            return shortName.isBoolean()
+                    ? prefix + name
+                    : prefix + (isNamedCreature
+                            ? shortName.asText()
+                            : isTitleCase
+                                    ? toTitleCase(shortName.asText())
+                                    : shortName.asText().toLowerCase());
+        }
+
+        return prefix + getShortNameFromName(name, isNamedCreature);
+    }
+
+    private String toTitleCase(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+
+        return Arrays
+                .stream(text.split(" "))
+                .map(word -> word.isEmpty()
+                        ? word
+                        : Character.toTitleCase(word.charAt(0)) + word
+                                .substring(1)
+                                .toLowerCase())
+                .collect(Collectors.joining(" "));
+    }
+
+    private String getShortNameFromName(String name, boolean isNamedCreature) {
+        String result = name.split(",")[0]
+                .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
+
+        return isNamedCreature
+                ? result.split(" ")[0]
+                : result.toLowerCase();
+    }
+
+    void handleMod(String originKey, JsonNode target, JsonNode _mod) {
         if (_mod != null) {
             _mod.fields().forEachRemaining(field -> {
                 if (field.getKey().equals("*")) {
-                    List.of("action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
+                    List.of("action", "bonus", "reaction", "trait", "legendary",
+                            "mythic", "variant", "spellcasting",
                             "legendaryHeader").forEach(x -> {
                                 if (target.has(x)) {
                                     handleModifications(originKey, x, field.getValue(), target);
@@ -207,9 +346,11 @@ public class JsonSourceCopier implements JsonSource {
                     handleModifications(originKey, field.getKey(), field.getValue(), target);
                 }
             });
-        }
 
-        return target;
+            if (_mod.has("calculateProp")) {
+                doCalculateProp(originKey, _mod.get("calculateProp"), target);
+            }
+        }
     }
 
     ArrayNode sortArrayNode(ArrayNode array) {
@@ -255,8 +396,14 @@ public class JsonSourceCopier implements JsonSource {
             case "replaceTxt":
                 doReplaceText(modItem, modFieldName, target);
                 break;
+            case "addSenses":
+                doAddSenses(originKey, modItem, target);
+                break;
+            case "addSaves":
+                doAddSaves(originKey, modItem, target, false);
+                break;
             case "addSkills":
-                doAddSkills(originKey, modItem, target);
+                doAddSkills(originKey, modItem, target, false);
                 break;
             case "addSpells":
                 doAddSpells(originKey, modItem, target);
@@ -267,9 +414,169 @@ public class JsonSourceCopier implements JsonSource {
             case "replaceSpells":
                 doReplaceSpells(originKey, modItem, target);
                 break;
+            case "maxSize":
+                doMaxSize(originKey, modItem, target);
+                break;
+            case "scalarAddProp":
+                doScalarAddProp(originKey, modItem, target, modFieldName);
+                break;
+            case "scalarMultProp":
+                doScalarMultProp(originKey, modItem, target, modFieldName);
+                break;
+            case "scalarAddHit":
+                doScalarAddHit(originKey, modItem, target, modFieldName);
+                break;
+            case "scalarAddDc":
+                doScalarAddDc(originKey, modItem, target, modFieldName);
+                break;
+            case "scalarMultXp":
+                doScalarMultXp(originKey, modItem, target);
+                break;
+            case "addAllSaves":
+            case "addAllSkills":
+            case "calculateProp":
+                // ignore
+                break;
             default:
                 tui().errorf("Unknown modification mode: %s (from %s)", modItem.toPrettyString(), originKey);
                 break;
+        }
+    }
+
+    static final Pattern dcPattern = Pattern.compile("\\{@dc (\\d+)(?:\\|[^}]+)?}");
+
+    private void doScalarAddDc(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
+        if (!target.has(modFieldName)) {
+            return;
+        }
+        int scalar = modItem.get("scalar").asInt();
+        String fullNode = dcPattern.matcher(target.get(modFieldName).toString())
+                .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+
+        try {
+            ((ObjectNode) target).replace(modFieldName, Json5eTui.MAPPER.readTree(fullNode));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Unable to apply scalar to dc " + target.get(modFieldName).toString());
+        }
+    }
+
+    static final Pattern hitPattern = Pattern.compile("\\{@hit ([-+]?\\d+)}");
+
+    private void doScalarAddHit(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
+        if (!target.has(modFieldName)) {
+            return;
+        }
+        int scalar = modItem.get("scalar").asInt();
+        String fullNode = hitPattern.matcher(target.get(modFieldName).toString())
+                .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+
+        try {
+            ((ObjectNode) target).replace(modFieldName, Json5eTui.MAPPER.readTree(fullNode));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Unable to apply scalar to hit " + target.get(modFieldName).toString());
+        }
+    }
+
+    private void doScalarMultXp(String originKey, JsonNode modItem, JsonNode target) {
+        double scalar = modItem.get("scalar").asDouble();
+        boolean floor = booleanOrDefault(modItem, "floor", false);
+
+        JsonNode crNode = target.get("cr");
+        int xp = crToXp(crNode);
+        double result = xp * scalar;
+
+        String newCr = JsonSource.XP_CHART_ALT.entrySet().stream()
+                .filter(e -> e.getValue() <= result)
+                .max((a, b) -> a.getValue() - b.getValue()).get().getKey();
+
+        ObjectNode o = Json5eTui.MAPPER.createObjectNode();
+        o.set("cr", new TextNode(newCr));
+        o.set("xp", doubleToJsonNode(null, result, floor));
+
+        ((ObjectNode) target).replace("cr", o);
+    }
+
+    private void doScalarMultProp(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
+        if (!target.has(modFieldName)) {
+            return;
+        }
+        double scalar = modItem.get("scalar").asDouble();
+        String prop = modItem.get("prop").asText();
+        boolean floor = booleanOrDefault(modItem, "floor", false);
+        if (prop.equals("*")) {
+            Iterator<String> i = target.get(modFieldName).fieldNames();
+            while (i.hasNext()) {
+                String name = i.next();
+                applyMultiply((ObjectNode) target.get(modFieldName), name, scalar, floor);
+            }
+        } else {
+            applyMultiply((ObjectNode) target.get(modFieldName), prop, scalar, floor);
+        }
+    }
+
+    private void applyMultiply(ObjectNode target, String prop, double scalar, boolean floor) {
+        double value = target.get(prop).asDouble();
+        double newValue = value * scalar;
+        target.replace(prop, doubleToJsonNode(target.get(prop), newValue, floor));
+    }
+
+    private void doScalarAddProp(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
+        if (!target.has(modFieldName)) {
+            return;
+        }
+        double scalar = modItem.get("scalar").asDouble();
+        String prop = modItem.get("prop").asText();
+        if (prop.equals("*")) {
+            Iterator<String> i = target.get(modFieldName).fieldNames();
+            while (i.hasNext()) {
+                String name = i.next();
+                applyAdd((ObjectNode) target.get(modFieldName), name, scalar);
+            }
+        } else {
+            applyAdd((ObjectNode) target.get(modFieldName), prop, scalar);
+        }
+    }
+
+    private void applyAdd(ObjectNode target, String prop, double scalar) {
+        double value = target.get(prop).asDouble();
+        double newValue = value + scalar;
+        target.replace(prop, doubleToJsonNode(target.get(prop), newValue, true));
+    }
+
+    private void doCalculateProp(String originKey, JsonNode modItem, JsonNode target) {
+        String prop = modItem.get("prop").asText();
+        String formula = modItem.get("formula").asText();
+        double prBonus = crToPb(target.get("cr"));
+        int dexMod = getAbilityModNumber(target.get("dex").asInt());
+
+        throw new IllegalStateException("doCalculateProp is implemented yet");
+    }
+
+    JsonNode doubleToJsonNode(JsonNode original, double newValue, boolean floor) {
+        if (original != null && original.isTextual()) {
+            return new TextNode((newValue >= 0 ? "+" : "") + (int) Math.floor(newValue));
+        }
+        if (floor) {
+            return new IntNode((int) Math.floor(newValue));
+        }
+        return new DoubleNode(newValue);
+    }
+
+    private void doMaxSize(String originKey, JsonNode modItem, JsonNode target) {
+        final String sizes = "VTSMLHG";
+        String maxValue = getTextOrEmpty(modItem, "max");
+        int max = sizes.indexOf(maxValue);
+        boolean set = false;
+        ArrayNode size = target.withArray("size");
+        for (int i = size.size() - 1; i >= 0; i--) {
+            String s = size.get(i).asText();
+            if (sizes.indexOf(s) > max) {
+                size.remove(i);
+                set = true;
+            }
+        }
+        if (set) {
+            size.add(maxValue);
         }
     }
 
@@ -384,7 +691,8 @@ public class JsonSourceCopier implements JsonSource {
                             targetSpells.set(s.getKey(), sortArrayNode(spellsArray));
                         } else if (spellsTgt.get(ss.getKey()).isObject()) {
                             throw new IllegalArgumentException(
-                                    String.format("Object %s is not an array (referenced from %s)", ss.getKey(), originKey));
+                                    String.format("Object %s is not an array (referenced from %s)", ss.getKey(),
+                                            originKey));
                         }
                     });
                 }
@@ -425,8 +733,85 @@ public class JsonSourceCopier implements JsonSource {
 
     }
 
-    void doAddSkills(String originKey, JsonNode modItem, JsonNode target) {
+    void doAddSenses(String originKey, JsonNode modItem, JsonNode target) {
+        tui().debugf("Add senses %s", originKey);
+        if (!modItem.has("senses") || modItem.get("senses").size() == 0) {
+            return;
+        }
+        JsonNode senses = modItem.get("senses");
+        if (senses.isObject()) {
+            senses = Json5eTui.MAPPER.createArrayNode();
+            ((ArrayNode) senses).add(modItem.get("senses"));
+        }
+
+        ArrayNode targetSenses = target.withArray("senses");
+
+        senses.forEach(sense -> {
+            String type = sense.get("type").asText();
+            int range = sense.get("range").asInt();
+            TextNode newValue = new TextNode(String.format("%s %s ft.", type, range));
+
+            boolean found = false;
+            for (int i = 0; i < targetSenses.size(); i++) {
+                Matcher m = Pattern.compile(type + " (\\d+)", i).matcher(sense.asText());
+                if (m.matches()) {
+                    found = true;
+                    if (Integer.parseInt(m.group(1)) < range) {
+                        targetSenses.set(i, newValue);
+                    }
+                }
+            }
+            if (!found) {
+                targetSenses.add(newValue);
+            }
+        });
+
+    }
+
+    void doAddSaves(String originKey, JsonNode modItem, JsonNode target, boolean allSaves) {
+        tui().debugf("Add saves %s", originKey);
+        // if (allSaves) {
+        //     int value = modItem.get("saves").asInt();
+        //     if (value > 0) {
+        //         ObjectNode recurse = Json5eTui.MAPPER.createObjectNode();
+        //         ObjectNode newSaves = Json5eTui.MAPPER.createObjectNode();
+        //         SkillOrAbility.allSaves.forEach(x -> newSaves.put(x, value));
+        //         recurse.set("saves", newSaves);
+        //         doAddSaves(originKey, recurse, target, false);
+        //     }
+        //     return;
+        // }
+        ObjectNode targetSaves = target.with("save");
+        modItem.get("saves").fields().forEachRemaining(e -> {
+            int mode = e.getValue().asInt();
+            String ability = e.getKey();
+            String cr = monsterCr(target);
+            double total = mode * crToPb(cr) + getAbilityModNumber(target.get(ability).asInt());
+            String totalAsText = (total >= 0 ? "+" : "") + ((int) total);
+
+            if (targetSaves.has(ability)) {
+                if (targetSaves.get(ability).asDouble() < total) {
+                    targetSaves.set(ability, new TextNode(totalAsText));
+                }
+            } else {
+                targetSaves.set(ability, new TextNode(totalAsText));
+            }
+        });
+    }
+
+    void doAddSkills(String originKey, JsonNode modItem, JsonNode target, boolean allSkills) {
         tui().debugf("Add skills %s", originKey);
+        // if (allSkills) {
+        //     int value = modItem.get("skills").asInt();
+        //     if (value > 0) {
+        //         ObjectNode recurse = Json5eTui.MAPPER.createObjectNode();
+        //         ObjectNode newSkills = Json5eTui.MAPPER.createObjectNode();
+        //         SkillOrAbility.allSkills.forEach(x -> newSkills.put(x, value));
+        //         recurse.set("skills", newSkills);
+        //         doAddSkills(originKey, recurse, target, false);
+        //     }
+        //     return;
+        // }
         ObjectNode targetSkills = target.with("skill");
         modItem.get("skills").fields().forEachRemaining(e -> {
             // mode: 1 = proficient; 2 = expert

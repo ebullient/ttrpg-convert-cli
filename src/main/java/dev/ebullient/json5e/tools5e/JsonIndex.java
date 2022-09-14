@@ -86,13 +86,13 @@ public class JsonIndex implements JsonSource {
                     try {
                         readDirectory(p);
                     } catch (Exception e) {
-                        tui().errorf(e, "Error parsing %s", p.toString());
+                        tui().errorf(e, "Error reading directory %s", p.toString());
                     }
                 } else if ((name.startsWith("fluff") || name.startsWith(basename)) && name.endsWith(".json")) {
                     try {
                         readFile(p);
                     } catch (Exception e) {
-                        tui().errorf(e, "Error parsing %s", p.toString());
+                        tui().errorf(e, "Error parsing file %s", p.toString());
                     }
                 }
             });
@@ -132,6 +132,7 @@ public class JsonIndex implements JsonSource {
         node.withArray("spellFluff").forEach(x -> addToIndex(IndexType.spellfluff, x));
         node.withArray("subrace").forEach(x -> addToIndex(IndexType.subrace, x));
         node.withArray("trait").forEach(x -> addToIndex(IndexType.trait, x));
+        node.withArray("legendaryGroup").forEach(x -> addToIndex(IndexType.legendarygroup, x));
         node.withArray("subclass").forEach(x -> addToIndex(IndexType.subclass, x));
         node.withArray("classFeature").forEach(x -> addToIndex(IndexType.classfeature, x));
         node.withArray("optionalfeature").forEach(x -> addToIndex(IndexType.optionalfeature, x));
@@ -272,6 +273,11 @@ public class JsonIndex implements JsonSource {
 
         nodeIndex.forEach((key, node) -> {
             IndexType type = IndexType.getTypeFromKey(key);
+            if (type == IndexType.trait || type == IndexType.legendarygroup) {
+                // traits are used by monsters
+                return;
+            }
+
             JsonNode jsonSource = copier.handleCopy(type, node);
 
             if (type == IndexType.subrace) {
@@ -442,14 +448,10 @@ public class JsonIndex implements JsonSource {
                         .toLowerCase();
             }
             default:
-                return createSimpleKey(type, x);
+                String name = x.get("name").asText();
+                String source = x.get("source").asText();
+                return createSimpleKey(type, name, source);
         }
-    }
-
-    public String createSimpleKey(IndexType type, JsonNode node) {
-        String name = node.get("name").asText();
-        String source = node.get("source").asText();
-        return createSimpleKey(type, name, source);
     }
 
     public String createSimpleKey(IndexType type, String name, String source) {
