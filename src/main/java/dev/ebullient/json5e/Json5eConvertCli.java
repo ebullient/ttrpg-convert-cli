@@ -34,7 +34,7 @@ import picocli.CommandLine.Spec;
 
 @SuppressWarnings("CanBeFinal")
 @QuarkusMain
-@Command(name = "5e-convert", mixinStandardHelpOptions = true, header = "Convert 5etools data to markdown", subcommands = {
+@Command(name = "5e-convert", header = "Convert 5etools data to markdown", subcommands = {
         Completion.class,
 }, description = {
         "%n%nThis will read from a 5etools json file (or the 5etools data directory) and will produce xml or markdown documents (based on options).",
@@ -63,7 +63,7 @@ import picocli.CommandLine.Spec;
         "",
         "Pass this file in as another input source. Use the identifiers from the generated index files in the list of excluded rules.",
         "",
-})
+}, mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
 public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
 
     List<Path> input;

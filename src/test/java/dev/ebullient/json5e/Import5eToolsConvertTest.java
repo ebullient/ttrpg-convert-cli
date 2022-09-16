@@ -35,6 +35,15 @@ public class Import5eToolsConvertTest {
     }
 
     @Test
+    @Launch({ "--version" })
+    void testCommandVersion(LaunchResult result) {
+        result.echoSystemOut();
+        assertThat(result.getOutput())
+                .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                .contains("5e-convert version");
+    }
+
+    @Test
     void testCommandLiveData(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             // SRD

@@ -46,6 +46,8 @@
         <!-- Libraries -->
         <assertj.version>3.23.1</assertj.version>
         <github-slugify.version>3.0.2</github-slugify.version>
+        <!-- Packaging -->
+        <quarkus.package.type>uber-jar</quarkus.package.type>
     </properties>
     <dependencyManagement>
         <dependencies>
