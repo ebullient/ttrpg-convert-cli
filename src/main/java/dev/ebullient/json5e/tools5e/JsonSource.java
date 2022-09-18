@@ -227,6 +227,10 @@ public interface JsonSource {
 
     default String sizeToString(String size) {
         switch (size) {
+            case "F":
+                return "Fine";
+            case "D":
+                return "Diminutive";
             case "T":
                 return "Tiny";
             case "S":
@@ -239,6 +243,8 @@ public interface JsonSource {
                 return "Huge";
             case "G":
                 return "Gargantuan";
+            case "C":
+                return "Colossal";
             case "V":
                 return "Varies";
             case "SM":
