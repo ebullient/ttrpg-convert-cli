@@ -37,57 +37,59 @@ public class MarkdownWriter {
         this.templates = templates;
     }
 
-    public <T extends QuteSource> void writeFiles(List<T> elements, String kind) {
+    public <T extends QuteSource> void writeFiles(List<T> elements, String kind, Path compendiumPath) {
         if (elements.isEmpty()) {
             return;
         }
         Set<FileMap> fileMappings = new TreeSet<>((a, b) -> {
-            if (a.dirName.equals(b.dirName)) {
+            if (a.dir.equals(b.dir)) {
                 return a.fileName.compareTo(b.fileName);
             }
-            return a.dirName.compareTo(b.dirName);
+            return a.dir.compareTo(b.dir);
         });
 
         elements.forEach(x -> {
             String type = x.getClass().getSimpleName();
-            FileMap fileMap = new FileMap(x.getName(), tui.slugify(x.getName()));
+            FileMap fileMap = new FileMap(
+                    x.getName(),
+                    tui.slugify(x.getName()));
             try {
                 switch (type) {
                     case "QuteBackground":
-                        fileMap.dirName = "backgrounds";
+                        fileMap.dir = compendiumPath.resolve("backgrounds");
                         writeFile(fileMap, templates.renderBackground((QuteBackground) x));
                         break;
                     case "QuteClass":
-                        fileMap.dirName = "classes";
+                        fileMap.dir = compendiumPath.resolve("classes");
                         writeFile(fileMap, templates.renderClass((QuteClass) x));
                         break;
                     case "QuteFeat":
-                        fileMap.dirName = "feats";
+                        fileMap.dir = compendiumPath.resolve("feats");
                         writeFile(fileMap, templates.renderFeat((QuteFeat) x));
                         break;
                     case "QuteItem":
-                        fileMap.dirName = "items";
+                        fileMap.dir = compendiumPath.resolve("items");
                         writeFile(fileMap, templates.renderItem((QuteItem) x));
                         break;
                     case "QuteMonster":
                         QuteMonster m = (QuteMonster) x;
                         fileMap = new FileMap(m.getName(),
                                 tui.slugify(m.getName()),
-                                QuteMonster.getSubdir(m));
+                                compendiumPath.resolve(QuteMonster.getSubdir(m)));
                         writeFile(fileMap, templates.renderMonster(m));
                         break;
                     case "QuteRace":
-                        fileMap.dirName = "races";
+                        fileMap.dir = compendiumPath.resolve("races");
                         writeFile(fileMap, templates.renderRace((QuteRace) x));
                         break;
                     case "QuteSpell":
-                        fileMap.dirName = "spells";
+                        fileMap.dir = compendiumPath.resolve("spells");
                         writeFile(fileMap, templates.renderSpell((QuteSpell) x));
                         break;
                     case "QuteSubclass":
                         QuteSubclass s = (QuteSubclass) x;
                         String title = s.parentClass + ": " + s.getName();
-                        fileMap = new FileMap(title, tui.slugify(title), "classes");
+                        fileMap = new FileMap(title, tui.slugify(title), compendiumPath.resolve("classes"));
                         writeFile(fileMap, templates.renderSubclass(s));
                         break;
                     default:
@@ -98,23 +100,25 @@ public class MarkdownWriter {
                 throw new WrappedIOException(e);
             }
         });
+
         fileMappings.stream()
-                .collect(Collectors.groupingBy(fm -> fm.dirName))
-                .forEach((dirName, value) -> {
-                    int lastIndex = dirName.lastIndexOf("/");
-                    String fileName = lastIndex > 0 ? dirName.substring(lastIndex + 1) : dirName;
+                .collect(Collectors.groupingBy(fm -> fm.dir))
+                .forEach((dir, value) -> {
+                    String fileName = dir.getFileName().toString();
                     String title = fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
                     try {
-                        writeFile(new FileMap(title, fileName, dirName), templates.renderIndex(title, value));
+                        writeFile(new FileMap(title, fileName, dir), templates.renderIndex(title, value));
                     } catch (IOException ex) {
                         throw new WrappedIOException(ex);
                     }
+
                 });
         tui.outPrintf("✅ Wrote %s %s files.%n", (fileMappings.size() + 1), kind == null ? "markdown" : kind);
+
     }
 
     void writeFile(FileMap fileMap, String content) throws IOException {
-        Path targetDir = Paths.get(output.toString(), fileMap.dirName);
+        Path targetDir = Paths.get(output.toString(), fileMap.dir.toString());
         targetDir.toFile().mkdirs();
 
         Path target = targetDir.resolve(fileMap.fileName);
@@ -122,8 +126,9 @@ public class MarkdownWriter {
         Files.write(target, content.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void writeNotes(String dirName, Collection<QuteNote> notes) {
-        Path targetDir = Paths.get(output.toString(), dirName);
+    public void writeNotes(Path dir, Collection<QuteNote> notes) {
+        Path targetDir = output.resolve(dir);
+        ;
         targetDir.toFile().mkdirs();
 
         for (QuteNote n : notes) {
@@ -134,8 +139,8 @@ public class MarkdownWriter {
         tui.outPrintf("✅ Wrote %s notes (rules and tables).%n", notes.size());
     }
 
-    public void writeNotes(String dirName, Map<String, QuteNote> notes) {
-        Path rootDir = Paths.get(output.toString(), dirName);
+    public void writeNotes(Path dir, Map<String, QuteNote> notes) {
+        Path rootDir = output.resolve(dir);
         rootDir.toFile().mkdirs();
 
         notes.forEach((k, v) -> {
@@ -159,8 +164,8 @@ public class MarkdownWriter {
         }
     }
 
-    public void writeNames(String dirName, Collection<QuteName> names) {
-        Path rootDir = Paths.get(output.toString(), dirName);
+    public void writeNames(Path dir, Collection<QuteName> names) {
+        Path rootDir = output.resolve(dir);
         rootDir.toFile().mkdirs();
 
         names.forEach(n -> {
@@ -179,17 +184,17 @@ public class MarkdownWriter {
     public static class FileMap {
         public final String title;
         public final String fileName;
-        public String dirName;
+        public Path dir;
 
         public FileMap(String title, String fileName) {
             this.title = title;
             this.fileName = fileName + (fileName.endsWith(".md") ? "" : ".md");
         }
 
-        public FileMap(String title, String fileName, String dirName) {
+        public FileMap(String title, String fileName, Path dirName) {
             this.title = title;
             this.fileName = fileName + (fileName.endsWith(".md") ? "" : ".md");
-            this.dirName = dirName;
+            this.dir = dirName;
         }
     }
 
