@@ -563,7 +563,7 @@ public class JsonSourceCopier implements JsonSource {
     }
 
     private void doMaxSize(String originKey, JsonNode modItem, JsonNode target) {
-        final String sizes = "VTSMLHG";
+        final String sizes = "VFDTSMLHGC";
         String maxValue = getTextOrEmpty(modItem, "max");
         int max = sizes.indexOf(maxValue);
         boolean set = false;
