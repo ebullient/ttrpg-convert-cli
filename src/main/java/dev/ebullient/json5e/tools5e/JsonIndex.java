@@ -52,8 +52,11 @@ public class JsonIndex implements JsonSource {
     private final Set<String> includeGroups = new HashSet<>();
     private final Set<String> missingSourceName = new HashSet<>();
 
-    private String rulesPath = "/rules/";
-    private String compendiumPath = "/compendium/";
+    private String rulesRoot = "/rules/";
+    private Path rulesPath = Path.of("rules/");
+
+    private String compendiumRoot = "/compendium/";
+    private Path compendiumPath = Path.of("compendium/");
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
 
@@ -145,8 +148,6 @@ public class JsonIndex implements JsonSource {
         node.withArray("feat").forEach(x -> addToIndex(IndexType.feat, x));
         node.withArray("baseitem").forEach(x -> addToIndex(IndexType.item, x));
         node.withArray("item").forEach(x -> addToIndex(IndexType.item, x));
-        // TODO: node.withArray("object").forEach(x -> addToIndex(IndexType.item, x));
-        // TODO: node.withArray("vehicle").forEach(x -> addToIndex(IndexType.item, x));
         node.withArray("monster").forEach(x -> addToIndex(IndexType.monster, x));
         node.withArray("race").forEach(x -> addToIndex(IndexType.race, x));
         node.withArray("spell").forEach(x -> addToIndex(IndexType.spell, x));
@@ -221,15 +222,24 @@ public class JsonIndex implements JsonSource {
             node.get("paths").fields().forEachRemaining(e -> {
                 switch (e.getKey()) {
                     case "rules":
-                        rulesPath = e.getValue().asText();
-                        if (!rulesPath.endsWith("/")) {
-                            rulesPath += "/";
+                        rulesRoot = ('/' + e.getValue().asText() + '/')
+                                .replace('\\', '/')
+                                .replaceAll("/+", "/");
+                        if (rulesRoot.equals("/")) {
+                            rulesPath = Path.of(".");
+                        } else {
+                            rulesPath = Path.of(rulesRoot.substring(1));
                         }
                         break;
                     case "compendium":
-                        compendiumPath = e.getValue().asText();
-                        if (!compendiumPath.endsWith("/")) {
-                            compendiumPath += "/";
+                        compendiumRoot = ('/' + e.getValue().asText() + '/')
+                                .replace('\\', '/')
+                                .replaceAll("/+", "/");
+
+                        if (compendiumRoot.equals("/")) {
+                            compendiumPath = Path.of(".");
+                        } else {
+                            compendiumPath = Path.of(rulesRoot.substring(1));
                         }
                         break;
                 }
@@ -655,10 +665,18 @@ public class JsonIndex implements JsonSource {
     }
 
     public String rulesRoot() {
-        return rulesPath;
+        return rulesRoot;
     }
 
     public String compendiumRoot() {
+        return compendiumRoot;
+    }
+
+    public Path rulesPath() {
+        return rulesPath;
+    }
+
+    public Path compendiumPath() {
         return compendiumPath;
     }
 

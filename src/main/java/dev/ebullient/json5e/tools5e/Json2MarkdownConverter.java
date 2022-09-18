@@ -1,5 +1,6 @@
 package dev.ebullient.json5e.tools5e;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class Json2MarkdownConverter {
             }
         }
 
-        writer.writeFiles(nodes, type.toString());
+        writer.writeFiles(nodes, type.toString(), index.compendiumPath());
         return this;
     }
 
@@ -151,22 +152,26 @@ public class Json2MarkdownConverter {
             }
         }
 
+        Path rulesPath = index.rulesPath();
+        Path compendiumPath = index.compendiumPath();
+
         if (!Json2QuteBackground.traits.isEmpty()) {
             List<QuteNote> notes = new BackgroundTraits2Note(index).buildNotes();
             tables.addAll(notes);
         }
         if (!names.isEmpty()) {
-            writer.writeNames("tables/", names);
+            writer.writeNames(compendiumPath.resolve("tables/"), names);
         }
         if (!adventures.isEmpty()) {
-            writer.writeNotes("adventures/", adventures);
+            writer.writeNotes(compendiumPath.resolve("adventures/"), adventures);
         }
         if (!books.isEmpty()) {
-            writer.writeNotes("books/", books);
+            writer.writeNotes(compendiumPath.resolve("books/"), books);
         }
-        writer.writeNotes("tables/", tables);
-        writer.writeNotes("rules/", rules);
-        writer.writeNotes("rules/variant-rules/", variants);
+        writer.writeNotes(compendiumPath.resolve("tables/"), tables);
+
+        writer.writeNotes(rulesPath, rules);
+        writer.writeNotes(rulesPath.resolve("variant-rules/"), variants);
         return this;
     }
 
