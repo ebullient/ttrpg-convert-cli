@@ -154,13 +154,13 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
                             continue;
                         }
                         if (p.toFile().isFile()) {
-                            index.readFile(p);
+                            tui.readFile(p, index.importFile());
                         } else {
-                            index.readDirectory(p);
+                            tui.readDirectory(p, index.importFile());
                         }
                     }
                 } else {
-                    index.readFile(inputPath);
+                    tui.readFile(inputPath, index.importFile());
                 }
             } catch (IOException e) {
                 tui.error(e, "  Exception: " + e.getMessage());
