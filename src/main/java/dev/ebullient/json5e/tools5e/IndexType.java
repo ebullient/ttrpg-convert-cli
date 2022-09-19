@@ -5,6 +5,7 @@ public enum IndexType {
     backgroundfluff,
     classtype,
     classfeature,
+    deity,
     feat,
     item,
     itementry,

@@ -104,10 +104,16 @@ public class CommonDataTests {
         }
     }
 
+    public void testDeityList(Path outputPath) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            new Json2MarkdownConverter(index, writer)
+                    .writeFiles(IndexType.deity);
+        }
+    }
+
     public void testItemList(Path outputPath) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            // TODO: objects, vehicles, magicvariants
-
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.item);

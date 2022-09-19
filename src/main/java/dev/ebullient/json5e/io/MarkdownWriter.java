@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.json5e.qute.QuteBackground;
 import dev.ebullient.json5e.qute.QuteClass;
+import dev.ebullient.json5e.qute.QuteDeity;
 import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteItem;
 import dev.ebullient.json5e.qute.QuteMonster;
@@ -62,6 +63,9 @@ public class MarkdownWriter {
                         break;
                     case "QuteClass":
                         writeFile(fileMap, templates.renderClass((QuteClass) x));
+                        break;
+                    case "QuteDeity":
+                        writeFile(fileMap, templates.renderDeity((QuteDeity) x));
                         break;
                     case "QuteFeat":
                         writeFile(fileMap, templates.renderFeat((QuteFeat) x));

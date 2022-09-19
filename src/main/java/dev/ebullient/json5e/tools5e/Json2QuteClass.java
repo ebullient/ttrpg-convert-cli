@@ -81,7 +81,12 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         subclasses.forEach(sc -> {
             List<String> tags = new ArrayList<>(sc.sources.getSourceTags());
-            tags.add("class/" + slugify(getName()) + "/" + slugify(sc.shortName));
+            String tag = slugify(getName()) + "/" + slugify(sc.shortName);
+            tags.add("class/" + tag);
+
+            if (tag.contains("cleric")) {
+                tags.add("domain/" + tag.substring(tag.lastIndexOf("/") + 1));
+            }
 
             List<String> text = new ArrayList<>();
 
