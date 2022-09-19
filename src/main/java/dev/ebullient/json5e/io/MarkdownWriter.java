@@ -51,46 +51,35 @@ public class MarkdownWriter {
         elements.forEach(x -> {
             String type = x.getClass().getSimpleName();
             FileMap fileMap = new FileMap(
-                    x.getName(),
-                    tui.slugify(x.getName()));
+                    x.title(),
+                    tui.slugify(x.title()),
+                    compendiumPath.resolve(x.targetPath()));
+
             try {
                 switch (type) {
                     case "QuteBackground":
-                        fileMap.dir = compendiumPath.resolve("backgrounds");
                         writeFile(fileMap, templates.renderBackground((QuteBackground) x));
                         break;
                     case "QuteClass":
-                        fileMap.dir = compendiumPath.resolve("classes");
                         writeFile(fileMap, templates.renderClass((QuteClass) x));
                         break;
                     case "QuteFeat":
-                        fileMap.dir = compendiumPath.resolve("feats");
                         writeFile(fileMap, templates.renderFeat((QuteFeat) x));
                         break;
                     case "QuteItem":
-                        fileMap.dir = compendiumPath.resolve("items");
                         writeFile(fileMap, templates.renderItem((QuteItem) x));
                         break;
                     case "QuteMonster":
-                        QuteMonster m = (QuteMonster) x;
-                        fileMap = new FileMap(m.getName(),
-                                tui.slugify(m.getName()),
-                                compendiumPath.resolve(QuteMonster.getSubdir(m)));
-                        writeFile(fileMap, templates.renderMonster(m));
+                        writeFile(fileMap, templates.renderMonster((QuteMonster) x));
                         break;
                     case "QuteRace":
-                        fileMap.dir = compendiumPath.resolve("races");
                         writeFile(fileMap, templates.renderRace((QuteRace) x));
                         break;
                     case "QuteSpell":
-                        fileMap.dir = compendiumPath.resolve("spells");
                         writeFile(fileMap, templates.renderSpell((QuteSpell) x));
                         break;
                     case "QuteSubclass":
-                        QuteSubclass s = (QuteSubclass) x;
-                        String title = s.parentClass + ": " + s.getName();
-                        fileMap = new FileMap(title, tui.slugify(title), compendiumPath.resolve("classes"));
-                        writeFile(fileMap, templates.renderSubclass(s));
+                        writeFile(fileMap, templates.renderSubclass((QuteSubclass) x));
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown file type:" + type);
@@ -114,7 +103,6 @@ public class MarkdownWriter {
 
                 });
         tui.outPrintf("✅ Wrote %s %s files.%n", (fileMappings.size() + 1), kind == null ? "markdown" : kind);
-
     }
 
     void writeFile(FileMap fileMap, String content) throws IOException {

@@ -107,6 +107,11 @@ public class QuteMonster extends QuteNote {
         return source;
     }
 
+    @Override
+    public String targetPath() {
+        return getSubdir(this);
+    }
+
     public String getFullType() {
         return type + ((subtype == null || subtype.isEmpty()) ? "" : "(" + subtype + ")");
     }

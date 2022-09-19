@@ -12,4 +12,9 @@ public class QuteFeat extends QuteNote {
         this.level = level;
         this.prerequisite = prerequisite; // optional
     }
+
+    @Override
+    public String targetPath() {
+        return "feats";
+    }
 }
