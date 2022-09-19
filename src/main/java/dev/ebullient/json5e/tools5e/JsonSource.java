@@ -1036,6 +1036,72 @@ public interface JsonSource {
         return index().getNode(key);
     }
 
+    default String mapAlignmentToString(String a) {
+        switch (a) {
+            case "A":
+                return "Any alignment";
+            case "C":
+                return "Chaotic";
+            case "CE":
+                return "Chaotic Evil";
+            case "CELENE":
+            case "LNXCE":
+                return "Any Evil Alignment";
+            case "CG":
+                return "Chaotic Good";
+            case "CGNE":
+                return "Chaotic Good or Neutral Evil";
+            case "CGNYE":
+                return "Any Chaotic alignment";
+            case "CN":
+                return "Chaotic Neutral";
+            case "N":
+            case "NX":
+            case "NY":
+                return "Neutral";
+            case "NE":
+                return "Neutral Evil";
+            case "NG":
+                return "Neutral Good";
+            case "NGNE":
+            case "NENG":
+                return "Neutral Good or Neutral Evil";
+            case "NNXNYN":
+            case "NXCGNYE":
+                return "Any Non-Lawful alignment";
+            case "L":
+                return "Lawful";
+            case "LE":
+                return "Lawful Evil";
+            case "LG":
+                return "Lawful Good";
+            case "LN":
+                return "Lawful Neutral";
+            case "LNXCNYE":
+                return "Any Non-Good alignment";
+            case "E":
+                return "Any Evil alignment";
+            case "G":
+                return "Any Good alignment";
+            case "U":
+                return "Unaligned";
+        }
+        tui().errorf("What alignment is this? %s (from %s)", a, getSources());
+        return "Unknown";
+    }
+
+    public static class JsonMediaHref {
+        public String type;
+        public JsonHref href;
+        String title;
+
+        static class JsonHref {
+            public String type;
+            public String path;
+            public String url;
+        }
+    }
+
     static final Map<String, Integer> XP_CHART_ALT = Map.ofEntries(
             entry("0", 10),
             entry("1/8", 25),

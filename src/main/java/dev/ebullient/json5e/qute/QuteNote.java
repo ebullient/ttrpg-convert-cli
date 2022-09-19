@@ -1,6 +1,7 @@
 package dev.ebullient.json5e.qute;
 
 import java.util.Collection;
+import java.util.List;
 
 public class QuteNote implements QuteSource {
     final String name;
@@ -23,5 +24,20 @@ public class QuteNote implements QuteSource {
     @Override
     public String getSource() {
         return source;
+    }
+
+    @Override
+    public List<ImageRef> images() {
+        return List.of();
+    }
+
+    @Override
+    public String title() {
+        return name;
+    }
+
+    @Override
+    public String targetPath() {
+        return null;
     }
 }

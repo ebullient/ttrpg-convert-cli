@@ -23,4 +23,9 @@ public class QuteClass extends QuteNote {
     public int getHitRollAverage() {
         return hitDice / 2 + 1;
     }
+
+    @Override
+    public String targetPath() {
+        return "classes";
+    }
 }

@@ -20,4 +20,14 @@ public class QuteSubclass extends QuteNote {
         this.subclassTitle = subclassTitle;
         this.classProgression = classProgression;
     }
+
+    @Override
+    public String targetPath() {
+        return "classes";
+    }
+
+    @Override
+    public String title() {
+        return parentClass + ": " + getName();
+    }
 }

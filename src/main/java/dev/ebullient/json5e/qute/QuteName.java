@@ -24,6 +24,21 @@ public class QuteName implements QuteSource {
         return source;
     }
 
+    @Override
+    public List<ImageRef> images() {
+        return List.of();
+    }
+
+    @Override
+    public String targetPath() {
+        return null;
+    }
+
+    @Override
+    public String title() {
+        return name;
+    }
+
     public List<LookupTable> getTables() {
         return tables;
     }

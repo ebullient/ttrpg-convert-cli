@@ -27,4 +27,9 @@ public class QuteSpell extends QuteNote {
         this.duration = duration;
         this.classes = classes;
     }
+
+    @Override
+    public String targetPath() {
+        return "spells";
+    }
 }

@@ -30,4 +30,9 @@ public class QuteItem extends QuteNote {
         this.cost = costGp;
         this.weight = weightLbs;
     }
+
+    @Override
+    public String targetPath() {
+        return "items";
+    }
 }

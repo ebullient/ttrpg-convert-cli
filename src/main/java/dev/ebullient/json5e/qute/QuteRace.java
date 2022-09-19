@@ -25,4 +25,9 @@ public class QuteRace extends QuteNote {
         this.traits = traits;
         this.description = description;
     }
+
+    @Override
+    public String targetPath() {
+        return "races";
+    }
 }
