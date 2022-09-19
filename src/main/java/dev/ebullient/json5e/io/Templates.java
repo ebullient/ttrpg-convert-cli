@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import dev.ebullient.json5e.io.MarkdownWriter.FileMap;
 import dev.ebullient.json5e.qute.QuteBackground;
 import dev.ebullient.json5e.qute.QuteClass;
+import dev.ebullient.json5e.qute.QuteDeity;
 import dev.ebullient.json5e.qute.QuteFeat;
 import dev.ebullient.json5e.qute.QuteItem;
 import dev.ebullient.json5e.qute.QuteMonster;
@@ -77,6 +78,16 @@ public class Templates {
 
     public String renderClass(QuteClass resource) {
         Template tpl = templates.computeIfAbsent("class2md.txt", k -> customTemplateOrDefault(k, class2md));
+        return tpl
+                .data("resource", resource)
+                .render().trim();
+    }
+
+    @Inject
+    public Template deity2md;
+
+    public String renderDeity(QuteDeity resource) {
+        Template tpl = templates.computeIfAbsent("deity2md.txt", k -> customTemplateOrDefault(k, deity2md));
         return tpl
                 .data("resource", resource)
                 .render().trim();

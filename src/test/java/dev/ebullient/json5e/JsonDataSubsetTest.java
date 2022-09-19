@@ -57,6 +57,11 @@ public class JsonDataSubsetTest {
     }
 
     @Test
+    public void testDeityList() {
+        commonTests.testDeityList(outputPath);
+    }
+
+    @Test
     public void testItemList() {
         commonTests.testItemList(outputPath);
     }

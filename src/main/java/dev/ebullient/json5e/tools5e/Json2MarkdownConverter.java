@@ -67,6 +67,8 @@ public class Json2MarkdownConverter {
         switch (type) {
             case background:
                 return new Json2QuteBackground(index, type, jsonSource).build();
+            case deity:
+                return new Json2QuteDeity(index, type, jsonSource).build();
             case feat:
                 return new Json2QuteFeat(index, type, jsonSource).build();
             case item:

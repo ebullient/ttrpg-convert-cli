@@ -140,7 +140,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
                 if (inputPath.toFile().isDirectory()) {
                     List<String> inputs = List.of(
                             "bestiary", "class", "spells",
-                            "adventures.json", "books.json",
+                            "adventures.json", "books.json", "deities.json",
                             "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
                             "backgrounds.json", "fluff-backgrounds.json",
                             "feats.json", "optionalfeatures.json",
