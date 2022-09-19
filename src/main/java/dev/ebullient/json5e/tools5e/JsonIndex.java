@@ -680,7 +680,7 @@ public class JsonIndex implements JsonSource {
     private void writeFile(Path outputFile, Map<String, Object> keys) throws IOException {
         DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
         pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
-        Json5eTui.MAPPER.writer()
+        mapper().writer()
                 .with(pp)
                 .writeValue(outputFile.toFile(), keys);
     }

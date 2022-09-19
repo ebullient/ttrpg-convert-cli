@@ -15,6 +15,7 @@ import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
@@ -40,6 +41,10 @@ public interface JsonSource {
     JsonIndex index();
 
     CompendiumSources getSources();
+
+    default ObjectMapper mapper() {
+        return Json5eTui.MAPPER;
+    }
 
     default Json5eTui tui() {
         return index().tui;
@@ -129,7 +134,7 @@ public interface JsonSource {
 
     default JsonNode copyNode(JsonNode sourceNode) {
         try {
-            return Json5eTui.MAPPER.readTree(sourceNode.toString());
+            return mapper().readTree(sourceNode.toString());
         } catch (JsonProcessingException ex) {
             tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
             throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
@@ -139,7 +144,7 @@ public interface JsonSource {
     default JsonNode copyReplaceNode(JsonNode sourceNode, Pattern replace, String with) {
         try {
             String modified = replace.matcher(sourceNode.toString()).replaceAll(with);
-            return Json5eTui.MAPPER.readTree(modified);
+            return mapper().readTree(modified);
         } catch (JsonProcessingException ex) {
             tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
             throw new IllegalStateException("JsonProcessingException processing " + sourceNode);

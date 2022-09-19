@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.qute.QuteItem;
 import dev.ebullient.json5e.qute.QuteSource;
 
@@ -127,7 +126,7 @@ public class Json2QuteItem extends Json2QuteCommon {
             tui().errorf("Could not find %s from %s", finalKey, getSources());
         } else if (index.sourceIncluded(ref.get("source").asText())) {
             try {
-                String entriesTemplate = Json5eTui.MAPPER.writeValueAsString(ref.get("entriesTemplate"));
+                String entriesTemplate = mapper().writeValueAsString(ref.get("entriesTemplate"));
                 if (node.has("detail1")) {
                     entriesTemplate = entriesTemplate.replaceAll("\\{\\{item.detail1}}",
                             node.get("detail1").asText());
@@ -136,7 +135,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                     entriesTemplate = entriesTemplate.replaceAll("\\{\\{item.resist}}",
                             joinAndReplace(node, "resist"));
                 }
-                appendEntryToText(text, Json5eTui.MAPPER.readTree(entriesTemplate), "##");
+                appendEntryToText(text, mapper().readTree(entriesTemplate), "##");
             } catch (JsonProcessingException e) {
                 tui().errorf(e, "Unable to insert item element text for %s from %s", input, getSources());
             }

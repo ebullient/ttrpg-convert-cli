@@ -19,8 +19,6 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import dev.ebullient.json5e.io.Json5eTui;
-
 public class JsonSourceCopier implements JsonSource {
 
     final JsonIndex index;
@@ -248,7 +246,7 @@ public class JsonSourceCopier implements JsonSource {
                 .replaceAll((match) -> getDamageAvg(target, match.group(1), match.group(2), match.group(3)));
 
         try {
-            return Json5eTui.MAPPER.readTree(targetString);
+            return mapper().readTree(targetString);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return target;
@@ -359,7 +357,7 @@ public class JsonSourceCopier implements JsonSource {
         }
         Set<JsonNode> elements = new TreeSet<>(Comparator.comparing(a -> a.asText().toLowerCase()));
         array.forEach(elements::add);
-        ArrayNode sorted = Json5eTui.MAPPER.createArrayNode();
+        ArrayNode sorted = mapper().createArrayNode();
         elements.forEach(sorted::add);
         return sorted;
     }
@@ -454,7 +452,7 @@ public class JsonSourceCopier implements JsonSource {
                 .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
 
         try {
-            ((ObjectNode) target).replace(modFieldName, Json5eTui.MAPPER.readTree(fullNode));
+            ((ObjectNode) target).replace(modFieldName, mapper().readTree(fullNode));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Unable to apply scalar to dc " + target.get(modFieldName).toString());
         }
@@ -471,7 +469,7 @@ public class JsonSourceCopier implements JsonSource {
                 .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
 
         try {
-            ((ObjectNode) target).replace(modFieldName, Json5eTui.MAPPER.readTree(fullNode));
+            ((ObjectNode) target).replace(modFieldName, mapper().readTree(fullNode));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Unable to apply scalar to hit " + target.get(modFieldName).toString());
         }
@@ -489,7 +487,7 @@ public class JsonSourceCopier implements JsonSource {
                 .filter(e -> e.getValue() <= result)
                 .max((a, b) -> a.getValue() - b.getValue()).get().getKey();
 
-        ObjectNode o = Json5eTui.MAPPER.createObjectNode();
+        ObjectNode o = mapper().createObjectNode();
         o.set("cr", new TextNode(newCr));
         o.set("xp", doubleToJsonNode(null, result, floor));
 
@@ -740,7 +738,7 @@ public class JsonSourceCopier implements JsonSource {
         }
         JsonNode senses = modItem.get("senses");
         if (senses.isObject()) {
-            senses = Json5eTui.MAPPER.createArrayNode();
+            senses = mapper().createArrayNode();
             ((ArrayNode) senses).add(modItem.get("senses"));
         }
 
@@ -773,8 +771,8 @@ public class JsonSourceCopier implements JsonSource {
         // if (allSaves) {
         //     int value = modItem.get("saves").asInt();
         //     if (value > 0) {
-        //         ObjectNode recurse = Json5eTui.MAPPER.createObjectNode();
-        //         ObjectNode newSaves = Json5eTui.MAPPER.createObjectNode();
+        //         ObjectNode recurse = mapper().createObjectNode();
+        //         ObjectNode newSaves = mapper().createObjectNode();
         //         SkillOrAbility.allSaves.forEach(x -> newSaves.put(x, value));
         //         recurse.set("saves", newSaves);
         //         doAddSaves(originKey, recurse, target, false);
@@ -804,8 +802,8 @@ public class JsonSourceCopier implements JsonSource {
         // if (allSkills) {
         //     int value = modItem.get("skills").asInt();
         //     if (value > 0) {
-        //         ObjectNode recurse = Json5eTui.MAPPER.createObjectNode();
-        //         ObjectNode newSkills = Json5eTui.MAPPER.createObjectNode();
+        //         ObjectNode recurse = mapper().createObjectNode();
+        //         ObjectNode newSkills = mapper().createObjectNode();
         //         SkillOrAbility.allSkills.forEach(x -> newSkills.put(x, value));
         //         recurse.set("skills", newSkills);
         //         doAddSkills(originKey, recurse, target, false);

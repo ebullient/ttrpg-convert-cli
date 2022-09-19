@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.qute.ImageRef;
 import dev.ebullient.json5e.qute.QuteDeity;
 import dev.ebullient.json5e.qute.QuteSource;
@@ -67,10 +66,10 @@ public class Json2QuteDeity extends Json2QuteCommon {
         if (node.has("symbolImg")) {
             JsonNode symbolImg = node.get("symbolImg");
             try {
-                JsonMediaHref mediaHref = Json5eTui.MAPPER.treeToValue(symbolImg, JsonMediaHref.class);
+                JsonMediaHref mediaHref = mapper().treeToValue(symbolImg, JsonMediaHref.class);
                 if (mediaHref.href.path != null) {
                     Path sourcePath = Path.of("img", mediaHref.href.path);
-                    Path target = Path.of("dieties", "img", slugify(sourcePath.getFileName().toString()));
+                    Path target = Path.of("deities", "img", slugify(sourcePath.getFileName().toString()));
                     String title = mediaHref.title == null ? "" : mediaHref.title;
 
                     return new ImageRef(
