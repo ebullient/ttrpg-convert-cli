@@ -1,6 +1,13 @@
 package dev.ebullient.json5e.io;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -9,10 +16,12 @@ import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.github.slugify.Slugify;
 
+import dev.ebullient.json5e.qute.ImageRef;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
 import picocli.CommandLine.Help.ColorScheme;
@@ -193,5 +202,42 @@ public class Json5eTui {
 
     public String slugify(String s) {
         return slugifier().slugify(s);
+    }
+
+    public void copyImages(List<ImageRef> images) {
+    }
+
+    public void readFile(Path p, BiConsumer<String, JsonNode> callback) throws IOException {
+        File f = p.toFile();
+        JsonNode node = MAPPER.readTree(f);
+        callback.accept(f.getName(), node);
+        //importTree(f.getName(), node);
+        verbosef("🔖 Finished reading %s", p);
+    }
+
+    public void readDirectory(Path dir, BiConsumer<String, JsonNode> callback) {
+        String basename = dir.getFileName().toString();
+        debugf("📁 %s\n", dir);
+        try (Stream<Path> stream = Files.list(dir)) {
+            stream.forEach(p -> {
+                File f = p.toFile();
+                String name = p.getFileName().toString();
+                if (f.isDirectory()) {
+                    try {
+                        readDirectory(p, callback);
+                    } catch (Exception e) {
+                        errorf(e, "Error reading directory %s", p.toString());
+                    }
+                } else if ((name.startsWith("fluff") || name.startsWith(basename)) && name.endsWith(".json")) {
+                    try {
+                        readFile(p, callback);
+                    } catch (Exception e) {
+                        errorf(e, "Error parsing file %s", p.toString());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            errorf(e, "Error parsing %s", dir.toString());
+        }
     }
 }

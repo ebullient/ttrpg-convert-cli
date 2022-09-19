@@ -1,8 +1,6 @@
 package dev.ebullient.json5e.tools5e;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,37 +70,13 @@ public class JsonIndex implements JsonSource {
         setClassFeaturePatterns();
     }
 
-    public void readFile(Path p) throws IOException {
-        File f = p.toFile();
-        JsonNode node = Json5eTui.MAPPER.readTree(f);
-        importTree(f.getName(), node);
-        tui().verbosef("🔖 Finished reading %s", p);
-    }
-
-    public void readDirectory(Path dir) {
-        String basename = dir.getFileName().toString();
-        tui().debugf("📁 %s\n", dir);
-        try (Stream<Path> stream = Files.list(dir)) {
-            stream.forEach(p -> {
-                File f = p.toFile();
-                String name = p.getFileName().toString();
-                if (f.isDirectory()) {
-                    try {
-                        readDirectory(p);
-                    } catch (Exception e) {
-                        tui().errorf(e, "Error reading directory %s", p.toString());
-                    }
-                } else if ((name.startsWith("fluff") || name.startsWith(basename)) && name.endsWith(".json")) {
-                    try {
-                        readFile(p);
-                    } catch (Exception e) {
-                        tui().errorf(e, "Error parsing file %s", p.toString());
-                    }
-                }
-            });
-        } catch (Exception e) {
-            tui().errorf(e, "Error parsing %s", dir.toString());
-        }
+    public BiConsumer<String, JsonNode> importFile() {
+        return new BiConsumer<String, JsonNode>() {
+            @Override
+            public void accept(String name, JsonNode node) {
+                importTree(name, node);
+            }
+        };
     }
 
     public JsonIndex importTree(String filename, JsonNode node) {
