@@ -69,13 +69,15 @@ public class Json2QuteDeity extends Json2QuteCommon {
                 JsonMediaHref mediaHref = mapper().treeToValue(symbolImg, JsonMediaHref.class);
                 if (mediaHref.href.path != null) {
                     Path sourcePath = Path.of("img", mediaHref.href.path);
-                    Path target = Path.of("deities", "img", slugify(sourcePath.getFileName().toString()));
+                    String fileName = sourcePath.getFileName().toString();
+                    int i = fileName.lastIndexOf('.');
+                    Path target = Path.of("deities", "img", slugify(fileName.substring(0, i)) + fileName.substring(i));
                     String title = mediaHref.title == null ? "" : mediaHref.title;
 
                     return new ImageRef(
                             sourcePath,
                             index().compendiumPath().resolve(target),
-                            String.format("![%s](%s#symbol)", title, index().compendiumRoot() + target.toString()));
+                            String.format("![%s](%s%s#symbol)", title, index().compendiumRoot(), target.toString()));
                 }
             } catch (JsonProcessingException | IllegalArgumentException e) {
                 tui().errorf("Unable to read media reference from %s", symbolImg.toPrettyString());

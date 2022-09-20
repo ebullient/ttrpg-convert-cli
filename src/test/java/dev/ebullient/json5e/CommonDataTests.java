@@ -1,5 +1,7 @@
 package dev.ebullient.json5e;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.nio.file.Path;
 import java.util.List;
 
@@ -24,17 +26,19 @@ public class CommonDataTests {
 
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             if (useSources) {
-                index = new JsonIndex(List.of(), tui)
-                        .importTree("", TestUtils.doParse(TestUtils.TEST_SOURCES_JSON));
+                index = new JsonIndex(List.of(), tui);
+                tui.readFile(TestUtils.TEST_SOURCES_JSON, index.importFile());
             } else {
                 index = new JsonIndex(List.of("*"), tui);
             }
-            index.importTree("", TestUtils.doParse(TestUtils.TEST_PATH_JSON));
+            tui.readFile(TestUtils.TEST_PATH_JSON, index.importFile());
+
             for (String x : List.of("adventures.json", "books.json", "adventure/adventure-wdh.json",
                     "book/book-vgm.json", "book/book-phb.json")) {
-                index.importTree(x, TestUtils.doParse(TestUtils.TOOLS_PATH.resolve(x)));
+                tui.readFile(TestUtils.TOOLS_PATH.resolve(x), index.importFile());
             }
-            TestUtils.fullIndex(index, TestUtils.TOOLS_PATH, tui);
+            tui.read5eTools(TestUtils.TOOLS_PATH, index.importFile());
+
             index.prepare();
         }
     }
@@ -45,6 +49,7 @@ public class CommonDataTests {
     }
 
     public void testKeyIndex(Path outputPath) throws Exception {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             Path p1Full = outputPath.resolve("allIndex.json");
             index.writeIndex(p1Full);
@@ -64,6 +69,7 @@ public class CommonDataTests {
     }
 
     public void testFeatList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
@@ -72,6 +78,7 @@ public class CommonDataTests {
     }
 
     public void testBackgroundList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
@@ -81,6 +88,7 @@ public class CommonDataTests {
     }
 
     public void testSpellList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
@@ -89,6 +97,7 @@ public class CommonDataTests {
     }
 
     public void testRaceList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
@@ -97,6 +106,7 @@ public class CommonDataTests {
     }
 
     public void testClassList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
@@ -105,14 +115,19 @@ public class CommonDataTests {
     }
 
     public void testDeityList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.deity);
+
+            Path imageDir = outputPath.resolve(index.compendiumPath()).resolve("deities/img");
+            assertThat(imageDir.toFile().exists()).isTrue();
         }
     }
 
     public void testItemList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
@@ -121,6 +136,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterList(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
@@ -129,6 +145,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlHeader(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
@@ -142,6 +159,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlBody(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
@@ -155,6 +173,7 @@ public class CommonDataTests {
     }
 
     public void testRules(Path outputPath) {
+        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)

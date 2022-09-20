@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.json5e.io.MarkdownWriter;
+import dev.ebullient.json5e.qute.ImageRef;
 import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteNote;
 import dev.ebullient.json5e.qute.QuteSource;
@@ -24,42 +26,51 @@ public class Json2MarkdownConverter {
     }
 
     public Json2MarkdownConverter writeFiles(IndexType type) {
+        return writeFiles(List.of(type));
+    }
+
+    public Json2MarkdownConverter writeFiles(List<IndexType> types) {
         if (index.notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing files");
         }
 
-        List<QuteSource> nodes = new ArrayList<>();
+        List<QuteSource> sources = new ArrayList<>();
         for (Entry<String, JsonNode> e : index.includedEntries()) {
             IndexType nodeType = IndexType.getTypeFromKey(e.getKey());
             JsonNode jsonSource = e.getValue();
 
-            if (type == IndexType.race && nodeType == IndexType.subrace) {
+            if (types.contains(IndexType.race) && nodeType == IndexType.subrace) {
                 // include these, too
-            } else if (nodeType != type) {
+            } else if (!types.contains(nodeType)) {
                 continue;
             }
 
-            if (type == IndexType.classtype) {
-                Json2QuteClass jsonClass = new Json2QuteClass(index, type, jsonSource);
+            if (nodeType == IndexType.classtype) {
+                Json2QuteClass jsonClass = new Json2QuteClass(index, nodeType, jsonSource);
                 QuteSource converted = jsonClass.build();
                 if (converted != null) {
-                    nodes.add(converted);
-                    nodes.addAll(jsonClass.buildSubclasses());
+                    sources.add(converted);
+                    sources.addAll(jsonClass.buildSubclasses());
                 }
-            } else if (type == IndexType.race || type == IndexType.subrace) {
-                QuteSource converted = new Json2QuteRace(index, type, jsonSource).build();
+            } else if (nodeType == IndexType.race || nodeType == IndexType.subrace) {
+                QuteSource converted = new Json2QuteRace(index, nodeType, jsonSource).build();
                 if (converted != null) {
-                    nodes.add(converted);
+                    sources.add(converted);
                 }
             } else {
-                QuteSource converted = json2qute(type, jsonSource);
+                QuteSource converted = json2qute(nodeType, jsonSource);
                 if (converted != null) {
-                    nodes.add(converted);
+                    sources.add(converted);
                 }
             }
         }
 
-        writer.writeFiles(nodes, type.toString(), index.compendiumPath());
+        String kinds = types.stream().map(IndexType::toString).collect(Collectors.joining(", "));
+        writer.writeFiles(sources, kinds, index.compendiumPath());
+
+        List<ImageRef> images = sources.stream()
+                .flatMap(s -> s.images().stream()).collect(Collectors.toList());
+        index.tui().copyImages(images);
         return this;
     }
 
