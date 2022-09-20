@@ -39,7 +39,7 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 2. Install the pre-built jar: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.9/json5e-convert-cli-1.0.9-runner.jar
+    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.10/json5e-convert-cli-1.0.10-runner.jar
     ```
 
 3. Run the command: 
