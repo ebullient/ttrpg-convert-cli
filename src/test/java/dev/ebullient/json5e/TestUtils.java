@@ -14,9 +14,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 
+import dev.ebullient.json5e.io.Json5eTui;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
@@ -50,18 +53,62 @@ public class TestUtils {
         }
     }
 
-    static void assertFileContent(Path p) throws IOException {
-        List<String> errors = new ArrayList<>();
-        Files.readAllLines(p)
-                .forEach(l -> {
-                    if (l.contains("{@")) {
-                        errors.add(String.format("Found {@ in %s: %s", p, l));
-                    }
-                    if (l.contains("{#")) {
-                        errors.add(String.format("Found {# in %s: %s", p, l));
-                    }
-                });
+    static void commonTests(Path p, String l, List<String> errors) {
+        if (l.contains("{@")) {
+            errors.add(String.format("Found {@ in %s: %s", p, l));
+        }
+        if (l.contains("{#")) {
+            errors.add(String.format("Found {# in %s: %s", p, l));
+        }
+    }
+
+    static BiFunction<Path, List<String>, List<String>> checkContents = new BiFunction<Path, List<String>, List<String>>() {
+        @Override
+        public List<String> apply(Path p, List<String> content) {
+            List<String> e = new ArrayList<>();
+            content.forEach(l -> commonTests(p, l, e));
+            return e;
+        }
+    };
+
+    static void assertDirectoryContents(Path directory, Json5eTui tui) {
+        assertDirectoryContents(directory, tui, checkContents);
+    }
+
+    static void assertDirectoryContents(Path directory, Json5eTui tui, BiFunction<Path, List<String>, List<String>> checker) {
+        List<String> errors = checkDirectoryContents(directory, tui, checkContents);
         assertThat(errors).isEmpty();
+    }
+
+    static List<String> checkDirectoryContents(Path directory, Json5eTui tui) {
+        return checkDirectoryContents(directory, tui, checkContents);
+    }
+
+    static List<String> checkDirectoryContents(Path directory, Json5eTui tui,
+            BiFunction<Path, List<String>, List<String>> checker) {
+        List<String> errors = new ArrayList<>();
+        try (Stream<Path> walk = Files.list(directory)) {
+            walk.forEach(p -> {
+                if (!p.toFile().isFile()) {
+                    return;
+                }
+                try {
+                    errors.addAll(checker.apply(p, Files.readAllLines(p)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    errors.add(String.format("Unable to read lines from %s: %s", p, e));
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            errors.add(String.format("Unable to parse files in directory %s: %s", directory, e));
+        }
+
+        if (!errors.isEmpty()) {
+            errors.forEach(tui::warn);
+        }
+
+        return errors;
     }
 
     public static String dump(LaunchResult result) {
