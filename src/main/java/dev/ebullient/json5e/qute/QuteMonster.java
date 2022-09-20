@@ -201,7 +201,13 @@ public class QuteMonster extends QuteNote {
         addUnlessEmpty(map, "legendary_actions", legendary);
         addUnlessEmpty(map, "source", books);
 
-        return Json5eTui.quotedYaml().dump(map).trim();
+        // De-markdown-ify
+        String yamlData = Json5eTui.quotedYaml().dump(map).trim()
+                .replaceAll("\\*([^*]+)\\*", "$1") // em
+                .replaceAll("\\*([^*]+)\\*", "$1") // bold
+                .replaceAll("\\*([^*]+)\\*", "$1"); // bold em
+
+        return yamlData;
     }
 
     void addIntegerUnlessEmpty(Map<String, Object> map, String key, Integer value) {
