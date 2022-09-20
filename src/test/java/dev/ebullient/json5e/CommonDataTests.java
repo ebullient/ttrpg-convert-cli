@@ -2,8 +2,12 @@ package dev.ebullient.json5e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.io.MarkdownWriter;
@@ -74,6 +78,9 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.feat);
+
+            Path featDir = outputPath.resolve(index.compendiumPath()).resolve("feats");
+            TestUtils.assertDirectoryContents(featDir, tui);
         }
     }
 
@@ -84,6 +91,9 @@ public class CommonDataTests {
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.background)
                     .writeRulesAndTables();
+
+            Path backgroundDir = outputPath.resolve(index.compendiumPath()).resolve("backgrounds");
+            TestUtils.assertDirectoryContents(backgroundDir, tui);
         }
     }
 
@@ -93,6 +103,9 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.spell);
+
+            Path spellDir = outputPath.resolve(index.compendiumPath()).resolve("spells");
+            TestUtils.assertDirectoryContents(spellDir, tui);
         }
     }
 
@@ -102,6 +115,9 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.race);
+
+            Path raceDir = outputPath.resolve(index.compendiumPath()).resolve("races");
+            TestUtils.assertDirectoryContents(raceDir, tui);
         }
     }
 
@@ -111,6 +127,9 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.classtype);
+
+            Path classDir = outputPath.resolve(index.compendiumPath()).resolve("classes");
+            TestUtils.assertDirectoryContents(classDir, tui);
         }
     }
 
@@ -122,7 +141,7 @@ public class CommonDataTests {
                     .writeFiles(IndexType.deity);
 
             Path imageDir = outputPath.resolve(index.compendiumPath()).resolve("deities/img");
-            assertThat(imageDir.toFile().exists()).isTrue();
+            assertThat(imageDir.toFile()).exists();
         }
     }
 
@@ -132,6 +151,9 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.item);
+
+            Path itemDir = outputPath.resolve(index.compendiumPath()).resolve("items");
+            TestUtils.assertDirectoryContents(itemDir, tui);
         }
     }
 
@@ -141,6 +163,21 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.monster);
+
+            Path bestiary = outputPath.resolve(index.compendiumPath()).resolve("bestiary");
+            Path tokenDir = bestiary.resolve(index.compendiumPath()).resolve("undead/token");
+            assertThat(tokenDir.toFile()).exists();
+
+            try {
+                Files.list(bestiary).forEach(p -> {
+                    if (p.toFile().isDirectory()) {
+                        TestUtils.assertDirectoryContents(p, tui);
+                    }
+                });
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -166,9 +203,43 @@ public class CommonDataTests {
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(templatePaths);
 
-            MarkdownWriter writer = new MarkdownWriter(outputPath.resolve("yaml-body"), templates, tui);
+            Path out_yaml = outputPath.resolve("yaml-body");
+            Path undead = out_yaml.resolve(index.compendiumPath()).resolve("bestiary/undead");
+
+            MarkdownWriter writer = new MarkdownWriter(out_yaml, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.monster);
+
+            assertThat(undead.toFile()).exists();
+
+            TestUtils.assertDirectoryContents(undead, tui, new BiFunction<Path, List<String>, List<String>>() {
+                @Override
+                public List<String> apply(Path p, List<String> content) {
+                    List<String> e = new ArrayList<>();
+                    boolean found = false;
+                    boolean yaml = false;
+                    boolean index = false;
+                    TestUtils.checkContents.apply(p, content);
+
+                    for (String l : content) {
+                        if (l.startsWith("# Index ")) {
+                            index = true;
+                        } else if (l.equals("```statblock")) {
+                            found = yaml = true; // start yaml block
+                        } else if (l.equals("```")) {
+                            yaml = false; // end yaml block
+                        } else if (yaml && l.contains("*")) {
+                            e.add(String.format("Found '*' in %s: %s", p.toString(), l));
+                        }
+                        TestUtils.commonTests(p, l, e);
+                    }
+
+                    if (!found && !index) {
+                        e.add(String.format("File %s did not contain a yaml statblock", p));
+                    }
+                    return e;
+                }
+            });
         }
     }
 
