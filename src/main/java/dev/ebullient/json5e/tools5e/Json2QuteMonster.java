@@ -171,7 +171,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 }
             });
             if (!details.isEmpty()) {
-                acText = String.join("; ", details);
+                acText = replaceText(String.join("; ", details));
             }
         } else {
             tui().errorf("Unknown armor class in monster %s: %s", sources.key, acNode.toPrettyString());
