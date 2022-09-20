@@ -481,12 +481,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
             Path target = Path.of("bestiary",
                     (isNpc ? "npc" : type),
                     "token",
-                    slugify(filename) +  ".png");
+                    slugify(filename) + ".png");
 
             return new ImageRef(
-                sourcePath,
-                index().compendiumPath().resolve(target),
-                String.format("![](%s%s#token)", index().compendiumRoot(), target.toString()));
+                    sourcePath,
+                    index().compendiumPath().resolve(target),
+                    String.format("![](%s%s#token)", index().compendiumRoot(), target.toString()));
         }
         return null;
     }
