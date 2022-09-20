@@ -974,6 +974,7 @@ public interface JsonSource {
         // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with
         // another pipe
         // (first number is level index (0-19), second number is feature index (0-n)).",
+        // {@class Barbarian|phb|Path of the Ancestral Guardian|Ancestral Guardian|xge}
         String[] parts = match.split("\\|");
         String className = parts[0];
         String classSource = "phb";
@@ -991,7 +992,11 @@ public interface JsonSource {
         }
 
         if (subclass != null) {
-            String key = index().getSubclassKey(subclass, className, classSource);
+            String key = index().getAliasOrDefault(index().getSubclassKey(subclass, className, classSource));
+            // "subclass|path of wild magic|barbarian|phb|"
+            int first = key.indexOf('|');
+            int second = key.indexOf('|', first + 1);
+            subclass = key.substring(first + 1, second);
             return linkOrText(linkText, key, "classes", className + "-" + subclass);
         } else {
             String key = index().getClassKey(className, classSource);

@@ -465,6 +465,10 @@ public class JsonIndex implements JsonSource {
         return aliases.get(key);
     }
 
+    public String getAliasOrDefault(String key) {
+        return aliases.getOrDefault(key, key);
+    }
+
     /**
      * For subclasses, class features, and subclass features,
      * cross references come directly from the class definition
