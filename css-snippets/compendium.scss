@@ -1,8 +1,8 @@
 .theme-dark {
-  --statblock-section-line: #c93c3c;
+  --statblock-section-line: 201,60,60;
 }
 .theme-light {
-  --statblock-section-line: #c93c3c;
+  --statblock-section-line: 201,60,60;
 }
 /* Deity: #symbol images */
 .json5e-deity {
@@ -16,8 +16,22 @@
   }
 }
 /* Monster: statblocks and #token images */
-.json5e-monster {
-  .admonition-statblock {
+.rendered-widget,
+.markdown-rendered,
+.markdown-preview-section {
+  .callout[data-callout="statblock"] {
+    --callout-color: var(--statblock-section-line);
+    --callout-border-width: 0 0 0 0.08rem;
+
+    .callout-title {
+      line-height: var(--line-height);
+
+      .callout-title-inner {
+        font-size: var(--h3-size);
+        flex: 2;
+      }
+    }
+
     img,
     div {
       &[src$="#token"] {
@@ -26,34 +40,46 @@
         width: 150px;
       }
     }
-    .admonition-content h1,
-    .admonition-content h2,
-    .admonition-content h3 {
-      font-family: var(--default-font);
-      font-variant: common-ligatures small-caps;
-    }
-    .admonition-content h1 {
-      font-size: 1.4em;
-      line-height: 1.4em;
-      margin: 0;
-      padding: 0;
-    }
-    .admonition-content h2,
-    .admonition-content h3 {
-      font-size: 1.2em;
-      line-height: 1.2em;
-      padding: .5em 0 0 0;
-      margin-top: .2em;
-      margin-bottom: .3em;
-      border-bottom: 1px solid var(--statblock-section-line);
-    }
-    .admonition-content p {
-      line-height: 1.2em;
-      margin-block-start: .5em;
-    }
-    .admonition-content li {
-      line-height: 1.2em;
-      margin-block-start: .5em;
+
+    .callout-content {
+      background-color: var(--background-primary);
+
+      > :first-child {
+        margin-top: 0.5em;
+      }
+      > :last-child {
+        margin-bottom: 0.5em;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: var(--default-font);
+        font-variant: common-ligatures small-caps;
+      }
+      h1 {
+        font-size: 1.4em;
+        line-height: 1.4em;
+        margin: 0;
+        padding: 0;
+      }
+      h2,
+      h3 {
+        font-size: 1.2em;
+        line-height: 1.2em;
+        padding: .5em 0 0 0;
+        margin-top: .2em;
+        margin-bottom: .3em;
+        border-bottom: 1px solid rgb(var(--statblock-section-line));
+      }
+      p {
+        line-height: 1.2em;
+        margin-block-start: .5em;
+      }
+      li {
+        line-height: 1.2em;
+        margin-block-start: .5em;
+      }
     }
   }
 }
