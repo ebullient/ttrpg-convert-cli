@@ -1,5 +1,8 @@
 package dev.ebullient.json5e.tools5e;
 
+import java.nio.file.Path;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.qute.AbilityScores;
+import dev.ebullient.json5e.qute.ImageRef;
 import dev.ebullient.json5e.qute.QuteMonster;
 import dev.ebullient.json5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.json5e.qute.QuteMonster.Spellcasting;
@@ -45,12 +49,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
     Integer hp;
     String hpText;
     String hitDice;
+    boolean isNpc;
 
     Json2QuteMonster(JsonIndex index, IndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         findType();
         findAc();
         findHp();
+        isNpc = isNpc(node);
     }
 
     @Override
@@ -79,7 +85,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         return new QuteMonster(decorateMonsterName(node, sources),
                 sources.getSourceText(index.srdOnly()),
-                isNpc(node),
+                isNpc,
                 size, type, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
                 monsterSpeed(), monsterScores(),
@@ -100,6 +106,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 getFluffDescription(IndexType.monsterfluff, null),
                 environment,
                 new ArrayList<>(sources.bookSources),
+                getToken(),
                 tags);
     }
 
@@ -453,6 +460,37 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return traits;
     }
 
+    ImageRef getToken() {
+        if (booleanOrDefault(node, "hasToken", false)) {
+            // const imgLink = Renderer.monster.getTokenUrl(mon);
+            // return mon.tokenUrl || UrlUtil.link(`${Renderer.get().baseMediaUrls["img"] || Renderer.get().baseUrl}img/${Parser.sourceJsonToAbv(mon.source)}/${Parser.nameToTokenName(mon.name)}.png`);
+            // nameToTokenName = function (name) { return name.toAscii().replace(/"/g, ""); }
+
+            // origin is set by conjured monster variant (below)
+            String name = getTextOrDefault(node, "original", getName());
+            String filename = Normalizer.normalize(name, Form.NFD)
+                    .replace("[\\u0300-\\u036f]", "")
+                    .replace("Æ", "AE")
+                    .replace("æ", "ae")
+                    .replace("\"", "");
+
+            Path sourcePath = Path.of("img",
+                    getSources().primarySource(),
+                    filename + ".png");
+
+            Path target = Path.of("bestiary",
+                    (isNpc ? "npc" : type),
+                    "token",
+                    slugify(filename) +  ".png");
+
+            return new ImageRef(
+                sourcePath,
+                index().compendiumPath().resolve(target),
+                String.format("![](%s%s#token)", index().compendiumRoot(), target.toString()));
+        }
+        return null;
+    }
+
     public static List<Tuple> findConjuredMonsterVariants(JsonIndex index, IndexType type,
             String key, JsonNode jsonSource) {
         final Pattern variantPattern = Pattern.compile("(\\d+) \\((.*?)\\)");
@@ -509,9 +547,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
         ConjuredMonster fixed = new ConjuredMonster(level, variantName, hpString, acString, jsonSource);
 
         ObjectNode adjustedSource = (ObjectNode) index.copyNode(jsonSource);
-        adjustedSource.set("name", fixed.getName());
-        adjustedSource.set("ac", fixed.getAc());
-        adjustedSource.set("hp", fixed.getHp());
+        adjustedSource.set("original", adjustedSource.get("name"));
+        adjustedSource.replace("name", fixed.getName());
+        adjustedSource.replace("ac", fixed.getAc());
+        adjustedSource.replace("hp", fixed.getHp());
 
         String newKey = index.getKey(type, adjustedSource);
         variants.add(new Tuple(newKey, adjustedSource));

@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: 5e-diety
+cssclass: json5e-deity
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}
@@ -10,9 +10,8 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*  
-{#if resource.image }{resource.image}
-{/if}
+*Source: {resource.source}* {#if resource.image }
+{resource.image} {/if}
 
 {#if resource.alignment }
 - **Alignment**: {resource.alignment}

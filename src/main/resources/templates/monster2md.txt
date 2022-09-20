@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: 5e-monster
+cssclass: json5e-monster
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}
@@ -18,7 +18,8 @@ aliases: ["{resource.name}"]
 {/if}
 ```ad-statblock
 title: {resource.name}
-*{resource.size} {resource.fullType}, {resource.alignment}*
+{#if resource.token } {resource.token} 
+{/if}*{resource.size} {resource.fullType}, {resource.alignment}*
 
 - **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }{resource.acText}{/if}
 - **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if} {#if resource.hpText }{resource.hpText}{/if}

@@ -26,11 +26,11 @@ Note: This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cl
 
 - **File names** To avoid conflicts and issues with different operating systems, all file names are slugified (all lower case, symbols stripped, and spaces replaced by dashes). This is a familiar convention for those used to jekyll, hugo, or other blogging systems.
 
-- **Organization** Files are generated in two roots: `compendium` and `rules`. The location of these roots is configurable (see below). The following directories may be created in the `compendium` directory depending on what sources you have enabled: `backgrounds`, `bestiary` (with contents organized by monster type), `classes` (separate documents for classes and subclasses), `feats`, `items`, `names`, `races`, and `spells`.
+- **Organization** Files are generated in two roots: `compendium` and `rules`. The location of these roots is configurable (see below). The following directories may be created in the `compendium` directory depending on what sources you have enabled: `backgrounds`, `bestiary` (with contents organized by monster type), `classes` (separate documents for classes and subclasses), `deities`, `feats`, `items`, `names`, `races`, and `spells`.
 
 - **Styles** 
-  - `css-snippets` has some snippets you can use to customize `statblock` admontions.
-  - Every document has a `cssclass` attribute that you can use to further tweak how page elements render: `5e-background`, `5e-monster`, `5e-class`, `5e-feat`, `5e-item`, `5e-names`, `5e-race`, and `5e-spell`.
+  - `css-snippets` has some snippets you can use to customize elements of the compendium.
+  - Every document has a `cssclass` attribute that you can use to further tweak how page elements render: `json5e-background`, `json5e-deity`, `json5e-monster`, `json5e-class`, `json5e-feat`, `json5e-item`, `json5e-names`, `json5e-race`, and `json5e-spell`.
 
 ## To run without building yourself
 
