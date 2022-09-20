@@ -436,7 +436,6 @@ public class CompendiumSources {
         abvToName.put("XGE", "Xanathar's Guide to Everything");
         abvToName.put("XMtS", "X Marks the Spot");
 
-
         sourceToAbv.put("UA2020SpellsAndMagicTattoos", "UA20SMT");
         sourceToAbv.put("UA2020SubclassesPt2", "UA20S2");
         sourceToAbv.put("UA2020SubclassesPt5", "UA20S5");
