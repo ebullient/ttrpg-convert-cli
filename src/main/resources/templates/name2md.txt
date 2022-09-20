@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: 5e-names
+cssclass: json5e-names
 aliases: ["{resource.name} Names"]
 ---
 # {resource.name} Names

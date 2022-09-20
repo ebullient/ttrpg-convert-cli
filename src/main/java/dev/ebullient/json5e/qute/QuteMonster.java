@@ -10,10 +10,6 @@ import dev.ebullient.json5e.io.Json5eTui;
 
 public class QuteMonster extends QuteNote {
 
-    public static String getSubdir(QuteMonster m) {
-        return "bestiary/" + (m.isNpc ? "npc" : m.type);
-    }
-
     public final boolean isNpc;
     public final String size;
     public final String type;
@@ -51,6 +47,7 @@ public class QuteMonster extends QuteNote {
 
     public final String description;
     public final String environment;
+    final ImageRef tokenImage;
 
     public QuteMonster(String name, String source, boolean isNpc, String size, String type, String subtype, String alignment,
             Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed, AbilityScores scores,
@@ -59,7 +56,7 @@ public class QuteMonster extends QuteNote {
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
             Map<String, Trait> legendaryGroup,
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
-            List<String> tags) {
+            ImageRef tokenImage, List<String> tags) {
 
         super(name, source, null, tags);
 
@@ -95,6 +92,7 @@ public class QuteMonster extends QuteNote {
         this.description = description;
         this.environment = environment;
         this.books = books; // for YAML
+        this.tokenImage = tokenImage;
     }
 
     @Override
@@ -108,8 +106,23 @@ public class QuteMonster extends QuteNote {
     }
 
     @Override
+    public List<ImageRef> images() {
+        if (tokenImage == null) {
+            return List.of();
+        }
+        return List.of(tokenImage);
+    }
+
+    @Override
     public String targetPath() {
-        return getSubdir(this);
+        return "bestiary/" + (isNpc ? "npc" : type);
+    }
+
+    public String getToken() {
+        if (tokenImage == null) {
+            return null;
+        }
+        return tokenImage.link;
     }
 
     public String getFullType() {

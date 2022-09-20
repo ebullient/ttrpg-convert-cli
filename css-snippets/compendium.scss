@@ -4,12 +4,28 @@
 .theme-light {
   --statblock-section-line: #c93c3c;
 }
-.markdown-rendered,
-.markdown-preview-section {
-  // ------------------------------------------------------
-  // Monster Statblocks
-  // ------------------------------------------------------
+/* Deity: #symbol images */
+.json5e-deity {
+  img,
+  div {
+    &[src$="#symbol"] {
+      float: right;
+      margin-left: 5px;
+      width: 200px;
+    }
+  }
+}
+/* Monster: statblocks and #token images */
+.json5e-monster {
   .admonition-statblock {
+    img,
+    div {
+      &[src$="#token"] {
+        float: right;
+        margin-left: 5px;
+        width: 150px;
+      }
+    }
     .admonition-content h1,
     .admonition-content h2,
     .admonition-content h3 {
