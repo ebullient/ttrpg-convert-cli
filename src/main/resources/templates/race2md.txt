@@ -26,6 +26,7 @@ aliases: ["{resource.name}"]
 
 {resource.traits}
 {#if resource.description}
+
 ## Description
 
 {resource.description}
