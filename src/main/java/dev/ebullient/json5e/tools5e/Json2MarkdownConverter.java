@@ -25,6 +25,18 @@ public class Json2MarkdownConverter {
         this.writer = writer;
     }
 
+    public Json2MarkdownConverter writeAll() {
+        return writeFiles(List.of(
+                IndexType.background,
+                IndexType.classtype,
+                IndexType.deity,
+                IndexType.feat,
+                IndexType.item,
+                IndexType.monster,
+                IndexType.race,
+                IndexType.spell));
+    }
+
     public Json2MarkdownConverter writeFiles(IndexType type) {
         return writeFiles(List.of(type));
     }
@@ -65,8 +77,7 @@ public class Json2MarkdownConverter {
             }
         }
 
-        String kinds = types.stream().map(IndexType::toString).collect(Collectors.joining(", "));
-        writer.writeFiles(sources, kinds, index.compendiumPath());
+        writer.writeFiles(sources, index.compendiumPath());
 
         List<ImageRef> images = sources.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
@@ -249,5 +260,4 @@ public class Json2MarkdownConverter {
             notes.add(n);
         }
     }
-
 }

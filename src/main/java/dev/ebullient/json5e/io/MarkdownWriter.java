@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class MarkdownWriter {
         this.templates = templates;
     }
 
-    public <T extends QuteSource> void writeFiles(List<T> elements, String kind, Path compendiumPath) {
+    public <T extends QuteSource> void writeFiles(List<T> elements, Path compendiumPath) {
         if (elements.isEmpty()) {
             return;
         }
@@ -94,9 +95,15 @@ public class MarkdownWriter {
             }
         });
 
+        Map<String, Integer> counts = new HashMap<>();
+
         fileMappings.stream()
                 .collect(Collectors.groupingBy(fm -> fm.dir))
                 .forEach((dir, value) -> {
+                    Path relative = compendiumPath.relativize(dir);
+                    String[] segments = relative.toString().split("/");
+                    counts.compute(segments[0], (k, v) -> (v == null) ? 1 : v + 1);
+
                     String fileName = dir.getFileName().toString();
                     String title = fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
                     try {
@@ -104,9 +111,8 @@ public class MarkdownWriter {
                     } catch (IOException ex) {
                         throw new WrappedIOException(ex);
                     }
-
                 });
-        tui.outPrintf("✅ Wrote %s %s files.%n", (fileMappings.size() + 1), kind == null ? "markdown" : kind);
+        counts.forEach((k, v) -> tui.outPrintf("✅ Wrote %s files to %s.%n", v, k));
     }
 
     void writeFile(FileMap fileMap, String content) throws IOException {
