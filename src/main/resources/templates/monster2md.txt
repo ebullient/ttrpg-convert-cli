@@ -22,7 +22,7 @@ title: {resource.name}
 {/if}*{resource.size} {resource.fullType}, {resource.alignment}*
 
 - **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }{resource.acText}{/if}
-- **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if} {#if resource.hpText }{resource.hpText}{/if}
+- **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if} {#if resource.hpText }({resource.hpText}){/if}
 - **Speed** {resource.speed}
 
 |STR|DEX|CON|INT|WIS|CHA|
