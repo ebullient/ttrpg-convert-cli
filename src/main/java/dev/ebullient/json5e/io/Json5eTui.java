@@ -5,7 +5,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
@@ -85,6 +90,8 @@ public class Json5eTui {
 
     private boolean debug;
     private boolean verbose;
+    private Path output = Paths.get("");
+    private Set<Path> inputRoot = new TreeSet<>();
 
     public Json5eTui() {
         this.ansi = Help.Ansi.OFF;
@@ -106,6 +113,10 @@ public class Json5eTui {
 
         this.debug = debug;
         this.verbose = verbose;
+    }
+
+    public void setOutputPath(Path output) {
+        this.output = output;
     }
 
     public void close() {
@@ -205,17 +216,43 @@ public class Json5eTui {
     }
 
     public void copyImages(List<ImageRef> images) {
+        for (ImageRef image : images) {
+            Optional<Path> sourceRoot = inputRoot.stream()
+                    .filter(x -> x.resolve(image.sourcePath).toFile().exists())
+                    .findFirst();
+
+            if (sourceRoot.isEmpty()) {
+                errorf("Unable to find image for %s", image.sourcePath);
+                continue;
+            }
+
+            // Resolve the image path from data against the correct parent path
+            Path sourcePath = sourceRoot.get().resolve(image.sourcePath);
+            Path targePath = output.resolve(image.targetPath);
+
+            // target path must be pre-resolved to compendium or rules root
+            // so just make sure the image dir exists
+            targePath.getParent().toFile().mkdirs();
+            try {
+                Files.copy(sourcePath, targePath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                errorf(e, "Unable to copy image from %s to %s", image.sourcePath, image.targetPath);
+            }
+        }
     }
 
     public void readFile(Path p, BiConsumer<String, JsonNode> callback) throws IOException {
+        inputRoot.add(p.getParent().toAbsolutePath());
+
         File f = p.toFile();
         JsonNode node = MAPPER.readTree(f);
         callback.accept(f.getName(), node);
-        //importTree(f.getName(), node);
         verbosef("🔖 Finished reading %s", p);
     }
 
     public void readDirectory(Path dir, BiConsumer<String, JsonNode> callback) {
+        inputRoot.add(dir.toAbsolutePath());
+
         String basename = dir.getFileName().toString();
         debugf("📁 %s\n", dir);
         try (Stream<Path> stream = Files.list(dir)) {
@@ -238,6 +275,35 @@ public class Json5eTui {
             });
         } catch (Exception e) {
             errorf(e, "Error parsing %s", dir.toString());
+        }
+    }
+
+    public void read5eTools(Path dir, BiConsumer<String, JsonNode> callback) throws IOException {
+        List<String> inputs = List.of(
+            "adventures.json", "books.json", "names.json", "variantrules.json",
+                "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
+                "bestiary", "bestiary/traits.json", "bestiary/legendarygroups.json",
+                "backgrounds.json", "fluff-backgrounds.json",
+                "class",
+                "deities.json",
+                "feats.json", "optionalfeatures.json",
+                "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
+                "races.json", "fluff-races.json",
+                "spells");
+
+        if (!dir.resolve("adventures.json").toFile().exists()) {
+            debugf("Unable to find 5eTools data: %s", dir.toString());
+            return;
+        }
+        inputRoot.add(dir.getParent());
+
+        for (String input : inputs) {
+            Path p = dir.resolve(input);
+            if (p.toFile().isFile()) {
+                readFile(p, callback);
+            } else {
+                readDirectory(p, callback);
+            }
         }
     }
 }

@@ -90,46 +90,4 @@ public class TestUtils {
         }
         Assertions.assertFalse(path.toFile().exists());
     }
-
-    public static JsonNode doParse(String resourceName) throws Exception {
-        try (InputStream is = Import5eToolsConvertTest.class.getClassLoader().getResourceAsStream(resourceName)) {
-            return Json5eTui.MAPPER.readTree(is);
-        }
-    }
-
-    public static JsonNode doParse(Path resourcePath) throws Exception {
-        try (InputStream is = Files.newInputStream(resourcePath, StandardOpenOption.READ)) {
-            return Json5eTui.MAPPER.readTree(is);
-        }
-    }
-
-    static void fullIndex(JsonIndex index, Path resourcePath, Json5eTui tui) throws Exception {
-        try (Stream<Path> stream = Files.list(resourcePath)) {
-            stream
-                    .filter(p -> !p.getFileName().toString().startsWith("adventure"))
-                    .filter(p -> !p.getFileName().toString().startsWith("book"))
-                    .filter(p -> !p.getFileName().toString().startsWith("foundry"))
-                    .filter(p -> !p.getFileName().toString().startsWith("gen"))
-                    .filter(p -> !p.getFileName().toString().startsWith("roll20"))
-                    .forEach(p -> {
-                        File f = p.toFile();
-                        if (f.isDirectory()) {
-                            try {
-                                fullIndex(index, p, tui);
-                            } catch (Exception e) {
-                                tui.errorf(e, "Error parsing %s", p);
-                                throw new RuntimeException(e);
-                            }
-                        } else if (f.getName().endsWith(".json")) {
-                            try {
-                                index.importTree(f.getName(), doParse(p));
-                            } catch (Exception e) {
-                                tui.errorf(e, "Error parsing %s", p);
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    });
-        }
-    }
-
 }

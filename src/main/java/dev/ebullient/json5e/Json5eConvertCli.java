@@ -128,6 +128,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
             source = List.of(tmp.split(","));
         }
 
+        tui.setOutputPath(output);
         tui.outPrintf("Importing/Converting items from 5e tools %s to %s.\n",
                 input, output);
 
@@ -138,27 +139,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
             tui.outPrintf("⏱  Reading 5eTools data from %s%n", inputPath);
             try {
                 if (inputPath.toFile().isDirectory()) {
-                    List<String> inputs = List.of(
-                            "bestiary", "class", "spells",
-                            "adventures.json", "books.json", "deities.json",
-                            "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
-                            "backgrounds.json", "fluff-backgrounds.json",
-                            "feats.json", "optionalfeatures.json",
-                            "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
-                            "races.json", "fluff-races.json",
-                            "names.json", "variantrules.json", "bestiary/traits.json", "bestiary/legendarygroups.json");
-                    for (String input : inputs) {
-                        Path p = inputPath.resolve(input);
-                        if (!p.toFile().exists()) {
-                            tui.debugf("Unable to find 5eTools data: %s", p.toString());
-                            continue;
-                        }
-                        if (p.toFile().isFile()) {
-                            tui.readFile(p, index.importFile());
-                        } else {
-                            tui.readDirectory(p, index.importFile());
-                        }
-                    }
+                    tui.read5eTools(inputPath, index.importFile());
                 } else {
                     tui.readFile(inputPath, index.importFile());
                 }

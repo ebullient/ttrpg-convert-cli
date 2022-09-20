@@ -62,6 +62,13 @@ public class JsonIndex implements JsonSource {
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;
 
+    final BiConsumer<String, JsonNode> fileConsumer = new BiConsumer<String, JsonNode>() {
+        @Override
+        public void accept(String name, JsonNode node) {
+            importTree(name, node);
+        }
+    };
+
     public JsonIndex(List<String> sources, Json5eTui tui) {
         this.tui = tui;
         this.allowedSources.addAll(sources.stream().map(String::toLowerCase).collect(Collectors.toList()));
@@ -71,12 +78,7 @@ public class JsonIndex implements JsonSource {
     }
 
     public BiConsumer<String, JsonNode> importFile() {
-        return new BiConsumer<String, JsonNode>() {
-            @Override
-            public void accept(String name, JsonNode node) {
-                importTree(name, node);
-            }
-        };
+        return fileConsumer;
     }
 
     public JsonIndex importTree(String filename, JsonNode node) {
