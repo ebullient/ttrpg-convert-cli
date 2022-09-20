@@ -469,13 +469,13 @@ public class Json2QuteMonster extends Json2QuteCommon {
             // origin is set by conjured monster variant (below)
             String name = getTextOrDefault(node, "original", getName());
             String filename = Normalizer.normalize(name, Form.NFD)
-                    .replace("[\\u0300-\\u036f]", "")
+                    .replaceAll("\\p{M}", "")
                     .replace("Æ", "AE")
                     .replace("æ", "ae")
                     .replace("\"", "");
 
             Path sourcePath = Path.of("img",
-                    getSources().primarySource(),
+                    getSources().mapPrimarySource(),
                     filename + ".png");
 
             Path target = Path.of("bestiary",
