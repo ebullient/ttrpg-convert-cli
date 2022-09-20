@@ -280,7 +280,7 @@ public class Json5eTui {
 
     public void read5eTools(Path dir, BiConsumer<String, JsonNode> callback) throws IOException {
         List<String> inputs = List.of(
-            "adventures.json", "books.json", "names.json", "variantrules.json",
+                "adventures.json", "books.json", "names.json", "variantrules.json",
                 "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
                 "bestiary", "bestiary/traits.json", "bestiary/legendarygroups.json",
                 "backgrounds.json", "fluff-backgrounds.json",

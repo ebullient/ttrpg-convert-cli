@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.io.UncheckedIOException;
 import java.nio.MappedByteBuffer;
@@ -12,18 +11,12 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import dev.ebullient.json5e.io.Json5eTui;
-import dev.ebullient.json5e.tools5e.JsonIndex;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
