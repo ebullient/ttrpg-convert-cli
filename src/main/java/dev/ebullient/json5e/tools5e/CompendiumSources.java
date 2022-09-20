@@ -98,6 +98,11 @@ public class CompendiumSources {
         return bookSources.iterator().next();
     }
 
+    public String mapPrimarySource() {
+        String primary = primarySource();
+        return sourceToAbv.getOrDefault(primary, primary);
+    }
+
     public String alternateSource() {
         Iterator<String> i = bookSources.iterator();
         if (bookSources.size() > 1) {
@@ -137,7 +142,9 @@ public class CompendiumSources {
     final static String AitFR_NAME = "Adventures in the Forgotten Realms";
     final static String NRH_NAME = "NERDS Restoring Harmony";
     final static String MCVX_PREFIX = "Monster Compendium Volume ";
+
     final static Map<String, String> abvToName = new HashMap<>();
+    final static Map<String, String> sourceToAbv = new HashMap<>();
 
     static {
         abvToName.put("AAG", "Astral Adventurer's Guide");
@@ -428,6 +435,18 @@ public class CompendiumSources {
         abvToName.put("WDMM", "Waterdeep: Dungeon of the Mad Mage");
         abvToName.put("XGE", "Xanathar's Guide to Everything");
         abvToName.put("XMtS", "X Marks the Spot");
+
+
+        sourceToAbv.put("UA2020SpellsAndMagicTattoos", "UA20SMT");
+        sourceToAbv.put("UA2020SubclassesPt2", "UA20S2");
+        sourceToAbv.put("UA2020SubclassesPt5", "UA20S5");
+        sourceToAbv.put("UA2021DraconicOptions", "UA21DO");
+        sourceToAbv.put("UA2021MagesOfStrixhaven", "UA21MoS");
+        sourceToAbv.put("UA2022GiantOptions", "UA22GO");
+        sourceToAbv.put("UA2022WondersOfTheMultiverse", "UA22WotM");
+        sourceToAbv.put("UAArtificerRevisited", "UAAR");
+        sourceToAbv.put("UAClassFeatureVariants", "UACFV");
+        sourceToAbv.put("UAClericDruidWizard", "UACDW");
     }
 
     public void checkKnown(Json5eTui tui, Set<String> missing) {
