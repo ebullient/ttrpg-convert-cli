@@ -14,7 +14,6 @@ import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.io.MarkdownWriter;
 import dev.ebullient.json5e.io.TemplatePaths;
 import dev.ebullient.json5e.io.Templates;
-import dev.ebullient.json5e.tools5e.IndexType;
 import dev.ebullient.json5e.tools5e.Json2MarkdownConverter;
 import dev.ebullient.json5e.tools5e.JsonIndex;
 import io.quarkus.runtime.QuarkusApplication;
@@ -168,13 +167,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
         MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
         tui.outPrintln("💡 Writing files to " + output);
         new Json2MarkdownConverter(index, writer)
-                .writeFiles(IndexType.background)
-                .writeFiles(IndexType.classtype)
-                .writeFiles(IndexType.feat)
-                .writeFiles(IndexType.item)
-                .writeFiles(IndexType.monster)
-                .writeFiles(IndexType.race)
-                .writeFiles(IndexType.spell)
+                .writeAll()
                 .writeRulesAndTables();
 
         return allOk ? ExitCode.OK : ExitCode.SOFTWARE;
