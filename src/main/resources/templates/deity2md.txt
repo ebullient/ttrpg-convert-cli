@@ -7,13 +7,15 @@ tags:
 - {tag}
 {/for}
 {/if}
-aliases: ["{resource.name}"]
+aliases: ["{resource.name}"{#each resource.altNames}, "{it}"{/each}]
 ---
 # {resource.name}
 *Source: {resource.source}* {#if resource.image }
 {resource.image} {/if}
 
-{#if resource.alignment }
+{#if resource.altNames }
+- **Alternate Names**: {#each resource.altNames}{it}{#if it_hasNext}, {/if}{/each}
+{/if}{#if resource.alignment }
 - **Alignment**: {resource.alignment}
 {/if}{#if resource.category }
 - **Category**: {resource.category}
