@@ -5,6 +5,10 @@ import java.util.List;
 
 public class QuteDeity extends QuteNote {
 
+    public static String getFileName(String name, String pantheon) {
+        return pantheon + "-" + name;
+    }
+
     public final List<String> altNames;
     public final String pantheon;
     public final String alignment;
@@ -45,6 +49,11 @@ public class QuteDeity extends QuteNote {
             return List.of();
         }
         return List.of(symbolImg);
+    }
+
+    @Override
+    public String targetFile() {
+        return getFileName(name, pantheon);
     }
 
     @Override

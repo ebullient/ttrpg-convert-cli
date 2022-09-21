@@ -9,6 +9,8 @@ public interface QuteSource {
 
     List<ImageRef> images();
 
+    String targetFile();
+
     String targetPath();
 
     String title();

@@ -57,7 +57,7 @@ public class MarkdownWriter {
             String type = x.getClass().getSimpleName();
             FileMap fileMap = new FileMap(
                     x.title(),
-                    tui.slugify(x.title()),
+                    tui.slugify(x.targetFile()),
                     compendiumPath.resolve(x.targetPath()));
 
             try {
@@ -128,6 +128,9 @@ public class MarkdownWriter {
         targetDir.toFile().mkdirs();
 
         Path target = targetDir.resolve(fileMap.fileName);
+        if (target.toFile().exists() && tui.isDebug()) {
+            tui.warnf("File already exists: %s", target);
+        }
 
         Files.write(target, content.getBytes(StandardCharsets.UTF_8));
     }

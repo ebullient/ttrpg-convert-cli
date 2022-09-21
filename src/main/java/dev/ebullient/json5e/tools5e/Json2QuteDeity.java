@@ -38,7 +38,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
         }
 
         return new QuteDeity(
-                decoratedTypeName(getName(), getSources()),
+                getName(),
                 getSources().getSourceText(index.srdOnly()),
                 findAndReplace(node, "altNames"),
                 pantheon,
