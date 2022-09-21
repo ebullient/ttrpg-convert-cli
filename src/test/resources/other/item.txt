@@ -1,0 +1,38 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-item
+tags: 
+- test
+{#if resource.tags }{#for tag in resource.tags}
+- {tag}
+{/for}{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+{#if resource.detail }*{resource.detail}*  {/if}
+
+{#if resource.armorClass }
+- **Armor Class**: {resource.armorClass}
+{#else if resource.damage }{#if resource.damage2h }
+- **Damage**:
+  - One-handed: {resource.damage}
+  - Two-handed: {resource.damage2h}
+{#else}
+- **Damage**: {resource.damage}
+{/if}{#if resource.range }
+- **Range**: {resource.range}
+{/if}{/if}{#if resource.properties }
+- **Properties**: {resource.properties}
+{/if}{#if resource.strengthRequirement }
+- **Strength**: Requires {resource.strengthRequirement} STR.
+{/if}{#if resource.stealthPenalty }
+- **Stealth**: The wearer has disadvantage on Stealth (DEX) checks.
+{/if}
+- **Cost**: {#if resource.cost }{resource.cost}{#else}⏤{/if}
+- **Weight**: {#if resource.weight }{resource.weight} lbs.{#else}⏤{/if}
+{#if resource.text }
+
+{resource.text}
+{/if}
+
+*Source: {resource.source}*

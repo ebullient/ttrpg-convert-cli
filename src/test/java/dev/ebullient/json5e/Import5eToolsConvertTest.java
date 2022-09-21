@@ -3,6 +3,8 @@ package dev.ebullient.json5e;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.function.BiFunction;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -78,6 +80,51 @@ public class Import5eToolsConvertTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+        }
+    }
+
+    @Test
+    void testCommandTemplates(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path target = outputPath.resolve("srd-templates");
+
+            // SRD only, just templates
+            LaunchResult result = launcher.launch("-v",
+                    "--background", "src/test/resources/other/background.txt",
+                    "--class", "src/test/resources/other/class.txt",
+                    "--deity", "src/test/resources/other/deity.txt",
+                    "--feat", "src/test/resources/other/feat.txt",
+                    "--item", "src/test/resources/other/item.txt",
+                    "--name", "src/test/resources/other/name.txt",
+                    "--note", "src/test/resources/other/note.txt",
+                    "--race", "src/test/resources/other/race.txt",
+                    "--spell", "src/test/resources/other/spell.txt",
+                    "--subclass", "src/test/resources/other/subclass.txt",
+                    "-o", target.toString(), TestUtils.TOOLS_PATH.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+
+            List.of(
+                    // target.resolve("compendium/backgrounds"), TODO
+                    target.resolve("compendium/classes"),
+                    target.resolve("compendium/deities"),
+                    target.resolve("compendium/feats"),
+                    target.resolve("compendium/items"),
+                    target.resolve("compendium/races"),
+                    target.resolve("compendium/spells")).forEach(directory -> {
+                        TestUtils.assertDirectoryContents(directory, tui, new BiFunction<Path, List<String>, List<String>>() {
+                            @Override
+                            public List<String> apply(Path p, List<String> content) {
+                                if (content.stream().noneMatch(l -> l.equals("- test")) &&
+                                        content.stream().noneMatch(l -> l.startsWith("# Index"))) {
+                                    return List.of("Unable to find the - test tag in file " + p);
+                                }
+                                return List.of();
+                            }
+                        });
+                    });
         }
     }
 }

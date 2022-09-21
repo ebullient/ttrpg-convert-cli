@@ -1,0 +1,20 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-class
+tags: 
+- test
+{#if resource.tags }{#for tag in resource.tags}
+- {tag}
+{/for}{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*{resource.parentClass}: {resource.subclassTitle}*  
+*Source: {resource.source}*  
+
+{#if resource.classProgression }
+{resource.classProgression}
+
+{/if}
+
+{resource.text}
