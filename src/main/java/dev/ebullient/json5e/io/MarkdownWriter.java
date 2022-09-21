@@ -29,6 +29,13 @@ import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
 
+    static final Set<FileMap> fileMappings = new TreeSet<>((a, b) -> {
+        if (a.dir.equals(b.dir)) {
+            return a.fileName.compareTo(b.fileName);
+        }
+        return a.dir.compareTo(b.dir);
+    });
+
     final Json5eTui tui;
     final Templates templates;
     final Path output;
@@ -43,14 +50,10 @@ public class MarkdownWriter {
         if (elements.isEmpty()) {
             return;
         }
-        Set<FileMap> fileMappings = new TreeSet<>((a, b) -> {
-            if (a.dir.equals(b.dir)) {
-                return a.fileName.compareTo(b.fileName);
-            }
-            return a.dir.compareTo(b.dir);
-        });
 
-        elements.forEach(x -> {
+        Map<String, Integer> counts = new HashMap<>();
+
+        for (T x : elements) {
             String type = x.getClass().getSimpleName();
             FileMap fileMap = new FileMap(
                     x.title(),
@@ -61,30 +64,39 @@ public class MarkdownWriter {
                 switch (type) {
                     case "QuteBackground":
                         writeFile(fileMap, templates.renderBackground((QuteBackground) x));
+                        counts.compute("backgrounds", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteClass":
                         writeFile(fileMap, templates.renderClass((QuteClass) x));
+                        counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteDeity":
                         writeFile(fileMap, templates.renderDeity((QuteDeity) x));
+                        counts.compute("deities", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteFeat":
                         writeFile(fileMap, templates.renderFeat((QuteFeat) x));
+                        counts.compute("feats", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteItem":
                         writeFile(fileMap, templates.renderItem((QuteItem) x));
+                        counts.compute("items", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteMonster":
                         writeFile(fileMap, templates.renderMonster((QuteMonster) x));
+                        counts.compute("bestiary", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteRace":
                         writeFile(fileMap, templates.renderRace((QuteRace) x));
+                        counts.compute("races", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteSpell":
                         writeFile(fileMap, templates.renderSpell((QuteSpell) x));
+                        counts.compute("spells", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     case "QuteSubclass":
                         writeFile(fileMap, templates.renderSubclass((QuteSubclass) x));
+                        counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown file type:" + type);
@@ -93,17 +105,12 @@ public class MarkdownWriter {
             } catch (IOException e) {
                 throw new WrappedIOException(e);
             }
-        });
-
-        Map<String, Integer> counts = new HashMap<>();
+        }
+        ;
 
         fileMappings.stream()
                 .collect(Collectors.groupingBy(fm -> fm.dir))
                 .forEach((dir, value) -> {
-                    Path relative = compendiumPath.relativize(dir);
-                    String[] segments = relative.toString().split("/");
-                    counts.compute(segments[0], (k, v) -> (v == null) ? 1 : v + 1);
-
                     String fileName = dir.getFileName().toString();
                     String title = fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
                     try {
@@ -112,6 +119,7 @@ public class MarkdownWriter {
                         throw new WrappedIOException(ex);
                     }
                 });
+
         counts.forEach((k, v) -> tui.outPrintf("✅ Wrote %s files to %s.%n", v, k));
     }
 
