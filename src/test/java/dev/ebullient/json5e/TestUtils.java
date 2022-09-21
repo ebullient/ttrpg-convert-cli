@@ -76,7 +76,7 @@ public class TestUtils {
     }
 
     static void assertDirectoryContents(Path directory, Json5eTui tui, BiFunction<Path, List<String>, List<String>> checker) {
-        List<String> errors = checkDirectoryContents(directory, tui, checkContents);
+        List<String> errors = checkDirectoryContents(directory, tui, checker);
         assertThat(errors).isEmpty();
     }
 

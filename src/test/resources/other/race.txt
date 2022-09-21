@@ -1,0 +1,32 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-race
+tags: 
+- test
+{#if resource.tags }{#for tag in resource.tags}
+- {tag}
+{/for}{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*Source: {resource.source}*  
+
+- **Ability Scores**: {resource.ability}
+{#if resource.type}
+- **Creature Type**: {resource.type}
+{/if}
+- **Size**: {resource.size}
+- **Speed**: {resource.speed}
+{#if resource.spellcasting}
+- **Spellcasting**: {resource.spellcasting}
+{/if}
+
+## Traits
+
+{resource.traits}
+{#if resource.description}
+
+## Description
+
+{resource.description}
+{/if}
