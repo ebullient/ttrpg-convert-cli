@@ -19,10 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
+import dev.ebullient.json5e.qute.QuteDeity;
 
 public interface JsonSource {
     Pattern backgroundPattern = Pattern.compile("\\{@(background) ([^}]+)}");
     Pattern classPattern1 = Pattern.compile("\\{@(class) ([^}]+)}");
+    Pattern deityPattern = Pattern.compile("\\{@(deity) ([^}]+)}");
     Pattern featPattern = Pattern.compile("\\{@(feat) ([^}]+)}");
     Pattern itemPattern = Pattern.compile("\\{@(item) ([^}]+)}");
     Pattern racePattern = Pattern.compile("\\{@(race) ([^}]+)}");
@@ -805,6 +807,7 @@ public interface JsonSource {
             result = backgroundPattern.matcher(result).replaceAll(this::linkify);
             result = classPattern1.matcher(result).replaceAll(this::linkify);
             result = creaturePattern.matcher(result).replaceAll(this::linkify);
+            result = deityPattern.matcher(result).replaceAll(this::linkify);
             result = featPattern.matcher(result).replaceAll(this::linkify);
             result = itemPattern.matcher(result).replaceAll(this::linkify);
             result = racePattern.matcher(result).replaceAll(this::linkify);
@@ -849,7 +852,6 @@ public interface JsonSource {
                     .replaceAll("\\{@optfeature ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                     .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
-                    .replaceAll("\\{@deity ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@quickref ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
@@ -900,6 +902,8 @@ public interface JsonSource {
                 return linkifyCreature(match.group(2));
             case "class":
                 return linkifyClass(match.group(2));
+            case "deity":
+                return linkifyDeity(match.group(2));
             case "feat":
                 // "Feats:
                 // {@feat Alert} assumes PHB by default,
@@ -963,6 +967,30 @@ public interface JsonSource {
             return linkOrText(linkText, key, dirName, decoratedRaceName(jsonSource, sources));
         }
         return linkOrText(linkText, key, dirName, decoratedTypeName(sources));
+    }
+
+    default String linkifyDeity(String match) {
+        // "Deities: {@deity Gond} assumes PHB Forgotten Realms pantheon by default,
+        // {@deity Gruumsh|nonhuman} can have pantheons added with a pipe,
+        // {@deity Ioun|dawn war|dmg} can have sources added with another pipe,
+        // {@deity Ioun|dawn war|dmg|and optional link text added with another pipe}.",
+        String[] parts = match.split("\\|");
+        String deity = parts[0];
+        String source = "phb";
+        String linkText = deity;
+        String pantheon = "Faerûnian";
+
+        if (parts.length > 3) {
+            linkText = parts[3];
+        }
+        if (parts.length > 2) {
+            source = parts[2];
+        }
+        if (parts.length > 1) {
+            pantheon = parts[1];
+        }
+        String key = index().getAliasOrDefault(index().createSimpleKey(IndexType.deity, parts[0], source));
+        return linkOrText(linkText, key, "deities", QuteDeity.getFileName(parts[0], pantheon));
     }
 
     default String linkifyClass(String match) {

@@ -37,7 +37,12 @@ public class QuteNote implements QuteSource {
     }
 
     @Override
+    public String targetFile() {
+        return name;
+    }
+
+    @Override
     public String targetPath() {
-        return null;
+        return ".";
     }
 }

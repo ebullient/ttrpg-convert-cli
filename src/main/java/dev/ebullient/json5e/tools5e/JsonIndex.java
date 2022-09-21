@@ -261,13 +261,16 @@ public class JsonIndex implements JsonSource {
         variantIndex = new HashMap<>();
 
         nodeIndex.forEach((key, node) -> {
+            // check for / manage copies first.
             IndexType type = IndexType.getTypeFromKey(key);
             JsonNode jsonSource = copier.handleCopy(type, node);
 
-            if (type == IndexType.trait || type == IndexType.subrace || type == IndexType.legendarygroup) {
+            if (type == IndexType.subrace ||
+                    type == IndexType.trait || type == IndexType.legendarygroup ||
+                    type == IndexType.deity) {
                 // subraces are pulled in by races
                 // traits and legendary groups are pulled in my monsters
-                // check for / manage copies first.
+                // deities are a hot mess
                 return;
             }
 
@@ -285,11 +288,70 @@ public class JsonIndex implements JsonSource {
             });
         });
 
+        // Find/Merge deities (this will also exclude based on sources)
+        List<Tuple> deities = findDeities(nodeIndex.entrySet().stream()
+                .filter(e -> IndexType.getTypeFromKey(e.getKey()) == IndexType.deity)
+                .map(e -> new Tuple(e.getKey(), e.getValue()))
+                .collect(Collectors.toList()));
+        deities.forEach(v -> {
+            JsonNode old = variantIndex.put(v.key, v.node);
+            if (old != null) {
+                tui.errorf("Duplicate key: %s", v.key);
+            }
+        });
+
         // Exclude items after we've created variants and handled copies
         filteredIndex = variantIndex.entrySet().stream()
                 .filter(e -> !isReprinted(e.getKey(), e.getValue()))
                 .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private List<Tuple> findDeities(List<Tuple> allDeities) {
+        List<String> reverseOrder = List.of("erlw", "mtf", "vgm", "scag", "dmg", "phb");
+        List<Tuple> result = new ArrayList<>();
+        Map<String, List<Tuple>> booklist = new HashMap<>();
+
+        // We have to build the reprint index ourselves in print order.
+        // If it isn't in one of the printed sources that matters, it goes right to the outbox
+        // otherwise, we put it in buckets by source (with aliases)
+        for (Tuple t : allDeities) {
+            if (keyIsIncluded(t.key, t.node)) {
+                String src = t.getSource().toLowerCase();
+                if (reverseOrder.contains(src)) {
+                    booklist.computeIfAbsent(src, k -> new ArrayList<>()).add(t);
+                } else {
+                    result.add(t);
+                }
+            }
+        }
+
+        // Now go through buckets in reverse order.
+        Map<String, Tuple> reprintIndex = new HashMap<>();
+        for (String book : reverseOrder) {
+            List<Tuple> deities = booklist.remove(book);
+            if (deities == null || deities.isEmpty()) {
+                continue;
+            }
+            if (reprintIndex.isEmpty()) { // most recent bucket. Keep all.
+                deities.forEach(t -> reprintIndex.put(t.getName(), t));
+                continue;
+            }
+
+            for (Tuple t : deities) {
+                String lookup = t.node.has("reprintAlias")
+                        ? t.node.get("reprintAlias").asText()
+                        : t.getName();
+
+                if (reprintIndex.containsKey(lookup)) {
+                    // skip it. It has been reprinted as a new thing
+                } else {
+                    reprintIndex.put(lookup, t);
+                }
+            }
+        }
+        result.addAll(reprintIndex.values());
+        return result;
     }
 
     List<Tuple> findVariants(String key, JsonNode jsonSource) {
@@ -713,6 +775,24 @@ public class JsonIndex implements JsonSource {
         public Tuple(String key, JsonNode node) {
             this.key = key;
             this.node = node;
+        }
+
+        String name;
+
+        public String getName() {
+            if (name == null) {
+                name = node.get("name").asText();
+            }
+            return name;
+        }
+
+        String source;
+
+        public String getSource() {
+            if (source == null) {
+                source = node.get("source").asText();
+            }
+            return source;
         }
     }
 }
