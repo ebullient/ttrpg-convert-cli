@@ -86,7 +86,7 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
     @Option(names = { "-v", "--verbose" }, description = "Verbose output", scope = ScopeType.INHERIT)
     boolean verbose;
 
-    @Option(names = "-s", description = "Source Books%n  Comma-separated list or multiple declarations (PHB,DMG,...)")
+    @Option(names = "-s", description = "Source Books%n  Comma-separated list or multiple declarations (PHB,DMG,...); use ALL for all sources")
     List<String> source = Collections.emptyList();
 
     @Option(names = "--index", description = "Create index of keys that can be used to exclude entries")
@@ -125,6 +125,9 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
         if (source.size() == 1 && source.get(0).contains(",")) {
             String tmp = source.remove(0);
             source = List.of(tmp.split(","));
+        }
+        if (source.contains("ALL")) {
+            source = List.of("*");
         }
 
         tui.setOutputPath(output);

@@ -71,6 +71,7 @@ public class JsonIndex implements JsonSource {
 
     public JsonIndex(List<String> sources, Json5eTui tui) {
         this.tui = tui;
+
         this.allowedSources.addAll(sources.stream().map(String::toLowerCase).collect(Collectors.toList()));
         this.allSources = allowedSources.contains("*");
 

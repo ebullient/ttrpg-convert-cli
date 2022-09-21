@@ -63,7 +63,7 @@ public class Import5eToolsConvertTest {
                     .isEqualTo(0);
 
             // All
-            result = launcher.launch("--index", "-s", "*", "-v",
+            result = launcher.launch("--index", "-s", "ALL", "-v",
                     "-o", outputPath.resolve("all-index").toString(), TestUtils.TOOLS_PATH.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
