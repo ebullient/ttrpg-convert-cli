@@ -483,10 +483,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     "token",
                     slugify(filename) + ".png");
 
-            return new ImageRef(
-                    sourcePath,
-                    index().compendiumPath().resolve(target),
-                    String.format("![](%s%s#token)", index().compendiumRoot(), target.toString()));
+            return new ImageRef.Builder()
+                    .setSourcePath(sourcePath)
+                    .setTargetPath(index().compendiumPath(), target)
+                    .createMarkdownLink("", index().compendiumRoot(), "#token")
+                    .build();
         }
         return null;
     }
