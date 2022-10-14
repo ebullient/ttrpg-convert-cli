@@ -73,18 +73,23 @@ public class CommonDataTests {
     }
 
     public void testFeatList(Path outputPath) {
+        Path featDir = outputPath.resolve(index.compendiumPath()).resolve("feats");
+        TestUtils.deleteDir(featDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.feat);
 
-            Path featDir = outputPath.resolve(index.compendiumPath()).resolve("feats");
             TestUtils.assertDirectoryContents(featDir, tui);
         }
     }
 
     public void testBackgroundList(Path outputPath) {
+        Path backgroundDir = outputPath.resolve(index.compendiumPath()).resolve("backgrounds");
+        TestUtils.deleteDir(backgroundDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -92,84 +97,96 @@ public class CommonDataTests {
                     .writeFiles(IndexType.background)
                     .writeRulesAndTables();
 
-            Path backgroundDir = outputPath.resolve(index.compendiumPath()).resolve("backgrounds");
             TestUtils.assertDirectoryContents(backgroundDir, tui);
         }
     }
 
     public void testSpellList(Path outputPath) {
+        Path spellDir = outputPath.resolve(index.compendiumPath()).resolve("spells");
+        TestUtils.deleteDir(spellDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.spell);
 
-            Path spellDir = outputPath.resolve(index.compendiumPath()).resolve("spells");
             TestUtils.assertDirectoryContents(spellDir, tui);
         }
     }
 
     public void testRaceList(Path outputPath) {
+        Path raceDir = outputPath.resolve(index.compendiumPath()).resolve("races");
+        TestUtils.deleteDir(raceDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.race);
 
-            Path raceDir = outputPath.resolve(index.compendiumPath()).resolve("races");
             TestUtils.assertDirectoryContents(raceDir, tui);
         }
     }
 
     public void testClassList(Path outputPath) {
+        Path classDir = outputPath.resolve(index.compendiumPath()).resolve("classes");
+        TestUtils.deleteDir(classDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.classtype);
 
-            Path classDir = outputPath.resolve(index.compendiumPath()).resolve("classes");
             TestUtils.assertDirectoryContents(classDir, tui);
         }
     }
 
     public void testDeityList(Path outputPath) {
+        Path deitiesDir = outputPath.resolve(index.compendiumPath()).resolve("deities");
+        TestUtils.deleteDir(deitiesDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.deity);
 
-            Path imageDir = outputPath.resolve(index.compendiumPath()).resolve("deities/img");
+            Path imageDir = deitiesDir.resolve("img");
             assertThat(imageDir.toFile()).exists();
         }
     }
 
     public void testItemList(Path outputPath) {
+        Path itemDir = outputPath.resolve(index.compendiumPath()).resolve("items");
+        TestUtils.deleteDir(itemDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.item);
 
-            Path itemDir = outputPath.resolve(index.compendiumPath()).resolve("items");
             TestUtils.assertDirectoryContents(itemDir, tui);
         }
     }
 
     public void testMonsterList(Path outputPath) {
+        Path bestiaryDir = outputPath.resolve(index.compendiumPath()).resolve("bestiary");
+        TestUtils.deleteDir(bestiaryDir);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.monster);
 
-            Path bestiary = outputPath.resolve(index.compendiumPath()).resolve("bestiary");
-            Path tokenDir = bestiary.resolve(index.compendiumPath()).resolve("undead/token");
+            Path tokenDir = bestiaryDir.resolve("undead/token");
             assertThat(tokenDir.toFile()).exists();
 
             try {
-                Files.list(bestiary).forEach(p -> {
+                Files.list(bestiaryDir).forEach(p -> {
                     if (p.toFile().isDirectory()) {
                         TestUtils.assertDirectoryContents(p, tui);
                     }
@@ -182,6 +199,9 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlHeader(Path outputPath) {
+        Path out = outputPath.resolve("yaml-header");
+        TestUtils.deleteDir(out);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
@@ -189,13 +209,15 @@ public class CommonDataTests {
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
             templates.setCustomTemplates(templatePaths);
 
-            MarkdownWriter writer = new MarkdownWriter(outputPath.resolve("yaml-header"), templates, tui);
-            new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.monster);
+            MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
+            new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
         }
     }
 
     public void testMonsterYamlBody(Path outputPath) {
+        Path out = outputPath.resolve("yaml-body");
+        TestUtils.deleteDir(out);
+
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
@@ -203,12 +225,10 @@ public class CommonDataTests {
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(templatePaths);
 
-            Path out_yaml = outputPath.resolve("yaml-body");
-            Path undead = out_yaml.resolve(index.compendiumPath()).resolve("bestiary/undead");
+            Path undead = out.resolve(index.compendiumPath()).resolve("bestiary/undead");
 
-            MarkdownWriter writer = new MarkdownWriter(out_yaml, templates, tui);
-            new Json2MarkdownConverter(index, writer)
-                    .writeFiles(IndexType.monster);
+            MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
+            new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
 
             assertThat(undead.toFile()).exists();
 
