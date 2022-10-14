@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.qute.QuteDeity;
+import dev.ebullient.json5e.qute.QuteSubclass;
 
 public interface JsonSource {
     Pattern backgroundPattern = Pattern.compile("\\{@(background) ([^}]+)}");
@@ -1033,7 +1034,7 @@ public interface JsonSource {
             int first = key.indexOf('|');
             int second = key.indexOf('|', first + 1);
             subclass = key.substring(first + 1, second);
-            return linkOrText(linkText, key, "classes", className + "-" + subclass);
+            return linkOrText(linkText, key, "classes", QuteSubclass.getFileName(subclass, className));
         } else {
             String key = index().getClassKey(className, classSource);
             return linkOrText(linkText, key, "classes", className);
