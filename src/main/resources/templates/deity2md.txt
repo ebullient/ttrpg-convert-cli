@@ -10,8 +10,8 @@ tags:
 aliases: ["{resource.name}"{#each resource.altNames}, "{it}"{/each}]
 ---
 # {resource.name}
-*Source: {resource.source}* {#if resource.image }
-{resource.image} {/if}
+*Source: {resource.source}* {#if resource.image}
+![{resource.image.caption}]({resource.image.path}#symbol){/if}
 
 {#if resource.altNames }
 - **Alternate Names**: {#each resource.altNames}{it}{#if it_hasNext}, {/if}{/each}
