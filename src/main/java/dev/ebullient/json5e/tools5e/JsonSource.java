@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -718,9 +719,11 @@ public interface JsonSource {
         if (sources.isPrimarySource("DMG") && !name.contains("(DMG)")) {
             return name + " (DMG)";
         }
-        if (sources.isFromUA() && !name.contains("(UA)")) {
-            return name + " (UA)";
+        Optional<String> uaSource = sources.uaSource();
+        if (uaSource.isPresent() && !name.contains("(UA")) {
+            return name + " (" + uaSource.get() + ")";
         }
+
         return name;
     }
 
@@ -1067,11 +1070,8 @@ public interface JsonSource {
     }
 
     default JsonNode getJsonNodeForKey(String key) {
-        String alias = index().getAlias(key);
-        if (alias != null) {
-            return index().getNode(alias);
-        }
-        return index().getNode(key);
+        String aliasKey = index().getAliasOrDefault(key);
+        return index().getNode(aliasKey);
     }
 
     default String mapAlignmentToString(String a) {
