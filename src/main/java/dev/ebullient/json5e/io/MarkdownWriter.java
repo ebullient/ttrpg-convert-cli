@@ -58,7 +58,7 @@ public class MarkdownWriter {
             FileMap fileMap = new FileMap(
                     x.title(),
                     tui.slugify(x.targetFile()),
-                    compendiumPath.resolve(x.targetPath()));
+                    compendiumPath.resolve(x.targetPath()).normalize());
 
             try {
                 switch (type) {
