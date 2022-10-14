@@ -3,6 +3,11 @@ package dev.ebullient.json5e.qute;
 import java.util.List;
 
 public class QuteSubclass extends QuteNote {
+
+    public static String getFileName(String name, String parentClass) {
+        return parentClass + "-" + name;
+    }
+
     public final String parentClass;
     public final String parentClassLink;
     public final String subclassTitle;
@@ -24,6 +29,11 @@ public class QuteSubclass extends QuteNote {
     @Override
     public String targetPath() {
         return "classes";
+    }
+
+    @Override
+    public String targetFile() {
+        return getFileName(name, parentClass);
     }
 
     @Override
