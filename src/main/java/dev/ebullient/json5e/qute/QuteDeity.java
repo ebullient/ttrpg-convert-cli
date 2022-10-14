@@ -36,11 +36,11 @@ public class QuteDeity extends QuteNote {
         this.symbolImg = symbolImg;
     }
 
-    public String getImage() {
+    public ImageRef getImage() {
         if (symbolImg == null) {
             return null;
         }
-        return symbolImg.link;
+        return symbolImg;
     }
 
     @Override

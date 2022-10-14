@@ -118,11 +118,11 @@ public class QuteMonster extends QuteNote {
         return "bestiary/" + (isNpc ? "npc" : type);
     }
 
-    public String getToken() {
+    public ImageRef getToken() {
         if (tokenImage == null) {
             return null;
         }
-        return tokenImage.link;
+        return tokenImage;
     }
 
     public String getFullType() {

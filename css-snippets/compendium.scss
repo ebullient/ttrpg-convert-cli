@@ -15,6 +15,21 @@
     }
   }
 }
+.json5e-background,
+.json5e-class,
+.json5e-deity,
+.json5e-feat,
+.json5e-item,
+.json5e-monster,
+.json5e-names,
+.json5e-note,
+.json5e-race,
+.json5e-spell {
+  .inline-title {
+    display: none;
+  }
+}
+
 /* Monster: statblocks and #token images */
 .rendered-widget,
 .markdown-rendered,

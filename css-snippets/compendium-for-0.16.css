@@ -14,6 +14,19 @@
   width: 200px;
 }
 
+.json5e-background .inline-title,
+.json5e-class .inline-title,
+.json5e-deity .inline-title,
+.json5e-feat .inline-title,
+.json5e-item .inline-title,
+.json5e-monster .inline-title,
+.json5e-names .inline-title,
+.json5e-note .inline-title,
+.json5e-race .inline-title,
+.json5e-spell .inline-title {
+  display: none;
+}
+
 /* Monster: statblocks and #token images */
 .rendered-widget .callout[data-callout=statblock],
 .markdown-rendered .callout[data-callout=statblock],
