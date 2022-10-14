@@ -13,8 +13,11 @@ import dev.ebullient.json5e.qute.QuteSpell;
 
 public class Json2QuteSpell extends Json2QuteCommon {
 
+    final String decoratedName;
+
     Json2QuteSpell(JsonIndex index, IndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
+        decoratedName = decoratedTypeName(getName(), getSources());
     }
 
     @Override
@@ -40,7 +43,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
             tags.add("spell/class/" + String.join("/", split));
         }
 
-        return new QuteSpell(getName(),
+        return new QuteSpell(decoratedName,
                 sources.getSourceText(index.srdOnly()),
                 levelToText(level),
                 school.name(),
@@ -206,6 +209,14 @@ public class Json2QuteSpell extends Json2QuteCommon {
             String className = c.get("name").asText();
             String classSource = c.get("source").asText();
             if (includeClass(className, classSource)) {
+                classes.add(className);
+            }
+        });
+        classesNode.withArray("fromClassListVariant").forEach(c -> {
+            String definedInSource = c.get("definedInSource").asText();
+            String className = c.get("name").asText();
+            String classSource = c.get("source").asText();
+            if (index.sourceIncluded(definedInSource) && includeClass(className, classSource)) {
                 classes.add(className);
             }
         });

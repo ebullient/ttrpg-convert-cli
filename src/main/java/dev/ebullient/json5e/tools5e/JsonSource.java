@@ -708,7 +708,9 @@ public interface JsonSource {
     }
 
     default String decorateMonsterName(JsonNode jsonSource, CompendiumSources sources) {
-        return sources.getName().replace("\"", "");
+        return decorateUAName(
+                sources.getName().replace("\"", ""),
+                sources);
     }
 
     default String decoratedTypeName(CompendiumSources sources) {
@@ -719,11 +721,14 @@ public interface JsonSource {
         if (sources.isPrimarySource("DMG") && !name.contains("(DMG)")) {
             return name + " (DMG)";
         }
+        return decorateUAName(name, sources);
+    }
+
+    default String decorateUAName(String name, CompendiumSources sources) {
         Optional<String> uaSource = sources.uaSource();
         if (uaSource.isPresent() && !name.contains("(UA")) {
             return name + " (" + uaSource.get() + ")";
         }
-
         return name;
     }
 

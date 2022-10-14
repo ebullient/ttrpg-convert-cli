@@ -80,16 +80,16 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     String itemName() {
-        if (index().sourceIncluded(getSources().primarySource())) {
-            return getSources().getName();
-        }
         JsonNode srd = node.get("srd");
         if (srd != null) {
+            if (index().sourceIncluded(getSources().primarySource())) {
+                return getSources().getName();
+            }
             if (srd.isTextual()) {
                 return srd.asText();
             }
         }
-        return getSources().getName();
+        return decorateUAName(getSources().getName(), getSources());
     }
 
     String itemText(List<PropertyEnum> propertyEnums) {
