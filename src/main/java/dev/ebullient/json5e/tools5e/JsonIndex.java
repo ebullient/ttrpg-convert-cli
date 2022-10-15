@@ -26,6 +26,12 @@ import dev.ebullient.json5e.io.Json5eTui;
 
 public class JsonIndex implements JsonSource {
 
+    private static JsonIndex staticInstance;
+
+    public static JsonIndex get() {
+        return staticInstance;
+    }
+
     // classfeature|ability score improvement|monk|phb|12
     static final String classFeature_1 = "classfeature\\|[^|]+\\|[^|]+\\|";
     static final String classFeature_2 = "\\|\\d+\\|?";
@@ -51,6 +57,8 @@ public class JsonIndex implements JsonSource {
     private final Set<String> includeGroups = new HashSet<>();
     private final Set<String> missingSourceName = new HashSet<>();
 
+    private final Map<JsonNode, CompendiumSources> nodeToSources = new HashMap<>();
+
     private String rulesRoot = "/rules/";
     private Path rulesPath = Path.of("rules/");
 
@@ -70,6 +78,8 @@ public class JsonIndex implements JsonSource {
     };
 
     public JsonIndex(List<String> sources, Json5eTui tui) {
+        staticInstance = this;
+
         this.tui = tui;
 
         this.allowedSources.addAll(sources.stream().map(String::toLowerCase).collect(Collectors.toList()));
@@ -432,8 +442,20 @@ public class JsonIndex implements JsonSource {
     }
 
     public CompendiumSources constructSources(IndexType type, JsonNode x) {
-        CompendiumSources sources = new CompendiumSources(type, getKey(type, x), x);
-        sources.checkKnown(tui, missingSourceName);
+        return constructSources(type, null, x);
+    }
+
+    public CompendiumSources constructSources(IndexType type, String indexKey, JsonNode x) {
+        if (x == null) {
+            throw new IllegalStateException("Unable to look up a null element: " + indexKey);
+        }
+        CompendiumSources sources = nodeToSources.computeIfAbsent(x, y -> {
+            String key = indexKey == null ? getKey(type, x) : indexKey;
+            CompendiumSources s = new CompendiumSources(type, key, x);
+            s.checkKnown(tui, missingSourceName);
+            return s;
+        });
+
         return sources;
     }
 
@@ -667,7 +689,7 @@ public class JsonIndex implements JsonSource {
                 && includeGroups.contains("familiars") && familiarKeys.contains(key)) {
             return true;
         }
-        CompendiumSources sources = constructSources(IndexType.getTypeFromKey(key), node);
+        CompendiumSources sources = constructSources(IndexType.getTypeFromKey(key), key, node);
         for (String s : sources.bookSources) {
             if (allowedSources.contains(s.toLowerCase())) {
                 return true;
