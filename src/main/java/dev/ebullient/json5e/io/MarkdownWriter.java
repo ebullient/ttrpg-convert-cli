@@ -5,7 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +30,12 @@ import dev.ebullient.json5e.qute.QuteSubclass;
 import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
-
-    static final Set<FileMap> fileMappings = new TreeSet<>((a, b) -> {
+    static Comparator<FileMap> fileSort = (a, b) -> {
         if (a.dir.equals(b.dir)) {
             return a.fileName.compareTo(b.fileName);
         }
         return a.dir.compareTo(b.dir);
-    });
+    };
 
     final Json5eTui tui;
     final Templates templates;
@@ -51,62 +52,28 @@ public class MarkdownWriter {
             return;
         }
 
+        // Counts and sorted lists (to write index)
         Map<String, Integer> counts = new HashMap<>();
+        Set<FileMap> fileMappings = new TreeSet<>(fileSort);
 
-        for (T x : elements) {
-            String type = x.getClass().getSimpleName();
-            FileMap fileMap = new FileMap(
-                    x.title(),
-                    tui.slugify(x.targetFile()),
-                    compendiumPath.resolve(x.targetPath()).normalize());
+        // Find duplicates
+        Map<FileMap, List<T>> pathMap = new HashMap<>();
+        for (T qs : elements) {
+            FileMap fileMap = new FileMap(qs.title(),
+                    qs.targetFile(),
+                    compendiumPath.resolve(qs.targetPath()).normalize());
 
-            try {
-                switch (type) {
-                    case "QuteBackground":
-                        writeFile(fileMap, templates.renderBackground((QuteBackground) x));
-                        counts.compute("backgrounds", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteClass":
-                        writeFile(fileMap, templates.renderClass((QuteClass) x));
-                        counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteDeity":
-                        writeFile(fileMap, templates.renderDeity((QuteDeity) x));
-                        counts.compute("deities", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteFeat":
-                        writeFile(fileMap, templates.renderFeat((QuteFeat) x));
-                        counts.compute("feats", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteItem":
-                        writeFile(fileMap, templates.renderItem((QuteItem) x));
-                        counts.compute("items", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteMonster":
-                        writeFile(fileMap, templates.renderMonster((QuteMonster) x));
-                        counts.compute("bestiary", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteRace":
-                        writeFile(fileMap, templates.renderRace((QuteRace) x));
-                        counts.compute("races", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteSpell":
-                        writeFile(fileMap, templates.renderSpell((QuteSpell) x));
-                        counts.compute("spells", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    case "QuteSubclass":
-                        writeFile(fileMap, templates.renderSubclass((QuteSubclass) x));
-                        counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown file type:" + type);
-                }
-                fileMappings.add(fileMap);
-            } catch (IOException e) {
-                throw new WrappedIOException(e);
-            }
+            pathMap.computeIfAbsent(fileMap, k -> new ArrayList<>()).add(qs);
         }
-        ;
+
+        for (Map.Entry<FileMap, List<T>> pathEntry : pathMap.entrySet()) {
+            if (pathEntry.getValue().size() > 1) {
+                tui.warnf("Conflict: several entries would write to the same file:\n  %s",
+                        pathEntry.getValue().stream().map(QuteSource::key)
+                                .collect(Collectors.joining("\n  ")));
+            }
+            fileMappings.add(doWrite(pathEntry.getKey(), pathEntry.getValue().get(0), counts));
+        }
 
         fileMappings.stream()
                 .collect(Collectors.groupingBy(fm -> fm.dir))
@@ -123,21 +90,66 @@ public class MarkdownWriter {
         counts.forEach((k, v) -> tui.outPrintf("✅ Wrote %s files to %s.%n", v, k));
     }
 
+    <T extends QuteSource> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
+        String type = qs.getClass().getSimpleName();
+
+        try {
+            switch (type) {
+                case "QuteBackground":
+                    writeFile(fileMap, templates.renderBackground((QuteBackground) qs));
+                    counts.compute("backgrounds", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteClass":
+                    writeFile(fileMap, templates.renderClass((QuteClass) qs));
+                    counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteDeity":
+                    writeFile(fileMap, templates.renderDeity((QuteDeity) qs));
+                    counts.compute("deities", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteFeat":
+                    writeFile(fileMap, templates.renderFeat((QuteFeat) qs));
+                    counts.compute("feats", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteItem":
+                    writeFile(fileMap, templates.renderItem((QuteItem) qs));
+                    counts.compute("items", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteMonster":
+                    writeFile(fileMap, templates.renderMonster((QuteMonster) qs));
+                    counts.compute("bestiary", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteRace":
+                    writeFile(fileMap, templates.renderRace((QuteRace) qs));
+                    counts.compute("races", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteSpell":
+                    writeFile(fileMap, templates.renderSpell((QuteSpell) qs));
+                    counts.compute("spells", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                case "QuteSubclass":
+                    writeFile(fileMap, templates.renderSubclass((QuteSubclass) qs));
+                    counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown file type:" + type);
+            }
+        } catch (IOException e) {
+            throw new WrappedIOException(e);
+        }
+        return fileMap;
+    }
+
     void writeFile(FileMap fileMap, String content) throws IOException {
         Path targetDir = Paths.get(output.toString(), fileMap.dir.toString());
         targetDir.toFile().mkdirs();
 
         Path target = targetDir.resolve(fileMap.fileName);
-        if (target.toFile().exists() && tui.isDebug()) {
-            tui.warnf("File already exists: %s", target);
-        }
-
         Files.write(target, content.getBytes(StandardCharsets.UTF_8));
     }
 
     public void writeNotes(Path dir, Collection<QuteNote> notes) {
         Path targetDir = output.resolve(dir);
-        ;
         targetDir.toFile().mkdirs();
 
         for (QuteNote n : notes) {
@@ -191,19 +203,48 @@ public class MarkdownWriter {
 
     @TemplateData
     public static class FileMap {
+
         public final String title;
         public final String fileName;
-        public Path dir;
-
-        public FileMap(String title, String fileName) {
-            this.title = title;
-            this.fileName = fileName + (fileName.endsWith(".md") ? "" : ".md");
-        }
+        public final Path dir;
 
         public FileMap(String title, String fileName, Path dirName) {
             this.title = title;
-            this.fileName = fileName + (fileName.endsWith(".md") ? "" : ".md");
+            this.fileName = Json5eTui.slugifier().slugify(fileName) + (fileName.endsWith(".md") ? "" : ".md");
             this.dir = dirName;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
+            result = prime * result + ((dir == null) ? 0 : dir.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+
+            FileMap other = (FileMap) obj;
+            if (fileName == null) {
+                if (other.fileName != null) {
+                    return false;
+                }
+            } else if (!fileName.equals(other.fileName)) {
+                return false;
+            }
+
+            if (dir == null) {
+                return other.dir == null;
+            }
+            return dir.equals(other.dir);
         }
     }
 
