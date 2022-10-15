@@ -2,7 +2,9 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
-public class QuteRace extends QuteNote {
+import dev.ebullient.json5e.tools5e.CompendiumSources;
+
+public class QuteRace extends QuteBase {
 
     public final String ability;
     public final String type;
@@ -12,11 +14,11 @@ public class QuteRace extends QuteNote {
     public final String traits;
     public final String description;
 
-    public QuteRace(String name, String source,
+    public QuteRace(CompendiumSources sources, String name, String source,
             String ability, String type, String size, String speed,
             String spellcasting, String traits, String description,
             List<String> tags) {
-        super(name, source, null, tags);
+        super(sources, name, source, null, tags);
         this.ability = ability;
         this.type = type;
         this.size = size;

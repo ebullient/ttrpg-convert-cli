@@ -241,21 +241,21 @@ public class Json2MarkdownConverter {
     }
 
     private void addNames(List<QuteName> names, String key, JsonNode element) {
-        QuteName nameTable = new Json2QuteName(index, element).build();
+        QuteName nameTable = new Json2QuteName(index, element).buildNames();
         if (nameTable != null) {
             names.add(nameTable);
         }
     }
 
     private void addRule(List<QuteNote> notes, JsonNode element, String title) {
-        QuteNote note = new Sourceless2QuteNote(index, element, title).build();
+        QuteNote note = new Sourceless2QuteNote(index, element, title).buildNote();
         if (note != null) {
             notes.add(note);
         }
     }
 
     private void addTable(List<QuteNote> notes, JsonNode table) {
-        QuteNote n = new Table2QuteNote(index, table).build();
+        QuteNote n = new Table2QuteNote(index, table).buildNote();
         if (n != null) {
             notes.add(n);
         }

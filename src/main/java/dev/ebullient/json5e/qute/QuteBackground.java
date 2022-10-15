@@ -2,10 +2,12 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
-public class QuteBackground extends QuteNote {
+import dev.ebullient.json5e.tools5e.CompendiumSources;
 
-    public QuteBackground(String name, String source, String text, List<String> tags) {
-        super(name, source, text, tags);
+public class QuteBackground extends QuteBase {
+
+    public QuteBackground(CompendiumSources sources, String name, String source, String text, List<String> tags) {
+        super(sources, name, source, text, tags);
     }
 
     @Override

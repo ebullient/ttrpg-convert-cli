@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.json5e.qute.QuteName;
 import dev.ebullient.json5e.qute.QuteName.LookupTable;
 import dev.ebullient.json5e.qute.QuteName.LookupTableRow;
+import dev.ebullient.json5e.qute.QuteSource;
 
 public class Json2QuteName extends Json2QuteCommon {
 
@@ -16,8 +17,7 @@ public class Json2QuteName extends Json2QuteCommon {
         super(index, IndexType.note, jsonNode);
     }
 
-    @Override
-    public QuteName build() {
+    public QuteName buildNames() {
         JsonNode tables = node.get("tables");
         if (tables == null || tables.isEmpty()) {
             index.tui().debugf("Skipped %s; no tables", getName());
@@ -58,5 +58,10 @@ public class Json2QuteName extends Json2QuteCommon {
         return new QuteName(sources.getName(),
                 sources.getSourceText(index.srdOnly()),
                 lookupTables);
+    }
+
+    @Override
+    public QuteSource build() {
+        throw new IllegalStateException("Not implemented");
     }
 }

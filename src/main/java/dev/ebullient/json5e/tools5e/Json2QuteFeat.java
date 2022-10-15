@@ -23,7 +23,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
         String prerequisite = listPrerequisites();
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
-        return new QuteFeat(
+        return new QuteFeat(sources,
                 decoratedTypeName(sources),
                 sources.getSourceText(index.srdOnly()),
                 prerequisite,

@@ -83,7 +83,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
-        return new QuteMonster(decorateMonsterName(node, sources),
+        return new QuteMonster(sources,
+                decorateMonsterName(node, sources),
                 sources.getSourceText(index.srdOnly()),
                 isNpc,
                 size, type, subtype, monsterAlignment(),

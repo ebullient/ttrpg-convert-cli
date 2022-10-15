@@ -2,7 +2,9 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
-public class QuteSubclass extends QuteNote {
+import dev.ebullient.json5e.tools5e.CompendiumSources;
+
+public class QuteSubclass extends QuteBase {
 
     public static String getFileName(String name, String parentClass) {
         return parentClass + "-" + name;
@@ -13,12 +15,12 @@ public class QuteSubclass extends QuteNote {
     public final String subclassTitle;
     public final String classProgression;
 
-    public QuteSubclass(String name, String source,
+    public QuteSubclass(CompendiumSources sources, String name, String source,
             String parentClass,
             String parentClassLink,
             String subclassTitle, String classProgression,
             String text, List<String> tags) {
-        super(name, source, text, tags);
+        super(sources, name, source, text, tags);
 
         this.parentClass = parentClass;
         this.parentClassLink = parentClassLink;

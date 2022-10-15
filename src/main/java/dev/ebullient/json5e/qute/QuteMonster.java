@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import dev.ebullient.json5e.io.Json5eTui;
+import dev.ebullient.json5e.tools5e.CompendiumSources;
 
-public class QuteMonster extends QuteNote {
+public class QuteMonster extends QuteBase {
 
     public final boolean isNpc;
     public final String size;
@@ -49,7 +50,8 @@ public class QuteMonster extends QuteNote {
     public final String environment;
     final ImageRef tokenImage;
 
-    public QuteMonster(String name, String source, boolean isNpc, String size, String type, String subtype, String alignment,
+    public QuteMonster(CompendiumSources sources, String name, String source, boolean isNpc, String size, String type,
+            String subtype, String alignment,
             Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed, AbilityScores scores,
             SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
             String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
@@ -58,7 +60,7 @@ public class QuteMonster extends QuteNote {
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
             ImageRef tokenImage, List<String> tags) {
 
-        super(name, source, null, tags);
+        super(sources, name, source, null, tags);
 
         this.isNpc = isNpc;
         this.size = size;

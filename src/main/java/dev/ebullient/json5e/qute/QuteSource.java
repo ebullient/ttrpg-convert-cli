@@ -14,4 +14,6 @@ public interface QuteSource {
     String targetPath();
 
     String title();
+
+    String key();
 }

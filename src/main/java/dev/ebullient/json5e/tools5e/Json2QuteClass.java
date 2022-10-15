@@ -65,7 +65,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         maybeAddBlankLine(progression);
         buildClassProgression(node, progression, "classTableGroups");
 
-        return new QuteClass(
+        return new QuteClass(sources,
                 decoratedName,
                 getSources().getSourceText(index.srdOnly()),
                 startingHitDice(),
@@ -99,7 +99,8 @@ public class Json2QuteClass extends Json2QuteCommon {
                 text.addAll(scf.text);
             });
 
-            quteSc.add(new QuteSubclass(sc.name,
+            quteSc.add(new QuteSubclass(sc.sources,
+                    sc.name,
                     sc.sources.getSourceText(index.srdOnly()),
                     getName(),
                     String.format("[%s](%s.md)", decoratedName, slugify(decoratedName)),

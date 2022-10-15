@@ -202,7 +202,7 @@ public class CommonDataTests {
         Path out = outputPath.resolve("yaml-header");
         TestUtils.deleteDir(out);
 
-        tui.setOutputPath(outputPath);
+        tui.setOutputPath(out);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
@@ -217,8 +217,8 @@ public class CommonDataTests {
     public void testMonsterYamlBody(Path outputPath) {
         Path out = outputPath.resolve("yaml-body");
         TestUtils.deleteDir(out);
+        tui.setOutputPath(out);
 
-        tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",

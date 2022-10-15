@@ -3,7 +3,9 @@ package dev.ebullient.json5e.qute;
 import java.util.Collection;
 import java.util.List;
 
-public class QuteDeity extends QuteNote {
+import dev.ebullient.json5e.tools5e.CompendiumSources;
+
+public class QuteDeity extends QuteBase {
 
     public static String getFileName(String name, String pantheon) {
         return pantheon + "-" + name;
@@ -19,12 +21,12 @@ public class QuteDeity extends QuteNote {
     public final String symbol;
     final ImageRef symbolImg;
 
-    public QuteDeity(String name, String source,
+    public QuteDeity(CompendiumSources sources, String name, String source,
             List<String> altNames, String pantheon, String alignment,
             String title, String cateogry, String domains,
             String province, String symbol, ImageRef symbolImg,
             String text, Collection<String> tags) {
-        super(name, source, text, tags);
+        super(sources, name, source, text, tags);
         this.altNames = altNames;
         this.pantheon = pantheon;
         this.alignment = alignment;

@@ -60,7 +60,7 @@ public class Json2QuteItem extends Json2QuteCommon {
             }
         }
 
-        return new QuteItem(
+        return new QuteItem(sources,
                 itemName(),
                 sources.getSourceText(index.srdOnly()),
                 itemType.getSpecializedType() + (detail.isBlank() ? "" : ", " + detail),

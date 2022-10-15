@@ -26,7 +26,7 @@ public class Json2QuteRace extends Json2QuteCommon {
         }
         tags.add("race/" + String.join("/", split));
 
-        return new QuteRace(
+        return new QuteRace(sources,
                 name,
                 sources.getSourceText(index.srdOnly()),
                 getRaceAbility(),
