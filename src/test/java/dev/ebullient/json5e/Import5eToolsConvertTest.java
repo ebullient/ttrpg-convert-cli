@@ -3,6 +3,7 @@ package dev.ebullient.json5e;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -61,13 +62,29 @@ public class Import5eToolsConvertTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+        }
+    }
 
+    @Test
+    void testCommandLiveDataAllSources(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
             // All
-            result = launcher.launch("--index", "-s", "ALL", "-v",
-                    "-o", outputPath.resolve("all-index").toString(), TestUtils.TOOLS_PATH.toString());
+            final Path allIndex = outputPath.resolve("all-index");
+            TestUtils.deleteDir(allIndex);
+
+            LaunchResult result = launcher.launch("--index", "-s", "ALL",
+                    "-o", allIndex.toString(), TestUtils.TOOLS_PATH.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+
+            Json5eTui tui = new Json5eTui();
+            tui.init(null, false, true);
+            List<String> errors = new ArrayList<>();
+            TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
+                content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
+                return List.of();
+            });
         }
     }
 

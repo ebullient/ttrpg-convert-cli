@@ -18,6 +18,6 @@ public class QuteFeat extends QuteBase {
 
     @Override
     public String targetPath() {
-        return "feats";
+        return QuteSource.FEATS_PATH;
     }
 }

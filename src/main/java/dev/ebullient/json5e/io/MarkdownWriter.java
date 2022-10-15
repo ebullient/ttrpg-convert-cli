@@ -101,23 +101,23 @@ public class MarkdownWriter {
                     break;
                 case "QuteClass":
                     writeFile(fileMap, templates.renderClass((QuteClass) qs));
-                    counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
+                    counts.compute(QuteSource.CLASSES_PATH, (k, v) -> (v == null) ? 1 : v + 1);
                     break;
                 case "QuteDeity":
                     writeFile(fileMap, templates.renderDeity((QuteDeity) qs));
-                    counts.compute("deities", (k, v) -> (v == null) ? 1 : v + 1);
+                    counts.compute(QuteSource.DEITIES_PATH, (k, v) -> (v == null) ? 1 : v + 1);
                     break;
                 case "QuteFeat":
                     writeFile(fileMap, templates.renderFeat((QuteFeat) qs));
-                    counts.compute("feats", (k, v) -> (v == null) ? 1 : v + 1);
+                    counts.compute(QuteSource.FEATS_PATH, (k, v) -> (v == null) ? 1 : v + 1);
                     break;
                 case "QuteItem":
                     writeFile(fileMap, templates.renderItem((QuteItem) qs));
-                    counts.compute("items", (k, v) -> (v == null) ? 1 : v + 1);
+                    counts.compute(QuteSource.ITEMS_PATH, (k, v) -> (v == null) ? 1 : v + 1);
                     break;
                 case "QuteMonster":
                     writeFile(fileMap, templates.renderMonster((QuteMonster) qs));
-                    counts.compute("bestiary", (k, v) -> (v == null) ? 1 : v + 1);
+                    counts.compute(QuteSource.MONSTERS_BASE_PATH, (k, v) -> (v == null) ? 1 : v + 1);
                     break;
                 case "QuteRace":
                     writeFile(fileMap, templates.renderRace((QuteRace) qs));
@@ -125,11 +125,11 @@ public class MarkdownWriter {
                     break;
                 case "QuteSpell":
                     writeFile(fileMap, templates.renderSpell((QuteSpell) qs));
-                    counts.compute("spells", (k, v) -> (v == null) ? 1 : v + 1);
+                    counts.compute(QuteSource.SPELLS_PATH, (k, v) -> (v == null) ? 1 : v + 1);
                     break;
                 case "QuteSubclass":
                     writeFile(fileMap, templates.renderSubclass((QuteSubclass) qs));
-                    counts.compute("classes", (k, v) -> (v == null) ? 1 : v + 1);
+                    counts.compute(QuteSource.CLASSES_PATH, (k, v) -> (v == null) ? 1 : v + 1);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown file type:" + type);

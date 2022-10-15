@@ -30,6 +30,6 @@ public class QuteRace extends QuteBase {
 
     @Override
     public String targetPath() {
-        return "races";
+        return QuteSource.RACES_PATH;
     }
 }

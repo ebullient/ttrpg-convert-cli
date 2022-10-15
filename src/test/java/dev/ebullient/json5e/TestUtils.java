@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +31,8 @@ public class TestUtils {
     final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
     final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
     final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
+
+    final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?\\]\\((.*?)\\)");
 
     static void assertContents(Path path1, Path path2, boolean areEqual) throws IOException {
         try (RandomAccessFile randomAccessFile1 = new RandomAccessFile(path1.toFile(), "r");
@@ -53,6 +57,30 @@ public class TestUtils {
         }
     }
 
+    static void checkMarkdownLinks(String baseDir, Path p, String line, List<String> errors) {
+        List<String> e = new ArrayList<>();
+        Matcher links = markdownLinkPattern.matcher(line);
+        links.results().forEach(m -> {
+            String path = m.group(1);
+            int hash = path.indexOf('#');
+            if (hash == 0) {
+                return;
+            } else if (hash > 0) {
+                path = path.substring(0, hash);
+            }
+            Path indexResource = p.getParent().resolve(path);
+            Path resource = Path.of(baseDir + path);
+            if (!resource.toFile().exists() && !indexResource.toFile().exists()) {
+                e.add("Unresolvable: " + m.group(0));
+            }
+        });
+        if (!e.isEmpty()) {
+            System.out.println(p);
+            e.forEach(x -> System.out.println("  " + x));
+        }
+        errors.addAll(e);
+    }
+
     static void commonTests(Path p, String l, List<String> errors) {
         if (l.contains("{@")) {
             errors.add(String.format("Found {@ in %s: %s", p, l));
@@ -62,13 +90,10 @@ public class TestUtils {
         }
     }
 
-    static BiFunction<Path, List<String>, List<String>> checkContents = new BiFunction<Path, List<String>, List<String>>() {
-        @Override
-        public List<String> apply(Path p, List<String> content) {
-            List<String> e = new ArrayList<>();
-            content.forEach(l -> commonTests(p, l, e));
-            return e;
-        }
+    static BiFunction<Path, List<String>, List<String>> checkContents = (p, content) -> {
+        List<String> e = new ArrayList<>();
+        content.forEach(l -> commonTests(p, l, e));
+        return e;
     };
 
     static void assertDirectoryContents(Path directory, Json5eTui tui) {
@@ -89,7 +114,17 @@ public class TestUtils {
         List<String> errors = new ArrayList<>();
         try (Stream<Path> walk = Files.list(directory)) {
             walk.forEach(p -> {
-                if (!p.toFile().isFile()) {
+                if (p.toFile().isDirectory()) {
+                    errors.addAll(checkDirectoryContents(p, tui, checker));
+                    return;
+                }
+                if (!p.toString().endsWith(".md")) {
+                    if (!p.toString().endsWith(".png")
+                            && !p.toString().endsWith(".jpg")
+                            && !p.toString().endsWith(".json")
+                            && !p.toString().endsWith(".yaml")) {
+                        errors.add(String.format("Found file that was not markdown: %s", p));
+                    }
                     return;
                 }
                 try {

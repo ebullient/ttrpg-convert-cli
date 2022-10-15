@@ -42,7 +42,7 @@ public class QuteBase implements QuteSource {
 
     @Override
     public String targetFile() {
-        return name;
+        return name + QuteSource.sourceIfNotCore(sources.primarySource());
     }
 
     @Override

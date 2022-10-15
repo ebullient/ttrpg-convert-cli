@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
-import dev.ebullient.json5e.qute.QuteDeity;
-import dev.ebullient.json5e.qute.QuteSubclass;
+import dev.ebullient.json5e.qute.QuteSource;
 
 public interface JsonSource {
     Pattern backgroundPattern = Pattern.compile("\\{@(background) ([^}]+)}");
@@ -710,9 +709,7 @@ public interface JsonSource {
     }
 
     default String decoratedMonsterName(JsonNode jsonSource, CompendiumSources sources) {
-        return decoratedUaName(
-                sources.getName().replace("\"", ""),
-                sources);
+        return sources.getName().replace("\"", "");
     }
 
     default String decoratedTypeName(CompendiumSources sources) {
@@ -723,7 +720,7 @@ public interface JsonSource {
         if (sources.isPrimarySource("DMG") && !name.contains("(DMG)")) {
             return name + " (DMG)";
         }
-        return decoratedUaName(name, sources);
+        return name;
     }
 
     default String decoratedUaName(String name, CompendiumSources sources) {
@@ -910,7 +907,7 @@ public interface JsonSource {
                 // {@background Anthropologist|toa} can have sources added with a pipe,
                 // {@background Anthropologist|ToA|and optional link text added with another
                 // pipe}.",
-                return linkifyType(IndexType.background, match.group(2), "backgrounds");
+                return linkifyType(IndexType.background, match.group(2), QuteSource.BACKGROUND_PATH);
             case "creature":
                 // "Creatures:
                 // {@creature goblin} assumes MM by default,
@@ -926,13 +923,13 @@ public interface JsonSource {
                 // {@feat Alert} assumes PHB by default,
                 // {@feat Elven Accuracy|xge} can have sources added with a pipe,
                 // {@feat Elven Accuracy|xge|and optional link text added with another pipe}.",
-                return linkifyType(IndexType.feat, match.group(2), "feats");
+                return linkifyType(IndexType.feat, match.group(2), QuteSource.FEATS_PATH);
             case "item":
                 // "Items:
                 // {@item alchemy jug} assumes DMG by default,
                 // {@item longsword|phb} can have sources added with a pipe,
                 // {@item longsword|phb|and optional link text added with another pipe}.",
-                return linkifyType(IndexType.item, match.group(2), "items", "dmg");
+                return linkifyType(IndexType.item, match.group(2), QuteSource.ITEMS_PATH, "dmg");
             case "race":
                 // "Races:
                 // {@race Human} assumes PHB by default,
@@ -940,13 +937,13 @@ public interface JsonSource {
                 // {@race Aarakocra|eepc} can have sources added with a pipe,
                 // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
                 // {@race dwarf (hill)||Dwarf, hill}
-                return linkifyType(IndexType.race, match.group(2), "races");
+                return linkifyType(IndexType.race, match.group(2), QuteSource.RACES_PATH);
             case "spell":
                 // "Spells:
                 // {@spell acid splash} assumes PHB by default,
                 // {@spell tiny servant|xge} can have sources added with a pipe,
                 // {@spell tiny servant|xge|and optional link text added with another pipe}.",
-                return linkifyType(IndexType.spell, match.group(2), "spells");
+                return linkifyType(IndexType.spell, match.group(2), QuteSource.SPELLS_PATH);
         }
         throw new IllegalArgumentException("Unknown group to linkify: " + match.group(1));
     }
@@ -979,11 +976,13 @@ public interface JsonSource {
         JsonNode jsonSource = getJsonNodeForKey(key);
         CompendiumSources sources = index().constructSources(type, jsonSource);
         if (type == IndexType.item) {
-            return linkOrText(linkText, key, dirName, parts[0]);
+            return linkOrText(linkText, key, dirName, parts[0] + QuteSource.sourceIfNotCore(sources.primarySource()));
         } else if (type == IndexType.race) {
-            return linkOrText(linkText, key, dirName, decoratedRaceName(jsonSource, sources));
+            return linkOrText(linkText, key, dirName,
+                    decoratedRaceName(jsonSource, sources) + QuteSource.sourceIfNotCore(sources.primarySource()));
         }
-        return linkOrText(linkText, key, dirName, decoratedTypeName(sources));
+        return linkOrText(linkText, key, dirName,
+                decoratedTypeName(sources) + QuteSource.sourceIfNotCore(sources.primarySource()));
     }
 
     default String linkifyDeity(String match) {
@@ -1007,7 +1006,7 @@ public interface JsonSource {
             pantheon = parts[1];
         }
         String key = index().getAliasOrDefault(index().createSimpleKey(IndexType.deity, parts[0], source));
-        return linkOrText(linkText, key, "deities", QuteDeity.getFileName(parts[0], pantheon));
+        return linkOrText(linkText, key, QuteSource.DEITIES_PATH, QuteSource.getDeityResourceName(parts[0], pantheon));
     }
 
     default String linkifyClass(String match) {
@@ -1042,10 +1041,13 @@ public interface JsonSource {
             int first = key.indexOf('|');
             int second = key.indexOf('|', first + 1);
             subclass = key.substring(first + 1, second);
-            return linkOrText(linkText, key, "classes", QuteSubclass.getFileName(subclass, className));
+            return linkOrText(linkText, key, QuteSource.CLASSES_PATH,
+                    QuteSource.getSubclassResourceName(subclass, className)
+                            + QuteSource.sourceIfNotCore(classSource));
         } else {
             String key = index().getClassKey(className, classSource);
-            return linkOrText(linkText, key, "classes", className);
+            return linkOrText(linkText, key, QuteSource.CLASSES_PATH,
+                    className + QuteSource.sourceIfNotCore(classSource));
         }
     }
 
@@ -1070,17 +1072,13 @@ public interface JsonSource {
         JsonNode jsonSource = getJsonNodeForKey(key);
         CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
         String resourceName = decoratedMonsterName(jsonSource, sources);
-        final String subdir;
-        if (Json2QuteMonster.isNpc(jsonSource)) {
-            subdir = "npc";
-        } else {
-            String type = getMonsterType(jsonSource); // may be missing for partial index
-            if (type == null) {
-                return linkText;
-            }
-            subdir = slugify(type);
+        String type = getMonsterType(jsonSource); // may be missing for partial index
+        if (type == null) {
+            return linkText;
         }
-        return linkOrText(linkText, key, "bestiary/" + subdir, resourceName);
+        boolean isNpc = Json2QuteMonster.isNpc(jsonSource);
+        return linkOrText(linkText, key, QuteSource.monsterPath(isNpc, type),
+                resourceName + QuteSource.sourceIfNotCore(sources.primarySource()));
     }
 
     default JsonNode getJsonNodeForKey(String key) {
