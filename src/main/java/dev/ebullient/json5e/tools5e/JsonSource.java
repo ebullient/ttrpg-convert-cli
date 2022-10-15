@@ -708,8 +708,8 @@ public interface JsonSource {
         return decoratedTypeName(raceName.replace("Variant; ", ""), getSources());
     }
 
-    default String decorateMonsterName(JsonNode jsonSource, CompendiumSources sources) {
-        return decorateUAName(
+    default String decoratedMonsterName(JsonNode jsonSource, CompendiumSources sources) {
+        return decoratedUaName(
                 sources.getName().replace("\"", ""),
                 sources);
     }
@@ -722,10 +722,10 @@ public interface JsonSource {
         if (sources.isPrimarySource("DMG") && !name.contains("(DMG)")) {
             return name + " (DMG)";
         }
-        return decorateUAName(name, sources);
+        return decoratedUaName(name, sources);
     }
 
-    default String decorateUAName(String name, CompendiumSources sources) {
+    default String decoratedUaName(String name, CompendiumSources sources) {
         Optional<String> uaSource = sources.uaSource();
         if (uaSource.isPresent() && !name.contains("(UA")) {
             return name + " (" + uaSource.get() + ")";
@@ -1061,7 +1061,7 @@ public interface JsonSource {
         }
         JsonNode jsonSource = getJsonNodeForKey(key);
         CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
-        String resourceName = decorateMonsterName(jsonSource, sources);
+        String resourceName = decoratedMonsterName(jsonSource, sources);
         final String subdir;
         if (Json2QuteMonster.isNpc(jsonSource)) {
             subdir = "npc";

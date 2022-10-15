@@ -29,7 +29,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     boolean additionalFromBackground;
     final String classSource;
     final String subclassTitle;
-    final String decoratedName;
+    final String decoratedClassName;
 
     Json2QuteClass(JsonIndex index, IndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
@@ -39,7 +39,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             findClassProficiencies();
         }
 
-        decoratedName = decoratedTypeName(getName(), getSources());
+        decoratedClassName = decoratedTypeName(getName(), getSources());
         classSource = node.get("source").asText();
         subclassTitle = getTextOrEmpty(node, "subclassTitle");
         findSubclasses();
@@ -66,7 +66,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         buildClassProgression(node, progression, "classTableGroups");
 
         return new QuteClass(sources,
-                decoratedName,
+                decoratedClassName,
                 getSources().getSourceText(index.srdOnly()),
                 startingHitDice(),
                 String.join("\n", progression),
@@ -103,7 +103,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     sc.name,
                     sc.sources.getSourceText(index.srdOnly()),
                     getName(),
-                    String.format("[%s](%s.md)", decoratedName, slugify(decoratedName)),
+                    String.format("[%s](%s.md)", decoratedClassName, slugify(decoratedClassName)),
                     subclassTitle,
                     sc.subclassProgression,
                     String.join("\n", text),
@@ -322,8 +322,8 @@ public class Json2QuteClass extends Json2QuteCommon {
 
             Subclass sc = new Subclass();
             sc.shortName = resolved.get("shortName").asText();
-            sc.sources = index.constructSources(IndexType.subclass, resolved);
-            sc.name = sc.sources.getName();
+            sc.sources = index.constructSources(IndexType.subclass, scKey, resolved);
+            sc.name = decoratedUaName(scKey, sources);
 
             // Subclass features
             s.withArray("subclassFeatures").forEach(f -> {
