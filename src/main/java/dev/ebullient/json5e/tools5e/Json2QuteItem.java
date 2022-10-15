@@ -89,7 +89,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 return srd.asText();
             }
         }
-        return decorateUAName(getSources().getName(), getSources());
+        return decoratedUaName(getSources().getName(), getSources());
     }
 
     String itemText(List<PropertyEnum> propertyEnums) {

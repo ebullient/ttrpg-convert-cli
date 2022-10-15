@@ -17,13 +17,15 @@ public class Json2QuteBackground extends Json2QuteCommon {
     public static Set<String> bonds = new HashSet<>();
     public static Set<String> flaws = new HashSet<>();
 
+    final String backgroundName;
+
     Json2QuteBackground(JsonIndex index, IndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
+        backgroundName = decoratedTypeName(decoratedBackgroundName(sources.getName()), sources);
     }
 
     @Override
     public QuteSource build() {
-        String backgroundName = decoratedBackgroundName(sources.getName());
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         List<String> text = new ArrayList<>();
@@ -50,7 +52,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
         }
 
         return new QuteBackground(sources,
-                decoratedTypeName(backgroundName, sources),
+                backgroundName,
                 sources.getSourceText(index.srdOnly()),
                 String.join("\n", text),
                 tags);
