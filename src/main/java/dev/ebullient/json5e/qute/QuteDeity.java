@@ -7,10 +7,6 @@ import dev.ebullient.json5e.tools5e.CompendiumSources;
 
 public class QuteDeity extends QuteBase {
 
-    public static String getFileName(String name, String pantheon) {
-        return pantheon + "-" + name;
-    }
-
     public final List<String> altNames;
     public final String pantheon;
     public final String alignment;
@@ -55,11 +51,11 @@ public class QuteDeity extends QuteBase {
 
     @Override
     public String targetFile() {
-        return getFileName(name, pantheon);
+        return QuteSource.getDeityResourceName(name, pantheon);
     }
 
     @Override
     public String targetPath() {
-        return "deities";
+        return QuteSource.DEITIES_PATH;
     }
 }

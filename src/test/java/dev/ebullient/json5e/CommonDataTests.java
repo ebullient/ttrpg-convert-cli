@@ -13,6 +13,7 @@ import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.io.MarkdownWriter;
 import dev.ebullient.json5e.io.TemplatePaths;
 import dev.ebullient.json5e.io.Templates;
+import dev.ebullient.json5e.qute.QuteSource;
 import dev.ebullient.json5e.tools5e.IndexType;
 import dev.ebullient.json5e.tools5e.Json2MarkdownConverter;
 import dev.ebullient.json5e.tools5e.JsonIndex;
@@ -26,7 +27,7 @@ public class CommonDataTests {
     public CommonDataTests(boolean useSources) throws Exception {
         tui = Arc.container().instance(Json5eTui.class).get();
         templates = Arc.container().instance(Templates.class).get();
-        tui.init(null, true, true);
+        tui.init(null, false, true);
 
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             if (useSources) {
@@ -73,11 +74,11 @@ public class CommonDataTests {
     }
 
     public void testFeatList(Path outputPath) {
-        Path featDir = outputPath.resolve(index.compendiumPath()).resolve("feats");
-        TestUtils.deleteDir(featDir);
-
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path featDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.FEATS_PATH);
+            TestUtils.deleteDir(featDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.feat);
@@ -87,11 +88,11 @@ public class CommonDataTests {
     }
 
     public void testBackgroundList(Path outputPath) {
-        Path backgroundDir = outputPath.resolve(index.compendiumPath()).resolve("backgrounds");
-        TestUtils.deleteDir(backgroundDir);
-
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path backgroundDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.BACKGROUND_PATH);
+            TestUtils.deleteDir(backgroundDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.background)
@@ -102,11 +103,12 @@ public class CommonDataTests {
     }
 
     public void testSpellList(Path outputPath) {
-        Path spellDir = outputPath.resolve(index.compendiumPath()).resolve("spells");
-        TestUtils.deleteDir(spellDir);
-
         tui.setOutputPath(outputPath);
+
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path spellDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.SPELLS_PATH);
+            TestUtils.deleteDir(spellDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.spell);
@@ -116,11 +118,12 @@ public class CommonDataTests {
     }
 
     public void testRaceList(Path outputPath) {
-        Path raceDir = outputPath.resolve(index.compendiumPath()).resolve("races");
-        TestUtils.deleteDir(raceDir);
-
         tui.setOutputPath(outputPath);
+
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path raceDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.RACES_PATH);
+            TestUtils.deleteDir(raceDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.race);
@@ -130,11 +133,12 @@ public class CommonDataTests {
     }
 
     public void testClassList(Path outputPath) {
-        Path classDir = outputPath.resolve(index.compendiumPath()).resolve("classes");
-        TestUtils.deleteDir(classDir);
-
         tui.setOutputPath(outputPath);
+
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path classDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.CLASSES_PATH);
+            TestUtils.deleteDir(classDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.classtype);
@@ -144,11 +148,12 @@ public class CommonDataTests {
     }
 
     public void testDeityList(Path outputPath) {
-        Path deitiesDir = outputPath.resolve(index.compendiumPath()).resolve("deities");
-        TestUtils.deleteDir(deitiesDir);
-
         tui.setOutputPath(outputPath);
+
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path deitiesDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.DEITIES_PATH);
+            TestUtils.deleteDir(deitiesDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.deity);
@@ -159,11 +164,12 @@ public class CommonDataTests {
     }
 
     public void testItemList(Path outputPath) {
-        Path itemDir = outputPath.resolve(index.compendiumPath()).resolve("items");
-        TestUtils.deleteDir(itemDir);
-
         tui.setOutputPath(outputPath);
+
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path itemDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.ITEMS_PATH);
+            TestUtils.deleteDir(itemDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.item);
@@ -173,11 +179,12 @@ public class CommonDataTests {
     }
 
     public void testMonsterList(Path outputPath) {
-        Path bestiaryDir = outputPath.resolve(index.compendiumPath()).resolve("bestiary");
-        TestUtils.deleteDir(bestiaryDir);
-
         tui.setOutputPath(outputPath);
+
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path bestiaryDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.MONSTERS_BASE_PATH);
+            TestUtils.deleteDir(bestiaryDir);
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.monster);
@@ -199,11 +206,12 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlHeader(Path outputPath) {
-        Path out = outputPath.resolve("yaml-header");
-        TestUtils.deleteDir(out);
-
-        tui.setOutputPath(out);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path out = outputPath.resolve("yaml-header");
+            TestUtils.deleteDir(out);
+
+            tui.setOutputPath(out);
+
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
@@ -215,17 +223,17 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlBody(Path outputPath) {
-        Path out = outputPath.resolve("yaml-body");
-        TestUtils.deleteDir(out);
-        tui.setOutputPath(out);
-
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path out = outputPath.resolve("yaml-body");
+            TestUtils.deleteDir(out);
+            tui.setOutputPath(out);
+
             TemplatePaths templatePaths = new TemplatePaths();
             templatePaths.setCustomTemplate("monster2md.txt",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(templatePaths);
 
-            Path undead = out.resolve(index.compendiumPath()).resolve("bestiary/undead");
+            Path undead = out.resolve(index.compendiumPath()).resolve(QuteSource.monsterPath(false, "undead"));
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);

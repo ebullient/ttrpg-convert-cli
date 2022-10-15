@@ -36,6 +36,6 @@ public class QuteItem extends QuteBase {
 
     @Override
     public String targetPath() {
-        return "items";
+        return QuteSource.ITEMS_PATH;
     }
 }

@@ -12,6 +12,6 @@ public class QuteBackground extends QuteBase {
 
     @Override
     public String targetPath() {
-        return "backgrounds";
+        return QuteSource.BACKGROUND_PATH;
     }
 }

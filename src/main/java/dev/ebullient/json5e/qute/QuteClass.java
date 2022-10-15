@@ -28,6 +28,6 @@ public class QuteClass extends QuteBase {
 
     @Override
     public String targetPath() {
-        return "classes";
+        return QuteSource.CLASSES_PATH;
     }
 }

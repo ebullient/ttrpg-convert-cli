@@ -102,8 +102,9 @@ public class Json2QuteClass extends Json2QuteCommon {
             quteSc.add(new QuteSubclass(sc.sources,
                     sc.name,
                     sc.sources.getSourceText(index.srdOnly()),
-                    getName(),
+                    getName(), // parentClassName
                     String.format("[%s](%s.md)", decoratedClassName, slugify(decoratedClassName)),
+                    sc.parentClassSource, // parentClassSource
                     subclassTitle,
                     sc.subclassProgression,
                     String.join("\n", text),
@@ -313,7 +314,16 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     void findSubclasses() {
-        index().classElementsMatching(IndexType.subclass, getSources().getName()).forEach(s -> {
+        findSubclassesForClassSource(getSources().getName(), classSource);
+        for (String aliasKey : index.getAliasesTo(sources.getKey())) {
+            int lastSegment = aliasKey.lastIndexOf('|');
+            String aliasSource = aliasKey.substring(lastSegment + 1);
+            findSubclassesForClassSource(getSources().getName(), aliasSource);
+        }
+    }
+
+    private void findSubclassesForClassSource(String parentClassName, String parentClassSource) {
+        index().classElementsMatching(IndexType.subclass, parentClassName, parentClassSource).forEach(s -> {
             String scKey = index.getKey(IndexType.subclass, s);
             JsonNode resolved = index.resolveClassFeatureNode(scKey, s);
             if (resolved == null) {
@@ -321,9 +331,10 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
 
             Subclass sc = new Subclass();
+            sc.parentClassSource = parentClassSource;
             sc.shortName = resolved.get("shortName").asText();
             sc.sources = index.constructSources(IndexType.subclass, scKey, resolved);
-            sc.name = decoratedUaName(scKey, sources);
+            sc.name = scKey;
 
             // Subclass features
             s.withArray("subclassFeatures").forEach(f -> {
@@ -562,6 +573,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     class Subclass {
         String name;
         String shortName;
+        String parentClassSource;
 
         String subclassProgression;
         CompendiumSources sources;

@@ -32,6 +32,6 @@ public class QuteSpell extends QuteBase {
 
     @Override
     public String targetPath() {
-        return "spells";
+        return QuteSource.SPELLS_PATH;
     }
 }

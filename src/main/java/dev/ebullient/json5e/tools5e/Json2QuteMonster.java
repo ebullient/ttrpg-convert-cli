@@ -479,8 +479,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     getSources().mapPrimarySource(),
                     filename + ".png");
 
-            Path target = Path.of("bestiary",
-                    (isNpc ? "npc" : type),
+            Path target = Path.of(QuteSource.monsterPath(isNpc, type),
                     "token",
                     slugify(filename) + ".png");
 

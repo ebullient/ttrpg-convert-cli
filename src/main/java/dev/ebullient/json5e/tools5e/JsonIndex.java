@@ -49,6 +49,7 @@ public class JsonIndex implements JsonSource {
 
     private final Map<String, JsonNode> nodeIndex = new HashMap<>();
     private final Map<String, String> aliases = new HashMap<>();
+    private final Map<String, String> classRoot = new HashMap<>();
     private Map<String, JsonNode> variantIndex = null;
     private Map<String, JsonNode> filteredIndex = null;
 
@@ -180,6 +181,14 @@ public class JsonIndex implements JsonSource {
                     parts[2], parts[1], parts[3]).toLowerCase();
             addAlias(lookupKey, key);
         }
+        if (type == IndexType.classtype
+                && !booleanOrDefault(node, "isReprinted", false)) {
+            String[] parts = key.split("\\|");
+            if (!parts[2].contains("ua")) {
+                String lookupKey = String.format("%s|%s|", parts[0], parts[1]);
+                classRoot.put(lookupKey, key);
+            }
+        }
 
         if (node.has("srd")) {
             srdKeys.add(key);
@@ -244,6 +253,13 @@ public class JsonIndex implements JsonSource {
         if (old != null && !alias.equals(old)) {
             tui().errorf("Oops! Duplicate simple key: %s -> %s", key, alias);
         }
+    }
+
+    List<String> getAliasesTo(String targetKey) {
+        return aliases.entrySet().stream()
+                .filter(e -> e.getValue().equals(targetKey))
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
     }
 
     void addRulesIfPresent(JsonNode node, String rule) {
@@ -411,9 +427,21 @@ public class JsonIndex implements JsonSource {
                 }
             }
         }
-        // This true/false flag tends to comes from UA resources (when printed in official source
+        // This true/false flag tends to comes from UA resources (when printed in official source)
         if (booleanOrDefault(jsonSource, "isReprinted", false)) {
             tui().debugf("Skipping %s (has been reprinted)", finalKey);
+            if (finalKey.startsWith("classtype")) {
+                String[] parts = finalKey.split("\\|");
+                String lookupKey = String.format("%s|%s|", parts[0], parts[1]);
+                String reprintKey = classRoot.get(lookupKey);
+                if (reprintKey == null) {
+                    lookupKey = String.format("%s|%s|", parts[0], parts[1].replaceAll("\\s*\\(.*", ""));
+                    reprintKey = classRoot.get(lookupKey);
+                }
+                if (reprintKey != null) {
+                    addAlias(finalKey, reprintKey);
+                }
+            }
             return true; // the reprint will be used instead of this one.
         }
         return false;
@@ -423,8 +451,8 @@ public class JsonIndex implements JsonSource {
         return filteredIndex == null || variantIndex == null;
     }
 
-    public Stream<JsonNode> classElementsMatching(IndexType type, String className) {
-        String pattern = String.format("%s\\|[^|]+\\|%s\\|.*", type, className)
+    public Stream<JsonNode> classElementsMatching(IndexType type, String className, String classSource) {
+        String pattern = String.format("%s\\|[^|]+\\|%s\\|%s\\|.*", type, className, classSource)
                 .toLowerCase();
         return filteredIndex.entrySet().stream()
                 .filter(e -> e.getKey().matches(pattern))

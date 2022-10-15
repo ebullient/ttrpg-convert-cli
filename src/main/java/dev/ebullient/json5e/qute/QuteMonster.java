@@ -117,7 +117,7 @@ public class QuteMonster extends QuteBase {
 
     @Override
     public String targetPath() {
-        return "bestiary/" + (isNpc ? "npc" : type);
+        return QuteSource.monsterPath(isNpc, type);
     }
 
     public ImageRef getToken() {
