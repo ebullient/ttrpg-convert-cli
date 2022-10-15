@@ -34,6 +34,7 @@ public interface JsonSource {
     Pattern creaturePattern = Pattern.compile("\\{@(creature) ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^|}]+)[^}]*}");
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
+    Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern condPattern = Pattern.compile("\\{@condition ([^|}]+)\\|?[^}]*}");
     Pattern diseasePattern = Pattern.compile("\\{@disease ([^|}]+)\\|?[^}]*}");
@@ -844,6 +845,14 @@ public interface JsonSource {
                         return String.join("\n", text);
                     });
 
+            result = quickRefPattern.matcher(result)
+                    .replaceAll((match) -> {
+                        String[] parts = match.group(1).split("\\|");
+                        if (parts.length > 4) {
+                            return parts[4];
+                        }
+                        return parts[0];
+                    });
             result = result
                     .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
                     .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
@@ -862,7 +871,6 @@ public interface JsonSource {
                     .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                     .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
                     .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@quickref ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
