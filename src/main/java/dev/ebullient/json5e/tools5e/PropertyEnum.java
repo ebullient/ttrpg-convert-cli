@@ -1,6 +1,7 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -34,8 +35,8 @@ public enum PropertyEnum {
     RELOAD("Reload", "RLD", "property/reload"),
 
     // Magic/Wondrous item attributes: tier
-    MAJOR("Major", "!", "rarity/major"),
-    MINOR("Minor", "@", "rarity/minor"),
+    MAJOR("Major", "!", "tier/major"),
+    MINOR("Minor", "@", "tier/minor"),
 
     // Magic/Wondrous item attributes: rarity
     COMMON("Common", "1", "rarity/common"),
@@ -55,19 +56,17 @@ public enum PropertyEnum {
     public final String longName;
     private final String encodedValue;
     private final String tagValue;
-    private final boolean rarity; // can apply to weapons
 
     PropertyEnum(String longName, String ev, String tagValue) {
         this.longName = longName;
         this.encodedValue = ev;
         this.tagValue = tagValue;
-        this.rarity = ordinal() > 16; // exclude 2H
     }
 
     public static final List<PropertyEnum> tierProperties = List.of(MAJOR, MINOR);
 
     public static final List<PropertyEnum> rarityProperties = Stream.of(PropertyEnum.values())
-            .filter(x -> x.rarity)
+            .filter(x -> x.ordinal() >= COMMON.ordinal() && x.ordinal() <= RARITY_UNK_MAGIC.ordinal())
             .collect(Collectors.toList());
 
     public String value() {
@@ -79,7 +78,7 @@ public enum PropertyEnum {
     }
 
     public String getMarkdownLink(JsonIndex index) {
-        if (rarity) {
+        if (rarityProperties.contains(this)) {
             return longName;
         }
         return String.format("[%s](%s)", longName,
@@ -123,7 +122,7 @@ public enum PropertyEnum {
         return result;
     }
 
-    public static void findAdditionalProperties(String name, ItemEnum type, List<PropertyEnum> properties,
+    public static void findAdditionalProperties(String name, ItemEnum type, Collection<PropertyEnum> properties,
             Predicate<String> matches) {
         if (type.isWeapon() && name.toLowerCase(Locale.ROOT).contains("silvered")) {
             properties.add(SILVERED);

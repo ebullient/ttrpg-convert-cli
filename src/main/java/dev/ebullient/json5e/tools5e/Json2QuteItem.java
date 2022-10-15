@@ -1,7 +1,10 @@
 package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,7 +24,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     @Override
     public QuteSource build() {
-        List<PropertyEnum> propertyEnums = new ArrayList<>();
+        Set<PropertyEnum> propertyEnums = new HashSet<>();
         findProperties(propertyEnums);
         String text = itemText(propertyEnums);
 
@@ -92,7 +95,7 @@ public class Json2QuteItem extends Json2QuteCommon {
         return getSources().getName();
     }
 
-    String itemText(List<PropertyEnum> propertyEnums) {
+    String itemText(Collection<PropertyEnum> propertyEnums) {
         List<String> text = new ArrayList<>(getFluff(IndexType.itemfluff, "##"));
         if (node.has("entries")) {
             maybeAddBlankLine(text);
@@ -186,7 +189,7 @@ public class Json2QuteItem extends Json2QuteCommon {
         }
     }
 
-    void findProperties(List<PropertyEnum> propertyEnums) {
+    void findProperties(Collection<PropertyEnum> propertyEnums) {
         JsonNode property = node.get("property");
         if (property != null && property.isArray()) {
             property.forEach(x -> propertyEnums.add(PropertyEnum.fromEncodedType(x.asText())));
@@ -201,7 +204,7 @@ public class Json2QuteItem extends Json2QuteCommon {
      * @param propertyEnums Item properties -- ensure non-null & modifiable: side-effect, will set magic properties
      * @return String containing formatted item text
      */
-    String itemDetail(List<PropertyEnum> propertyEnums) {
+    String itemDetail(Collection<PropertyEnum> propertyEnums) {
         String tier = getTextOrDefault(node, "tier", "");
         if (!tier.isEmpty()) {
             propertyEnums.add(PropertyEnum.fromValue(tier));
@@ -223,7 +226,7 @@ public class Json2QuteItem extends Json2QuteCommon {
      * @param properties Item properties -- ensure non-null & modifiable: side-effect, will set magic properties
      * @return detail string
      */
-    String createDetail(String attunement, List<PropertyEnum> properties) {
+    String createDetail(String attunement, Collection<PropertyEnum> properties) {
         StringBuilder replacement = new StringBuilder();
 
         PropertyEnum.tierProperties.forEach(p -> {

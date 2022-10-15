@@ -1,6 +1,6 @@
 package dev.ebullient.json5e.tools5e;
 
-import java.util.List;
+import java.util.Collection;
 
 import dev.ebullient.json5e.io.Json5eTui;
 
@@ -112,7 +112,7 @@ public enum ItemEnum {
                 || this == WONDROUS;
     }
 
-    public String getItemTag(List<PropertyEnum> properties, Json5eTui tui) {
+    public String getItemTag(Collection<PropertyEnum> properties, Json5eTui tui) {
         StringBuilder tag = new StringBuilder();
         tag.append("item");
         if (isArmor()) {
