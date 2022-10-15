@@ -62,6 +62,7 @@ public class CompendiumSources {
         if (jsonElement.has("additionalSources")) {
             srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
                     .filter(x -> !x.get("source").asText().equals(copySrc))
+                    .filter(x -> !coreSourceBook(x.get("source").asText()))
                     .peek(x -> this.bookSources.add(x.get("source").asText()))
                     .map(this::sourceAndPage)
                     .collect(Collectors.toList()));
@@ -70,6 +71,7 @@ public class CompendiumSources {
         if (jsonElement.has("otherSources")) {
             srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
                     .filter(x -> !x.get("source").asText().equals(copySrc))
+                    .filter(x -> !coreSourceBook(x.get("source").asText()))
                     .peek(x -> this.bookSources.add(x.get("source").asText()))
                     .map(this::sourceAndPage)
                     .collect(Collectors.toList()));
@@ -136,6 +138,10 @@ public class CompendiumSources {
     @Override
     public String toString() {
         return "sources[" + key + ']';
+    }
+
+    private boolean coreSourceBook(String source) {
+        return List.of("phb", "mm", "dmg").contains(source.toLowerCase());
     }
 
     final static String AL_PREFIX = "Adventurers League: ";
