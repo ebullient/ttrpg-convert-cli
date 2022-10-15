@@ -16,8 +16,8 @@ public class QuteItem extends QuteBase {
     public final String cost;
     public final Double weight;
 
-    public QuteItem(CompendiumSources sources, String name, String source, String detail, String armorClass, String damage,
-            String damage2h,
+    public QuteItem(CompendiumSources sources, String name, String source, String detail,
+            String armorClass, String damage, String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
             String costGp, Double weightLbs, String text, List<String> tags) {
         super(sources, name, source, text, tags);
