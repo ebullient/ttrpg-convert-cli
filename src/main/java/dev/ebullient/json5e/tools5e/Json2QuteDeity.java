@@ -37,7 +37,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
             });
         }
 
-        return new QuteDeity(
+        return new QuteDeity(sources,
                 getName(),
                 getSources().getSourceText(index.srdOnly()),
                 findAndReplace(node, "altNames"),

@@ -43,7 +43,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
             tags.add("spell/class/" + String.join("/", split));
         }
 
-        return new QuteSpell(decoratedName,
+        return new QuteSpell(sources,
+                decoratedName,
                 sources.getSourceText(index.srdOnly()),
                 levelToText(level),
                 school.name(),

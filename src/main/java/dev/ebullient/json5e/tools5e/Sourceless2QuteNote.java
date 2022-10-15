@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.json5e.qute.QuteNote;
+import dev.ebullient.json5e.qute.QuteSource;
 
 public class Sourceless2QuteNote extends Json2QuteCommon {
 
@@ -43,7 +44,11 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     @Override
-    public QuteNote build() {
+    public QuteSource build() {
+        throw new IllegalStateException("Not implemented");
+    }
+
+    public QuteNote buildNote() {
         Set<String> tags = new HashSet<>();
         List<String> text = new ArrayList<>();
 
@@ -75,8 +80,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
 
         return new QuteNote(title,
                 sources.getSourceText(index.srdOnly()),
-                getText("##"),
-                tags);
+                getText("##"), tags);
     }
 
     public Map<String, QuteNote> buildReference(JsonNode data) {
@@ -152,7 +156,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         Set<String> tags = new HashSet<>();
         List<String> text = new ArrayList<>();
 
-        node.forEach(entry -> appendLootElement(entry, text, tags));
+        node.forEach(entry -> appendLootElement(entry, text));
         if (text.isEmpty()) {
             return null;
         }
@@ -160,7 +164,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         return new QuteNote(title, null, String.join("\n", text), tags);
     }
 
-    private void appendLootElement(JsonNode entry, List<String> text, Set<String> tags) {
+    private void appendLootElement(JsonNode entry, List<String> text) {
         currentSource = index.constructSources(IndexType.sourceless, entry);
         String name = entry.get("name").asText();
         if (!index.rulesSourceExcluded(entry, name)) {
@@ -257,7 +261,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         if (node.has("fromVariant")) {
             maybeAddBlankLine(text);
             text.add("This action is an optional addition to the game, from the optional/variant rule "
-                    + linkifyVariant(node.get("fromVariant").asText(), currentSource) + ".");
+                    + linkifyVariant(node.get("fromVariant").asText()) + ".");
         }
 
         maybeAddBlankLine(text);
@@ -279,7 +283,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         }
     }
 
-    private String linkifyVariant(String variant, CompendiumSources currentSource2) {
+    private String linkifyVariant(String variant) {
         // "fromVariant": "Action Options",
         // "fromVariant": "Spellcasting|XGE",
         String[] parts = variant.trim().split("\\|");

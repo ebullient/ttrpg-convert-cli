@@ -2,7 +2,9 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
-public class QuteItem extends QuteNote {
+import dev.ebullient.json5e.tools5e.CompendiumSources;
+
+public class QuteItem extends QuteBase {
     public final String detail;
     public final String armorClass;
     public final String damage;
@@ -14,10 +16,11 @@ public class QuteItem extends QuteNote {
     public final String cost;
     public final Double weight;
 
-    public QuteItem(String name, String source, String detail, String armorClass, String damage, String damage2h,
+    public QuteItem(CompendiumSources sources, String name, String source, String detail, String armorClass, String damage,
+            String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
             String costGp, Double weightLbs, String text, List<String> tags) {
-        super(name, source, text, tags);
+        super(sources, name, source, text, tags);
 
         this.detail = detail;
         this.armorClass = armorClass;

@@ -49,7 +49,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
             return null;
         }
 
-        return new QuteBackground(
+        return new QuteBackground(sources,
                 decoratedTypeName(backgroundName, sources),
                 sources.getSourceText(index.srdOnly()),
                 String.join("\n", text),

@@ -2,7 +2,7 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
-public class QuteName implements QuteSource {
+public class QuteName {
 
     final String name;
     final String source;
@@ -14,32 +14,26 @@ public class QuteName implements QuteSource {
         this.tables = tables;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public String getSource() {
         return source;
     }
 
-    @Override
     public List<ImageRef> images() {
         return List.of();
     }
 
-    @Override
     public String targetFile() {
         return name;
     }
 
-    @Override
     public String targetPath() {
         return ".";
     }
 
-    @Override
     public String title() {
         return name;
     }

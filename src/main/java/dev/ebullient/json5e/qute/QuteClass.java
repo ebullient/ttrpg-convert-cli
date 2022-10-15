@@ -2,17 +2,19 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
-public class QuteClass extends QuteNote {
+import dev.ebullient.json5e.tools5e.CompendiumSources;
+
+public class QuteClass extends QuteBase {
     public final int hitDice;
     public final String classProgression;
     public final String startingEquipment;
     public final String multiclassing;
 
-    public QuteClass(String name, String source,
+    public QuteClass(CompendiumSources sources, String name, String source,
             int hitDice, String classProgression,
             String startingEquipment, String multiclassing,
             String text, List<String> tags) {
-        super(name, source, text, tags);
+        super(sources, name, source, text, tags);
 
         this.hitDice = hitDice;
         this.classProgression = classProgression;

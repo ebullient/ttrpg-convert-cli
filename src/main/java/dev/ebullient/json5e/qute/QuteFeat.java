@@ -2,13 +2,16 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
-public class QuteFeat extends QuteNote {
+import dev.ebullient.json5e.tools5e.CompendiumSources;
+
+public class QuteFeat extends QuteBase {
 
     public final String level;
     public final String prerequisite;
 
-    public QuteFeat(String name, String source, String prerequisite, String level, String text, List<String> tags) {
-        super(name, source, text, tags);
+    public QuteFeat(CompendiumSources sources, String name, String source, String prerequisite, String level, String text,
+            List<String> tags) {
+        super(sources, name, source, text, tags);
         this.level = level;
         this.prerequisite = prerequisite; // optional
     }
