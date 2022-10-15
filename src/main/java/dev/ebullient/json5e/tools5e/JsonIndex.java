@@ -228,7 +228,7 @@ public class JsonIndex implements JsonSource {
                         if (compendiumRoot.equals("/")) {
                             compendiumPath = Path.of(".");
                         } else {
-                            compendiumPath = Path.of(rulesRoot.substring(1));
+                            compendiumPath = Path.of(compendiumRoot.substring(1));
                         }
                         break;
                 }
