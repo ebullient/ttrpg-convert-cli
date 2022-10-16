@@ -107,20 +107,25 @@ To run commands listed below, either:
 
     The rest of the command-line specifies input files: 
 
-    - `~/git/dnd/5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone or release of the mirror repo)
+    - `5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone or release of the mirror repo)
 
 3. Invoke the command again, this time including sources and custom items:
 
     ```shell
     5e-convert \
-    --index \
-    -o dm \
-    -s PHB,DMG,SCAG \
-    5etools-mirror-1.github.io/data \
-    my-items.json dm-sources.json
+        --index \
+        -o dm \
+        -s PHB,DMG,SCAG \
+        5etools-mirror-1.github.io/data \
+        5etools-mirror-1.github.io/data/adventure/adventure-lox.json \
+        5etools-mirror-1.github.io/data/book/book-aag.json \
+        my-items.json dm-sources.json
     ```
     
-    - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. Source abbreviations are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/55fe9139fe56a27b3148f8faa0834f3e34aa95ec/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L130).
+    - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. 
+        > 🔶 **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
+     
+    - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) should be listed explicitly
     - `my-items.json` Custom items that I've created for my campaign that follow 5etools JSON format.
     - `dm-sources.json` Additional parameters (shown in detail below)
 
