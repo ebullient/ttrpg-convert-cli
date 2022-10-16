@@ -9,16 +9,12 @@
 <td><a href="#recommended-plugins">Plugins</a></td>
 <td><a href="#use-with-5etools-json-data">5etools Data</a></td>
 <td><a href="#templates">Templates</a></td>
-<td><a href="#other-notes">Notes</a></td>
+<td><a href="#changes-that-impact-generated-templates-and-files">Migration</a></td>
 </tr></table>
 
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
 
-> 🔥 1.0.12 makes a significant change to file names 🔥
-> 
-> Each file name will now contain an abbreviation of the primary source to avoid conflicts (for anything that does not come from phb, mm, dmg).
-> 
-> ***If you use the Templater plugin***, you can use [a templater script](migration/json5e-cli-renameFiles-1.0.12.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
+> 🔥 **1.0.12 makes significant changes** to file names, and minor changes for custom templates. [See details below](#changes-that-impact-generated-templates-and-files).
 
 ## Download and run
 
@@ -285,6 +281,32 @@ Of particular note are the varied monster templates:
 - Admonition codeblock: https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md.txt
 - TTRPG statblock in the body: https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-yamlStatblock-body.txt
 - Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-yamlStatblock-header.txt 
+
+## Changes that impact generated templates and files
+
+### 🔥 1.0.12: File name changes
+
+Each file name will now contain an abbreviation of the primary source to avoid conflicts (for anything that does not come from phb, mm, dmg).
+
+***If you use the Templater plugin***, you can use [a templater script](migration/json5e-cli-renameFiles-1.0.12.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
+
+### 🔥 1.0.12: Deity symbols and Bestiary Tokens
+
+Symbols and tokens have changed in structure. Custom templates will need a bit of adjustment.
+
+For bestiary tokens:
+
+```
+{#if resource.token}
+![{resource.token.caption}]({resource.token.path}#token){/if}
+```
+
+For deities:
+
+```
+{#if resource.image}
+![{resource.image.caption}]({resource.image.path}#symbol){/if}
+```
 
 ## Other notes
 
