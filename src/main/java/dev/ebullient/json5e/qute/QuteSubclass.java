@@ -11,7 +11,6 @@ public class QuteSubclass extends QuteBase {
 
     public final String parentClassSource;
 
-    final String subclassName;
     public final String subclassTitle;
     public final String classProgression;
 
@@ -28,10 +27,6 @@ public class QuteSubclass extends QuteBase {
         this.parentClassSource = parentClassSource;
         this.subclassTitle = subclassTitle;
         this.classProgression = classProgression;
-
-        int first = name.indexOf('|');
-        int second = name.indexOf('|', first + 1);
-        subclassName = name.substring(first + 1, second);
     }
 
     @Override
@@ -41,7 +36,7 @@ public class QuteSubclass extends QuteBase {
 
     @Override
     public String targetFile() {
-        return QuteSource.getSubclassResourceName(subclassName, parentClass)
+        return QuteSource.getSubclassResourceName(name, parentClass)
                 + QuteSource.sourceIfNotCore(parentClassSource);
     }
 

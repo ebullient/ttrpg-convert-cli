@@ -334,7 +334,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             sc.parentClassSource = parentClassSource;
             sc.shortName = resolved.get("shortName").asText();
             sc.sources = index.constructSources(IndexType.subclass, scKey, resolved);
-            sc.name = scKey;
+            sc.name = sc.sources.getName();
 
             // Subclass features
             s.withArray("subclassFeatures").forEach(f -> {
