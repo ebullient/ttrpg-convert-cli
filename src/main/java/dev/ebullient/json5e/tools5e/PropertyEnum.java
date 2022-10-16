@@ -77,6 +77,10 @@ public enum PropertyEnum {
         return tagValue;
     }
 
+    public boolean mundaneProperty() {
+        return !tierProperties.contains(this) && !rarityProperties.contains(this);
+    }
+
     public String getMarkdownLink(JsonIndex index) {
         if (rarityProperties.contains(this)) {
             return longName;
