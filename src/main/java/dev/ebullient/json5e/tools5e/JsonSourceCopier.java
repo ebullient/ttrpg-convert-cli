@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -20,6 +21,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 public class JsonSourceCopier implements JsonSource {
+    static final Pattern spell_dc_subst = Pattern.compile("<\\$spell_dc__([^$]+)\\$>");
+    static final Pattern to_hit_subst = Pattern.compile("\\+?<\\$to_hit__([^$]+)\\$>");
+    static final Pattern dmg_mod_subst = Pattern.compile("<\\$damage_mod__([^$]+)\\$>");
+    static final Pattern dmg_avg_subst = Pattern.compile("<\\$damage_avg__([\\d.,]+)([+*-])([^$]+)\\$>");
 
     final JsonIndex index;
 
@@ -212,9 +217,8 @@ public class JsonSourceCopier implements JsonSource {
                 JsonNode apply = trait.get("apply");
                 if (apply != null) {
                     if (apply.has("_root")) {
-                        apply.get("_root").fields().forEachRemaining(field -> {
-                            target.replace(field.getKey(), copyNode(field.getValue()));
-                        });
+                        apply.get("_root").fields()
+                                .forEachRemaining(field -> target.replace(field.getKey(), copyNode(field.getValue())));
                     }
                     handleMod(originKey, target, apply.get("_mod"));
                 }
@@ -222,11 +226,6 @@ public class JsonSourceCopier implements JsonSource {
         }
 
         handleMod(originKey, target, _mod);
-
-        final Pattern spell_dc_subst = Pattern.compile("<\\$spell_dc__([^$]+)\\$>");
-        final Pattern to_hit_subst = Pattern.compile("<$\\to_hit__([^$]+)\\$>");
-        final Pattern dmg_mod_subst = Pattern.compile("<\\$damage_mod__([^$]+)\\$>");
-        final Pattern dmg_avg_subst = Pattern.compile("<\\$damage_avg__([0-9.,])([-+/*])([^$]+)\\$>");
 
         String targetString = target.toString()
                 .replace("<$name$>", baseNode.get("name").asText())
@@ -485,7 +484,7 @@ public class JsonSourceCopier implements JsonSource {
 
         String newCr = JsonSource.XP_CHART_ALT.entrySet().stream()
                 .filter(e -> e.getValue() <= result)
-                .max((a, b) -> a.getValue() - b.getValue()).get().getKey();
+                .max(Comparator.comparingInt(Map.Entry::getValue)).get().getKey();
 
         ObjectNode o = mapper().createObjectNode();
         o.set("cr", new TextNode(newCr));
