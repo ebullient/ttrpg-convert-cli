@@ -6,6 +6,9 @@
     "TCE",
     "WbtW"
   ],
+  "include": [
+    "race|changeling|mpmm"
+  ],
   "exclude": [
     "monster|expert|dc",
     "monster|expert|sdw",
