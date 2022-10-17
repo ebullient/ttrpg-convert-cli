@@ -80,10 +80,10 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
     @Spec
     private CommandSpec spec;
 
-    @Option(names = { "-d", "--debug" }, description = "Enable debug output", scope = ScopeType.INHERIT)
+    @Option(names = { "-d", "--debug" }, description = "Enable debug output", defaultValue = "false", scope = ScopeType.INHERIT)
     boolean debug;
 
-    @Option(names = { "-v", "--verbose" }, description = "Verbose output", scope = ScopeType.INHERIT)
+    @Option(names = { "-v", "--verbose" }, description = "Verbose output", defaultValue = "false", scope = ScopeType.INHERIT)
     boolean verbose;
 
     @Option(names = "-s", description = "Source Books%n  Comma-separated list or multiple declarations (PHB,DMG,...); use ALL for all sources")
@@ -131,14 +131,13 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
         }
 
         tui.setOutputPath(output);
-        tui.outPrintf("Importing/Converting items from 5e tools %s to %s.\n",
-                input, output);
+        tui.verbosef("Writing markdown to %s.\n", output);
 
         boolean allOk = true;
         JsonIndex index = new JsonIndex(source, tui);
 
         for (Path inputPath : input) {
-            tui.outPrintf("⏱  Reading 5eTools data from %s%n", inputPath);
+            tui.outPrintf("⏱  Reading %s%n", inputPath);
             try {
                 if (inputPath.toFile().isDirectory()) {
                     tui.read5eTools(inputPath, index.importFile());
