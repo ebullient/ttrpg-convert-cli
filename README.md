@@ -14,7 +14,7 @@
 
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
 
-> 🔥 **1.0.12 makes significant changes** to file names, and minor changes for custom templates. [See details below](#changes-that-impact-generated-templates-and-files).
+> 🔥 **1.0.13 makes significant changes** to file names, and minor changes for custom templates. [See details below](#changes-that-impact-generated-templates-and-files).
 
 ## Download and run
 
@@ -23,7 +23,7 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 2. Install the pre-built jar: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.12/json5e-convert-cli-1.0.12-runner.jar
+    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.13/json5e-convert-cli-1.0.13-runner.jar
     ```
 
 3. Run the command: 
@@ -288,13 +288,13 @@ Of particular note are the varied monster templates:
 
 Property tags on items are now sorted (not alphabetically) to stabilize their order in generated files. This should be a one-time bit of noise as you cross this release (using a version before to using some version after).
 
-### 🔥 1.0.12: File name changes
+### 🔥 1.0.13: File name changes
 
 Each file name will now contain an abbreviation of the primary source to avoid conflicts (for anything that does not come from phb, mm, dmg).
 
-***If you use the Templater plugin***, you can use [a templater script](migration/json5e-cli-renameFiles-1.0.12.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
+***If you use the Templater plugin***, you can use [a templater script](migration/json5e-cli-renameFiles-1.0.13.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
 
-### 🔥 1.0.12: Deity symbols and Bestiary Tokens
+### 🔥 1.0.13: Deity symbols and Bestiary Tokens
 
 Symbols and tokens have changed in structure. Custom templates will need a bit of adjustment.
 
