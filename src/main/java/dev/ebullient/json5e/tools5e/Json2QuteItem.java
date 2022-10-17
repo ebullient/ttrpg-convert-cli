@@ -2,9 +2,9 @@ package dev.ebullient.json5e.tools5e;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,7 +24,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     @Override
     public QuteSource build() {
-        Set<PropertyEnum> propertyEnums = new HashSet<>();
+        Set<PropertyEnum> propertyEnums = new TreeSet<>(); // stable order
         findProperties(propertyEnums);
         String text = itemText(propertyEnums);
 
