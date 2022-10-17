@@ -44,6 +44,7 @@ public class JsonIndex implements JsonSource {
     private final boolean allSources;
     private final Map<String, JsonNode> rules = new HashMap<>();
     private final Set<String> allowedSources = new HashSet<>();
+    private final Set<String> includedKeys = new HashSet<>();
     private final Set<String> excludedKeys = new HashSet<>();
     private final Set<Pattern> excludedPatterns = new HashSet<>();
 
@@ -212,6 +213,7 @@ public class JsonIndex implements JsonSource {
 
     void addConfigIfPresent(JsonNode node) {
         node.withArray("from").forEach(x -> updateSources(x.asText().toLowerCase()));
+        node.withArray("include").forEach(x -> includedKeys.add(x.asText()));
         node.withArray("includeGroups").forEach(x -> includeGroups.add(x.asText()));
         node.withArray("exclude").forEach(x -> excludedKeys.add(x.asText().toLowerCase()));
         node.withArray("excludePattern").forEach(x -> addExcludePattern(x.asText().toLowerCase()));
@@ -698,6 +700,9 @@ public class JsonIndex implements JsonSource {
     }
 
     private boolean keyIsIncluded(String key, JsonNode node) {
+        if (includedKeys.contains(key)) {
+            return true;
+        }
         if (excludedKeys.contains(key) ||
                 excludedPatterns.stream().anyMatch(x -> x.matcher(key).matches())) {
             return false;
