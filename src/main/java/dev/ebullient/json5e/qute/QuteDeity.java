@@ -35,9 +35,6 @@ public class QuteDeity extends QuteBase {
     }
 
     public ImageRef getImage() {
-        if (symbolImg == null) {
-            return null;
-        }
         return symbolImg;
     }
 

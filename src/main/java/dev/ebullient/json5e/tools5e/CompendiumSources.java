@@ -62,7 +62,7 @@ public class CompendiumSources {
         if (jsonElement.has("additionalSources")) {
             srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
                     .filter(x -> !x.get("source").asText().equals(copySrc))
-                    .filter(x -> !coreSourceBook(x.get("source").asText()))
+                    .filter(x -> notCoreSourceBook(x.get("source").asText()))
                     .peek(x -> this.bookSources.add(x.get("source").asText()))
                     .map(this::sourceAndPage)
                     .collect(Collectors.toList()));
@@ -71,7 +71,7 @@ public class CompendiumSources {
         if (jsonElement.has("otherSources")) {
             srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
                     .filter(x -> !x.get("source").asText().equals(copySrc))
-                    .filter(x -> !coreSourceBook(x.get("source").asText()))
+                    .filter(x -> notCoreSourceBook(x.get("source").asText()))
                     .peek(x -> this.bookSources.add(x.get("source").asText()))
                     .map(this::sourceAndPage)
                     .collect(Collectors.toList()));
@@ -99,7 +99,7 @@ public class CompendiumSources {
 
     public Optional<String> uaSource() {
         Optional<String> source = bookSources.stream().filter(x -> x.contains("UA") && !x.equals("UAWGE")).findFirst();
-        return source.map(s -> sourceToAbbreviation(s));
+        return source.map(CompendiumSources::sourceToAbbreviation);
     }
 
     public String mapPrimarySource() {
@@ -140,8 +140,8 @@ public class CompendiumSources {
         return "sources[" + key + ']';
     }
 
-    private boolean coreSourceBook(String source) {
-        return List.of("phb", "mm", "dmg").contains(source.toLowerCase());
+    private boolean notCoreSourceBook(String source) {
+        return !List.of("phb", "mm", "dmg").contains(source.toLowerCase());
     }
 
     final static String AL_PREFIX = "Adventurers League: ";
@@ -418,16 +418,13 @@ public class CompendiumSources {
         sourceToAbv.put("UAATrioOfSubclasses", "UAATOSC");
         sourceToAbv.put("UAArtificer", "UAA");
         sourceToAbv.put("UAArtificerRevisited", "UAAR");
-        sourceToAbv.put("UAArtificerRevisited", "UAAR");
         sourceToAbv.put("UABarbarianAndMonk", "UABAM");
         sourceToAbv.put("UABarbarianPrimalPaths", "UABPP");
         sourceToAbv.put("UABardAndPaladin", "UABAP");
         sourceToAbv.put("UABardBardColleges", "UABBC");
         sourceToAbv.put("UACentaursMinotaurs", "UACAM");
         sourceToAbv.put("UAClassFeatureVariants", "UACFV");
-        sourceToAbv.put("UAClassFeatureVariants", "UACFV");
         sourceToAbv.put("UAClericDivineDomains", "UACDD");
-        sourceToAbv.put("UAClericDruidWizard", "UACDW");
         sourceToAbv.put("UAClericDruidWizard", "UACDW");
         sourceToAbv.put("UADruid", "UAD");
         sourceToAbv.put("UAEberron", "UAEBB");

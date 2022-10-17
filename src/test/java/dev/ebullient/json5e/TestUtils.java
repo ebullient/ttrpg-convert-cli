@@ -32,7 +32,7 @@ public class TestUtils {
     final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
     final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
 
-    final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?\\]\\((.*?)\\)");
+    final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");
 
     static void assertContents(Path path1, Path path2, boolean areEqual) throws IOException {
         try (RandomAccessFile randomAccessFile1 = new RandomAccessFile(path1.toFile(), "r");
@@ -90,7 +90,7 @@ public class TestUtils {
         }
     }
 
-    static BiFunction<Path, List<String>, List<String>> checkContents = (p, content) -> {
+    static final BiFunction<Path, List<String>, List<String>> checkContents = (p, content) -> {
         List<String> e = new ArrayList<>();
         content.forEach(l -> commonTests(p, l, e));
         return e;
@@ -155,9 +155,8 @@ public class TestUtils {
             return;
         }
 
-        try {
-            Files.walk(path)
-                    .sorted(Comparator.reverseOrder())
+        try (Stream<Path> paths = Files.walk(path)) {
+            paths.sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException e) {

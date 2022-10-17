@@ -12,10 +12,10 @@ import dev.ebullient.json5e.qute.QuteSource;
 
 public class Json2QuteBackground extends Json2QuteCommon {
 
-    public static Set<String> traits = new HashSet<>();
-    public static Set<String> ideals = new HashSet<>();
-    public static Set<String> bonds = new HashSet<>();
-    public static Set<String> flaws = new HashSet<>();
+    public static final Set<String> traits = new HashSet<>();
+    public static final Set<String> ideals = new HashSet<>();
+    public static final Set<String> bonds = new HashSet<>();
+    public static final Set<String> flaws = new HashSet<>();
 
     final String backgroundName;
 
