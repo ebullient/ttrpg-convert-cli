@@ -284,6 +284,10 @@ Of particular note are the varied monster templates:
 
 ## Changes that impact generated templates and files
 
+### 1.0.13: Item property tags are now sorted
+
+Property tags on items are now sorted (not alphabetically) to stabilize their order in generated files. This should be a one-time bit of noise as you cross this release (using a version before to using some version after).
+
 ### 🔥 1.0.12: File name changes
 
 Each file name will now contain an abbreviation of the primary source to avoid conflicts (for anything that does not come from phb, mm, dmg).
