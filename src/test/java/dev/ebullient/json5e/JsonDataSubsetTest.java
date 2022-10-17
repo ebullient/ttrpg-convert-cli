@@ -1,11 +1,14 @@
 package dev.ebullient.json5e;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import dev.ebullient.json5e.qute.QuteSource;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -17,7 +20,7 @@ public class JsonDataSubsetTest {
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
-        // A Tree Blight is from CoS, but appears in WbtW. It is listed in "otherSources" (should pull that entry in)
+        // This uses test/resources/sources.json to constrain sources
         commonTests = new CommonDataTests(true);
     }
 
@@ -49,6 +52,14 @@ public class JsonDataSubsetTest {
     @Test
     public void testRaceList() {
         commonTests.testRaceList(outputPath);
+
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            // Single included race: changeling from mpmm
+            Path changeling = outputPath
+                    .resolve(QuteSource.RACES_PATH)
+                    .resolve("changeling-mpmm.md");
+            assertThat(changeling).exists();
+        }
     }
 
     @Test
@@ -69,6 +80,16 @@ public class JsonDataSubsetTest {
     @Test
     public void testMonsterList() {
         commonTests.testMonsterList(outputPath);
+
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            // Tree blight is from Curse of Strahd, but is also present in
+            // The Wild Beyond the Witchlight --> an "otherSource".
+            // The tree blight should be included when WBtW is included
+            Path treeBlight = outputPath
+                    .resolve(QuteSource.monsterPath(false, "plant"))
+                    .resolve("tree-blight-cos.md");
+            assertThat(treeBlight).exists();
+        }
     }
 
     @Test
