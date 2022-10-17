@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.json5e.io.Json5eTui;
 
 public class JsonIndex implements JsonSource {
-
+    private static final Path CWD = Path.of(".");
     private static JsonIndex staticInstance;
 
     public static JsonIndex get() {
@@ -72,12 +72,7 @@ public class JsonIndex implements JsonSource {
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;
 
-    final BiConsumer<String, JsonNode> fileConsumer = new BiConsumer<String, JsonNode>() {
-        @Override
-        public void accept(String name, JsonNode node) {
-            importTree(name, node);
-        }
-    };
+    final BiConsumer<String, JsonNode> fileConsumer = this::importTree;
 
     public JsonIndex(List<String> sources, Json5eTui tui) {
         staticInstance = this;
@@ -226,7 +221,7 @@ public class JsonIndex implements JsonSource {
                                 .replace('\\', '/')
                                 .replaceAll("/+", "/");
                         if (rulesRoot.equals("/")) {
-                            rulesPath = Path.of(".");
+                            rulesPath = CWD;
                         } else {
                             rulesPath = Path.of(rulesRoot.substring(1));
                         }
@@ -237,7 +232,7 @@ public class JsonIndex implements JsonSource {
                                 .replaceAll("/+", "/");
 
                         if (compendiumRoot.equals("/")) {
-                            compendiumPath = Path.of(".");
+                            compendiumPath = CWD;
                         } else {
                             compendiumPath = Path.of(compendiumRoot.substring(1));
                         }
@@ -260,7 +255,7 @@ public class JsonIndex implements JsonSource {
     List<String> getAliasesTo(String targetKey) {
         return aliases.entrySet().stream()
                 .filter(e -> e.getValue().equals(targetKey))
-                .map(e -> e.getKey())
+                .map(Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -479,14 +474,13 @@ public class JsonIndex implements JsonSource {
         if (x == null) {
             throw new IllegalStateException("Unable to look up a null element: " + indexKey);
         }
-        CompendiumSources sources = nodeToSources.computeIfAbsent(x, y -> {
+
+        return nodeToSources.computeIfAbsent(x, y -> {
             String key = indexKey == null ? getKey(type, x) : indexKey;
             CompendiumSources s = new CompendiumSources(type, key, x);
             s.checkKnown(tui, missingSourceName);
             return s;
         });
-
-        return sources;
     }
 
     public String getKey(IndexType type, JsonNode x) {
@@ -630,16 +624,6 @@ public class JsonIndex implements JsonSource {
             return null;
         }
         return nodeIndex.get(getKey(type, x));
-    }
-
-    public Stream<JsonNode> subraces(CompendiumSources sources) {
-        String raceName = sources.getName();
-        String raceSource = String.join("|", sources.bookSources);
-        String pattern = String.format("%s\\|[^|]+\\|%s\\|(%s)", IndexType.subrace, raceName, raceSource)
-                .toLowerCase();
-        return filteredIndex.entrySet().stream()
-                .filter(e -> e.getKey().matches(pattern))
-                .map(Entry::getValue);
     }
 
     public Stream<JsonNode> originSubraces(CompendiumSources sources) {

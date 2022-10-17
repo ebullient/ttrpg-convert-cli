@@ -121,9 +121,6 @@ public class QuteMonster extends QuteBase {
     }
 
     public ImageRef getToken() {
-        if (tokenImage == null) {
-            return null;
-        }
         return tokenImage;
     }
 
@@ -150,7 +147,7 @@ public class QuteMonster extends QuteBase {
     }
 
     public String get5eInitiativeYaml() {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<>();
         addUnlessEmpty(map, "name", name);
         addIntegerUnlessEmpty(map, "ac", ac);
         addIntegerUnlessEmpty(map, "hp", hp);
@@ -163,7 +160,7 @@ public class QuteMonster extends QuteBase {
     }
 
     public String get5eStatblockYaml() {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<>();
         addUnlessEmpty(map, "name", name);
         addUnlessEmpty(map, "size", size);
         addUnlessEmpty(map, "type", type);
@@ -204,12 +201,10 @@ public class QuteMonster extends QuteBase {
         addUnlessEmpty(map, "source", books);
 
         // De-markdown-ify
-        String yamlData = Json5eTui.quotedYaml().dump(map).trim()
+        return Json5eTui.quotedYaml().dump(map).trim()
                 .replaceAll("\\*([^*]+)\\*", "$1") // em
                 .replaceAll("\\*([^*]+)\\*", "$1") // bold
                 .replaceAll("\\*([^*]+)\\*", "$1"); // bold em
-
-        return yamlData;
     }
 
     void addIntegerUnlessEmpty(Map<String, Object> map, String key, Integer value) {

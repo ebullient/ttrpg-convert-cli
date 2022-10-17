@@ -30,7 +30,7 @@ import dev.ebullient.json5e.tools5e.JsonIndex.Tuple;
 
 public class Json2QuteMonster extends Json2QuteCommon {
 
-    private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|[0-9]+)");
+    private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|\\d+)");
 
     public static boolean isNpc(JsonNode source) {
         if (source.has("isNpc")) {
@@ -49,7 +49,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     Integer hp;
     String hpText;
     String hitDice;
-    boolean isNpc;
+    final boolean isNpc;
 
     Json2QuteMonster(JsonIndex index, IndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);

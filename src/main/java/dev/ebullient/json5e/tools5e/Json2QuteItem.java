@@ -30,7 +30,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
         String detail = itemDetail(propertyEnums);
         String properties = propertyEnums.stream()
-                .filter(x -> x.mundaneProperty())
+                .filter(PropertyEnum::mundaneProperty)
                 .map(x -> x.getMarkdownLink(index))
                 .collect(Collectors.joining(", "));
 

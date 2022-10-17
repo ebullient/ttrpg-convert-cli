@@ -91,7 +91,7 @@ public class Json5eTui {
     private boolean debug;
     private boolean verbose;
     private Path output = Paths.get("");
-    private Set<Path> inputRoot = new TreeSet<>();
+    private final Set<Path> inputRoot = new TreeSet<>();
 
     public Json5eTui() {
         this.ansi = Help.Ansi.OFF;

@@ -30,7 +30,7 @@ import dev.ebullient.json5e.qute.QuteSubclass;
 import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
-    static Comparator<FileMap> fileSort = (a, b) -> {
+    static final Comparator<FileMap> fileSort = (a, b) -> {
         if (a.dir.equals(b.dir)) {
             return a.fileName.compareTo(b.fileName);
         }

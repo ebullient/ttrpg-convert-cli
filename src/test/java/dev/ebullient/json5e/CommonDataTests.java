@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.io.MarkdownWriter;
@@ -27,7 +27,7 @@ public class CommonDataTests {
     public CommonDataTests(boolean useSources) throws Exception {
         tui = Arc.container().instance(Json5eTui.class).get();
         templates = Arc.container().instance(Templates.class).get();
-        tui.init(null, false, true);
+        tui.init(null, false, false);
 
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             if (useSources) {
@@ -192,14 +192,13 @@ public class CommonDataTests {
             Path tokenDir = bestiaryDir.resolve("undead/token");
             assertThat(tokenDir.toFile()).exists();
 
-            try {
-                Files.list(bestiaryDir).forEach(p -> {
+            try (Stream<Path> paths = Files.list(bestiaryDir)) {
+                paths.forEach(p -> {
                     if (p.toFile().isDirectory()) {
                         TestUtils.assertDirectoryContents(p, tui);
                     }
                 });
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -240,33 +239,30 @@ public class CommonDataTests {
 
             assertThat(undead.toFile()).exists();
 
-            TestUtils.assertDirectoryContents(undead, tui, new BiFunction<Path, List<String>, List<String>>() {
-                @Override
-                public List<String> apply(Path p, List<String> content) {
-                    List<String> e = new ArrayList<>();
-                    boolean found = false;
-                    boolean yaml = false;
-                    boolean index = false;
-                    TestUtils.checkContents.apply(p, content);
+            TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {
+                List<String> e = new ArrayList<>();
+                boolean found = false;
+                boolean yaml = false;
+                boolean index = false;
+                TestUtils.checkContents.apply(p, content);
 
-                    for (String l : content) {
-                        if (l.startsWith("# Index ")) {
-                            index = true;
-                        } else if (l.equals("```statblock")) {
-                            found = yaml = true; // start yaml block
-                        } else if (l.equals("```")) {
-                            yaml = false; // end yaml block
-                        } else if (yaml && l.contains("*")) {
-                            e.add(String.format("Found '*' in %s: %s", p.toString(), l));
-                        }
-                        TestUtils.commonTests(p, l, e);
+                for (String l : content) {
+                    if (l.startsWith("# Index ")) {
+                        index = true;
+                    } else if (l.equals("```statblock")) {
+                        found = yaml = true; // start yaml block
+                    } else if (l.equals("```")) {
+                        yaml = false; // end yaml block
+                    } else if (yaml && l.contains("*")) {
+                        e.add(String.format("Found '*' in %s: %s", p.toString(), l));
                     }
-
-                    if (!found && !index) {
-                        e.add(String.format("File %s did not contain a yaml statblock", p));
-                    }
-                    return e;
+                    TestUtils.commonTests(p, l, e);
                 }
+
+                if (!found && !index) {
+                    e.add(String.format("File %s did not contain a yaml statblock", p));
+                }
+                return e;
             });
         }
     }

@@ -602,23 +602,28 @@ public interface JsonSource {
         }
 
         entry.withArray("rows").forEach(r -> {
-            StringBuilder row = new StringBuilder()
-                    .append("| ")
-                    .append(StreamSupport.stream(r.spliterator(), false)
+            String row = "| " +
+                    StreamSupport.stream(r.spliterator(), false)
                             .map(x -> replaceText(x.asText()))
-                            .collect(Collectors.joining(" | ")))
-                    .append(" |");
-            table.add(row.toString());
+                            .collect(Collectors.joining(" | "))
+                    +
+                    " |";
+            table.add(row);
         });
 
-        if (blockid.equals("personality-trait")) {
-            Json2QuteBackground.traits.addAll(table);
-        } else if (blockid.equals("ideal")) {
-            Json2QuteBackground.ideals.addAll(table);
-        } else if (blockid.equals("bond")) {
-            Json2QuteBackground.bonds.addAll(table);
-        } else if (blockid.equals("flaw")) {
-            Json2QuteBackground.flaws.addAll(table);
+        switch (blockid) {
+            case "personality-trait":
+                Json2QuteBackground.traits.addAll(table);
+                break;
+            case "ideal":
+                Json2QuteBackground.ideals.addAll(table);
+                break;
+            case "bond":
+                Json2QuteBackground.bonds.addAll(table);
+                break;
+            case "flaw":
+                Json2QuteBackground.flaws.addAll(table);
+                break;
         }
 
         header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
@@ -871,7 +876,7 @@ public interface JsonSource {
                     .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
-                    .replaceAll("\\{@hit ([^}]+)}", "+$1")
+                    .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                     .replaceAll("\\{@h}", "Hit: ")
                     .replaceAll("\\{@atk m}", "*Melee Attack:*")
                     .replaceAll("\\{@atk mw}", "*Melee Weapon Attack:*")
@@ -1140,7 +1145,7 @@ public interface JsonSource {
         return "Unknown";
     }
 
-    public static class JsonMediaHref {
+    class JsonMediaHref {
         public String type;
         public JsonHref href;
         String title;
@@ -1152,7 +1157,7 @@ public interface JsonSource {
         }
     }
 
-    static final Map<String, Integer> XP_CHART_ALT = Map.ofEntries(
+    Map<String, Integer> XP_CHART_ALT = Map.ofEntries(
             entry("0", 10),
             entry("1/8", 25),
             entry("1/4", 50),

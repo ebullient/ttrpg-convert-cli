@@ -18,7 +18,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         List<QuteNote> notes = new ArrayList<>();
 
         addIfPresent(notes, Json2QuteBackground.traits, "Personality Traits");
-        addIdealsIfPresent(notes, Json2QuteBackground.ideals);
+        addIdealsIfPresent(notes);
         addIfPresent(notes, Json2QuteBackground.bonds, "Bonds");
         addIfPresent(notes, Json2QuteBackground.flaws, "Flaws");
 
@@ -44,12 +44,12 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
                 List.of()));
     }
 
-    private void addIdealsIfPresent(List<QuteNote> notes, Set<String> table) {
-        if (table.isEmpty()) {
+    private void addIdealsIfPresent(List<QuteNote> notes) {
+        if (Json2QuteBackground.ideals.isEmpty()) {
             return;
         }
 
-        List<String> ideals = table.stream()
+        List<String> ideals = Json2QuteBackground.ideals.stream()
                 .map(x -> x.replace("**", ""))
                 .map(x -> x.replaceAll("^\\|\\s*\\d+\\s*", ""))
                 .collect(Collectors.toList());
