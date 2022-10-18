@@ -278,16 +278,16 @@ This applicaiton uses the [Qute Templating Engine](https://quarkus.io/guides/qut
 
 Of particular note are the varied monster templates: 
 
-- Admonition codeblock: [monster2md.txt](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md.txt)
-- Admonition codeblock with alternate score layout: [monster2md-scores.txt](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-scores.txt)
-- TTRPG statblock in the body: [monster2md-yamlStatblock-body.yxy](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-yamlStatblock-body.txt)
-- Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-yamlStatblock-header.txt 
+- Admonition codeblock: [monster2md.txt](src/main/resources/templates/monster2md.txt)
+- Admonition codeblock with alternate score layout: [monster2md-scores.txt](src/main/resources/templates/monster2md-scores.txt)
+- TTRPG statblock in the body: [monster2md-yamlStatblock-body.txt](src/main/resources/templates/monster2md-yamlStatblock-body.txt)
+- Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](src/main/resources/templates/monster2md-yamlStatblock-header.txt)
 
 ## Changes that impact generated templates and files
 
 ### 1.0.14: Ability Scores
 
-As shown in [monster2md-scores.txt](https://githupb.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
+As shown in [monster2md-scores.txt](src/main/resources/templates/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
 
 ```
 - STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
