@@ -17,13 +17,17 @@ public class AbilityScores {
         this.charisma = charisma;
     }
 
-    private String toAbilityModifier(int value) {
-        int mod = value - 10;
+    private int getModifier(int score) {
+        int mod = score - 10;
         if (mod % 2 != 0) {
             mod -= 1; // round down
         }
-        int modifier = mod / 2;
-        return String.format("%s (%s%s)", value,
+        return mod / 2;
+    }
+
+    private String toAbilityString(int value) {
+        int modifier = getModifier(value);
+        return String.format("%2s (%s%s)", value,
                 modifier >= 0 ? "+" : "",
                 modifier);
     }
@@ -39,38 +43,86 @@ public class AbilityScores {
         };
     }
 
-    public int getStr() {
+    public String getStr() {
+        return toAbilityString(strength);
+    }
+
+    public int getStrStat() {
         return strength;
     }
 
-    public int getDex() {
+    public int getStrMod() {
+        return getModifier(strength);
+    }
+
+    public String getDex() {
+        return toAbilityString(dexterity);
+    }
+
+    public int getDexStat() {
         return dexterity;
     }
 
-    public int getCon() {
+    public int getDexMod() {
+        return getModifier(dexterity);
+    }
+
+    public String getCon() {
+        return toAbilityString(constitution);
+    }
+
+    public int getConStat() {
         return constitution;
     }
 
-    public int getInt() {
+    public int getConMod() {
+        return getModifier(constitution);
+    }
+
+    public String getInt() {
+        return toAbilityString(intelligence);
+    }
+
+    public int getIntStat() {
         return intelligence;
     }
 
-    public int getWis() {
+    public int getIntMod() {
+        return getModifier(intelligence);
+    }
+
+    public String getWis() {
+        return toAbilityString(wisdom);
+    }
+
+    public int getWisStat() {
         return wisdom;
     }
 
-    public int getCha() {
+    public int getWisMod() {
+        return getModifier(wisdom);
+    }
+
+    public String getCha() {
+        return toAbilityString(charisma);
+    }
+
+    public int getChaStat() {
         return charisma;
+    }
+
+    public int getChaMod() {
+        return getModifier(charisma);
     }
 
     @Override
     public String toString() {
-        return toAbilityModifier(strength)
-                + "|" + toAbilityModifier(dexterity)
-                + "|" + toAbilityModifier(constitution)
-                + "|" + toAbilityModifier(intelligence)
-                + "|" + toAbilityModifier(wisdom)
-                + "|" + toAbilityModifier(charisma);
+        return toAbilityString(strength)
+                + "|" + toAbilityString(dexterity)
+                + "|" + toAbilityString(constitution)
+                + "|" + toAbilityString(intelligence)
+                + "|" + toAbilityString(wisdom)
+                + "|" + toAbilityString(charisma);
     }
 
     public static class Builder {

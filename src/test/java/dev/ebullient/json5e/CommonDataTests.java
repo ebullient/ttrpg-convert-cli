@@ -204,6 +204,23 @@ public class CommonDataTests {
         }
     }
 
+    public void testMonsterAlternateScores(Path outputPath) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path out = outputPath.resolve("alt-scores");
+            TestUtils.deleteDir(out);
+
+            tui.setOutputPath(out);
+
+            TemplatePaths templatePaths = new TemplatePaths();
+            templatePaths.setCustomTemplate("monster2md.txt",
+                    TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-scores.txt"));
+            templates.setCustomTemplates(templatePaths);
+
+            MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
+            new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
+        }
+    }
+
     public void testMonsterYamlHeader(Path outputPath) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             Path out = outputPath.resolve("yaml-header");
@@ -218,6 +235,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
+
         }
     }
 
@@ -232,11 +250,10 @@ public class CommonDataTests {
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(templatePaths);
 
-            Path undead = out.resolve(index.compendiumPath()).resolve(QuteSource.monsterPath(false, "undead"));
-
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
 
+            Path undead = out.resolve(index.compendiumPath()).resolve(QuteSource.monsterPath(false, "undead"));
             assertThat(undead.toFile()).exists();
 
             TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {

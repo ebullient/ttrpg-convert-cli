@@ -128,6 +128,10 @@ public class QuteMonster extends QuteBase {
         return type + ((subtype == null || subtype.isEmpty()) ? "" : "(" + subtype + ")");
     }
 
+    public AbilityScores getScores() {
+        return scores;
+    }
+
     public String getScoreString() {
         return scores.toString();
     }

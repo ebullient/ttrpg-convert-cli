@@ -7,9 +7,6 @@ tags:
 - {tag}
 {/for}
 {/if}
-statblock: true
-statblock-link: "#^statblock"
-{resource.5eInitiativeYaml}
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
@@ -28,9 +25,12 @@ title: {resource.name}{#if resource.token}
 - **Hit Points** {resource.hp} {#if resource.hitDice }({resource.hitDice}){/if} {#if resource.hpText }({resource.hpText}){/if}
 - **Speed** {resource.speed}
 
-|STR|DEX|CON|INT|WIS|CHA|
-|:---:|:---:|:---:|:---:|:---:|:---:|
-|{resource.scoreString}|
+- STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
+- DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}` 
+- CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}` 
+- INT: {resource.scores.int} `dice: 1d20 {resource.scores.intMod}` 
+- WIS: {resource.scores.wis} `dice: 1d20 {resource.scores.wisMod}`
+- CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
 
 - **Proficiency Bonus** {resource.pb}
 - **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
