@@ -90,7 +90,8 @@ jobs:
           echo "🔹 Creating new release"
 
           # Messy and not maven-y, but whatever.
-          sed -i -r "s/$CURRENT/$NEXT/g" README.md
+          sed -i -r "s|/$CURRENT|/$NEXT|g" README.md
+          sed -i -r "s|-$CURRENT|-$NEXT|g" README.md
           sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
           sed -i -r "s/  current-version: .*/  current-version: $NEXT/g" .github/project.yml
 
