@@ -23,7 +23,7 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 2. Install the pre-built jar: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.13/json5e-convert-cli-1.0.13-runner.jar
+    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.14/json5e-convert-cli-1.0.14-runner.jar
     ```
 
 3. Run the command: 
