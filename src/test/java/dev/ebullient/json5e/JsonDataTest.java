@@ -71,6 +71,11 @@ public class JsonDataTest {
     }
 
     @Test
+    public void testMonsterAlternateScores() {
+        commonTests.testMonsterAlternateScores(outputPath);
+    }
+
+    @Test
     public void testMonsterYamlHeader() {
         commonTests.testMonsterYamlHeader(outputPath);
     }

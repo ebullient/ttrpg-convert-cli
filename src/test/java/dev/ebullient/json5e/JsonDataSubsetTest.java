@@ -93,16 +93,6 @@ public class JsonDataSubsetTest {
     }
 
     @Test
-    public void testMonsterYamlHeader() {
-        commonTests.testMonsterYamlHeader(outputPath);
-    }
-
-    @Test
-    public void testMonsterYamlBody() {
-        commonTests.testMonsterYamlBody(outputPath);
-    }
-
-    @Test
     public void testRules() {
         commonTests.testRules(outputPath);
     }

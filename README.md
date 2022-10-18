@@ -270,7 +270,7 @@ This applicaiton uses the [Qute Templating Engine](https://quarkus.io/guides/qut
   --index -o dm dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
 ```
 
-> 🔹 Not everything is customizable. In some cases, formatting headings, indenting and text accurately is easier to do inline as a big blob. The example templates show what is available to tweak.
+> 🔹 Not everything is customizable. In some cases, formatting headings, indenting and organizing text accurately is easier to do inline as a big blob. The example templates show what is available to tweak.
 
 ### Built-in / example templates
 
@@ -278,11 +278,25 @@ This applicaiton uses the [Qute Templating Engine](https://quarkus.io/guides/qut
 
 Of particular note are the varied monster templates: 
 
-- Admonition codeblock: https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md.txt
-- TTRPG statblock in the body: https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-yamlStatblock-body.txt
+- Admonition codeblock: [monster2md.txt](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md.txt)
+- Admonition codeblock with alternate score layout: [monster2md-scores.txt](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-scores.txt)
+- TTRPG statblock in the body: [monster2md-yamlStatblock-body.yxy](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-yamlStatblock-body.txt)
 - Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-yamlStatblock-header.txt 
 
 ## Changes that impact generated templates and files
+
+### 1.0.14: Ability Scores
+
+As shown in [monster2md-scores.txt](https://githupb.com/ebullient/json5e-convert-cli/blob/main/src/main/resources/templates/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
+
+```
+- STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
+- DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}` 
+- CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}` 
+- INT: {resource.scores.int} `dice: 1d20 {resource.scores.intMod}` 
+- WIS: {resource.scores.wis} `dice: 1d20 {resource.scores.wisMod}`
+- CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
+```
 
 ### 1.0.13: Item property tags are now sorted
 
