@@ -29,7 +29,7 @@
         </repository>
     </distributionManagement>
     <properties>
-        <revision>1.0.14</revision>
+        <revision>199-SNAPSHOT</revision>
         <!-- Build -->
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <maven.compiler.release>11</maven.compiler.release>
