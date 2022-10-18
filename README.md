@@ -1,4 +1,5 @@
-# Json 5e convert CLI
+# Json 5e convert CLI 
+![GitHub all releases](https://img.shields.io/github/downloads/ebullient/json5e-convert-cli/total?color=success)
 
 <table><tr>
 <td>Jump</td>
