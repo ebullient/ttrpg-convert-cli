@@ -27,9 +27,7 @@ public class AbilityScores {
 
     private String toAbilityString(int value) {
         int modifier = getModifier(value);
-        return String.format("%2s (%s%s)", value,
-                modifier >= 0 ? "+" : "",
-                modifier);
+        return String.format("%2s (%s)", value, padded(modifier));
     }
 
     public int[] toArray() {
@@ -51,8 +49,8 @@ public class AbilityScores {
         return strength;
     }
 
-    public int getStrMod() {
-        return getModifier(strength);
+    public String getStrMod() {
+        return padded(getModifier(strength));
     }
 
     public String getDex() {
@@ -63,8 +61,8 @@ public class AbilityScores {
         return dexterity;
     }
 
-    public int getDexMod() {
-        return getModifier(dexterity);
+    public String getDexMod() {
+        return padded(getModifier(dexterity));
     }
 
     public String getCon() {
@@ -75,8 +73,8 @@ public class AbilityScores {
         return constitution;
     }
 
-    public int getConMod() {
-        return getModifier(constitution);
+    public String getConMod() {
+        return padded(getModifier(constitution));
     }
 
     public String getInt() {
@@ -87,8 +85,8 @@ public class AbilityScores {
         return intelligence;
     }
 
-    public int getIntMod() {
-        return getModifier(intelligence);
+    public String getIntMod() {
+        return padded(getModifier(intelligence));
     }
 
     public String getWis() {
@@ -99,8 +97,8 @@ public class AbilityScores {
         return wisdom;
     }
 
-    public int getWisMod() {
-        return getModifier(wisdom);
+    public String getWisMod() {
+        return padded(getModifier(wisdom));
     }
 
     public String getCha() {
@@ -111,8 +109,14 @@ public class AbilityScores {
         return charisma;
     }
 
-    public int getChaMod() {
-        return getModifier(charisma);
+    public String getChaMod() {
+        return padded(getModifier(charisma));
+    }
+
+    private String padded(int value) {
+        return String.format("%s%s",
+                value >= 0 ? "+" : "",
+                value);
     }
 
     @Override
