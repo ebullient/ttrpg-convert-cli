@@ -490,6 +490,16 @@ public interface JsonSource {
                     text.add(String.join("", inner));
                     break;
                 }
+                case "optfeature":
+                    maybeAddBlankLine(text);
+                    text.add(heading + " " + node.get("name").asText());
+                    String prereq = getTextOrDefault(node, "prerequisite", null);
+                    if (prereq != null) {
+                        text.add("*Prerequisites* " + prereq);
+                    }
+                    text.add("");
+                    appendEntryToText(text, node.get("entries"), "#" + heading);
+                    break;
                 case "gallery":
                 case "image":
                     // TODO: maybe someday?
