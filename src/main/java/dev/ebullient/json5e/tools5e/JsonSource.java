@@ -602,8 +602,15 @@ public interface JsonSource {
         }
 
         entry.withArray("rows").forEach(r -> {
+            JsonNode cells;
+            if ("row".equals(getTextOrDefault(r, "type", null))) {
+                cells = r.get("row");
+            } else {
+                cells = r;
+            }
+
             String row = "| " +
-                    StreamSupport.stream(r.spliterator(), false)
+                    StreamSupport.stream(cells.spliterator(), false)
                             .map(x -> replaceText(x.asText()))
                             .collect(Collectors.joining(" | "))
                     +
