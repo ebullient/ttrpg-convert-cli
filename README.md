@@ -181,9 +181,22 @@ I use a json file to provide detailed configuration for sources, as doing so wit
     ```
     > 🔹 Note: the leading slash indicates the path starting at the root of your vault.
 
-- `exclude`, and `excludePattern` work against the identifiers (listed in the generated index files). They allow you to further tweak/constrain what is emitted as formatted markdown. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. I own both of these books, but I don't want those creatures in the formatted bestiary.
+- `exclude` and `excludePattern` work against the identifiers (listed in the generated index files). They allow you to further tweak/constrain what is emitted as formatted markdown. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. I own both of these books, but I don't want those creatures in the formatted bestiary.
 
-For example, to generate player-focused reference content for a Wild Beyond the Witchlight campaign, I've constrained things further: I am pulling from a much smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but then added exclude patterns to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners). My JSON looks like this:
+- `include` (as of 1.0.13): specifically include a single identifier (as listed in the generated index files). 
+This allows you to include a specific resource without including the whole source and excluding everything else. Useful for single resources (classes, backgrounds, races, items, etc.) purchased from D&D Beyond. To include just the Changeling race from _Mordenkainen Presents: Monsters of the Multiverse_, for example, you would add the folowing: 
+
+    ```json
+    "include": [
+        "race|changeling|mpmm"
+    ]
+    ```
+
+#### Additional example
+
+To generate player-focused reference content for a Wild Beyond the Witchlight campaign, I constrained things further. I am pulling from a smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but also used `exclude` and `excludePattern` to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners). 
+
+The JSON looks like this:
 
 ```json
 {
@@ -258,12 +271,11 @@ For example, to generate player-focused reference content for a Wild Beyond the 
     "feat|wood elf magic|xge",
     "item|iggwilv's cauldron|wbtw"
   ]
-}
 ```
 
 ## Templates
 
-This applicaiton uses the [Qute Templating Engine](https://quarkus.io/guides/qute). Simple customizations to markdown output can be achieved by copying a template from src/main/resources/templates, making the desired modifications, and then specifying that template on the command line.
+This application uses the [Qute Templating Engine](https://quarkus.io/guides/qute). You can make simple customizations to markdown output by copying a template from `src/main/resources/templates`, making the desired modifications, and then specifying that template on the command line.
 
 ```
 5e-convert 5etools \
