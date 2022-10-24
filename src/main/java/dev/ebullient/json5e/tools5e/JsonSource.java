@@ -500,6 +500,9 @@ public interface JsonSource {
                     text.add("");
                     appendEntryToText(text, node.get("entries"), "#" + heading);
                     break;
+                case "flowchart":
+                    appendFlowchart(text, node, heading);
+                    break;
                 case "gallery":
                 case "image":
                     // TODO: maybe someday?
@@ -719,6 +722,22 @@ public interface JsonSource {
         maybeAddBlankLine(text);
         quoteText.forEach(x -> text.add("> " + x));
         maybeAddBlankLine(text);
+    }
+
+    default void appendFlowchart(List<String> text, JsonNode entry, String heading) {
+        if (entry.has("name")) {
+            maybeAddBlankLine(text);
+            text.add(heading + " " + entry.get("name").asText());
+        }
+
+        for (JsonNode n : entry.withArray("blocks")) {
+            maybeAddBlankLine(text);
+            text.add("> [!flowchart] " + n.get("name").asText());
+            for (JsonNode e : n.withArray("entries")) {
+                text.add("> " + replaceText(e.asText()));
+            }
+            text.add("%% %%");
+        }
     }
 
     default String decoratedRaceName(JsonNode jsonSource, CompendiumSources sources) {
