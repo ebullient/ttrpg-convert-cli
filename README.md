@@ -71,9 +71,10 @@ To run commands listed below, either:
 ## Recommended plugins 
 
 - **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: One of the templates for rendering monsters uses the code-style format supported by the admonitions plugin to render human-readable text (and avoid blockquote line wrapping).
-  - Create a custom admonition called `statblock`
+  - Create a custom admonition called `statblock` (I recommend a dragon icon)
+  - Create a custom admonition called `flowchart` (I recommend a map icon)
   - Either set the appearance/icon for the style in the plugin, or use/modify [this snippet](css-snippets/admonition_callout.css) to style the admonition.
-  - The [compendium snippet](css-snippets/compendium-for-0.16.css) defines styles for the contents of the statblock, including setting the size of the token image based on the #token anchor in the link.
+  - The [compendium snippet](css-snippets/compendium.css) defines styles for the contents of the statblock, including setting the size of the token image based on the #token anchor in the link.
 
 - **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read only. Specifically, I ensure the plugin has the following options enabled: "Ignore open files" (so that if I have toggled to edit mode, it doesn't fight with me over it), and "Ignore force view when not in front matter" (so that the setting isn't applied to documents that don't have the front matter tag).
 
@@ -298,15 +299,22 @@ Of particular note are the varied monster templates:
 
 ## Changes that impact generated templates and files
 
+### 1.0.15: Flowcharts, optfeature in text, styled rows
+
+- `optfeature` text is rendered (Tortle package)
+- `flowcharts` is rendered as a series of `flowchart` callouts  
+    Use the admonition plugin to create a custom `flowchart` callout with an icon of your choice.
+- The adventuring gear tables from the PHB have been corrected
+
 ### 1.0.14: Ability Scores
 
 As shown in [monster2md-scores.txt](src/main/resources/templates/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
 
 ```
 - STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
-- DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}` 
-- CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}` 
-- INT: {resource.scores.int} `dice: 1d20 {resource.scores.intMod}` 
+- DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}`
+- CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}`
+- INT: {resource.scores.int} `dice: 1d20 {resource.scores.intMod}`
 - WIS: {resource.scores.wis} `dice: 1d20 {resource.scores.wisMod}`
 - CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
 ```

@@ -1,0 +1,52 @@
+.theme-dark {
+  --statblock-section-line: #c93c3c;
+}
+
+.theme-light {
+  --statblock-section-line: #c93c3c;
+}
+
+/* Deity: #symbol images */
+.json5e-deity img[src$="#symbol"],
+.json5e-deity div[src$="#symbol"] {
+  float: right;
+  margin-left: 5px;
+  width: 200px;
+}
+
+/* Monster: statblocks and #token images */
+.json5e-monster .admonition-statblock img[src$="#token"],
+.json5e-monster .admonition-statblock div[src$="#token"] {
+  float: right;
+  margin-left: 5px;
+  width: 150px;
+}
+.json5e-monster .admonition-statblock .admonition-content h1,
+.json5e-monster .admonition-statblock .admonition-content h2,
+.json5e-monster .admonition-statblock .admonition-content h3 {
+  font-family: var(--default-font);
+  font-variant: common-ligatures small-caps;
+}
+.json5e-monster .admonition-statblock .admonition-content h1 {
+  font-size: 1.4em;
+  line-height: 1.4em;
+  margin: 0;
+  padding: 0;
+}
+.json5e-monster .admonition-statblock .admonition-content h2,
+.json5e-monster .admonition-statblock .admonition-content h3 {
+  font-size: 1.2em;
+  line-height: 1.2em;
+  padding: 0.5em 0 0 0;
+  margin-top: 0.2em;
+  margin-bottom: 0.3em;
+  border-bottom: 1px solid var(--statblock-section-line);
+}
+.json5e-monster .admonition-statblock .admonition-content p {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+.json5e-monster .admonition-statblock .admonition-content li {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
