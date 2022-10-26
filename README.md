@@ -3,14 +3,14 @@
 
 <table><tr>
 <td>Jump</td>
-<td><a href="#download-and-run">Download</a></td>
-<td><a href="#build-and-run-optional">Build</a></td>
-<td><a href="#conventions">Conventions</a></td>
+<td><a href="#download-and-run">⬇ Download</a></td>
+<td><a href="#build-and-run-optional">⚙️ Build</a></td>
+<td><a href="#conventions">📝 Conventions</a></td>
 </tr><tr>
-<td><a href="#recommended-plugins">Plugins</a></td>
-<td><a href="#use-with-5etools-json-data">5etools Data</a></td>
-<td><a href="#templates">Templates</a></td>
-<td><a href="#changes-that-impact-generated-templates-and-files">Migration</a></td>
+<td><a href="#recommended-plugins">🔌 Plugins</a></td>
+<td><a href="#use-with-5etools-json-data">📖 5etools Data</a></td>
+<td><a href="#templates">🎨 Templates</a></td>
+<td><a href="#changes-that-impact-generated-templates-and-files">🚜 Migration</a></td>
 </tr></table>
 
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
@@ -21,19 +21,27 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 
 1. Install JBang: https://www.jbang.dev/documentation/guide/latest/installation.html
 
-2. Install the pre-built jar: 
+2. Install the pre-built release: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/1.0.15/json5e-convert-cli-1.0.15-runner.jar
+    jbang app install --name 5e-convert --force --fresh https://github.com/ebullient/json5e-convert-cli/releases/download/1.0.15/json5e-convert-cli-1.0.15-runner.jar
     ```
+    
+    If you want the latest unreleased snapshot: 
+    
+    ```shell
+    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/199-SNAPSHOT/json5e-convert-cli-199-SNAPSHOT-runner.jar
+    ```    
 
-3. Run the command: 
+    There may be a pause if you download the snapshot, as it is rebuilt on demand.
+
+    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
+
+3. Verify the install by running the command: 
 
     ```shell
     5e-convert --help
     ```
-
-    > Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
 
 ## Build and run (optional)
 
@@ -50,7 +58,7 @@ To run commands listed below, either:
     jbang app install --name 5e-convert --force --fresh ~/.m2/repository/dev/ebullient/json5e-convert-cli/199-SNAPSHOT/json5e-convert-cli-199-SNAPSHOT-runner.jar
     ```
 
-    > Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
+    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
 
 ## Conventions
 
@@ -121,7 +129,7 @@ To run commands listed below, either:
     ```
     
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. 
-        > 🔶 **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
+        > 🔸 **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
      
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) should be listed explicitly
     - `my-items.json` Custom items that I've created for my campaign that follow 5etools JSON format.
@@ -170,7 +178,7 @@ I use a json file to provide detailed configuration for sources, as doing so wit
 
 - `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.  
 
-    > 🔶 **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
+    > 🔸 **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
 
 - `paths` allows you to redefine vault paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
 
