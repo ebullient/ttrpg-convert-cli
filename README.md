@@ -307,6 +307,16 @@ Of particular note are the varied monster templates:
 
 ## Changes that impact generated templates and files
 
+### 1.0.16: Sections in Spell text
+
+Text for changes to spells at higher levels is added to spells a little differently depending on how complicated the spell is.
+
+Some spells effectively have subsections. Create or Destroy Water, from the PHB, has one subsection describing how water is created, and another describing how it is destroyed. In many layouts, there is just a bit of bold text to visually highlight this information. I've opted to make these proper sections (with a heading) instead, because you can then embed/transclude just the variant you want into your notes where that is relevant.
+
+If a spell has sections, then "At Higher Levels" will be added as an additional section. Otherwise, it will be appended with `**At Higher Levels.**` as leading eyecatcher text.
+
+The [default spell template](src/main/resources/templates/spell2md.txt) has also been amended. It will test for sections in the spell text, and if so, now inserts a `## Summary` header above the Classes/Sources information, to ensure that the penultimate section can be embedded cleanly.
+
 ### 1.0.15: Flowcharts, optfeature in text, styled rows
 
 - `optfeature` text is rendered (Tortle package)
