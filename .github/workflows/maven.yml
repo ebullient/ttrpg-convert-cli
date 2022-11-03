@@ -41,7 +41,7 @@ jobs:
       run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
     - name: Set up JDK 11
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: 11
         distribution: 'temurin'
@@ -66,14 +66,14 @@ jobs:
           echo "Tag does not exist yet"
         fi
 
-        echo "::set-output name=current::${CURRENT}"
-        echo "::set-output name=next::${NEXT}"
-        echo "::set-output name=snapshot::${SNAPSHOT}"
-        echo "::set-output name=artifact::${ARTIFACT}"
-        echo "::set-output name=group::${GROUP}"
+        echo "current=${CURRENT}" >> $GITHUB_OUTPUT
+        echo "next=${NEXT}" >> $GITHUB_OUTPUT
+        echo "snapshot=${SNAPSHOT}" >> $GITHUB_OUTPUT
+        echo "artifact=${ARTIFACT}" >> $GITHUB_OUTPUT
+        echo "group=${GROUP}" >> $GITHUB_OUTPUT
 
     - name: Maven release
-      if: steps.filter.outputs.project == 'true'
+      if: ${{ github.ref == 'refs/heads/main' && steps.filter.outputs.project == 'true' }}
       id: mvn-build-release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -85,7 +85,7 @@ jobs:
         if git rev-parse "refs/tags/$NEXT" >/dev/null 2>&1; then
           echo "🔹 Tagged release alreay exists"
           mvn -B formatter:validate install --file pom.xml
-          echo "::set-output name=release::false"
+          echo "release=false" >> $GITHUB_OUTPUT
         else
           echo "🔹 Creating new release"
 
@@ -95,10 +95,10 @@ jobs:
           sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
           sed -i -r "s/  current-version: .*/  current-version: $NEXT/g" .github/project.yml
 
-          mvn -B clean package
+          ./mvnw -B --no-transfer-progress package
 
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 
           git add README.md pom.xml .github/project.yml
           git commit -m "🔖 $NEXT"
@@ -111,11 +111,11 @@ jobs:
           git add pom.xml
           git commit -m "🔧 Prepare for next release"
           git push
-          echo "::set-output name=release::true"
+          echo "release=true" >> $GITHUB_OUTPUT
         fi
 
     - name: Build with Maven
-      if: steps.filter.outputs.project == 'false'
+      if: ${{ github.ref != 'refs/heads/main' || steps.filter.outputs.project == 'false' }}
       id: mvn-build
       run: |
         mvn -B formatter:validate install --file pom.xml
@@ -127,7 +127,7 @@ jobs:
 
     # Create the release on github
     - name: Create Release
-      if: steps.mvn-build-release.outputs.release == 'true'
+      if: ${{ steps.mvn-build-release.outputs.release == 'true' }}
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -139,7 +139,7 @@ jobs:
         prerelease: false
 
     - name: Upload runner.jar
-      if: steps.mvn-build-release.outputs.release == 'true'
+      if: ${{ steps.mvn-build-release.outputs.release == 'true' }}
       id: upload-jar
       uses: actions/upload-release-asset@v1
       env:
@@ -153,7 +153,7 @@ jobs:
   update-snapshot:
     # Only run for successful build of the main branch
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -167,6 +167,7 @@ jobs:
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
           echo "Update tag for $SNAPSHOT"
           git push origin :refs/tags/$SNAPSHOT
           git tag -f $SNAPSHOT
