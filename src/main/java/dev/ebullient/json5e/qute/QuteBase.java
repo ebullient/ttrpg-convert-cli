@@ -30,6 +30,10 @@ public class QuteBase implements QuteSource {
         return source;
     }
 
+    public boolean hasSections() {
+        return text.contains("\n## ");
+    }
+
     @Override
     public List<ImageRef> images() {
         return List.of();

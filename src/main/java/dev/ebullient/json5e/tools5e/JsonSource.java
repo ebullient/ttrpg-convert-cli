@@ -62,6 +62,10 @@ public interface JsonSource {
         return StreamSupport.stream(array.spliterator(), false);
     }
 
+    default boolean textContains(List<String> haystack, String needle) {
+        return haystack.stream().anyMatch(x -> x.contains(needle));
+    }
+
     default List<String> findAndReplace(JsonNode jsonSource, String field) {
         return findAndReplace(jsonSource, field, s -> s);
     }
@@ -903,6 +907,7 @@ public interface JsonSource {
                     .replaceAll("\\{@d20 ([^}]+?)}", "$1")
                     .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
                     .replaceAll("\\{@recharge}", "(Recharge 6)")
+                    .replaceAll("\\{@(scaledice|scaledamage) [^|]+\\|[^|]+\\|([^|}]+)[^}]*}", "$2")
                     .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@classFeature ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@optfeature ([^|}]+)\\|?[^}]*}", "$1")
