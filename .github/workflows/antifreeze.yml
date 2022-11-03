@@ -26,7 +26,7 @@ jobs:
         distribution: 'temurin'
 
     - name: yq - portable yaml processor
-      uses: mikefarah/yq@v4.27.3
+      uses: mikefarah/yq@v4.29.2
 
     - name: Project metadata
       id: metadata
