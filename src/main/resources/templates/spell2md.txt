@@ -19,6 +19,10 @@ aliases: ["{resource.name}"]
 
 {resource.text}
 
+{#if resource.hasSections }
+## Summary
+
+{/if}
 **Classes**: {resource.classes}
 
 Source: {resource.source}

@@ -43,6 +43,14 @@ public class Json2QuteSpell extends Json2QuteCommon {
             tags.add("spell/class/" + String.join("/", split));
         }
 
+        List<String> text = new ArrayList<>();
+        appendEntryToText(text, node, "##");
+        if (node.has("entriesHigherLevel")) {
+            maybeAddBlankLine(text);
+            appendEntryToText(text, node.get("entriesHigherLevel"),
+                    textContains(text, "## ") ? "##" : null);
+        }
+
         return new QuteSpell(sources,
                 decoratedName,
                 sources.getSourceText(index.srdOnly()),
@@ -54,7 +62,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 spellComponents(),
                 spellDuration(),
                 String.join(", ", classes),
-                getText("##"),
+                String.join("\n", text),
                 tags);
     }
 
