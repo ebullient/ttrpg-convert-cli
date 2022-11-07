@@ -33,7 +33,7 @@
         <!-- Build -->
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <maven.compiler.release>11</maven.compiler.release>
-        <formatter-plugin.version>2.20.0</formatter-plugin.version>
+        <formatter-plugin.version>2.21.0</formatter-plugin.version>
         <impsort-plugin.version>1.7.0</impsort-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
