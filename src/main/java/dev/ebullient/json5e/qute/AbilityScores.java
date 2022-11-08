@@ -1,5 +1,8 @@
 package dev.ebullient.json5e.qute;
 
+import io.quarkus.qute.TemplateData;
+
+@TemplateData
 public class AbilityScores {
     final int strength;
     final int dexterity;

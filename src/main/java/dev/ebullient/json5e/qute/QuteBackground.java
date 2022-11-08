@@ -3,7 +3,11 @@ package dev.ebullient.json5e.qute;
 import java.util.List;
 
 import dev.ebullient.json5e.tools5e.CompendiumSources;
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@TemplateData
+@RegisterForReflection
 public class QuteBackground extends QuteBase {
 
     public QuteBackground(CompendiumSources sources, String name, String source, String text, List<String> tags) {

@@ -4,7 +4,11 @@ import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.json5e.tools5e.CompendiumSources;
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@TemplateData
+@RegisterForReflection
 public class QuteDeity extends QuteBase {
 
     public final List<String> altNames;
