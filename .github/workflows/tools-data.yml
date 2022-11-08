@@ -81,16 +81,13 @@ jobs:
         run: |
           ./mvnw -B --no-transfer-progress -Dformat.skip verify
 
-      - name: Delete Local Artifacts From Maven repo
-        shell: bash
-        run: rm -r ~/.m2/repository/dev/ebullient
-
   native-test-with-data:
   
     name: Test on ${{ matrix.os }}
-    needs: cache-setup
+    needs: [cache-setup, test-with-data]
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       max-parallel: 1
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
@@ -129,6 +126,3 @@ jobs:
         run: |
           ./mvnw -B --no-transfer-progress verify -Dnative -DskipTests -Dformat.skip
 
-      - name: Delete Local Artifacts From Maven repo
-        shell: bash
-        run: rm -r ~/.m2/repository/dev/ebullient
