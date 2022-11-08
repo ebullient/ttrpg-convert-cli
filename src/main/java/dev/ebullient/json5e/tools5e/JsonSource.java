@@ -1025,7 +1025,8 @@ public interface JsonSource {
             return linkOrText(linkText, key, dirName, parts[0] + QuteSource.sourceIfNotCore(sources.primarySource()));
         } else if (type == IndexType.race) {
             return linkOrText(linkText, key, dirName,
-                    decoratedRaceName(jsonSource, sources) + QuteSource.sourceIfNotCore(sources.primarySource()));
+                    decoratedRaceName(jsonSource, sources)
+                            + QuteSource.sourceIfNotDefault(sources.primarySource(), defaultSource));
         }
         return linkOrText(linkText, key, dirName,
                 decoratedTypeName(sources) + QuteSource.sourceIfNotCore(sources.primarySource()));
