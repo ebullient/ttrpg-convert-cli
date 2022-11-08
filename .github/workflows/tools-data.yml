@@ -1,0 +1,69 @@
+name: Test Tools Data
+on:
+  schedule:
+      # At 03:07 on Saturday (because why not)
+    - cron: "7 3 * * 6"
+
+  workflow_dispatch:
+      
+jobs:
+  cache:
+    runs-on: ubuntu-latest
+    outputs:
+      cache_key: ${{ steps.test-data-key.outputs.tools_version }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Tools release cache key
+        id: test-data-key
+        run: |
+          LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/5etools-mirror-1/5etools-mirror-1.github.io/releases/latest)
+          LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
+          echo $LATEST_VERSION
+
+          echo "🔹 Use $LATEST_VERSION"
+          echo "tools_version=${LATEST_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Cache Test Data
+        id: test-data-cache
+        uses: actions/cache@v3
+        with:
+          path: 5etools-mirror-1.github.io
+          key: ${{ steps.test-data-key.outputs.tools_version }}
+
+      - name: Test Data
+        id: test-data
+        if: ${{ steps.test-data-cache.outputs.cache-hit != 'true' }}
+        env:
+          LATEST_VERSION: ${{ steps.test-data-key.outputs.tools_version }}
+        run: |
+          echo "🔹 Download $LATEST_VERSION"
+          ARTIFACT_URL="https://github.com/5etools-mirror-1/5etools-mirror-1.github.io/archive/refs/tags/$LATEST_VERSION.tar.gz"
+          VER=$(echo $LATEST_VERSION | cut -c 2-)
+          ROOT="5etools-mirror-1.github.io-$VER"
+
+          curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
+          tar xzf 5etools.tar.gz ${ROOT}/data ${ROOT}/img
+
+          rm -rf 5etools-mirror-1.github.io
+          mv ${ROOT} 5etools-mirror-1.github.io
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build with Maven
+        id: mvn-build
+        run: |
+          ./mvnw -B --no-transfer-progress verify
+
+      - name: Delete Local Artifacts From Maven repo
+        shell: bash
+        run: rm -r ~/.m2/repository/dev/ebullient
+
