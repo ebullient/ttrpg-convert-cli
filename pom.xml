@@ -176,7 +176,7 @@
                 </executions>
                 <configuration>
                     <configFile>ide-config/eclipse-format.xml</configFile>
-                    <skip>${format.skip}</skip>
+                    <skip>${skipFormat}</skip>
                 </configuration>
             </plugin>
             <plugin>
@@ -194,7 +194,7 @@
                 <configuration>
                     <groups>java.,javax.,org.,com.</groups>
                     <staticGroups>*</staticGroups>
-                    <skip>${format.skip}</skip>
+                    <skip>${skipFormat}</skip>
                     <removeUnused>true</removeUnused>
                 </configuration>
             </plugin>
