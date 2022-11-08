@@ -129,7 +129,7 @@ To run commands listed below, either:
     ```
     
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. 
-        > 🔸 **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
+        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java)
      
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) should be listed explicitly
     - `my-items.json` Custom items that I've created for my campaign that follow 5etools JSON format.
@@ -178,7 +178,7 @@ I use a json file to provide detailed configuration for sources, as doing so wit
 
 - `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.  
 
-    > 🔸 **Source abbreviations** are found in the [source code](https://github.com/ebullient/json5e-convert-cli/blob/1a2b43ac25324caffb253b377a04b2a463f61d57/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java#L138)
+    > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java)
 
 - `paths` allows you to redefine vault paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
 
@@ -300,10 +300,10 @@ This application uses the [Qute Templating Engine](https://quarkus.io/guides/qut
 
 Of particular note are the varied monster templates: 
 
-- Admonition codeblock: [monster2md.txt](src/main/resources/templates/monster2md.txt)
-- Admonition codeblock with alternate score layout: [monster2md-scores.txt](src/main/resources/templates/monster2md-scores.txt)
-- TTRPG statblock in the body: [monster2md-yamlStatblock-body.txt](src/main/resources/templates/monster2md-yamlStatblock-body.txt)
-- Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](src/main/resources/templates/monster2md-yamlStatblock-header.txt)
+- Admonition codeblock: [monster2md.txt](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/monster2md.txt)
+- Admonition codeblock with alternate score layout: [monster2md-scores.txt](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/monster2md-scores.txt)
+- TTRPG statblock in the body: [monster2md-yamlStatblock-body.txt](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/monster2md-yamlStatblock-body.txt)
+- Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/monster2md-yamlStatblock-header.txt)
 
 ## Changes that impact generated templates and files
 
@@ -315,7 +315,7 @@ Some spells effectively have subsections. Create or Destroy Water, from the PHB,
 
 If a spell has sections, then "At Higher Levels" will be added as an additional section. Otherwise, it will be appended with `**At Higher Levels.**` as leading eyecatcher text.
 
-The [default spell template](src/main/resources/templates/spell2md.txt) has also been amended. It will test for sections in the spell text, and if so, now inserts a `## Summary` header above the Classes/Sources information, to ensure that the penultimate section can be embedded cleanly.
+The [default spell template](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/spell2md.txt) has also been amended. It will test for sections in the spell text, and if so, now inserts a `## Summary` header above the Classes/Sources information, to ensure that the penultimate section can be embedded cleanly.
 
 ### 1.0.15: Flowcharts, optfeature in text, styled rows
 
@@ -326,7 +326,7 @@ The [default spell template](src/main/resources/templates/spell2md.txt) has also
 
 ### 1.0.14: Ability Scores
 
-As shown in [monster2md-scores.txt](src/main/resources/templates/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
+As shown in [monster2md-scores.txt](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
 
 ```
 - STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
@@ -345,7 +345,7 @@ Property tags on items are now sorted (not alphabetically) to stabilize their or
 
 Each file name will now contain an abbreviation of the primary source to avoid conflicts (for anything that does not come from phb, mm, dmg).
 
-***If you use the Templater plugin***, you can use [a templater script](migration/json5e-cli-renameFiles-1.0.12.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
+***If you use the Templater plugin***, you can use [a templater script](https://github.com/ebullient/json5e-convert-cli/blob/main/migration/json5e-cli-renameFiles-1.0.12.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
 
 ### 🔥 1.0.12: Deity symbols and Bestiary Tokens
 
@@ -369,4 +369,4 @@ For deities:
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework. If you want to learn more about Quarkus, please visit its website: https://quarkus.io/.
 
-This project is a derivative of [fc5-convert-cli](ebullient/fc5-convert-cli), which focused on working to and from FightClub5 Compendium XML files. It has also stolen some bits and pieces from [pockets-cli](ebullient/pockets-cli).
+This project is a derivative of [fc5-convert-cli](https://github.com/ebullient/fc5-convert-cli), which focused on working to and from FightClub5 Compendium XML files. It has also stolen some bits and pieces from [pockets-cli](https://github.com/ebullient/pockets-cli).
