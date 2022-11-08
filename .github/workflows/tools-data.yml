@@ -79,7 +79,7 @@ jobs:
       - name: Build with Maven
         id: mvn-build
         run: |
-          ./mvnw -B --no-transfer-progress -Dformat.skip verify
+          ./mvnw -B --no-transfer-progress -DskipFormat verify
 
   native-test-with-data:
   
@@ -124,5 +124,5 @@ jobs:
         env:
           MAVEN_OPTS: "-Xmx1g"
         run: |
-          ./mvnw -B --no-transfer-progress verify -Dnative -DskipTests -Dformat.skip
+          ./mvnw -B --no-transfer-progress verify -Dnative -DskipTests -DskipFormat
 

@@ -21,6 +21,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      make_release: ${{ steps.filter.outputs.project }}
 
     steps:
       - uses: actions/checkout@v3
@@ -39,12 +41,18 @@ jobs:
         run: |
           ./mvnw ${MAVEN_VERIFY}
 
-      - name: Delete Local Artifacts From Maven repo
-        shell: bash
-        run: rm -r ~/.m2/repository/dev/ebullient
-
+      - uses: dorny/paths-filter@v2
+        if: ${{ github.ref == 'refs/heads/main'}}
+        id: filter
+        with:
+          filters: |
+            project:
+              - '.github/project.yml'
+            
   update-snapshot:
     # Only run for successful build of the main branch
+    if: ${{ github.ref == 'refs/heads/main' }} 
     needs: build
     uses: ./.github/workflows/antifreeze.yml
     secrets: inherit
+
