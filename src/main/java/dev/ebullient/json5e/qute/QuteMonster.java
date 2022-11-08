@@ -8,7 +8,11 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.tools5e.CompendiumSources;
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@TemplateData
+@RegisterForReflection
 public class QuteMonster extends QuteBase {
 
     public final boolean isNpc;
@@ -245,6 +249,7 @@ public class QuteMonster extends QuteBase {
         return "spells";
     }
 
+    @TemplateData
     public static class Spellcasting {
         public String name;
         public List<String> headerEntries;
@@ -335,12 +340,14 @@ public class QuteMonster extends QuteBase {
         }
     }
 
+    @TemplateData
     public static class Spells {
         public int slots;
         public int lowerBound;
         public List<String> spells;
     }
 
+    @TemplateData
     public static class SavesAndSkills {
         public Map<String, Integer> saveMap;
         public Map<String, Integer> skillMap;

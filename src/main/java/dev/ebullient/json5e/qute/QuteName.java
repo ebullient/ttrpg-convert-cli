@@ -2,6 +2,11 @@ package dev.ebullient.json5e.qute;
 
 import java.util.List;
 
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@TemplateData
+@RegisterForReflection
 public class QuteName {
 
     final String name;
@@ -42,6 +47,7 @@ public class QuteName {
         return tables;
     }
 
+    @TemplateData
     public static class LookupTable {
         public final String name;
         public final String diceType;
@@ -56,6 +62,7 @@ public class QuteName {
         }
     }
 
+    @TemplateData
     public static class LookupTableRow {
         public final String min;
         public final String max;

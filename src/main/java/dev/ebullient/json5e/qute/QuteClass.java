@@ -3,7 +3,11 @@ package dev.ebullient.json5e.qute;
 import java.util.List;
 
 import dev.ebullient.json5e.tools5e.CompendiumSources;
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@TemplateData
+@RegisterForReflection
 public class QuteClass extends QuteBase {
     public final int hitDice;
     public final String classProgression;

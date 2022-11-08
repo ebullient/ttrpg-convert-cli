@@ -3,6 +3,11 @@ package dev.ebullient.json5e.qute;
 import java.util.Collection;
 import java.util.List;
 
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@TemplateData
+@RegisterForReflection
 public class QuteNote {
     final String name;
     public final String source;

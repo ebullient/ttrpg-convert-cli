@@ -27,6 +27,7 @@ import dev.ebullient.json5e.qute.QuteMonster.Spells;
 import dev.ebullient.json5e.qute.QuteSource;
 import dev.ebullient.json5e.qute.Trait;
 import dev.ebullient.json5e.tools5e.JsonIndex.Tuple;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteMonster extends Json2QuteCommon {
 
@@ -558,7 +559,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     public static class ConjuredMonster {
-
         final String name;
         final MonsterAC monsterAc;
         final MonsterHp monsterHp;
@@ -583,6 +583,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
     }
 
+    @RegisterForReflection
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class MonsterAC {
         public final int ac;
@@ -628,6 +629,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
     }
 
+    @RegisterForReflection
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class MonsterHp {
         static final Pattern hpPattern = Pattern

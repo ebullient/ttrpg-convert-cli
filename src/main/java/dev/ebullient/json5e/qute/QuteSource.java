@@ -20,8 +20,15 @@ public interface QuteSource {
             case "dmg":
                 return "";
             default:
-                return "-" + source;
+                return "-" + source.toLowerCase();
         }
+    }
+
+    static String sourceIfNotDefault(String source, String defaultSource) {
+        if (!source.equalsIgnoreCase(defaultSource)) {
+            return "-" + source.toLowerCase();
+        }
+        return "";
     }
 
     static String monsterPath(boolean isNpc, String type) {

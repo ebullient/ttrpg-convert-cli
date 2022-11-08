@@ -14,7 +14,9 @@ import java.util.stream.StreamSupport;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class CompendiumSources {
     final IndexType type;
     final String key;

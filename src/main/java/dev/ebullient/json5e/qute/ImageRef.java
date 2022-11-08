@@ -2,6 +2,9 @@ package dev.ebullient.json5e.qute;
 
 import java.nio.file.Path;
 
+import io.quarkus.qute.TemplateData;
+
+@TemplateData
 public class ImageRef {
     public final Path sourcePath;
     public final Path targetPath;
