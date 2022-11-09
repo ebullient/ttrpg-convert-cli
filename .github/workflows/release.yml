@@ -2,21 +2,22 @@ name: Create a release
 
 on:
   workflow_dispatch:
-    version:
-      description: "New version or major, minor, patch, project"
-      default: "patch"
-      required: true
-      type: string
-    retry:
-      description: "Retry (use version from project.yml)"
-      default: false
-      required: true 
-      type: boolean 
-    dry_run:
-      description: "Test capabilities, do not release"
-      default: false
-      required: true 
-      type: boolean 
+    inputs:
+      semver:
+        description: "New version or major, minor, patch, project"
+        default: "patch"
+        required: true
+        type: string
+      retry:
+        description: "Retry (use version from project.yml)"
+        default: false
+        required: true
+        type: boolean
+      dry_run:
+        description: "Test capabilities, do not release"
+        default: false
+        required: true
+        type: boolean
 
 env:
   JAVA_VERSION: 11
@@ -24,17 +25,17 @@ env:
   GRAALVM_VERSION: 22.3.0
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
+  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts -od target -sp linux-x86_64 -sp windows-x86_64 -sp osx-x86_64'
 
 jobs:
-
-  build:
+  build_tag:
     runs-on: ubuntu-latest
-    
+
     outputs:
       group: ${{ steps.metadata.outputs.group }}
-      version: ${{ steps.metadata.outputs.next }}
       artifact: ${{ steps.metadata.outputs.artifact }}
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.metadata.outputs.next }}
+      current: ${{ steps.metadata.outputs.current }}
 
     steps:
       - uses: actions/checkout@v3
@@ -49,8 +50,9 @@ jobs:
       - name: Project metadata
         id: metadata
         env:
-          INPUT: ${{ inputs.version }}
+          INPUT: ${{ inputs.semver }}
           RETRY: ${{ inputs.retry }}
+          DRY_RUN: ${{ inputs.dry_run }}
         run: .github/versions.sh
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
@@ -60,20 +62,17 @@ jobs:
           distribution: ${{ env.JAVA_DISTRO }}
           cache: maven
 
-      - name: Maven build
-        id: mvn-build
+      - name: Update version
+        if: inputs.dry_run == false
+        id: update_version
         env:
           CURRENT: ${{ steps.metadata.outputs.current }}
           NEXT: ${{ steps.metadata.outputs.next }}
-        run: |
-          # Messy and not maven-y, but whatever.
-          sed -i -r "s|/$CURRENT|/$NEXT|g" README.md
-          sed -i -r "s|-$CURRENT|-$NEXT|g" README.md
-          sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
-          sed -i -r "s/  current-version: .*/  current-version: $NEXT/g" .github/project.yml
-          sed -i -r "s/  next-version: .*/  next-version: $NEXT/g" .github/project.yml
+        run: .github/update_version.sh
 
-          ./mvnw -B -ntp package -DskipFormat
+      - name: Maven build
+        id: mvn-build
+        run: ./mvnw -B -ntp package -DskipFormat
 
       - name: Maven release
         id: mvn-release
@@ -84,18 +83,38 @@ jobs:
           SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
           RETRY: ${{ inputs.retry }}
         run: |
-          echo "🔹 Creating new $NEXT release, retry=$RETRY"
+          echo "🔹 Tagging new $NEXT release, retry=$RETRY"
+          git config user.name ${{ env.GH_BOT_NAME }}
+          git config user.email ${{ env.GH_BOT_EMAIL }}
+
+          FLAG=
+          if git rev-parse "refs/tags/$NEXT" > /dev/null 2>&1; then
+            if [[ "$RETRY" == true ]]; then
+              git push origin :refs/tags/$NEXT
+              FLAG="-f "
+            else
+              echo "🛑 Tag $NEXT already exists"
+              exit 1
+            fi
+          fi
+
+          git add README.md pom.xml .github/project.yml
+          git commit -m "🔖 $NEXT"
+          git push
+
+          git tag $FLAG$NEXT
+          git push --tags
 
       - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
         uses: actions/upload-artifact@v3
         id: upload-jar
         with:
-          name: ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
+          name: artifacts
           path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
 
   native-binaries:
     name: Build ${{ matrix.os }} binary
-    needs: release
+    needs: build_tag
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -105,12 +124,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        if: inputs.dry_run == true
+   
+      - uses: actions/checkout@v3
+        if: inputs.dry_run == false
         with:
-          ref: ${{ needs.release.outputs.version }}
-      
+          ref: ${{ needs.build_tag.outputs.version }}
+
       - uses: graalvm/setup-graalvm@v1
         with:
-          cache: 'maven'
+          cache: "maven"
           components: "native-image"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           java-version: ${{ env.JAVA_VERSION }}
@@ -120,13 +143,100 @@ jobs:
         id: mvn-native-build
         env:
           MAVEN_OPTS: "-Xmx1g"
-        run: |
-          ./mvnw -B -ntp package -Dnative -DskipTests -DskipITs -DskipFormat
+        run: ./mvnw -B -ntp package -Dnative -DskipTests -DskipITs -DskipFormat
 
-      - name: 'Upload build artifact'
+      - name: Assemble ${{ matrix.os }} archive
+        uses: jreleaser/release-action@v1
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ needs.build_tag.outputs.version }}
+        with:
+          arguments: assemble -s archive -scp -od target
+
+      - name: Upload ${{ matrix.os }} archive
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.os }} ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner
-          path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner
+          retention-days: 1
+          name: artifacts
+          path: |
+            target/jreleaser/assemble/native-archive/archive/*.tgz
+            target/jreleaser/assemble/native-archive/archive/*.zip
 
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: native-image-${{ runner.os }}-logs
+          path: |
+            target/jreleaser/trace.log
+            target/jreleaser/output.properties
 
+  release:
+    runs-on: ubuntu-latest
+    needs: [build_tag, native-binaries]
+    steps:
+      - uses: actions/checkout@v3
+        if: inputs.dry_run == true
+        with:
+          fetch-depth: 0
+   
+      - uses: actions/checkout@v3
+        if: inputs.dry_run == false
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.build_tag.outputs.version }}
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Release with JReleaser
+        if: inputs.dry_run == true
+        uses: jreleaser/release-action@v1
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PROJECT_VERSION: ${{ needs.build_tag.outputs.version }}
+        with:
+          arguments: release ${JRELEASER_ARGS} --dry-run
+
+      - name: Release with JReleaser
+        if: inputs.dry_run == false
+        uses: jreleaser/release-action@v1
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PROJECT_VERSION: ${{ needs.build_tag.outputs.version }}
+        with:
+          arguments: release ${JRELEASER_ARGS}
+
+      - name: Prepare for next release
+        id: mvn-next-release
+        if: inputs.dry_run == false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT: ${{ steps.metadata.outputs.next }}
+          SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
+          RETRY: ${{ inputs.retry }}
+        run: |
+          echo "🔹 Prepare for next release"
+          git config user.name ${{ env.GH_BOT_NAME }}
+          git config user.email ${{ env.GH_BOT_EMAIL }}
+
+          sed -i -r "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
+          git add pom.xml
+          git commit -m "🔧 Prepare for next release"
+          git push
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-logs
+          path: |
+            target/jreleaser/trace.log
+            target/jreleaser/output.properties
+
+  update-snapshot:
+    if: github.ref == 'refs/heads/main'
+    needs: release
+    uses: ./.github/workflows/antifreeze.yml
+    with:
+      update-snapshot-tag: true
+    secrets: inherit

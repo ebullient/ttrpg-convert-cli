@@ -4,6 +4,12 @@
     <groupId>dev.ebullient</groupId>
     <artifactId>json5e-convert-cli</artifactId>
     <version>${revision}</version>
+
+    <name>json5e-convert-cli</name>
+    <description>Json 5e convert CLI </description>
+    <inceptionYear>2022</inceptionYear>
+    <url>https://github.com/ebullient/json5e-convert-cli</url>
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -43,6 +49,7 @@
         <icu4j.version>72.1</icu4j.version><!-- Optional dependency of Slugify -->
         <!-- Packaging -->
         <quarkus.package.type>uber-jar</quarkus.package.type>
+        <native.executable.name>5e-convert</native.executable.name>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -148,7 +155,7 @@
                             <skipTests>${skipITs}</skipTests>
                             <skipITs>${skipITs}</skipITs>
                             <systemPropertyVariables>
-                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                                <native.image.path>${project.build.directory}/${native.executable.name}</native.image.path>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <maven.home>${maven.home}</maven.home>
                             </systemPropertyVariables>
@@ -204,6 +211,8 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.package.type>native</quarkus.package.type>
+                <quarkus.package.add-runner-suffix>false</quarkus.package.add-runner-suffix>
+                <quarkus.package.output-name>${native.executable.name}</quarkus.package.output-name>
             </properties>
         </profile>
     </profiles>

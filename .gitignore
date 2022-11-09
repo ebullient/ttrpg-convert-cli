@@ -2,6 +2,7 @@
 excludes.json
 publish
 compendium
+artifacts
 
 #Maven
 target/

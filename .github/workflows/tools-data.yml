@@ -39,7 +39,7 @@ jobs:
 
       - name: Test Data
         id: test-data
-        if: ${{ steps.test-data-cache.outputs.cache-hit != 'true' }}
+        if: steps.test-data-cache.outputs.cache-hit != 'true'
         env:
           LATEST_VERSION: ${{ steps.test-data-key.outputs.tools_version }}
         run: |
@@ -94,7 +94,8 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
-      - if: ${{ runner.os == 'Windows' }}
+      # Improve cache behavior on Windows
+      - if: runner.os == 'Windows'
         name: Use GNU tar
         shell: cmd
         run: |
