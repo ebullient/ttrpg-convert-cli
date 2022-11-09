@@ -1,0 +1,132 @@
+name: Create a release
+
+on:
+  workflow_dispatch:
+    version:
+      description: "New version or major, minor, patch, project"
+      default: "patch"
+      required: true
+      type: string
+    retry:
+      description: "Retry (use version from project.yml)"
+      default: false
+      required: true 
+      type: boolean 
+    dry_run:
+      description: "Test capabilities, do not release"
+      default: false
+      required: true 
+      type: boolean 
+
+env:
+  JAVA_VERSION: 11
+  JAVA_DISTRO: temurin
+  GRAALVM_VERSION: 22.3.0
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    outputs:
+      group: ${{ steps.metadata.outputs.group }}
+      version: ${{ steps.metadata.outputs.next }}
+      artifact: ${{ steps.metadata.outputs.artifact }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Fetches all tags for the repo
+      - name: Fetch tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
+      - name: yq - portable yaml processor
+        uses: mikefarah/yq@v4.29.2
+
+      - name: Project metadata
+        id: metadata
+        env:
+          INPUT: ${{ inputs.version }}
+          RETRY: ${{ inputs.retry }}
+        run: .github/versions.sh
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+          cache: maven
+
+      - name: Maven build
+        id: mvn-build
+        env:
+          CURRENT: ${{ steps.metadata.outputs.current }}
+          NEXT: ${{ steps.metadata.outputs.next }}
+        run: |
+          # Messy and not maven-y, but whatever.
+          sed -i -r "s|/$CURRENT|/$NEXT|g" README.md
+          sed -i -r "s|-$CURRENT|-$NEXT|g" README.md
+          sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
+          sed -i -r "s/  current-version: .*/  current-version: $NEXT/g" .github/project.yml
+          sed -i -r "s/  next-version: .*/  next-version: $NEXT/g" .github/project.yml
+
+          ./mvnw -B -ntp package -DskipFormat
+
+      - name: Maven release
+        id: mvn-release
+        if: inputs.dry_run == false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT: ${{ steps.metadata.outputs.next }}
+          SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
+          RETRY: ${{ inputs.retry }}
+        run: |
+          echo "🔹 Creating new $NEXT release, retry=$RETRY"
+
+      - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
+        uses: actions/upload-artifact@v3
+        id: upload-jar
+        with:
+          name: ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
+          path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
+
+  native-binaries:
+    name: Build ${{ matrix.os }} binary
+    needs: release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.release.outputs.version }}
+      
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          cache: 'maven'
+          components: "native-image"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          java-version: ${{ env.JAVA_VERSION }}
+          version: ${{ env.GRAALVM_VERSION }}
+
+      - name: Build ${{ matrix.os }} native binary
+        id: mvn-native-build
+        env:
+          MAVEN_OPTS: "-Xmx1g"
+        run: |
+          ./mvnw -B -ntp package -Dnative -DskipTests -DskipITs -DskipFormat
+
+      - name: 'Upload build artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }} ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner
+          path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner
+
+

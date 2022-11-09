@@ -24,8 +24,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      make_release: ${{ steps.filter.outputs.project }}
 
     steps:
       - uses: actions/checkout@v3
@@ -41,20 +39,34 @@ jobs:
 
       - name: Build with Maven
         id: mvn-build
-        run: |
-          ./mvnw -B -ntp formatter:validate verify
+        run: ./mvnw -B -ntp formatter:validate verify
 
-      - name: Pull Quarkus Native Builder Image ${{ env.GRAALVM_VERSION }}-java${{ env.JAVA_VERSION }}
-        run: docker pull quay.io/quarkus/ubi-quarkus-native-image:${{ env.GRAALVM_VERSION }}-java${{ env.JAVA_VERSION }}
+  native-build:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - uses: actions/checkout@v3
 
-      - name: Native Quarkus build with maven
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: ${{ env.GRAALVM_VERSION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          components: "native-image"
+          cache: 'maven'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and run in native mode
+        id: mvn-native-build
+        env:
+          MAVEN_OPTS: "-Xmx1g"
         run: |
-          ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat \
-              -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-native-image:${{ env.GRAALVM_VERSION }}-java${{ env.JAVA_VERSION }}
+          ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat
 
   update-snapshot:
-    # Only run for successful build of the main branch
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: github.ref == 'refs/heads/main'
     needs: build
     uses: ./.github/workflows/antifreeze.yml
+    with:
+      update-snapshot-tag: true
     secrets: inherit
