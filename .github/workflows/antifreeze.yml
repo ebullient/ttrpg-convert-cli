@@ -8,7 +8,23 @@ on:
     - cron: "5 3 */3 * *"
 
   workflow_dispatch:
+    inputs:
+      update-snapshot-tag:
+        description: "Should the snapshot tag be reset"
+        default: false
+        required: false 
+        type: boolean 
+        
   workflow_call:
+    inputs:
+      update-snapshot-tag:
+        default: false
+        required: false 
+        type: boolean 
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
 
 jobs:
   clear:
@@ -21,6 +37,22 @@ jobs:
 
       - name: yq - portable yaml processor
         uses: mikefarah/yq@v4.29.2
+
+      - name: Update snapshot tag
+        if: inputs.update-snapshot-tag == true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
+
+          git config user.name ${{ env.GH_BOT_NAME }}
+          git config user.email ${{ env.GH_BOT_EMAIL }}
+
+          echo "Update tag for $SNAPSHOT"
+          git push origin :refs/tags/$SNAPSHOT
+          git tag -f $SNAPSHOT
+          git push --tags
 
       - name: Delete Jitpack resource
         id: jitpack-antifreeze

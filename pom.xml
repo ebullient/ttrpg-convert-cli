@@ -21,13 +21,6 @@
         <system>GitHub</system>
         <url>https://github.com/ebullient/json5e-convert-cli/issues</url>
     </issueManagement>
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub ebullient json5e-convert-cli Maven Packages</name>
-            <url>https://maven.pkg.github.com/ebullient/json5e-convert-cli</url>
-        </repository>
-    </distributionManagement>
     <properties>
         <revision>199-SNAPSHOT</revision>
         <!-- Build -->
