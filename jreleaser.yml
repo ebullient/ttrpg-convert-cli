@@ -1,0 +1,113 @@
+environment:
+  properties:
+    nativeImageDir: target/jreleaser/assemble/native-archive/archive
+    uberJarDir: target
+
+project:
+  name: json5e-convert-cli
+  description: Utility to convert 5etools JSON data into Markdown
+  longDescription: |
+    This utility works with json sources and materials from the 5etools mirror to create 
+    linked and formatted markdown. The resulting markdown will include backgrounds, 
+    classes, deities, feats, items, monsters, races, and spells from a filtered list 
+    of sources (constrained to those you specify == those you own). Books and adventures
+    can also be explicitly included. Generated content contains Obsidian-specific 
+    formatting for some plugins (admonitions, dice roller, TTRPG Statblocks, etc.),
+    and is cross-linked and aliased for ease of reference.
+  links:
+    homepage: https://github.com/ebullient/json5e-convert-cli
+    documentation: https://github.com/ebullient/json5e-convert-cli#readme
+    license: https://github.com/ebullient/json5e-convert-cli/LICENSE
+  authors:
+    - "ebullient (Erin Schnabel)"
+  license: Apache-2.0
+  inceptionYear: 2022
+  stereotype: CLI
+  java:
+    groupId: dev.ebullient
+    version: 11
+    multiProject: false
+  tags:
+    - "quarkus"
+    - "cli"
+    - "5e-tools"
+    - "java"
+    - "obsidian-md"
+
+assemble:
+  # Archives for native images
+  archive:
+    native-archive:
+      active: ALWAYS
+      exported: false
+      attachPlatform: true
+      archiveName: "{{projectName}}-{{projectVersion}}"
+      formats:
+        - ZIP
+        - TGZ
+      fileSets:
+        - input: "."
+          includes:
+            - "LICENSE"
+            - "README.md"
+        - input: "target/"
+          includes:
+            - "5e-convert{.exe,}"
+          output: "bin"
+
+distributions:
+  uber-jar:
+    type: SINGLE_JAR
+    artifacts:
+      - path: '{{uberJarDir}}/{{projectName}}-{{projectVersion}}-runner.jar'
+
+  native-archive:
+    type: NATIVE_IMAGE
+    artifacts:
+      - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-linux-x86_64.tgz'
+        platform: linux-x86_64
+      - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-windows-x86_64.zip'
+        platform: windows-x86_64
+      - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-osx-x86_64.zip'
+        platform: osx-x86_64
+      - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-osx-aarch_64.zip'
+        platform: osx-aarch_64
+
+release:
+  github:
+    changelog:
+      formatted: ALWAYS
+      format: "- {{commitShortHash}} {{commitTitle}}"
+      content: |
+        # Summary of changes
+
+        {{changelogChanges}}
+        {{changelogContributors}}
+      labelers:
+        - label: "infra"
+          title: "regex:(🔧|👷)"
+        - label: "deps"
+          title: "Bump "
+        - label: "release"
+          title: "🔖 "
+      excludeLabels:
+        - "infra"
+        - "deps"
+        - "release"
+      hide:
+        contributors:
+          - "ebullient"
+          - "Erin Schnabel"
+          - github-actions
+          - GitHub
+          - "[bot]"
+    checksums: true
+    discussionCategoryName: Announcements
+    issues:
+      enabled: false
+    milestone:
+      close: false
+    overwrite: true
+    skipTag: true
+    sign: false
+    tagName: "{{projectVersion}}"

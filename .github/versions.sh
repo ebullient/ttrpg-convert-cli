@@ -6,7 +6,10 @@ SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
 ARTIFACT=$(yq '.jitpack.artifact' .github/project.yml)
 GROUP=$(yq '.jitpack.group' .github/project.yml)
 
-if [[ -z "${INPUT}" ]] || [[ "${INPUT}" == "project" ]]; then
+if [[ "${DRY_RUN}" == "true" ]]; then
+  NEXT=199-SNAPSHOT
+  echo "🔹 Dry run, use snapshot: $NEXT"
+elif [[ -z "${INPUT}" ]] || [[ "${INPUT}" == "project" ]]; then
   NEXT=$(yq '.release.next-version' .github/project.yml)
   echo "🔹 Use project version: $CURRENT --> $NEXT"
 else
@@ -41,7 +44,7 @@ else
   esac
 fi
 
-if [[ "${RETRY}" == "true" ]]; then
+if [[ "${RETRY}" == "true" ]] || [[ "${DRY_RUN}" == "true" ]]; then
   echo "🔹 Retrying release of $NEXT"
 elif git rev-parse "refs/tags/$NEXT" > /dev/null 2>&1; then
   echo "🛑 Tag $NEXT already exists"
