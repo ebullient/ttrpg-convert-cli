@@ -34,6 +34,7 @@ jobs:
     outputs:
       group: ${{ steps.metadata.outputs.group }}
       artifact: ${{ steps.metadata.outputs.artifact }}
+      snapshot: ${{ steps.metadata.outputs.snapshot }}
       version: ${{ steps.metadata.outputs.next }}
       current: ${{ steps.metadata.outputs.current }}
 
@@ -96,11 +97,11 @@ jobs:
               echo "🛑 Tag $NEXT already exists"
               exit 1
             fi
+          else
+            git add README.md pom.xml .github/project.yml
+            git commit -m "🔖 $NEXT"
+            git push
           fi
-
-          git add README.md pom.xml .github/project.yml
-          git commit -m "🔖 $NEXT"
-          git push
 
           git tag $FLAG$NEXT
           git push --tags
@@ -124,12 +125,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        if: inputs.dry_run == true
-   
-      - uses: actions/checkout@v3
-        if: inputs.dry_run == false
-        with:
-          ref: ${{ needs.build_tag.outputs.version }}
 
       - uses: graalvm/setup-graalvm@v1
         with:
@@ -175,15 +170,8 @@ jobs:
     needs: [build_tag, native-binaries]
     steps:
       - uses: actions/checkout@v3
-        if: inputs.dry_run == true
         with:
           fetch-depth: 0
-   
-      - uses: actions/checkout@v3
-        if: inputs.dry_run == false
-        with:
-          fetch-depth: 0
-          ref: ${{ needs.build_tag.outputs.version }}
 
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
@@ -211,8 +199,7 @@ jobs:
         if: inputs.dry_run == false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NEXT: ${{ steps.metadata.outputs.next }}
-          SNAPSHOT: ${{ steps.metadata.outputs.snapshot }}
+          SNAPSHOT: ${{ needs.build_tag.outputs.snapshot }}
           RETRY: ${{ inputs.retry }}
         run: |
           echo "🔹 Prepare for next release"

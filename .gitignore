@@ -50,3 +50,9 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 release.properties
 *.log
+
+JRELEASER_VERSION
+jreleaser-cli.jar
+native-image-Linux-logs
+native-image-Windows-logs
+native-image-macOS-logs
