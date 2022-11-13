@@ -55,6 +55,9 @@ assemble:
             - "5e-convert{.exe,}"
           output: "bin"
 
+checksum:
+  individual: true
+
 distributions:
   uber-jar:
     type: SINGLE_JAR
@@ -107,7 +110,11 @@ release:
       enabled: false
     milestone:
       close: false
-    overwrite: true
+    overwrite: false
+    update:
+      enabled: true
+      sections:
+        - ASSETS
     skipTag: true
     sign: false
     tagName: "{{projectVersion}}"
