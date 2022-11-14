@@ -1,4 +1,8 @@
 {
+  "paths": {
+    "rules": "/ru les/",
+    "compendium": "/compend ium/"
+  },
   "from": [
     "PHB", 
     "DMG", 

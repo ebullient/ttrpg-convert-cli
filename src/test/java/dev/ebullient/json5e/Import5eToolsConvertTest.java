@@ -53,9 +53,12 @@ public class Import5eToolsConvertTest {
     @Test
     void testCommandLiveData(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            final Path target = outputPath.resolve("srd-index");
+            TestUtils.deleteDir(target);
+
             // SRD
             LaunchResult result = launcher.launch("--index",
-                    "-o", outputPath.resolve("srd-index").toString(), TestUtils.TOOLS_PATH.toString());
+                    "-o", target.toString(), TestUtils.TOOLS_PATH.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -114,6 +117,7 @@ public class Import5eToolsConvertTest {
     void testCommandLiveDataOneSource(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             Path target = outputPath.resolve("erlw");
+            TestUtils.deleteDir(target);
 
             // No basics
             LaunchResult result = launcher.launch("-s", "ERLW",
@@ -128,6 +132,7 @@ public class Import5eToolsConvertTest {
     void testCommandTemplates(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             Path target = outputPath.resolve("srd-templates");
+            TestUtils.deleteDir(target);
 
             // SRD only, just templates
             LaunchResult result = launcher.launch(
@@ -201,6 +206,7 @@ public class Import5eToolsConvertTest {
     void testCommandBookAdventureInJson(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             Path target = outputPath.resolve("json-book-adventure");
+            TestUtils.deleteDir(target);
 
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
@@ -211,13 +217,34 @@ public class Import5eToolsConvertTest {
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
-            Path wbtw = target.resolve("compendium/adventures/the-wild-beyond-the-witchlight");
+            Path wbtw = target.resolve("compend ium/adventures/the-wild-beyond-the-witchlight");
             assertThat(wbtw).exists();
             assertThat(wbtw).isDirectory();
 
-            Path phb = target.resolve("compendium/books/players-handbook");
+            Path phb = target.resolve("compend ium/books/players-handbook");
             assertThat(phb).exists();
             assertThat(phb).isDirectory();
+
+            List.of(
+                    target.resolve("compend ium/adventures"),
+                    target.resolve("compend ium/backgrounds"),
+                    target.resolve("compend ium/books"),
+                    target.resolve("compend ium/classes"),
+                    target.resolve("compend ium/deities"),
+                    target.resolve("compend ium/feats"),
+                    target.resolve("compend ium/items"),
+                    target.resolve("compend ium/races"),
+                    target.resolve("compend ium/spells"))
+                    .forEach(directory -> TestUtils.assertDirectoryContents(directory, tui, (p, content) -> {
+                        List<String> errors = new ArrayList<>();
+                        if (content.stream().anyMatch(l -> l.contains("/ru les/"))) {
+                            errors.add("Found '/ru les/' " + p); // not escaped
+                        }
+                        if (content.stream().anyMatch(l -> l.contains("/compend ium/"))) {
+                            errors.add("Found '/compend ium/' " + p); // not escaped
+                        }
+                        return errors;
+                    }));
         }
     }
 }
