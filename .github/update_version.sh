@@ -10,8 +10,15 @@ elif [[ -z "$NEXT" ]]; then
 fi
 
 # Messy and not maven-y, but whatever.
-sed -i -r "s|/$CURRENT|/$NEXT|g" README.md
-sed -i -r "s|-$CURRENT|-$NEXT|g" README.md
-sed -i -r "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
-sed -i -r "s/  current-version: .*/  current-version: $NEXT/g" .github/project.yml
-sed -i -r "s/  next-version: .*/  next-version: $NEXT/g" .github/project.yml
+sed -E -i "s|/$CURRENT|/$NEXT|g" README.md
+sed -E -i "s|-$CURRENT|-$NEXT|g" README.md
+sed -E -i "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
+sed -E -i "s/  current-version: .*/  current-version: $NEXT/g" .github/project.yml
+sed -E -i "s/  next-version: .*/  next-version: $NEXT/g" .github/project.yml
+
+if grep '<revision>' pom.xml | grep $NEXT; then
+  echo "✅ <revision> in pom.xml updated to $NEXT"
+else
+  echo "❌ <revision> in pom.xml is $(grep '<revision>' pom.xml)"
+  exit 1
+fi
