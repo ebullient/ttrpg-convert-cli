@@ -1,0 +1,13 @@
+{
+  "from": [
+    "PHB", 
+    "DMG", 
+    "XGE", 
+    "TCE",
+    "WbtW"
+  ],
+  "template": {
+    "background": "garbage",
+    "glory": "unknown"
+  }
+}
