@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.github.slugify.Slugify;
 
 import dev.ebullient.json5e.qute.ImageRef;
+import picocli.CommandLine;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
 import picocli.CommandLine.Help.ColorScheme;
@@ -88,6 +90,7 @@ public class Json5eTui {
     PrintWriter out;
     PrintWriter err;
 
+    private CommandLine commandLine;
     private boolean debug;
     private boolean verbose;
     private Path output = Paths.get("");
@@ -109,6 +112,7 @@ public class Json5eTui {
             this.colors = spec.commandLine().getHelp().colorScheme();
             this.out = spec.commandLine().getOut();
             this.err = spec.commandLine().getErr();
+            this.commandLine = spec.commandLine();
         }
 
         this.debug = debug;
@@ -122,6 +126,10 @@ public class Json5eTui {
     public void close() {
         out.flush();
         err.flush();
+    }
+
+    public CommandLine getCommandLine() {
+        return commandLine;
     }
 
     public boolean isDebug() {
@@ -196,7 +204,7 @@ public class Json5eTui {
     }
 
     public void error(Throwable ex, String errorMsg) {
-        err.println(ansi.new Text("🛑 @|fg(red) " + errorMsg + "|@", colors));
+        err.println(colors.errorText("🛑 " + errorMsg));
         if (ex != null && isDebug()) {
             ex.printStackTrace(err);
         }
@@ -241,44 +249,47 @@ public class Json5eTui {
         }
     }
 
-    public void readFile(Path p, BiConsumer<String, JsonNode> callback) throws IOException {
+    public boolean readFile(Path p, BiConsumer<String, JsonNode> callback) {
         inputRoot.add(p.getParent().toAbsolutePath());
-
-        File f = p.toFile();
-        JsonNode node = MAPPER.readTree(f);
-        callback.accept(f.getName(), node);
-        verbosef("🔖 Finished reading %s", p);
+        try {
+            File f = p.toFile();
+            JsonNode node = MAPPER.readTree(f);
+            callback.accept(f.getName(), node);
+            verbosef("🔖 Finished reading %s", p);
+        } catch (IOException e) {
+            errorf(e, "Unable to read source file at path %s", p);
+            return false;
+        }
+        return true;
     }
 
-    public void readDirectory(Path dir, BiConsumer<String, JsonNode> callback) {
+    public boolean readDirectory(Path dir, BiConsumer<String, JsonNode> callback) {
+        debugf("📁 %s\n", dir);
+
         inputRoot.add(dir.toAbsolutePath());
 
+        boolean result = true;
         String basename = dir.getFileName().toString();
-        debugf("📁 %s\n", dir);
         try (Stream<Path> stream = Files.list(dir)) {
-            stream.forEach(p -> {
+            Iterator<Path> i = stream.iterator();
+            while (i.hasNext()) {
+                Path p = i.next();
                 File f = p.toFile();
                 String name = p.getFileName().toString();
                 if (f.isDirectory()) {
-                    try {
-                        readDirectory(p, callback);
-                    } catch (Exception e) {
-                        errorf(e, "Error reading directory %s", p.toString());
-                    }
+                    result |= readDirectory(p, callback);
                 } else if ((name.startsWith("fluff") || name.startsWith(basename)) && name.endsWith(".json")) {
-                    try {
-                        readFile(p, callback);
-                    } catch (Exception e) {
-                        errorf(e, "Error parsing file %s", p.toString());
-                    }
+                    result |= readFile(p, callback);
                 }
-            });
+            }
         } catch (Exception e) {
-            errorf(e, "Error parsing %s", dir.toString());
+            errorf(e, "Error reading %s", dir.toString());
+            return false;
         }
+        return result;
     }
 
-    public void read5eTools(Path dir, BiConsumer<String, JsonNode> callback) throws IOException {
+    public boolean read5eTools(Path dir, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
                 "adventures.json", "books.json", "names.json", "variantrules.json",
                 "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
@@ -293,17 +304,19 @@ public class Json5eTui {
 
         if (!dir.resolve("adventures.json").toFile().exists()) {
             debugf("Unable to find 5eTools data: %s", dir.toString());
-            return;
+            return false;
         }
         inputRoot.add(dir.getParent());
 
+        boolean result = true;
         for (String input : inputs) {
             Path p = dir.resolve(input);
             if (p.toFile().isFile()) {
-                readFile(p, callback);
+                result |= readFile(p, callback);
             } else {
-                readDirectory(p, callback);
+                result |= readDirectory(p, callback);
             }
         }
+        return result;
     }
 }

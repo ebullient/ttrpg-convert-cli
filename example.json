@@ -1,0 +1,36 @@
+{
+  "from": [
+    "PHB",
+    "TCE",
+    "DMG"
+  ],
+  "paths": {
+    "compendium": "/compendium/",
+    "rules": "/compendium/rules/",
+  },
+  "excludePattern": [
+    "race|.*|dmg"
+  ],
+  "exclude": [
+    "monster|expert|dc",
+    "monster|expert|sdw",
+    "monster|expert|slw"
+  ],
+  "include": [
+    "race|changeling|mpmm"
+  ],
+  "includeGroups": [
+    "familiars"
+  ],
+  "convert": {
+    "adventure": [
+      "WBtW"
+    ],
+    "book": [
+      "PHB"
+    ]
+  },
+  "template": {
+    "background": "path/to/custom/background.txt"
+  }
+}

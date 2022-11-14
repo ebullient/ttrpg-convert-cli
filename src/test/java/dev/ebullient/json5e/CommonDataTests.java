@@ -212,7 +212,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             TemplatePaths templatePaths = new TemplatePaths();
-            templatePaths.setCustomTemplate("monster2md.txt",
+            templatePaths.setCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-scores.txt"));
             templates.setCustomTemplates(templatePaths);
 
@@ -229,7 +229,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             TemplatePaths templatePaths = new TemplatePaths();
-            templatePaths.setCustomTemplate("monster2md.txt",
+            templatePaths.setCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
             templates.setCustomTemplates(templatePaths);
 
@@ -246,7 +246,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             TemplatePaths templatePaths = new TemplatePaths();
-            templatePaths.setCustomTemplate("monster2md.txt",
+            templatePaths.setCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(templatePaths);
 

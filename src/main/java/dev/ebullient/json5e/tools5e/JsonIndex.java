@@ -41,6 +41,8 @@ public class JsonIndex implements JsonSource {
     static final String subclassFeature_3 = "\\|\\d+\\|?";
 
     final Json5eTui tui;
+    final Json5eConfig extraConfig = new Json5eConfig();
+
     private final boolean allSources;
     private final Map<String, JsonNode> rules = new HashMap<>();
     private final Set<String> allowedSources = new HashSet<>();
@@ -83,6 +85,10 @@ public class JsonIndex implements JsonSource {
         this.allSources = allowedSources.contains("*");
 
         setClassFeaturePatterns();
+    }
+
+    public Json5eConfig getExtraConfig() {
+        return extraConfig;
     }
 
     public BiConsumer<String, JsonNode> importFile() {
@@ -207,6 +213,8 @@ public class JsonIndex implements JsonSource {
     }
 
     void addConfigIfPresent(JsonNode node) {
+        extraConfig.readConfigIfPresent(mapper(), node);
+
         node.withArray("from").forEach(x -> updateSources(x.asText().toLowerCase()));
         node.withArray("include").forEach(x -> includedKeys.add(x.asText()));
         node.withArray("includeGroups").forEach(x -> includeGroups.add(x.asText()));

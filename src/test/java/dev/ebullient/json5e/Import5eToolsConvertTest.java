@@ -18,6 +18,7 @@ import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
 import io.quarkus.test.junit.main.QuarkusMainLauncher;
 import io.quarkus.test.junit.main.QuarkusMainTest;
+import picocli.CommandLine;
 
 @QuarkusMainTest
 public class Import5eToolsConvertTest {
@@ -112,9 +113,11 @@ public class Import5eToolsConvertTest {
     @Test
     void testCommandLiveDataOneSource(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path target = outputPath.resolve("erlw");
+
             // No basics
             LaunchResult result = launcher.launch("-s", "ERLW",
-                    "-o", outputPath.resolve("erlw").toString(), TestUtils.TOOLS_PATH.toString());
+                    "-o", target.toString(), TestUtils.TOOLS_PATH.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -159,6 +162,62 @@ public class Import5eToolsConvertTest {
                         }
                         return List.of();
                     }));
+        }
+    }
+
+    @Test
+    void testCommandBadTemplates(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path target = outputPath.resolve("bad-templates");
+
+            LaunchResult result = launcher.launch("--index",
+                    "--background=garbage.txt",
+                    "-o", target.toString(),
+                    TestUtils.TOOLS_PATH.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command did not fail as expected. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(CommandLine.ExitCode.USAGE);
+        }
+    }
+
+    @Test
+    void testCommandBadTemplatesInJson(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path target = outputPath.resolve("bad-templates-json");
+
+            LaunchResult result = launcher.launch("--index",
+                    "-o", target.toString(),
+                    TestUtils.TOOLS_PATH.toString(),
+                    TestUtils.TEST_SOURCES_BAD_TEMPL_JSON.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command did not fail as expected. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(CommandLine.ExitCode.USAGE);
+        }
+    }
+
+    @Test
+    void testCommandBookAdventureInJson(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            Path target = outputPath.resolve("json-book-adventure");
+
+            LaunchResult result = launcher.launch("--index",
+                    "-o", target.toString(),
+                    TestUtils.TOOLS_PATH.toString(),
+                    TestUtils.TEST_SOURCES_BOOK_ADV_JSON.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+
+            Path wbtw = target.resolve("compendium/adventures/the-wild-beyond-the-witchlight");
+            assertThat(wbtw).exists();
+            assertThat(wbtw).isDirectory();
+
+            Path phb = target.resolve("compendium/books/players-handbook");
+            assertThat(phb).exists();
+            assertThat(phb).isDirectory();
         }
     }
 }

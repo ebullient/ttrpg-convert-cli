@@ -30,6 +30,8 @@ public class TestUtils {
     final static Path TOOLS_PATH = PROJECT_PATH.resolve("5etools-mirror-1.github.io/data");
     final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
     final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
+    final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
+    final static Path TEST_SOURCES_BOOK_ADV_JSON = PROJECT_PATH.resolve("src/test/resources/sources-book-adventure.json");
     final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
 
     final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");

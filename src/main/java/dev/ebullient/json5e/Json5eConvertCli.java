@@ -15,6 +15,7 @@ import dev.ebullient.json5e.io.MarkdownWriter;
 import dev.ebullient.json5e.io.TemplatePaths;
 import dev.ebullient.json5e.io.Templates;
 import dev.ebullient.json5e.tools5e.Json2MarkdownConverter;
+import dev.ebullient.json5e.tools5e.Json5eConfig;
 import dev.ebullient.json5e.tools5e.JsonIndex;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
@@ -23,6 +24,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.IFactory;
+import picocli.CommandLine.IParameterExceptionHandler;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParameterException;
@@ -30,6 +32,7 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParseResult;
 import picocli.CommandLine.ScopeType;
 import picocli.CommandLine.Spec;
+import picocli.CommandLine.UnmatchedArgumentException;
 
 @SuppressWarnings("CanBeFinal")
 @QuarkusMain
@@ -135,26 +138,33 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
 
         boolean allOk = true;
         JsonIndex index = new JsonIndex(source, tui);
+        Path toolsBase = Path.of("").toAbsolutePath();
 
         for (Path inputPath : input) {
             tui.outPrintf("⏱  Reading %s%n", inputPath);
-            try {
-                if (inputPath.toFile().isDirectory()) {
-                    tui.read5eTools(inputPath, index.importFile());
-                } else {
-                    tui.readFile(inputPath, index.importFile());
-                }
-            } catch (IOException e) {
-                tui.error(e, "  Exception: " + e.getMessage());
-                allOk = false;
+            if (inputPath.toFile().isDirectory()) {
+                toolsBase = inputPath.toAbsolutePath();
+                allOk |= tui.read5eTools(toolsBase, index.importFile());
+            } else {
+                allOk |= tui.readFile(inputPath, index.importFile());
             }
         }
+
+        Json5eConfig extraConfig = index.getExtraConfig();
+        for (String adventure : extraConfig.getAdventures()) {
+            allOk |= tui.readFile(toolsBase.resolve(adventure), index.importFile());
+        }
+        for (String book : extraConfig.getBooks()) {
+            allOk |= tui.readFile(toolsBase.resolve(book), index.importFile());
+        }
+        extraConfig.getTemplates().forEach((k, v) -> paths.setCustomTemplate(k, v));
+
         tui.outPrintln("✅ finished reading 5etools data.");
         index.prepare();
 
-        tui.verbosef("Custom templates: %s", paths.customTemplates.toString());
-        tpl.setCustomTemplates(paths);
         tui.debugf("Defined templates: %s", tpl);
+        tpl.setCustomTemplates(paths);
+        tui.verbosef("Custom templates: %s", paths.customTemplates.toString());
 
         if (filterIndex) {
             try {
@@ -197,6 +207,30 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
         return new CommandLine(this, factory)
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .setExecutionStrategy(this::executionStrategy)
+                .setParameterExceptionHandler(new ShortErrorMessageHandler())
                 .execute(args);
+    }
+
+    class ShortErrorMessageHandler implements IParameterExceptionHandler {
+        public int handleParseException(ParameterException ex, String[] args) {
+            CommandLine cmd = ex.getCommandLine();
+            CommandSpec spec = cmd.getCommandSpec();
+            tui.init(spec, debug, verbose);
+
+            tui.error(ex, ex.getMessage());
+            UnmatchedArgumentException.printSuggestions(ex, cmd.getErr());
+
+            cmd.getErr().println(cmd.getHelp().fullSynopsis()); // normal text to error stream
+
+            if (spec.equals(spec.root())) {
+                cmd.getErr().println(cmd.getHelp().commandList()); // normal text to error stream
+            }
+            cmd.getErr().printf("See '%s --help' for more information.%n", spec.qualifiedName());
+            cmd.getErr().flush();
+
+            return cmd.getExitCodeExceptionMapper() != null
+                    ? cmd.getExitCodeExceptionMapper().getExitCode(ex)
+                    : spec.exitCodeOnInvalidInput();
+        }
     }
 }

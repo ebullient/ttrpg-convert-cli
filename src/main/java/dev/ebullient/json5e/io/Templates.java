@@ -27,6 +27,7 @@ import io.quarkus.qute.Template;
 
 @ApplicationScoped
 public class Templates {
+
     final Map<String, Template> templates = new HashMap<>();
     TemplatePaths templatePaths = null;
 
@@ -37,6 +38,10 @@ public class Templates {
     Engine engine;
 
     public void setCustomTemplates(TemplatePaths templatePaths) {
+        if (templatePaths != null) {
+            templatePaths.verify(tui);
+        }
+
         this.templatePaths = templatePaths;
         this.templates.clear();
     }

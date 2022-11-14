@@ -190,16 +190,33 @@ I use a json file to provide detailed configuration for sources, as doing so wit
     ```
     > 🔹 Note: the leading slash indicates the path starting at the root of your vault.
 
-- `exclude` and `excludePattern` work against the identifiers (listed in the generated index files). They allow you to further tweak/constrain what is emitted as formatted markdown. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. I own both of these books, but I don't want those creatures in the formatted bestiary.
+- `exclude` and `excludePattern`: Exclude a single identifier (as listed in the generated index files), or all identifiers matching a pattern. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. As it happens, I own these materials, but I don't want these variants in the formatted bestiary.
 
-- `include` (as of 1.0.13): specifically include a single identifier (as listed in the generated index files). 
-This allows you to include a specific resource without including the whole source and excluding everything else. Useful for single resources (classes, backgrounds, races, items, etc.) purchased from D&D Beyond. To include just the Changeling race from _Mordenkainen Presents: Monsters of the Multiverse_, for example, you would add the folowing: 
+- `include` (as of 1.0.13): Include a single identifier (as listed in the generated index files). 
+This allows you to include a specific resource without including the whole source and excluding everything else. Useful for single resources (classes, backgrounds, races, items, etc.) purchased from D&D Beyond. To include the Changeling race from _Mordenkainen Presents: Monsters of the Multiverse_, for example, you would add the folowing: 
 
     ```json
     "include": [
         "race|changeling|mpmm"
     ]
     ```
+
+- `convert` (as of 1.0.18): specify books or adventures to import into the compendium (which will allow cross-linking, etc.). Either provide the full relative path to the adventure or book json file, or specify its Id (as found in the [source code (around line 138)](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java)): 
+
+    ```json
+    "convert": {
+        "adventure": [
+            "WBtW",
+            "tftyp-wpm", 
+        ],
+        "book": [
+            "5etools-mirror-1.github.io/data/book/book-phb.json"
+        ]
+    }
+    ```
+
+Note that some adventures, like _Tales from the Yawning Portal_, are treated as a collection of standalone modules. The generated index contains these as `reference` items, but it can help you find the sources you own. The three sources shown in the example above are listed in the index as `reference|adventure-wbtw`, `reference|adventure-tftyp-wpm`, and `reference|book-phb` respectively.
+
 
 #### Additional example
 
@@ -306,6 +323,33 @@ Of particular note are the varied monster templates:
 - Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/monster2md-yamlStatblock-header.txt)
 
 ## Changes that impact generated templates and files
+
+## 1.0.18: You can put more things in json input now!
+
+Use `convert` to import source text for books and adventures that you own: 
+
+```json
+  "convert": {
+    "adventure": [
+      "WBtW"
+    ],
+    "book": [
+      "PHB"
+    ]
+  }
+```
+
+Specify templates in json:
+
+```json
+  "template": {
+    "background": "path/to/template.txt",
+  }
+```
+
+Be careful of paths here. Relative paths will be resolved depending on where the command is run from. Absolute paths will be machine specific (most likely). Use forward slashes for path segments, even if you're working on windows. 
+
+You can place this configuration one file or several, your choice. 
 
 ### 1.0.16: Sections in Spell text
 
