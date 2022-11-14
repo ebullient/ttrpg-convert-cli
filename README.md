@@ -17,7 +17,28 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 
 > 🔥 **1.0.12 makes significant changes** to file names, and minor changes for custom templates. [See details below](#changes-that-impact-generated-templates-and-files).
 
-## Download and run
+## Install the command line utility
+
+- [Use pre-built platform binary](#use-pre-built-platform-binary)
+- [Use Java Jar](#use-java-jar)
+- [Build from source](#build-and-run)
+
+### Use pre-built platform binary
+
+[Download the latest release](https://github.com/ebullient/json5e-convert-cli/releases/latest) of the zip or tgz for your platform. Extract the archive. A `5e-convert` binary executable will be in the extracted bin directory. 
+
+```shell
+5e-convert --help
+```
+
+Use this binary in the instructions below. Continue to notes about [Conventions](#conventions).
+
+Notes:
+
+- [Open a command prompt in a folder (Windows) ](https://www.lifewire.com/open-command-prompt-in-a-folder-5185505)
+- [Running executables from the command line (Windows)](https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window)
+
+### Use Java Jar
 
 1. Install JBang: https://www.jbang.dev/documentation/guide/latest/installation.html
 
@@ -26,14 +47,14 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
     ```shell
     jbang app install --name 5e-convert --force --fresh https://github.com/ebullient/json5e-convert-cli/releases/download/1.0.17/json5e-convert-cli-1.0.17-runner.jar
     ```
-    
+
     If you want the latest unreleased snapshot: 
-    
+
     ```shell
     jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/json5e-convert-cli/199-SNAPSHOT/json5e-convert-cli-199-SNAPSHOT-runner.jar
-    ```    
+    ```
 
-    There may be a pause if you download the snapshot, as it is rebuilt on demand.
+    There may be a pause if you download the snapshot; it is rebuilt on demand.
 
     > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
 
@@ -43,7 +64,9 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
     5e-convert --help
     ```
 
-## Build and run (optional)
+Continue to notes about [Conventions](#conventions).
+
+### Build and run
 
 1. Clone this repository
 2. Build this project: `quarkus build` or `./mvnw install`
@@ -66,7 +89,7 @@ To run commands listed below, either:
 
 - **File names.** To avoid conflicts and issues with different operating systems, all file names are slugified (all lower case, symbols stripped, and spaces replaced by dashes). This is a familiar convention for those used to jekyll, hugo, or other blogging systems.
 
-  File names for resources outside of the core books (PHB, MM, and DMG) have the abbreviated source name appended to the end to avoid file collisions. 
+  File names for resources outside of the core books (PHB, MM, and DMG) have the abbreviated source name appended to the end to avoid file collisions.
 
 - **Organization.** Files are generated in two roots: `compendium` and `rules`. The location of these roots is configurable (see below).   
 
@@ -127,16 +150,16 @@ To run commands listed below, either:
         5etools-mirror-1.github.io/data/book/book-aag.json \
         my-items.json dm-sources.json
     ```
-    
+
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. 
         > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/json5e-convert-cli/blob/main/src/main/java/dev/ebullient/json5e/tools5e/CompendiumSources.java)
-     
+
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) should be listed explicitly
     - `my-items.json` Custom items that I've created for my campaign that follow 5etools JSON format.
     - `dm-sources.json` Additional parameters (shown in detail below)
 
 > 💭 I recommend running the CLI against a separate directory, and then using a comparison tool of your choice to preview changes before you copy or merge them in.
-> 
+>
 > You can use `git diff` to compare arbitrary directories:
 > ```
 > git diff --no-index vault/compendium/bestiary generated/compendium/bestiary
