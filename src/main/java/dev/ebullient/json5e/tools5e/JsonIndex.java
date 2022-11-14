@@ -233,6 +233,7 @@ public class JsonIndex implements JsonSource {
                         } else {
                             rulesPath = Path.of(rulesRoot.substring(1));
                         }
+                        rulesRoot = rulesRoot.replaceAll(" ", "%20");
                         break;
                     case "compendium":
                         compendiumRoot = ('/' + e.getValue().asText() + '/')
@@ -244,6 +245,7 @@ public class JsonIndex implements JsonSource {
                         } else {
                             compendiumPath = Path.of(compendiumRoot.substring(1));
                         }
+                        compendiumRoot = compendiumRoot.replaceAll(" ", "%20");
                         break;
                 }
             });
