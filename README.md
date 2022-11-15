@@ -19,6 +19,8 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 
 ## Install the command line utility
 
+There are several options for running 5e-convert. Choose whichever you are the most comfortable with: 
+
 - [Use pre-built platform binary](#use-pre-built-platform-binary)
 - [Use Java Jar](#use-java-jar)
 - [Build from source](#build-and-run)
