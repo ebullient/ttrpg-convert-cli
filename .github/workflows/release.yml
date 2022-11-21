@@ -149,7 +149,7 @@ jobs:
         run: ./mvnw -B -ntp package -Dnative -DskipTests -DskipITs -DskipFormat
 
       - name: Assemble ${{ matrix.os }} archive
-        uses: jreleaser/release-action@v1
+        uses: jreleaser/release-action@v2
         env:
           JRELEASER_PROJECT_VERSION: ${{ needs.build_tag.outputs.version }}
         with:
@@ -187,7 +187,7 @@ jobs:
 
       - name: Release with JReleaser
         if: inputs.dry_run == true
-        uses: jreleaser/release-action@v1
+        uses: jreleaser/release-action@v2
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PROJECT_VERSION: ${{ needs.build_tag.outputs.version }}
@@ -196,7 +196,7 @@ jobs:
 
       - name: Release with JReleaser
         if: inputs.dry_run == false
-        uses: jreleaser/release-action@v1
+        uses: jreleaser/release-action@v2
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PROJECT_VERSION: ${{ needs.build_tag.outputs.version }}
