@@ -49,7 +49,7 @@ Notes:
 2. Install the pre-built release: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://github.com/ebullient/json5e-convert-cli/releases/download/1.0.19/json5e-convert-cli-1.0.19-runner.jar
+    jbang app install --name 5e-convert --force --fresh https://github.com/ebullient/json5e-convert-cli/releases/download/1.0.20/json5e-convert-cli-1.0.20-runner.jar
     ```
 
     If you want the latest unreleased snapshot: 
