@@ -250,6 +250,7 @@ public class QuteMonster extends QuteBase {
     }
 
     @TemplateData
+    @RegisterForReflection
     public static class Spellcasting {
         public String name;
         public List<String> headerEntries;
@@ -341,6 +342,7 @@ public class QuteMonster extends QuteBase {
     }
 
     @TemplateData
+    @RegisterForReflection
     public static class Spells {
         public int slots;
         public int lowerBound;
@@ -348,6 +350,7 @@ public class QuteMonster extends QuteBase {
     }
 
     @TemplateData
+    @RegisterForReflection
     public static class SavesAndSkills {
         public Map<String, Integer> saveMap;
         public Map<String, Integer> skillMap;
