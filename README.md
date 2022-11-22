@@ -39,6 +39,8 @@ Notes:
 
 - [Open a command prompt in a folder (Windows) ](https://www.lifewire.com/open-command-prompt-in-a-folder-5185505)
 - [Running executables from the command line (Windows)](https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window)
+- To show emoji in Windows Commmand Prompt: `chcp 65001` and choose a font with emoji support (Consolas is one). You can also try the new Windows Terminal (`wt.exe`).
+- MacOS permission checking (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/5e-convert`
 
 ### Use Java Jar
 
