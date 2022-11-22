@@ -48,6 +48,7 @@ public class QuteName {
     }
 
     @TemplateData
+    @RegisterForReflection
     public static class LookupTable {
         public final String name;
         public final String diceType;
@@ -63,6 +64,7 @@ public class QuteName {
     }
 
     @TemplateData
+    @RegisterForReflection
     public static class LookupTableRow {
         public final String min;
         public final String max;

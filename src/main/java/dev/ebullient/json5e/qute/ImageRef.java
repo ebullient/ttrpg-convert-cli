@@ -3,8 +3,10 @@ package dev.ebullient.json5e.qute;
 import java.nio.file.Path;
 
 import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
+@RegisterForReflection
 public class ImageRef {
     public final Path sourcePath;
     public final Path targetPath;

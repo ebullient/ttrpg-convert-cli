@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.json5e.io.Json5eTui;
 import dev.ebullient.json5e.qute.QuteSource;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface JsonSource {
     Pattern backgroundPattern = Pattern.compile("\\{@(background) ([^}]+)}");
@@ -1187,16 +1188,18 @@ public interface JsonSource {
         return "Unknown";
     }
 
+    @RegisterForReflection
     class JsonMediaHref {
         public String type;
         public JsonHref href;
-        String title;
+        public String title;
+    }
 
-        static class JsonHref {
-            public String type;
-            public String path;
-            public String url;
-        }
+    @RegisterForReflection
+    static class JsonHref {
+        public String type;
+        public String path;
+        public String url;
     }
 
     Map<String, Integer> XP_CHART_ALT = Map.ofEntries(
