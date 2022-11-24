@@ -393,7 +393,7 @@ public class JsonIndex implements JsonSource {
             return Json2QuteRace.findRaceVariants(this, type, key, jsonSource);
         } else if (type == IndexType.monster && jsonSource.has("summonedBySpellLevel")) {
             return Json2QuteMonster.findConjuredMonsterVariants(this, type, key, jsonSource);
-        } else if (key.contains("splugoth the returned")) {
+        } else if (key.contains("splugoth the returned") || key.contains("prophetess dran")) {
             // Fix.
             ObjectNode copy = (ObjectNode) copier.copyNode(jsonSource);
             copy.put("isNpc", true);
