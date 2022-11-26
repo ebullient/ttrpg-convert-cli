@@ -39,6 +39,7 @@ public interface JsonSource {
     Pattern condPattern = Pattern.compile("\\{@condition ([^|}]+)\\|?[^}]*}");
     Pattern diseasePattern = Pattern.compile("\\{@disease ([^|}]+)\\|?[^}]*}");
     Pattern skillPattern = Pattern.compile("\\{@skill ([^}]+)}");
+    Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+) ([^}]+)}"); // {@skillCheck animal_handling 5}
     Pattern sensePattern = Pattern.compile("\\{@sense ([^}]+)}");
     int CR_UNKNOWN = 100001;
     int CR_CUSTOM = 100000;
@@ -852,6 +853,7 @@ public interface JsonSource {
                     .replace("#$prompt_number:title=Enter Lifestyle Modifier$#", "Charisma modifier")
                     .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
                     .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)");
+
             result = dicePattern.matcher(result)
                     .replaceAll((match) -> match.group(2));
             result = chancePattern.matcher(result)
@@ -878,6 +880,11 @@ public interface JsonSource {
             result = skillPattern.matcher(result)
                     .replaceAll((match) -> linkifyRules(match.group(1), "skills"));
 
+            result = skillCheckPattern.matcher(result).replaceAll((match) -> {
+                SkillOrAbility skill = SkillOrAbility.fromTextValue(match.group(1));
+                return linkifyRules(skill.value(), "skills");
+            });
+
             result = notePattern.matcher(result)
                     .replaceAll((match) -> {
                         List<String> text = new ArrayList<>();
@@ -896,6 +903,7 @@ public interface JsonSource {
                         }
                         return parts[0];
                     });
+
             result = result
                     .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
                     .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first

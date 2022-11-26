@@ -10,8 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.json5e.qute.QuteNote;
 import dev.ebullient.json5e.qute.QuteSource;
@@ -122,31 +120,20 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         });
 
         return notes;
-
     }
 
     public QuteNote buildItemProperties() {
         Set<String> tags = new HashSet<>();
+        tags.add("compendium/src/srd");
+
         List<String> text = new ArrayList<>();
+        text.add(String.format("_Source: SRD / Basic Rules_"));
 
         node.forEach(entry -> {
-            PropertyEnum propertyEnum = PropertyEnum.fromEncodedType(entry.get("abbreviation").asText());
-            ObjectNode node = (ObjectNode) copyNode(entry);
-            node.set("name", new TextNode(propertyEnum.longName));
-            currentSource = index.constructSources(IndexType.sourceless, node);
-            if (!index.rulesSourceExcluded(node, propertyEnum.longName)) {
-                tags.addAll(currentSource.getSourceTags());
-                maybeAddBlankLine(text);
-                text.add("## " + propertyEnum.longName);
-                maybeAddBlankLine(text);
-                entry.withArray("entries").forEach(e -> appendEntryToText(text, e.get("entries"), null));
-                if (propertyEnum == PropertyEnum.SPECIAL) {
-                    text.add(
-                            "A weapon with the special property has unusual rules governing its use, which are explained in the weapon's description.");
-                }
-                maybeAddBlankLine(text);
-                text.add(String.format("_Source: %s_", currentSource.getSourceText(index.srdOnly())));
-            }
+            maybeAddBlankLine(text);
+            text.add("## " + entry.get("name").asText());
+            maybeAddBlankLine(text);
+            appendEntryObjectToText(text, entry, "###");
         });
 
         return new QuteNote(title, null, String.join("\n", text), tags);
