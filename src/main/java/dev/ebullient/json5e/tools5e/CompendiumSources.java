@@ -185,6 +185,7 @@ public class CompendiumSources {
         abvToName.put("DMG", "Dungeon Master's Guide");
         abvToName.put("DoD", "Domains of Delight");
         abvToName.put("DoSI", "Dragons of Stormwreck Isle");
+        abvToName.put("DSotDQ", "Dragonlance: Shadow of the Dragon Queen");
         abvToName.put("EEPC", "Elemental Evil Player's Companion");
         abvToName.put("EET", "Elemental Evil: Trinkets");
         abvToName.put("EFR", "Eberron: Forgotten Relics");

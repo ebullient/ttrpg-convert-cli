@@ -341,7 +341,7 @@ public class JsonIndex implements JsonSource {
     }
 
     private List<Tuple> findDeities(List<Tuple> allDeities) {
-        List<String> reverseOrder = List.of("erlw", "mtf", "vgm", "scag", "dmg", "phb");
+        List<String> reverseOrder = List.of("dsotdq", "erlw", "mtf", "vgm", "scag", "dmg", "phb");
         List<Tuple> result = new ArrayList<>();
         Map<String, List<Tuple>> booklist = new HashMap<>();
 
