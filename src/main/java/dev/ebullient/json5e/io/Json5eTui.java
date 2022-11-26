@@ -249,6 +249,18 @@ public class Json5eTui {
         }
     }
 
+    public boolean readResource(String name, BiConsumer<String, JsonNode> callback) {
+        try {
+            JsonNode node = MAPPER.readTree(this.getClass().getResourceAsStream(name));
+            callback.accept(name, node);
+            verbosef("🔖 Finished reading %s", name);
+        } catch (IOException e) {
+            errorf(e, "Unable to read resource %s", name);
+            return false;
+        }
+        return true;
+    }
+
     public boolean readFile(Path p, BiConsumer<String, JsonNode> callback) {
         inputRoot.add(p.getParent().toAbsolutePath());
         try {

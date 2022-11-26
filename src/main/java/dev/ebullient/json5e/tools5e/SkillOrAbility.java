@@ -52,7 +52,7 @@ public enum SkillOrAbility {
         if (v == null || v.isBlank()) {
             return None;
         }
-        String lower = v.toLowerCase().replace(" saving throws", "");
+        String lower = v.toLowerCase().replace(" saving throws", "").replace("_", "");
         for (SkillOrAbility s : SkillOrAbility.values()) {
             if (s.lowerValue.equals(lower) || s.name().toLowerCase().equals(lower)) {
                 return s;

@@ -112,7 +112,10 @@ public class Json2MarkdownConverter {
         List<QuteNote> tables = new ArrayList<>();
         List<QuteNote> variants = new ArrayList<>();
 
-        for (Entry<String, JsonNode> entry : index.getRules().entrySet()) {
+        final Map<String, JsonNode> ruleIndex = index.getRules();
+        final JsonNode srdEntries = ruleIndex.get("srdEntries");
+
+        for (Entry<String, JsonNode> entry : ruleIndex.entrySet()) {
             String key = entry.getKey();
             JsonNode node = entry.getValue();
             if (node.isNull()) {
@@ -145,9 +148,6 @@ public class Json2MarkdownConverter {
                     case "action":
                         addActions(rules, node);
                         break;
-                    case "itemProperty":
-                        addItemProperties(rules, node);
-                        break;
                     case "magicItems":
                         addLootGroup(tables, node, "Magic Item Tables");
                         break;
@@ -175,6 +175,8 @@ public class Json2MarkdownConverter {
                 }
             }
         }
+
+        addItemProperties(rules, srdEntries.get("properties"));
 
         Path rulesPath = index.rulesPath();
         Path compendiumPath = index.compendiumPath();

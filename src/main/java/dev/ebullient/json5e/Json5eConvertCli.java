@@ -144,18 +144,18 @@ public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
             tui.outPrintf("⏱  Reading %s%n", inputPath);
             if (inputPath.toFile().isDirectory()) {
                 toolsBase = inputPath.toAbsolutePath();
-                allOk |= tui.read5eTools(toolsBase, index.importFile());
+                allOk |= tui.read5eTools(toolsBase, index::importTree);
             } else {
-                allOk |= tui.readFile(inputPath, index.importFile());
+                allOk |= tui.readFile(inputPath, index::importTree);
             }
         }
 
         Json5eConfig extraConfig = index.getExtraConfig();
         for (String adventure : extraConfig.getAdventures()) {
-            allOk |= tui.readFile(toolsBase.resolve(adventure), index.importFile());
+            allOk |= tui.readFile(toolsBase.resolve(adventure), index::importTree);
         }
         for (String book : extraConfig.getBooks()) {
-            allOk |= tui.readFile(toolsBase.resolve(book), index.importFile());
+            allOk |= tui.readFile(toolsBase.resolve(book), index::importTree);
         }
         extraConfig.getTemplates().forEach((k, v) -> paths.setCustomTemplate(k, v));
 

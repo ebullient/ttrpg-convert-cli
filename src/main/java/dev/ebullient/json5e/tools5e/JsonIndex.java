@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -74,8 +73,6 @@ public class JsonIndex implements JsonSource {
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;
 
-    final BiConsumer<String, JsonNode> fileConsumer = this::importTree;
-
     public JsonIndex(List<String> sources, Json5eTui tui) {
         staticInstance = this;
 
@@ -89,10 +86,6 @@ public class JsonIndex implements JsonSource {
 
     public Json5eConfig getExtraConfig() {
         return extraConfig;
-    }
-
-    public BiConsumer<String, JsonNode> importFile() {
-        return fileConsumer;
     }
 
     public JsonIndex importTree(String filename, JsonNode node) {
@@ -116,6 +109,7 @@ public class JsonIndex implements JsonSource {
         addRulesIfPresent(node, "status");
         addRulesIfPresent(node, "table");
         addRulesIfPresent(node, "variantrule");
+        addRulesIfPresent(node, "srdEntries");
 
         // Reference/Internal Types
         node.withArray("backgroundFluff").forEach(x -> addToIndex(IndexType.backgroundfluff, x));
@@ -292,6 +286,9 @@ public class JsonIndex implements JsonSource {
             return;
         }
         variantIndex = new HashMap<>();
+
+        // read additional SRD entries
+        tui().readResource("/srd-entries.json", this::importTree);
 
         nodeIndex.forEach((key, node) -> {
             // check for / manage copies first.

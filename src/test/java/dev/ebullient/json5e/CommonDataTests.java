@@ -32,17 +32,17 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             if (useSources) {
                 index = new JsonIndex(List.of(), tui);
-                tui.readFile(TestUtils.TEST_SOURCES_JSON, index.importFile());
+                tui.readFile(TestUtils.TEST_SOURCES_JSON, index::importTree);
             } else {
                 index = new JsonIndex(List.of("*"), tui);
             }
-            tui.readFile(TestUtils.TEST_PATH_JSON, index.importFile());
+            tui.readFile(TestUtils.TEST_PATH_JSON, index::importTree);
 
             for (String x : List.of("adventures.json", "books.json", "adventure/adventure-wdh.json",
                     "book/book-vgm.json", "book/book-phb.json")) {
-                tui.readFile(TestUtils.TOOLS_PATH.resolve(x), index.importFile());
+                tui.readFile(TestUtils.TOOLS_PATH.resolve(x), index::importTree);
             }
-            tui.read5eTools(TestUtils.TOOLS_PATH, index.importFile());
+            tui.read5eTools(TestUtils.TOOLS_PATH, index::importTree);
 
             index.prepare();
         }
