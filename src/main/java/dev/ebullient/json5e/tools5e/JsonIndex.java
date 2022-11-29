@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.json5e.io.Json5eTui;
 
 public class JsonIndex implements JsonSource {
-    private static final Path CWD = Path.of(".");
     private static JsonIndex staticInstance;
 
     public static JsonIndex get() {
@@ -40,14 +39,9 @@ public class JsonIndex implements JsonSource {
     static final String subclassFeature_3 = "\\|\\d+\\|?";
 
     final Json5eTui tui;
-    final Json5eConfig extraConfig = new Json5eConfig();
+    final Json5eConfig extraConfig;
 
-    private final boolean allSources;
     private final Map<String, JsonNode> rules = new HashMap<>();
-    private final Set<String> allowedSources = new HashSet<>();
-    private final Set<String> includedKeys = new HashSet<>();
-    private final Set<String> excludedKeys = new HashSet<>();
-    private final Set<Pattern> excludedPatterns = new HashSet<>();
 
     private final Map<String, JsonNode> nodeIndex = new HashMap<>();
     private final Map<String, String> aliases = new HashMap<>();
@@ -57,16 +51,9 @@ public class JsonIndex implements JsonSource {
 
     private final Set<String> srdKeys = new HashSet<>();
     private final Set<String> familiarKeys = new HashSet<>();
-    private final Set<String> includeGroups = new HashSet<>();
     private final Set<String> missingSourceName = new HashSet<>();
 
     private final Map<JsonNode, CompendiumSources> nodeToSources = new HashMap<>();
-
-    private String rulesRoot = "/rules/";
-    private Path rulesPath = Path.of("rules/");
-
-    private String compendiumRoot = "/compendium/";
-    private Path compendiumPath = Path.of("compendium/");
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
 
@@ -78,8 +65,8 @@ public class JsonIndex implements JsonSource {
 
         this.tui = tui;
 
-        this.allowedSources.addAll(sources.stream().map(String::toLowerCase).collect(Collectors.toList()));
-        this.allSources = allowedSources.contains("*");
+        this.extraConfig = new Json5eConfig(tui);
+        extraConfig.addSources(sources);
 
         setClassFeaturePatterns();
     }
@@ -93,7 +80,7 @@ public class JsonIndex implements JsonSource {
             return this;
         }
 
-        addConfigIfPresent(node);
+        extraConfig.readConfigIfPresent(mapper(), node);
 
         addRulesIfPresent(node, "action");
         addRulesIfPresent(node, "artObjects");
@@ -194,58 +181,6 @@ public class JsonIndex implements JsonSource {
         }
     }
 
-    void addExcludePattern(String value) {
-        String[] split = value.split("\\|");
-        if (split.length > 1) {
-            for (int i = 0; i < split.length - 1; i++) {
-                if (!split[i].endsWith("\\")) {
-                    split[i] += "\\";
-                }
-            }
-        }
-        excludedPatterns.add(Pattern.compile(String.join("|", split)));
-    }
-
-    void addConfigIfPresent(JsonNode node) {
-        extraConfig.readConfigIfPresent(mapper(), node);
-
-        node.withArray("from").forEach(x -> updateSources(x.asText().toLowerCase()));
-        node.withArray("include").forEach(x -> includedKeys.add(x.asText()));
-        node.withArray("includeGroups").forEach(x -> includeGroups.add(x.asText()));
-        node.withArray("exclude").forEach(x -> excludedKeys.add(x.asText().toLowerCase()));
-        node.withArray("excludePattern").forEach(x -> addExcludePattern(x.asText().toLowerCase()));
-
-        if (node.has("paths")) {
-            node.get("paths").fields().forEachRemaining(e -> {
-                switch (e.getKey()) {
-                    case "rules":
-                        rulesRoot = ('/' + e.getValue().asText() + '/')
-                                .replace('\\', '/')
-                                .replaceAll("/+", "/");
-                        if (rulesRoot.equals("/")) {
-                            rulesPath = CWD;
-                        } else {
-                            rulesPath = Path.of(rulesRoot.substring(1));
-                        }
-                        rulesRoot = rulesRoot.replaceAll(" ", "%20");
-                        break;
-                    case "compendium":
-                        compendiumRoot = ('/' + e.getValue().asText() + '/')
-                                .replace('\\', '/')
-                                .replaceAll("/+", "/");
-
-                        if (compendiumRoot.equals("/")) {
-                            compendiumPath = CWD;
-                        } else {
-                            compendiumPath = Path.of(compendiumRoot.substring(1));
-                        }
-                        compendiumRoot = compendiumRoot.replaceAll(" ", "%20");
-                        break;
-                }
-            });
-        }
-    }
-
     void addAlias(String key, String alias) {
         if (key.equals(alias)) {
             return;
@@ -269,13 +204,8 @@ public class JsonIndex implements JsonSource {
         }
     }
 
-    void updateSources(String x) {
-        allowedSources.add(x);
-        setClassFeaturePatterns();
-    }
-
     void setClassFeaturePatterns() {
-        String allowed = allowedSources.contains("*") ? "([^|]+)" : "(" + String.join("|", allowedSources) + ")";
+        String allowed = extraConfig.getAllowedSourcePattern();
         classFeaturePattern = Pattern.compile(classFeature_1 + allowed + classFeature_2 + allowed + "?");
         subclassFeaturePattern = Pattern
                 .compile(subclassFeature_1 + allowed + subclassFeature_2 + allowed + subclassFeature_3 + allowed + "?");
@@ -659,67 +589,25 @@ public class JsonIndex implements JsonSource {
     }
 
     public boolean srdOnly() {
-        return allowedSources.isEmpty();
+        return extraConfig.srdOnly();
     }
 
     public boolean sourceIncluded(String source) {
-        return allSources || allowedSources.contains(source.toLowerCase());
+        return extraConfig.sourceIncluded(source);
     }
 
     public boolean excludeItem(JsonNode itemSource, boolean isSRD) {
-        if (allSources) {
-            return false;
-        }
-        if (allowedSources.isEmpty()) {
-            return !isSRD; // exclude non-SRD sources when no filter is specified.
-        }
-        if (itemSource == null || !itemSource.isTextual()) {
-            return true; // unlikely, but skip items if we can't check their source
-        }
-        return !allowedSources.contains(itemSource.asText().toLowerCase());
+        return extraConfig.excludeItem(itemSource, isSRD);
     }
 
     public boolean rulesSourceExcluded(JsonNode node, String name) {
-        boolean isSRD = node.has("srd");
-        JsonNode itemSource = node.get("source");
-        if (excludeItem(itemSource, isSRD)) {
-            // skip this item: not from a specified source
-            tui.debugf("Skipped %s from %s (%s)", name, itemSource, isSRD);
-            return true;
-        }
-        return false;
+        return extraConfig.rulesSourceExcluded(node, name);
     }
 
     private boolean keyIsIncluded(String key, JsonNode node) {
-        if (includedKeys.contains(key)) {
-            return true;
-        }
-        if (excludedKeys.contains(key) ||
-                excludedPatterns.stream().anyMatch(x -> x.matcher(key).matches())) {
-            return false;
-        }
-        if (allSources) {
-            return true;
-        }
-        if (allowedSources.isEmpty()) {
-            return srdKeys.contains(key);
-        }
-        if (key.contains("classfeature|")) {
-            // class features squish phb
-            String featureKey = key.replace("||", "|phb|");
-            return classFeaturePattern.matcher(featureKey).matches() || subclassFeaturePattern.matcher(featureKey).matches();
-        }
-        if (key.startsWith("monster|") && key.endsWith("mm")
-                && includeGroups.contains("familiars") && familiarKeys.contains(key)) {
-            return true;
-        }
-        CompendiumSources sources = constructSources(IndexType.getTypeFromKey(key), key, node);
-        for (String s : sources.bookSources) {
-            if (allowedSources.contains(s.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        return extraConfig.keyIsIncluded(key, node, srdKeys, familiarKeys,
+                classFeaturePattern, subclassFeaturePattern,
+                () -> constructSources(IndexType.getTypeFromKey(key), key, node));
     }
 
     boolean isIncluded(String key) {
@@ -756,19 +644,19 @@ public class JsonIndex implements JsonSource {
     }
 
     public String rulesRoot() {
-        return rulesRoot;
+        return extraConfig.rulesRoot();
     }
 
     public String compendiumRoot() {
-        return compendiumRoot;
+        return extraConfig.compendiumRoot();
     }
 
     public Path rulesPath() {
-        return rulesPath;
+        return extraConfig.rulesPath();
     }
 
     public Path compendiumPath() {
-        return compendiumPath;
+        return extraConfig.compendiumPath();
     }
 
     public void writeIndex(Path outputFile) throws IOException {
