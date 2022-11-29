@@ -32,6 +32,7 @@ public class TestUtils {
     final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
     final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
     final static Path TEST_SOURCES_BOOK_ADV_JSON = PROJECT_PATH.resolve("src/test/resources/sources-book-adventure.json");
+    final static Path TEST_SOURCES_FROM_ALL = PROJECT_PATH.resolve("src/test/resources/sources-from-all.json");
     final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
 
     final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");
