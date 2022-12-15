@@ -28,7 +28,7 @@
         <url>https://github.com/ebullient/json5e-convert-cli/issues</url>
     </issueManagement>
     <properties>
-        <revision>199-SNAPSHOT</revision>
+        <revision>1.0.22</revision>
         <!-- Build -->
         <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <maven.compiler.release>11</maven.compiler.release>
