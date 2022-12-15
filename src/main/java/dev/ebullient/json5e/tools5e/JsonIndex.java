@@ -251,7 +251,10 @@ public class JsonIndex implements JsonSource {
         // Find/Merge deities (this will also exclude based on sources)
         List<Tuple> deities = findDeities(nodeIndex.entrySet().stream()
                 .filter(e -> IndexType.getTypeFromKey(e.getKey()) == IndexType.deity)
-                .map(e -> new Tuple(e.getKey(), e.getValue()))
+                .map(e -> new Tuple(e.getKey(), e.getValue(),
+                        String.format("%s-%s",
+                                e.getValue().get("name").asText(),
+                                e.getValue().get("pantheon").asText())))
                 .collect(Collectors.toList()));
         deities.forEach(v -> {
             JsonNode old = variantIndex.put(v.key, v.node);
@@ -422,6 +425,10 @@ public class JsonIndex implements JsonSource {
 
     public String getKey(IndexType type, JsonNode x) {
         switch (type) {
+            case deity:
+                return createDeityKey(getTextOrEmpty(x, "name"),
+                        getTextOrEmpty(x, "pantheon"),
+                        x.get("source").asText());
             case subclass:
                 return String.format("%s|%s|%s|%s|",
                         type,
@@ -487,6 +494,10 @@ public class JsonIndex implements JsonSource {
 
     public String createSimpleKey(IndexType type, String name, String source) {
         return String.format("%s|%s|%s", type, name, source).toLowerCase();
+    }
+
+    public String createDeityKey(String name, String pantheon, String source) {
+        return String.format("%s|%s|%s|%s", IndexType.deity, name, pantheon, source).toLowerCase();
     }
 
     public String getRefKey(IndexType type, String crossRef) {
@@ -707,8 +718,13 @@ public class JsonIndex implements JsonSource {
         final JsonNode node;
 
         public Tuple(String key, JsonNode node) {
+            this(key, node, null);
+        }
+
+        public Tuple(String key, JsonNode node, String name) {
             this.key = key;
             this.node = node;
+            this.name = name;
         }
 
         String name;
