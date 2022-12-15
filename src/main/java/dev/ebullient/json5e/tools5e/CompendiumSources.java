@@ -179,7 +179,7 @@ public class CompendiumSources {
     final static String TftYP_NAME = "Tales from the Yawning Portal";
     final static String AitFR_NAME = "Adventures in the Forgotten Realms";
     final static String NRH_NAME = "NERDS Restoring Harmony";
-    final static String MCVX_PREFIX = "Monster Compendium Volume ";
+    final static String MCVX_PREFIX = "Monstrous Compendium Volume ";
 
     final static Map<String, String> abvToName = new HashMap<>();
     final static Map<String, String> sourceToAbv = new HashMap<>();
@@ -241,6 +241,7 @@ public class CompendiumSources {
         abvToName.put("LR", "Locathah Rising");
         abvToName.put("MaBJoV", "Minsc and Boo's Journal of Villainy");
         abvToName.put("MCV1SC", MCVX_PREFIX + "1: Spelljammer Creatures");
+        abvToName.put("MCV2DC", MCVX_PREFIX + "2: Dragonlance Creatures");
         abvToName.put("MFF", "Mordenkainen's Fiendish Folio");
         abvToName.put("MGELFT", "Muk's Guide To Everything He Learned From Tasha");
         abvToName.put("MM", "Monster Manual");
