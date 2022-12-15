@@ -58,7 +58,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
                 tags);
     }
 
-    String decoratedBackgroundName(String name) {
+    public static String decoratedBackgroundName(String name) {
         if (name.startsWith("Variant")) {
             name = name.replace("Variant ", "") + " (Variant)";
         }

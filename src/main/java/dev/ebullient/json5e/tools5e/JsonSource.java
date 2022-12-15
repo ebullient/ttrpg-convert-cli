@@ -989,6 +989,7 @@ public interface JsonSource {
                 // "Races:
                 // {@race Human} assumes PHB by default,
                 // {@race Aasimar (Fallen)|VGM}
+                // {@race Aasimar|DMG|racial traits for the aasimar}
                 // {@race Aarakocra|eepc} can have sources added with a pipe,
                 // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
                 // {@race dwarf (hill)||Dwarf, hill}
@@ -1006,7 +1007,8 @@ public interface JsonSource {
     default String linkOrText(String linkText, String key, String dirName, String resourceName) {
         return index().isIncluded(key)
                 ? String.format("[%s](%s%s/%s.md)",
-                        linkText, index().compendiumRoot(), dirName, slugify(resourceName))
+                        linkText, index().compendiumRoot(), dirName, slugify(resourceName)
+                                .replace("-dmg-dmg", "-dmg")) // bad combo for some race names
                 : linkText;
     }
 
@@ -1024,13 +1026,17 @@ public interface JsonSource {
         if (parts.length > 1) {
             source = parts[1].isBlank() ? source : parts[1];
         }
-        String key = index().createSimpleKey(type, parts[0], source);
+        String key = index().getAliasOrDefault(index().createSimpleKey(type, parts[0], source));
         if (index().isExcluded(key)) {
             return linkText;
         }
         JsonNode jsonSource = getJsonNodeForKey(key);
         CompendiumSources sources = index().constructSources(type, jsonSource);
-        if (type == IndexType.item) {
+        if (type == IndexType.background) {
+            return linkOrText(linkText, key, dirName,
+                    Json2QuteBackground.decoratedBackgroundName(parts[0])
+                            + QuteSource.sourceIfNotCore(sources.primarySource()));
+        } else if (type == IndexType.item) {
             return linkOrText(linkText, key, dirName, parts[0] + QuteSource.sourceIfNotCore(sources.primarySource()));
         } else if (type == IndexType.race) {
             return linkOrText(linkText, key, dirName,
