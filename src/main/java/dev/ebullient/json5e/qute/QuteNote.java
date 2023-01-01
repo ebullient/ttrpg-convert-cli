@@ -1,7 +1,6 @@
 package dev.ebullient.json5e.qute;
 
 import java.util.Collection;
-import java.util.List;
 
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -27,10 +26,6 @@ public class QuteNote {
 
     public String getSource() {
         return source;
-    }
-
-    public List<ImageRef> images() {
-        return List.of();
     }
 
     public String title() {

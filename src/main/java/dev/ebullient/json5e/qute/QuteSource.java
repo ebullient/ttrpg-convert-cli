@@ -47,7 +47,9 @@ public interface QuteSource {
 
     String getSource();
 
-    List<ImageRef> images();
+    default List<ImageRef> images() {
+        return List.of();
+    };
 
     String targetFile();
 
