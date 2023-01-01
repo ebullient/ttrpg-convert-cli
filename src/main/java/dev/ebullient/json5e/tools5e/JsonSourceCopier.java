@@ -587,7 +587,7 @@ public class JsonSourceCopier implements JsonSource {
             if (!modItem.has(prop)) {
                 return;
             }
-            ObjectNode targetGroup = targetSpellcasting.with(prop);
+            ObjectNode targetGroup = targetSpellcasting.withObject("/" + prop);
             for (int i = 1; i <= 9; ++i) {
                 String key = i + "";
                 if (modItem.get(prop).has(key)) {
@@ -625,11 +625,11 @@ public class JsonSourceCopier implements JsonSource {
         arrayNode.forEach(targetSpellcasting -> {
             if (modItem.has("spells")) {
                 JsonNode spells = modItem.get("spells");
-                ObjectNode targetSpells = targetSpellcasting.with("spells");
+                ObjectNode targetSpells = targetSpellcasting.withObject("/spells");
                 spells.fields().forEachRemaining(ss -> {
                     if (targetSpells.has(ss.getKey())) {
                         JsonNode levelMetas = ss.getValue();
-                        ObjectNode targetLevel = targetSpells.with(ss.getKey());
+                        ObjectNode targetLevel = targetSpells.withObject("/" + ss.getKey());
                         ArrayNode targetLevelSpells = targetLevel.withArray("spells");
                         levelMetas.forEach(x -> replaceArray(originKey, x, targetLevelSpells,
                                 x.get("replace"), x.get("with")));
@@ -642,7 +642,7 @@ public class JsonSourceCopier implements JsonSource {
                 if (!modItem.has(prop)) {
                     return;
                 }
-                ObjectNode targetGroup = targetSpellcasting.with(prop);
+                ObjectNode targetGroup = targetSpellcasting.withObject("/" + prop);
                 for (int i = 1; i <= 9; ++i) {
                     String key = i + "";
                     if (modItem.get(prop).has(key)) {
@@ -672,13 +672,13 @@ public class JsonSourceCopier implements JsonSource {
         ObjectNode targetSpellcasting = (ObjectNode) target.get("spellcasting").get(0);
         if (modItem.has("spells")) {
             JsonNode spells = modItem.get("spells");
-            ObjectNode targetSpells = targetSpellcasting.with("spells");
+            ObjectNode targetSpells = targetSpellcasting.withObject("/spells");
             spells.fields().forEachRemaining(s -> {
                 if (!targetSpells.has(s.getKey())) {
                     targetSpells.set(s.getKey(), sortArrayNode((ArrayNode) s.getValue()));
                 } else {
                     JsonNode spellsNew = spells.get(s.getKey());
-                    ObjectNode spellsTgt = targetSpells.with(s.getKey());
+                    ObjectNode spellsTgt = targetSpells.withObject("/" + s.getKey());
                     spellsNew.fields().forEachRemaining(ss -> {
                         if (!spellsTgt.has(ss.getKey())) {
                             spellsTgt.set(ss.getKey(), sortArrayNode((ArrayNode) ss.getValue()));
@@ -710,7 +710,7 @@ public class JsonSourceCopier implements JsonSource {
                 return;
             }
 
-            ObjectNode targetGroup = targetSpellcasting.with(prop);
+            ObjectNode targetGroup = targetSpellcasting.withObject("/" + prop);
             for (int i = 1; i <= 9; ++i) {
                 String key = i + "";
                 if (modItem.get(prop).has(key)) {
@@ -778,7 +778,7 @@ public class JsonSourceCopier implements JsonSource {
         //     }
         //     return;
         // }
-        ObjectNode targetSaves = target.with("save");
+        ObjectNode targetSaves = target.withObject("/save");
         modItem.get("saves").fields().forEachRemaining(e -> {
             int mode = e.getValue().asInt();
             String ability = e.getKey();
@@ -809,7 +809,7 @@ public class JsonSourceCopier implements JsonSource {
         //     }
         //     return;
         // }
-        ObjectNode targetSkills = target.with("skill");
+        ObjectNode targetSkills = target.withObject("/skills");
         modItem.get("skills").fields().forEachRemaining(e -> {
             // mode: 1 = proficient; 2 = expert
             int mode = e.getValue().asInt();
