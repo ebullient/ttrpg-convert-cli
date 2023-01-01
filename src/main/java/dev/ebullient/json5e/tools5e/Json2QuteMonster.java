@@ -373,12 +373,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
             if (scNode.has("daily")) {
                 spellcasting.daily = new TreeMap<>();
-                scNode.with("daily").fields()
+                scNode.get("daily").fields()
                         .forEachRemaining(f -> spellcasting.daily.put(f.getKey(), getSpells(f.getValue())));
             }
             if (scNode.has("spells")) {
                 spellcasting.spells = new TreeMap<>();
-                scNode.with("spells").fields().forEachRemaining(f -> {
+                scNode.get("spells").fields().forEachRemaining(f -> {
                     JsonNode spellNode = f.getValue();
                     Spells spells = new Spells();
                     if (spellNode.isArray()) {

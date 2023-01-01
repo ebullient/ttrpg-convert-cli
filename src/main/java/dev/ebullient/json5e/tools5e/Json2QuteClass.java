@@ -267,7 +267,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         startMulticlass.add(String.format("To multiclass as a %s, you must meet the following prerequisites:", getName()));
 
         maybeAddBlankLine(startMulticlass);
-        JsonNode requirements = multiclassing.with("requirements");
+        JsonNode requirements = multiclassing.get("requirements");
         if (requirements.has("or")) {
             List<String> options = new ArrayList<>();
             requirements.get("or").get(0).fields().forEachRemaining(ability -> options.add(String.format("%s %s",
