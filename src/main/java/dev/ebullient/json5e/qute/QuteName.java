@@ -27,10 +27,6 @@ public class QuteName {
         return source;
     }
 
-    public List<ImageRef> images() {
-        return List.of();
-    }
-
     public String targetFile() {
         return name;
     }

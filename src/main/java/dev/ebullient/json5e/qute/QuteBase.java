@@ -1,7 +1,6 @@
 package dev.ebullient.json5e.qute;
 
 import java.util.Collection;
-import java.util.List;
 
 import dev.ebullient.json5e.tools5e.CompendiumSources;
 import io.quarkus.qute.TemplateData;
@@ -36,11 +35,6 @@ public class QuteBase implements QuteSource {
 
     public boolean hasSections() {
         return text.contains("\n## ");
-    }
-
-    @Override
-    public List<ImageRef> images() {
-        return List.of();
     }
 
     @Override
