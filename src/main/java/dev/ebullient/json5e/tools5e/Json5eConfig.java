@@ -29,6 +29,7 @@ public class Json5eConfig {
     final static String ADVENTURE = "adventure";
     final static String TEMPLATE = "template";
     final static String FROM = "from";
+    final static String IMAGE_MAP = "fallback-image";
 
     private String rulesRoot = "/rules/";
     private Path rulesPath = Path.of("rules/");
@@ -36,6 +37,7 @@ public class Json5eConfig {
     private String compendiumRoot = "/compendium/";
     private Path compendiumPath = Path.of("compendium/");
 
+    final Map<String, String> fallbackImagePaths = new HashMap<>();
     final Map<String, String> templates = new HashMap<>();
     final Set<String> adventures = new HashSet<>();
     final Set<String> books = new HashSet<>();
@@ -108,6 +110,9 @@ public class Json5eConfig {
                         break;
                 }
             });
+        }
+        if (node.has(IMAGE_MAP)) {
+            fallbackImagePaths.putAll(mapper.convertValue(node.get(IMAGE_MAP), MAP_STRING_STRING));
         }
     }
 
@@ -258,5 +263,9 @@ public class Json5eConfig {
             }
         }
         return false;
+    }
+
+    public Map<String, String> getFallbackPaths() {
+        return fallbackImagePaths;
     }
 }

@@ -1,0 +1,35 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-spell
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*{resource.level}, {resource.school}{#if resource.ritual} (ritual){/if}*  {#if resource.fluffImages && resource.fluffImages.0 }
+![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
+{/if}
+
+- **Casting time:** {resource.time}{#if resource.ritual} unless cast as a ritual{/if}
+- **Range:** {resource.range}
+- **Components:** {resource.components}
+- **Duration:** {resource.duration}
+
+{resource.text}
+
+{#if resource.hasSections }
+## Summary
+
+{/if}
+{#if resource.fluffImages }
+{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
+
+{/if}{/each}
+{/if}
+**Classes**: {resource.classes}
+
+Source: {resource.source}

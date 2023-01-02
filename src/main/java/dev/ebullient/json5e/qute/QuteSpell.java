@@ -17,11 +17,12 @@ public class QuteSpell extends QuteBase {
     public final String components;
     public final String duration;
     public final String classes;
+    final List<ImageRef> fluffImages;
 
     public QuteSpell(CompendiumSources sources, String name, String source, String level,
             String school, boolean ritual, String time, String range,
             String components, String duration,
-            String classes, String text, List<String> tags) {
+            String classes, String text, List<ImageRef> fluffImages, List<String> tags) {
         super(sources, name, source, text, tags);
 
         this.level = level;
@@ -32,10 +33,20 @@ public class QuteSpell extends QuteBase {
         this.components = components;
         this.duration = duration;
         this.classes = classes;
+        this.fluffImages = fluffImages;
     }
 
     @Override
     public String targetPath() {
         return QuteSource.SPELLS_PATH;
+    }
+
+    @Override
+    public List<ImageRef> images() { // not usable by Qute templates
+        return fluffImages;
+    }
+
+    public List<ImageRef> getFluffImages() {
+        return fluffImages;
     }
 }

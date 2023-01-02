@@ -19,11 +19,13 @@ public class QuteItem extends QuteBase {
     public final boolean stealthPenalty;
     public final String cost;
     public final Double weight;
+    public final List<ImageRef> images;
 
     public QuteItem(CompendiumSources sources, String name, String source, String detail,
             String armorClass, String damage, String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
-            String costGp, Double weightLbs, String text, List<String> tags) {
+            String costGp, Double weightLbs, String text,
+            List<ImageRef> images, List<String> tags) {
         super(sources, name, source, text, tags);
 
         this.detail = detail;
@@ -36,10 +38,20 @@ public class QuteItem extends QuteBase {
         this.stealthPenalty = stealthPenalty;
         this.cost = costGp;
         this.weight = weightLbs;
+        this.images = images;
     }
 
     @Override
     public String targetPath() {
         return QuteSource.ITEMS_PATH;
+    }
+
+    @Override
+    public List<ImageRef> images() { // not usable by qute templates
+        return images;
+    }
+
+    public List<ImageRef> getFluffImages() {
+        return images;
     }
 }

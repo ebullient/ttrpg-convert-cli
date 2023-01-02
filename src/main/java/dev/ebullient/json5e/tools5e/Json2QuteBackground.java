@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.json5e.qute.ImageRef;
 import dev.ebullient.json5e.qute.QuteBackground;
 import dev.ebullient.json5e.qute.QuteSource;
 
@@ -27,11 +28,12 @@ public class Json2QuteBackground extends Json2QuteCommon {
     @Override
     public QuteSource build() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
-
         List<String> text = new ArrayList<>();
         appendEntryToText(text, node, "##");
 
-        List<String> fluff = getFluff(IndexType.backgroundfluff, "##");
+        List<ImageRef> images = new ArrayList<>();
+        List<String> fluff = getFluff(IndexType.backgroundfluff, "##", images);
+
         if (fluff != null) {
             boolean found = false;
             int max = Math.min(text.size(), 10);
@@ -55,6 +57,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
                 backgroundName,
                 sources.getSourceText(index.srdOnly()),
                 String.join("\n", text),
+                images,
                 tags);
     }
 

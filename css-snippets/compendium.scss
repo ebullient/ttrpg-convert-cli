@@ -29,11 +29,35 @@
     display: none;
   }
 }
+.json5e-background,
+.json5e-item,
+.json5e-monster,
+.json5e-race,
+.json5e-spell {
+  div {
+    &[src$="#center"] {
+      text-align: center;
+      img {
+        height: 300px;
+      }
+    }
+    &[src$="#right"] {
+      float: right;
+      margin-left: 5px;
+      img {
+        height: 300px;
+      }
+    }
+  }
+}
 
 /* Monster: statblocks and #token images */
 .rendered-widget,
 .markdown-rendered,
 .markdown-preview-section {
+  .admonition-statblock-parent {
+    clear: both;
+  }
   .callout[data-callout="statblock"] {
     --callout-color: var(--statblock-section-line);
     --callout-border-width: 0 0 0 0.08rem;
@@ -55,7 +79,6 @@
         width: 150px;
       }
     }
-
     .callout-content {
       background-color: var(--background-primary);
 

@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.json5e.qute.ImageRef;
 import dev.ebullient.json5e.qute.QuteRace;
 import dev.ebullient.json5e.tools5e.JsonIndex.Tuple;
 
@@ -26,6 +27,9 @@ public class Json2QuteRace extends Json2QuteCommon {
         }
         tags.add("race/" + String.join("/", split));
 
+        List<ImageRef> fluffImages = new ArrayList<>();
+        String fluff = getFluffDescription(IndexType.racefluff, "###", fluffImages);
+
         return new QuteRace(sources,
                 name,
                 sources.getSourceText(index.srdOnly()),
@@ -35,7 +39,8 @@ public class Json2QuteRace extends Json2QuteCommon {
                 getSpeed(node),
                 spellcastingAbility(),
                 getText("###"),
-                getFluffDescription(IndexType.racefluff, "###"),
+                fluff,
+                fluffImages,
                 tags);
     }
 

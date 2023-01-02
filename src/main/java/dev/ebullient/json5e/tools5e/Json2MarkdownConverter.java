@@ -81,7 +81,7 @@ public class Json2MarkdownConverter {
 
         List<ImageRef> images = sources.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
-        index.tui().copyImages(images);
+        index.tui().copyImages(images, index.getFallbackPaths());
         return this;
     }
 

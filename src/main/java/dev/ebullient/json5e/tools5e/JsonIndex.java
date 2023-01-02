@@ -218,7 +218,7 @@ public class JsonIndex implements JsonSource {
         variantIndex = new HashMap<>();
 
         // read additional SRD entries
-        tui().readResource("/srd-entries.json", this::importTree);
+        tui().readResource("/json5econvert.json", this::importTree);
 
         nodeIndex.forEach((key, node) -> {
             // check for / manage copies first.
@@ -744,5 +744,9 @@ public class JsonIndex implements JsonSource {
             }
             return source;
         }
+    }
+
+    public Map<String, String> getFallbackPaths() {
+        return extraConfig.getFallbackPaths();
     }
 }

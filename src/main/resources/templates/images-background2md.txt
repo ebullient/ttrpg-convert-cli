@@ -1,0 +1,20 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-background
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*Source: {resource.source}*  {#if resource.fluffImages && resource.fluffImages.0 }
+![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
+{/if}
+
+{resource.text}
+
+{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
+{/if}{/each}
