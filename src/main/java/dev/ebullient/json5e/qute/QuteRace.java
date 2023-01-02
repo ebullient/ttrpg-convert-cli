@@ -17,11 +17,12 @@ public class QuteRace extends QuteBase {
     public final String spellcasting;
     public final String traits;
     public final String description;
+    final List<ImageRef> images;
 
     public QuteRace(CompendiumSources sources, String name, String source,
             String ability, String type, String size, String speed,
             String spellcasting, String traits, String description,
-            List<String> tags) {
+            List<ImageRef> images, List<String> tags) {
         super(sources, name, source, null, tags);
         this.ability = ability;
         this.type = type;
@@ -30,10 +31,20 @@ public class QuteRace extends QuteBase {
         this.spellcasting = spellcasting;
         this.traits = traits;
         this.description = description;
+        this.images = images;
     }
 
     @Override
     public String targetPath() {
         return QuteSource.RACES_PATH;
+    }
+
+    @Override
+    public List<ImageRef> images() { // not usable by Qute templates
+        return images;
+    }
+
+    public List<ImageRef> getFluffImages() {
+        return images;
     }
 }

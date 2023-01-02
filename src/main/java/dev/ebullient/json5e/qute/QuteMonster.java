@@ -53,6 +53,8 @@ public class QuteMonster extends QuteBase {
     public final String description;
     public final String environment;
     final ImageRef tokenImage;
+    final List<ImageRef> fluffImages;
+    final List<ImageRef> allImages;
 
     public QuteMonster(CompendiumSources sources, String name, String source, boolean isNpc, String size, String type,
             String subtype, String alignment,
@@ -62,7 +64,7 @@ public class QuteMonster extends QuteBase {
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
             Map<String, Trait> legendaryGroup,
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
-            ImageRef tokenImage, List<String> tags) {
+            ImageRef tokenImage, List<ImageRef> fluffImages, List<String> tags) {
 
         super(sources, name, source, null, tags);
 
@@ -99,6 +101,19 @@ public class QuteMonster extends QuteBase {
         this.environment = environment;
         this.books = books; // for YAML
         this.tokenImage = tokenImage;
+        this.fluffImages = fluffImages;
+
+        if (tokenImage != null || !fluffImages.isEmpty()) {
+            allImages = new ArrayList<>();
+            if (tokenImage != null) {
+                allImages.add(tokenImage);
+            }
+            if (!fluffImages.isEmpty()) {
+                allImages.addAll(fluffImages);
+            }
+        } else {
+            allImages = List.of();
+        }
     }
 
     @Override
@@ -113,10 +128,7 @@ public class QuteMonster extends QuteBase {
 
     @Override
     public List<ImageRef> images() {
-        if (tokenImage == null) {
-            return List.of();
-        }
-        return List.of(tokenImage);
+        return allImages;
     }
 
     @Override
@@ -126,6 +138,10 @@ public class QuteMonster extends QuteBase {
 
     public ImageRef getToken() {
         return tokenImage;
+    }
+
+    public List<ImageRef> getFluffImages() {
+        return fluffImages;
     }
 
     public String getFullType() {

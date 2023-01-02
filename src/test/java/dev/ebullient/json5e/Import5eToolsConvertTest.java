@@ -80,6 +80,10 @@ public class Import5eToolsConvertTest {
             TestUtils.deleteDir(allIndex);
 
             List<String> args = new ArrayList<>(List.of("--index", "-s", "ALL",
+                    "--background", "src/main/resources/templates/images-background2md.txt",
+                    "--item", "src/main/resources/templates/images-item2md.txt",
+                    "--monster", "src/main/resources/templates/images-monster2md.txt",
+                    "--race", "src/main/resources/templates/images-race2md.txt",
                     "-o", allIndex.toString(),
                     TestUtils.TOOLS_PATH.toString()));
 

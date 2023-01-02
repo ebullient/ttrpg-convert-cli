@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -223,19 +224,35 @@ public class Json5eTui {
         return slugifier().slugify(s);
     }
 
-    public void copyImages(List<ImageRef> images) {
+    public void copyImages(List<ImageRef> images, Map<String, String> fallbackPaths) {
         for (ImageRef image : images) {
             Optional<Path> sourceRoot = inputRoot.stream()
                     .filter(x -> x.resolve(image.sourcePath).toFile().exists())
                     .findFirst();
 
+            Path basePath = image.sourcePath;
+
             if (sourceRoot.isEmpty()) {
-                errorf("Unable to find image for %s", image.sourcePath);
-                continue;
+                String path = image.sourcePath.toString();
+
+                // Find relocated image
+                String adjustedPath = fallbackPaths.get(path);
+                if (adjustedPath != null) {
+                    sourceRoot = inputRoot.stream()
+                            .filter(x -> x.resolve(adjustedPath).toFile().exists())
+                            .findFirst();
+                    basePath = Path.of(adjustedPath);
+                }
+
+                // If the file is still not found, bail..
+                if (sourceRoot.isEmpty()) {
+                    errorf("Unable to find image for %s", image.sourcePath);
+                    continue;
+                }
             }
 
             // Resolve the image path from data against the correct parent path
-            Path sourcePath = sourceRoot.get().resolve(image.sourcePath);
+            Path sourcePath = sourceRoot.get().resolve(basePath);
             Path targePath = output.resolve(image.targetPath);
 
             // target path must be pre-resolved to compendium or rules root

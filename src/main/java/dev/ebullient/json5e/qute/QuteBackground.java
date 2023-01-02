@@ -10,12 +10,27 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class QuteBackground extends QuteBase {
 
-    public QuteBackground(CompendiumSources sources, String name, String source, String text, List<String> tags) {
+    final List<ImageRef> images;
+
+    public QuteBackground(CompendiumSources sources,
+            String name, String source, String text,
+            List<ImageRef> images,
+            List<String> tags) {
         super(sources, name, source, text, tags);
+        this.images = images;
     }
 
     @Override
     public String targetPath() {
         return QuteSource.BACKGROUND_PATH;
+    }
+
+    @Override
+    public List<ImageRef> images() { // not usable by Qute templates
+        return images;
+    }
+
+    public List<ImageRef> getFluffImages() {
+        return images;
     }
 }

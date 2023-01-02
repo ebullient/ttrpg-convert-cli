@@ -10,12 +10,12 @@
 <td><a href="#recommended-plugins">🔌 Plugins</a></td>
 <td><a href="#use-with-5etools-json-data">📖 5etools Data</a></td>
 <td><a href="#templates">🎨 Templates</a></td>
-<td><a href="#changes-that-impact-generated-templates-and-files">🚜 Migration</a></td>
+<td><a href="#changes-that-impact-generated-templates-and-files">🚜 Changelog</a></td>
 </tr></table>
 
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
 
-> 🔥 **1.0.12 makes significant changes** to file names, and minor changes for custom templates. [See details below](#changes-that-impact-generated-templates-and-files).
+> 🚜 Check out [Changes that impact generated templates and files](#changes-that-impact-generated-templates-and-files) and/or release notes for breaking changes and new capabilities. 
 
 ## Install the command line utility
 
@@ -340,7 +340,7 @@ This application uses the [Qute Templating Engine](https://quarkus.io/guides/qut
 
 ### Built-in / example templates
 
-- [Default templates](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates)
+- [Default and example templates](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates)
 
 Of particular note are the varied monster templates: 
 
@@ -350,6 +350,80 @@ Of particular note are the varied monster templates:
 - Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/monster2md-yamlStatblock-header.txt)
 
 ## Changes that impact generated templates and files
+
+## 1.1.0: Images for backgrounds, items, monsters, races, and spells
+
+The conversion tool downloads fluff images into `img` directories within each type, e.g. `backgrounds/img` or `bestiary/aberration/img`. These images are unordered, and are not referenced in entry text. Templates must be modified to include them.
+
+To display all images, you can do something like this: 
+
+```
+{#each resource.fluffImages}![{it.caption}]({it.path})  
+{/each}
+```
+
+Note that the line above ends with two spaces, which serves as a line break when you have strict line endings enabled. You may need something a little different to get things to wrap the way you want in the case that there are multiple images (which is infrequent for these types).
+
+You can also use two separate blocks, such that the first image is used at the top of the document, and any others are included later: 
+
+```
+{#if resource.fluffImages && resource.fluffImages.0 }
+![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
+{/if}
+
+...
+
+{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
+{/if}{/each}
+```
+
+Notice the `#right` and `#center` anchor tags in the example above. The following CSS snippet defines formatting for two anchor tags: `#right` (which will float the image to the right) and `#center` (which will display the image as a centered block). 
+
+```css
+.json5e-background div[src$="#center"],
+.json5e-item div[src$="#center"],
+.json5e-monster div[src$="#center"],
+.json5e-race div[src$="#center"],
+.json5e-spell div[src$="#center"] {
+  text-align: center;
+}
+.json5e-background div[src$="#center"] img,
+.json5e-item div[src$="#center"] img,
+.json5e-monster div[src$="#center"] img,
+.json5e-race div[src$="#center"] img,
+.json5e-spell div[src$="#center"] img {
+  height: 300px;
+}
+.json5e-background div[src$="#right"],
+.json5e-item div[src$="#right"],
+.json5e-monster div[src$="#right"],
+.json5e-race div[src$="#right"],
+.json5e-spell div[src$="#right"] {
+  float: right;
+  margin-left: 5px;
+}
+.json5e-background div[src$="#right"] img,
+.json5e-item div[src$="#right"] img,
+.json5e-monster div[src$="#right"] img,
+.json5e-race div[src$="#right"] img,
+.json5e-spell div[src$="#right"] img {
+  height: 300px;
+}
+
+.rendered-widget .admonition-statblock-parent,
+.markdown-rendered .admonition-statblock-parent,
+.markdown-preview-section .admonition-statblock-parent {
+  clear: both;
+}
+```
+
+Notes: 
+
+- I recommend constraining the image height (rather than the width) in your CSS snippet for images. 
+- The above snippet also adds a `clear` setting to the admonition parent. Some text descriptions are shorter than the constrained image height. Setting `clear: both` on `admonition-parent` ensures that images floated to the right do not impact the `statblock` display.
+- This configuration is in the [compendium.css snippet](https://github.com/ebullient/json5e-convert-cli/tree/main/css-snippets/compendium.css).
+- There is an example for each type in the [templates directory](https://github.com/ebullient/json5e-convert-cli/tree/main/src/main/resources/templates/) directory. Relevant file names start with `images-`.
+
 
 ## 1.0.18: You can put more things in json input now!
 

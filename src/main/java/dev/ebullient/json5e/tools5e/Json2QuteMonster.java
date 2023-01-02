@@ -84,6 +84,9 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
+        List<ImageRef> fluffImages = new ArrayList<>();
+        String fluff = getFluffDescription(IndexType.monsterfluff, null, fluffImages);
+
         return new QuteMonster(sources,
                 decoratedMonsterName(node, sources),
                 sources.getSourceText(index.srdOnly()),
@@ -105,10 +108,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterTraits("legendary"),
                 legendaryGroup(),
                 monsterSpellcasting(),
-                getFluffDescription(IndexType.monsterfluff, null),
+                fluff,
                 environment,
                 new ArrayList<>(sources.bookSources),
                 getToken(),
+                fluffImages,
                 tags);
     }
 
@@ -480,7 +484,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     getSources().mapPrimarySource(),
                     filename + ".png");
 
-            Path target = Path.of(QuteSource.monsterPath(isNpc, type),
+            Path target = Path.of(getImagePath(),
                     "token",
                     slugify(filename) + ".png");
 
@@ -491,6 +495,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     .build();
         }
         return null;
+    }
+
+    @Override
+    protected String getImagePath() {
+        return QuteSource.monsterPath(isNpc, type);
     }
 
     public static List<Tuple> findConjuredMonsterVariants(JsonIndex index, IndexType type,

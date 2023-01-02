@@ -1,4 +1,8 @@
 {
+  "fallback-image": {
+    "img/bestiary/SDW/Lhammaruntosz.jpg": "img/SDW/Lhammaruntosz.png",
+    "img/items/CRCotN/Medal of the Maze.jpg": "img/items/CRCotN/Medal of the Maze.webp"
+  },
   "srdEntries": {
     "properties": [
       {

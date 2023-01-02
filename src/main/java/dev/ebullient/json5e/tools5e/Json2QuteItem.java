@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.json5e.qute.ImageRef;
 import dev.ebullient.json5e.qute.QuteItem;
 import dev.ebullient.json5e.qute.QuteSource;
 
@@ -25,8 +26,11 @@ public class Json2QuteItem extends Json2QuteCommon {
     @Override
     public QuteSource build() {
         Set<PropertyEnum> propertyEnums = new TreeSet<>(); // stable order
+
         findProperties(propertyEnums);
-        String text = itemText(propertyEnums);
+
+        List<ImageRef> fluffImages = new ArrayList<>();
+        String text = itemText(propertyEnums, fluffImages);
 
         String detail = itemDetail(propertyEnums);
         String properties = propertyEnums.stream()
@@ -73,6 +77,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 range, properties,
                 strength, stealthPenalty, gpValue(), weight,
                 text,
+                fluffImages,
                 tags);
     }
 
@@ -96,8 +101,9 @@ public class Json2QuteItem extends Json2QuteCommon {
         return getSources().getName();
     }
 
-    String itemText(Collection<PropertyEnum> propertyEnums) {
-        List<String> text = new ArrayList<>(getFluff(IndexType.itemfluff, "##"));
+    String itemText(Collection<PropertyEnum> propertyEnums, List<ImageRef> imageRef) {
+        List<String> text = getFluff(IndexType.itemfluff, "##", imageRef);
+
         if (node.has("entries")) {
             maybeAddBlankLine(text);
             node.withArray("entries").forEach(entry -> {
