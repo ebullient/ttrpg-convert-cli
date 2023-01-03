@@ -65,10 +65,7 @@ public class JsonIndex implements JsonSource {
 
         this.tui = tui;
 
-        this.extraConfig = new Json5eConfig(tui);
-        extraConfig.addSources(sources);
-
-        setClassFeaturePatterns();
+        this.extraConfig = new Json5eConfig(tui, sources);
     }
 
     public Json5eConfig getExtraConfig() {
@@ -215,6 +212,8 @@ public class JsonIndex implements JsonSource {
         if (variantIndex != null || filteredIndex != null) {
             return;
         }
+        setClassFeaturePatterns();
+
         variantIndex = new HashMap<>();
 
         // read additional SRD entries
@@ -638,9 +637,9 @@ public class JsonIndex implements JsonSource {
     }
 
     public JsonNode resolveClassFeatureNode(String finalKey, String originClassKey) {
-        JsonNode featureNode = getNode(finalKey);
+        JsonNode featureNode = getOrigin(finalKey);
         if (featureNode == null) {
-            tui.debugf("%s: %s not found or excluded", originClassKey, finalKey);
+            tui.debugf("%s: %s not found", originClassKey, finalKey);
             return null; // skip this
         }
         return resolveClassFeatureNode(finalKey, featureNode);
@@ -648,6 +647,7 @@ public class JsonIndex implements JsonSource {
 
     public JsonNode resolveClassFeatureNode(String finalKey, JsonNode featureNode) {
         if (isExcluded(finalKey)) {
+            tui.debugf("excluded: %s", finalKey);
             return null; // skip this
         }
         // TODO: Handle copies or other fill-in / fluff?
