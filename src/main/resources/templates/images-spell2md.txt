@@ -10,7 +10,8 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*{resource.level}, {resource.school}{#if resource.ritual} (ritual){/if}*  {#if resource.fluffImages && resource.fluffImages.0 }
+*{resource.level}, {resource.school}{#if resource.ritual} (ritual){/if}*  
+{#if resource.fluffImages && resource.fluffImages.0 }
 ![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
 {/if}
 
@@ -25,10 +26,11 @@ aliases: ["{resource.name}"]
 ## Summary
 
 {/if}
-{#if resource.fluffImages }
-{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
+{#if resource.fluffImages.size > 1 }
 
+{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
 {/if}{/each}
+
 {/if}
 **Classes**: {resource.classes}
 

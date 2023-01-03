@@ -10,7 +10,8 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*  {#if resource.fluffImages && resource.fluffImages.0 }
+*Source: {resource.source}*  
+{#if resource.fluffImages && resource.fluffImages.0 }
 ![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
 {/if}
 

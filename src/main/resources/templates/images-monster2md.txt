@@ -13,18 +13,20 @@ aliases: ["{resource.name}"]
 *Source: {resource.source}*  
 
 {#if resource.description }
-
-{#if resource.description && resource.fluffImages && resource.fluffImages.0 }
+{#if resource.fluffImages && resource.fluffImages.0 }
 ![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
 {/if}
 {resource.description}
 
-{/if}
-{#if resource.fluffImages }
-
-{#each resource.fluffImages}{#if ! resource.description || it_index != 0 }![{it.caption}]({it.path}#center)  
+{#each resource.fluffImages}{#if it_index != 0 }
+![{it.caption}]({it.path}#center)  
 {/if}{/each}
+{#else}
+{#each resource.fluffImages}
+![{it.caption}]({it.path}#center)  
+{/each}
 {/if}
+
 ```ad-statblock
 title: {resource.name}{#if resource.token}
 ![{resource.token.caption}]({resource.token.path}#token){/if}
