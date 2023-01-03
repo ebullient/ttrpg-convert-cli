@@ -27,7 +27,7 @@ public class CommonDataTests {
     public CommonDataTests(boolean useSources) throws Exception {
         tui = Arc.container().instance(Json5eTui.class).get();
         templates = Arc.container().instance(Templates.class).get();
-        tui.init(null, false, false);
+        tui.init(null, true, false);
 
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             if (useSources) {
@@ -143,7 +143,25 @@ public class CommonDataTests {
             new Json2MarkdownConverter(index, writer)
                     .writeFiles(IndexType.classtype);
 
-            TestUtils.assertDirectoryContents(classDir, tui);
+            TestUtils.assertDirectoryContents(classDir, tui, (p, content) -> {
+                List<String> e = new ArrayList<>();
+                boolean found = false;
+                boolean index = false;
+
+                for (String l : content) {
+                    if (l.startsWith("# Index ")) {
+                        index = true;
+                    } else if (l.startsWith("## ")) {
+                        found = true; // Found class features
+                    }
+                    TestUtils.commonTests(p, l, e);
+                }
+
+                if (!found && !index) {
+                    e.add(String.format("File %s did not contain class features", p));
+                }
+                return e;
+            });
         }
     }
 
@@ -261,7 +279,6 @@ public class CommonDataTests {
                 boolean found = false;
                 boolean yaml = false;
                 boolean index = false;
-                TestUtils.checkContents.apply(p, content);
 
                 for (String l : content) {
                     if (l.startsWith("# Index ")) {

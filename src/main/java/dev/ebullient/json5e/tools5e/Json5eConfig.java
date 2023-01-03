@@ -52,8 +52,9 @@ public class Json5eConfig {
 
     final Json5eTui tui;
 
-    public Json5eConfig(Json5eTui tui) {
+    public Json5eConfig(Json5eTui tui, List<String> initialSources) {
         this.tui = tui;
+        this.addSources(initialSources);
     }
 
     public void readConfigIfPresent(ObjectMapper mapper, JsonNode node) {
