@@ -10,7 +10,8 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*  {#if resource.fluffImages && resource.fluffImages.0 }
+*Source: {resource.source}*  
+{#if resource.fluffImages && resource.fluffImages.0 }
 ![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
 {/if}
 
@@ -27,15 +28,15 @@ aliases: ["{resource.name}"]
 ## Traits
 
 {resource.traits}
-{#if resource.fluffImages }
-
-{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
-{/if}{/each}
-{/if}
 {#if resource.description}
 
-## Description 
+## Description
 
 {resource.description}
 
+{/if}
+{#if resource.fluffImages.size > 1 }
+
+{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
+{/if}{/each}
 {/if}
