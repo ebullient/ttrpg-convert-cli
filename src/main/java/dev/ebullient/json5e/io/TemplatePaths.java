@@ -12,6 +12,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.ParameterException;
 
 public class TemplatePaths {
+
     final static List<String> KEYS = List.of("background", "class", "deity",
             "feat", "item", "monster", "name", "note", "race", "spell",
             "subclass");
@@ -26,12 +27,20 @@ public class TemplatePaths {
     public void setCustomTemplate(String key, Path path) {
         if (!KEYS.contains(key)) {
             badKeys.put(key, path);
+            return;
         }
+
         if (Files.isRegularFile(path)) {
             customTemplates.put(key + "2md.txt", path);
-        } else {
-            badTemplates.put(key, path);
+            return;
         }
+
+        Path resolved = Path.of("").resolve(path);
+        if (Files.isRegularFile(resolved)) {
+            customTemplates.put(key + "2md.txt", path);
+            return;
+        }
+        badTemplates.put(key, path);
     }
 
     @Option(names = { "--background" }, order = 1, description = "Path to Qute template for Backgrounds")
