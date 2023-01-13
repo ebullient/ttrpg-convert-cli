@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 
 public class JsonIndex implements JsonSource {
     private static JsonIndex staticInstance;
@@ -38,7 +38,7 @@ public class JsonIndex implements JsonSource {
     static final String subclassFeature_2 = "\\|[^|]+\\|";
     static final String subclassFeature_3 = "\\|\\d+\\|?";
 
-    final Json5eTui tui;
+    final Tui tui;
     final Json5eConfig extraConfig;
 
     private final Map<String, JsonNode> rules = new HashMap<>();
@@ -60,7 +60,7 @@ public class JsonIndex implements JsonSource {
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;
 
-    public JsonIndex(List<String> sources, Json5eTui tui) {
+    public JsonIndex(List<String> sources, Tui tui) {
         staticInstance = this;
 
         this.tui = tui;

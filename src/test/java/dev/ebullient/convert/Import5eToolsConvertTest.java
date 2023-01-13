@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
 import io.quarkus.test.junit.main.QuarkusMainLauncher;
@@ -23,11 +23,11 @@ import picocli.CommandLine;
 @QuarkusMainTest
 public class Import5eToolsConvertTest {
     static final Path outputPath = TestUtils.OUTPUT_ROOT.resolve("test-cli");
-    static Json5eTui tui;
+    static Tui tui;
 
     @BeforeAll
     public static void setupDir() {
-        tui = new Json5eTui();
+        tui = new Tui();
         tui.init(null, false, false);
         outputPath.toFile().mkdirs();
     }
@@ -95,7 +95,7 @@ public class Import5eToolsConvertTest {
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
-            Json5eTui tui = new Json5eTui();
+            Tui tui = new Tui();
             tui.init(null, false, false);
             List<String> errors = new ArrayList<>();
             TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {

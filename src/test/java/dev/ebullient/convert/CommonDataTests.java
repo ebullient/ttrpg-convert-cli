@@ -9,23 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.TemplatePaths;
 import dev.ebullient.convert.io.Templates;
 import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools5e.IndexType;
-import dev.ebullient.convert.tools5e.Json2MarkdownConverter;
-import dev.ebullient.convert.tools5e.JsonIndex;
+import dev.ebullient.convert.tools.dnd5e.IndexType;
+import dev.ebullient.convert.tools.dnd5e.Json2MarkdownConverter;
+import dev.ebullient.convert.tools.dnd5e.JsonIndex;
 import io.quarkus.arc.Arc;
 
 public class CommonDataTests {
-    protected final Json5eTui tui;
+    protected final Tui tui;
     protected final Templates templates;
     protected JsonIndex index;
 
     public CommonDataTests(boolean useSources) throws Exception {
-        tui = Arc.container().instance(Json5eTui.class).get();
+        tui = Arc.container().instance(Tui.class).get();
         templates = Arc.container().instance(Templates.class).get();
         tui.init(null, true, false);
 

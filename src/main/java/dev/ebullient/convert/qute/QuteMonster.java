@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import dev.ebullient.convert.io.Json5eTui;
-import dev.ebullient.convert.tools5e.CompendiumSources;
+import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.dnd5e.CompendiumSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -180,7 +180,7 @@ public class QuteMonster extends QuteBase {
         addUnlessEmpty(map, "cr", cr);
         map.put("stats", scores.toArray()); // for initiative
         addUnlessEmpty(map, "source", books);
-        return Json5eTui.plainYaml().dump(map).trim();
+        return Tui.plainYaml().dump(map).trim();
     }
 
     public String get5eStatblockYaml() {
@@ -225,7 +225,7 @@ public class QuteMonster extends QuteBase {
         addUnlessEmpty(map, "source", books);
 
         // De-markdown-ify
-        return Json5eTui.quotedYaml().dump(map).trim()
+        return Tui.quotedYaml().dump(map).trim()
                 .replaceAll("\\*([^*]+)\\*", "$1") // em
                 .replaceAll("\\*([^*]+)\\*", "$1") // bold
                 .replaceAll("\\*([^*]+)\\*", "$1"); // bold em

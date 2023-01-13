@@ -10,13 +10,13 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.TemplatePaths;
 import dev.ebullient.convert.io.Templates;
-import dev.ebullient.convert.tools5e.Json2MarkdownConverter;
-import dev.ebullient.convert.tools5e.Json5eConfig;
-import dev.ebullient.convert.tools5e.JsonIndex;
+import dev.ebullient.convert.tools.dnd5e.Json2MarkdownConverter;
+import dev.ebullient.convert.tools.dnd5e.Json5eConfig;
+import dev.ebullient.convert.tools.dnd5e.JsonIndex;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import picocli.CommandLine;
@@ -78,7 +78,7 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
     Templates tpl;
 
     @Inject
-    Json5eTui tui;
+    Tui tui;
 
     @Spec
     private CommandSpec spec;

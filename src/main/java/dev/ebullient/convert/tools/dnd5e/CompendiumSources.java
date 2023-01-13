@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -501,7 +501,7 @@ public class CompendiumSources {
         sourceToAbv.put("UAWizardRevisited", "UAWR");
     }
 
-    public void checkKnown(Json5eTui tui, Set<String> missing) {
+    public void checkKnown(Tui tui, Set<String> missing) {
         bookSources.forEach(s -> {
             if (abvToName.containsKey(s)) {
                 return;

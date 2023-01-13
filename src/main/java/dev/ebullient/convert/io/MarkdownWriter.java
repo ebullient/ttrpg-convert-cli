@@ -37,11 +37,11 @@ public class MarkdownWriter {
         return a.dir.compareTo(b.dir);
     };
 
-    final Json5eTui tui;
+    final Tui tui;
     final Templates templates;
     final Path output;
 
-    public MarkdownWriter(Path output, Templates templates, Json5eTui tui) {
+    public MarkdownWriter(Path output, Templates templates, Tui tui) {
         this.tui = tui;
         this.output = output;
         this.templates = templates;
@@ -210,7 +210,7 @@ public class MarkdownWriter {
 
         public FileMap(String title, String fileName, Path dirName) {
             this.title = title;
-            this.fileName = Json5eTui.slugifier().slugify(fileName) + (fileName.endsWith(".md") ? "" : ".md");
+            this.fileName = Tui.slugifier().slugify(fileName) + (fileName.endsWith(".md") ? "" : ".md");
             this.dir = dirName;
         }
 

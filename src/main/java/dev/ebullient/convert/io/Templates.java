@@ -32,7 +32,7 @@ public class Templates {
     TemplatePaths templatePaths = null;
 
     @Inject
-    Json5eTui tui;
+    Tui tui;
 
     @Inject
     Engine engine;

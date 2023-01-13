@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.AbilityScores;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteMonster;
@@ -26,7 +26,7 @@ import dev.ebullient.convert.qute.QuteMonster.Spellcasting;
 import dev.ebullient.convert.qute.QuteMonster.Spells;
 import dev.ebullient.convert.qute.QuteSource;
 import dev.ebullient.convert.qute.Trait;
-import dev.ebullient.convert.tools5e.JsonIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteMonster extends Json2QuteCommon {
@@ -584,11 +584,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         public JsonNode getAc() {
             MonsterAC[] result = new MonsterAC[] { monsterAc };
-            return Json5eTui.MAPPER.valueToTree(result);
+            return Tui.MAPPER.valueToTree(result);
         }
 
         public JsonNode getHp() {
-            return Json5eTui.MAPPER.valueToTree(monsterHp);
+            return Tui.MAPPER.valueToTree(monsterHp);
         }
     }
 

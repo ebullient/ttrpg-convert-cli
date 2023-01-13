@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 
 public class Json5eConfig {
     final static TypeReference<List<String>> LIST_STRING = new TypeReference<List<String>>() {
@@ -50,9 +50,9 @@ public class Json5eConfig {
 
     private boolean allSources;
 
-    final Json5eTui tui;
+    final Tui tui;
 
-    public Json5eConfig(Json5eTui tui, List<String> initialSources) {
+    public Json5eConfig(Tui tui, List<String> initialSources) {
         this.tui = tui;
         this.addSources(initialSources);
     }

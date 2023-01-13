@@ -6,23 +6,23 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.io.Templates;
-import dev.ebullient.convert.tools5e.Json5eConfig;
-import dev.ebullient.convert.tools5e.JsonIndex;
+import dev.ebullient.convert.tools.dnd5e.Json5eConfig;
+import dev.ebullient.convert.tools.dnd5e.JsonIndex;
 import io.quarkus.arc.Arc;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 public class JsonSourcesTest {
 
-    protected Json5eTui tui;
+    protected Tui tui;
     protected Templates templates;
     protected JsonIndex index;
 
     @Test
     public void testFromAllSources() {
-        tui = Arc.container().instance(Json5eTui.class).get();
+        tui = Arc.container().instance(Tui.class).get();
         templates = Arc.container().instance(Templates.class).get();
         tui.init(null, false, false);
 
@@ -38,7 +38,7 @@ public class JsonSourcesTest {
 
     @Test
     public void testFromSomeSources() {
-        tui = Arc.container().instance(Json5eTui.class).get();
+        tui = Arc.container().instance(Tui.class).get();
         templates = Arc.container().instance(Templates.class).get();
         tui.init(null, false, false);
 
@@ -54,7 +54,7 @@ public class JsonSourcesTest {
 
     @Test
     public void testSrdOnly() {
-        tui = Arc.container().instance(Json5eTui.class).get();
+        tui = Arc.container().instance(Tui.class).get();
         templates = Arc.container().instance(Templates.class).get();
         tui.init(null, false, false);
 
