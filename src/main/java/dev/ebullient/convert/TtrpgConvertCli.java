@@ -66,7 +66,7 @@ import picocli.CommandLine.UnmatchedArgumentException;
         "Pass this file in as another input source. Use the identifiers from the generated index files in the list of excluded rules.",
         "",
 }, mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
-public class Json5eConvertCli implements Callable<Integer>, QuarkusApplication {
+public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
 
     List<Path> input;
     Path output;
