@@ -57,6 +57,13 @@
   height: 300px;
 }
 
+.creature-view-container.workspace-leaf-content {
+  background-color: var(--background-primary-alt);
+}
+.creature-view-container.workspace-leaf-content .admonition {
+  margin-top: 0;
+}
+
 /* Monster: statblocks and #token images */
 .rendered-widget .admonition-statblock-parent,
 .markdown-rendered .admonition-statblock-parent,

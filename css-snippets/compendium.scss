@@ -51,6 +51,14 @@
   }
 }
 
+.creature-view-container.workspace-leaf-content {
+  background-color: var(--background-primary-alt);
+
+  .admonition {
+    margin-top: 0;
+  }
+}
+
 /* Monster: statblocks and #token images */
 .rendered-widget,
 .markdown-rendered,
