@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteRace;
-import dev.ebullient.convert.tools5e.JsonIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
 
 public class Json2QuteRace extends Json2QuteCommon {
 

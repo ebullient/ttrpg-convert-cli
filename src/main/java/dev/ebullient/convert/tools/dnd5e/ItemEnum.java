@@ -1,8 +1,8 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.Collection;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 
 public enum ItemEnum {
 
@@ -112,7 +112,7 @@ public enum ItemEnum {
                 || this == WONDROUS;
     }
 
-    public String getItemTag(Collection<PropertyEnum> properties, Json5eTui tui) {
+    public String getItemTag(Collection<PropertyEnum> properties, Tui tui) {
         StringBuilder tag = new StringBuilder();
         tag.append("item");
         if (isArmor()) {

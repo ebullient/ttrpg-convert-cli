@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
@@ -99,20 +99,20 @@ public class TestUtils {
         return e;
     };
 
-    static void assertDirectoryContents(Path directory, Json5eTui tui) {
+    static void assertDirectoryContents(Path directory, Tui tui) {
         assertDirectoryContents(directory, tui, checkContents);
     }
 
-    static void assertDirectoryContents(Path directory, Json5eTui tui, BiFunction<Path, List<String>, List<String>> checker) {
+    static void assertDirectoryContents(Path directory, Tui tui, BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = checkDirectoryContents(directory, tui, checker);
         assertThat(errors).isEmpty();
     }
 
-    static List<String> checkDirectoryContents(Path directory, Json5eTui tui) {
+    static List<String> checkDirectoryContents(Path directory, Tui tui) {
         return checkDirectoryContents(directory, tui, checkContents);
     }
 
-    static List<String> checkDirectoryContents(Path directory, Json5eTui tui,
+    static List<String> checkDirectoryContents(Path directory, Tui tui,
             BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = new ArrayList<>();
         try (Stream<Path> walk = Files.list(directory)) {

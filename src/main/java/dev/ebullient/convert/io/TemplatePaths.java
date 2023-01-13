@@ -22,7 +22,7 @@ public class TemplatePaths {
     public final Map<String, Path> badTemplates = new HashMap<>();
 
     @Inject
-    Json5eTui tui;
+    Tui tui;
 
     public void setCustomTemplate(String key, Path path) {
         if (!KEYS.contains(key)) {
@@ -102,7 +102,7 @@ public class TemplatePaths {
         return customTemplates.get(id);
     }
 
-    void verify(Json5eTui tui) {
+    void verify(Tui tui) {
         if (badKeys.isEmpty() && badTemplates.isEmpty()) {
             return;
         }

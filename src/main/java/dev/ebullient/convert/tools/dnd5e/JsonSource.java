@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import static java.util.Map.entry;
 
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteSource;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -49,10 +49,10 @@ public interface JsonSource {
     CompendiumSources getSources();
 
     default ObjectMapper mapper() {
-        return Json5eTui.MAPPER;
+        return Tui.MAPPER;
     }
 
-    default Json5eTui tui() {
+    default Tui tui() {
         return index().tui;
     }
 

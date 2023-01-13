@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -36,7 +36,7 @@ import picocli.CommandLine.Help.ColorScheme;
 import picocli.CommandLine.Model.CommandSpec;
 
 @ApplicationScoped
-public class Json5eTui {
+public class Tui {
     public final static ObjectMapper MAPPER = new ObjectMapper()
             .setVisibility(VisibilityChecker.Std.defaultInstance().with(JsonAutoDetect.Visibility.ANY));
 
@@ -97,7 +97,7 @@ public class Json5eTui {
     private Path output = Paths.get("");
     private final Set<Path> inputRoot = new TreeSet<>();
 
-    public Json5eTui() {
+    public Tui() {
         this.ansi = Help.Ansi.OFF;
         this.colors = Help.defaultColorScheme(ansi);
 

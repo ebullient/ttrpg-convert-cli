@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools5e;
+package dev.ebullient.convert.tools.dnd5e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,11 +7,11 @@ import java.util.regex.Matcher;
 
 import org.junit.jupiter.api.Test;
 
-import dev.ebullient.convert.io.Json5eTui;
+import dev.ebullient.convert.io.Tui;
 
 public class RegexTest {
 
-    Json5eTui tui = new Json5eTui();
+    Tui tui = new Tui();
     JsonIndex index = new JsonIndex(List.of("ALL"), tui);
     JsonSourceCopier copier = new JsonSourceCopier(index);
 

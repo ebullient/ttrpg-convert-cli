@@ -3,7 +3,7 @@ package dev.ebullient.convert.qute;
 import java.util.Collection;
 import java.util.List;
 
-import dev.ebullient.convert.tools5e.CompendiumSources;
+import dev.ebullient.convert.tools.dnd5e.CompendiumSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
