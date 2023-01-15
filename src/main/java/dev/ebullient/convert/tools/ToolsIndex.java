@@ -10,17 +10,15 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.dnd5e.JsonIndex;
-import dev.ebullient.convert.tools.pf2e.Pf2eJsonIndex;
 
 public interface ToolsIndex {
 
     static ToolsIndex createIndex(Datasource game, CompendiumConfig config, Tui tui) {
         switch (game) {
             case toolsp2fe:
-                return new Pf2eJsonIndex(config);
+                return new dev.ebullient.convert.tools.pf2e.JsonIndex(config);
             default:
-                return new JsonIndex(config);
+                return new dev.ebullient.convert.tools.dnd5e.JsonIndex(config);
         }
     }
 
@@ -46,7 +44,7 @@ public interface ToolsIndex {
 
     boolean notPrepared();
 
-    JsonIndex importTree(String filename, JsonNode node);
+    ToolsIndex importTree(String filename, JsonNode node);
 
     MarkdownConverter markdownConverter(MarkdownWriter writer, Map<String, String> imageFallbackPaths);
 

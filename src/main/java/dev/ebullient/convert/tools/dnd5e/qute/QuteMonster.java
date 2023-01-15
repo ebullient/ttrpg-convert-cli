@@ -1,4 +1,4 @@
-package dev.ebullient.convert.qute;
+package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.dnd5e.CompendiumSources;
+import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -56,7 +58,7 @@ public class QuteMonster extends QuteBase {
     final List<ImageRef> fluffImages;
     final List<ImageRef> allImages;
 
-    public QuteMonster(CompendiumSources sources, String name, String source, boolean isNpc, String size, String type,
+    public QuteMonster(Tools5eSources sources, String name, String source, boolean isNpc, String size, String type,
             String subtype, String alignment,
             Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed, AbilityScores scores,
             SavesAndSkills savesSkills, String senses, int passive, String vulnerable,

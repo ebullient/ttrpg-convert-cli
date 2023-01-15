@@ -195,7 +195,11 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
             tui.outPrintf("⏱  Reading %s%n", inputPath);
             if (inputPath.toFile().isDirectory()) {
                 toolsBase = inputPath.toAbsolutePath();
-                allOk &= tui.read5eTools(toolsBase, index::importTree);
+                if (game == Datasource.toolsp2fe) {
+                    allOk &= tui.readPf2eTools(toolsBase, index::importTree);
+                } else {
+                    allOk &= tui.read5eTools(toolsBase, index::importTree);
+                }
             } else {
                 allOk &= tui.readFile(inputPath, index::importTree);
             }

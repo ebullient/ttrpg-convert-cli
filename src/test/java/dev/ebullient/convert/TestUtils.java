@@ -26,15 +26,20 @@ import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
     public final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
-    // for compile/test purposes. Must clone/sync separately.
-    public final static Path TOOLS_PATH = PROJECT_PATH.resolve("sources/5etools-mirror-1.github.io/data");
-    public final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
-    public final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
-    public final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
-    public final static Path TEST_SOURCES_BOOK_ADV_JSON = PROJECT_PATH
-            .resolve("src/test/resources/sources-book-adventure.json");
+    public final static Path OUTPUT_ROOT_5E = PROJECT_PATH.resolve("target/test-5e");
+    public final static Path OUTPUT_ROOT_PF2 = PROJECT_PATH.resolve("target/test-pf2");
+
     public final static Path TEST_SOURCES_FROM_ALL = PROJECT_PATH.resolve("src/test/resources/sources-from-all.json");
-    public final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
+    public final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
+    public final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
+
+    // for compile/test purposes. Must clone/sync separately.
+    public final static Path TOOLS_PATH_5E = PROJECT_PATH.resolve("sources/5etools-mirror-1.github.io/data");
+    public final static Path TEST_SOURCES_JSON_5E = PROJECT_PATH.resolve("src/test/resources/sources.json");
+    public final static Path TEST_SOURCES_BOOK_ADV_JSON_5E = PROJECT_PATH
+            .resolve("src/test/resources/sources-book-adventure.json");
+
+    public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/PF2eTools/data");
 
     final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");
 

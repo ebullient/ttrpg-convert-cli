@@ -9,14 +9,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.TestUtils;
-import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 public class JsonDataSubsetTest {
 
     static CommonDataTests commonTests;
-    static final Path outputPath = TestUtils.OUTPUT_ROOT.resolve("subset");
+    static final Path outputPath = TestUtils.OUTPUT_ROOT_5E.resolve("subset");
 
     @BeforeAll
     public static void setupDir() throws Exception {
@@ -54,7 +54,7 @@ public class JsonDataSubsetTest {
     public void testRaceList() {
         commonTests.testRaceList(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             // Single included race: changeling from mpmm
             Path changeling = outputPath
                     .resolve(QuteSource.RACES_PATH)
@@ -82,7 +82,7 @@ public class JsonDataSubsetTest {
     public void testMonsterList() {
         commonTests.testMonsterList(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             // Tree blight is from Curse of Strahd, but is also present in
             // The Wild Beyond the Witchlight --> an "otherSource".
             // The tree blight should be included when WBtW is included

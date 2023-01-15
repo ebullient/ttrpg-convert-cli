@@ -347,7 +347,7 @@ public class Tui {
         return result;
     }
 
-    public boolean read5eTools(Path dir, BiConsumer<String, JsonNode> callback) {
+    public boolean read5eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
                 "adventures.json", "books.json", "names.json", "variantrules.json",
                 "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
@@ -360,15 +360,31 @@ public class Tui {
                 "races.json", "fluff-races.json",
                 "spells");
 
-        if (!dir.resolve("adventures.json").toFile().exists()) {
-            debugf("Unable to find 5eTools data: %s", dir.toString());
+        if (!toolsBase.resolve("adventures.json").toFile().exists()) {
+            debugf("Unable to find 5eTools data: %s", toolsBase.toString());
             return false;
         }
-        inputRoot.add(dir.getParent());
+        inputRoot.add(toolsBase.getParent());
 
+        return readToolsList(toolsBase, inputs, callback);
+    }
+
+    public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
+        List<String> inputs = List.of(
+                "adventures.json", "books.json");
+
+        if (!toolsBase.resolve("archetypes.json").toFile().exists()) {
+            debugf("Unable to find pf2e data: %s", toolsBase.toString());
+            return false;
+        }
+        inputRoot.add(toolsBase.getParent());
+        return readToolsList(toolsBase, inputs, callback);
+    }
+
+    private boolean readToolsList(Path toolsBase, List<String> inputs, BiConsumer<String, JsonNode> callback) {
         boolean result = true;
         for (String input : inputs) {
-            Path p = dir.resolve(input);
+            Path p = toolsBase.resolve(input);
             if (p.toFile().isFile()) {
                 result |= readFile(p, callback);
             } else {

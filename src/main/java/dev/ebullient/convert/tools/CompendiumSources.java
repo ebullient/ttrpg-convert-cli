@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools.dnd5e;
+package dev.ebullient.convert.tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,6 @@ import java.util.stream.StreamSupport;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.IndexType;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -24,8 +23,6 @@ public class CompendiumSources {
     final String name;
     final Set<String> bookSources = new LinkedHashSet<>();
     final String sourceText;
-    final boolean srd;
-    final boolean basicRules;
 
     public CompendiumSources(IndexType type, String key, JsonNode jsonElement) {
         this.type = type;
@@ -33,19 +30,10 @@ public class CompendiumSources {
         this.name = (jsonElement.has("name")
                 ? jsonElement.get("name").asText()
                 : jsonElement.get("abbreviation").asText()).trim();
-        this.basicRules = jsonElement.has("basicRules")
-                ? jsonElement.get("basicRules").asBoolean(false)
-                : false;
-        this.srd = jsonElement.has("srd")
-                ? jsonElement.get("srd").asBoolean(false)
-                : false;
         this.sourceText = findSourceText(jsonElement);
     }
 
     public String getSourceText(boolean useSrd) {
-        if (useSrd) {
-            return "SRD / Basic Rules";
-        }
         return sourceText;
     }
 
@@ -88,21 +76,21 @@ public class CompendiumSources {
                     .collect(Collectors.toList()));
         }
 
-        String srdBasic = null;
-        if (srd && basicRules) {
-            srdBasic = "Available in the SRD and the Basic Rules.";
-        } else if (srd) {
-            srdBasic = "Available in the SRD.";
-        } else if (basicRules) {
-            srdBasic = "Available in the Basic Rules.";
-        }
+        // String srdBasic = null;
+        // if (srd && basicRules) {
+        //     srdBasic = "Available in the SRD and the Basic Rules.";
+        // } else if (srd) {
+        //     srdBasic = "Available in the SRD.";
+        // } else if (basicRules) {
+        //     srdBasic = "Available in the Basic Rules.";
+        // }
 
-        String sourceText = String.join(", ", srcText);
-        if (srdBasic != null) {
-            return sourceText.isEmpty()
-                    ? srdBasic
-                    : sourceText + ". " + srdBasic;
-        }
+        // String sourceText = String.join(", ", srcText);
+        // if (srdBasic != null) {
+        //     return sourceText.isEmpty()
+        //             ? srdBasic
+        //             : sourceText + ". " + srdBasic;
+        // }
 
         return sourceText;
     }

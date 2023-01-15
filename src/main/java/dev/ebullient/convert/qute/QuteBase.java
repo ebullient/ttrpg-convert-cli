@@ -1,16 +1,19 @@
 package dev.ebullient.convert.qute;
 
 import java.util.Collection;
+import java.util.List;
 
-import dev.ebullient.convert.tools.dnd5e.CompendiumSources;
+import dev.ebullient.convert.tools.CompendiumSources;
+import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteBase implements QuteSource {
-    final String name;
-    final CompendiumSources sources;
+public class QuteBase {
+    protected final String name;
+    protected final CompendiumSources sources;
     public final String source;
     public final String text;
     public final Collection<String> tags;
@@ -23,12 +26,10 @@ public class QuteBase implements QuteSource {
         this.tags = tags;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public String getSource() {
         return source;
     }
@@ -37,22 +38,30 @@ public class QuteBase implements QuteSource {
         return text.contains("\n## ");
     }
 
-    @Override
+    public List<ImageRef> images() {
+        return List.of();
+    };
+
+    public CompendiumSources sources() {
+        return sources;
+    };
+
     public String title() {
         return name;
     }
 
-    @Override
     public String targetFile() {
         return name + QuteSource.sourceIfNotCore(sources.primarySource());
     }
 
-    @Override
     public String targetPath() {
         return ".";
     }
 
-    @Override
+    public IndexType type() {
+        return sources.getType();
+    }
+
     public String key() {
         return sources.getKey();
     }

@@ -8,9 +8,8 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
 
 public class Table2QuteNote extends Json2QuteCommon {
     Table2QuteNote(JsonIndex index, JsonNode jsonNode) {
@@ -18,7 +17,7 @@ public class Table2QuteNote extends Json2QuteCommon {
     }
 
     @Override
-    public QuteSource build() {
+    public QuteBase build() {
         throw new IllegalStateException("Not implemented");
     }
 

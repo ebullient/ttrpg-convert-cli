@@ -1,9 +1,11 @@
-package dev.ebullient.convert.qute;
+package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.Collection;
 import java.util.List;
 
-import dev.ebullient.convert.tools.dnd5e.CompendiumSources;
+import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -21,7 +23,7 @@ public class QuteDeity extends QuteBase {
     public final String symbol;
     final ImageRef symbolImg;
 
-    public QuteDeity(CompendiumSources sources, String name, String source,
+    public QuteDeity(Tools5eSources sources, String name, String source,
             List<String> altNames, String pantheon, String alignment,
             String title, String cateogry, String domains,
             String province, String symbol, ImageRef symbolImg,

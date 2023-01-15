@@ -12,17 +12,17 @@ import javax.inject.Inject;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.MarkdownWriter.FileMap;
-import dev.ebullient.convert.qute.QuteBackground;
-import dev.ebullient.convert.qute.QuteClass;
-import dev.ebullient.convert.qute.QuteDeity;
-import dev.ebullient.convert.qute.QuteFeat;
-import dev.ebullient.convert.qute.QuteItem;
-import dev.ebullient.convert.qute.QuteMonster;
-import dev.ebullient.convert.qute.QuteName;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.qute.QuteRace;
-import dev.ebullient.convert.qute.QuteSpell;
-import dev.ebullient.convert.qute.QuteSubclass;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteBackground;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteDeity;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteItem;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.Template;
 

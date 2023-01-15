@@ -6,11 +6,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.qute.QuteName;
-import dev.ebullient.convert.qute.QuteName.LookupTable;
-import dev.ebullient.convert.qute.QuteName.LookupTableRow;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteName.LookupTable;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteName.LookupTableRow;
 
 public class Json2QuteName extends Json2QuteCommon {
 
@@ -63,7 +62,7 @@ public class Json2QuteName extends Json2QuteCommon {
     }
 
     @Override
-    public QuteSource build() {
+    public QuteBase build() {
         throw new IllegalStateException("Not implemented");
     }
 }

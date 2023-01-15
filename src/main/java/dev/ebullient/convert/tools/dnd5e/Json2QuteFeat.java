@@ -8,9 +8,8 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.qute.QuteFeat;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 
 public class Json2QuteFeat extends Json2QuteCommon {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
@@ -20,7 +19,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
     }
 
     @Override
-    public QuteSource build() {
+    public QuteBase build() {
         String prerequisite = listPrerequisites();
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 

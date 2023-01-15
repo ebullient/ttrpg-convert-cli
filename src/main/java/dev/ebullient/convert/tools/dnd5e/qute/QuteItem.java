@@ -1,8 +1,10 @@
-package dev.ebullient.convert.qute;
+package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
 
-import dev.ebullient.convert.tools.dnd5e.CompendiumSources;
+import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -21,7 +23,7 @@ public class QuteItem extends QuteBase {
     public final Double weight;
     public final List<ImageRef> images;
 
-    public QuteItem(CompendiumSources sources, String name, String source, String detail,
+    public QuteItem(Tools5eSources sources, String name, String source, String detail,
             String armorClass, String damage, String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
             String costGp, Double weightLbs, String text,
