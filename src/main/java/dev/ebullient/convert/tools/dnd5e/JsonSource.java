@@ -21,8 +21,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface JsonSource {
@@ -52,7 +51,7 @@ public interface JsonSource {
         return index().cfg();
     }
 
-    CompendiumSources getSources();
+    Tools5eSources getSources();
 
     default ObjectMapper mapper() {
         return Tui.MAPPER;
@@ -752,7 +751,7 @@ public interface JsonSource {
         }
     }
 
-    default String decoratedRaceName(JsonNode jsonSource, CompendiumSources sources) {
+    default String decoratedRaceName(JsonNode jsonSource, Tools5eSources sources) {
         String raceName = sources.getName();
         JsonNode raceNameNode = jsonSource.get("raceName");
         if (raceNameNode != null) {
@@ -761,22 +760,22 @@ public interface JsonSource {
         return decoratedTypeName(raceName.replace("Variant; ", ""), getSources());
     }
 
-    default String decoratedMonsterName(JsonNode jsonSource, CompendiumSources sources) {
+    default String decoratedMonsterName(JsonNode jsonSource, Tools5eSources sources) {
         return sources.getName().replace("\"", "");
     }
 
-    default String decoratedTypeName(CompendiumSources sources) {
+    default String decoratedTypeName(Tools5eSources sources) {
         return decoratedTypeName(sources.name, sources);
     }
 
-    default String decoratedTypeName(String name, CompendiumSources sources) {
+    default String decoratedTypeName(String name, Tools5eSources sources) {
         if (sources.isPrimarySource("DMG") && !name.contains("(DMG)")) {
             return name + " (DMG)";
         }
         return name;
     }
 
-    default String decoratedUaName(String name, CompendiumSources sources) {
+    default String decoratedUaName(String name, Tools5eSources sources) {
         Optional<String> uaSource = sources.uaSource();
         if (uaSource.isPresent() && !name.contains("(UA")) {
             return name + " (" + uaSource.get() + ")";
@@ -784,7 +783,7 @@ public interface JsonSource {
         return name;
     }
 
-    default String decoratedFeatureTypeName(CompendiumSources valueSources, JsonNode value) {
+    default String decoratedFeatureTypeName(Tools5eSources valueSources, JsonNode value) {
         String name = decoratedTypeName(value.get("name").asText(), valueSources);
         String type = getTextOrEmpty(value, "featureType");
 
@@ -1037,7 +1036,7 @@ public interface JsonSource {
             return linkText;
         }
         JsonNode jsonSource = getJsonNodeForKey(key);
-        CompendiumSources sources = index().constructSources(type, jsonSource);
+        Tools5eSources sources = index().constructSources(type, jsonSource);
         if (type == IndexType.background) {
             return linkOrText(linkText, key, dirName,
                     Json2QuteBackground.decoratedBackgroundName(parts[0])
@@ -1138,7 +1137,7 @@ public interface JsonSource {
             return linkText;
         }
         JsonNode jsonSource = getJsonNodeForKey(key);
-        CompendiumSources sources = index().constructSources(IndexType.monster, jsonSource);
+        Tools5eSources sources = index().constructSources(IndexType.monster, jsonSource);
         String resourceName = decoratedMonsterName(jsonSource, sources);
         String type = getMonsterType(jsonSource); // may be missing for partial index
         if (type == null) {

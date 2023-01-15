@@ -8,9 +8,8 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBackground;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteBackground;
 
 public class Json2QuteBackground extends Json2QuteCommon {
 
@@ -27,7 +26,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
     }
 
     @Override
-    public QuteSource build() {
+    public QuteBase build() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
         appendEntryToText(text, node, "##");

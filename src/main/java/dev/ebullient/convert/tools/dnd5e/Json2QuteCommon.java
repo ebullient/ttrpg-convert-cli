@@ -9,12 +9,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 
 public abstract class Json2QuteCommon implements JsonSource {
     protected final JsonIndex index;
-    protected final CompendiumSources sources;
+    protected final Tools5eSources sources;
     protected final JsonNode node;
 
     Json2QuteCommon(JsonIndex index, IndexType type, JsonNode jsonNode) {
@@ -28,7 +28,7 @@ public abstract class Json2QuteCommon implements JsonSource {
     }
 
     @Override
-    public CompendiumSources getSources() {
+    public Tools5eSources getSources() {
         return sources;
     }
 
@@ -143,5 +143,5 @@ public abstract class Json2QuteCommon implements JsonSource {
         }
     }
 
-    public abstract QuteSource build();
+    public abstract QuteBase build();
 }

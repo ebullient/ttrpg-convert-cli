@@ -8,9 +8,8 @@ import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.qute.QuteSpell;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
 
 public class Json2QuteSpell extends Json2QuteCommon {
 
@@ -22,7 +21,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     @Override
-    public QuteSource build() {
+    public QuteBase build() {
         boolean ritual = spellIsRitual();
         SchoolEnum school = getSchool();
         String level = node.get("level").asText();

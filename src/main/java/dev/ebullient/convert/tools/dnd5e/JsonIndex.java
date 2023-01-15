@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
@@ -59,7 +58,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
     private final Set<String> familiarKeys = new HashSet<>();
     private final Set<String> missingSourceName = new HashSet<>();
 
-    private final Map<JsonNode, CompendiumSources> nodeToSources = new HashMap<>();
+    private final Map<JsonNode, Tools5eSources> nodeToSources = new HashMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
 
@@ -410,18 +409,18 @@ public class JsonIndex implements JsonSource, ToolsIndex {
                 IndexType.subclass, name, className, classSource).toLowerCase();
     }
 
-    public CompendiumSources constructSources(IndexType type, JsonNode x) {
+    public Tools5eSources constructSources(IndexType type, JsonNode x) {
         return constructSources(type, null, x);
     }
 
-    public CompendiumSources constructSources(IndexType type, String indexKey, JsonNode x) {
+    public Tools5eSources constructSources(IndexType type, String indexKey, JsonNode x) {
         if (x == null) {
             throw new IllegalStateException("Unable to look up a null element: " + indexKey);
         }
 
         return nodeToSources.computeIfAbsent(x, y -> {
             String key = indexKey == null ? getKey(type, x) : indexKey;
-            CompendiumSources s = new CompendiumSources(type, key, x);
+            Tools5eSources s = new Tools5eSources(type, key, x);
             s.checkKnown(tui(), missingSourceName);
             return s;
         });
@@ -578,7 +577,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         return nodeIndex.get(getKey(type, x));
     }
 
-    public Stream<JsonNode> originSubraces(CompendiumSources sources) {
+    public Stream<JsonNode> originSubraces(Tools5eSources sources) {
         String raceName = sources.getName();
         String raceSource = String.join("|", sources.bookSources);
         String pattern = String.format("%s\\|[^|]+\\|%s\\|(%s)", IndexType.subrace, raceName, raceSource)
@@ -646,7 +645,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
             return true;
         }
 
-        CompendiumSources sources = constructSources(IndexType.getTypeFromKey(key), key, node);
+        Tools5eSources sources = constructSources(IndexType.getTypeFromKey(key), key, node);
         return sources.bookSources.stream().anyMatch((s) -> config.sourceIncluded(s));
     }
 
@@ -731,7 +730,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
     }
 
     @Override
-    public CompendiumSources getSources() {
+    public Tools5eSources getSources() {
         return null;
     }
 

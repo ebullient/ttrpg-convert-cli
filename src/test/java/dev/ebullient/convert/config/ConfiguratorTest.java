@@ -72,7 +72,7 @@ public class ConfiguratorTest {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
         Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
 
-        tui.readFile(TestUtils.TEST_SOURCES_JSON, (f, node) -> {
+        tui.readFile(TestUtils.TEST_SOURCES_JSON_5E, (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = ttrpgConfig.getConfig();
 
@@ -109,7 +109,7 @@ public class ConfiguratorTest {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
         Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
 
-        tui.readFile(TestUtils.TEST_SOURCES_BOOK_ADV_JSON, (f, node) -> {
+        tui.readFile(TestUtils.TEST_SOURCES_BOOK_ADV_JSON_5E, (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = ttrpgConfig.getConfig();
             Collection<String> books = config.getBooks();

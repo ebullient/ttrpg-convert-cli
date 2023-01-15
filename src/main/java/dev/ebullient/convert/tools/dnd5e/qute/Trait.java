@@ -1,4 +1,4 @@
-package dev.ebullient.convert.qute;
+package dev.ebullient.convert.tools.dnd5e.qute;
 
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;

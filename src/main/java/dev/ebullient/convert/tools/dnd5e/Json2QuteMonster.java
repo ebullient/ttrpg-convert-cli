@@ -18,16 +18,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.AbilityScores;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteMonster;
-import dev.ebullient.convert.qute.QuteMonster.SavesAndSkills;
-import dev.ebullient.convert.qute.QuteMonster.Spellcasting;
-import dev.ebullient.convert.qute.QuteMonster.Spells;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.qute.Trait;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.Trait;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteMonster extends Json2QuteCommon {
@@ -62,7 +62,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     @Override
-    public QuteSource build() {
+    public QuteBase build() {
         String size = getSize(node);
         String environment = joinAndReplace(node, "environment");
         String cr = monsterCr(node);

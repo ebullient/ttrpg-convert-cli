@@ -7,9 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteRace;
-import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
 
 public class Json2QuteRace extends Json2QuteCommon {
 
@@ -126,10 +125,10 @@ public class Json2QuteRace extends Json2QuteCommon {
             String key, JsonNode jsonSource) {
         List<Tuple> variants = new ArrayList<>();
         variants.add(new Tuple(key, jsonSource));
-        CompendiumSources sources = index.constructSources(type, jsonSource);
+        Tools5eSources sources = index.constructSources(type, jsonSource);
         index.originSubraces(sources).forEach(sr -> {
             JsonNode newNode = index.copier.handleCopy(type, sr);
-            CompendiumSources srSources = index.constructSources(IndexType.subrace, newNode);
+            Tools5eSources srSources = index.constructSources(IndexType.subrace, newNode);
             variants.add(new Tuple(srSources.getKey(), newNode));
         });
         return variants;

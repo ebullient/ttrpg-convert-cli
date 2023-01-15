@@ -1,10 +1,6 @@
 {
   "from": [
-    "PHB", 
-    "DMG", 
-    "XGE", 
-    "TCE",
-    "WbtW"
+    "ALL"
   ],
   "template": {
     "background": "garbage",

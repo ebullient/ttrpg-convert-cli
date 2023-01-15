@@ -18,8 +18,7 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Templates;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.arc.Arc;
 
 public class CommonDataTests {
@@ -30,29 +29,29 @@ public class CommonDataTests {
     protected JsonIndex index;
 
     public CommonDataTests(boolean useSources) throws Exception {
-        ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
-        templates = Arc.container().instance(Templates.class).get();
-
         tui = Arc.container().instance(Tui.class).get();
         tui.init(null, true, false);
 
+        ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
+        templates = Arc.container().instance(Templates.class).get();
+
         configurator = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             index = new JsonIndex(ttrpgConfig.getConfig());
 
             configurator.readConfiguration(TestUtils.TEST_PATH_JSON);
             if (useSources) {
-                configurator.readConfiguration(TestUtils.TEST_SOURCES_JSON);
+                configurator.readConfiguration(TestUtils.TEST_SOURCES_JSON_5E);
             } else {
                 configurator.setSources(List.of("*"));
             }
 
             for (String x : List.of("adventures.json", "books.json", "adventure/adventure-wdh.json",
                     "book/book-vgm.json", "book/book-phb.json")) {
-                tui.readFile(TestUtils.TOOLS_PATH.resolve(x), index::importTree);
+                tui.readFile(TestUtils.TOOLS_PATH_5E.resolve(x), index::importTree);
             }
-            tui.read5eTools(TestUtils.TOOLS_PATH, index::importTree);
+            tui.read5eTools(TestUtils.TOOLS_PATH_5E, index::importTree);
             index.prepare();
         }
     }
@@ -63,7 +62,7 @@ public class CommonDataTests {
 
     public void testKeyIndex(Path outputPath) throws Exception {
         tui.setOutputPath(outputPath);
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path p1Full = outputPath.resolve("allIndex.json");
             index.writeFullIndex(p1Full);
             Path p1Source = outputPath.resolve("allSourceIndex.json");
@@ -83,7 +82,7 @@ public class CommonDataTests {
 
     public void testFeatList(Path outputPath) {
         tui.setOutputPath(outputPath);
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path featDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.FEATS_PATH);
             TestUtils.deleteDir(featDir);
 
@@ -97,7 +96,7 @@ public class CommonDataTests {
 
     public void testBackgroundList(Path outputPath) {
         tui.setOutputPath(outputPath);
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path backgroundDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.BACKGROUND_PATH);
             TestUtils.deleteDir(backgroundDir);
 
@@ -113,7 +112,7 @@ public class CommonDataTests {
     public void testSpellList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path spellDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.SPELLS_PATH);
             TestUtils.deleteDir(spellDir);
 
@@ -128,7 +127,7 @@ public class CommonDataTests {
     public void testRaceList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path raceDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.RACES_PATH);
             TestUtils.deleteDir(raceDir);
 
@@ -143,7 +142,7 @@ public class CommonDataTests {
     public void testClassList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path classDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.CLASSES_PATH);
             TestUtils.deleteDir(classDir);
 
@@ -176,7 +175,7 @@ public class CommonDataTests {
     public void testDeityList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path deitiesDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.DEITIES_PATH);
             TestUtils.deleteDir(deitiesDir);
 
@@ -192,7 +191,7 @@ public class CommonDataTests {
     public void testItemList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path itemDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.ITEMS_PATH);
             TestUtils.deleteDir(itemDir);
 
@@ -207,7 +206,7 @@ public class CommonDataTests {
     public void testMonsterList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path bestiaryDir = outputPath.resolve(index.compendiumPath()).resolve(QuteSource.MONSTERS_BASE_PATH);
             TestUtils.deleteDir(bestiaryDir);
 
@@ -231,7 +230,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterAlternateScores(Path outputPath) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path out = outputPath.resolve("alt-scores");
             TestUtils.deleteDir(out);
 
@@ -248,7 +247,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlHeader(Path outputPath) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path out = outputPath.resolve("yaml-header");
             TestUtils.deleteDir(out);
 
@@ -266,7 +265,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlBody(Path outputPath) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path out = outputPath.resolve("yaml-body");
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
@@ -311,7 +310,7 @@ public class CommonDataTests {
 
     public void testRules(Path outputPath) {
         tui.setOutputPath(outputPath);
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeRulesAndTables();

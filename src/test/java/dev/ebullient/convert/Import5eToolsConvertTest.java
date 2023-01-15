@@ -22,14 +22,16 @@ import picocli.CommandLine;
 
 @QuarkusMainTest
 public class Import5eToolsConvertTest {
-    static final Path outputPath = TestUtils.OUTPUT_ROOT.resolve("test-cli");
+    static final Path outputPath_5e = TestUtils.OUTPUT_ROOT_5E.resolve("test-cli");
+    static final Path outputPath_pf2 = TestUtils.OUTPUT_ROOT_PF2.resolve("test-cli");
     static Tui tui;
 
     @BeforeAll
     public static void setupDir() {
         tui = new Tui();
         tui.init(null, false, false);
-        outputPath.toFile().mkdirs();
+        outputPath_5e.toFile().mkdirs();
+        outputPath_pf2.toFile().mkdirs();
     }
 
     @Test
@@ -51,21 +53,21 @@ public class Import5eToolsConvertTest {
     }
 
     @Test
-    void testCommandLiveData(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            final Path target = outputPath.resolve("srd-index");
+    void testCommandLiveData_5e(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            final Path target = outputPath_5e.resolve("srd-index");
             TestUtils.deleteDir(target);
 
             // SRD
             LaunchResult result = launcher.launch("--index",
-                    "-o", target.toString(), TestUtils.TOOLS_PATH.toString());
+                    "-o", target.toString(), TestUtils.TOOLS_PATH_5E.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
             // Subset
             result = launcher.launch("--index", "-s", "PHB,DMG,XGE,SCAG",
-                    "-o", outputPath.resolve("subset-index").toString(), TestUtils.TOOLS_PATH.toString());
+                    "-o", outputPath_5e.resolve("subset-index").toString(), TestUtils.TOOLS_PATH_5E.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -73,10 +75,10 @@ public class Import5eToolsConvertTest {
     }
 
     @Test
-    void testCommandLiveDataAllSources(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+    void testCommandLiveData_5eAllSources(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             // All, I mean it. Really for real.. ALL.
-            final Path allIndex = outputPath.resolve("all-index");
+            final Path allIndex = outputPath_5e.resolve("all-index");
             TestUtils.deleteDir(allIndex);
 
             List<String> args = new ArrayList<>(List.of("--index", "-s", "ALL",
@@ -85,10 +87,10 @@ public class Import5eToolsConvertTest {
                     "--monster", "src/main/resources/templates/images-monster2md.txt",
                     "--race", "src/main/resources/templates/images-race2md.txt",
                     "-o", allIndex.toString(),
-                    TestUtils.TOOLS_PATH.toString()));
+                    TestUtils.TOOLS_PATH_5E.toString()));
 
-            args.addAll(getFilesFrom(TestUtils.TOOLS_PATH.resolve("adventure")));
-            args.addAll(getFilesFrom(TestUtils.TOOLS_PATH.resolve("book")));
+            args.addAll(getFilesFrom(TestUtils.TOOLS_PATH_5E.resolve("adventure")));
+            args.addAll(getFilesFrom(TestUtils.TOOLS_PATH_5E.resolve("book")));
 
             LaunchResult result = launcher.launch(args.toArray(new String[0]));
             assertThat(result.exitCode())
@@ -118,14 +120,14 @@ public class Import5eToolsConvertTest {
     }
 
     @Test
-    void testCommandLiveDataOneSource(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            Path target = outputPath.resolve("erlw");
+    void testCommandLiveData_5eOneSource(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path target = outputPath_5e.resolve("erlw");
             TestUtils.deleteDir(target);
 
             // No basics
             LaunchResult result = launcher.launch("-s", "ERLW",
-                    "-o", target.toString(), TestUtils.TOOLS_PATH.toString());
+                    "-o", target.toString(), TestUtils.TOOLS_PATH_5E.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -133,9 +135,9 @@ public class Import5eToolsConvertTest {
     }
 
     @Test
-    void testCommandTemplates(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            Path target = outputPath.resolve("srd-templates");
+    void testCommandTemplates_5e(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path target = outputPath_5e.resolve("srd-templates");
             TestUtils.deleteDir(target);
 
             // SRD only, just templates
@@ -150,7 +152,7 @@ public class Import5eToolsConvertTest {
                     "--race", "src/test/resources/other/race.txt",
                     "--spell", "src/test/resources/other/spell.txt",
                     "--subclass", "src/test/resources/other/subclass.txt",
-                    "-o", target.toString(), TestUtils.TOOLS_PATH.toString());
+                    "-o", target.toString(), TestUtils.TOOLS_PATH_5E.toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
@@ -176,13 +178,13 @@ public class Import5eToolsConvertTest {
 
     @Test
     void testCommandBadTemplates(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            Path target = outputPath.resolve("bad-templates");
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path target = outputPath_5e.resolve("bad-templates");
 
             LaunchResult result = launcher.launch("--index",
                     "--background=garbage.txt",
                     "-o", target.toString(),
-                    TestUtils.TOOLS_PATH.toString());
+                    TestUtils.TOOLS_PATH_5E.toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command did not fail as expected. Output:%n%s", TestUtils.dump(result))
@@ -192,12 +194,12 @@ public class Import5eToolsConvertTest {
 
     @Test
     void testCommandBadTemplatesInJson(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            Path target = outputPath.resolve("bad-templates-json");
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path target = outputPath_5e.resolve("bad-templates-json");
 
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
-                    TestUtils.TOOLS_PATH.toString(),
+                    TestUtils.TOOLS_PATH_5E.toString(),
                     TestUtils.TEST_SOURCES_BAD_TEMPL_JSON.toString());
 
             assertThat(result.exitCode())
@@ -207,15 +209,15 @@ public class Import5eToolsConvertTest {
     }
 
     @Test
-    void testCommandBookAdventureInJson(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH.toFile().exists()) {
-            Path target = outputPath.resolve("json-book-adventure");
+    void testCommand_5eBookAdventureInJson(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path target = outputPath_5e.resolve("json-book-adventure");
             TestUtils.deleteDir(target);
 
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
-                    TestUtils.TOOLS_PATH.toString(),
-                    TestUtils.TEST_SOURCES_BOOK_ADV_JSON.toString());
+                    TestUtils.TOOLS_PATH_5E.toString(),
+                    TestUtils.TEST_SOURCES_BOOK_ADV_JSON_5E.toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))

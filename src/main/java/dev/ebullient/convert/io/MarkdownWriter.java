@@ -15,18 +15,19 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import dev.ebullient.convert.qute.QuteBackground;
-import dev.ebullient.convert.qute.QuteClass;
-import dev.ebullient.convert.qute.QuteDeity;
-import dev.ebullient.convert.qute.QuteFeat;
-import dev.ebullient.convert.qute.QuteItem;
-import dev.ebullient.convert.qute.QuteMonster;
-import dev.ebullient.convert.qute.QuteName;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.qute.QuteRace;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.qute.QuteSpell;
-import dev.ebullient.convert.qute.QuteSubclass;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteBackground;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteDeity;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteItem;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
@@ -47,7 +48,7 @@ public class MarkdownWriter {
         this.templates = templates;
     }
 
-    public <T extends QuteSource> void writeFiles(List<T> elements, Path compendiumPath) {
+    public <T extends QuteBase> void writeFiles(List<T> elements, Path compendiumPath) {
         if (elements.isEmpty()) {
             return;
         }
@@ -69,7 +70,7 @@ public class MarkdownWriter {
         for (Map.Entry<FileMap, List<T>> pathEntry : pathMap.entrySet()) {
             if (pathEntry.getValue().size() > 1) {
                 tui.warnf("Conflict: several entries would write to the same file:\n  %s",
-                        pathEntry.getValue().stream().map(QuteSource::key)
+                        pathEntry.getValue().stream().map(QuteBase::key)
                                 .collect(Collectors.joining("\n  ")));
             }
             fileMappings.add(doWrite(pathEntry.getKey(), pathEntry.getValue().get(0), counts));
@@ -90,7 +91,7 @@ public class MarkdownWriter {
         counts.forEach((k, v) -> tui.outPrintf("✅ Wrote %s files to %s.%n", v, k));
     }
 
-    <T extends QuteSource> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
+    <T extends QuteBase> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
         String type = qs.getClass().getSimpleName();
 
         try {

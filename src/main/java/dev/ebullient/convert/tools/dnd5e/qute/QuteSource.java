@@ -1,7 +1,10 @@
-package dev.ebullient.convert.qute;
+package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.nio.file.Path;
 import java.util.List;
+
+import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.CompendiumSources;
 
 public interface QuteSource {
     String BACKGROUND_PATH = "backgrounds";
@@ -51,7 +54,11 @@ public interface QuteSource {
         return List.of();
     };
 
-    String targetFile();
+    CompendiumSources sources();
+
+    default String targetFile() {
+        return getName() + QuteSource.sourceIfNotCore(sources().primarySource());
+    }
 
     String targetPath();
 

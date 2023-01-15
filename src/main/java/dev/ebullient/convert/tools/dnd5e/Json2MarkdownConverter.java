@@ -12,11 +12,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteName;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
 
 public class Json2MarkdownConverter implements MarkdownConverter {
     final JsonIndex index;
@@ -41,16 +40,16 @@ public class Json2MarkdownConverter implements MarkdownConverter {
                 IndexType.spell));
     }
 
-    public Json2MarkdownConverter writeFiles(IndexType type) {
+    public Json2MarkdownConverter writeFiles(dev.ebullient.convert.tools.IndexType type) {
         return writeFiles(List.of(type));
     }
 
-    public Json2MarkdownConverter writeFiles(List<IndexType> types) {
+    public Json2MarkdownConverter writeFiles(List<dev.ebullient.convert.tools.IndexType> types) {
         if (index.notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing files");
         }
 
-        List<QuteSource> sources = new ArrayList<>();
+        List<QuteBase> sources = new ArrayList<>();
         for (Entry<String, JsonNode> e : index.includedEntries()) {
             IndexType nodeType = IndexType.getTypeFromKey(e.getKey());
             JsonNode jsonSource = e.getValue();
@@ -63,18 +62,18 @@ public class Json2MarkdownConverter implements MarkdownConverter {
 
             if (nodeType == IndexType.classtype) {
                 Json2QuteClass jsonClass = new Json2QuteClass(index, nodeType, jsonSource);
-                QuteSource converted = jsonClass.build();
+                QuteBase converted = jsonClass.build();
                 if (converted != null) {
                     sources.add(converted);
                     sources.addAll(jsonClass.buildSubclasses());
                 }
             } else if (nodeType == IndexType.race || nodeType == IndexType.subrace) {
-                QuteSource converted = new Json2QuteRace(index, nodeType, jsonSource).build();
+                QuteBase converted = new Json2QuteRace(index, nodeType, jsonSource).build();
                 if (converted != null) {
                     sources.add(converted);
                 }
             } else {
-                QuteSource converted = json2qute(nodeType, jsonSource);
+                QuteBase converted = json2qute(nodeType, jsonSource);
                 if (converted != null) {
                     sources.add(converted);
                 }
@@ -89,7 +88,7 @@ public class Json2MarkdownConverter implements MarkdownConverter {
         return this;
     }
 
-    private QuteSource json2qute(IndexType type, JsonNode jsonSource) {
+    private QuteBase json2qute(IndexType type, JsonNode jsonSource) {
         switch (type) {
             case background:
                 return new Json2QuteBackground(index, type, jsonSource).build();

@@ -13,7 +13,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class JsonDataTest {
 
     static CommonDataTests commonTests;
-    static final Path outputPath = TestUtils.OUTPUT_ROOT.resolve("all");
+    static final Path outputPath = TestUtils.OUTPUT_ROOT_5E.resolve("all");
 
     @BeforeAll
     public static void setupDir() throws Exception {

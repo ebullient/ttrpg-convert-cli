@@ -17,9 +17,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import dev.ebullient.convert.qute.QuteClass;
-import dev.ebullient.convert.qute.QuteSubclass;
-import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 
 public class Json2QuteClass extends Json2QuteCommon {
 
@@ -486,7 +485,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         .collect(Collectors.joining(", ")));
     }
 
-    int classSkills(JsonNode source, Collection<String> list, CompendiumSources sources) {
+    int classSkills(JsonNode source, Collection<String> list, Tools5eSources sources) {
         ArrayNode skillNode = source.withArray("skills");
         if (skillNode.size() > 1) {
             tui().errorf("Multivalue skill array in %s: %s", sources, source.toPrettyString());
@@ -577,7 +576,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         String parentClassSource;
 
         String subclassProgression;
-        CompendiumSources sources;
+        Tools5eSources sources;
         final List<ClassFeature> features = new ArrayList<>();
     }
 
@@ -590,7 +589,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         public ClassFeature(String lookup, JsonNode featureJson, IndexType type, String heading, String parentSource) {
             String level = lookup.replaceAll(".*\\|(\\d+)\\|?.*", "$1");
 
-            CompendiumSources featureSources = new CompendiumSources(type, lookup, featureJson);
+            Tools5eSources featureSources = new Tools5eSources(type, lookup, featureJson);
             String name = decoratedFeatureTypeName(featureSources, featureJson);
             if (!featureNames.add(name)) {
                 // A class feature already uses this name. Add the level.
@@ -617,7 +616,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             this.text = text;
         }
 
-        void replaceElementRefs(JsonNode featureJson, List<String> text, String heading, CompendiumSources parentSource) {
+        void replaceElementRefs(JsonNode featureJson, List<String> text, String heading, Tools5eSources parentSource) {
             JsonNode field = featureJson.get("entries");
             if (field == null) {
                 return;
@@ -692,7 +691,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
                         // Add a source entry if this feature comes from a different source than the parent
                         if (!refSource.equals(parentSource)) {
-                            CompendiumSources sources = index().constructSources(refType, refJson);
+                            Tools5eSources sources = index().constructSources(refType, refJson);
                             replace.set("entry", new TextNode("_Source: " + sources.getSourceText(index.srdOnly()) + "_"));
                         }
                         copy.set(i, replace);
