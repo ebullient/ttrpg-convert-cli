@@ -23,7 +23,6 @@ import dev.ebullient.convert.io.Tui;
 public class CompendiumConfig {
     final static Path CWD = Path.of(".");
 
-    final TtrpgConfig ttrpgConfig;
     final Tui tui;
     final Datasource datasource;
 
@@ -38,8 +37,7 @@ public class CompendiumConfig {
     final Set<String> books = new HashSet<>();
     final Map<String, Path> customTemplates = new HashMap<>();
 
-    CompendiumConfig(TtrpgConfig ttrpgConfig, Datasource src, Tui tui) {
-        this.ttrpgConfig = ttrpgConfig;
+    CompendiumConfig(Datasource src, Tui tui) {
         this.tui = tui;
         this.datasource = src;
     }
@@ -145,6 +143,10 @@ public class CompendiumConfig {
                 .collect(Collectors.toList());
     }
 
+    public Path getCustomTemplate(String id) {
+        return customTemplates.get(id);
+    }
+
     public void readConfigurationIfPresent(JsonNode node) {
         if (userConfigPresent(node)) {
             Configurator c = new Configurator(this);
@@ -187,27 +189,24 @@ public class CompendiumConfig {
      */
     public static class Configurator {
 
-        protected TtrpgConfig ttrpgConfig;
         protected Tui tui;
 
-        public Configurator(TtrpgConfig ttrpgConfig, Tui tui) {
-            this.ttrpgConfig = ttrpgConfig;
+        public Configurator(Tui tui) {
             this.tui = tui;
         }
 
         public Configurator(CompendiumConfig compendiumConfig) {
-            this.ttrpgConfig = compendiumConfig.ttrpgConfig;
             this.tui = compendiumConfig.tui;
         }
 
         /** 1.x sources from command line */
         public void setSources(List<String> source) {
-            CompendiumConfig cfg = ttrpgConfig.getConfig();
+            CompendiumConfig cfg = TtrpgConfig.getConfig();
             cfg.addSources(source);
         }
 
         public void setTemplatePaths(TemplatePaths templatePaths) {
-            CompendiumConfig cfg = ttrpgConfig.getConfig();
+            CompendiumConfig cfg = TtrpgConfig.getConfig();
             cfg.customTemplates.putAll(templatePaths.customTemplates);
             templatePaths.verify(tui);
         }
@@ -246,11 +245,11 @@ public class CompendiumConfig {
                 for (Iterator<Entry<String, JsonNode>> i = ttrpgNode.fields(); i.hasNext();) {
                     Entry<String, JsonNode> e = i.next();
                     Datasource source = Datasource.matchDatasource(e.getKey());
-                    CompendiumConfig cfg = ttrpgConfig.getConfig(source);
+                    CompendiumConfig cfg = TtrpgConfig.getConfig(source);
                     readConfig(cfg, e.getValue());
                 }
             } else if (userConfigPresent(node)) {
-                CompendiumConfig cfg = ttrpgConfig.getConfig();
+                CompendiumConfig cfg = TtrpgConfig.getConfig();
                 readConfig(cfg, node);
             }
         }
@@ -393,13 +392,5 @@ public class CompendiumConfig {
                 child.forEach(x -> action.accept(x));
             }
         }
-    }
-
-    public void addFallbackPaths(Map<String, String> fbPaths) {
-        ttrpgConfig.fallbackImagePaths.putAll(fbPaths);
-    }
-
-    public Path getCustomTemplate(String id) {
-        return customTemplates.get(id);
     }
 }

@@ -4,16 +4,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.regex.Matcher;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.ConfiguratorUtil;
+import dev.ebullient.convert.config.Datasource;
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 
 public class RegexTest {
 
     Tui tui = new Tui();
-    Tools5eIndex index = new Tools5eIndex(ConfiguratorUtil.testConfig(tui));
+
+    CompendiumConfig config = ConfiguratorUtil.createNewConfig(tui);
+    Tools5eIndex index = new Tools5eIndex(config);
     JsonSourceCopier copier = new JsonSourceCopier(index);
+
+    @BeforeEach
+    void init() {
+        TtrpgConfig.init(tui, Datasource.tools5e);
+    }
 
     @Test
     public void testToHitStr() {

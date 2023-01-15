@@ -29,12 +29,11 @@ public class ConfiguratorTest {
 
     @Test
     public void testPath() throws Exception {
-        TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui);
+        Configurator test = new Configurator(tui);
 
         tui.readFile(TestUtils.TEST_PATH_JSON, (f, node) -> {
             test.readConfigIfPresent(node);
-            CompendiumConfig config = ttrpgConfig.getConfig();
+            CompendiumConfig config = TtrpgConfig.getConfig();
             assertThat(config).isNotNull();
             assertThat(config.compendiumRoot()).isEqualTo("/");
             assertThat(config.compendiumPath()).isEqualTo(CompendiumConfig.CWD);
@@ -45,8 +44,8 @@ public class ConfiguratorTest {
 
     @Test
     public void testPathNested() throws Exception {
-        TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui);
+        TtrpgConfig.init(tui, Datasource.tools5e);
+        Configurator test = new Configurator(tui);
 
         tui.readFile(TestUtils.TEST_PATH_JSON, (f, node) -> {
             ObjectNode parent = Tui.MAPPER.createObjectNode();
@@ -55,7 +54,7 @@ public class ConfiguratorTest {
             ttrpg.set("5e", node);
 
             test.readConfigIfPresent(parent);
-            CompendiumConfig config = ttrpgConfig.getConfig(Datasource.tools5e);
+            CompendiumConfig config = TtrpgConfig.getConfig();
 
             assertThat(config).isNotNull();
             assertThat(config).isNotNull();
@@ -69,12 +68,12 @@ public class ConfiguratorTest {
 
     @Test
     public void testSources() throws Exception {
-        TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui);
+        TtrpgConfig.init(tui, Datasource.tools5e);
+        Configurator test = new Configurator(tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_JSON_5E, (f, node) -> {
             test.readConfigIfPresent(node);
-            CompendiumConfig config = ttrpgConfig.getConfig();
+            CompendiumConfig config = TtrpgConfig.getConfig();
 
             assertThat(config).isNotNull();
             assertThat(config.allSources()).isFalse();
@@ -90,12 +89,12 @@ public class ConfiguratorTest {
 
     @Test
     public void testFromAll() throws Exception {
-        TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui);
+        TtrpgConfig.init(tui, Datasource.tools5e);
+        Configurator test = new Configurator(tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_FROM_ALL, (f, node) -> {
             test.readConfigIfPresent(node);
-            CompendiumConfig config = ttrpgConfig.getConfig();
+            CompendiumConfig config = TtrpgConfig.getConfig();
 
             assertThat(config).isNotNull();
             assertThat(config.allSources()).isTrue();
@@ -106,12 +105,12 @@ public class ConfiguratorTest {
 
     @Test
     public void testBooksAdventures() throws Exception {
-        TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui);
+        TtrpgConfig.init(tui, Datasource.tools5e);
+        Configurator test = new Configurator(tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_BOOK_ADV_JSON_5E, (f, node) -> {
             test.readConfigIfPresent(node);
-            CompendiumConfig config = ttrpgConfig.getConfig();
+            CompendiumConfig config = TtrpgConfig.getConfig();
             Collection<String> books = config.getBooks();
             Collection<String> adventures = config.getAdventures();
 
@@ -128,14 +127,14 @@ public class ConfiguratorTest {
 
     @Test
     public void testSourcesBadTemplates() throws Exception {
-        TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui);
+        TtrpgConfig.init(tui, Datasource.tools5e);
+        Configurator test = new Configurator(tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_BAD_TEMPL_JSON, (f, node) -> {
             assertThrows(IllegalArgumentException.class,
                     () -> test.readConfigIfPresent(node));
 
-            CompendiumConfig config = ttrpgConfig.getConfig();
+            CompendiumConfig config = TtrpgConfig.getConfig();
             assertThat(config).isNotNull();
             assertThat(config.getCustomTemplate("background")).isNull();
         });

@@ -20,8 +20,8 @@ public class JsonSourceCopier implements JsonSource {
     }
 
     JsonNode handleCopy(ToolsPf2eIndexType type, JsonNode jsonSource) {
-
         return jsonSource;
+
     }
 
 }

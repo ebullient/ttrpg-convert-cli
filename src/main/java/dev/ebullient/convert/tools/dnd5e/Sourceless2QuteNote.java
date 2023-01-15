@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 
@@ -275,7 +276,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         // "fromVariant": "Spellcasting|XGE",
         String[] parts = variant.trim().split("\\|");
         if (parts.length > 1 && !index().sourceIncluded(parts[1])) {
-            return variant + " from " + Tools5eSources.sourceToLongName(parts[1]);
+            return variant + " from " + TtrpgConfig.sourceToLongName(parts[1]);
         } else {
             return String.format("[%s](%svariant-rules/%s.md)",
                     variant, index().rulesRoot(), slugify(variant));

@@ -19,7 +19,6 @@ import io.quarkus.test.junit.QuarkusTest;
 public class Pf2JsonDataTest {
     static final Path outputPath = TestUtils.OUTPUT_ROOT_PF2.resolve("all");
 
-    protected static TtrpgConfig ttrpgConfig;
     protected static Templates templates;
     protected static Tui tui;
 
@@ -31,18 +30,17 @@ public class Pf2JsonDataTest {
         tui = Arc.container().instance(Tui.class).get();
         tui.init(null, true, false);
 
-        ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
-        ttrpgConfig.setDatasource(Datasource.toolsPf2e);
+        TtrpgConfig.init(tui, Datasource.toolsPf2e);
 
         templates = Arc.container().instance(Templates.class).get();
     }
 
     @Test
     public void testDataIndex_pf2e() throws Exception {
-        Configurator configurator = new Configurator(ttrpgConfig, tui);
+        Configurator configurator = new Configurator(tui);
 
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
-            index = new ToolsPf2eIndex(ttrpgConfig.getConfig());
+            index = new ToolsPf2eIndex(TtrpgConfig.getConfig());
 
             configurator.setSources(List.of("*"));
 

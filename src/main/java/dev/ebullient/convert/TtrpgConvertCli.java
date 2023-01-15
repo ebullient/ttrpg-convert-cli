@@ -89,9 +89,6 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
     @Inject
     Templates tpl;
 
-    @Inject
-    TtrpgConfig ttrpgConfig;
-
     @Spec
     private CommandSpec spec;
 
@@ -108,7 +105,6 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
     void setDatasource(String datasource) {
         try {
             game = Datasource.matchDatasource(datasource);
-            ttrpgConfig.setDatasource(game);
         } catch (IllegalStateException e) {
             tui.errorf("Unknown game data: %s", datasource);
         }
@@ -157,8 +153,9 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
 
         boolean allOk = true;
         tui.setOutputPath(output);
+        TtrpgConfig.init(tui, game);
 
-        Configurator configurator = new Configurator(ttrpgConfig, tui);
+        Configurator configurator = new Configurator(tui);
 
         if (source.size() == 1 && source.get(0).contains(",")) {
             String tmp = source.remove(0);
@@ -184,12 +181,12 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
             return ExitCode.USAGE;
         }
 
-        CompendiumConfig config = ttrpgConfig.getConfig();
+        CompendiumConfig config = TtrpgConfig.getConfig();
 
         tui.outPrintln("✅ finished reading config.");
         tui.verbosef("Writing markdown to %s.\n", output);
 
-        ToolsIndex index = ToolsIndex.createIndex(game, config, tui);
+        ToolsIndex index = ToolsIndex.createIndex();
         Path toolsBase = Path.of("").toAbsolutePath();
 
         for (Path inputPath : input) {
@@ -229,7 +226,7 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
         tpl.setCustomTemplates(config);
 
         MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
-        index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+        index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                 .writeAll()
                 .writeRulesAndTables();
 

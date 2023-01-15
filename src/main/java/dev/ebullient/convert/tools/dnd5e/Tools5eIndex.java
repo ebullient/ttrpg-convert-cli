@@ -24,17 +24,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
 public class Tools5eIndex implements JsonSource, ToolsIndex {
-
-    private static Tools5eIndex staticInstance;
-
-    public static Tools5eIndex get() {
-        return staticInstance;
-    }
 
     // classfeature|ability score improvement|monk|phb|12
     static final String classFeature_1 = "classfeature\\|[^|]+\\|[^|]+\\|";
@@ -56,7 +49,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     private final Set<String> srdKeys = new HashSet<>();
     private final Set<String> familiarKeys = new HashSet<>();
-    private final Set<String> missingSourceName = new HashSet<>();
 
     private final Map<JsonNode, Tools5eSources> nodeToSources = new HashMap<>();
 
@@ -66,7 +58,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     Pattern subclassFeaturePattern;
 
     public Tools5eIndex(CompendiumConfig config) {
-        staticInstance = this;
         this.config = config;
     }
 
@@ -91,7 +82,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         addRulesIfPresent(node, "status");
         addRulesIfPresent(node, "table");
         addRulesIfPresent(node, "variantrule");
-        addRulesIfPresent(node, "srdEntries");
 
         // Reference/Internal Types
         node.withArray("backgroundFluff").forEach(x -> addToIndex(Tools5eIndexType.backgroundfluff, x));
@@ -133,12 +123,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');
             rules.put(filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot), node);
-        }
-
-        JsonNode imageFallback = node.get("fallback-image");
-        if (imageFallback != null) {
-            Map<String, String> paths = Tui.MAPPER.convertValue(imageFallback, Tui.MAP_STRING_STRING);
-            config.addFallbackPaths(paths);
         }
 
         return this;
@@ -216,12 +200,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (variantIndex != null || filteredIndex != null) {
             return;
         }
+
         setClassFeaturePatterns();
 
         variantIndex = new HashMap<>();
-
-        // read additional SRD entries
-        tui().readResource("/json5econvert.json", this::importTree);
 
         nodeIndex.forEach((key, node) -> {
             // check for / manage copies first.
@@ -421,7 +403,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return nodeToSources.computeIfAbsent(x, y -> {
             String key = indexKey == null ? getKey(type, x) : indexKey;
             Tools5eSources s = new Tools5eSources(type, key, x);
-            s.checkKnown(tui(), missingSourceName);
+            s.checkKnown();
             return s;
         });
     }

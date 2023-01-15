@@ -13,6 +13,7 @@ import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
 import dev.ebullient.convert.config.ConfiguratorUtil;
+import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Templates;
@@ -23,7 +24,6 @@ import io.quarkus.arc.Arc;
 public class CommonDataTests {
     protected final Tui tui;
     protected final Configurator configurator;
-    protected final TtrpgConfig ttrpgConfig;
     protected final Templates templates;
     protected Tools5eIndex index;
 
@@ -32,13 +32,13 @@ public class CommonDataTests {
         tui.init(null, true, false);
 
         templates = Arc.container().instance(Templates.class).get();
-        ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
 
-        configurator = new Configurator(ttrpgConfig, tui);
+        TtrpgConfig.init(tui, Datasource.tools5e);
+        configurator = new Configurator(tui);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            index = new Tools5eIndex(ttrpgConfig.getConfig());
-            templates.setCustomTemplates(ttrpgConfig.getConfig());
+            index = new Tools5eIndex(TtrpgConfig.getConfig());
+            templates.setCustomTemplates(TtrpgConfig.getConfig());
 
             configurator.readConfiguration(TestUtils.TEST_PATH_JSON);
             if (useSources) {
@@ -87,7 +87,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(featDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.feat);
 
             TestUtils.assertDirectoryContents(featDir, tui);
@@ -101,7 +101,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(backgroundDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.background)
                     .writeRulesAndTables();
 
@@ -117,7 +117,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(spellDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.spell);
 
             TestUtils.assertDirectoryContents(spellDir, tui);
@@ -132,7 +132,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(raceDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.race);
 
             TestUtils.assertDirectoryContents(raceDir, tui);
@@ -147,7 +147,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(classDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.classtype);
 
             TestUtils.assertDirectoryContents(classDir, tui, (p, content) -> {
@@ -180,7 +180,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(deitiesDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.deity);
 
             Path imageDir = deitiesDir.resolve("img");
@@ -196,7 +196,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(itemDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.item);
 
             TestUtils.assertDirectoryContents(itemDir, tui);
@@ -211,7 +211,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(bestiaryDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.monster);
 
             Path tokenDir = bestiaryDir.resolve("undead/token");
@@ -236,12 +236,12 @@ public class CommonDataTests {
 
             tui.setOutputPath(out);
 
-            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate(ttrpgConfig, "monster",
+            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-scores.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.monster);
         }
     }
@@ -253,12 +253,12 @@ public class CommonDataTests {
 
             tui.setOutputPath(out);
 
-            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate(ttrpgConfig, "monster",
+            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.monster);
 
         }
@@ -270,12 +270,12 @@ public class CommonDataTests {
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
 
-            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate(ttrpgConfig, "monster",
+            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.monster);
 
             Path undead = out.resolve(index.compendiumPath()).resolve(QuteSource.monsterPath(false, "undead"));
@@ -312,7 +312,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeRulesAndTables();
         }
     }
