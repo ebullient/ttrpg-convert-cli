@@ -8,12 +8,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.Datasource;
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
-import dev.ebullient.convert.io.Tui;
 
 public interface ToolsIndex {
 
-    static ToolsIndex createIndex(Datasource game, CompendiumConfig config, Tui tui) {
+    static ToolsIndex createIndex() {
+        CompendiumConfig config = TtrpgConfig.getConfig();
+        return createIndex(config.datasource(), config);
+    }
+
+    static ToolsIndex createIndex(Datasource game, CompendiumConfig config) {
         switch (game) {
             case toolsPf2e:
                 return new dev.ebullient.convert.tools.pf2e.ToolsPf2eIndex(config);

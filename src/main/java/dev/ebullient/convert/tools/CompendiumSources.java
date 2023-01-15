@@ -2,18 +2,16 @@ package dev.ebullient.convert.tools;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.config.TtrpgConfig;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -89,7 +87,7 @@ public class CompendiumSources {
 
     private String sourceAndPage(JsonNode source) {
         String src = source.get("source").asText();
-        String book = abvToName.getOrDefault(src, src);
+        String book = TtrpgConfig.sourceToLongName(src);
         if (source.has("page")) {
             return String.format("%s p. %s", book, source.get("page").asText());
         }
@@ -106,7 +104,7 @@ public class CompendiumSources {
 
     public String mapPrimarySource() {
         String primary = primarySource();
-        return sourceToAbv.getOrDefault(primary, primary);
+        return TtrpgConfig.sourceToAbbreviation(primary);
     }
 
     public String alternateSource() {
@@ -134,29 +132,7 @@ public class CompendiumSources {
         return "sources[" + key + ']';
     }
 
-    protected final static Map<String, String> abvToName = new HashMap<>();
-    protected final static Map<String, String> sourceToAbv = new HashMap<>();
-
-    public static String sourceToLongName(String src) {
-        return abvToName.getOrDefault(sourceToAbbreviation(src), src);
-    }
-
-    public static String sourceToAbbreviation(String src) {
-        return sourceToAbv.getOrDefault(src, src);
-    }
-
-    public void checkKnown(Tui tui, Set<String> missing) {
-        bookSources.forEach(s -> {
-            if (abvToName.containsKey(s)) {
-                return;
-            }
-            String alternate = sourceToAbv.get(s);
-            if (alternate != null) {
-                return;
-            }
-            if (missing.add(s)) {
-                tui.warnf("Source %s is unknown", s);
-            }
-        });
+    public void checkKnown() {
+        TtrpgConfig.checkKnown(this.bookSources);
     }
 }

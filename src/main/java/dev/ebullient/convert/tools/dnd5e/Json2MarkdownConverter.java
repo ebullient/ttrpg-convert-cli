@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
@@ -116,7 +117,7 @@ public class Json2MarkdownConverter implements MarkdownConverter {
         List<QuteNote> variants = new ArrayList<>();
 
         final Map<String, JsonNode> ruleIndex = index.getRules();
-        final JsonNode srdEntries = ruleIndex.get("srdEntries");
+        final JsonNode srdEntries = TtrpgConfig.activeGlobalConfig("srdEntries");
 
         for (Entry<String, JsonNode> entry : ruleIndex.entrySet()) {
             String key = entry.getKey();

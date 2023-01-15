@@ -138,7 +138,6 @@ public class Templates {
     }
 
     Template getTemplateForType(Datasource datasource, IndexType type) {
-        tui.debug(templates.toString());
         switch (datasource) {
             case toolsPf2e:
                 return getPf2eTemplates((ToolsPf2eIndexType) type);
