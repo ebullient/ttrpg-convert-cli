@@ -124,7 +124,7 @@ public abstract class Json2QuteCommon implements JsonSource {
     }
 
     protected String getImagePath() {
-        switch (sources.type) {
+        switch (sources.getType()) {
             case background:
                 return QuteSource.BACKGROUND_PATH;
             case deity:
@@ -139,7 +139,7 @@ public abstract class Json2QuteCommon implements JsonSource {
                 return QuteSource.SPELLS_PATH;
             // Note: Monster overrides this method
             default:
-                throw new IllegalArgumentException("We need the fluff image path for: " + sources.type);
+                throw new IllegalArgumentException("We need the fluff image path for: " + sources.getType());
         }
     }
 

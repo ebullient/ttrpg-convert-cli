@@ -1,48 +1,35 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.CompendiumSources;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
 public class Tools5eSources extends CompendiumSources {
-    final Tools5eIndexType type;
-    final String key;
-    final String name;
-    final Set<String> bookSources = new LinkedHashSet<>();
-    final String sourceText;
     final boolean srd;
     final boolean basicRules;
 
     public Tools5eSources(Tools5eIndexType type, String key, JsonNode jsonElement) {
         super(type, key, jsonElement);
-        this.type = type;
-        this.key = key;
-        this.name = (jsonElement.has("name")
-                ? jsonElement.get("name").asText()
-                : jsonElement.get("abbreviation").asText()).trim();
         this.basicRules = jsonElement.has("basicRules")
                 ? jsonElement.get("basicRules").asBoolean(false)
                 : false;
         this.srd = jsonElement.has("srd")
                 ? jsonElement.get("srd").asBoolean(false)
                 : false;
-        this.sourceText = findSourceText(jsonElement);
     }
 
+    @Override
+    public Tools5eIndexType getType() {
+        return (Tools5eIndexType) type;
+    }
+
+    @Override
     public String getSourceText(boolean useSrd) {
         if (useSrd) {
             return "SRD / Basic Rules";
@@ -54,40 +41,9 @@ public class Tools5eSources extends CompendiumSources {
         return List.of("compendium/src/" + primarySource().toLowerCase());
     }
 
-    private String findSourceText(JsonNode jsonElement) {
-        this.bookSources.add(jsonElement.get("source").asText());
-
-        List<String> srcText = new ArrayList<>();
-        srcText.add(sourceAndPage(jsonElement));
-
-        String copyOf = jsonElement.has("_copy")
-                ? jsonElement.get("_copy").get("name").asText()
-                : null;
-        String copySrc = jsonElement.has("_copy")
-                ? jsonElement.get("_copy").get("source").asText()
-                : null;
-
-        if (copyOf != null) {
-            srcText.add(String.format("Derived from %s (%s)", copyOf, copySrc));
-        }
-
-        if (jsonElement.has("additionalSources")) {
-            srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
-                    .filter(x -> !x.get("source").asText().equals(copySrc))
-                    .filter(x -> notCoreSourceBook(x.get("source").asText()))
-                    .peek(x -> this.bookSources.add(x.get("source").asText()))
-                    .map(this::sourceAndPage)
-                    .collect(Collectors.toList()));
-        }
-
-        if (jsonElement.has("otherSources")) {
-            srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
-                    .filter(x -> !x.get("source").asText().equals(copySrc))
-                    .filter(x -> notCoreSourceBook(x.get("source").asText()))
-                    .peek(x -> this.bookSources.add(x.get("source").asText()))
-                    .map(this::sourceAndPage)
-                    .collect(Collectors.toList()));
-        }
+    @Override
+    protected String findSourceText(JsonNode jsonElement) {
+        String srcText = super.findSourceText(jsonElement);
 
         String srdBasic = null;
         if (srd && basicRules) {
@@ -108,21 +64,9 @@ public class Tools5eSources extends CompendiumSources {
         return sourceText;
     }
 
-    private String sourceAndPage(JsonNode source) {
-        String src = source.get("source").asText();
-        String book = abvToName.getOrDefault(src, src);
-        if (source.has("page")) {
-            return String.format("%s p. %s", book, source.get("page").asText());
-        }
-        return book;
-    }
-
-    public boolean isPrimarySource(String source) {
-        return bookSources.iterator().next().equals(source);
-    }
-
-    public String primarySource() {
-        return bookSources.iterator().next();
+    @Override
+    protected boolean subclassFilter(String source) {
+        return !List.of("phb", "mm", "dmg").contains(source.toLowerCase());
     }
 
     public Optional<String> uaSource() {
@@ -143,33 +87,9 @@ public class Tools5eSources extends CompendiumSources {
         return i.next();
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Tools5eIndexType getType() {
-        return type;
-    }
-
-    public static String sourceToLongName(String src) {
-        return abvToName.getOrDefault(sourceToAbbreviation(src), src);
-    }
-
-    public static String sourceToAbbreviation(String src) {
-        return sourceToAbv.getOrDefault(src, src);
-    }
-
     @Override
     public String toString() {
         return "sources[" + key + ']';
-    }
-
-    private boolean notCoreSourceBook(String source) {
-        return !List.of("phb", "mm", "dmg").contains(source.toLowerCase());
     }
 
     final static String AL_PREFIX = "Adventurers League: ";
@@ -182,9 +102,6 @@ public class Tools5eSources extends CompendiumSources {
     final static String AitFR_NAME = "Adventures in the Forgotten Realms";
     final static String NRH_NAME = "NERDS Restoring Harmony";
     final static String MCVX_PREFIX = "Monstrous Compendium Volume ";
-
-    final static Map<String, String> abvToName = new HashMap<>();
-    final static Map<String, String> sourceToAbv = new HashMap<>();
 
     static {
         abvToName.put("AAG", "Astral Adventurer's Guide");
@@ -503,20 +420,5 @@ public class Tools5eSources extends CompendiumSources {
         sourceToAbv.put("UAWaterborneAdventures", "UAWA");
         sourceToAbv.put("UAWayfindersGuideToEberron", "UAWGE");
         sourceToAbv.put("UAWizardRevisited", "UAWR");
-    }
-
-    public void checkKnown(Tui tui, Set<String> missing) {
-        bookSources.forEach(s -> {
-            if (abvToName.containsKey(s)) {
-                return;
-            }
-            String alternate = sourceToAbv.get(s);
-            if (alternate != null) {
-                return;
-            }
-            if (missing.add(s)) {
-                tui.warnf("Source %s is unknown", s);
-            }
-        });
     }
 }
