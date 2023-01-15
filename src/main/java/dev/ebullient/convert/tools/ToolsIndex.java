@@ -18,7 +18,7 @@ public interface ToolsIndex {
             case toolsPf2e:
                 return new dev.ebullient.convert.tools.pf2e.ToolsPf2eIndex(config);
             default:
-                return new dev.ebullient.convert.tools.dnd5e.JsonIndex(config);
+                return new dev.ebullient.convert.tools.dnd5e.Tools5eIndex(config);
         }
     }
 

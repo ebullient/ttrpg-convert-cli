@@ -26,14 +26,14 @@ public class JsonSourceCopier implements JsonSource {
     static final Pattern dmg_mod_subst = Pattern.compile("<\\$damage_mod__([^$]+)\\$>");
     static final Pattern dmg_avg_subst = Pattern.compile("<\\$damage_avg__([\\d.,]+)([+*-])([^$]+)\\$>");
 
-    final JsonIndex index;
+    final Tools5eIndex index;
 
-    JsonSourceCopier(JsonIndex index) {
+    JsonSourceCopier(Tools5eIndex index) {
         this.index = index;
     }
 
     @Override
-    public JsonIndex index() {
+    public Tools5eIndex index() {
         return index;
     }
 

@@ -13,11 +13,11 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 
 public abstract class Json2QuteCommon implements JsonSource {
-    protected final JsonIndex index;
+    protected final Tools5eIndex index;
     protected final Tools5eSources sources;
     protected final JsonNode node;
 
-    Json2QuteCommon(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteCommon(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         this.index = index;
         this.node = jsonNode;
         this.sources = type == Tools5eIndexType.sourceless ? null : index.constructSources(type, jsonNode);
@@ -33,7 +33,7 @@ public abstract class Json2QuteCommon implements JsonSource {
     }
 
     @Override
-    public JsonIndex index() {
+    public Tools5eIndex index() {
         return index;
     }
 

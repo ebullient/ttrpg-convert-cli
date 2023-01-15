@@ -18,11 +18,11 @@ import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
 
 public class Json2MarkdownConverter implements MarkdownConverter {
-    final JsonIndex index;
+    final Tools5eIndex index;
     final MarkdownWriter writer;
     final Map<String, String> fallbackPaths;
 
-    public Json2MarkdownConverter(JsonIndex index, MarkdownWriter writer, Map<String, String> fallbackPaths) {
+    public Json2MarkdownConverter(Tools5eIndex index, MarkdownWriter writer, Map<String, String> fallbackPaths) {
         this.index = index;
         this.writer = writer;
         this.fallbackPaths = fallbackPaths;

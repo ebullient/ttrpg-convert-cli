@@ -20,7 +20,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
 
     final String backgroundName;
 
-    Json2QuteBackground(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteBackground(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         backgroundName = decoratedTypeName(decoratedBackgroundName(sources.getName()), sources);
     }

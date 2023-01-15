@@ -12,7 +12,7 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 
 public class Table2QuteNote extends Json2QuteCommon {
-    Table2QuteNote(JsonIndex index, JsonNode jsonNode) {
+    Table2QuteNote(Tools5eIndex index, JsonNode jsonNode) {
         super(index, Tools5eIndexType.table, jsonNode);
     }
 

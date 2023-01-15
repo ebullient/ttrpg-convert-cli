@@ -26,7 +26,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         return Tools5eIndexType.sourceless;
     }
 
-    Sourceless2QuteNote(JsonIndex index, JsonNode jsonNode, String title) {
+    Sourceless2QuteNote(Tools5eIndex index, JsonNode jsonNode, String title) {
         super(index, getType(jsonNode), jsonNode);
         this.title = title;
     }

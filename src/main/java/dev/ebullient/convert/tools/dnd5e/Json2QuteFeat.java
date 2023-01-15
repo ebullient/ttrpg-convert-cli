@@ -14,7 +14,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 public class Json2QuteFeat extends Json2QuteCommon {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
 
-    public Json2QuteFeat(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    public Json2QuteFeat(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 
@@ -34,7 +34,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
     String listPrerequisites() {
         List<String> prereqs = new ArrayList<>();
-        JsonIndex index = index();
+        Tools5eIndex index = index();
         node.withArray("prerequisite").forEach(entry -> {
             if (entry.has("level")) {
                 prereqs.add(levelToText(entry.get("level")));

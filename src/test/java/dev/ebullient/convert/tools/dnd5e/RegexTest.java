@@ -12,7 +12,7 @@ import dev.ebullient.convert.io.Tui;
 public class RegexTest {
 
     Tui tui = new Tui();
-    JsonIndex index = new JsonIndex(ConfiguratorUtil.testConfig(tui));
+    Tools5eIndex index = new Tools5eIndex(ConfiguratorUtil.testConfig(tui));
     JsonSourceCopier copier = new JsonSourceCopier(index);
 
     @Test

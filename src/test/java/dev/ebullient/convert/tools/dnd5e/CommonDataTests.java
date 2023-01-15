@@ -25,7 +25,7 @@ public class CommonDataTests {
     protected final Configurator configurator;
     protected final TtrpgConfig ttrpgConfig;
     protected final Templates templates;
-    protected JsonIndex index;
+    protected Tools5eIndex index;
 
     public CommonDataTests(boolean useSources) throws Exception {
         tui = Arc.container().instance(Tui.class).get();
@@ -37,7 +37,7 @@ public class CommonDataTests {
         configurator = new Configurator(ttrpgConfig, tui);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            index = new JsonIndex(ttrpgConfig.getConfig());
+            index = new Tools5eIndex(ttrpgConfig.getConfig());
             templates.setCustomTemplates(ttrpgConfig.getConfig());
 
             configurator.readConfiguration(TestUtils.TEST_PATH_JSON);

@@ -28,11 +28,11 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
-public class JsonIndex implements JsonSource, ToolsIndex {
+public class Tools5eIndex implements JsonSource, ToolsIndex {
 
-    private static JsonIndex staticInstance;
+    private static Tools5eIndex staticInstance;
 
-    public static JsonIndex get() {
+    public static Tools5eIndex get() {
         return staticInstance;
     }
 
@@ -65,12 +65,12 @@ public class JsonIndex implements JsonSource, ToolsIndex {
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;
 
-    public JsonIndex(CompendiumConfig config) {
+    public Tools5eIndex(CompendiumConfig config) {
         staticInstance = this;
         this.config = config;
     }
 
-    public JsonIndex importTree(String filename, JsonNode node) {
+    public Tools5eIndex importTree(String filename, JsonNode node) {
         if (!node.isObject()) {
             return this;
         }
@@ -725,7 +725,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
     }
 
     @Override
-    public JsonIndex index() {
+    public Tools5eIndex index() {
         return this;
     }
 
