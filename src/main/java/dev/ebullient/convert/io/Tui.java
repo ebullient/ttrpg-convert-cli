@@ -23,9 +23,11 @@ import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.slugify.Slugify;
 
 import dev.ebullient.convert.qute.ImageRef;
@@ -34,11 +36,16 @@ import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
 import picocli.CommandLine.Help.ColorScheme;
 import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.ParameterException;
 
 @ApplicationScoped
 public class Tui {
-    public final static ObjectMapper MAPPER = new ObjectMapper()
-            .setVisibility(VisibilityChecker.Std.defaultInstance().with(JsonAutoDetect.Visibility.ANY));
+    public final static TypeReference<List<String>> LIST_STRING = new TypeReference<>() {
+    };
+    public final static TypeReference<Map<String, String>> MAP_STRING_STRING = new TypeReference<>() {
+    };
+
+    public final static ObjectMapper MAPPER = initMapper(new ObjectMapper());
 
     private static Slugify slugify;
 
@@ -52,6 +59,23 @@ public class Tui {
                     .build();
         }
         return s;
+    }
+
+    public static ObjectMapper mapper(Path p) {
+        return p.getFileName().toString().endsWith(".json") ? MAPPER : yamlMapper();
+    }
+
+    private static ObjectMapper yamlMapper;
+
+    private static ObjectMapper yamlMapper() {
+        return yamlMapper == null ? yamlMapper = initMapper(new ObjectMapper(new YAMLFactory())) : yamlMapper;
+    }
+
+    private static ObjectMapper initMapper(ObjectMapper mapper) {
+        new ObjectMapper()
+                .setVisibility(VisibilityChecker.Std.defaultInstance()
+                        .with(JsonAutoDetect.Visibility.ANY));
+        return mapper;
     }
 
     private static Yaml plainYaml;
@@ -81,9 +105,6 @@ public class Tui {
     }
 
     static final boolean picocliDebugEnabled = "DEBUG".equalsIgnoreCase(System.getProperty("picocli.trace"));
-
-    public static final int NOT_FOUND = 3;
-    public static final int INSUFFICIENT_FUNDS = 4;
 
     Ansi ansi;
     ColorScheme colors;
@@ -210,6 +231,14 @@ public class Tui {
             ex.printStackTrace(err);
         }
         err.flush();
+    }
+
+    public void throwInvalidArgumentException(String message) {
+        if (commandLine != null) {
+            throw new ParameterException(commandLine, message);
+        } else {
+            throw new IllegalArgumentException(message);
+        }
     }
 
     public void showUsage(CommandSpec spec) {

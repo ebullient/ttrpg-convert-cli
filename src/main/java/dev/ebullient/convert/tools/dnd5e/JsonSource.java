@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface JsonSource {
@@ -46,6 +48,10 @@ public interface JsonSource {
 
     JsonIndex index();
 
+    default CompendiumConfig cfg() {
+        return index().cfg();
+    }
+
     CompendiumSources getSources();
 
     default ObjectMapper mapper() {
@@ -53,11 +59,11 @@ public interface JsonSource {
     }
 
     default Tui tui() {
-        return index().tui;
+        return cfg().tui();
     }
 
     default String slugify(String s) {
-        return index().tui.slugify(s);
+        return cfg().tui().slugify(s);
     }
 
     default Stream<JsonNode> streamOf(ArrayNode array) {

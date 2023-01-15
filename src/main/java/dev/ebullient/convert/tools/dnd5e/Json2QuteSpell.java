@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.QuteSource;
 import dev.ebullient.convert.qute.QuteSpell;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Json2QuteSpell extends Json2QuteCommon {
 

@@ -26,6 +26,7 @@ import dev.ebullient.convert.qute.QuteMonster.Spellcasting;
 import dev.ebullient.convert.qute.QuteMonster.Spells;
 import dev.ebullient.convert.qute.QuteSource;
 import dev.ebullient.convert.qute.Trait;
+import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

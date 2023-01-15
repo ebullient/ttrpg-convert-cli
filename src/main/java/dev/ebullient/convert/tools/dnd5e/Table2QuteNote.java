@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Table2QuteNote extends Json2QuteCommon {
     Table2QuteNote(JsonIndex index, JsonNode jsonNode) {

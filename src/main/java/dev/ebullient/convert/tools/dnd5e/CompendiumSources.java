@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.IndexType;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -287,6 +288,7 @@ public class CompendiumSources {
         abvToName.put("SCC", "Strixhaven: A Curriculum of Chaos");
         abvToName.put("SCREEN_DUNGEON_KIT", "Dungeon Master's Screen: Dungeon Kit");
         abvToName.put("SCREEN_WILDERNESS_KIT", "Dungeon Master's Screen: Wilderness Kit");
+        abvToName.put("SRC_SCREEN_SPELLJAMMER", "ScreenSpelljammer");
         abvToName.put("SCREEN", "Dungeon Master's Screen");
         abvToName.put("SDW", "Sleeping Dragon's Wake");
         abvToName.put("SjA", "Spelljammer Academy");
@@ -405,6 +407,7 @@ public class CompendiumSources {
 
         sourceToAbv.put("ScreenDungeonKit", "SCREEN_DUNGEON_KIT");
         sourceToAbv.put("ScreenWildernessKit", "SCREEN_WILDERNESS_KIT");
+        sourceToAbv.put("ScreenSpelljammer", "SRC_SCREEN_SPELLJAMMER");
         sourceToAbv.put("Screen", "SCREEN");
 
         sourceToAbv.put("UA2020F", "UA20F");

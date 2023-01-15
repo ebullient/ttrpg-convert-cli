@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -21,9 +22,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.MarkdownConverter;
+import dev.ebullient.convert.tools.ToolsIndex;
 
-public class JsonIndex implements JsonSource {
+public class JsonIndex implements JsonSource, ToolsIndex {
+
     private static JsonIndex staticInstance;
 
     public static JsonIndex get() {
@@ -38,8 +45,7 @@ public class JsonIndex implements JsonSource {
     static final String subclassFeature_2 = "\\|[^|]+\\|";
     static final String subclassFeature_3 = "\\|\\d+\\|?";
 
-    final Tui tui;
-    final Json5eConfig extraConfig;
+    final CompendiumConfig config;
 
     private final Map<String, JsonNode> rules = new HashMap<>();
 
@@ -60,16 +66,9 @@ public class JsonIndex implements JsonSource {
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;
 
-    public JsonIndex(List<String> sources, Tui tui) {
+    public JsonIndex(CompendiumConfig config) {
         staticInstance = this;
-
-        this.tui = tui;
-
-        this.extraConfig = new Json5eConfig(tui, sources);
-    }
-
-    public Json5eConfig getExtraConfig() {
-        return extraConfig;
+        this.config = config;
     }
 
     public JsonIndex importTree(String filename, JsonNode node) {
@@ -77,7 +76,7 @@ public class JsonIndex implements JsonSource {
             return this;
         }
 
-        extraConfig.readConfigIfPresent(mapper(), node);
+        config.readConfigurationIfPresent(node);
 
         addRulesIfPresent(node, "action");
         addRulesIfPresent(node, "artObjects");
@@ -135,6 +134,12 @@ public class JsonIndex implements JsonSource {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');
             rules.put(filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot), node);
+        }
+
+        JsonNode imageFallback = node.get("fallback-image");
+        if (imageFallback != null) {
+            Map<String, String> paths = Tui.MAPPER.convertValue(imageFallback, Tui.MAP_STRING_STRING);
+            config.addFallbackPaths(paths);
         }
 
         return this;
@@ -202,7 +207,7 @@ public class JsonIndex implements JsonSource {
     }
 
     void setClassFeaturePatterns() {
-        String allowed = extraConfig.getAllowedSourcePattern();
+        String allowed = config.getAllowedSourcePattern();
         classFeaturePattern = Pattern.compile(classFeature_1 + allowed + classFeature_2 + allowed + "?");
         subclassFeaturePattern = Pattern
                 .compile(subclassFeature_1 + allowed + subclassFeature_2 + allowed + subclassFeature_3 + allowed + "?");
@@ -236,13 +241,13 @@ public class JsonIndex implements JsonSource {
             // Find variants
             List<Tuple> variants = findVariants(key, jsonSource);
             if (variants.size() > 1) {
-                tui.debugf("%s variants found for %s", variants.size(), key);
-                variants.forEach(x -> tui.debugf("\t%s", x.key));
+                tui().debugf("%s variants found for %s", variants.size(), key);
+                variants.forEach(x -> tui().debugf("\t%s", x.key));
             }
             variants.forEach(v -> {
                 JsonNode old = variantIndex.put(v.key, v.node);
                 if (old != null) {
-                    tui.errorf("Duplicate key: %s", v.key);
+                    tui().errorf("Duplicate key: %s", v.key);
                 }
             });
         });
@@ -258,7 +263,7 @@ public class JsonIndex implements JsonSource {
         deities.forEach(v -> {
             JsonNode old = variantIndex.put(v.key, v.node);
             if (old != null) {
-                tui.errorf("Duplicate key: %s", v.key);
+                tui().errorf("Duplicate key: %s", v.key);
             }
         });
 
@@ -417,7 +422,7 @@ public class JsonIndex implements JsonSource {
         return nodeToSources.computeIfAbsent(x, y -> {
             String key = indexKey == null ? getKey(type, x) : indexKey;
             CompendiumSources s = new CompendiumSources(type, key, x);
-            s.checkKnown(tui, missingSourceName);
+            s.checkKnown(tui(), missingSourceName);
             return s;
         });
     }
@@ -590,34 +595,59 @@ public class JsonIndex implements JsonSource {
                 .collect(Collectors.toList());
 
         if (target.isEmpty()) {
-            tui.debugf("Did not find element for %s", name);
+            tui().debugf("Did not find element for %s", name);
             return name;
         } else if (target.size() > 1) {
-            tui.debugf("Found several elements for %s: %s", name, target);
+            tui().debugf("Found several elements for %s: %s", name, target);
         }
         return filteredIndex.get(target.get(0)).get("name").asText();
     }
 
     public boolean srdOnly() {
-        return extraConfig.srdOnly();
+        return config.noSources();
     }
 
     public boolean sourceIncluded(String source) {
-        return extraConfig.sourceIncluded(source);
+        return config.sourceIncluded(source);
     }
 
     public boolean excludeItem(JsonNode itemSource, boolean isSRD) {
-        return extraConfig.excludeItem(itemSource, isSRD);
+        return config.excludeItem(itemSource, isSRD);
     }
 
     public boolean rulesSourceExcluded(JsonNode node, String name) {
-        return extraConfig.rulesSourceExcluded(node, name);
+        boolean isSRD = node.has("srd");
+        JsonNode itemSource = node.get("source");
+        if (excludeItem(itemSource, isSRD)) {
+            // skip this item: not from a specified source
+            tui().debugf("Skipped %s from %s (%s)", name, itemSource, isSRD);
+            return true;
+        }
+        return false;
     }
 
     private boolean keyIsIncluded(String key, JsonNode node) {
-        return extraConfig.keyIsIncluded(key, node, srdKeys, familiarKeys,
-                classFeaturePattern, subclassFeaturePattern,
-                () -> constructSources(IndexType.getTypeFromKey(key), key, node));
+
+        // Check against include/exclude rules (srdKeys allowed when there are no sources)
+        Optional<Boolean> rulesAllow = config.keyIsIncluded(key, node, srdKeys);
+        if (rulesAllow.isPresent()) {
+            return rulesAllow.get();
+        }
+
+        // Special case for class features (match against constructed patterns)
+        if (key.contains("classfeature|")) {
+            String featureKey = key.replace("||", "|phb|");
+            return classFeaturePattern.matcher(featureKey).matches() || subclassFeaturePattern.matcher(featureKey).matches();
+        }
+        // Familiars
+        if (key.startsWith("monster|")
+                && config.groupIsIncluded("familiars")
+                && familiarKeys.contains(key)) {
+            return true;
+        }
+
+        CompendiumSources sources = constructSources(IndexType.getTypeFromKey(key), key, node);
+        return sources.bookSources.stream().anyMatch((s) -> config.sourceIncluded(s));
     }
 
     boolean isIncluded(String key) {
@@ -639,7 +669,7 @@ public class JsonIndex implements JsonSource {
     public JsonNode resolveClassFeatureNode(String finalKey, String originClassKey) {
         JsonNode featureNode = getOrigin(finalKey);
         if (featureNode == null) {
-            tui.debugf("%s: %s not found", originClassKey, finalKey);
+            tui().debugf("%s: %s not found", originClassKey, finalKey);
             return null; // skip this
         }
         return resolveClassFeatureNode(finalKey, featureNode);
@@ -647,30 +677,15 @@ public class JsonIndex implements JsonSource {
 
     public JsonNode resolveClassFeatureNode(String finalKey, JsonNode featureNode) {
         if (isExcluded(finalKey)) {
-            tui.debugf("excluded: %s", finalKey);
+            tui().debugf("excluded: %s", finalKey);
             return null; // skip this
         }
         // TODO: Handle copies or other fill-in / fluff?
         return featureNode;
     }
 
-    public String rulesRoot() {
-        return extraConfig.rulesRoot();
-    }
-
-    public String compendiumRoot() {
-        return extraConfig.compendiumRoot();
-    }
-
-    public Path rulesPath() {
-        return extraConfig.rulesPath();
-    }
-
-    public Path compendiumPath() {
-        return extraConfig.compendiumPath();
-    }
-
-    public void writeIndex(Path outputFile) throws IOException {
+    @Override
+    public void writeFullIndex(Path outputFile) throws IOException {
         if (notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing indexes");
         }
@@ -682,7 +697,8 @@ public class JsonIndex implements JsonSource {
         writeFile(outputFile, allKeys);
     }
 
-    public void writeSourceIndex(Path outputFile) throws IOException {
+    @Override
+    public void writeFilteredIndex(Path outputFile) throws IOException {
         if (notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing files");
         }
@@ -691,12 +707,22 @@ public class JsonIndex implements JsonSource {
         writeFile(outputFile, Map.of("keys", keys));
     }
 
+    @Override
+    public MarkdownConverter markdownConverter(MarkdownWriter writer, Map<String, String> imageFallbackPaths) {
+        return new Json2MarkdownConverter(this, writer, imageFallbackPaths);
+    }
+
     private void writeFile(Path outputFile, Map<String, Object> keys) throws IOException {
         DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
         pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
         mapper().writer()
                 .with(pp)
                 .writeValue(outputFile.toFile(), keys);
+    }
+
+    @Override
+    public CompendiumConfig cfg() {
+        return this.config;
     }
 
     @Override
@@ -744,9 +770,5 @@ public class JsonIndex implements JsonSource {
             }
             return source;
         }
-    }
-
-    public Map<String, String> getFallbackPaths() {
-        return extraConfig.getFallbackPaths();
     }
 }

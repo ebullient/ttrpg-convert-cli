@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class BackgroundTraits2Note extends Json2QuteCommon {
 

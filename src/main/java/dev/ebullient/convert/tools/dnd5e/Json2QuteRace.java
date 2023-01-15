@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteRace;
+import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
 
 public class Json2QuteRace extends Json2QuteCommon {

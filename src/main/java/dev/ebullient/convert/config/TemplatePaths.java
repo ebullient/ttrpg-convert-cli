@@ -1,4 +1,4 @@
-package dev.ebullient.convert.io;
+package dev.ebullient.convert.config;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
+import dev.ebullient.convert.io.Tui;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParameterException;
 
 public class TemplatePaths {
 
@@ -20,9 +18,6 @@ public class TemplatePaths {
     public final Map<String, Path> customTemplates = new HashMap<>();
     public final Map<String, Path> badKeys = new HashMap<>();
     public final Map<String, Path> badTemplates = new HashMap<>();
-
-    @Inject
-    Tui tui;
 
     public void setCustomTemplate(String key, Path path) {
         if (!KEYS.contains(key)) {
@@ -43,57 +38,57 @@ public class TemplatePaths {
         badTemplates.put(key, path);
     }
 
-    @Option(names = { "--background" }, order = 1, description = "Path to Qute template for Backgrounds")
+    @Option(names = { "--background" }, order = 1, hidden = true, description = "Path to Qute template for Backgrounds")
     void setBackgroundTemplatePath(Path path) {
         setCustomTemplate("background", path);
     }
 
-    @Option(names = { "--class" }, order = 2, description = "Path to Qute template for Classes")
+    @Option(names = { "--class" }, order = 2, hidden = true, description = "Path to Qute template for Classes")
     void setClassTemplatePath(Path path) {
         setCustomTemplate("class", path);
     }
 
-    @Option(names = { "--deity" }, order = 3, description = "Path to Qute template for Deities")
+    @Option(names = { "--deity" }, order = 3, hidden = true, description = "Path to Qute template for Deities")
     void setDeityTemplatePath(Path path) {
         setCustomTemplate("deity", path);
     }
 
-    @Option(names = { "--feat" }, order = 4, description = "Path to Qute template for Feats")
+    @Option(names = { "--feat" }, order = 4, hidden = true, description = "Path to Qute template for Feats")
     void setFeatTemplatePath(Path path) {
         setCustomTemplate("feat", path);
     }
 
-    @Option(names = { "--item" }, order = 5, description = "Path to Qute template for Items")
+    @Option(names = { "--item" }, order = 5, hidden = true, description = "Path to Qute template for Items")
     void setItemTemplatePath(Path path) {
         setCustomTemplate("item", path);
     }
 
-    @Option(names = { "--monster" }, order = 6, description = "Path to Qute template for Monsters")
+    @Option(names = { "--monster" }, order = 6, hidden = true, description = "Path to Qute template for Monsters")
     void setMonsterTemplatePath(Path path) {
         setCustomTemplate("monster", path);
     }
 
-    @Option(names = { "--name" }, order = 7, description = "Path to Qute template for Names")
+    @Option(names = { "--name" }, order = 7, hidden = true, description = "Path to Qute template for Names")
     void setNameTemplatePath(Path path) {
         setCustomTemplate("name", path);
     }
 
-    @Option(names = { "--note" }, order = 8, description = "Path to Qute template for Notes")
+    @Option(names = { "--note" }, order = 8, hidden = true, description = "Path to Qute template for Notes")
     void setNoteTemplatePath(Path path) {
         setCustomTemplate("note", path);
     }
 
-    @Option(names = { "--race" }, order = 9, description = "Path to Qute template for Races")
+    @Option(names = { "--race" }, order = 9, hidden = true, description = "Path to Qute template for Races")
     void setRaceTemplatePath(Path path) {
         setCustomTemplate("race", path);
     }
 
-    @Option(names = { "--spell" }, order = 10, description = "Path to Qute template for Spells")
+    @Option(names = { "--spell" }, order = 10, hidden = true, description = "Path to Qute template for Spells")
     void setSpellTemplatePath(Path path) {
         setCustomTemplate("spell", path);
     }
 
-    @Option(names = { "--subclass" }, order = 11, description = "Path to Qute template for Subclasses")
+    @Option(names = { "--subclass" }, order = 11, hidden = true, description = "Path to Qute template for Subclasses")
     void setSubclassTemplatePath(Path path) {
         setCustomTemplate("subclass", path);
     }
@@ -102,7 +97,7 @@ public class TemplatePaths {
         return customTemplates.get(id);
     }
 
-    void verify(Tui tui) {
+    public void verify(Tui tui) {
         if (badKeys.isEmpty() && badTemplates.isEmpty()) {
             return;
         }
@@ -114,6 +109,6 @@ public class TemplatePaths {
             tui.errorf("Template file specified for '%s' (%s) does not exist or is not a file.",
                     k, v);
         });
-        throw new ParameterException(tui.getCommandLine(), "Incorrect template specification.");
+        tui.throwInvalidArgumentException("Bad template specified");
     }
 }

@@ -1,4 +1,4 @@
-package dev.ebullient.convert.tools.dnd5e;
+package dev.ebullient.convert.tools;
 
 public enum IndexType {
     background,

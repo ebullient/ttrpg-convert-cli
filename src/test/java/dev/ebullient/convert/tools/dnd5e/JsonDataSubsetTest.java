@@ -1,4 +1,6 @@
-package dev.ebullient.convert;
+package dev.ebullient.convert.tools.dnd5e;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
 
@@ -6,18 +8,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import dev.ebullient.convert.TestUtils;
+import dev.ebullient.convert.qute.QuteSource;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class JsonDataTest {
+public class JsonDataSubsetTest {
 
     static CommonDataTests commonTests;
-    static final Path outputPath = TestUtils.OUTPUT_ROOT.resolve("all");
+    static final Path outputPath = TestUtils.OUTPUT_ROOT.resolve("subset");
 
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
-        commonTests = new CommonDataTests(false);
+        // This uses test/resources/sources.json to constrain sources
+        commonTests = new CommonDataTests(true);
     }
 
     @AfterEach
@@ -48,6 +53,14 @@ public class JsonDataTest {
     @Test
     public void testRaceList() {
         commonTests.testRaceList(outputPath);
+
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            // Single included race: changeling from mpmm
+            Path changeling = outputPath
+                    .resolve(QuteSource.RACES_PATH)
+                    .resolve("changeling-mpmm.md");
+            assertThat(changeling).exists();
+        }
     }
 
     @Test
@@ -68,21 +81,16 @@ public class JsonDataTest {
     @Test
     public void testMonsterList() {
         commonTests.testMonsterList(outputPath);
-    }
 
-    @Test
-    public void testMonsterAlternateScores() {
-        commonTests.testMonsterAlternateScores(outputPath);
-    }
-
-    @Test
-    public void testMonsterYamlHeader() {
-        commonTests.testMonsterYamlHeader(outputPath);
-    }
-
-    @Test
-    public void testMonsterYamlBody() {
-        commonTests.testMonsterYamlBody(outputPath);
+        if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            // Tree blight is from Curse of Strahd, but is also present in
+            // The Wild Beyond the Witchlight --> an "otherSource".
+            // The tree blight should be included when WBtW is included
+            Path treeBlight = outputPath
+                    .resolve(QuteSource.monsterPath(false, "plant"))
+                    .resolve("tree-blight-cos.md");
+            assertThat(treeBlight).exists();
+        }
     }
 
     @Test

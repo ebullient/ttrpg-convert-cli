@@ -10,6 +10,7 @@ import dev.ebullient.convert.qute.QuteName;
 import dev.ebullient.convert.qute.QuteName.LookupTable;
 import dev.ebullient.convert.qute.QuteName.LookupTableRow;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Json2QuteName extends Json2QuteCommon {
 
