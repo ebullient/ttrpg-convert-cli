@@ -2,18 +2,20 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
 
+import dev.ebullient.convert.qute.QuteBase;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteName {
+public class QuteName extends QuteBase {
 
     final String name;
     final String source;
     final List<LookupTable> tables;
 
     public QuteName(String name, String source, List<LookupTable> tables) {
+        super(null, name, source, source, List.of());
         this.name = name;
         this.source = source;
         this.tables = tables;

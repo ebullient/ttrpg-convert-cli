@@ -14,7 +14,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 public class Json2QuteFeat extends Json2QuteCommon {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
 
-    public Json2QuteFeat(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    public Json2QuteFeat(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 
@@ -39,7 +39,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
             if (entry.has("level")) {
                 prereqs.add(levelToText(entry.get("level")));
             }
-            entry.withArray("race").forEach(r -> prereqs.add(index.lookupName(IndexType.race, raceToText(r))));
+            entry.withArray("race").forEach(r -> prereqs.add(index.lookupName(Tools5eIndexType.race, raceToText(r))));
 
             Map<String, List<String>> abilityScores = new HashMap<>();
             entry.withArray("ability").forEach(a -> a.fields().forEachRemaining(score -> abilityScores.computeIfAbsent(
@@ -59,17 +59,17 @@ public class Json2QuteFeat extends Json2QuteCommon {
             }
             entry.withArray("spell").forEach(s -> {
                 String text = s.asText().replaceAll("#c", "");
-                prereqs.add(index.lookupName(IndexType.spell, text));
+                prereqs.add(index.lookupName(Tools5eIndexType.spell, text));
             });
             entry.withArray("feat").forEach(f -> prereqs
                     .add(featPattern.matcher(f.asText())
-                            .replaceAll(m -> index.lookupName(IndexType.feat, m.group(1)))));
+                            .replaceAll(m -> index.lookupName(Tools5eIndexType.feat, m.group(1)))));
             entry.withArray("feature").forEach(f -> prereqs.add(featPattern.matcher(f.asText())
-                    .replaceAll(m -> index.lookupName(IndexType.optionalfeature, m.group(1)))));
+                    .replaceAll(m -> index.lookupName(Tools5eIndexType.optionalfeature, m.group(1)))));
             entry.withArray("background")
                     .forEach(f -> prereqs
-                            .add(index.lookupName(IndexType.background, f.get("name").asText()) + " background"));
-            entry.withArray("item").forEach(i -> prereqs.add(index.lookupName(IndexType.item, i.asText())));
+                            .add(index.lookupName(Tools5eIndexType.background, f.get("name").asText()) + " background"));
+            entry.withArray("item").forEach(i -> prereqs.add(index.lookupName(Tools5eIndexType.item, i.asText())));
 
             if (entry.has("psionics")) {
                 prereqs.add("Psionics");

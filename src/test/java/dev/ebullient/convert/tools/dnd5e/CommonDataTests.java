@@ -13,7 +13,6 @@ import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
 import dev.ebullient.convert.config.ConfiguratorUtil;
-import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Templates;
@@ -32,13 +31,14 @@ public class CommonDataTests {
         tui = Arc.container().instance(Tui.class).get();
         tui.init(null, true, false);
 
-        ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
         templates = Arc.container().instance(Templates.class).get();
+        ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
 
-        configurator = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+        configurator = new Configurator(ttrpgConfig, tui);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             index = new JsonIndex(ttrpgConfig.getConfig());
+            templates.setCustomTemplates(ttrpgConfig.getConfig());
 
             configurator.readConfiguration(TestUtils.TEST_PATH_JSON);
             if (useSources) {
@@ -88,7 +88,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.feat);
+                    .writeFiles(Tools5eIndexType.feat);
 
             TestUtils.assertDirectoryContents(featDir, tui);
         }
@@ -102,7 +102,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.background)
+                    .writeFiles(Tools5eIndexType.background)
                     .writeRulesAndTables();
 
             TestUtils.assertDirectoryContents(backgroundDir, tui);
@@ -118,7 +118,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.spell);
+                    .writeFiles(Tools5eIndexType.spell);
 
             TestUtils.assertDirectoryContents(spellDir, tui);
         }
@@ -133,7 +133,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.race);
+                    .writeFiles(Tools5eIndexType.race);
 
             TestUtils.assertDirectoryContents(raceDir, tui);
         }
@@ -148,7 +148,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.classtype);
+                    .writeFiles(Tools5eIndexType.classtype);
 
             TestUtils.assertDirectoryContents(classDir, tui, (p, content) -> {
                 List<String> e = new ArrayList<>();
@@ -181,7 +181,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.deity);
+                    .writeFiles(Tools5eIndexType.deity);
 
             Path imageDir = deitiesDir.resolve("img");
             assertThat(imageDir.toFile()).exists();
@@ -197,7 +197,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.item);
+                    .writeFiles(Tools5eIndexType.item);
 
             TestUtils.assertDirectoryContents(itemDir, tui);
         }
@@ -212,7 +212,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.monster);
+                    .writeFiles(Tools5eIndexType.monster);
 
             Path tokenDir = bestiaryDir.resolve("undead/token");
             assertThat(tokenDir.toFile()).exists();
@@ -242,7 +242,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.monster);
+                    .writeFiles(Tools5eIndexType.monster);
         }
     }
 
@@ -259,7 +259,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.monster);
+                    .writeFiles(Tools5eIndexType.monster);
 
         }
     }
@@ -276,7 +276,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
-                    .writeFiles(IndexType.monster);
+                    .writeFiles(Tools5eIndexType.monster);
 
             Path undead = out.resolve(index.compendiumPath()).resolve(QuteSource.monsterPath(false, "undead"));
             assertThat(undead.toFile()).exists();

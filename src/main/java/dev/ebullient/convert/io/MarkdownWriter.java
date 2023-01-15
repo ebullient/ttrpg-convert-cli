@@ -17,17 +17,7 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteBackground;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteDeity;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteItem;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
@@ -92,49 +82,8 @@ public class MarkdownWriter {
     }
 
     <T extends QuteBase> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
-        String type = qs.getClass().getSimpleName();
-
         try {
-            switch (type) {
-                case "QuteBackground":
-                    writeFile(fileMap, templates.renderBackground((QuteBackground) qs));
-                    counts.compute("backgrounds", (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteClass":
-                    writeFile(fileMap, templates.renderClass((QuteClass) qs));
-                    counts.compute(QuteSource.CLASSES_PATH, (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteDeity":
-                    writeFile(fileMap, templates.renderDeity((QuteDeity) qs));
-                    counts.compute(QuteSource.DEITIES_PATH, (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteFeat":
-                    writeFile(fileMap, templates.renderFeat((QuteFeat) qs));
-                    counts.compute(QuteSource.FEATS_PATH, (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteItem":
-                    writeFile(fileMap, templates.renderItem((QuteItem) qs));
-                    counts.compute(QuteSource.ITEMS_PATH, (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteMonster":
-                    writeFile(fileMap, templates.renderMonster((QuteMonster) qs));
-                    counts.compute(QuteSource.MONSTERS_BASE_PATH, (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteRace":
-                    writeFile(fileMap, templates.renderRace((QuteRace) qs));
-                    counts.compute("races", (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteSpell":
-                    writeFile(fileMap, templates.renderSpell((QuteSpell) qs));
-                    counts.compute(QuteSource.SPELLS_PATH, (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                case "QuteSubclass":
-                    writeFile(fileMap, templates.renderSubclass((QuteSubclass) qs));
-                    counts.compute(QuteSource.CLASSES_PATH, (k, v) -> (v == null) ? 1 : v + 1);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown file type:" + type);
-            }
+            writeFile(fileMap, templates.render(qs));
         } catch (IOException e) {
             throw new WrappedIOException(e);
         }

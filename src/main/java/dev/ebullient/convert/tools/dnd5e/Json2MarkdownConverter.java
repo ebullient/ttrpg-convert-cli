@@ -30,14 +30,14 @@ public class Json2MarkdownConverter implements MarkdownConverter {
 
     public Json2MarkdownConverter writeAll() {
         return writeFiles(List.of(
-                IndexType.background,
-                IndexType.classtype,
-                IndexType.deity,
-                IndexType.feat,
-                IndexType.item,
-                IndexType.monster,
-                IndexType.race,
-                IndexType.spell));
+                Tools5eIndexType.background,
+                Tools5eIndexType.classtype,
+                Tools5eIndexType.deity,
+                Tools5eIndexType.feat,
+                Tools5eIndexType.item,
+                Tools5eIndexType.monster,
+                Tools5eIndexType.race,
+                Tools5eIndexType.spell));
     }
 
     public Json2MarkdownConverter writeFiles(dev.ebullient.convert.tools.IndexType type) {
@@ -51,23 +51,23 @@ public class Json2MarkdownConverter implements MarkdownConverter {
 
         List<QuteBase> sources = new ArrayList<>();
         for (Entry<String, JsonNode> e : index.includedEntries()) {
-            IndexType nodeType = IndexType.getTypeFromKey(e.getKey());
+            Tools5eIndexType nodeType = Tools5eIndexType.getTypeFromKey(e.getKey());
             JsonNode jsonSource = e.getValue();
 
-            if (types.contains(IndexType.race) && nodeType == IndexType.subrace) {
+            if (types.contains(Tools5eIndexType.race) && nodeType == Tools5eIndexType.subrace) {
                 // include these, too
             } else if (!types.contains(nodeType)) {
                 continue;
             }
 
-            if (nodeType == IndexType.classtype) {
+            if (nodeType == Tools5eIndexType.classtype) {
                 Json2QuteClass jsonClass = new Json2QuteClass(index, nodeType, jsonSource);
                 QuteBase converted = jsonClass.build();
                 if (converted != null) {
                     sources.add(converted);
                     sources.addAll(jsonClass.buildSubclasses());
                 }
-            } else if (nodeType == IndexType.race || nodeType == IndexType.subrace) {
+            } else if (nodeType == Tools5eIndexType.race || nodeType == Tools5eIndexType.subrace) {
                 QuteBase converted = new Json2QuteRace(index, nodeType, jsonSource).build();
                 if (converted != null) {
                     sources.add(converted);
@@ -88,7 +88,7 @@ public class Json2MarkdownConverter implements MarkdownConverter {
         return this;
     }
 
-    private QuteBase json2qute(IndexType type, JsonNode jsonSource) {
+    private QuteBase json2qute(Tools5eIndexType type, JsonNode jsonSource) {
         switch (type) {
             case background:
                 return new Json2QuteBackground(index, type, jsonSource).build();

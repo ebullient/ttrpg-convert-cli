@@ -23,7 +23,7 @@ public class Pf2JsonDataTest {
     protected static Templates templates;
     protected static Tui tui;
 
-    protected JsonIndex index;
+    protected ToolsPf2eIndex index;
 
     @BeforeAll
     public static void prepare() {
@@ -32,16 +32,17 @@ public class Pf2JsonDataTest {
         tui.init(null, true, false);
 
         ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
+        ttrpgConfig.setDatasource(Datasource.toolsPf2e);
+
         templates = Arc.container().instance(Templates.class).get();
     }
 
     @Test
     public void testDataIndex_pf2e() throws Exception {
-        TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator configurator = new Configurator(ttrpgConfig, tui, Datasource.toolsp2fe);
+        Configurator configurator = new Configurator(ttrpgConfig, tui);
 
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
-            index = new JsonIndex(ttrpgConfig.getConfig());
+            index = new ToolsPf2eIndex(ttrpgConfig.getConfig());
 
             configurator.setSources(List.of("*"));
 

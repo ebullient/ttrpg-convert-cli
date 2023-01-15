@@ -1,9 +1,9 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-public enum IndexType implements dev.ebullient.convert.tools.IndexType {
+public enum Tools5eIndexType implements dev.ebullient.convert.tools.IndexType {
     background,
     backgroundfluff,
-    classtype,
+    classtype("class"),
     classfeature,
     deity,
     feat,
@@ -20,7 +20,7 @@ public enum IndexType implements dev.ebullient.convert.tools.IndexType {
     spellfluff,
     subclass,
     subclassfeature,
-    subrace,
+    subrace("race"),
     optionalfeature,
     table,
     trait,
@@ -28,7 +28,21 @@ public enum IndexType implements dev.ebullient.convert.tools.IndexType {
     note,
     reference;
 
-    public static IndexType getTypeFromKey(String key) {
+    String templateName;
+
+    Tools5eIndexType() {
+        this.templateName = this.name();
+    }
+
+    Tools5eIndexType(String templateName) {
+        this.templateName = templateName;
+    }
+
+    public String templateName() {
+        return templateName;
+    }
+
+    public static Tools5eIndexType getTypeFromKey(String key) {
         String typeKey = key.substring(0, key.indexOf("|"));
         return valueOf(typeKey);
     }

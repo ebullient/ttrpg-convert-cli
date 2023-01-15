@@ -15,8 +15,8 @@ public interface ToolsIndex {
 
     static ToolsIndex createIndex(Datasource game, CompendiumConfig config, Tui tui) {
         switch (game) {
-            case toolsp2fe:
-                return new dev.ebullient.convert.tools.pf2e.JsonIndex(config);
+            case toolsPf2e:
+                return new dev.ebullient.convert.tools.pf2e.ToolsPf2eIndex(config);
             default:
                 return new dev.ebullient.convert.tools.dnd5e.JsonIndex(config);
         }

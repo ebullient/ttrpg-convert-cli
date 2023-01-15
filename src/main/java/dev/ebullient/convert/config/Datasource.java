@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 public enum Datasource {
     tools5e("5etools", "5e"),
-    toolsp2fe("p2fetools", "pf2e");
+    toolsPf2e("p2fetools", "pf2e");
 
     public final List<String> format;
 

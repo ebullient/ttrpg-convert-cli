@@ -3,14 +3,14 @@ package dev.ebullient.convert.tools.pf2e;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonSourceCopier implements JsonSource {
-    final JsonIndex index;
+    final ToolsPf2eIndex index;
 
-    JsonSourceCopier(JsonIndex index) {
+    JsonSourceCopier(ToolsPf2eIndex index) {
         this.index = index;
     }
 
     @Override
-    public JsonIndex index() {
+    public ToolsPf2eIndex index() {
         return index;
     }
 
@@ -19,7 +19,7 @@ public class JsonSourceCopier implements JsonSource {
         throw new IllegalStateException("Should not call getSources while copying source");
     }
 
-    JsonNode handleCopy(IndexType type, JsonNode jsonSource) {
+    JsonNode handleCopy(ToolsPf2eIndexType type, JsonNode jsonSource) {
 
         return jsonSource;
     }

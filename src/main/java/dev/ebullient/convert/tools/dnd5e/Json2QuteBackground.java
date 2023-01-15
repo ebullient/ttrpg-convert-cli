@@ -20,7 +20,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
 
     final String backgroundName;
 
-    Json2QuteBackground(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    Json2QuteBackground(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         backgroundName = decoratedTypeName(decoratedBackgroundName(sources.getName()), sources);
     }
@@ -32,7 +32,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
         appendEntryToText(text, node, "##");
 
         List<ImageRef> images = new ArrayList<>();
-        List<String> fluff = getFluff(IndexType.backgroundfluff, "##", images);
+        List<String> fluff = getFluff(Tools5eIndexType.backgroundfluff, "##", images);
 
         if (fluff != null) {
             boolean found = false;

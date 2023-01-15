@@ -108,6 +108,7 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
     void setDatasource(String datasource) {
         try {
             game = Datasource.matchDatasource(datasource);
+            ttrpgConfig.setDatasource(game);
         } catch (IllegalStateException e) {
             tui.errorf("Unknown game data: %s", datasource);
         }
@@ -157,7 +158,7 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
         boolean allOk = true;
         tui.setOutputPath(output);
 
-        Configurator configurator = new Configurator(ttrpgConfig, tui, game);
+        Configurator configurator = new Configurator(ttrpgConfig, tui);
 
         if (source.size() == 1 && source.get(0).contains(",")) {
             String tmp = source.remove(0);
@@ -195,7 +196,7 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
             tui.outPrintf("⏱  Reading %s%n", inputPath);
             if (inputPath.toFile().isDirectory()) {
                 toolsBase = inputPath.toAbsolutePath();
-                if (game == Datasource.toolsp2fe) {
+                if (game == Datasource.toolsPf2e) {
                     allOk &= tui.readPf2eTools(toolsBase, index::importTree);
                 } else {
                     allOk &= tui.read5eTools(toolsBase, index::importTree);

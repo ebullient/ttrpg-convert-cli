@@ -11,7 +11,7 @@ import dev.ebullient.convert.qute.QuteNote;
 public class BackgroundTraits2Note extends Json2QuteCommon {
 
     public BackgroundTraits2Note(JsonIndex index) {
-        super(index, IndexType.sourceless, null);
+        super(index, Tools5eIndexType.sourceless, null);
     }
 
     public List<QuteNote> buildNotes() {

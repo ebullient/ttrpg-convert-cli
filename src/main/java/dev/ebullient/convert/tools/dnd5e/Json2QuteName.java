@@ -14,7 +14,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteName.LookupTableRow;
 public class Json2QuteName extends Json2QuteCommon {
 
     public Json2QuteName(JsonIndex index, JsonNode jsonNode) {
-        super(index, IndexType.note, jsonNode);
+        super(index, Tools5eIndexType.note, jsonNode);
     }
 
     public QuteName buildNames() {

@@ -94,31 +94,31 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         addRulesIfPresent(node, "srdEntries");
 
         // Reference/Internal Types
-        node.withArray("backgroundFluff").forEach(x -> addToIndex(IndexType.backgroundfluff, x));
-        node.withArray("itemEntry").forEach(x -> addToIndex(IndexType.itementry, x));
-        node.withArray("itemFluff").forEach(x -> addToIndex(IndexType.itemfluff, x));
-        node.withArray("monsterFluff").forEach(x -> addToIndex(IndexType.monsterfluff, x));
-        node.withArray("raceFluff").forEach(x -> addToIndex(IndexType.racefluff, x));
-        node.withArray("spellFluff").forEach(x -> addToIndex(IndexType.spellfluff, x));
-        node.withArray("subrace").forEach(x -> addToIndex(IndexType.subrace, x));
-        node.withArray("trait").forEach(x -> addToIndex(IndexType.trait, x));
-        node.withArray("legendaryGroup").forEach(x -> addToIndex(IndexType.legendarygroup, x));
-        node.withArray("subclass").forEach(x -> addToIndex(IndexType.subclass, x));
-        node.withArray("classFeature").forEach(x -> addToIndex(IndexType.classfeature, x));
-        node.withArray("optionalfeature").forEach(x -> addToIndex(IndexType.optionalfeature, x));
-        node.withArray("subclassFeature").forEach(x -> addToIndex(IndexType.subclassfeature, x));
+        node.withArray("backgroundFluff").forEach(x -> addToIndex(Tools5eIndexType.backgroundfluff, x));
+        node.withArray("itemEntry").forEach(x -> addToIndex(Tools5eIndexType.itementry, x));
+        node.withArray("itemFluff").forEach(x -> addToIndex(Tools5eIndexType.itemfluff, x));
+        node.withArray("monsterFluff").forEach(x -> addToIndex(Tools5eIndexType.monsterfluff, x));
+        node.withArray("raceFluff").forEach(x -> addToIndex(Tools5eIndexType.racefluff, x));
+        node.withArray("spellFluff").forEach(x -> addToIndex(Tools5eIndexType.spellfluff, x));
+        node.withArray("subrace").forEach(x -> addToIndex(Tools5eIndexType.subrace, x));
+        node.withArray("trait").forEach(x -> addToIndex(Tools5eIndexType.trait, x));
+        node.withArray("legendaryGroup").forEach(x -> addToIndex(Tools5eIndexType.legendarygroup, x));
+        node.withArray("subclass").forEach(x -> addToIndex(Tools5eIndexType.subclass, x));
+        node.withArray("classFeature").forEach(x -> addToIndex(Tools5eIndexType.classfeature, x));
+        node.withArray("optionalfeature").forEach(x -> addToIndex(Tools5eIndexType.optionalfeature, x));
+        node.withArray("subclassFeature").forEach(x -> addToIndex(Tools5eIndexType.subclassfeature, x));
         // TODO: node.withArray("variant").forEach(x -> addToIndex(IndexType.itemvariant, x));
 
         // Output Types
-        node.withArray("background").forEach(x -> addToIndex(IndexType.background, x));
-        node.withArray("class").forEach(x -> addToIndex(IndexType.classtype, x));
-        node.withArray("deity").forEach(x -> addToIndex(IndexType.deity, x));
-        node.withArray("feat").forEach(x -> addToIndex(IndexType.feat, x));
-        node.withArray("baseitem").forEach(x -> addToIndex(IndexType.item, x));
-        node.withArray("item").forEach(x -> addToIndex(IndexType.item, x));
-        node.withArray("monster").forEach(x -> addToIndex(IndexType.monster, x));
-        node.withArray("race").forEach(x -> addToIndex(IndexType.race, x));
-        node.withArray("spell").forEach(x -> addToIndex(IndexType.spell, x));
+        node.withArray("background").forEach(x -> addToIndex(Tools5eIndexType.background, x));
+        node.withArray("class").forEach(x -> addToIndex(Tools5eIndexType.classtype, x));
+        node.withArray("deity").forEach(x -> addToIndex(Tools5eIndexType.deity, x));
+        node.withArray("feat").forEach(x -> addToIndex(Tools5eIndexType.feat, x));
+        node.withArray("baseitem").forEach(x -> addToIndex(Tools5eIndexType.item, x));
+        node.withArray("item").forEach(x -> addToIndex(Tools5eIndexType.item, x));
+        node.withArray("monster").forEach(x -> addToIndex(Tools5eIndexType.monster, x));
+        node.withArray("race").forEach(x -> addToIndex(Tools5eIndexType.race, x));
+        node.withArray("spell").forEach(x -> addToIndex(Tools5eIndexType.spell, x));
 
         if (node.has("name") && node.get("name").isArray()) {
             ArrayNode names = node.withArray("name");
@@ -149,23 +149,23 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         nodeIndex.put(key, node);
     }
 
-    void addToIndex(IndexType type, JsonNode node) {
+    void addToIndex(Tools5eIndexType type, JsonNode node) {
         String key = getKey(type, node);
         nodeIndex.put(key, node);
-        if (type == IndexType.subclass) {
+        if (type == Tools5eIndexType.subclass) {
             String lookupKey = getSubclassKey(node.get("shortName").asText().trim(),
                     node.get("className").asText(), node.get("classSource").asText());
             // add subclass to alias. Referenced from spells
             addAlias(lookupKey, key);
         }
-        if (type == IndexType.subrace) {
+        if (type == Tools5eIndexType.subrace) {
             // {@race Aasimar (Fallen)|VGM}
             String[] parts = key.split("\\|");
             String lookupKey = String.format("race|%s (%s)|%s",
                     parts[2], parts[1], parts[3]).toLowerCase();
             addAlias(lookupKey, key);
         }
-        if (type == IndexType.classtype
+        if (type == Tools5eIndexType.classtype
                 && !booleanOrDefault(node, "isReprinted", false)) {
             String[] parts = key.split("\\|");
             if (!parts[2].contains("ua")) {
@@ -225,12 +225,12 @@ public class JsonIndex implements JsonSource, ToolsIndex {
 
         nodeIndex.forEach((key, node) -> {
             // check for / manage copies first.
-            IndexType type = IndexType.getTypeFromKey(key);
+            Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
             JsonNode jsonSource = copier.handleCopy(type, node);
 
-            if (type == IndexType.subrace ||
-                    type == IndexType.trait || type == IndexType.legendarygroup ||
-                    type == IndexType.deity) {
+            if (type == Tools5eIndexType.subrace ||
+                    type == Tools5eIndexType.trait || type == Tools5eIndexType.legendarygroup ||
+                    type == Tools5eIndexType.deity) {
                 // subraces are pulled in by races
                 // traits and legendary groups are pulled in my monsters
                 // deities are a hot mess
@@ -253,7 +253,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
 
         // Find/Merge deities (this will also exclude based on sources)
         List<Tuple> deities = findDeities(nodeIndex.entrySet().stream()
-                .filter(e -> IndexType.getTypeFromKey(e.getKey()) == IndexType.deity)
+                .filter(e -> Tools5eIndexType.getTypeFromKey(e.getKey()) == Tools5eIndexType.deity)
                 .map(e -> new Tuple(e.getKey(), e.getValue(),
                         String.format("%s-%s",
                                 e.getValue().get("name").asText(),
@@ -321,10 +321,10 @@ public class JsonIndex implements JsonSource, ToolsIndex {
     }
 
     List<Tuple> findVariants(String key, JsonNode jsonSource) {
-        IndexType type = IndexType.getTypeFromKey(key);
-        if (type == IndexType.race) {
+        Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
+        if (type == Tools5eIndexType.race) {
             return Json2QuteRace.findRaceVariants(this, type, key, jsonSource);
-        } else if (type == IndexType.monster && jsonSource.has("summonedBySpellLevel")) {
+        } else if (type == Tools5eIndexType.monster && jsonSource.has("summonedBySpellLevel")) {
             return Json2QuteMonster.findConjuredMonsterVariants(this, type, key, jsonSource);
         } else if (key.contains("splugoth the returned") || key.contains("prophetess dran")) {
             // Fix.
@@ -343,11 +343,11 @@ public class JsonIndex implements JsonSource, ToolsIndex {
                 String reprint = i.next().asText();
                 String[] ra = reprint.split("\\|");
                 if (sourceIncluded(ra[1])) {
-                    IndexType type = IndexType.getTypeFromKey(finalKey);
+                    Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(finalKey);
                     String primarySource = jsonSource.get("source").asText().toLowerCase();
                     String reprintKey = type + "|" + reprint.toLowerCase();
-                    if (type == IndexType.subrace && !variantIndex.containsKey(reprintKey)) {
-                        reprintKey = IndexType.race + "|" + reprint.toLowerCase();
+                    if (type == Tools5eIndexType.subrace && !variantIndex.containsKey(reprintKey)) {
+                        reprintKey = Tools5eIndexType.race + "|" + reprint.toLowerCase();
                         if (!variantIndex.containsKey(reprintKey)) {
                             reprintKey = finalKey.replace(primarySource, ra[1]).toLowerCase();
                         }
@@ -391,7 +391,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         return filteredIndex == null || variantIndex == null;
     }
 
-    public Stream<JsonNode> classElementsMatching(IndexType type, String className, String classSource) {
+    public Stream<JsonNode> classElementsMatching(Tools5eIndexType type, String className, String classSource) {
         String pattern = String.format("%s\\|[^|]+\\|%s\\|%s\\|.*", type, className, classSource)
                 .toLowerCase();
         return filteredIndex.entrySet().stream()
@@ -401,19 +401,19 @@ public class JsonIndex implements JsonSource, ToolsIndex {
 
     public String getClassKey(String className, String classSource) {
         return String.format("%s|%s|%s",
-                IndexType.classtype, className, classSource).toLowerCase();
+                Tools5eIndexType.classtype, className, classSource).toLowerCase();
     }
 
     public String getSubclassKey(String name, String className, String classSource) {
         return String.format("%s|%s|%s|%s|",
-                IndexType.subclass, name, className, classSource).toLowerCase();
+                Tools5eIndexType.subclass, name, className, classSource).toLowerCase();
     }
 
-    public Tools5eSources constructSources(IndexType type, JsonNode x) {
+    public Tools5eSources constructSources(Tools5eIndexType type, JsonNode x) {
         return constructSources(type, null, x);
     }
 
-    public Tools5eSources constructSources(IndexType type, String indexKey, JsonNode x) {
+    public Tools5eSources constructSources(Tools5eIndexType type, String indexKey, JsonNode x) {
         if (x == null) {
             throw new IllegalStateException("Unable to look up a null element: " + indexKey);
         }
@@ -426,7 +426,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         });
     }
 
-    public String getKey(IndexType type, JsonNode x) {
+    public String getKey(Tools5eIndexType type, JsonNode x) {
         switch (type) {
             case deity:
                 return createDeityKey(getTextOrEmpty(x, "name"),
@@ -495,15 +495,15 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         }
     }
 
-    public String createSimpleKey(IndexType type, String name, String source) {
+    public String createSimpleKey(Tools5eIndexType type, String name, String source) {
         return String.format("%s|%s|%s", type, name, source).toLowerCase();
     }
 
     public String createDeityKey(String name, String pantheon, String source) {
-        return String.format("%s|%s|%s|%s", IndexType.deity, name, pantheon, source).toLowerCase();
+        return String.format("%s|%s|%s|%s", Tools5eIndexType.deity, name, pantheon, source).toLowerCase();
     }
 
-    public String getRefKey(IndexType type, String crossRef) {
+    public String getRefKey(Tools5eIndexType type, String crossRef) {
         return String.format("%s|%s", type, crossRef).toLowerCase()
                 // NOTE: correct reference inconsistencies in the original data
                 .replaceAll("\\|phb\\|", "||")
@@ -511,13 +511,13 @@ public class JsonIndex implements JsonSource, ToolsIndex {
     }
 
     public String getDataKey(String value) {
-        return String.format("%s|%s", IndexType.reference, value)
+        return String.format("%s|%s", Tools5eIndexType.reference, value)
                 .toLowerCase();
     }
 
     public String getDataKey(String type, String id) {
         return String.format("%s|%s-%s",
-                IndexType.reference, type, id)
+                Tools5eIndexType.reference, type, id)
                 .toLowerCase();
     }
 
@@ -548,7 +548,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         return nodeIndex.get(finalKey);
     }
 
-    public JsonNode getOrigin(IndexType type, String name, String source) {
+    public JsonNode getOrigin(Tools5eIndexType type, String name, String source) {
         String key = String.format("%s|%s|%s", type, name, source)
                 .toLowerCase();
         return nodeIndex.get(key);
@@ -563,14 +563,14 @@ public class JsonIndex implements JsonSource, ToolsIndex {
      * @param x JsonNode providing lookup elements (name, source)
      * @return JsonNode or null
      */
-    public JsonNode getNode(IndexType type, JsonNode x) {
+    public JsonNode getNode(Tools5eIndexType type, JsonNode x) {
         if (x == null) {
             return null;
         }
         return filteredIndex.get(getKey(type, x));
     }
 
-    public JsonNode getOrigin(IndexType type, JsonNode x) {
+    public JsonNode getOrigin(Tools5eIndexType type, JsonNode x) {
         if (x == null) {
             return null;
         }
@@ -580,14 +580,14 @@ public class JsonIndex implements JsonSource, ToolsIndex {
     public Stream<JsonNode> originSubraces(Tools5eSources sources) {
         String raceName = sources.getName();
         String raceSource = String.join("|", sources.bookSources);
-        String pattern = String.format("%s\\|[^|]+\\|%s\\|(%s)", IndexType.subrace, raceName, raceSource)
+        String pattern = String.format("%s\\|[^|]+\\|%s\\|(%s)", Tools5eIndexType.subrace, raceName, raceSource)
                 .toLowerCase();
         return nodeIndex.entrySet().stream()
                 .filter(e -> e.getKey().matches(pattern))
                 .map(Entry::getValue);
     }
 
-    public String lookupName(IndexType type, String name) {
+    public String lookupName(Tools5eIndexType type, String name) {
         String prefix = String.format("%s|%s|", type, name).toLowerCase();
         List<String> target = filteredIndex.keySet().stream()
                 .filter(k -> k.startsWith(prefix))
@@ -645,7 +645,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
             return true;
         }
 
-        Tools5eSources sources = constructSources(IndexType.getTypeFromKey(key), key, node);
+        Tools5eSources sources = constructSources(Tools5eIndexType.getTypeFromKey(key), key, node);
         return sources.bookSources.stream().anyMatch((s) -> config.sourceIncluded(s));
     }
 
