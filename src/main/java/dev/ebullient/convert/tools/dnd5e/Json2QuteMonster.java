@@ -53,7 +53,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     String hitDice;
     final boolean isNpc;
 
-    Json2QuteMonster(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    Json2QuteMonster(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         findType();
         findAc();
@@ -86,7 +86,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         List<ImageRef> fluffImages = new ArrayList<>();
-        String fluff = getFluffDescription(IndexType.monsterfluff, null, fluffImages);
+        String fluff = getFluffDescription(Tools5eIndexType.monsterfluff, null, fluffImages);
 
         return new QuteMonster(sources,
                 decoratedMonsterName(node, sources),
@@ -416,7 +416,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         if (group == null) {
             return null;
         }
-        String key = index.getKey(IndexType.legendarygroup, group);
+        String key = index.getKey(Tools5eIndexType.legendarygroup, group);
         if (!index.sourceIncluded(group.get("source").asText())) {
             tui().debugf("Legendary group %s source excluded", key);
         }
@@ -503,7 +503,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return QuteSource.monsterPath(isNpc, type);
     }
 
-    public static List<Tuple> findConjuredMonsterVariants(JsonIndex index, IndexType type,
+    public static List<Tuple> findConjuredMonsterVariants(JsonIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
         final Pattern variantPattern = Pattern.compile("(\\d+) \\((.*?)\\)");
         int startLevel = jsonSource.get("summonedBySpellLevel").asInt();
@@ -553,7 +553,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     static void createVariant(JsonIndex index, List<Tuple> variants,
-            JsonNode jsonSource, IndexType type,
+            JsonNode jsonSource, Tools5eIndexType type,
             String variantName, int level, String hpString, String acString) {
 
         ConjuredMonster fixed = new ConjuredMonster(level, variantName, hpString, acString, jsonSource);

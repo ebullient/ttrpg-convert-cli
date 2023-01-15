@@ -11,18 +11,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.io.MarkdownWriter.FileMap;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteBackground;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteDeity;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteItem;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
+import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
+import dev.ebullient.convert.tools.pf2e.ToolsPf2eIndexType;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.Template;
 
@@ -38,13 +34,52 @@ public class Templates {
     @Inject
     Engine engine;
 
+    @Inject
+    public Template index;
+
+    @Inject
+    public Template background2md;
+
+    @Inject
+    public Template class2md;
+
+    @Inject
+    public Template deity2md;
+
+    @Inject
+    public Template feat2md;
+
+    @Inject
+    public Template item2md;
+
+    @Inject
+    public Template monster2md;
+
+    @Inject
+    public Template name2md;
+
+    @Inject
+    public Template note2md;
+
+    @Inject
+    public Template race2md;
+
+    @Inject
+    public Template spell2md;
+
+    @Inject
+    public Template subclass2md;
+
     public void setCustomTemplates(CompendiumConfig config) {
         this.config = config;
         this.templates.clear();
     }
 
     private Template customTemplateOrDefault(String id, Template defaultTemplate) {
-        Path customPath = config == null ? null : config.getCustomTemplate(id);
+        if (config == null) {
+            throw new IllegalStateException("Config not set");
+        }
+        Path customPath = config.getCustomTemplate(id);
         if (customPath != null) {
             tui.verbosef("📝 %s template: %s", id, customPath);
             try {
@@ -56,8 +91,30 @@ public class Templates {
         return defaultTemplate;
     }
 
-    @Inject
-    public Template index;
+    public String render(QuteBase resource) {
+        IndexType type = resource.type();
+        String key = String.format("%s2md.txt", type.templateName());
+
+        Template tpl = templates.computeIfAbsent(key, k -> {
+            if (config == null) {
+                throw new IllegalStateException("Config not set");
+            }
+            Path customPath = config.getCustomTemplate(key);
+            if (customPath != null) {
+                tui.verbosef("📝 %s template: %s", key, customPath);
+                try {
+                    return engine.parse(Files.readString(customPath));
+                } catch (IOException e) {
+                    tui.errorf(e, "Failed reading template for %s from %s", key, customPath);
+                }
+            }
+            return getTemplateForType(config.datasource(), type);
+        });
+
+        return tpl
+                .data("resource", resource)
+                .render().trim();
+    }
 
     public String renderIndex(String name, Collection<FileMap> resources) {
         return index
@@ -66,78 +123,12 @@ public class Templates {
                 .render();
     }
 
-    @Inject
-    public Template background2md;
-
-    public String renderBackground(QuteBackground resource) {
-        Template tpl = templates.computeIfAbsent("background2md.txt", k -> customTemplateOrDefault(k, background2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
-    }
-
-    @Inject
-    public Template class2md;
-
-    public String renderClass(QuteClass resource) {
-        Template tpl = templates.computeIfAbsent("class2md.txt", k -> customTemplateOrDefault(k, class2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
-    }
-
-    @Inject
-    public Template deity2md;
-
-    public String renderDeity(QuteDeity resource) {
-        Template tpl = templates.computeIfAbsent("deity2md.txt", k -> customTemplateOrDefault(k, deity2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
-    }
-
-    @Inject
-    public Template feat2md;
-
-    public String renderFeat(QuteFeat resource) {
-        Template tpl = templates.computeIfAbsent("feat2md.txt", k -> customTemplateOrDefault(k, feat2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
-    }
-
-    @Inject
-    public Template item2md;
-
-    public String renderItem(QuteItem resource) {
-        Template tpl = templates.computeIfAbsent("item2md.txt", k -> customTemplateOrDefault(k, item2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
-    }
-
-    @Inject
-    public Template monster2md;
-
-    public String renderMonster(QuteMonster resource) {
-        Template tpl = templates.computeIfAbsent("monster2md.txt", k -> customTemplateOrDefault(k, monster2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
-    }
-
-    @Inject
-    public Template name2md;
-
     public String renderName(QuteName resource) {
         Template tpl = templates.computeIfAbsent("name2md.txt", k -> customTemplateOrDefault(k, name2md));
         return tpl
                 .data("resource", resource)
                 .render().trim();
     }
-
-    @Inject
-    public Template note2md;
 
     public String renderNote(QuteNote resource) {
         Template tpl = templates.computeIfAbsent("note2md.txt", k -> customTemplateOrDefault(k, note2md));
@@ -146,53 +137,44 @@ public class Templates {
                 .render().trim();
     }
 
-    @Inject
-    public Template race2md;
-
-    public String renderRace(QuteRace resource) {
-        Template tpl = templates.computeIfAbsent("race2md.txt", k -> customTemplateOrDefault(k, race2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
+    Template getTemplateForType(Datasource datasource, IndexType type) {
+        tui.debug(templates.toString());
+        switch (datasource) {
+            case toolsPf2e:
+                return getPf2eTemplates((ToolsPf2eIndexType) type);
+            default:
+                return get5eToolsTemplates((Tools5eIndexType) type);
+        }
     }
 
-    @Inject
-    public Template spell2md;
-
-    public String renderSpell(QuteSpell resource) {
-        Template tpl = templates.computeIfAbsent("spell2md.txt", k -> customTemplateOrDefault(k, spell2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
+    private Template get5eToolsTemplates(Tools5eIndexType type) {
+        switch (type) {
+            case background:
+                return background2md;
+            case classtype:
+                return class2md;
+            case subclass:
+                return subclass2md;
+            case deity:
+                return deity2md;
+            case feat:
+                return feat2md;
+            case item:
+                return item2md;
+            case monster:
+                return monster2md;
+            case race:
+            case subrace:
+                return race2md;
+            case spell:
+                return spell2md;
+            default:
+                throw new IllegalArgumentException("No template for type:" + type);
+        }
     }
 
-    @Inject
-    public Template subclass2md;
-
-    public String renderSubclass(QuteSubclass resource) {
-        Template tpl = templates.computeIfAbsent("subclass2md.txt", k -> customTemplateOrDefault(k, subclass2md));
-        return tpl
-                .data("resource", resource)
-                .render().trim();
+    private Template getPf2eTemplates(ToolsPf2eIndexType type) {
+        throw new IllegalArgumentException("No template for type:" + type);
     }
 
-    @Override
-    public String toString() {
-        return "Templates{" +
-                "templates=" + templates +
-                ", tui=" + tui +
-                ", engine=" + engine +
-                ", index=" + index +
-                ", background2md=" + background2md +
-                ", class2md=" + class2md +
-                ", feat2md=" + feat2md +
-                ", item2md=" + item2md +
-                ", monster2md=" + monster2md +
-                ", name2md=" + name2md +
-                ", note2md=" + note2md +
-                ", race2md=" + race2md +
-                ", spell2md=" + spell2md +
-                ", subclass2md=" + subclass2md +
-                '}';
-    }
 }

@@ -30,7 +30,7 @@ public class ConfiguratorTest {
     @Test
     public void testPath() throws Exception {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+        Configurator test = new Configurator(ttrpgConfig, tui);
 
         tui.readFile(TestUtils.TEST_PATH_JSON, (f, node) -> {
             test.readConfigIfPresent(node);
@@ -46,7 +46,7 @@ public class ConfiguratorTest {
     @Test
     public void testPathNested() throws Exception {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+        Configurator test = new Configurator(ttrpgConfig, tui);
 
         tui.readFile(TestUtils.TEST_PATH_JSON, (f, node) -> {
             ObjectNode parent = Tui.MAPPER.createObjectNode();
@@ -70,7 +70,7 @@ public class ConfiguratorTest {
     @Test
     public void testSources() throws Exception {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+        Configurator test = new Configurator(ttrpgConfig, tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_JSON_5E, (f, node) -> {
             test.readConfigIfPresent(node);
@@ -91,7 +91,7 @@ public class ConfiguratorTest {
     @Test
     public void testFromAll() throws Exception {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+        Configurator test = new Configurator(ttrpgConfig, tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_FROM_ALL, (f, node) -> {
             test.readConfigIfPresent(node);
@@ -107,7 +107,7 @@ public class ConfiguratorTest {
     @Test
     public void testBooksAdventures() throws Exception {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+        Configurator test = new Configurator(ttrpgConfig, tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_BOOK_ADV_JSON_5E, (f, node) -> {
             test.readConfigIfPresent(node);
@@ -129,7 +129,7 @@ public class ConfiguratorTest {
     @Test
     public void testSourcesBadTemplates() throws Exception {
         TtrpgConfig ttrpgConfig = new TtrpgConfig();
-        Configurator test = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+        Configurator test = new Configurator(ttrpgConfig, tui);
 
         tui.readFile(TestUtils.TEST_SOURCES_BAD_TEMPL_JSON, (f, node) -> {
             assertThrows(IllegalArgumentException.class,

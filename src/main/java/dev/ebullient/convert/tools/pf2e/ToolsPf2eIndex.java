@@ -11,11 +11,11 @@ import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
-public class JsonIndex implements ToolsIndex {
+public class ToolsPf2eIndex implements ToolsIndex {
 
     final CompendiumConfig config;
 
-    public JsonIndex(CompendiumConfig config) {
+    public ToolsPf2eIndex(CompendiumConfig config) {
         this.config = config;
     }
 
@@ -37,7 +37,7 @@ public class JsonIndex implements ToolsIndex {
     }
 
     @Override
-    public JsonIndex importTree(String filename, JsonNode node) {
+    public ToolsPf2eIndex importTree(String filename, JsonNode node) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -64,19 +64,19 @@ public class JsonIndex implements ToolsIndex {
         return false;
     }
 
-    public JsonNode getOrigin(IndexType type, JsonNode _copy) {
+    public JsonNode getOrigin(ToolsPf2eIndexType type, JsonNode _copy) {
         return null;
     }
 
-    public String getKey(IndexType type, JsonNode jsonSource) {
+    public String getKey(ToolsPf2eIndexType type, JsonNode jsonSource) {
         return null;
     }
 
-    public ToolsPf2eSources constructSources(IndexType race, JsonNode jsonNode) {
+    public ToolsPf2eSources constructSources(ToolsPf2eIndexType race, JsonNode jsonNode) {
         return null;
     }
 
-    public JsonNode getOrigin(IndexType parentType, String parentName, String parentSource) {
+    public JsonNode getOrigin(ToolsPf2eIndexType parentType, String parentName, String parentSource) {
         return null;
     }
 
@@ -88,7 +88,7 @@ public class JsonIndex implements ToolsIndex {
         return false;
     }
 
-    public String createSimpleKey(IndexType type, String string, String source) {
+    public String createSimpleKey(ToolsPf2eIndexType type, String string, String source) {
         return null;
     }
 

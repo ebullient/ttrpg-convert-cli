@@ -19,11 +19,11 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     final String title;
     Tools5eSources currentSource;
 
-    static IndexType getType(JsonNode jsonNode) {
+    static Tools5eIndexType getType(JsonNode jsonNode) {
         if (jsonNode.has("source")) {
-            return IndexType.note;
+            return Tools5eIndexType.note;
         }
-        return IndexType.sourceless;
+        return Tools5eIndexType.sourceless;
     }
 
     Sourceless2QuteNote(JsonIndex index, JsonNode jsonNode, String title) {
@@ -59,7 +59,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendElement(JsonNode entry, List<String> text, Set<String> tags) {
-        currentSource = index.constructSources(IndexType.sourceless, entry);
+        currentSource = index.constructSources(Tools5eIndexType.sourceless, entry);
         String name = entry.get("name").asText();
         if (!index.rulesSourceExcluded(entry, name)) {
             tags.addAll(currentSource.getSourceTags());
@@ -152,7 +152,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendLootElement(JsonNode entry, List<String> text) {
-        currentSource = index.constructSources(IndexType.sourceless, entry);
+        currentSource = index.constructSources(Tools5eIndexType.sourceless, entry);
         String name = entry.get("name").asText();
         if (!index.rulesSourceExcluded(entry, name)) {
             String blockid = slugify(name);
@@ -222,7 +222,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendAction(JsonNode entry, List<String> text, Map<String, String> actionDuration, Set<String> tags) {
-        currentSource = index.constructSources(IndexType.sourceless, entry);
+        currentSource = index.constructSources(Tools5eIndexType.sourceless, entry);
         String name = entry.get("name").asText();
 
         if (index.rulesSourceExcluded(entry, name)) {

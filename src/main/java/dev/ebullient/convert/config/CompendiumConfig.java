@@ -145,10 +145,6 @@ public class CompendiumConfig {
                 .collect(Collectors.toList());
     }
 
-    public Path getCustomTemplate(String id) {
-        return customTemplates.get(id);
-    }
-
     public void readConfigurationIfPresent(JsonNode node) {
         if (userConfigPresent(node)) {
             Configurator c = new Configurator(this);
@@ -194,9 +190,8 @@ public class CompendiumConfig {
         protected TtrpgConfig ttrpgConfig;
         protected Tui tui;
 
-        public Configurator(TtrpgConfig ttrpgConfig, Tui tui, Datasource game) {
+        public Configurator(TtrpgConfig ttrpgConfig, Tui tui) {
             this.ttrpgConfig = ttrpgConfig;
-            this.ttrpgConfig.game = game;
             this.tui = tui;
         }
 
@@ -402,5 +397,9 @@ public class CompendiumConfig {
 
     public void addFallbackPaths(Map<String, String> fbPaths) {
         ttrpgConfig.fallbackImagePaths.putAll(fbPaths);
+    }
+
+    public Path getCustomTemplate(String id) {
+        return customTemplates.get(id);
     }
 }

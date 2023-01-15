@@ -42,17 +42,17 @@ public class JsonSourceCopier implements JsonSource {
         throw new IllegalStateException("Should not call getSources while copying source");
     }
 
-    JsonNode handleCopy(IndexType type, JsonNode jsonSource) {
-        if (type == IndexType.race) {
+    JsonNode handleCopy(Tools5eIndexType type, JsonNode jsonSource) {
+        if (type == Tools5eIndexType.race) {
             return copyAndMergeRace(jsonSource);
         }
-        if (type == IndexType.classtype) {
+        if (type == Tools5eIndexType.classtype) {
             return copyAndMergeClass(jsonSource);
         }
         JsonNode _copy = jsonSource.get("_copy");
         if (_copy != null) {
             // Fix infinite loop: self-referencing copy
-            if (type == IndexType.monsterfluff
+            if (type == Tools5eIndexType.monsterfluff
                     && jsonSource.get("name").asText().equalsIgnoreCase("Derro Savant")
                     && _copy.get("name").asText().equalsIgnoreCase("Derro Savant")) {
                 ((ObjectNode) _copy).set("name", new TextNode("Derro"));
@@ -74,9 +74,9 @@ public class JsonSourceCopier implements JsonSource {
 
     JsonNode copyAndMergeRace(JsonNode jsonNode) {
         if (jsonNode.has("raceName") || jsonNode.has("_copy")) {
-            Tools5eSources sources = index().constructSources(IndexType.race, jsonNode);
+            Tools5eSources sources = index().constructSources(Tools5eIndexType.race, jsonNode);
             jsonNode = cloneOrCopy(sources.getKey(),
-                    jsonNode, IndexType.race,
+                    jsonNode, Tools5eIndexType.race,
                     getTextOrDefault(jsonNode, "raceName", null),
                     getTextOrDefault(jsonNode, "raceSource", null));
         }
@@ -85,16 +85,16 @@ public class JsonSourceCopier implements JsonSource {
 
     JsonNode copyAndMergeClass(JsonNode jsonSource) {
         if (jsonSource.has("className") || jsonSource.has("_copy")) {
-            Tools5eSources sources = index().constructSources(IndexType.classtype, jsonSource);
+            Tools5eSources sources = index().constructSources(Tools5eIndexType.classtype, jsonSource);
             jsonSource = cloneOrCopy(sources.getKey(),
-                    jsonSource, IndexType.classtype,
+                    jsonSource, Tools5eIndexType.classtype,
                     getTextOrDefault(jsonSource, "className", null),
                     getTextOrDefault(jsonSource, "classSource", null));
         }
         return jsonSource;
     }
 
-    JsonNode cloneOrCopy(String originKey, JsonNode value, IndexType parentType, String parentName,
+    JsonNode cloneOrCopy(String originKey, JsonNode value, Tools5eIndexType parentType, String parentName,
             String parentSource) {
         JsonNode parentNode = parentName == null ? null : index().getOrigin(parentType, parentName, parentSource);
         JsonNode copyNode = index().getOrigin(parentType, value.get("_copy"));
@@ -209,7 +209,7 @@ public class JsonSourceCopier implements JsonSource {
         }
 
         if (_trait != null) {
-            String key = index.getKey(IndexType.trait, _trait);
+            String key = index.getKey(Tools5eIndexType.trait, _trait);
             JsonNode trait = index.getOrigin(key);
             if (trait == null) {
                 tui().warn("Unable to find trait for " + key);

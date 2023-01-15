@@ -18,7 +18,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     final ItemEnum itemType;
 
-    Json2QuteItem(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    Json2QuteItem(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         itemType = getItemType();
     }
@@ -102,7 +102,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     String itemText(Collection<PropertyEnum> propertyEnums, List<ImageRef> imageRef) {
-        List<String> text = getFluff(IndexType.itemfluff, "##", imageRef);
+        List<String> text = getFluff(Tools5eIndexType.itemfluff, "##", imageRef);
 
         if (node.has("entries")) {
             maybeAddBlankLine(text);
@@ -127,7 +127,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     void insertItemRefText(List<String> text, String input) {
-        String finalKey = index.getRefKey(IndexType.itementry, input.replaceAll("\\{#itemEntry (.*)}", "$1"));
+        String finalKey = index.getRefKey(Tools5eIndexType.itementry, input.replaceAll("\\{#itemEntry (.*)}", "$1"));
         if (index.isExcluded(finalKey)) {
             return;
         }

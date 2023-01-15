@@ -14,7 +14,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteDeity;
 
 public class Json2QuteDeity extends Json2QuteCommon {
 
-    Json2QuteDeity(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    Json2QuteDeity(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 

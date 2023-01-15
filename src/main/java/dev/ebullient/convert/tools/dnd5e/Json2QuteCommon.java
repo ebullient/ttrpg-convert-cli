@@ -17,10 +17,10 @@ public abstract class Json2QuteCommon implements JsonSource {
     protected final Tools5eSources sources;
     protected final JsonNode node;
 
-    Json2QuteCommon(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    Json2QuteCommon(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         this.index = index;
         this.node = jsonNode;
-        this.sources = type == IndexType.sourceless ? null : index.constructSources(type, jsonNode);
+        this.sources = type == Tools5eIndexType.sourceless ? null : index.constructSources(type, jsonNode);
     }
 
     String getName() {
@@ -43,12 +43,12 @@ public abstract class Json2QuteCommon implements JsonSource {
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
-    public String getFluffDescription(IndexType fluffType, String heading, List<ImageRef> imageRef) {
+    public String getFluffDescription(Tools5eIndexType fluffType, String heading, List<ImageRef> imageRef) {
         List<String> text = getFluff(fluffType, heading, imageRef);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
-    public List<String> getFluff(IndexType fluffType, String heading, List<ImageRef> imageRef) {
+    public List<String> getFluff(Tools5eIndexType fluffType, String heading, List<ImageRef> imageRef) {
         List<String> text = new ArrayList<>();
         if (booleanOrDefault(node, "hasFluff", false) || booleanOrDefault(node, "hasFluffImages", false)) {
             JsonNode fluffNode = index.getNode(fluffType, node);
@@ -74,7 +74,7 @@ public abstract class Json2QuteCommon implements JsonSource {
         return text;
     }
 
-    public List<ImageRef> getFluffImages(IndexType fluffType) {
+    public List<ImageRef> getFluffImages(Tools5eIndexType fluffType) {
         List<ImageRef> imageRef = new ArrayList<>();
         if (booleanOrDefault(node, "hasFluffImages", false)) {
             JsonNode fluffNode = index.getNode(fluffType, node);

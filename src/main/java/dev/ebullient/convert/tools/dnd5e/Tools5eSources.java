@@ -19,7 +19,7 @@ import io.quarkus.qute.TemplateData;
 
 @TemplateData
 public class Tools5eSources extends CompendiumSources {
-    final IndexType type;
+    final Tools5eIndexType type;
     final String key;
     final String name;
     final Set<String> bookSources = new LinkedHashSet<>();
@@ -27,7 +27,7 @@ public class Tools5eSources extends CompendiumSources {
     final boolean srd;
     final boolean basicRules;
 
-    public Tools5eSources(IndexType type, String key, JsonNode jsonElement) {
+    public Tools5eSources(Tools5eIndexType type, String key, JsonNode jsonElement) {
         super(type, key, jsonElement);
         this.type = type;
         this.key = key;
@@ -151,7 +151,7 @@ public class Tools5eSources extends CompendiumSources {
         return name;
     }
 
-    public IndexType getType() {
+    public Tools5eIndexType getType() {
         return type;
     }
 

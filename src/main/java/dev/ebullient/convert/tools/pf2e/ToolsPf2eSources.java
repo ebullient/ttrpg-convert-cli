@@ -8,7 +8,7 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class ToolsPf2eSources extends CompendiumSources {
 
-    public ToolsPf2eSources(IndexType type, String key, JsonNode jsonElement) {
+    public ToolsPf2eSources(ToolsPf2eIndexType type, String key, JsonNode jsonElement) {
         super(type, key, jsonElement);
         //TODO Auto-generated constructor stub
     }

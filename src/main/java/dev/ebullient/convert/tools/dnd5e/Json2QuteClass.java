@@ -31,7 +31,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     final String subclassTitle;
     final String decoratedClassName;
 
-    Json2QuteClass(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    Json2QuteClass(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         if (!isSidekick()) {
             findClassHitDice();
@@ -323,8 +323,8 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     private void findSubclassesForClassSource(String parentClassName, String parentClassSource) {
-        index().classElementsMatching(IndexType.subclass, parentClassName, parentClassSource).forEach(s -> {
-            String scKey = index.getKey(IndexType.subclass, s);
+        index().classElementsMatching(Tools5eIndexType.subclass, parentClassName, parentClassSource).forEach(s -> {
+            String scKey = index.getKey(Tools5eIndexType.subclass, s);
             JsonNode resolved = index.resolveClassFeatureNode(scKey, s);
             if (resolved == null) {
                 return; // e.g. excluded
@@ -333,7 +333,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             Subclass sc = new Subclass();
             sc.parentClassSource = parentClassSource;
             sc.shortName = resolved.get("shortName").asText();
-            sc.sources = index.constructSources(IndexType.subclass, scKey, resolved);
+            sc.sources = index.constructSources(Tools5eIndexType.subclass, scKey, resolved);
             sc.name = sc.sources.getName();
 
             // Subclass features
@@ -365,21 +365,21 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     private void lookupClassFeature(String lookup) {
-        String finalKey = index.getRefKey(IndexType.classfeature, lookup);
+        String finalKey = index.getRefKey(Tools5eIndexType.classfeature, lookup);
         JsonNode featureJson = index.resolveClassFeatureNode(finalKey, getSources().getKey());
         if (featureJson == null) {
             return; // skipped or not found
         }
-        classFeatures.add(new ClassFeature(finalKey, featureJson, IndexType.classfeature, "####", classSource));
+        classFeatures.add(new ClassFeature(finalKey, featureJson, Tools5eIndexType.classfeature, "####", classSource));
     }
 
     private ClassFeature lookupSubclassFeature(String lookup, String source) {
-        String finalKey = index.getRefKey(IndexType.subclassfeature, lookup);
+        String finalKey = index.getRefKey(Tools5eIndexType.subclassfeature, lookup);
         JsonNode featureJson = index.resolveClassFeatureNode(finalKey, getSources().getKey());
         if (featureJson == null) {
             return null; // skipped or not found
         }
-        return new ClassFeature(finalKey, featureJson, IndexType.subclassfeature, "##", source);
+        return new ClassFeature(finalKey, featureJson, Tools5eIndexType.subclassfeature, "##", source);
     }
 
     void findStartingEquipment() {
@@ -586,7 +586,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         final boolean optional;
         final List<String> text;
 
-        public ClassFeature(String lookup, JsonNode featureJson, IndexType type, String heading, String parentSource) {
+        public ClassFeature(String lookup, JsonNode featureJson, Tools5eIndexType type, String heading, String parentSource) {
             String level = lookup.replaceAll(".*\\|(\\d+)\\|?.*", "$1");
 
             Tools5eSources featureSources = new Tools5eSources(type, lookup, featureJson);
@@ -595,7 +595,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 // A class feature already uses this name. Add the level.
                 name += " (Level " + level + ")";
             }
-            boolean optional = type == IndexType.optionalfeature
+            boolean optional = type == Tools5eIndexType.optionalfeature
                     || booleanOrDefault(featureJson, "isClassFeatureVariant", false);
 
             List<String> text = new ArrayList<>();
@@ -636,14 +636,14 @@ public class Json2QuteClass extends Json2QuteCommon {
                     || allEntries.contains("refClassFeature");
         }
 
-        IndexType referenceType(String referenceType) {
+        Tools5eIndexType referenceType(String referenceType) {
             switch (referenceType) {
                 case "refSubclassFeature":
-                    return IndexType.subclassfeature;
+                    return Tools5eIndexType.subclassfeature;
                 case "refOptionalfeature":
-                    return IndexType.optionalfeature;
+                    return Tools5eIndexType.optionalfeature;
                 case "refClassFeature":
-                    return IndexType.classfeature;
+                    return Tools5eIndexType.classfeature;
                 default:
                     return null;
             }
@@ -667,7 +667,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             for (int i = origin.size() - 1; i >= 0; i--) {
                 if (origin.get(i).isObject() && origin.get(i).has("type")) {
                     String typeField = getTextOrEmpty(origin.get(i), "type");
-                    final IndexType refType = referenceType(typeField);
+                    final Tools5eIndexType refType = referenceType(typeField);
                     final String refField = referenceField(typeField);
                     if (refField != null) {
                         // replace refClassFeature with class feature entries

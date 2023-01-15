@@ -12,7 +12,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
 
 public class Json2QuteRace extends Json2QuteCommon {
 
-    Json2QuteRace(JsonIndex index, IndexType type, JsonNode jsonNode) {
+    Json2QuteRace(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 
@@ -28,7 +28,7 @@ public class Json2QuteRace extends Json2QuteCommon {
         tags.add("race/" + String.join("/", split));
 
         List<ImageRef> fluffImages = new ArrayList<>();
-        String fluff = getFluffDescription(IndexType.racefluff, "###", fluffImages);
+        String fluff = getFluffDescription(Tools5eIndexType.racefluff, "###", fluffImages);
 
         return new QuteRace(sources,
                 name,
@@ -121,14 +121,14 @@ public class Json2QuteRace extends Json2QuteCommon {
         return amount + "";
     }
 
-    public static List<Tuple> findRaceVariants(JsonIndex index, IndexType type,
+    public static List<Tuple> findRaceVariants(JsonIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
         List<Tuple> variants = new ArrayList<>();
         variants.add(new Tuple(key, jsonSource));
         Tools5eSources sources = index.constructSources(type, jsonSource);
         index.originSubraces(sources).forEach(sr -> {
             JsonNode newNode = index.copier.handleCopy(type, sr);
-            Tools5eSources srSources = index.constructSources(IndexType.subrace, newNode);
+            Tools5eSources srSources = index.constructSources(Tools5eIndexType.subrace, newNode);
             variants.add(new Tuple(srSources.getKey(), newNode));
         });
         return variants;
