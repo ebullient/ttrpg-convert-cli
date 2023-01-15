@@ -31,7 +31,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     final String subclassTitle;
     final String decoratedClassName;
 
-    Json2QuteClass(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteClass(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         if (!isSidekick()) {
             findClassHitDice();

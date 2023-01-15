@@ -18,7 +18,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     final ItemEnum itemType;
 
-    Json2QuteItem(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteItem(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         itemType = getItemType();
     }

@@ -45,7 +45,7 @@ public interface JsonSource {
     int CR_UNKNOWN = 100001;
     int CR_CUSTOM = 100000;
 
-    JsonIndex index();
+    Tools5eIndex index();
 
     default CompendiumConfig cfg() {
         return index().cfg();

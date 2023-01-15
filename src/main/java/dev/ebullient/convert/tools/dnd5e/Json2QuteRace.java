@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
 
 public class Json2QuteRace extends Json2QuteCommon {
 
-    Json2QuteRace(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteRace(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 
@@ -121,7 +121,7 @@ public class Json2QuteRace extends Json2QuteCommon {
         return amount + "";
     }
 
-    public static List<Tuple> findRaceVariants(JsonIndex index, Tools5eIndexType type,
+    public static List<Tuple> findRaceVariants(Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
         List<Tuple> variants = new ArrayList<>();
         variants.add(new Tuple(key, jsonSource));

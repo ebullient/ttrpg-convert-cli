@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
-import dev.ebullient.convert.tools.dnd5e.JsonIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
@@ -53,7 +53,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     String hitDice;
     final boolean isNpc;
 
-    Json2QuteMonster(JsonIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteMonster(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         findType();
         findAc();
@@ -503,7 +503,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return QuteSource.monsterPath(isNpc, type);
     }
 
-    public static List<Tuple> findConjuredMonsterVariants(JsonIndex index, Tools5eIndexType type,
+    public static List<Tuple> findConjuredMonsterVariants(Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
         final Pattern variantPattern = Pattern.compile("(\\d+) \\((.*?)\\)");
         int startLevel = jsonSource.get("summonedBySpellLevel").asInt();
@@ -552,7 +552,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return variants;
     }
 
-    static void createVariant(JsonIndex index, List<Tuple> variants,
+    static void createVariant(Tools5eIndex index, List<Tuple> variants,
             JsonNode jsonSource, Tools5eIndexType type,
             String variantName, int level, String hpString, String acString) {
 

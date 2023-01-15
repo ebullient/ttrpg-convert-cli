@@ -81,7 +81,7 @@ public enum PropertyEnum {
         return !tierProperties.contains(this) && !rarityProperties.contains(this);
     }
 
-    public String getMarkdownLink(JsonIndex index) {
+    public String getMarkdownLink(Tools5eIndex index) {
         if (rarityProperties.contains(this)) {
             return longName;
         }
