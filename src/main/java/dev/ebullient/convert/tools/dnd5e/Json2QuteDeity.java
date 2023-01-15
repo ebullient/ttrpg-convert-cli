@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteDeity;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Json2QuteDeity extends Json2QuteCommon {
 

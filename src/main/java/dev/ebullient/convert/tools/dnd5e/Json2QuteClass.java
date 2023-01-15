@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.qute.QuteClass;
 import dev.ebullient.convert.qute.QuteSubclass;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Json2QuteClass extends Json2QuteCommon {
 

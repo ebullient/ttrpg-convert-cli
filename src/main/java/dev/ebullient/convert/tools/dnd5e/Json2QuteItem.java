@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteItem;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Json2QuteItem extends Json2QuteCommon {
 

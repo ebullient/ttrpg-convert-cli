@@ -38,7 +38,7 @@ public class Import5eToolsConvertTest {
         result.echoSystemOut();
         assertThat(result.getOutput())
                 .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
-                .contains("Usage: 5e-convert");
+                .contains("Usage: ttrpg-convert");
     }
 
     @Test
@@ -47,7 +47,7 @@ public class Import5eToolsConvertTest {
         result.echoSystemOut();
         assertThat(result.getOutput())
                 .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
-                .contains("5e-convert version");
+                .contains("ttrpg-convert version");
     }
 
     @Test

@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import dev.ebullient.convert.tools.IndexType;
+
 public class JsonSourceCopier implements JsonSource {
     static final Pattern spell_dc_subst = Pattern.compile("<\\$spell_dc__([^$]+)\\$>");
     static final Pattern to_hit_subst = Pattern.compile("\\+?<\\$to_hit__([^$]+)\\$>");

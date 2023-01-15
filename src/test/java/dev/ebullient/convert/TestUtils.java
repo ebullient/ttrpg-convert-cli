@@ -25,15 +25,16 @@ import dev.ebullient.convert.io.Tui;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
-    final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
+    public final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
     // for compile/test purposes. Must clone/sync separately.
-    final static Path TOOLS_PATH = PROJECT_PATH.resolve("5etools-mirror-1.github.io/data");
-    final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
-    final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
-    final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
-    final static Path TEST_SOURCES_BOOK_ADV_JSON = PROJECT_PATH.resolve("src/test/resources/sources-book-adventure.json");
-    final static Path TEST_SOURCES_FROM_ALL = PROJECT_PATH.resolve("src/test/resources/sources-from-all.json");
-    final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
+    public final static Path TOOLS_PATH = PROJECT_PATH.resolve("sources/5etools-mirror-1.github.io/data");
+    public final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
+    public final static Path TEST_SOURCES_JSON = PROJECT_PATH.resolve("src/test/resources/sources.json");
+    public final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
+    public final static Path TEST_SOURCES_BOOK_ADV_JSON = PROJECT_PATH
+            .resolve("src/test/resources/sources-book-adventure.json");
+    public final static Path TEST_SOURCES_FROM_ALL = PROJECT_PATH.resolve("src/test/resources/sources-from-all.json");
+    public final static Path OUTPUT_ROOT = PROJECT_PATH.resolve("target/test-data");
 
     final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");
 
@@ -84,7 +85,7 @@ public class TestUtils {
         errors.addAll(e);
     }
 
-    static void commonTests(Path p, String l, List<String> errors) {
+    public static void commonTests(Path p, String l, List<String> errors) {
         if (l.contains("{@")) {
             errors.add(String.format("Found {@ in %s: %s", p, l));
         }
@@ -99,11 +100,11 @@ public class TestUtils {
         return e;
     };
 
-    static void assertDirectoryContents(Path directory, Tui tui) {
+    public static void assertDirectoryContents(Path directory, Tui tui) {
         assertDirectoryContents(directory, tui, checkContents);
     }
 
-    static void assertDirectoryContents(Path directory, Tui tui, BiFunction<Path, List<String>, List<String>> checker) {
+    public static void assertDirectoryContents(Path directory, Tui tui, BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = checkDirectoryContents(directory, tui, checker);
         assertThat(errors).isEmpty();
     }

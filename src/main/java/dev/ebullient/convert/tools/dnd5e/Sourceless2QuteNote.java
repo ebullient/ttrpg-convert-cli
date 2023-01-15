@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Sourceless2QuteNote extends Json2QuteCommon {
 
@@ -108,7 +109,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
                     String page = x.get("page").asText();
                     titlePage = title + ", p. " + page;
                 }
-                String name = x.get("name").asText();
+                String name = getTextOrDefault(x, "name", "");
                 QuteNote note = new QuteNote(name, titlePage, content, tags);
                 notes.put(String.format("%s/%s-%s.md",
                         slugify(title),

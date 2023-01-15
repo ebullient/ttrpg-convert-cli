@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBackground;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Json2QuteBackground extends Json2QuteCommon {
 

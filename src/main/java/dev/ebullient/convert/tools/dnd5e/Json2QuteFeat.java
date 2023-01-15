@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.QuteFeat;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
 
 public class Json2QuteFeat extends Json2QuteCommon {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");

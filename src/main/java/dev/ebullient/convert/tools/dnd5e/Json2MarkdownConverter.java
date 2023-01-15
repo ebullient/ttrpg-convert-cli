@@ -15,14 +15,18 @@ import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteName;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.qute.QuteSource;
+import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.MarkdownConverter;
 
-public class Json2MarkdownConverter {
+public class Json2MarkdownConverter implements MarkdownConverter {
     final JsonIndex index;
     final MarkdownWriter writer;
+    final Map<String, String> fallbackPaths;
 
-    public Json2MarkdownConverter(JsonIndex index, MarkdownWriter writer) {
+    public Json2MarkdownConverter(JsonIndex index, MarkdownWriter writer, Map<String, String> fallbackPaths) {
         this.index = index;
         this.writer = writer;
+        this.fallbackPaths = fallbackPaths;
     }
 
     public Json2MarkdownConverter writeAll() {
@@ -81,7 +85,7 @@ public class Json2MarkdownConverter {
 
         List<ImageRef> images = sources.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
-        index.tui().copyImages(images, index.getFallbackPaths());
+        index.tui().copyImages(images, fallbackPaths);
         return this;
     }
 

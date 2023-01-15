@@ -48,8 +48,9 @@ jobs:
           VER=$(echo $LATEST_VERSION | cut -c 2-)
           ROOT="5etools-mirror-1.github.io-$VER"
 
+          mkdir sources
           curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
-          tar xzf 5etools.tar.gz ${ROOT}/data ${ROOT}/img
+          tar xzf 5etools.tar.gz sources/${ROOT}/data sources/${ROOT}/img
 
           rm -rf 5etools-mirror-1.github.io
           mv ${ROOT} 5etools-mirror-1.github.io

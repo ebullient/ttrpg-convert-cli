@@ -1,4 +1,4 @@
-package dev.ebullient.convert;
+package dev.ebullient.convert.tools.dnd5e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,47 +9,55 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.TestUtils;
+import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.config.CompendiumConfig.Configurator;
+import dev.ebullient.convert.config.ConfiguratorUtil;
+import dev.ebullient.convert.config.Datasource;
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
-import dev.ebullient.convert.io.TemplatePaths;
 import dev.ebullient.convert.io.Templates;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteSource;
-import dev.ebullient.convert.tools.dnd5e.IndexType;
-import dev.ebullient.convert.tools.dnd5e.Json2MarkdownConverter;
-import dev.ebullient.convert.tools.dnd5e.JsonIndex;
+import dev.ebullient.convert.tools.IndexType;
 import io.quarkus.arc.Arc;
 
 public class CommonDataTests {
     protected final Tui tui;
+    protected final Configurator configurator;
+    protected final TtrpgConfig ttrpgConfig;
     protected final Templates templates;
     protected JsonIndex index;
 
     public CommonDataTests(boolean useSources) throws Exception {
-        tui = Arc.container().instance(Tui.class).get();
+        ttrpgConfig = Arc.container().instance(TtrpgConfig.class).get();
         templates = Arc.container().instance(Templates.class).get();
+
+        tui = Arc.container().instance(Tui.class).get();
         tui.init(null, true, false);
 
+        configurator = new Configurator(ttrpgConfig, tui, Datasource.tools5e);
+
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
+            index = new JsonIndex(ttrpgConfig.getConfig());
+
+            configurator.readConfiguration(TestUtils.TEST_PATH_JSON);
             if (useSources) {
-                index = new JsonIndex(List.of(), tui);
-                tui.readFile(TestUtils.TEST_SOURCES_JSON, index::importTree);
+                configurator.readConfiguration(TestUtils.TEST_SOURCES_JSON);
             } else {
-                index = new JsonIndex(List.of("*"), tui);
+                configurator.setSources(List.of("*"));
             }
-            tui.readFile(TestUtils.TEST_PATH_JSON, index::importTree);
 
             for (String x : List.of("adventures.json", "books.json", "adventure/adventure-wdh.json",
                     "book/book-vgm.json", "book/book-phb.json")) {
                 tui.readFile(TestUtils.TOOLS_PATH.resolve(x), index::importTree);
             }
             tui.read5eTools(TestUtils.TOOLS_PATH, index::importTree);
-
             index.prepare();
         }
     }
 
     public void cleanup() {
-        templates.setCustomTemplates(null);
         tui.close();
     }
 
@@ -57,9 +65,9 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             Path p1Full = outputPath.resolve("allIndex.json");
-            index.writeIndex(p1Full);
+            index.writeFullIndex(p1Full);
             Path p1Source = outputPath.resolve("allSourceIndex.json");
-            index.writeSourceIndex(p1Source);
+            index.writeFilteredIndex(p1Source);
 
             // JsonIndex index2 = new JsonIndex(List.of("PHB", "DMG", "XGE"), tui);
             // TestUtils.fullIndex(index2, TOOLS_PATH, tui);
@@ -80,7 +88,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(featDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.feat);
 
             TestUtils.assertDirectoryContents(featDir, tui);
@@ -94,7 +102,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(backgroundDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.background)
                     .writeRulesAndTables();
 
@@ -110,7 +118,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(spellDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.spell);
 
             TestUtils.assertDirectoryContents(spellDir, tui);
@@ -125,7 +133,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(raceDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.race);
 
             TestUtils.assertDirectoryContents(raceDir, tui);
@@ -140,7 +148,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(classDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.classtype);
 
             TestUtils.assertDirectoryContents(classDir, tui, (p, content) -> {
@@ -173,7 +181,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(deitiesDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.deity);
 
             Path imageDir = deitiesDir.resolve("img");
@@ -189,7 +197,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(itemDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.item);
 
             TestUtils.assertDirectoryContents(itemDir, tui);
@@ -204,7 +212,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(bestiaryDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeFiles(IndexType.monster);
 
             Path tokenDir = bestiaryDir.resolve("undead/token");
@@ -229,13 +237,13 @@ public class CommonDataTests {
 
             tui.setOutputPath(out);
 
-            TemplatePaths templatePaths = new TemplatePaths();
-            templatePaths.setCustomTemplate("monster",
+            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate(ttrpgConfig, "monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-scores.txt"));
-            templates.setCustomTemplates(templatePaths);
+            templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+                    .writeFiles(IndexType.monster);
         }
     }
 
@@ -246,13 +254,13 @@ public class CommonDataTests {
 
             tui.setOutputPath(out);
 
-            TemplatePaths templatePaths = new TemplatePaths();
-            templatePaths.setCustomTemplate("monster",
+            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate(ttrpgConfig, "monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
-            templates.setCustomTemplates(templatePaths);
+            templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+                    .writeFiles(IndexType.monster);
 
         }
     }
@@ -263,13 +271,13 @@ public class CommonDataTests {
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
 
-            TemplatePaths templatePaths = new TemplatePaths();
-            templatePaths.setCustomTemplate("monster",
+            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate(ttrpgConfig, "monster",
                     TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
-            templates.setCustomTemplates(templatePaths);
+            templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            new Json2MarkdownConverter(index, writer).writeFiles(IndexType.monster);
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
+                    .writeFiles(IndexType.monster);
 
             Path undead = out.resolve(index.compendiumPath()).resolve(QuteSource.monsterPath(false, "undead"));
             assertThat(undead.toFile()).exists();
@@ -305,7 +313,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            new Json2MarkdownConverter(index, writer)
+            index.markdownConverter(writer, ttrpgConfig.imageFallbackPaths())
                     .writeRulesAndTables();
         }
     }

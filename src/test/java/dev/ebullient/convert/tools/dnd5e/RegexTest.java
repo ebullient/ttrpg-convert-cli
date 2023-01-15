@@ -2,17 +2,17 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.regex.Matcher;
 
 import org.junit.jupiter.api.Test;
 
+import dev.ebullient.convert.config.ConfiguratorUtil;
 import dev.ebullient.convert.io.Tui;
 
 public class RegexTest {
 
     Tui tui = new Tui();
-    JsonIndex index = new JsonIndex(List.of("ALL"), tui);
+    JsonIndex index = new JsonIndex(ConfiguratorUtil.testConfig(tui));
     JsonSourceCopier copier = new JsonSourceCopier(index);
 
     @Test

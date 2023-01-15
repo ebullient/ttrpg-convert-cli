@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.MarkdownWriter.FileMap;
 import dev.ebullient.convert.qute.QuteBackground;
 import dev.ebullient.convert.qute.QuteClass;
@@ -29,7 +30,7 @@ import io.quarkus.qute.Template;
 public class Templates {
 
     final Map<String, Template> templates = new HashMap<>();
-    TemplatePaths templatePaths = null;
+    CompendiumConfig config = null;
 
     @Inject
     Tui tui;
@@ -37,18 +38,15 @@ public class Templates {
     @Inject
     Engine engine;
 
-    public void setCustomTemplates(TemplatePaths templatePaths) {
-        if (templatePaths != null) {
-            templatePaths.verify(tui);
-        }
-
-        this.templatePaths = templatePaths;
+    public void setCustomTemplates(CompendiumConfig config) {
+        this.config = config;
         this.templates.clear();
     }
 
     private Template customTemplateOrDefault(String id, Template defaultTemplate) {
-        Path customPath = templatePaths == null ? null : templatePaths.get(id);
+        Path customPath = config == null ? null : config.getCustomTemplate(id);
         if (customPath != null) {
+            tui.verbosef("📝 %s template: %s", id, customPath);
             try {
                 return engine.parse(Files.readString(customPath));
             } catch (IOException e) {
@@ -182,7 +180,6 @@ public class Templates {
     public String toString() {
         return "Templates{" +
                 "templates=" + templates +
-                ", templatePaths=" + templatePaths +
                 ", tui=" + tui +
                 ", engine=" + engine +
                 ", index=" + index +
