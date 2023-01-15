@@ -579,7 +579,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
 
     public Stream<JsonNode> originSubraces(Tools5eSources sources) {
         String raceName = sources.getName();
-        String raceSource = String.join("|", sources.bookSources);
+        String raceSource = String.join("|", sources.getBookSources());
         String pattern = String.format("%s\\|[^|]+\\|%s\\|(%s)", Tools5eIndexType.subrace, raceName, raceSource)
                 .toLowerCase();
         return nodeIndex.entrySet().stream()
@@ -646,7 +646,7 @@ public class JsonIndex implements JsonSource, ToolsIndex {
         }
 
         Tools5eSources sources = constructSources(Tools5eIndexType.getTypeFromKey(key), key, node);
-        return sources.bookSources.stream().anyMatch((s) -> config.sourceIncluded(s));
+        return sources.getBookSources().stream().anyMatch((s) -> config.sourceIncluded(s));
     }
 
     boolean isIncluded(String key) {

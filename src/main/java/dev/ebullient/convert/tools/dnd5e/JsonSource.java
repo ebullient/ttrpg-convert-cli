@@ -701,7 +701,7 @@ public interface JsonSource {
             id = entry.get("name").asText();
             insetText.add("[!quote] " + id);
             appendEntryToText(insetText, entry.get("entries"), null);
-        } else if (getSources().type == Tools5eIndexType.race) {
+        } else if (getSources().getType() == Tools5eIndexType.race) {
             appendEntryToText(insetText, entry.get("entries"), null);
             id = insetText.remove(0);
             insetText.add(0, "[!quote] " + id);
@@ -765,7 +765,7 @@ public interface JsonSource {
     }
 
     default String decoratedTypeName(Tools5eSources sources) {
-        return decoratedTypeName(sources.name, sources);
+        return decoratedTypeName(sources.getName(), sources);
     }
 
     default String decoratedTypeName(String name, Tools5eSources sources) {

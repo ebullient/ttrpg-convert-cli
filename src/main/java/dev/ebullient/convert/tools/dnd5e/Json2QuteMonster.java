@@ -111,7 +111,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterSpellcasting(),
                 fluff,
                 environment,
-                new ArrayList<>(sources.bookSources),
+                new ArrayList<>(sources.getBookSources()),
                 getToken(),
                 fluffImages,
                 tags);
@@ -181,7 +181,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 acText = replaceText(String.join("; ", details));
             }
         } else {
-            tui().errorf("Unknown armor class in monster %s: %s", sources.key, acNode.toPrettyString());
+            tui().errorf("Unknown armor class in monster %s: %s", sources.getKey(), acNode.toPrettyString());
         }
     }
 
