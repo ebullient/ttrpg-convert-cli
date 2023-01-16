@@ -24,6 +24,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
@@ -41,6 +43,8 @@ import picocli.CommandLine.ParameterException;
 @ApplicationScoped
 public class Tui {
     public final static TypeReference<List<String>> LIST_STRING = new TypeReference<>() {
+    };
+    public final static TypeReference<List<Integer>> LIST_INT = new TypeReference<>() {
     };
     public final static TypeReference<Map<String, String>> MAP_STRING_STRING = new TypeReference<>() {
     };
@@ -392,5 +396,13 @@ public class Tui {
             }
         }
         return result;
+    }
+
+    public void writeJsonFile(Path outputFile, Map<String, Object> keys) throws IOException {
+        DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
+        pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+        MAPPER.writer()
+                .with(pp)
+                .writeValue(outputFile.toFile(), keys);
     }
 }

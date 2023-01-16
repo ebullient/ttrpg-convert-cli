@@ -16,8 +16,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -66,6 +64,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return this;
         }
 
+        // user configuration
         config.readConfigurationIfPresent(node);
 
         addRulesIfPresent(node, "action");
@@ -675,7 +674,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Collections.sort(keys);
         allKeys.put("keys", keys);
         allKeys.put("mapping", aliases);
-        writeFile(outputFile, allKeys);
+        tui().writeJsonFile(outputFile, allKeys);
     }
 
     @Override
@@ -685,20 +684,12 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
         List<String> keys = new ArrayList<>(filteredIndex.keySet());
         Collections.sort(keys);
-        writeFile(outputFile, Map.of("keys", keys));
+        tui().writeJsonFile(outputFile, Map.of("keys", keys));
     }
 
     @Override
     public MarkdownConverter markdownConverter(MarkdownWriter writer, Map<String, String> imageFallbackPaths) {
         return new Json2MarkdownConverter(this, writer, imageFallbackPaths);
-    }
-
-    private void writeFile(Path outputFile, Map<String, Object> keys) throws IOException {
-        DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
-        pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
-        mapper().writer()
-                .with(pp)
-                .writeValue(outputFile.toFile(), keys);
     }
 
     @Override
