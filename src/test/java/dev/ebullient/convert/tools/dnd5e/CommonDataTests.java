@@ -254,7 +254,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
-                    TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-header.txt"));
+                    TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/tools5e/monster2md-yamlStatblock-header.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
@@ -271,7 +271,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
-                    TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/monster2md-yamlStatblock-body.txt"));
+                    TestUtils.PROJECT_PATH.resolve("src/main/resources/templates/tools5e/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);

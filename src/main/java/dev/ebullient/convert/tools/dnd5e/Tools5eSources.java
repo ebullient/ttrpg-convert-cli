@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.tools.CompendiumSources;
+import dev.ebullient.convert.tools.IndexType;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -30,7 +31,6 @@ public class Tools5eSources extends CompendiumSources {
         return (Tools5eIndexType) type;
     }
 
-    @Override
     public String getSourceText(boolean useSrd) {
         if (useSrd) {
             return "SRD / Basic Rules";
@@ -42,9 +42,15 @@ public class Tools5eSources extends CompendiumSources {
         return List.of("compendium/src/" + primarySource().toLowerCase());
     }
 
+    protected String findName(IndexType type, JsonNode jsonElement) {
+        return (jsonElement.has("name")
+                ? jsonElement.get("name").asText()
+                : jsonElement.get("abbreviation").asText()).trim();
+    }
+
     @Override
-    protected String findSourceText(JsonNode jsonElement) {
-        String srcText = super.findSourceText(jsonElement);
+    protected String findSourceText(IndexType type, JsonNode jsonElement) {
+        String srcText = super.findSourceText(type, jsonElement);
 
         String srdBasic = null;
         if (srd && basicRules) {
@@ -81,10 +87,5 @@ public class Tools5eSources extends CompendiumSources {
             i.next();
         }
         return i.next();
-    }
-
-    @Override
-    public String toString() {
-        return "sources[" + key + ']';
     }
 }

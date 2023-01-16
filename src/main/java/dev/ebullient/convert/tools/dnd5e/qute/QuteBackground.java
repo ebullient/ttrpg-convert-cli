@@ -3,14 +3,13 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteBackground extends QuteBase {
+public class QuteBackground extends QuteSource {
 
     final List<ImageRef> images;
 

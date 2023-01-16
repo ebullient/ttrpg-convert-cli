@@ -10,6 +10,8 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndex;
 
 public interface ToolsIndex {
 
@@ -21,9 +23,9 @@ public interface ToolsIndex {
     static ToolsIndex createIndex(Datasource game, CompendiumConfig config) {
         switch (game) {
             case toolsPf2e:
-                return new dev.ebullient.convert.tools.pf2e.ToolsPf2eIndex(config);
+                return new Pf2eIndex(config);
             default:
-                return new dev.ebullient.convert.tools.dnd5e.Tools5eIndex(config);
+                return new Tools5eIndex(config);
         }
     }
 
