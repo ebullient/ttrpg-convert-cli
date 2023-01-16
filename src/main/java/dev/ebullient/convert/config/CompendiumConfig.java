@@ -82,7 +82,7 @@ public class CompendiumConfig {
         return !allowedSources.contains(sourceNode.asText().toLowerCase());
     }
 
-    public Optional<Boolean> keyIsIncluded(String key, JsonNode node, Collection<String> allowedWhenEmpty) {
+    public Optional<Boolean> keyIsIncluded(String key, JsonNode node) {
         if (includedKeys.contains(key)) {
             return Optional.of(true);
         }
@@ -92,9 +92,6 @@ public class CompendiumConfig {
         }
         if (allSources) {
             return Optional.of(true);
-        }
-        if (noSources()) {
-            return Optional.of(allowedWhenEmpty.contains(key));
         }
         return Optional.empty();
     }
