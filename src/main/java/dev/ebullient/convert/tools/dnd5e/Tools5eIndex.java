@@ -609,9 +609,12 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private boolean keyIsIncluded(String key, JsonNode node) {
 
         // Check against include/exclude rules (srdKeys allowed when there are no sources)
-        Optional<Boolean> rulesAllow = config.keyIsIncluded(key, node, srdKeys);
+        Optional<Boolean> rulesAllow = config.keyIsIncluded(key, node);
         if (rulesAllow.isPresent()) {
             return rulesAllow.get();
+        }
+        if (config.noSources()) {
+            return srdKeys.contains(key);
         }
 
         // Special case for class features (match against constructed patterns)
