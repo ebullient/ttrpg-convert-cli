@@ -15,6 +15,7 @@ import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
 
@@ -41,11 +42,11 @@ public class Json2MarkdownConverter implements MarkdownConverter {
                 Tools5eIndexType.spell));
     }
 
-    public Json2MarkdownConverter writeFiles(dev.ebullient.convert.tools.IndexType type) {
+    public Json2MarkdownConverter writeFiles(IndexType type) {
         return writeFiles(List.of(type));
     }
 
-    public Json2MarkdownConverter writeFiles(List<dev.ebullient.convert.tools.IndexType> types) {
+    public Json2MarkdownConverter writeFiles(List<IndexType> types) {
         if (index.notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing files");
         }

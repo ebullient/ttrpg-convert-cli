@@ -12,10 +12,11 @@ import java.util.stream.StreamSupport;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
-public class CompendiumSources {
+public abstract class CompendiumSources {
     protected final IndexType type;
     protected final String key;
     protected final String name;
@@ -25,13 +26,11 @@ public class CompendiumSources {
     public CompendiumSources(IndexType type, String key, JsonNode jsonElement) {
         this.type = type;
         this.key = key;
-        this.name = (jsonElement.has("name")
-                ? jsonElement.get("name").asText()
-                : jsonElement.get("abbreviation").asText()).trim();
-        this.sourceText = findSourceText(jsonElement);
+        this.name = findName(type, jsonElement);
+        this.sourceText = findSourceText(type, jsonElement);
     }
 
-    public String getSourceText(boolean useSrd) {
+    public String getSourceText() {
         return sourceText;
     }
 
@@ -40,10 +39,16 @@ public class CompendiumSources {
     }
 
     public List<String> getSourceTags() {
-        return List.of("compendium/src/" + primarySource().toLowerCase());
+        return List.of(
+                String.format("compendium/%s/src/%s",
+                        TtrpgConfig.getConfig().datasource().shortName(),
+                        isSynthetic() ? "" : primarySource().toLowerCase()));
     }
 
-    protected String findSourceText(JsonNode jsonElement) {
+    protected abstract String findName(IndexType type, JsonNode jsonElement);
+
+    protected String findSourceText(IndexType type, JsonNode jsonElement) {
+        // add the primary source...
         this.bookSources.add(jsonElement.get("source").asText());
 
         List<String> srcText = new ArrayList<>();
@@ -60,6 +65,7 @@ public class CompendiumSources {
             srcText.add(String.format("Derived from %s (%s)", copyOf, copySrc));
         }
 
+        // find/add additional sources
         if (jsonElement.has("additionalSources")) {
             srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
                     .filter(x -> !x.get("source").asText().equals(copySrc))
@@ -68,7 +74,6 @@ public class CompendiumSources {
                     .map(this::sourceAndPage)
                     .collect(Collectors.toList()));
         }
-
         if (jsonElement.has("otherSources")) {
             srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
                     .filter(x -> !x.get("source").asText().equals(copySrc))
@@ -78,7 +83,7 @@ public class CompendiumSources {
                     .collect(Collectors.toList()));
         }
 
-        return sourceText;
+        return String.join(", ", srcText);
     }
 
     protected boolean subclassFilter(String source) {
@@ -134,5 +139,9 @@ public class CompendiumSources {
 
     public void checkKnown() {
         TtrpgConfig.checkKnown(this.bookSources);
+    }
+
+    boolean isSynthetic() {
+        return type == Pf2eIndexType.syntheticGroup;
     }
 }

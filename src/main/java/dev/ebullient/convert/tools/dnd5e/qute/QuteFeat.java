@@ -2,14 +2,13 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
 
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteFeat extends QuteBase {
+public class QuteFeat extends QuteSource {
 
     public final String level;
     public final String prerequisite;

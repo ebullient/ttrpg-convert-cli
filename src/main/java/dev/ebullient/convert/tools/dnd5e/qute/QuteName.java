@@ -2,13 +2,12 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
 
-import dev.ebullient.convert.qute.QuteBase;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteName extends QuteBase {
+public class QuteName extends QuteSource {
 
     final String name;
     final String source;

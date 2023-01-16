@@ -375,7 +375,7 @@ public class Tui {
 
     public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
-                "adventures.json", "books.json");
+                "actions.json", "skills.json");
 
         if (!toolsBase.resolve("archetypes.json").toFile().exists()) {
             debugf("Unable to find pf2e data: %s", toolsBase.toString());

@@ -38,7 +38,7 @@ import picocli.CommandLine.UnmatchedArgumentException;
 
 @SuppressWarnings("CanBeFinal")
 @QuarkusMain
-@Command(name = "ttrpg-convert", header = "Convert JSON data to markdown", subcommands = {
+@Command(name = "ttrpg-convert", header = "Convert TTRPG JSON data to markdown", subcommands = {
         Completion.class,
 }, description = {
         "%n%nThis will read from a collection of individual JSON files or a directory containing JSON files and will produce Obsidian markdown documents.",
@@ -74,7 +74,7 @@ import picocli.CommandLine.UnmatchedArgumentException;
         "}",
         "",
 }, mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
-public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
+public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication {
     static final Path DEFAULT_PATH = Path.of("config.json");
 
     List<Path> input;
@@ -101,7 +101,7 @@ public class TtrpgConvertCli implements Callable<Integer>, QuarkusApplication {
     Datasource game;
 
     @Option(names = { "-g",
-            "--game" }, description = "Game data source.%n  Candidates: ${COMPLETION-CANDIDATES}", defaultValue = "5etools", completionCandidates = Datasource.DatasourceCandidates.class)
+            "--game" }, description = "Game data source.%n  Candidates: ${COMPLETION-CANDIDATES}", defaultValue = "5e", completionCandidates = Datasource.DatasourceCandidates.class)
     void setDatasource(String datasource) {
         try {
             game = Datasource.matchDatasource(datasource);

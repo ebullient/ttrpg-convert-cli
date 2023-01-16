@@ -1,22 +1,26 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
 
-import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 
-public interface QuteSource {
-    String BACKGROUND_PATH = "backgrounds";
-    String CLASSES_PATH = "classes";
-    String DEITIES_PATH = "deities";
-    String FEATS_PATH = "feats";
-    String ITEMS_PATH = "items";
-    String MONSTERS_BASE_PATH = "bestiary";
-    String RACES_PATH = "races";
-    String SPELLS_PATH = "spells";
+public class QuteSource extends QuteBase {
+    public static String BACKGROUND_PATH = "backgrounds";
+    public static String CLASSES_PATH = "classes";
+    public static String DEITIES_PATH = "deities";
+    public static String FEATS_PATH = "feats";
+    public static String ITEMS_PATH = "items";
+    public static String MONSTERS_BASE_PATH = "bestiary";
+    public static String RACES_PATH = "races";
+    public static String SPELLS_PATH = "spells";
 
-    static String sourceIfNotCore(String source) {
+    public QuteSource(CompendiumSources sources, String name, String source, String text, Collection<String> tags) {
+        super(sources, name, source, text, tags);
+    }
+
+    public static String sourceIfNotCore(String source) {
         switch (source.toLowerCase()) {
             case "phb":
             case "mm":
@@ -27,42 +31,27 @@ public interface QuteSource {
         }
     }
 
-    static String sourceIfNotDefault(String source, String defaultSource) {
+    public static String sourceIfNotDefault(String source, String defaultSource) {
         if (!source.equalsIgnoreCase(defaultSource)) {
             return "-" + source.toLowerCase();
         }
         return "";
     }
 
-    static String monsterPath(boolean isNpc, String type) {
+    public static String monsterPath(boolean isNpc, String type) {
         return Path.of(QuteSource.MONSTERS_BASE_PATH, (isNpc ? "npc" : type)).toString();
     }
 
-    static String getSubclassResourceName(String subclass, String parentClass) {
+    public static String getSubclassResourceName(String subclass, String parentClass) {
         return parentClass + "-" + subclass;
     }
 
-    static String getDeityResourceName(String name, String pantheon) {
+    public static String getDeityResourceName(String name, String pantheon) {
         return pantheon + "-" + name;
     }
 
-    String getName();
-
-    String getSource();
-
-    default List<ImageRef> images() {
-        return List.of();
-    };
-
-    CompendiumSources sources();
-
-    default String targetFile() {
+    @Override
+    public String targetFile() {
         return getName() + QuteSource.sourceIfNotCore(sources().primarySource());
     }
-
-    String targetPath();
-
-    String title();
-
-    String key();
 }

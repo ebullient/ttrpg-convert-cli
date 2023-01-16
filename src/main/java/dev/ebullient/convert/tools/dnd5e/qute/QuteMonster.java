@@ -8,14 +8,13 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteMonster extends QuteBase {
+public class QuteMonster extends QuteSource {
 
     public final boolean isNpc;
     public final String size;

@@ -2,7 +2,6 @@ package dev.ebullient.convert.config;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;

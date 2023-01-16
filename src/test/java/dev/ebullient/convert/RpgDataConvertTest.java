@@ -21,7 +21,7 @@ import io.quarkus.test.junit.main.QuarkusMainTest;
 import picocli.CommandLine;
 
 @QuarkusMainTest
-public class Import5eToolsConvertTest {
+public class RpgDataConvertTest {
     static final Path outputPath_5e = TestUtils.OUTPUT_ROOT_5E.resolve("test-cli");
     static final Path outputPath_pf2 = TestUtils.OUTPUT_ROOT_PF2.resolve("test-cli");
     static Tui tui;
@@ -82,10 +82,10 @@ public class Import5eToolsConvertTest {
             TestUtils.deleteDir(allIndex);
 
             List<String> args = new ArrayList<>(List.of("--index", "-s", "ALL",
-                    "--background", "src/main/resources/templates/images-background2md.txt",
-                    "--item", "src/main/resources/templates/images-item2md.txt",
-                    "--monster", "src/main/resources/templates/images-monster2md.txt",
-                    "--race", "src/main/resources/templates/images-race2md.txt",
+                    "--background", "src/main/resources/templates/tools5e/images-background2md.txt",
+                    "--item", "src/main/resources/templates/tools5e/images-item2md.txt",
+                    "--monster", "src/main/resources/templates/tools5e/images-monster2md.txt",
+                    "--race", "src/main/resources/templates/tools5e/images-race2md.txt",
                     "-o", allIndex.toString(),
                     TestUtils.TOOLS_PATH_5E.toString()));
 

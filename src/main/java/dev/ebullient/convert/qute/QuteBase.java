@@ -5,7 +5,6 @@ import java.util.List;
 
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -51,7 +50,7 @@ public class QuteBase {
     }
 
     public String targetFile() {
-        return name + QuteSource.sourceIfNotCore(sources.primarySource());
+        return name;
     }
 
     public String targetPath() {
