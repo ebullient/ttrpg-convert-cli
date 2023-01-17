@@ -1,45 +1,19 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
 
-public interface JsonSource {
-
-    ToolsPf2eIndex index();
-
-    ToolsPf2eSources getSources();
-
-    default String slugify(String s) {
-        return tui().slugify(s);
-    }
-
-    default Tui tui() {
-        return cfg().tui();
-    }
-
-    default CompendiumConfig cfg() {
-        return index().cfg();
-    }
-
-    default Stream<JsonNode> streamOf(ArrayNode array) {
-        return StreamSupport.stream(array.spliterator(), false);
-    }
-
-    default boolean textContains(List<String> haystack, String needle) {
-        return haystack.stream().anyMatch(x -> x.contains(needle));
-    }
+public interface JsonSource extends JsonTextReplacement {
 
     default void appendEntryToText(List<String> text, JsonNode node, String heading) {
         if (node == null || node.isNull()) {
@@ -60,8 +34,8 @@ public interface JsonSource {
 
     default void appendEntryObjectToText(List<String> text, JsonNode node, String heading) {
         String source = Field.source.getTextOrEmpty(node);
-        if (!source.isEmpty() && !index().sourceIncluded(source)) {
-            if (!index().sourceIncluded(getSources().alternateSource())) {
+        if (!source.isEmpty() && !cfg().sourceIncluded(source)) {
+            if (!cfg().sourceIncluded(getSources().alternateSource())) {
                 return;
             }
         }
@@ -123,19 +97,18 @@ public interface JsonSource {
                     appendTextHeaderBlock(text, node,
                             heading == null ? null : heading + "#");
                     break;
+
+                // lists & items
+
                 case pf2options:
-                    appendList(text, Field.items.withArrayFrom(node));
-                    break;
-
-                case entries:
-                    appendEntryToText(text, AppendTypeValue.entries.getFrom(node), heading);
-                    break;
-                case entriesOtherSource:
-                    tui().debugf("TODO: %s %s", type, node.toString());
-                    break;
-
                 case list:
                     appendList(text, Field.items.withArrayFrom(node));
+                    break;
+                case item:
+                    appendListItem(text, node);
+                    break;
+                case entries:
+                    appendEntryToText(text, AppendTypeValue.entries.getFrom(node), heading);
                     break;
                 case table:
                     appendTable(text, node);
@@ -151,19 +124,8 @@ public interface JsonSource {
                 case ability:
                     appendAbility(text, node);
                     break;
-                case affliction:
-                    tui().debugf("TODO: %s %s", type, node.toString());
-                    break;
-                case attack:
-                    tui().debugf("TODO: %s %s", type, node.toString());
-                    break;
-                case lvlEffect:
-                    tui().debugf("TODO: %s %s", type, node.toString());
-                    break;
-
-                // list items
-                case item:
-                    appendListItem(text, node);
+                case successDegree:
+                    appendSuccessDegree(text, node);
                     break;
 
                 default:
@@ -206,31 +168,11 @@ public interface JsonSource {
         return false;
     }
 
-    default void appendAbility(List<String> text, JsonNode node) {
-        List<String> inner = new ArrayList<>();
-        appendEntryToText(inner, Field.entry.getFrom(node), null);
-        appendEntryToText(inner, Field.entries.getFrom(node), null);
-
-        String name = Field.name.getTextOrNull(node);
-        if (name != null) {
-            if (inner.isEmpty()) {
-                inner.add(name);
-            } else {
-                name = replaceText(name.trim().replace(":", ""));
-                name = "***" + name + ".*** ";
-                inner.set(0, name + inner.get(0));
-                maybeAddBlankLine(text);
-            }
-        }
-        text.addAll(inner);
-        text.add("CHECK ME: ABILITY ABOVE");
-    }
-
     default void appendTextHeaderBlock(List<String> text, JsonNode node, String heading) {
         if (heading == null) {
             List<String> inner = new ArrayList<>();
-            appendEntryToText(inner, Field.entry.getFrom(node), heading);
-            appendEntryToText(inner, Field.entries.getFrom(node), heading);
+            appendEntryToText(inner, Field.entry.getFrom(node), null);
+            appendEntryToText(inner, Field.entries.getFrom(node), null);
             if (prependField(node, Field.name, inner)) {
                 maybeAddBlankLine(text);
             }
@@ -330,6 +272,65 @@ public interface JsonSource {
 
         maybeAddBlankLine(text);
         insetText.forEach(x -> text.add("> " + x));
+        text.add("\nCHECK ME: KEY ABILITY ABOVE");
+    }
+
+    default void appendAbility(List<String> text, JsonNode node) {
+        List<String> inner = new ArrayList<>();
+
+        appendEntryToText(inner, Field.entry.getFrom(node), null);
+        appendEntryToText(inner, Field.entries.getFrom(node), null);
+
+        String name = Field.name.getTextOrNull(node);
+        if (name != null) {
+            if (inner.isEmpty()) {
+                inner.add(name);
+            } else {
+                name = replaceText(name.trim().replace(":", ""));
+                name = "***" + name + ".*** ";
+                inner.set(0, name + inner.get(0));
+                maybeAddBlankLine(text);
+            }
+        }
+        text.addAll(inner);
+        text.add("\nCHECK ME: ABILITY ABOVE");
+    }
+
+    default void appendSuccessDegree(List<String> text, JsonNode node) {
+        JsonNode entries = Field.entries.getFrom(node);
+
+        List<String> inner = new ArrayList<>();
+        inner.add("[!success-degree] ");
+
+        JsonNode field = Field.criticalSuccess.getFrom(entries);
+        if (field != null) {
+            prependTextMakeListItem(inner, field, "**Critical Success** ");
+        }
+        field = Field.success.getFrom(entries);
+        if (field != null) {
+            prependTextMakeListItem(inner, field, "**Success** ");
+        }
+        field = Field.failure.getFrom(entries);
+        if (field != null) {
+            prependTextMakeListItem(inner, field, "**Failure** ");
+        }
+        field = Field.criticalSuccess.getFrom(entries);
+        if (field != null) {
+            prependTextMakeListItem(inner, field, "**Critical Failure** ");
+        }
+
+        maybeAddBlankLine(text);
+        inner.forEach(x -> text.add("> " + x));
+        text.add("\nCHECK ME: SUCCESS DEGREE");
+    }
+
+    default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend) {
+        List<String> inner = new ArrayList<>();
+        appendEntryToText(inner, e, null);
+        if (inner.size() > 0) {
+            prependText("- " + prepend, inner);
+            text.add(String.join("  \n    ", inner).trim()); // preserve line items
+        }
     }
 
     default void appendTable(List<String> text, JsonNode tableNode) {
@@ -341,26 +342,29 @@ public interface JsonSource {
         String id = Field.id.getTextOrEmpty(tableNode);
 
         ArrayNode rows = Field.rows.withArrayFrom(tableNode);
-        List<Integer> labelIdx = Field.labelRowIdx.fromTo(tableNode, Tui.LIST_INT, tui());
+        List<Integer> labelIdx = Field.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
 
         if (!name.isEmpty()) {
             blockid = slugify(name + " " + id);
         }
 
-        // TODO: No label index
-        // {
-        //     int length = entry.withArray("rows").size();
-        //     String[] array = new String[length];
-        //     Arrays.fill(array, " ");
-        //     header = "|" + String.join(" | ", array) + " |";
-        // }
+        if (labelIdx == null) {
+            int length = rows.get(0).size();
+            String[] array = new String[length];
+            Arrays.fill(array, " ");
+            String header = "|" + String.join(" | ", array) + " |";
+            table.add(header);
+            table.add(header.replaceAll("[^|]", "-"));
+        }
 
         for (int r = 0; r < rows.size(); r++) {
             JsonNode rowNode = rows.get(r);
 
-            if (labelIdx.contains(r)) {
+            if (labelIdx != null && labelIdx.contains(r)) {
+                final int ri = r;
                 String header = StreamSupport.stream(rowNode.spliterator(), false)
                         .map(x -> replaceText(x.asText()))
+                        .map(x -> ri != 0 ? "**" + x + "**" : x)
                         .collect(Collectors.joining(" | "));
 
                 // make rollable dice headers
@@ -379,8 +383,7 @@ public interface JsonSource {
                 }
                 table.add(header);
                 table.add(header.replaceAll("[^|]", "-"));
-
-            } else if (FieldValue.multiRow.isFieldValue(rows, Field.type)) {
+            } else if (FieldValue.multiRow.isValueOfField(rows, Field.type)) {
                 ArrayNode rows2 = Field.rows.withArrayFrom(rowNode);
                 for (int j = 0; j < rows2.size(); j++) {
                     final int rindex = j;
@@ -393,7 +396,6 @@ public interface JsonSource {
                             " |";
                     table.add(row);
                 }
-
             } else {
                 String row = "| " +
                         StreamSupport.stream(rowNode.spliterator(), false)
@@ -435,83 +437,22 @@ public interface JsonSource {
         }
     }
 
-    default JsonNode copyNode(JsonNode sourceNode) {
-        try {
-            return Tui.MAPPER.readTree(sourceNode.toString());
-        } catch (JsonProcessingException ex) {
-            tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
-            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
+    // Special one-offs for accounting/tracking
+    enum TtrpgValue implements NodeReader {
+        indexKey;
+
+        public void addToNode(JsonNode node, String value) {
+            ((ObjectNode) node).put(this.name(), value);
         }
-    }
 
-    default JsonNode copyReplaceNode(JsonNode sourceNode, Pattern replace, String with) {
-        try {
-            String modified = replace.matcher(sourceNode.toString()).replaceAll(with);
-            return Tui.MAPPER.readTree(modified);
-        } catch (JsonProcessingException ex) {
-            tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
-            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
+        public String getFromNode(JsonNode node) {
+            return this.getTextOrNull(node);
         }
-    }
-
-    default List<String> findAndReplace(JsonNode jsonSource, String field) {
-        return findAndReplace(jsonSource, field, s -> s);
-    }
-
-    default List<String> findAndReplace(JsonNode jsonSource, String field, Function<String, String> replacement) {
-        JsonNode node = jsonSource.get(field);
-        if (node == null || node.isNull()) {
-            return List.of();
-        } else if (node.isTextual()) {
-            return List.of(replaceText(node.asText()));
-        } else if (node.isObject()) {
-            throw new IllegalArgumentException(
-                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node,
-                            getSources()));
-        }
-        return streamOf(jsonSource.withArray(field))
-                .map(x -> replaceText(x.asText()).trim())
-                .map(replacement)
-                .filter(x -> !x.isBlank())
-                .collect(Collectors.toList());
-    }
-
-    default String joinAndReplace(JsonNode jsonSource, String field) {
-        JsonNode node = jsonSource.get(field);
-        if (node == null || node.isNull()) {
-            return "";
-        } else if (node.isTextual()) {
-            return node.asText();
-        } else if (node.isObject()) {
-            throw new IllegalArgumentException(
-                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node,
-                            getSources()));
-        }
-        return joinAndReplace((ArrayNode) node);
-    }
-
-    default String joinAndReplace(ArrayNode array) {
-        List<String> list = new ArrayList<>();
-        array.forEach(v -> list.add(replaceText(v.asText())));
-        return String.join(", ", list);
-    }
-
-    /**
-     * Remove/replace syntax within text
-     *
-     * @param input
-     * @return
-     */
-    default String replaceText(String input) {
-        String result = input;
-
-        // TODO
-        return result;
     }
 
     // Other context-constrained type values (not the big append loop)
     enum FieldValue implements NodeReader {
-        multiRow;
+        multiRow
     }
 
     enum Field implements NodeReader {
@@ -532,7 +473,25 @@ public interface JsonSource {
         source,
         style,
         title,
-        type;
+        type,
+        criticalSuccess("Critical Success"),
+        success("Success"),
+        failure("Failure"),
+        criticalFailure("Critical Failure");
+
+        final String nodeName;
+
+        Field() {
+            this.nodeName = this.name();
+        }
+
+        Field(String nodeName) {
+            this.nodeName = nodeName;
+        }
+
+        public String nodeName() {
+            return nodeName;
+        }
     }
 
     enum AppendTypeValue implements NodeReader {
@@ -592,6 +551,6 @@ public interface JsonSource {
             return nodeName;
         }
     }
-
     // enum Type
+
 }
