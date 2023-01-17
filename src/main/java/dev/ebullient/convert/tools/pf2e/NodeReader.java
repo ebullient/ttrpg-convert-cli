@@ -16,67 +16,31 @@ public interface NodeReader {
         return this.name();
     }
 
-    default boolean existsIn(JsonNode node) {
-        return node.has(this.nodeName());
+    default boolean existsIn(JsonNode source) {
+        return source.has(this.nodeName());
     }
 
-    default boolean isFieldValue(JsonNode source, Field field) {
+    default boolean isValueOfField(JsonNode source, Field field) {
         return this.nodeName().equals(field.getTextOrNull(source));
     }
 
-    default JsonNode getFrom(JsonNode node) {
-        return node.get(this.nodeName());
-    }
-
-    default <T> T fromTo(JsonNode node, TypeReference<T> target, Tui tui) {
-        try {
-            return Tui.MAPPER.readValue(node.toString(), target);
-        } catch (JsonProcessingException e) {
-            tui.errorf(e, "Unable to convert %s", node.toString());
-        }
-        return null;
-    }
-
-    default <T> T fromTo(JsonNode node, Class<T> target, Tui tui) {
-        try {
-            return Tui.MAPPER.readValue(node.toString(), target);
-        } catch (JsonProcessingException e) {
-            tui.errorf(e, "Unable to convert %s", node.toString());
-        }
-        return null;
-    }
-
-    default ArrayNode withArrayFrom(JsonNode node) {
-        return node.withArray(this.nodeName());
+    default JsonNode getFrom(JsonNode source) {
+        return source.get(this.nodeName());
     }
 
     default String getTextOrNull(JsonNode x) {
-        if (x.has(this.nodeName())) {
-            return x.get(this.nodeName()).asText();
-        }
-        return null;
+        JsonNode text = getFrom(x);
+        return text == null ? null : text.asText();
     }
 
     default String getTextOrEmpty(JsonNode x) {
-        if (x.has(this.nodeName())) {
-            return x.get(this.nodeName()).asText();
-        }
-        return "";
+        String text = getTextOrNull(x);
+        return text == null ? "" : text;
     }
 
     default String getTextOrDefault(JsonNode x, String value) {
-        if (x.has(this.nodeName())) {
-            return x.get(this.nodeName()).asText();
-        }
-        return value;
-    }
-
-    default String getOrEmptyIfEqual(JsonNode x, String expected) {
-        if (x.has(this.nodeName())) {
-            String value = x.get(this.nodeName()).asText().trim();
-            return value.equalsIgnoreCase(expected) ? "" : value;
-        }
-        return "";
+        String text = getTextOrNull(x);
+        return text == null ? value : text;
     }
 
     default boolean booleanOrDefault(JsonNode source, boolean value) {
@@ -87,5 +51,33 @@ public interface NodeReader {
     default int intOrDefault(JsonNode source, int value) {
         JsonNode result = source.get(this.nodeName());
         return result == null ? value : result.asInt();
+    }
+
+    default ArrayNode withArrayFrom(JsonNode source) {
+        return source.withArray(this.nodeName());
+    }
+
+    default <T> T fieldFromTo(JsonNode source, TypeReference<T> target, Tui tui) {
+        JsonNode node = source.get(this.nodeName());
+        if (node != null) {
+            try {
+                return Tui.MAPPER.readValue(node.toString(), target);
+            } catch (JsonProcessingException e) {
+                tui.errorf(e, "Unable to convert field %s from %s", this.nodeName(), node.toString());
+            }
+        }
+        return null;
+    }
+
+    default <T> T fieldFromTo(JsonNode source, Class<T> target, Tui tui) {
+        JsonNode node = source.get(this.nodeName());
+        if (node != null) {
+            try {
+                return Tui.MAPPER.readValue(node.toString(), target);
+            } catch (JsonProcessingException e) {
+                tui.errorf(e, "Unable to convert field %s from %s", this.nodeName(), node.toString());
+            }
+        }
+        return null;
     }
 }
