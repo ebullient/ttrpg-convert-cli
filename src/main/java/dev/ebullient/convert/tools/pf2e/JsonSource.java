@@ -40,7 +40,7 @@ public interface JsonSource extends JsonTextReplacement {
             }
         }
 
-        AppendTypeValue type = AppendTypeValue.from(Field.type.getTextOrNull(node));
+        AppendTypeValue type = AppendTypeValue.valueFrom(node, Field.type);
         if (type != null) {
             switch (type) {
                 case section:
@@ -108,7 +108,7 @@ public interface JsonSource extends JsonTextReplacement {
                     appendListItem(text, node);
                     break;
                 case entries:
-                    appendEntryToText(text, AppendTypeValue.entries.getFrom(node), heading);
+                    appendEntryToText(text, Field.entries.getFrom(node), heading);
                     break;
                 case table:
                     appendTable(text, node);
@@ -451,28 +451,40 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     // Other context-constrained type values (not the big append loop)
-    enum FieldValue implements NodeReader {
-        multiRow
+    enum FieldValue implements NodeReader.FieldValue {
+        multiRow;
+
+        @Override
+        public String value() {
+            return this.name();
+        }
     }
 
     enum Field implements NodeReader {
+        activity,
+        actionType,
+        alias,
         by,
         entry,
         entries,
         footnotes,
         head,
         id,
+        info,
         intro,
         items,
         labelRowIdx,
         name,
         outro,
         page,
+        requirements,
         rows,
         signature,
         source,
         style,
         title,
+        traits,
+        trigger,
         type,
         criticalSuccess("Critical Success"),
         success("Success"),
@@ -494,7 +506,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    enum AppendTypeValue implements NodeReader {
+    enum AppendTypeValue implements NodeReader.FieldValue {
         ability,
         affliction,
         attack,
@@ -527,28 +539,28 @@ public interface JsonSource extends JsonTextReplacement {
         successDegree,
         table;
 
-        final String nodeName;
+        final String nodeValue;
 
         AppendTypeValue() {
-            nodeName = this.name();
+            nodeValue = this.name();
         }
 
-        static AppendTypeValue from(String textOrNull) {
+        AppendTypeValue(String nodeValue) {
+            this.nodeValue = nodeValue;
+        }
+
+        public String value() {
+            return this.nodeValue;
+        }
+
+        static AppendTypeValue valueFrom(JsonNode source, Field field) {
+            String textOrNull = field.getTextOrNull(source);
             if (textOrNull == null) {
                 return null;
             }
             return Stream.of(AppendTypeValue.values())
-                    .filter((t) -> t.nodeName.equals(textOrNull) || t.name().equalsIgnoreCase(textOrNull))
+                    .filter((t) -> t.nodeValue.equals(textOrNull) || t.name().equalsIgnoreCase(textOrNull))
                     .findFirst().orElse(null);
-        }
-
-        AppendTypeValue(String nodeName) {
-            this.nodeName = nodeName;
-        }
-
-        @Override
-        public String nodeName() {
-            return nodeName;
         }
     }
     // enum Type

@@ -11,18 +11,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 
-public class Json2QuteSkills extends Json2QuteBase {
-    List<JsonNode> skills = new ArrayList<>();
+public class Json2QuteCompose extends Json2QuteBase {
+    List<JsonNode> nodes = new ArrayList<>();
     Pf2eSources currentSources;
+    String title;
 
-    public Json2QuteSkills(Pf2eIndex index) {
+    public Json2QuteCompose(Pf2eIndex index, String title) {
         super(index, Pf2eIndexType.skill, null,
-                Pf2eSources.constructSyntheticSource("skills"));
+                Pf2eSources.constructSyntheticSource(title));
         currentSources = super.getSources();
+        this.title = title;
     }
 
     public void add(JsonNode node) {
-        skills.add(node);
+        nodes.add(node);
     }
 
     @Override
@@ -35,11 +37,11 @@ public class Json2QuteSkills extends Json2QuteBase {
         Set<String> tags = new HashSet<>();
         List<String> text = new ArrayList<>();
 
-        skills.sort(Comparator.comparing(Field.name::getTextOrEmpty));
-        skills.forEach(x -> appendElement(x, text, tags));
+        nodes.sort(Comparator.comparing(Field.name::getTextOrEmpty));
+        nodes.forEach(x -> appendElement(x, text, tags));
 
         return new QuteNote(sources,
-                "Skills",
+                title,
                 null,
                 String.join("\n", text),
                 tags);

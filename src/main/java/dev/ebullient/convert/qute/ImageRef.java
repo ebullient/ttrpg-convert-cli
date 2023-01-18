@@ -25,6 +25,11 @@ public class ImageRef {
             return this;
         }
 
+        public Builder setStreamSource(String glyph) {
+            this.sourcePath = Path.of("stream", glyph);
+            return this;
+        }
+
         public Builder setTargetPath(Path rootPath, Path relativeTarget) {
             this.targetPath = rootPath.resolve(relativeTarget);
             this.relativeTarget = relativeTarget;
@@ -43,7 +48,7 @@ public class ImageRef {
 
         public ImageRef build() {
             if (sourcePath == null || targetPath == null) {
-                throw new IllegalStateException("Call setTargetPath first");
+                throw new IllegalStateException("Call setSourcePath and setTargetPath first");
             }
             return new ImageRef(sourcePath, targetPath, caption, image);
         }

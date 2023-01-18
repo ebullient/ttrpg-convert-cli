@@ -87,9 +87,14 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
             switch (type) {
                 case skill:
-                    Json2QuteSkills skills = (Json2QuteSkills) combinedDocs.computeIfAbsent(type,
-                            t -> new Json2QuteSkills(index));
+                    Json2QuteCompose skills = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
+                            t -> new Json2QuteCompose(index, "Skills"));
                     skills.add(node);
+                    break;
+                case condition:
+                    Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
+                            t -> new Json2QuteCompose(index, "Conditions"));
+                    conditions.add(node);
                     break;
                 default:
                     break;

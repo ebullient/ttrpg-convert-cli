@@ -2,6 +2,7 @@ package dev.ebullient.convert.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.slugify.Slugify;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.ImageRef;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
@@ -259,6 +261,11 @@ public class Tui {
 
     public void copyImages(List<ImageRef> images, Map<String, String> fallbackPaths) {
         for (ImageRef image : images) {
+            if (image.sourcePath.toString().startsWith("stream/")) {
+                copyImageResource(image);
+                continue;
+            }
+
             Optional<Path> sourceRoot = inputRoot.stream()
                     .filter(x -> x.resolve(image.sourcePath).toFile().exists())
                     .findFirst();
@@ -286,16 +293,29 @@ public class Tui {
 
             // Resolve the image path from data against the correct parent path
             Path sourcePath = sourceRoot.get().resolve(basePath);
-            Path targePath = output.resolve(image.targetPath);
+            Path targetPath = output.resolve(image.targetPath);
 
             // target path must be pre-resolved to compendium or rules root
             // so just make sure the image dir exists
-            targePath.getParent().toFile().mkdirs();
+            targetPath.getParent().toFile().mkdirs();
             try {
-                Files.copy(sourcePath, targePath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 errorf(e, "Unable to copy image from %s to %s", image.sourcePath, image.targetPath);
             }
+        }
+    }
+
+    public void copyImageResource(ImageRef image) {
+        String sourcePath = image.sourcePath.toString().replace("stream", "");
+        Path targetPath = output.resolve(image.targetPath);
+        targetPath.getParent().toFile().mkdirs();
+
+        try {
+            InputStream in = TtrpgConfig.class.getResourceAsStream(sourcePath);
+            Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            errorf(e, "Unable to copy resource from %s to %s", sourcePath, image.targetPath);
         }
     }
 
@@ -375,7 +395,7 @@ public class Tui {
 
     public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
-                "actions.json", "skills.json");
+                "actions.json", "conditions.json", "skills.json");
 
         if (!toolsBase.resolve("archetypes.json").toFile().exists()) {
             debugf("Unable to find pf2e data: %s", toolsBase.toString());

@@ -9,7 +9,15 @@ tags:
 {/if}
 aliases: ["{resource.name}"]
 ---
-# {resource.name}
-*Source: {resource.source}*  
+# {resource.name} {#if resource.glyph}![{resource.glyph.caption}]({resource.glyph.path}#glyph){/if}
+{#if resource.traits }{#each resource.traits}***{it}***{#if it_hasNext} {/if}{/each}
+{/if}*Source: {resource.source}*  
+
+{#if resource.actionType }{resource.actionType}
+{/if}{#if resource.requirements }
+- **Requirements**: {resource.requirements}
+{/if}{#if resource.activity }
+- **Activity**: {resource.activity}
+{/if}
 
 {resource.text}
