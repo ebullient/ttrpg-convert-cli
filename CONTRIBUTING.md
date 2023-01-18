@@ -36,7 +36,7 @@ Click _Import_ and then select the `eclipse-format.xml` file from the `ide-confi
 
 Next navigate to _Java_ -> _Code Style_ -> _Organize Imports_. Click _Import_ and select the `eclipse.importorder` file from the `ide-config` directory.
 
-Choose the `json5e-convert-cli` profile.
+Choose the `ttrpg-convert-cli` profile.
 
 #### VSCode Setup
 
@@ -44,7 +44,7 @@ Add the following to your workspace settings (JSON)
 
 ```json
     "java.format.settings.url": "/full/path/to/ide-config/eclipse-format.xml",
-    "java.format.settings.profile": "json5e-convert-cli",
+    "java.format.settings.profile": "ttrpg-convert-cli",
 ```
 
 ## Signing
