@@ -4,8 +4,8 @@ environment:
     uberJarDir: target
 
 project:
-  name: json5e-convert-cli
-  description: Utility to convert 5etools JSON data into Markdown
+  name: ttrpg-convert-cli
+  description: Utility to convert 5eTools and Pf2eTools JSON data into Markdown
   longDescription: |
     This utility works with json sources and materials from the 5etools mirror to create 
     linked and formatted markdown. The resulting markdown will include backgrounds, 
@@ -15,9 +15,9 @@ project:
     formatting for some plugins (admonitions, dice roller, TTRPG Statblocks, etc.),
     and is cross-linked and aliased for ease of reference.
   links:
-    homepage: https://github.com/ebullient/json5e-convert-cli
-    documentation: https://github.com/ebullient/json5e-convert-cli#readme
-    license: https://github.com/ebullient/json5e-convert-cli/LICENSE
+    homepage: https://github.com/ebullient/ttrpg-convert-cli
+    documentation: https://github.com/ebullient/ttrpg-convert-cli#readme
+    license: https://github.com/ebullient/ttrpg-convert-cli/LICENSE
   authors:
     - "ebullient (Erin Schnabel)"
   license: Apache-2.0
@@ -31,6 +31,7 @@ project:
     - "quarkus"
     - "cli"
     - "5e-tools"
+    - "pf2e-tools"
     - "java"
     - "obsidian-md"
 
@@ -52,7 +53,7 @@ assemble:
             - "README.md"
         - input: "target/"
           includes:
-            - "5e-convert{.exe,}"
+            - "ttrpg-convert{.exe,}"
           output: "bin"
 
 checksum:

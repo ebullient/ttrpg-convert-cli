@@ -5,5 +5,5 @@ release:
   snapshot-version: 199-SNAPSHOT
 jitpack:
   group: com.github.ebullient
-  artifact: json5e-convert-cli
+  artifact: ttrpg-convert-cli
 toggle: false
