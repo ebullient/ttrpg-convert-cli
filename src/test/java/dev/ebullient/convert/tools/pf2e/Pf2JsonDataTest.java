@@ -43,9 +43,9 @@ public class Pf2JsonDataTest {
         configurator.setSources(List.of("*"));
 
         variant = TestInput.all;
-        outputPath = TestUtils.OUTPUT_ROOT_PF2.resolve("all");
+        outputPath = TestUtils.OUTPUT_ROOT_PF2.resolve(variant.name());
         outputPath.toFile().mkdirs();
-
+        tui.setOutputPath(outputPath);
     }
 
     @BeforeAll

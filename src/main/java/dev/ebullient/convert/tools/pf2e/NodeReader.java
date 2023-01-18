@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,10 +22,6 @@ public interface NodeReader {
         return source.has(this.nodeName());
     }
 
-    default boolean isValueOfField(JsonNode source, Field field) {
-        return this.nodeName().equals(field.getTextOrNull(source));
-    }
-
     default JsonNode getFrom(JsonNode source) {
         return source.get(this.nodeName());
     }
@@ -41,6 +39,17 @@ public interface NodeReader {
     default String getTextOrDefault(JsonNode x, String value) {
         String text = getTextOrNull(x);
         return text == null ? value : text;
+    }
+
+    default List<String> getListOfStrings(JsonNode source, Tui tui) {
+        JsonNode result = source.get(this.nodeName());
+        if (result == null) {
+            return List.of();
+        } else if (result.isTextual()) {
+            return List.of(result.asText());
+        } else {
+            return fieldFromTo(source, Tui.LIST_STRING, tui);
+        }
     }
 
     default boolean booleanOrDefault(JsonNode source, boolean value) {
@@ -79,5 +88,13 @@ public interface NodeReader {
             }
         }
         return null;
+    }
+
+    interface FieldValue {
+        String value();
+
+        default boolean isValueOfField(JsonNode source, Field field) {
+            return this.value().equals(field.getTextOrNull(source));
+        }
     }
 }

@@ -46,6 +46,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
 
         // data ingest. Minimal processing.
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
 
         return this;

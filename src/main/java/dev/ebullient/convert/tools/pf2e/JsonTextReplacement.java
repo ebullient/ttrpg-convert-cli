@@ -15,9 +15,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.pf2e.Pf2eIndex;
-import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
-import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 
 public interface JsonTextReplacement {
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
@@ -25,6 +22,59 @@ public interface JsonTextReplacement {
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
+
+    enum Activity {
+        single("Single Action", "\\[>\\]", "single_action.svg"),
+        two("Two-Action activity", "\\[>>\\]", "two_actions.svg"),
+        three("Three-Action activity", "\\[>>>\\]", "three_actions.svg"),
+        free("Free Action", "\\[F\\]", "delay.svg"),
+        reaction("Reaction", "\\[R\\]", "reaction.svg"),
+        varies("Varies", "\\[?\\]", "hour-glass.svg");
+
+        String activity;
+        String textGlyph;
+        String glyph;
+
+        Activity(String desc, String textGlyph, String glyph) {
+            this.activity = desc;
+            this.textGlyph = textGlyph;
+            this.glyph = glyph;
+        }
+
+        public static Activity toActivity(String unit, int number) {
+            switch (unit) {
+                case "action":
+                    switch (number) {
+                        case 1:
+                            return single;
+                        case 2:
+                            return two;
+                        case 3:
+                            return three;
+                    }
+                    break;
+                case "free":
+                    return free;
+                case "reaction":
+                    return reaction;
+                case "varies":
+                    return varies;
+            }
+            throw new IllegalArgumentException("Unable to find Activity for " + number + " " + unit);
+        }
+
+        public String getText() {
+            return this.activity;
+        }
+
+        public String getTextGlyph() {
+            return this.textGlyph;
+        }
+
+        public String getGlyph() {
+            return this.glyph;
+        }
+    }
 
     Pf2eIndex index();
 
@@ -118,6 +168,9 @@ public interface JsonTextReplacement {
      * @return
      */
     default String replaceText(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
         String result = input;
 
         result = dicePattern.matcher(result)
@@ -156,6 +209,7 @@ public interface JsonTextReplacement {
                     .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
                     .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@dc ([^}]+)}", "DC $1")
+                    .replaceAll("\\{@flatDC ([^}]+)}", "$1")
                     .replaceAll("\\{@d20 ([^}]+?)}", "$1")
                     .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
                     .replaceAll("\\{@recharge}", "(Recharge 6)")
@@ -209,23 +263,27 @@ public interface JsonTextReplacement {
 
     default String linkify(MatchResult match) {
         Pf2eIndexType targetType = Pf2eIndexType.fromTemplateName(match.group(1));
+        return linkify(targetType, match.group(2));
+    }
+
+    default String linkify(Pf2eIndexType targetType, String match) {
         switch (targetType) {
             case skill:
                 //	"Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception} (case sensitive) provide tooltips on hover.",
-                return linkifyRules(match.group(2), "skills");
+                return linkifyRules(match, "skills");
             case classtype:
-                return linkifyClass(match.group(2));
+                return linkifyClass(match);
             case classFeature:
-                return linkifyClassFeature(match.group(2));
+                return linkifyClassFeature(match);
             case subclassFeature:
-                return linkifySubClassFeature(match.group(2));
+                return linkifySubClassFeature(match);
         }
 
         // TODO not an _item_: "{@b Items with Runes:} {@runeItem longsword||+1 weapon potency||flaming|}, {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}. In general, the syntax is this: (open curly brace)@runeItem base item|base item source|rune 1|rune 1 source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly brace). For each source, we assume CRB by default.",
 
         // "{@b Actions:} {@action strike} assumes CRB by default, {@action act together|som} can have sources added with a pipe, {@action devise a stratagem|apg|and optional link text added with another pipe}.",
         // "{@b Conditions:} {@condition stunned} assumes CRB by default, {@condition stunned|crb} can have sources added with a pipe (not that it's ever useful), {@condition stunned|crb|and optional link text added with another pipe}.",
-        String[] parts = match.group(2).split("\\|");
+        String[] parts = match.split("\\|");
         String linkText = parts[0];
         String source = targetType.defaultSource().name();
         if (parts.length > 2) {
