@@ -82,10 +82,10 @@ public class RpgDataConvertTest {
             TestUtils.deleteDir(allIndex);
 
             List<String> args = new ArrayList<>(List.of("--index", "-s", "ALL",
-                    "--background", "src/main/resources/templates/tools5e/images-background2md.txt",
-                    "--item", "src/main/resources/templates/tools5e/images-item2md.txt",
-                    "--monster", "src/main/resources/templates/tools5e/images-monster2md.txt",
-                    "--race", "src/main/resources/templates/tools5e/images-race2md.txt",
+                    "--background", "templates/tools5e/images-background2md.txt",
+                    "--item", "templates/tools5e/images-item2md.txt",
+                    "--monster", "templates/tools5e/images-monster2md.txt",
+                    "--race", "templates/tools5e/images-race2md.txt",
                     "-o", allIndex.toString(),
                     TestUtils.TOOLS_PATH_5E.toString()));
 
