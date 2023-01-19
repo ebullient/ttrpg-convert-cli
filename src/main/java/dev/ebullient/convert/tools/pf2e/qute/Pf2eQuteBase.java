@@ -5,7 +5,9 @@ import java.util.Collection;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class Pf2eQuteBase extends QuteBase {
 
     protected Pf2eIndexType type;
@@ -17,6 +19,6 @@ public class Pf2eQuteBase extends QuteBase {
 
     @Override
     public String targetPath() {
-        return type.compendiumPath();
+        return type.relativePath();
     }
 }

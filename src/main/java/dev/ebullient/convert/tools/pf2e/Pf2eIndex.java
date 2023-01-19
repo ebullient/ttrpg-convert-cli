@@ -11,20 +11,23 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
 public class Pf2eIndex implements ToolsIndex, JsonSource {
-
+    static final String CORE_RULES = "book-crb.json";
     final CompendiumConfig config;
 
     private final Map<String, JsonNode> imported = new HashMap<>();
     private final Map<String, JsonNode> filteredIndex = new HashMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
+    boolean coreRulesIncluded = false;
 
     public Pf2eIndex(CompendiumConfig config) {
         this.config = config;
@@ -43,21 +46,45 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
 
         // user configuration
         config.readConfigurationIfPresent(node);
+        coreRulesIncluded |= filename.endsWith(CORE_RULES);
 
         // data ingest. Minimal processing.
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
 
+        Pf2eIndexType.adventure.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.book.withArrayFrom(node, this::addToIndex);
+
+        addDataToIndex(Pf2eIndexType.data.getFrom(node), filename);
+
         return this;
     }
 
     void addToIndex(Pf2eIndexType type, JsonNode node) {
         // TODO: Variants? Reprints?
-
         String key = type.createKey(node);
         TtrpgValue.indexKey.addToNode(node, key); // backlink
         imported.put(key, node);
+    }
+
+    void addDataToIndex(JsonNode data, String filename) {
+        if (data == null || filename.isEmpty()) {
+            return;
+        }
+        int slash = filename.indexOf('/');
+        int dot = filename.indexOf('.');
+        String name = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
+        String key = Pf2eIndexType.data.createKey(name, null); // e.g. data|book-crb
+
+        // synthetic node
+        ObjectNode newNode = Tui.MAPPER.createObjectNode();
+        newNode.put("name", name);
+        newNode.put("filename", filename);
+        newNode.set("data", data);
+
+        TtrpgValue.indexKey.addToNode(newNode, key); // backlink
+        imported.put(key, newNode);
     }
 
     @Override
@@ -66,11 +93,17 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
             return;
         }
 
+        if (!coreRulesIncluded) {
+            tui().warn("The core rules were not found or included. Some references may be missing");
+        }
+
         imported.forEach((key, node) -> {
             Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
-            // check for / manage copies first (creatures, fluff)
-            node = copier.handleCopy(type, node);
-            Pf2eSources.constructSources(node); // pre-construct sources
+            if (type.checkCopiesAndReprints()) {
+                // check for / manage copies first (creatures, fluff)
+                node = copier.handleCopy(type, node);
+            }
+            Pf2eSources.constructSources(type, node); // pre-construct sources
         });
 
         imported.entrySet().stream()

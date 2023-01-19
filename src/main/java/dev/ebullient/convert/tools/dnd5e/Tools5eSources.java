@@ -38,14 +38,10 @@ public class Tools5eSources extends CompendiumSources {
         return sourceText;
     }
 
-    public List<String> getSourceTags() {
-        return List.of("compendium/src/" + primarySource().toLowerCase());
-    }
-
     protected String findName(IndexType type, JsonNode jsonElement) {
-        return (jsonElement.has("name")
-                ? jsonElement.get("name").asText()
-                : jsonElement.get("abbreviation").asText()).trim();
+        return Fields.name.getTextOrDefault(jsonElement,
+                Fields.abbreviation.getTextOrDefault(jsonElement,
+                        "unknown"));
     }
 
     @Override
@@ -72,7 +68,7 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     @Override
-    protected boolean subclassFilter(String source) {
+    protected boolean datasourceFilter(String source) {
         return !List.of("phb", "mm", "dmg").contains(source.toLowerCase());
     }
 

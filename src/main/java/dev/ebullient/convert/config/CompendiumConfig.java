@@ -25,6 +25,7 @@ public class CompendiumConfig {
     final Tui tui;
     final Datasource datasource;
 
+    String tagPrefix = ""; // TODO: empty or ends with '/'
     PathAttributes paths;
     boolean allSources = false;
     final Set<String> allowedSources = new HashSet<>();
@@ -113,6 +114,10 @@ public class CompendiumConfig {
 
     public Path compendiumPath() {
         return getPaths().compendiumPath;
+    }
+
+    public String tagOf(String... tag) {
+        return tagPrefix + String.join("/", tag);
     }
 
     public List<String> getBooks() {

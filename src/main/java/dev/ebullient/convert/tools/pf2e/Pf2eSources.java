@@ -23,12 +23,11 @@ public class Pf2eSources extends CompendiumSources {
         return keyToSources.get(key);
     }
 
-    public static Pf2eSources constructSources(JsonNode node) {
+    public static Pf2eSources constructSources(Pf2eIndexType type, JsonNode node) {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
         }
         String key = JsonSource.TtrpgValue.indexKey.getFromNode(node);
-        Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
         return keyToSources.computeIfAbsent(key, k -> {
             Pf2eSources s = new Pf2eSources(type, key, node);
             s.checkKnown();
@@ -73,6 +72,9 @@ public class Pf2eSources extends CompendiumSources {
     }
 
     public boolean fromDefaultSource() {
+        if (type == Pf2eIndexType.data) {
+            return true;
+        }
         DefaultSource ds = type.defaultSource();
         return ds.name().equals(primarySource().toLowerCase());
     }

@@ -1,6 +1,9 @@
-package dev.ebullient.convert.tools.pf2e;
+package dev.ebullient.convert.tools;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,6 +26,9 @@ public interface NodeReader {
     }
 
     default JsonNode getFrom(JsonNode source) {
+        if (source == null) {
+            return null;
+        }
         return source.get(this.nodeName());
     }
 
@@ -62,8 +68,18 @@ public interface NodeReader {
         return result == null ? value : result.asInt();
     }
 
+    default Optional<Integer> getIntFrom(JsonNode source) {
+        JsonNode result = source.get(this.nodeName());
+        return result == null ? Optional.empty() : Optional.of(result.asInt());
+    }
+
     default ArrayNode withArrayFrom(JsonNode source) {
         return source.withArray(this.nodeName());
+    }
+
+    default Stream<JsonNode> streamOf(JsonNode node) {
+        ArrayNode array = withArrayFrom(node);
+        return StreamSupport.stream(array.spliterator(), false);
     }
 
     default <T> T fieldFromTo(JsonNode source, TypeReference<T> target, Tui tui) {

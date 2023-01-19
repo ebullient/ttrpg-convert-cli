@@ -1,0 +1,9 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-note
+---
+# Index of {name}
+
+{#for mapping in resources}
+- [{mapping.title}]({mapping.fileName})
+{/for}

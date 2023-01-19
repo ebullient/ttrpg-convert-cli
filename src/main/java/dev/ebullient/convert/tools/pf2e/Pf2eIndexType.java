@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.nio.file.Path;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -8,15 +9,18 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources.DefaultSource;
 
 public enum Pf2eIndexType implements IndexType, NodeReader {
     ability, // B1
     action,
+    adventure,
     ancestry,
     archetype,
     background,
+    book,
     classFeature,
     classtype("class"),
     companion,
@@ -25,6 +29,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     creature, // B1
     creatureTemplate, // B1
     curse, // GMG
+    data, // data from any source
     deity,
     disease, // GMG
     domain,
@@ -93,6 +98,10 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public String createKey(JsonNode node) {
+        if (this == book || this == adventure) {
+            String id = Field.id.getTextOrEmpty(node);
+            return String.format("%s|%s-%s", this.name(), this.name(), id).toLowerCase();
+        }
         // TODO: special keys?
         String name = Field.name.getTextOrEmpty(node);
         String source = Field.source.getTextOrDefault(node, this.defaultSource().name());
@@ -100,13 +109,49 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public String createKey(String name, String source) {
+        if (source == null) {
+            return String.format("%s|%s", this.name(), name).toLowerCase();
+        }
         return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
     }
 
-    public String compendiumPath() {
+    public String getRepoRoot(Pf2eIndex index) {
+        return useCompendiumPath() ? index.compendiumRoot() : index.rulesRoot();
+    }
+
+    public Path getBasePath(Pf2eIndex index) {
+        return useCompendiumPath() ? index.compendiumPath() : index.rulesPath();
+    }
+
+    public boolean checkCopiesAndReprints() {
+        switch (this) {
+            case adventure:
+            case book:
+            case data:
+            case syntheticGroup:
+                return false; // use rules
+            default:
+                return true; // use compendium
+        }
+    }
+
+    public boolean useCompendiumPath() {
         switch (this) {
             case action:
-                return "actions";
+            case condition:
+            case trait:
+            case table:
+            case variantrule:
+                return false; // use rules
+            default:
+                return true; // use compendium
+        }
+    }
+
+    public String relativePath() {
+        switch (this) {
+            case action:
+                return this.name() + 's';
             default:
                 return null;
         }
@@ -114,48 +159,50 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public DefaultSource defaultSource() {
         switch (this) {
-            case versatileHeritage:
             case familiar:
             case optfeature:
+            case versatileHeritage:
                 return DefaultSource.apg;
             case ability:
             case creature:
             case creatureTemplate:
                 return DefaultSource.b1;
-            case spell:
-            case item:
-            case classtype:
-            case condition:
-            case background:
+            case action:
+            case adventure:
             case ancestry:
             case archetype:
-            case feat:
-            case trap:
-            case hazard:
-            case deity:
-            case action:
+            case background:
+            case book:
             case classFeature:
-            case subclassFeature:
-            case table:
-            case language:
-            case ritual:
-            case trait:
-            case group:
-            case domain:
-            case skill:
-            case familiarAbility:
+            case classtype:
             case companion:
             case companionAbility:
+            case condition:
+            case deity:
+            case domain:
+            case familiarAbility:
+            case feat:
+            case group:
+            case hazard:
+            case item:
+            case language:
+            case ritual:
+            case skill:
+            case spell:
+            case subclassFeature:
+            case table:
+            case trait:
+            case trap:
                 return DefaultSource.crb;
-            case disease:
             case curse:
-            case variantrule:
-            case vehicle:
+            case disease:
+            case nation:
             case place:
             case plane:
             case relicGift:
             case settlement:
-            case nation:
+            case variantrule:
+            case vehicle:
                 return DefaultSource.gmg;
             case organization:
                 return DefaultSource.locg;

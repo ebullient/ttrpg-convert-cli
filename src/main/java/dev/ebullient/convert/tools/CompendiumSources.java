@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -49,54 +48,52 @@ public abstract class CompendiumSources {
 
     protected String findSourceText(IndexType type, JsonNode jsonElement) {
         // add the primary source...
-        this.bookSources.add(jsonElement.get("source").asText());
+        String primarySource = Fields.source.getTextOrEmpty(jsonElement);
+        if (primarySource != null) {
+            this.bookSources.add(primarySource);
+        }
 
         List<String> srcText = new ArrayList<>();
-        srcText.add(sourceAndPage(jsonElement));
+        String sPage = new SourceAndPage(jsonElement).toString();
+        if (sPage != null) {
+            srcText.add(sPage);
+        }
 
-        String copyOf = jsonElement.has("_copy")
-                ? jsonElement.get("_copy").get("name").asText()
-                : null;
-        String copySrc = jsonElement.has("_copy")
-                ? jsonElement.get("_copy").get("source").asText()
-                : null;
+        JsonNode copyElement = Fields._copy.getFrom(jsonElement);
+        String copyOf = Fields.name.getTextOrNull(copyElement);
+        String copySrc = Fields.source.getTextOrNull(copyElement);
 
         if (copyOf != null) {
             srcText.add(String.format("Derived from %s (%s)", copyOf, copySrc));
         }
 
         // find/add additional sources
-        if (jsonElement.has("additionalSources")) {
-            srcText.addAll(StreamSupport.stream(jsonElement.withArray("additionalSources").spliterator(), false)
-                    .filter(x -> !x.get("source").asText().equals(copySrc))
-                    .filter(x -> subclassFilter(x.get("source").asText()))
-                    .peek(x -> this.bookSources.add(x.get("source").asText()))
-                    .map(this::sourceAndPage)
+        if (Fields.additionalSources.existsIn(jsonElement)) {
+            srcText.addAll(Fields.additionalSources.streamOf(jsonElement)
+                    .map(e -> new SourceAndPage(e))
+                    .filter(sp -> sp.source != null)
+                    .filter(sp -> !sp.source.equals(copySrc))
+                    .filter(sp -> datasourceFilter(sp.source))
+                    .peek(sp -> this.bookSources.add(sp.source))
+                    .map(sp -> sp.toString())
                     .collect(Collectors.toList()));
         }
-        if (jsonElement.has("otherSources")) {
-            srcText.addAll(StreamSupport.stream(jsonElement.withArray("otherSources").spliterator(), false)
-                    .filter(x -> !x.get("source").asText().equals(copySrc))
-                    .filter(x -> subclassFilter(x.get("source").asText()))
-                    .peek(x -> this.bookSources.add(x.get("source").asText()))
-                    .map(this::sourceAndPage)
+        if (Fields.otherSources.existsIn(jsonElement)) {
+            srcText.addAll(Fields.otherSources.streamOf(jsonElement)
+                    .map(e -> new SourceAndPage(e))
+                    .filter(sp -> sp.source != null)
+                    .filter(sp -> !sp.source.equals(copySrc))
+                    .filter(sp -> datasourceFilter(sp.source))
+                    .peek(sp -> this.bookSources.add(sp.source))
+                    .map(sp -> sp.toString())
                     .collect(Collectors.toList()));
         }
 
         return String.join(", ", srcText);
     }
 
-    protected boolean subclassFilter(String source) {
-        return !List.of("phb", "mm", "dmg").contains(source.toLowerCase());
-    }
-
-    private String sourceAndPage(JsonNode source) {
-        String src = source.get("source").asText();
-        String book = TtrpgConfig.sourceToLongName(src);
-        if (source.has("page")) {
-            return String.format("%s p. %s", book, source.get("page").asText());
-        }
-        return book;
+    protected boolean datasourceFilter(String source) {
+        return true;
     }
 
     public boolean isPrimarySource(String source) {
@@ -143,5 +140,36 @@ public abstract class CompendiumSources {
 
     boolean isSynthetic() {
         return type == Pf2eIndexType.syntheticGroup;
+    }
+
+    protected enum Fields implements NodeReader {
+        abbreviation,
+        additionalSources,
+        _copy,
+        name,
+        otherSources,
+        page,
+        source;
+    }
+
+    public static class SourceAndPage {
+        String source;
+        String page;
+
+        SourceAndPage(JsonNode jsonElement) {
+            source = Fields.source.getTextOrNull(jsonElement);
+            page = Fields.page.getTextOrNull(jsonElement);
+        }
+
+        public String toString() {
+            if (source != null) {
+                String book = TtrpgConfig.sourceToLongName(source);
+                if (page != null) {
+                    return String.format("%s p. %s", book, page);
+                }
+                return book;
+            }
+            return null;
+        }
     }
 }

@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +12,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 
 public class Pf2eMarkdown implements MarkdownConverter {
     final Pf2eIndex index;
@@ -42,7 +41,8 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
     @Override
     public Pf2eMarkdown writeFiles(List<IndexType> types) {
-        List<QuteBase> sources = new ArrayList<>();
+        List<Pf2eQuteBase> compendium = new ArrayList<>();
+        List<Pf2eQuteBase> rules = new ArrayList<>();
 
         for (Entry<String, JsonNode> e : index.filteredEntries()) {
             final String key = e.getKey();
@@ -53,7 +53,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
                 continue;
             }
 
-            QuteBase converted = null;
+            Pf2eQuteBase converted = null;
             switch (type) {
                 case action:
                     converted = new Json2QuteAction(index, type, node).build();
@@ -61,14 +61,13 @@ public class Pf2eMarkdown implements MarkdownConverter {
                 default:
                     throw new IllegalArgumentException("Unsupported type " + type);
             }
-            if (converted != null) {
-                sources.add(converted);
-            }
+            append(type, converted, compendium, rules);
         }
 
-        writer.writeFiles(sources, index.compendiumPath());
+        writer.writeFiles(index.compendiumPath(), compendium);
+        writer.writeFiles(index.rulesPath(), rules);
 
-        List<ImageRef> images = sources.stream()
+        List<ImageRef> images = Stream.concat(compendium.stream(), rules.stream())
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
 
         index.tui().copyImages(images, fallbackPaths);
@@ -76,10 +75,11 @@ public class Pf2eMarkdown implements MarkdownConverter {
     }
 
     @Override
-    public Pf2eMarkdown writeRulesAndTables() {
+    public Pf2eMarkdown writeNotesAndTables() {
+        List<QuteNote> compendium = new ArrayList<>();
         List<QuteNote> rules = new ArrayList<>();
-        Map<Pf2eIndexType, Json2QuteBase> combinedDocs = new HashMap<>();
 
+        Map<Pf2eIndexType, Json2QuteBase> combinedDocs = new HashMap<>();
         for (Entry<String, JsonNode> e : index.filteredEntries()) {
             final String key = e.getKey();
             final JsonNode node = e.getValue();
@@ -88,12 +88,12 @@ public class Pf2eMarkdown implements MarkdownConverter {
             switch (type) {
                 case skill:
                     Json2QuteCompose skills = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
-                            t -> new Json2QuteCompose(index, "Skills"));
+                            t -> new Json2QuteCompose(type, index, "Skills"));
                     skills.add(node);
                     break;
                 case condition:
                     Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
-                            t -> new Json2QuteCompose(index, "Conditions"));
+                            t -> new Json2QuteCompose(type, index, "Conditions"));
                     conditions.add(node);
                     break;
                 default:
@@ -102,18 +102,25 @@ public class Pf2eMarkdown implements MarkdownConverter {
         }
 
         for (Json2QuteBase value : combinedDocs.values()) {
-            QuteBase note = value.build();
-            if (note != null) {
-                rules.add((QuteNote) note);
-            }
+            append(value.type, (QuteNote) value.build(), compendium, rules);
         }
 
-        Path rulesPath = index.rulesPath();
-        writer.writeNotes(rulesPath, rules);
+        writer.writeNotes(index.compendiumPath(), compendium);
+        writer.writeNotes(index.rulesPath(), rules);
 
         List<ImageRef> images = rules.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
         index.tui().copyImages(images, fallbackPaths);
         return this;
+    }
+
+    <T> void append(Pf2eIndexType type, T note, List<T> compendium, List<T> rules) {
+        if (note != null) {
+            if (type.useCompendiumPath()) {
+                compendium.add(note);
+            } else {
+                rules.add(note);
+            }
+        }
     }
 }
