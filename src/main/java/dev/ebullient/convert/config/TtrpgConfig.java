@@ -75,18 +75,21 @@ public class TtrpgConfig {
         try {
             JsonNode node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/convertData.json"));
             readSystemConfig(node);
+
+            node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/sourceMap.json"));
+            readSystemConfig(node);
         } catch (IOException e) {
             tui.error(e, "Error reading system config: /convertData.json");
         }
     }
 
+    // Global config: path mapping for missing images
     protected static void readSystemConfig(JsonNode node) {
-        // Global config: path mapping for missing images
+        DatasourceConfig config = globalConfig.computeIfAbsent(datasource, k -> new DatasourceConfig());
+
         if (datasource == Datasource.tools5e) {
             JsonNode config5e = ConfigKeys.config5e.get(node);
             if (config5e != null) {
-                DatasourceConfig config = new DatasourceConfig();
-
                 JsonNode srdEntries = ConfigKeys.srdEntries.get(config5e);
                 if (srdEntries != null) {
                     config.data.put(ConfigKeys.srdEntries.name(), srdEntries);
@@ -94,20 +97,14 @@ public class TtrpgConfig {
                 config.abvToName.putAll(ConfigKeys.abvToName.getAsMap(config5e));
                 config.longToAbv.putAll(ConfigKeys.longToAbv.getAsMap(config5e));
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(config5e));
-
-                globalConfig.put(Datasource.tools5e, config);
             }
         }
         if (datasource == Datasource.toolsPf2e) {
             JsonNode configPf2e = ConfigKeys.configPf2e.get(node);
             if (configPf2e != null) {
-                DatasourceConfig config = new DatasourceConfig();
-
                 config.abvToName.putAll(ConfigKeys.abvToName.getAsMap(configPf2e));
                 config.longToAbv.putAll(ConfigKeys.longToAbv.getAsMap(configPf2e));
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(configPf2e));
-
-                globalConfig.put(Datasource.toolsPf2e, config);
             }
         }
     }
