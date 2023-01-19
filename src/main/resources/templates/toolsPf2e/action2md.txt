@@ -7,17 +7,25 @@ tags:
 - {tag}
 {/for}
 {/if}
-aliases: ["{resource.name}"]
+aliases: ["{resource.name}"{#each resource.alias}, "{it}"{/each}]
 ---
-# {resource.name} {#if resource.glyph}![{resource.glyph.caption}]({resource.glyph.path}#glyph){/if}
+# {resource.name}{#if resource.basic} (basic){/if}{#if resource.activity} [{resource.activity.caption}]({resource.activity.rulesPath}){/if}
 {#if resource.traits }{#each resource.traits}***{it}***{#if it_hasNext} {/if}{/each}
 {/if}*Source: {resource.source}*  
 
 {#if resource.actionType }{resource.actionType}
+{/if}{#if resource.cost }
+- **Cost**: {resource.cost}
+{/if}{#if resource.prerequisites }
+- **Prerequisites**: {resource.prerequisites}
+{/if}{#if resource.frequency }
+- **Frequency**: {resource.frequency}
+{/if}{#if resource.trigger }
+- **Trigger** {resource.trigger}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
 {/if}{#if resource.activity }
-- **Activity**: {resource.activity}
+- **Activity** {resource.activity}
 {/if}
 
 {resource.text}

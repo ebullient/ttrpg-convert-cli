@@ -103,7 +103,7 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.background)
-                    .writeRulesAndTables();
+                    .writeNotesAndTables();
 
             TestUtils.assertDirectoryContents(backgroundDir, tui);
         }
@@ -313,7 +313,7 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeRulesAndTables();
+                    .writeNotesAndTables();
         }
     }
 }

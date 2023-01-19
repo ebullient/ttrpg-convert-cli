@@ -1,5 +1,6 @@
 ---
 obsidianUIMode: preview
+cssclass: pf2e-index
 ---
 # Index of {name}
 

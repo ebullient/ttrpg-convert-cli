@@ -13,14 +13,16 @@ import dev.ebullient.convert.qute.QuteNote;
 
 public class Json2QuteCompose extends Json2QuteBase {
     List<JsonNode> nodes = new ArrayList<>();
+    Pf2eIndexType type;
     Pf2eSources currentSources;
     String title;
 
-    public Json2QuteCompose(Pf2eIndex index, String title) {
-        super(index, Pf2eIndexType.skill, null,
+    public Json2QuteCompose(Pf2eIndexType type, Pf2eIndex index, String title) {
+        super(index, type, null,
                 Pf2eSources.constructSyntheticSource(title));
         currentSources = super.getSources();
         this.title = title;
+        this.type = type;
     }
 
     public void add(JsonNode node) {

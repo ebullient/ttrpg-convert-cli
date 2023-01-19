@@ -108,8 +108,8 @@ public class Pf2JsonDataTest {
     }
 
     Path generateNotesForType(Pf2eIndexType type) {
-        Path typeDir = outputPath.resolve(index.compendiumPath())
-                .resolve(type.compendiumPath());
+        Path typeDir = outputPath.resolve(type.getBasePath(index))
+                .resolve(type.relativePath());
 
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             TestUtils.deleteDir(typeDir);
@@ -130,16 +130,18 @@ public class Pf2JsonDataTest {
     }
 
     @Test
-    public void testRules_p2fe() throws Exception {
-        Path typeDir = outputPath.resolve(index.rulesPath());
+    public void testNotes_p2fe() throws Exception {
+        Path rulesDir = outputPath.resolve(index.rulesPath());
+        Path compendiumDir = outputPath.resolve(index.compendiumPath());
 
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
-            TestUtils.deleteDir(typeDir);
-
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeRulesAndTables();
-            TestUtils.assertDirectoryContents(typeDir, tui);
+                    .writeNotesAndTables();
+
+            TestUtils.assertDirectoryContents(rulesDir, tui);
+            assertThat(rulesDir.resolve("conditions.md")).exists();
+            assertThat(compendiumDir.resolve("skills.md")).exists();
         }
     }
 }

@@ -228,7 +228,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
         index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                 .writeAll()
-                .writeRulesAndTables();
+                .writeNotesAndTables();
 
         return allOk ? ExitCode.OK : ExitCode.SOFTWARE;
     }

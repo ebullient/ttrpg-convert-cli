@@ -28,22 +28,17 @@ public class Templates {
     @Inject
     Engine engine;
 
-    @Inject
-    public Template index;
-
     public void setCustomTemplates(CompendiumConfig config) {
         this.config = config;
         engine.clearTemplates();
     }
 
-    private Template customTemplateOrDefault(String id, boolean useDatasource) throws RuntimeException {
+    private Template customTemplateOrDefault(String id) throws RuntimeException {
         if (config == null) {
             throw new IllegalStateException("Config not set");
         }
 
-        String key = useDatasource
-                ? config.datasource() + "/" + id
-                : id;
+        String key = config.datasource() + "/" + id;
 
         if (!engine.isTemplateLoaded(key)) {
             Path customPath = config.getCustomTemplate(id);
@@ -68,28 +63,29 @@ public class Templates {
         IndexType type = resource.type();
         String key = String.format("%s2md.txt", type.templateName());
 
-        Template tpl = customTemplateOrDefault(key, true);
+        Template tpl = customTemplateOrDefault(key);
         return tpl
                 .data("resource", resource)
                 .render().trim();
     }
 
     public String renderIndex(String name, Collection<FileMap> resources) {
-        return index
+        Template tpl = customTemplateOrDefault("index.txt");
+        return tpl
                 .data("name", name)
                 .data("resources", resources)
                 .render();
     }
 
     public String renderName(QuteName resource) {
-        Template tpl = customTemplateOrDefault("name2md.txt", false);
+        Template tpl = customTemplateOrDefault("name2md.txt");
         return tpl
                 .data("resource", resource)
                 .render().trim();
     }
 
     public String renderNote(QuteNote resource) {
-        Template tpl = customTemplateOrDefault("note2md.txt", false);
+        Template tpl = customTemplateOrDefault("note2md.txt");
         return tpl
                 .data("resource", resource)
                 .render().trim();

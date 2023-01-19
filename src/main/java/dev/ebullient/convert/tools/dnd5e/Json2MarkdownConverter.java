@@ -82,7 +82,7 @@ public class Json2MarkdownConverter implements MarkdownConverter {
             }
         }
 
-        writer.writeFiles(sources, index.compendiumPath());
+        writer.writeFiles(index.compendiumPath(), sources);
 
         List<ImageRef> images = sources.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
@@ -109,7 +109,7 @@ public class Json2MarkdownConverter implements MarkdownConverter {
         }
     }
 
-    public Json2MarkdownConverter writeRulesAndTables() {
+    public Json2MarkdownConverter writeNotesAndTables() {
         Map<String, QuteNote> adventures = new HashMap<>();
         Map<String, QuteNote> books = new HashMap<>();
         List<QuteName> names = new ArrayList<>();

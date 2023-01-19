@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAction;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -19,44 +19,45 @@ public class Json2QuteAction extends Json2QuteBase {
         super(index, type, node, Pf2eSources.findSources(node));
     }
 
-    public QuteBase build() {
+    public Pf2eQuteBase build() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendEntryToText(text, Field.info.getFrom(rootNode), null);
-        if (text.isEmpty()) {
-            return null;
-        }
 
         JsonActivity jsonActivity = Field.activity.fieldFromTo(rootNode, JsonActivity.class, tui());
         ActionType actionType = Field.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
         String trigger = replaceText(Field.trigger.getTextOrNull(rootNode));
+        String cost = replaceText(Field.cost.getTextOrNull(rootNode));
         List<String> alias = transform(Field.alias);
-        List<String> traits = linkify(Field.traits);
+        List<String> prerequisites = transform(Field.prerequisites);
         List<String> requirements = transform(Field.requirements);
+
+        List<String> traits = Field.traits.getListOfStrings(rootNode, tui()).stream()
+                .sorted()
+                .map(s -> linkify(Pf2eIndexType.trait, s))
+                .collect(Collectors.toList());
+
+        if (actionType == null) {
+            tags.add(cfg().tagOf("action"));
+        } else {
+            actionType.addTags(this, tags);
+        }
 
         return new QuteAction(
                 getSources(),
                 getSources().getName(),
                 getSources().getSourceText(),
-                trigger, alias, traits,
+                cost, trigger, alias, traits,
+                String.join(", ", prerequisites),
                 String.join(", ", requirements),
+                getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.build(this),
                 actionType == null ? null : actionType.build(this),
                 String.join("\n", text),
                 tags);
-    }
-
-    List<String> linkify(Field field) {
-        List<String> list = field.getListOfStrings(rootNode, tui());
-        if (list == null || list.isEmpty()) {
-            return List.of();
-        }
-        return list.stream()
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.trait, s)).collect(Collectors.toList());
     }
 
     List<String> transform(Field field) {
@@ -68,9 +69,9 @@ public class Json2QuteAction extends Json2QuteBase {
     }
 
     @RegisterForReflection
-    public static class ActionType {
-        public Boolean item;
+    static class ActionType {
         public Boolean basic;
+        public Boolean item;
         public Skill skill;
         public List<String> ancestry;
         public List<String> archetype;
@@ -81,38 +82,145 @@ public class Json2QuteAction extends Json2QuteBase {
         public List<String> subclass;
         public List<String> variantrule;
 
-        public QuteAction.ActionType build(JsonSource convert) {
+        public void addTags(JsonSource convert, List<String> tags) {
+            if (isBasic()) {
+                tags.add(convert.cfg().tagOf("action", "basic"));
+            }
+            if (isItem()) {
+                tags.add(convert.cfg().tagOf("action", "item"));
+            }
+            if (ancestry != null) {
+                ancestry.forEach(c -> tags.add(convert.cfg().tagOf("action", "ancestry", c)));
+            }
+            if (archetype != null) {
+                archetype.forEach(c -> tags.add(convert.cfg().tagOf("action", "archetype", c)));
+            }
+            if (classType != null) {
+                classType.forEach(c -> tags.add(convert.cfg().tagOf("action", "class", c)));
+            }
+        }
 
-            return new QuteAction.ActionType(
-                    basic == null ? false : basic,
-                    item == null ? false : item,
-                    skill == null ? null : skill.asList(convert),
-                    ancestry, archetype, heritage, versatileHeritage,
-                    classType, subclass, variantrule);
+        public boolean isBasic() {
+            return basic != null && basic == true;
+        }
+
+        public boolean isItem() {
+            return item != null && item == true;
+        }
+
+        public QuteAction.ActionType build(JsonSource convert) {
+            return new QuteAction.ActionType(isBasic(), isItem(),
+                    skill == null ? null
+                            : skill.toString(convert),
+                    classType == null ? null
+                            : classType.stream()
+                                    .map(s -> convert.linkify(Pf2eIndexType.classtype, convert.toTitleCase(s)))
+                                    .collect(Collectors.toList()),
+                    subclass == null ? null
+                            : subclass.stream()
+                                    .map(s -> createSubclassLink(s))
+                                    .map(s -> convert.linkify(Pf2eIndexType.classtype, convert.toTitleCase(s)))
+                                    .collect(Collectors.toList()),
+                    archetype == null ? null
+                            : archetype.stream()
+                                    .map(s -> convert.linkify(Pf2eIndexType.archetype, convert.toTitleCase(s)))
+                                    .collect(Collectors.toList()),
+                    ancestry == null ? null
+                            : ancestry.stream()
+                                    .map(s -> createAncestryLink(s))
+                                    .map(s -> convert.linkify(Pf2eIndexType.ancestry, convert.toTitleCase(s)))
+                                    .collect(Collectors.toList()),
+                    heritage == null ? null
+                            : heritage.stream()
+                                    .map(s -> createHeritageLink(s))
+                                    .collect(Collectors.toList()),
+                    versatileHeritage == null ? null
+                            : versatileHeritage.stream()
+                                    .map(s -> createVersatileHeritageLink(s))
+                                    .collect(Collectors.toList()),
+                    variantrule == null ? null
+                            : variantrule.stream()
+                                    .map(s -> convert.linkify(Pf2eIndexType.variantrule, convert.toTitleCase(s)))
+                                    .collect(Collectors.toList()));
+        }
+
+        private String createSubclassLink(String subclassName) {
+            String[] cSrc = this.classType.get(0).split("|");
+            String[] scSrc = subclassName.split("|");
+            return String.format("%s|%s|%s|%s|%s",
+                    cSrc[0],
+                    cSrc.length > 0 ? cSrc[1] : "",
+                    scSrc[0],
+                    scSrc[0],
+                    scSrc.length > 0 ? scSrc[1] : "");
+        }
+
+        private String createAncestryLink(String ancestry) {
+            String[] aSrc = ancestry.split("|");
+            return String.format("%s|%s",
+                    aSrc[0],
+                    aSrc.length > 0 ? aSrc[1] : "");
+        }
+
+        private String createHeritageLink(String heritage) {
+            String[] aSrc = this.ancestry.get(0).split("|");
+            String[] hSrc = heritage.split("|");
+            return String.format("%s|%s|%s|%s|%s|",
+                    aSrc[0],
+                    aSrc.length > 0 ? aSrc[1] : "",
+                    hSrc[0],
+                    hSrc[0],
+                    hSrc.length > 0 ? hSrc[1] : "");
+        }
+
+        private String createVersatileHeritageLink(String versatile) {
+            String[] aSrc = (this.ancestry == null ? "Human|CRB" : this.ancestry.get(0))
+                    .split("|");
+            String[] vSrc = versatile.split("|");
+            return String.format("%s|%s|%s|%s|%s|",
+                    aSrc[0],
+                    aSrc.length > 0 ? aSrc[1] : "",
+                    vSrc[0],
+                    vSrc[0],
+                    vSrc.length > 0 ? vSrc[1] : "");
         }
     }
 
     @RegisterForReflection
-    public static class Skill {
+    static class Skill {
         public List<String> trained;
         public List<String> untrained;
+        public List<String> expert;
+        public List<String> legendary;
 
-        List<String> asList(JsonSource convert) {
+        public String toString(JsonSource convert) {
             List<String> allSkills = new ArrayList<>();
-            if (trained != null) {
-                trained.forEach(s -> allSkills.add(String.format("%s (trained)",
-                        convert.linkify(Pf2eIndexType.skill, s))));
-            }
             if (untrained != null) {
-                untrained.forEach(s -> allSkills.add(String.format("%s (untrained)",
-                        convert.linkify(Pf2eIndexType.skill, s))));
+                List<String> inner = new ArrayList<>();
+                untrained.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                allSkills.add(String.format("%s (untrained)", String.join(", ", inner)));
             }
-            return allSkills;
+            if (trained != null) {
+                List<String> inner = new ArrayList<>();
+                trained.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                allSkills.add(String.format("%s (trained)", String.join(", ", inner)));
+            }
+            if (expert != null) {
+                List<String> inner = new ArrayList<>();
+                expert.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                allSkills.add(String.format("%s (expert)", String.join(", ", inner)));
+            }
+            if (legendary != null) {
+                List<String> inner = new ArrayList<>();
+                legendary.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                allSkills.add(String.format("%s (legendary)", String.join(", ", inner)));
+            }
+            return String.join("; ", allSkills);
         }
     }
 
     @RegisterForReflection
-    public static class JsonActivity {
+    static class JsonActivity {
         public int number;
         public String unit;
         public String entry;
@@ -127,38 +235,41 @@ public class Json2QuteAction extends Json2QuteBase {
                 case "free":
                 case "reaction":
                     Activity activity = Activity.toActivity(unit, number);
-
-                    String fileName = activity.getGlyph();
-                    int x = fileName.lastIndexOf('.');
-                    Path target = Path.of("img",
-                            convert.slugify(fileName.substring(0, x)) + fileName.substring(x));
-
-                    return new QuteAction.ActivityType(
-                            activity.getText(),
-                            new ImageRef.Builder()
-                                    .setStreamSource(activity.getGlyph())
-                                    .setTargetPath(convert.index().rulesPath(), target)
-                                    .setMarkdownPath(activity.getText(), convert.index().rulesRoot())
-                                    .build(),
-                            activity.getTextGlyph());
+                    return createActivity(convert,
+                            String.format("%s%s", activity.getCaption(), extra),
+                            activity);
                 case "varies":
-                    return new QuteAction.ActivityType(
-                            String.format("%s%s", Activity.varies.getText(), extra),
-                            null,
-                            Activity.varies.getTextGlyph());
+                    return createActivity(convert,
+                            String.format("%s%s", Activity.varies.getCaption(), extra),
+                            Activity.varies);
                 case "day":
                 case "minute":
                 case "hour":
                 case "round":
-                    return new QuteAction.ActivityType(
+                    return createActivity(convert,
                             String.format("%s %s%s", number, unit, extra),
-                            null, // TODO
-                            "\\[⏲️\\]");
+                            Activity.timed);
                 default:
                     throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
             }
         }
 
+        QuteAction.ActivityType createActivity(JsonSource convert, String text, Activity activity) {
+            String fileName = activity.getGlyph();
+            int x = fileName.lastIndexOf('.');
+            Path target = Path.of("img",
+                    convert.slugify(fileName.substring(0, x)) + fileName.substring(x));
+
+            return new QuteAction.ActivityType(
+                    text,
+                    new ImageRef.Builder()
+                            .setStreamSource(activity.getGlyph())
+                            .setTargetPath(convert.index().rulesPath(), target)
+                            .setMarkdownPath(activity.getCaption(), convert.index().rulesRoot())
+                            .build(),
+                    activity.getTextGlyph(),
+                    "/rules/something.md");
+        }
     }
 
 }

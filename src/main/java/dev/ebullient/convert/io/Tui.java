@@ -395,14 +395,16 @@ public class Tui {
 
     public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
-                "actions.json", "conditions.json", "skills.json");
+                "actions.json", "books.json", "book/book-crb.json",
+                "conditions.json", "skills.json");
 
-        if (!toolsBase.resolve("archetypes.json").toFile().exists()) {
-            debugf("Unable to find pf2e data: %s", toolsBase.toString());
-            return false;
+        if (toolsBase.resolve("archetypes.json").toFile().exists()
+                && toolsBase.resolve("book/book-crb.json").toFile().exists()) {
+            inputRoot.add(toolsBase.getParent());
+            return readToolsList(toolsBase, inputs, callback);
         }
-        inputRoot.add(toolsBase.getParent());
-        return readToolsList(toolsBase, inputs, callback);
+        debugf("Unable to find pf2e data: %s", toolsBase.toString());
+        return false;
     }
 
     private boolean readToolsList(Path toolsBase, List<String> inputs, BiConsumer<String, JsonNode> callback) {

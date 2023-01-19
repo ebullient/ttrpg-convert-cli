@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -12,8 +13,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.NodeReader;
 
 public interface JsonSource extends JsonTextReplacement {
+
+    default String toTitleCase(String lowercase) {
+        if (lowercase == null || lowercase.isEmpty()) {
+            return lowercase;
+        }
+        return lowercase.substring(0, 1).toUpperCase(Locale.ROOT)
+                + lowercase.substring(1);
+    }
 
     default void appendEntryToText(List<String> text, JsonNode node, String heading) {
         if (node == null || node.isNull()) {
@@ -45,22 +55,14 @@ public interface JsonSource extends JsonTextReplacement {
             switch (type) {
                 case section:
                 case pf2h1:
-                    appendTextHeaderBlock(text, node, "#");
+                case pf2h2:
+                case pf2h3:
+                case pf2h4:
+                case pf2h5:
+                    appendTextHeaderBlock(text, node, heading);
                     break;
                 case pf2h1flavor:
                     appendTextHeaderFlavorBlock(text, node);
-                    break;
-                case pf2h2:
-                    appendTextHeaderBlock(text, node, "##");
-                    break;
-                case pf2h3:
-                    appendTextHeaderBlock(text, node, "###");
-                    break;
-                case pf2h4:
-                    appendTextHeaderBlock(text, node, "####");
-                    break;
-                case pf2h5:
-                    appendTextHeaderBlock(text, node, "#####");
                     break;
 
                 // callout boxes
@@ -177,12 +179,14 @@ public interface JsonSource extends JsonTextReplacement {
                 maybeAddBlankLine(text);
             }
             text.addAll(inner);
-        } else {
+        } else if (Field.name.existsIn(node)) {
             maybeAddBlankLine(text);
-            text.add(heading + " " + node.get("name").asText());
+            text.add(heading + " " + Field.name.getTextOrEmpty(node));
             text.add("");
-            appendEntryToText(text, Field.entry.getFrom(node), heading);
-            appendEntryToText(text, Field.entries.getFrom(node), heading);
+            appendEntryToText(text, Field.entry.getFrom(node), "#" + heading);
+            appendEntryToText(text, Field.entries.getFrom(node), "#" + heading);
+        } else {
+            appendEntryToText(text, node.get("entries"), heading);
         }
     }
 
@@ -465,31 +469,43 @@ public interface JsonSource extends JsonTextReplacement {
         actionType,
         alias,
         by,
+        customUnit,
         entry,
         entries,
         footnotes,
+        freq, // inside frequency
+        frequency,
+        group,
         head,
         id,
         info,
         intro,
+        interval,
         items,
         labelRowIdx,
         name,
+        number,
+        overcharge,
         outro,
         page,
+        prerequisites,
+        recurs,
         requirements,
         rows,
         signature,
         source,
+        special,
         style,
         title,
         traits,
         trigger,
         type,
+        unit,
         criticalSuccess("Critical Success"),
         success("Success"),
         failure("Failure"),
-        criticalFailure("Critical Failure");
+        criticalFailure("Critical Failure"),
+        cost;
 
         final String nodeName;
 

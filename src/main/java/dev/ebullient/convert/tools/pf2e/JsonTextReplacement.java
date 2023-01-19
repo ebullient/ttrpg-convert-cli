@@ -29,14 +29,15 @@ public interface JsonTextReplacement {
         three("Three-Action activity", "\\[>>>\\]", "three_actions.svg"),
         free("Free Action", "\\[F\\]", "delay.svg"),
         reaction("Reaction", "\\[R\\]", "reaction.svg"),
-        varies("Varies", "\\[?\\]", "hour-glass.svg");
+        varies("Varies", "\\[?\\]", "load.svg"),
+        timed("Duration or Frequency", "\\[⏲\\]", "hour-glass.svg");
 
-        String activity;
+        String caption;
         String textGlyph;
         String glyph;
 
-        Activity(String desc, String textGlyph, String glyph) {
-            this.activity = desc;
+        Activity(String caption, String textGlyph, String glyph) {
+            this.caption = caption;
             this.textGlyph = textGlyph;
             this.glyph = glyph;
         }
@@ -59,12 +60,14 @@ public interface JsonTextReplacement {
                     return reaction;
                 case "varies":
                     return varies;
+                case "timed":
+                    return timed;
             }
             throw new IllegalArgumentException("Unable to find Activity for " + number + " " + unit);
         }
 
-        public String getText() {
-            return this.activity;
+        public String getCaption() {
+            return this.caption;
         }
 
         public String getTextGlyph() {
@@ -289,7 +292,7 @@ public interface JsonTextReplacement {
         if (parts.length > 2) {
             linkText = parts[2];
         }
-        if (targetType.compendiumPath() == null) {
+        if (targetType.relativePath() == null) {
             return linkText;
         }
         if (parts.length > 1) {
@@ -300,7 +303,8 @@ public interface JsonTextReplacement {
         // TODO: nested file structure for some types
         return index().isIncluded(key)
                 ? String.format("[%s](%s%s/%s.md)", linkText,
-                        index().compendiumRoot(), targetType.compendiumPath(), slugify(parts[0]))
+                        targetType.getRepoRoot(index()),
+                        targetType.relativePath(), slugify(parts[0]))
                 : linkText;
     }
 

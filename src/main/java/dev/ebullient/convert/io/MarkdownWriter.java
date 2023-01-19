@@ -38,7 +38,7 @@ public class MarkdownWriter {
         this.templates = templates;
     }
 
-    public <T extends QuteBase> void writeFiles(List<T> elements, Path compendiumPath) {
+    public <T extends QuteBase> void writeFiles(Path basePath, List<T> elements) {
         if (elements.isEmpty()) {
             return;
         }
@@ -52,7 +52,7 @@ public class MarkdownWriter {
         for (T qs : elements) {
             FileMap fileMap = new FileMap(qs.title(),
                     qs.targetFile(),
-                    compendiumPath.resolve(qs.targetPath()).normalize());
+                    basePath.resolve(qs.targetPath()).normalize());
 
             pathMap.computeIfAbsent(fileMap, k -> new ArrayList<>()).add(qs);
         }
