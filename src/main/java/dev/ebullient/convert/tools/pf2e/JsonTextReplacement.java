@@ -154,10 +154,16 @@ public interface JsonTextReplacement {
     }
 
     default String linkifyRules(String text, String rules) {
-        return String.format("[%s](%s%s.md#%s)",
+        return linkifyRules(text, rules, text);
+    }
+
+    default String linkifyRules(String text, String rules, String anchor) {
+        String link = String.format("[%s](%s%s.md#%s)",
                 text, index().rulesRoot(), rules,
-                text.replace(" ", "%20")
+                anchor.replace(" ", "%20")
                         .replace(".", ""));
+        tui().debugf("LINK for %s (%s): %s", rules, anchor, link);
+        return link;
     }
 
     default String linkify(MatchResult match) {
@@ -193,15 +199,19 @@ public interface JsonTextReplacement {
         if (parts.length > 2) {
             linkText = parts[2];
         }
-        if (targetType.relativePath() == null) {
-            return linkText;
-        }
         if (parts.length > 1) {
             source = parts[1].isBlank() ? source : parts[1];
         }
+        if (targetType == Pf2eIndexType.condition) {
+            return linkifyRules(linkText, "conditions", toTitleCase(parts[0]));
+        }
+
+        if (targetType.relativePath() == null) {
+            return linkText;
+        }
+
         // TODO: aliases?
         String key = targetType.createKey(parts[0], source);
-
         // TODO: nested file structure for some types
         String link = String.format("[%s](%s%s/%s.md)", linkText,
                 targetType.getRepoRoot(index()),
