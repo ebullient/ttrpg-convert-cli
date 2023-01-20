@@ -73,7 +73,7 @@ import picocli.CommandLine.UnmatchedArgumentException;
         "  }",
         "}",
         "",
-}, mixinStandardHelpOptions = true, versionProvider = VersionProvider.class)
+}, mixinStandardHelpOptions = true, versionProvider = VersionProvider.class, showDefaultValues = true)
 public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication {
     static final Path DEFAULT_PATH = Path.of("config.json");
 

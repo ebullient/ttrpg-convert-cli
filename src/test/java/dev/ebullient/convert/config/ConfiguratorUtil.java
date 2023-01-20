@@ -37,7 +37,7 @@ public class ConfiguratorUtil {
         copy.customTemplates.putAll(newTemplates.customTemplates);
         copy.excludedKeys.addAll(base.excludedKeys);
         copy.excludedPatterns.addAll(base.excludedPatterns);
-        copy.includeGroups.addAll(base.includeGroups);
+        copy.includedGroups.addAll(base.includedGroups);
         copy.includedKeys.addAll(base.includedKeys);
 
         return copy;

@@ -58,10 +58,10 @@ Notes:
     jbang app install --name 5e-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/1.1.0/json5e-convert-cli-1.1.0-runner.jar
     ```
 
-    If you want the latest unreleased snapshot: 
+    If you want the latest _unreleased snapshot_ (may not match this doc!): 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/json5e-convert-cli-199-SNAPSHOT-runner.jar
+    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/ttrpg-convert-cli-199-SNAPSHOT-runner.jar
     ```
 
     There may be a pause if you download the snapshot; it is rebuilt on demand.
@@ -162,11 +162,11 @@ To run commands listed below, either:
     ```
 
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. 
-        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/sourceMap.json)
+        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md)
 
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) should be listed explicitly
-    - `my-items.json` Custom items that I've created for my campaign that follow 5etools JSON format.
-    - `dm-sources.json` Additional parameters (shown in detail below)
+    - `my-items.json` defines custom items for my campaign that follow 5etools JSON format.
+    - `dm-sources.json` contains configuration parameters (shown in detail below)
 
 > 💭 I recommend running the CLI against a separate directory, and then using a comparison tool of your choice to preview changes before you copy or merge them in.
 >
@@ -174,6 +174,35 @@ To run commands listed below, either:
 > ```
 > git diff --no-index vault/compendium/bestiary generated/compendium/bestiary
 > ```
+
+## Use with Pf2eTools Data
+
+🚜 🚧 🚜 🚧 🚜 🚧 🚜 🚧
+
+1. Download a release of the Pf2eTools mirror, or create a shallow clone of the repo (which can/should be deleted afterwards):
+
+    ```shell
+    git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
+    ```
+
+2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content (using the alias set up when [installing the cli](#install-the-command-line-utility)):
+
+    ```shell
+    5e-convert \
+      -g pf2e \
+      --index \
+      -o dm \
+      5etools-mirror-1.github.io/data
+    ```
+
+    - `-g p2fe` The target output directory. Files will be created in this directory.
+    - `--index` Create `all-index.json` containing all of the touched artifact ids, and `src-index.json` that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
+    - `-o dm` The target output directory. Files will be created in this directory.
+
+    The rest of the command-line specifies input files: 
+
+    - `5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone or release of the mirror repo)
+
 
 ### Additional parameters
 
@@ -211,7 +240,7 @@ I use a json file to provide detailed configuration for sources, as doing so wit
 
 - `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.  
 
-    > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/sourceMap.json)
+    > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md)
 
 - `paths` allows you to redefine vault paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
 
@@ -234,7 +263,7 @@ This allows you to include a specific resource without including the whole sourc
     ]
     ```
 
-- `convert` (as of 1.0.18): specify books or adventures to import into the compendium (which will allow cross-linking, etc.). Either provide the full relative path to the adventure or book json file, or specify its Id (as found in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/sourceMap.json)): 
+- `convert` (as of 1.0.18): specify books or adventures to import into the compendium (which will allow cross-linking, etc.). Either provide the full relative path to the adventure or book json file, or specify its Id (as found in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md)): 
 
     ```json
     "convert": {
@@ -347,14 +376,14 @@ This application uses the [Qute Templating Engine](https://quarkus.io/guides/qut
 ### Built-in / example templates
 
 - [Default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates)
-- [Example templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/templates)
+- [Example templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates)
 
 Of particular note are the varied monster templates: 
 
 - Admonition codeblock: [monster2md.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/monster2md.txt)
-- Admonition codeblock with alternate score layout: [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/templates/tools5e/monster2md-scores.txt)
-- TTRPG statblock in the body: [monster2md-yamlStatblock-body.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/templates/tools5e/monster2md-yamlStatblock-body.txt)
-- Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/templates/tools5e/monster2md-yamlStatblock-header.txt)
+- Admonition codeblock with alternate score layout: [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-scores.txt)
+- TTRPG statblock in the body: [monster2md-yamlStatblock-body.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-yamlStatblock-body.txt)
+- Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-yamlStatblock-header.txt)
 
 ## Changes that impact generated templates and files
 
@@ -428,8 +457,8 @@ Notes:
 
 - I recommend constraining the image height (rather than the width) in your CSS snippet for images. 
 - The above snippet also adds a `clear` setting to the admonition parent. Some text descriptions are shorter than the constrained image height. Setting `clear: both` on `admonition-parent` ensures that images floated to the right do not impact the `statblock` display.
-- This configuration is in the [compendium.css snippet](https://github.com/ebullient/ttrpg-convert-cli/tree/main/css-snippets/compendium.css).
-- There is an example for each type in the [example templates directory](https://github.com/ebullient/ttrpg-convert-cli/tree/main/templates/tools5e/) directory. Relevant file names start with `images-`.
+- This configuration is in the [compendium.css snippet](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets/compendium.css).
+- There is an example for each type in the [example templates directory](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/) directory. Relevant file names start with `images-`.
 
 
 ## 1.0.18: You can put more things in json input now!
@@ -478,7 +507,7 @@ The [default spell template](https://github.com/ebullient/ttrpg-convert-cli/tree
 
 ### 1.0.14: Ability Scores
 
-As shown in [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/templates/tools5e/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
+As shown in [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
 
 ```
 - STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`

@@ -2,6 +2,7 @@ package dev.ebullient.convert.config;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,11 +12,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
@@ -31,7 +33,7 @@ public class CompendiumConfig {
     boolean allSources = false;
     final Set<String> allowedSources = new HashSet<>();
     final Set<String> includedKeys = new HashSet<>();
-    final Set<String> includeGroups = new HashSet<>();
+    final Set<String> includedGroups = new HashSet<>();
     final Set<String> excludedKeys = new HashSet<>();
     final Set<Pattern> excludedPatterns = new HashSet<>();
     final Set<String> adventures = new HashSet<>();
@@ -98,7 +100,7 @@ public class CompendiumConfig {
     }
 
     public boolean groupIsIncluded(String group) {
-        return includeGroups.contains(group);
+        return includedGroups.contains(group);
     }
 
     public String rulesRoot() {
@@ -259,46 +261,24 @@ public class CompendiumConfig {
         }
 
         private void readConfig(CompendiumConfig config, JsonNode node) {
-            JsonNode from = ConfigKeys.from.get(node);
-            if (from != null) {
-                List<String> src = Tui.MAPPER.convertValue(from, Tui.LIST_STRING);
-                config.addSources(src);
-            }
+            InputConfig input = Tui.MAPPER.convertValue(node, InputConfig.class);
 
-            ConfigKeys.include.forEach(node, (x) -> config.includedKeys.add(x.asText()));
-            ConfigKeys.includeGroups.forEach(node, (x) -> config.includeGroups.add(x.asText()));
-            ConfigKeys.exclude.forEach(node, (x) -> config.excludedKeys.add(x.asText().toLowerCase()));
-            ConfigKeys.excludePattern.forEach(node, (x) -> config.addExcludePattern(x.asText().toLowerCase()));
+            config.addSources(input.from);
 
-            JsonNode fullSource = ConfigKeys.fullSource.get(node);
-            if (fullSource != null) {
-                JsonNode adventure = ConfigKeys.adventure.get(fullSource);
-                if (adventure != null) {
-                    List<String> a = Tui.MAPPER.convertValue(adventure, Tui.LIST_STRING);
-                    config.adventures.addAll(a);
-                }
+            input.include.forEach(s -> config.includedKeys.add(s.toLowerCase()));
+            input.includeGroup.forEach(s -> config.includedGroups.add(s.toLowerCase()));
+            input.exclude.forEach(s -> config.excludedKeys.add(s.toLowerCase()));
+            input.excludePattern.forEach(s -> config.addExcludePattern(s.toLowerCase()));
 
-                JsonNode book = ConfigKeys.book.get(fullSource);
-                if (book != null) {
-                    List<String> b = Tui.MAPPER.convertValue(book, Tui.LIST_STRING);
-                    config.books.addAll(b);
-                }
-            }
+            config.books.addAll(input.fullSource.book);
+            config.adventures.addAll(input.fullSource.adventure);
 
-            JsonNode paths = ConfigKeys.paths.get(node);
-            if (paths != null) {
-                config.paths = new PathAttributes(paths);
-            }
+            config.paths = new PathAttributes(config.paths, input.paths);
 
-            JsonNode templates = ConfigKeys.template.get(node);
-            if (templates != null) {
+            if (!input.template.isEmpty()) {
                 TemplatePaths tplPaths = new TemplatePaths();
-                Map<String, String> tplString = Tui.MAPPER.convertValue(templates, Tui.MAP_STRING_STRING);
-                for (Entry<String, String> entry : tplString.entrySet()) {
-                    tplPaths.setCustomTemplate(entry.getKey(), Path.of(entry.getValue()));
-                }
+                input.template.entrySet().forEach(e -> tplPaths.setCustomTemplate(e.getKey(), Path.of(e.getValue())));
                 tplPaths.verify(tui);
-
                 config.customTemplates.putAll(tplPaths.customTemplates);
             }
         }
@@ -319,22 +299,24 @@ public class CompendiumConfig {
         PathAttributes() {
         }
 
-        PathAttributes(JsonNode paths) {
-            paths.fields().forEachRemaining(e -> {
-                String root;
-                switch (e.getKey()) {
-                    case "rules":
-                        root = toRoot(e.getValue().asText());
-                        rulesPath = rootToPath(root);
-                        rulesRoot = rootToMarkdown(root);
-                        break;
-                    case "compendium":
-                        root = toRoot(e.getValue().asText());
-                        compendiumPath = rootToPath(root);
-                        compendiumRoot = rootToMarkdown(root);
-                        break;
-                }
-            });
+        public PathAttributes(PathAttributes old, InputPaths paths) {
+            String root;
+            if (paths.rules != null) {
+                root = toRoot(paths.rules);
+                rulesPath = rootToPath(root);
+                rulesRoot = rootToMarkdown(root);
+            } else if (old != null) {
+                rulesPath = old.rulesPath;
+                rulesRoot = old.rulesRoot;
+            }
+            if (paths.compendium != null) {
+                root = toRoot(paths.compendium);
+                compendiumPath = rootToPath(root);
+                compendiumRoot = rootToMarkdown(root);
+            } else if (old != null) {
+                compendiumPath = old.compendiumPath;
+                compendiumRoot = old.compendiumRoot;
+            }
         }
 
         private static String toRoot(String value) {
@@ -356,8 +338,6 @@ public class CompendiumConfig {
     }
 
     private enum ConfigKeys {
-        adventure,
-        book,
         exclude,
         excludePattern,
         from,
@@ -389,12 +369,48 @@ public class CompendiumConfig {
             }
             return child;
         }
+    }
 
-        void forEach(JsonNode parent, Consumer<JsonNode> action) {
-            JsonNode child = this.get(parent);
-            if (child != null && child.isArray()) {
-                child.forEach(x -> action.accept(x));
-            }
-        }
+    public static class InputConfig {
+        @JsonProperty(required = false)
+        List<String> from = new ArrayList<>();
+
+        @JsonProperty(required = false)
+        InputPaths paths = new InputPaths();
+
+        @JsonProperty(required = false)
+        List<String> include = new ArrayList<>();
+
+        @JsonProperty(required = false)
+        List<String> includeGroup = new ArrayList<>();
+
+        @JsonProperty(required = false)
+        List<String> exclude = new ArrayList<>();
+
+        @JsonProperty(required = false)
+        List<String> excludePattern = new ArrayList<>();
+
+        @JsonProperty(required = false)
+        Map<String, String> template = new HashMap<>();
+
+        @JsonAlias({ "convert" })
+        @JsonProperty(value = "full-source", required = false)
+        FullSource fullSource = new FullSource();
+    }
+
+    static class FullSource {
+        @JsonProperty(required = false)
+        List<String> book = new ArrayList<>();
+
+        @JsonProperty(required = false)
+        List<String> adventure = new ArrayList<>();
+    }
+
+    static class InputPaths {
+        @JsonProperty(required = false)
+        String compendium;
+
+        @JsonProperty(required = false)
+        String rules;
     }
 }
