@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 
@@ -174,7 +175,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         text.add(header);
         text.add(header.replaceAll("[^|]", "-"));
         text.addAll(elements);
-        text.add("^" + tui().slugify(tableHeading));
+        text.add("^" + Tui.slugify(tableHeading));
         return text;
     }
 }

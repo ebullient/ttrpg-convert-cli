@@ -1,15 +1,14 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -23,68 +22,12 @@ public interface JsonTextReplacement {
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
 
-    enum Activity {
-        single("Single Action", "\\[>\\]", "single_action.svg"),
-        two("Two-Action activity", "\\[>>\\]", "two_actions.svg"),
-        three("Three-Action activity", "\\[>>>\\]", "three_actions.svg"),
-        free("Free Action", "\\[F\\]", "delay.svg"),
-        reaction("Reaction", "\\[R\\]", "reaction.svg"),
-        varies("Varies", "\\[?\\]", "load.svg"),
-        timed("Duration or Frequency", "\\[⏲\\]", "hour-glass.svg");
-
-        String caption;
-        String textGlyph;
-        String glyph;
-
-        Activity(String caption, String textGlyph, String glyph) {
-            this.caption = caption;
-            this.textGlyph = textGlyph;
-            this.glyph = glyph;
-        }
-
-        public static Activity toActivity(String unit, int number) {
-            switch (unit) {
-                case "action":
-                    switch (number) {
-                        case 1:
-                            return single;
-                        case 2:
-                            return two;
-                        case 3:
-                            return three;
-                    }
-                    break;
-                case "free":
-                    return free;
-                case "reaction":
-                    return reaction;
-                case "varies":
-                    return varies;
-                case "timed":
-                    return timed;
-            }
-            throw new IllegalArgumentException("Unable to find Activity for " + number + " " + unit);
-        }
-
-        public String getCaption() {
-            return this.caption;
-        }
-
-        public String getTextGlyph() {
-            return this.textGlyph;
-        }
-
-        public String getGlyph() {
-            return this.glyph;
-        }
-    }
-
     Pf2eIndex index();
 
     Pf2eSources getSources();
 
     default String slugify(String s) {
-        return tui().slugify(s);
+        return Tui.slugify(s);
     }
 
     default Tui tui() {
@@ -103,65 +46,18 @@ public interface JsonTextReplacement {
         return haystack.stream().anyMatch(x -> x.contains(needle));
     }
 
-    default JsonNode copyNode(JsonNode sourceNode) {
-        try {
-            return Tui.MAPPER.readTree(sourceNode.toString());
-        } catch (JsonProcessingException ex) {
-            tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
-            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
+    default String toTitleCase(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
         }
-    }
-
-    default JsonNode copyReplaceNode(JsonNode sourceNode, Pattern replace, String with) {
-        try {
-            String modified = replace.matcher(sourceNode.toString()).replaceAll(with);
-            return Tui.MAPPER.readTree(modified);
-        } catch (JsonProcessingException ex) {
-            tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
-            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
-        }
-    }
-
-    default List<String> findAndReplace(JsonNode jsonSource, String field) {
-        return findAndReplace(jsonSource, field, s -> s);
-    }
-
-    default List<String> findAndReplace(JsonNode jsonSource, String field, Function<String, String> replacement) {
-        JsonNode node = jsonSource.get(field);
-        if (node == null || node.isNull()) {
-            return List.of();
-        } else if (node.isTextual()) {
-            return List.of(replaceText(node.asText()));
-        } else if (node.isObject()) {
-            throw new IllegalArgumentException(
-                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node,
-                            getSources()));
-        }
-        return streamOf(jsonSource.withArray(field))
-                .map(x -> replaceText(x.asText()).trim())
-                .map(replacement)
-                .filter(x -> !x.isBlank())
-                .collect(Collectors.toList());
-    }
-
-    default String joinAndReplace(JsonNode jsonSource, String field) {
-        JsonNode node = jsonSource.get(field);
-        if (node == null || node.isNull()) {
-            return "";
-        } else if (node.isTextual()) {
-            return node.asText();
-        } else if (node.isObject()) {
-            throw new IllegalArgumentException(
-                    String.format("Unexpected object node (expected array): %s (referenced from %s)", node,
-                            getSources()));
-        }
-        return joinAndReplace((ArrayNode) node);
-    }
-
-    default String joinAndReplace(ArrayNode array) {
-        List<String> list = new ArrayList<>();
-        array.forEach(v -> list.add(replaceText(v.asText())));
-        return String.join(", ", list);
+        return Arrays
+                .stream(text.split(" "))
+                .map(word -> word.isEmpty()
+                        ? word
+                        : Character.toTitleCase(word.charAt(0)) + word
+                                .substring(1)
+                                .toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 
     /**
@@ -272,17 +168,22 @@ public interface JsonTextReplacement {
     default String linkify(Pf2eIndexType targetType, String match) {
         switch (targetType) {
             case skill:
-                //	"Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception} (case sensitive) provide tooltips on hover.",
-                return linkifyRules(match, "skills");
+                //	"Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception}",
+                return linkifyRules(toTitleCase(match), "skills");
             case classtype:
                 return linkifyClass(match);
             case classFeature:
                 return linkifyClassFeature(match);
             case subclassFeature:
                 return linkifySubClassFeature(match);
+            case trait:
+                tui().debugf("LINK for trait %s: #%s", match, index().getTagForTrait(match));
+                return "#" + index().getTagForTrait(match);
+            default:
+                break;
         }
 
-        // TODO not an _item_: "{@b Items with Runes:} {@runeItem longsword||+1 weapon potency||flaming|}, {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}. In general, the syntax is this: (open curly brace)@runeItem base item|base item source|rune 1|rune 1 source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly brace). For each source, we assume CRB by default.",
+        // TODO {@runeItem longsword||+1 weapon potency||flaming|}, {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}. In general, the syntax is this: (open curly brace)@runeItem base item|base item source|rune 1|rune 1 source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly brace). For each source, we assume CRB by default.",
 
         // "{@b Actions:} {@action strike} assumes CRB by default, {@action act together|som} can have sources added with a pipe, {@action devise a stratagem|apg|and optional link text added with another pipe}.",
         // "{@b Conditions:} {@condition stunned} assumes CRB by default, {@condition stunned|crb} can have sources added with a pipe (not that it's ever useful), {@condition stunned|crb|and optional link text added with another pipe}.",
@@ -300,12 +201,14 @@ public interface JsonTextReplacement {
         }
         // TODO: aliases?
         String key = targetType.createKey(parts[0], source);
+
         // TODO: nested file structure for some types
-        return index().isIncluded(key)
-                ? String.format("[%s](%s%s/%s.md)", linkText,
-                        targetType.getRepoRoot(index()),
-                        targetType.relativePath(), slugify(parts[0]))
-                : linkText;
+        String link = String.format("[%s](%s%s/%s.md)", linkText,
+                targetType.getRepoRoot(index()),
+                targetType.relativePath(), slugify(parts[0]));
+
+        tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
+        return index().isIncluded(key) ? link : linkText;
     }
 
     default String linkifyClass(String match) {

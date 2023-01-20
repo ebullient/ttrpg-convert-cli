@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAction;
@@ -114,21 +115,21 @@ public class Json2QuteAction extends Json2QuteBase {
                             : skill.toString(convert),
                     classType == null ? null
                             : classType.stream()
-                                    .map(s -> convert.linkify(Pf2eIndexType.classtype, convert.toTitleCase(s)))
+                                    .map(s -> convert.linkify(Pf2eIndexType.classtype, s))
                                     .collect(Collectors.toList()),
                     subclass == null ? null
                             : subclass.stream()
                                     .map(s -> createSubclassLink(s))
-                                    .map(s -> convert.linkify(Pf2eIndexType.classtype, convert.toTitleCase(s)))
+                                    .map(s -> convert.linkify(Pf2eIndexType.classtype, s))
                                     .collect(Collectors.toList()),
                     archetype == null ? null
                             : archetype.stream()
-                                    .map(s -> convert.linkify(Pf2eIndexType.archetype, convert.toTitleCase(s)))
+                                    .map(s -> convert.linkify(Pf2eIndexType.archetype, s))
                                     .collect(Collectors.toList()),
                     ancestry == null ? null
                             : ancestry.stream()
                                     .map(s -> createAncestryLink(s))
-                                    .map(s -> convert.linkify(Pf2eIndexType.ancestry, convert.toTitleCase(s)))
+                                    .map(s -> convert.linkify(Pf2eIndexType.ancestry, s))
                                     .collect(Collectors.toList()),
                     heritage == null ? null
                             : heritage.stream()
@@ -140,7 +141,7 @@ public class Json2QuteAction extends Json2QuteBase {
                                     .collect(Collectors.toList()),
                     variantrule == null ? null
                             : variantrule.stream()
-                                    .map(s -> convert.linkify(Pf2eIndexType.variantrule, convert.toTitleCase(s)))
+                                    .map(s -> convert.linkify(Pf2eIndexType.variantrule, s))
                                     .collect(Collectors.toList()));
         }
 
@@ -197,22 +198,22 @@ public class Json2QuteAction extends Json2QuteBase {
             List<String> allSkills = new ArrayList<>();
             if (untrained != null) {
                 List<String> inner = new ArrayList<>();
-                untrained.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                untrained.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, s)));
                 allSkills.add(String.format("%s (untrained)", String.join(", ", inner)));
             }
             if (trained != null) {
                 List<String> inner = new ArrayList<>();
-                trained.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                trained.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, s)));
                 allSkills.add(String.format("%s (trained)", String.join(", ", inner)));
             }
             if (expert != null) {
                 List<String> inner = new ArrayList<>();
-                expert.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                expert.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, s)));
                 allSkills.add(String.format("%s (expert)", String.join(", ", inner)));
             }
             if (legendary != null) {
                 List<String> inner = new ArrayList<>();
-                legendary.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, convert.toTitleCase(s))));
+                legendary.forEach(s -> inner.add(convert.linkify(Pf2eIndexType.skill, s)));
                 allSkills.add(String.format("%s (legendary)", String.join(", ", inner)));
             }
             return String.join("; ", allSkills);
@@ -234,31 +235,31 @@ public class Json2QuteAction extends Json2QuteBase {
                 case "action":
                 case "free":
                 case "reaction":
-                    Activity activity = Activity.toActivity(unit, number);
+                    Pf2eActivityType activity = Pf2eActivityType.toActivity(unit, number);
                     return createActivity(convert,
                             String.format("%s%s", activity.getCaption(), extra),
                             activity);
                 case "varies":
                     return createActivity(convert,
-                            String.format("%s%s", Activity.varies.getCaption(), extra),
-                            Activity.varies);
+                            String.format("%s%s", Pf2eActivityType.varies.getCaption(), extra),
+                            Pf2eActivityType.varies);
                 case "day":
                 case "minute":
                 case "hour":
                 case "round":
                     return createActivity(convert,
                             String.format("%s %s%s", number, unit, extra),
-                            Activity.timed);
+                            Pf2eActivityType.timed);
                 default:
                     throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
             }
         }
 
-        QuteAction.ActivityType createActivity(JsonSource convert, String text, Activity activity) {
+        QuteAction.ActivityType createActivity(JsonSource convert, String text, Pf2eActivityType activity) {
             String fileName = activity.getGlyph();
             int x = fileName.lastIndexOf('.');
             Path target = Path.of("img",
-                    convert.slugify(fileName.substring(0, x)) + fileName.substring(x));
+                    Tui.slugify(fileName.substring(0, x)) + fileName.substring(x));
 
             return new QuteAction.ActivityType(
                     text,

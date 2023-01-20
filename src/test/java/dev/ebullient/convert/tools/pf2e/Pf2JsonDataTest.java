@@ -130,6 +130,11 @@ public class Pf2JsonDataTest {
     }
 
     @Test
+    public void testTrait_p2fe() throws Exception {
+        generateNotesForType(Pf2eIndexType.trait);
+    }
+
+    @Test
     public void testNotes_p2fe() throws Exception {
         Path rulesDir = outputPath.resolve(index.rulesPath());
         Path compendiumDir = outputPath.resolve(index.compendiumPath());

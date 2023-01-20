@@ -17,6 +17,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     ability, // B1
     action,
     adventure,
+    affliction,
     ancestry,
     archetype,
     background,
@@ -59,7 +60,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     variantrule, // GMG
     vehicle, // GMG
     versatileHeritage, // APG
-    syntheticGroup // for this tool only
+    syntheticGroup, // for this tool only
     ;
 
     String templateName;
@@ -150,7 +151,50 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public String relativePath() {
         switch (this) {
+            // Character
+            case ancestry:
+                return "character/ancestries";
+            case classtype:
+                return "character/classes";
+            case archetype:
+            case background:
+            case companion:
+                return "character/" + this.name() + 's';
+            // Equipment
+            case item:
+            case vehicle:
+                return "equipment/" + this.name() + 's';
+            case relicGift:
+                return "equipment/relics-gifts";
+            // Feats
+            case feat:
+                return this.name() + 's';
+            // GM
+            case affliction:
+            case creature:
+            case hazard:
+                return "gm/" + this.name() + 's';
+            // Setting
+            case adventure:
+            case domain:
+            case event:
+            case group:
+            case language:
+            case organization:
+            case place:
+            case plane:
+                return "setting/" + this.name() + 's';
+            case deity:
+                return "setting/deities";
+            // Spell/Ritual
+            case ritual:
+            case spell:
+                return "spells/";
+            // Rules --> Rules root
             case action:
+            case table:
+            case trait:
+            case variantrule:
                 return this.name() + 's';
             default:
                 return null;
@@ -194,6 +238,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             case trait:
             case trap:
                 return DefaultSource.crb;
+            case affliction:
             case curse:
             case disease:
             case nation:
@@ -210,7 +255,8 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
                 return DefaultSource.lotg;
             case eidolon:
                 return DefaultSource.som;
+            default:
+                throw new IllegalStateException("How did we get here? Switch is missing " + this);
         }
-        throw new IllegalStateException("How did we get here? Switch is missing " + this);
     }
 }

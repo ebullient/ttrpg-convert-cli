@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.pf2e;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -16,14 +15,6 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 
 public interface JsonSource extends JsonTextReplacement {
-
-    default String toTitleCase(String lowercase) {
-        if (lowercase == null || lowercase.isEmpty()) {
-            return lowercase;
-        }
-        return lowercase.substring(0, 1).toUpperCase(Locale.ROOT)
-                + lowercase.substring(1);
-    }
 
     default void appendEntryToText(List<String> text, JsonNode node, String heading) {
         if (node == null || node.isNull()) {
@@ -443,6 +434,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     // Special one-offs for accounting/tracking
     enum TtrpgValue implements NodeReader {
+        traitTag,
         indexKey;
 
         public void addToNode(JsonNode node, String value) {
@@ -469,6 +461,8 @@ public interface JsonSource extends JsonTextReplacement {
         actionType,
         alias,
         by,
+        categories,
+        cost,
         customUnit,
         entry,
         entries,
@@ -478,6 +472,7 @@ public interface JsonSource extends JsonTextReplacement {
         group,
         head,
         id,
+        implies,
         info,
         intro,
         interval,
@@ -505,7 +500,7 @@ public interface JsonSource extends JsonTextReplacement {
         success("Success"),
         failure("Failure"),
         criticalFailure("Critical Failure"),
-        cost;
+        ;
 
         final String nodeName;
 
