@@ -103,7 +103,8 @@ public class MarkdownWriter {
         targetDir.toFile().mkdirs();
 
         for (QuteNote n : notes) {
-            String fileName = Tui.slugify(n.getName()) + ".md";
+            String fn = n.targetFile();
+            String fileName = Tui.slugify(fn) + (fn.endsWith(".md") ? "" : ".md");
             writeNote(targetDir, fileName, n);
         }
 

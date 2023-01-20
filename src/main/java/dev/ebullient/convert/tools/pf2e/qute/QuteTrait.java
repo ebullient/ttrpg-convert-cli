@@ -19,4 +19,8 @@ public class QuteTrait extends Pf2eQuteBase {
         this.categories = categories;
     }
 
+    @Override
+    public boolean createIndex() {
+        return false;
+    }
 }

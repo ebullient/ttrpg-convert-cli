@@ -1,0 +1,13 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e-index
+---
+# Index of Traits
+{#for entry in resource.categoryToTraits}
+
+## #{entry.key}
+
+{#for element in entry.value}
+- #{element}
+{/for}
+{/for}

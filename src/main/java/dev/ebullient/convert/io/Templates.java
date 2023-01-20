@@ -85,7 +85,7 @@ public class Templates {
     }
 
     public String renderNote(QuteNote resource) {
-        Template tpl = customTemplateOrDefault("note2md.txt");
+        Template tpl = customTemplateOrDefault(resource.template());
         return tpl
                 .data("resource", resource)
                 .render().trim();

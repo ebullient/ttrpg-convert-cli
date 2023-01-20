@@ -434,11 +434,16 @@ public interface JsonSource extends JsonTextReplacement {
 
     // Special one-offs for accounting/tracking
     enum TtrpgValue implements NodeReader {
+        categoryTag,
         traitTag,
         indexKey;
 
         public void addToNode(JsonNode node, String value) {
             ((ObjectNode) node).put(this.name(), value);
+        }
+
+        public void addToNode(JsonNode node, List<String> categories) {
+            ((ObjectNode) node).set(this.name(), Tui.MAPPER.valueToTree(categories));
         }
 
         public String getFromNode(JsonNode node) {

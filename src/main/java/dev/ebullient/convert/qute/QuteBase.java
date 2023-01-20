@@ -64,4 +64,12 @@ public class QuteBase {
     public String key() {
         return sources.getKey();
     }
+
+    public boolean createIndex() {
+        return true;
+    }
+
+    public String template() {
+        return null;
+    }
 }

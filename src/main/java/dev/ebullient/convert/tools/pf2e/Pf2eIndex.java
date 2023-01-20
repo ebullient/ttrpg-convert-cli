@@ -3,12 +3,15 @@ package dev.ebullient.convert.tools.pf2e;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,6 +30,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     private final Map<String, JsonNode> filteredIndex = new HashMap<>();
 
     private final Map<String, String> traitToTag = new HashMap<>();
+    private final Map<String, Collection<String>> categoryToTraits = new TreeMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
     boolean coreRulesIncluded = false;
@@ -51,6 +55,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         coreRulesIncluded |= filename.endsWith(CORE_RULES);
 
         // data ingest. Minimal processing.
+        Pf2eIndexType.ability.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
@@ -73,9 +78,16 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         // Precreate tag index/lookup
         if (type == Pf2eIndexType.trait) {
             String trait = Field.name.getTextOrEmpty(node);
-            String traitTag = cfg().tagOf("trait", trait);
-            TtrpgValue.traitTag.addToNode(node, traitTag);
+            String traitTag = cfg().traitTagOf(trait);
             traitToTag.put(trait.toLowerCase(), traitTag);
+
+            Field.categories.getListOfStrings(node, tui()).stream()
+                    .filter(c -> !c.equals("_alignAbv"))
+                    .forEach(c -> {
+                        String categoryTag = cfg().traitCategoryTagOf(c);
+                        categoryToTraits.computeIfAbsent(categoryTag, k -> new TreeSet<>())
+                                .add(traitTag);
+                    });
         }
     }
 
@@ -201,5 +213,9 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
             throw new IllegalStateException("Index must be prepared before writing indexes");
         }
         return filteredIndex.entrySet();
+    }
+
+    public Map<String, Collection<String>> categoryTraitMap() {
+        return categoryToTraits;
     }
 }
