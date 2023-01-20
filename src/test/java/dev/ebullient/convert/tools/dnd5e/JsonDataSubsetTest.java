@@ -54,6 +54,7 @@ public class JsonDataSubsetTest {
     public void testRaceList() {
         commonTests.testRaceList(outputPath);
 
+        // Changeling from mpmm is a reprint..
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             // Single included race: changeling from mpmm
             Path changeling = outputPath

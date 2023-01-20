@@ -1,0 +1,53 @@
+{
+  "5e" : {
+    "from" : [
+      "PHB",
+      "CRB"
+    ],
+    "paths" : {
+      "compendium" : "/compendium/",
+      "rules" : "/compendium/rules/"
+    },
+    "include" : [
+      "race|changeling|mpmm"
+    ],
+    "includeGroup" : [
+      "familiars"
+    ],
+    "exclude" : [
+      "monster|expert|dc",
+      "monster|expert|sdw",
+      "monster|expert|slw"
+    ],
+    "excludePattern" : [
+      "race|.*|dmg"
+    ],
+    "template" : {
+      "background" : "examples/templates/tools5e/images-background2md.txt"
+    },
+    "full-source" : {
+      "book" : [
+        "PHB"
+      ],
+      "adventure" : [
+        "LMoP"
+      ]
+    }
+  },
+  "pf2e" : {
+    "from" : [ ],
+    "paths" : {
+      "compendium" : null,
+      "rules" : null
+    },
+    "include" : [ ],
+    "includeGroup" : [ ],
+    "exclude" : [ ],
+    "excludePattern" : [ ],
+    "template" : { },
+    "full-source" : {
+      "book" : [ ],
+      "adventure" : [ ]
+    }
+  }
+}

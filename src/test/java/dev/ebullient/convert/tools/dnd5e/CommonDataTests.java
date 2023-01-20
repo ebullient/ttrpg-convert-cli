@@ -53,6 +53,11 @@ public class CommonDataTests {
             }
             tui.read5eTools(TestUtils.TOOLS_PATH_5E, index::importTree);
             index.prepare();
+
+            tui.debugf("Changeling (origin present): ", index.getOrigin("race|changeling|mpmm"));
+            tui.debugf("Changeling (filtered present): ", index.getNode("race|changeling|mpmm"));
+            tui.debugf("Tree blight (present): %s", index.getNode("monster|tree blight|cos"));
+            tui.debugf("Expert (absent): %s", index.getNode("monster|expert|dc"));
         }
     }
 
@@ -237,7 +242,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
-                    TestUtils.PROJECT_PATH.resolve("templates/tools5e/monster2md-scores.txt"));
+                    TestUtils.PROJECT_PATH.resolve("examples/templates/tools5e/monster2md-scores.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
@@ -254,7 +259,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
-                    TestUtils.PROJECT_PATH.resolve("templates/tools5e/monster2md-yamlStatblock-header.txt"));
+                    TestUtils.PROJECT_PATH.resolve("examples/templates/tools5e/monster2md-yamlStatblock-header.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
@@ -271,7 +276,7 @@ public class CommonDataTests {
             tui.setOutputPath(out);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
-                    TestUtils.PROJECT_PATH.resolve("templates/tools5e/monster2md-yamlStatblock-body.txt"));
+                    TestUtils.PROJECT_PATH.resolve("examples/templates/tools5e/monster2md-yamlStatblock-body.txt"));
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);

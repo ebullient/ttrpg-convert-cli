@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 import org.yaml.snakeyaml.Yaml;
 
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
 import com.github.slugify.Slugify;
 
 import dev.ebullient.convert.config.TtrpgConfig;
@@ -74,7 +76,15 @@ public class Tui {
     private static ObjectMapper yamlMapper;
 
     private static ObjectMapper yamlMapper() {
-        return yamlMapper == null ? yamlMapper = initMapper(new ObjectMapper(new YAMLFactory())) : yamlMapper;
+        if (yamlMapper == null) {
+            DumperOptions options = new DumperOptions();
+            options.setDefaultScalarStyle(ScalarStyle.PLAIN);
+            options.setDefaultFlowStyle(FlowStyle.AUTO);
+            options.setPrettyFlow(true);
+            yamlMapper = initMapper(new ObjectMapper(new YAMLFactoryBuilder(new YAMLFactory())
+                    .dumperOptions(options).build()));
+        }
+        return yamlMapper;
     }
 
     private static ObjectMapper initMapper(ObjectMapper mapper) {
@@ -426,5 +436,9 @@ public class Tui {
         MAPPER.writer()
                 .with(pp)
                 .writeValue(outputFile.toFile(), keys);
+    }
+
+    public void writeYamlFile(Path outputFile, Map<String, Object> map) throws IOException {
+        yamlMapper().writer().writeValue(outputFile.toFile(), map);
     }
 }
