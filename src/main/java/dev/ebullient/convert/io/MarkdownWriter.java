@@ -103,7 +103,7 @@ public class MarkdownWriter {
         targetDir.toFile().mkdirs();
 
         for (QuteNote n : notes) {
-            String fileName = tui.slugify(n.getName()) + ".md";
+            String fileName = Tui.slugify(n.getName()) + ".md";
             writeNote(targetDir, fileName, n);
         }
 
@@ -140,7 +140,7 @@ public class MarkdownWriter {
         rootDir.toFile().mkdirs();
 
         names.forEach(n -> {
-            Path target = rootDir.resolve("names-" + tui.slugify(n.getName()) + ".md");
+            Path target = rootDir.resolve("names-" + Tui.slugify(n.getName()) + ".md");
             String content = templates.renderName(n);
             try {
                 Files.write(target, content.getBytes(StandardCharsets.UTF_8));
@@ -160,7 +160,7 @@ public class MarkdownWriter {
 
         public FileMap(String title, String fileName, Path dirName) {
             this.title = title;
-            this.fileName = Tui.slugifier().slugify(fileName) + (fileName.endsWith(".md") ? "" : ".md");
+            this.fileName = Tui.slugify(fileName) + (fileName.endsWith(".md") ? "" : ".md");
             this.dir = dirName;
         }
 

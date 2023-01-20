@@ -6,6 +6,62 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public interface Pf2eTypeReader extends JsonSource {
 
+    enum Pf2eActivityType {
+        single("Single Action", "\\[>\\]", "single_action.svg"),
+        two("Two-Action activity", "\\[>>\\]", "two_actions.svg"),
+        three("Three-Action activity", "\\[>>>\\]", "three_actions.svg"),
+        free("Free Action", "\\[F\\]", "delay.svg"),
+        reaction("Reaction", "\\[R\\]", "reaction.svg"),
+        varies("Varies", "\\[?\\]", "load.svg"),
+        timed("Duration or Frequency", "\\[⏲\\]", "hour-glass.svg");
+
+        String caption;
+        String textGlyph;
+        String glyph;
+
+        Pf2eActivityType(String caption, String textGlyph, String glyph) {
+            this.caption = caption;
+            this.textGlyph = textGlyph;
+            this.glyph = glyph;
+        }
+
+        public static Pf2eActivityType toActivity(String unit, int number) {
+            switch (unit) {
+                case "action":
+                    switch (number) {
+                        case 1:
+                            return single;
+                        case 2:
+                            return two;
+                        case 3:
+                            return three;
+                    }
+                    break;
+                case "free":
+                    return free;
+                case "reaction":
+                    return reaction;
+                case "varies":
+                    return varies;
+                case "timed":
+                    return timed;
+            }
+            throw new IllegalArgumentException("Unable to find Activity for " + number + " " + unit);
+        }
+
+        public String getCaption() {
+            return this.caption;
+        }
+
+        public String getTextGlyph() {
+            return this.textGlyph;
+        }
+
+        public String getGlyph() {
+            return this.glyph;
+        }
+    }
+
     default String getFrequency(JsonNode rootNode) {
         JsonNode frequency = Field.frequency.getFrom(rootNode);
         if (frequency == null) {
@@ -26,7 +82,7 @@ public interface Pf2eTypeReader extends JsonSource {
         return String.format("%s %s %s%s%s",
                 number,
                 recurs ? "every" : "per",
-                interval.isPresent() ? interval.get() + " " : "",
+                interval.map(integer -> integer + " ").orElse(""),
                 interval.isPresent() && interval.get() > 2 ? unit + "s" : customUnit,
                 overcharge ? ", plus overcharge" : "");
     }
@@ -111,4 +167,5 @@ public interface Pf2eTypeReader extends JsonSource {
                 return intToString(abs - r, freq) + "-" + intToString(r, freq);
         }
     }
+
 }

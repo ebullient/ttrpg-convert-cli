@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName.LookupTable;
@@ -36,7 +37,7 @@ public class Json2QuteName extends Json2QuteCommon {
         for (Iterator<JsonNode> j = tables.elements(); j.hasNext();) {
             JsonNode t_element = j.next();
             String tableName = t_element.get("option").asText();
-            String blockId = index.slugify(tableName);
+            String blockId = Tui.slugify(tableName);
             String diceType = getTextOrDefault(t_element, "diceExpression",
                     getTextOrEmpty(t_element, "diceType"));
 

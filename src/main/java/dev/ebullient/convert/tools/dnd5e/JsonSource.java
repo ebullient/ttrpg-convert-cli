@@ -62,7 +62,7 @@ public interface JsonSource {
     }
 
     default String slugify(String s) {
-        return cfg().tui().slugify(s);
+        return Tui.slugify(s);
     }
 
     default Stream<JsonNode> streamOf(ArrayNode array) {

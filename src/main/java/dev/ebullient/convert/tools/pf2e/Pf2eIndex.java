@@ -26,6 +26,8 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     private final Map<String, JsonNode> imported = new HashMap<>();
     private final Map<String, JsonNode> filteredIndex = new HashMap<>();
 
+    private final Map<String, String> traitToTag = new HashMap<>();
+
     final JsonSourceCopier copier = new JsonSourceCopier(this);
     boolean coreRulesIncluded = false;
 
@@ -52,6 +54,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.trait.withArrayFrom(node, this::addToIndex);
 
         Pf2eIndexType.adventure.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.book.withArrayFrom(node, this::addToIndex);
@@ -66,6 +69,14 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         String key = type.createKey(node);
         TtrpgValue.indexKey.addToNode(node, key); // backlink
         imported.put(key, node);
+
+        // Precreate tag index/lookup
+        if (type == Pf2eIndexType.trait) {
+            String trait = Field.name.getTextOrEmpty(node);
+            String traitTag = cfg().tagOf("trait", trait);
+            TtrpgValue.traitTag.addToNode(node, traitTag);
+            traitToTag.put(trait.toLowerCase(), traitTag);
+        }
     }
 
     void addDataToIndex(JsonNode data, String filename) {
@@ -109,6 +120,9 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         imported.entrySet().stream()
                 .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
                 .forEach(e -> filteredIndex.put(e.getKey(), e.getValue()));
+
+        // categorize traits
+
     }
 
     boolean keyIsIncluded(String key, JsonNode node) {
@@ -130,6 +144,10 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
 
     public boolean isExcluded(String key) {
         return !isIncluded(key);
+    }
+
+    public String getTagForTrait(String trait) {
+        return traitToTag.get(trait.toLowerCase());
     }
 
     // --------- Write indexes ---------

@@ -58,6 +58,9 @@ public class Pf2eMarkdown implements MarkdownConverter {
                 case action:
                     converted = new Json2QuteAction(index, type, node).build();
                     break;
+                case trait:
+                    converted = new Json2QuteTrait(index, type, node).build();
+                    break;
                 default:
                     throw new IllegalArgumentException("Unsupported type " + type);
             }

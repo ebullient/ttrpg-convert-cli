@@ -11,7 +11,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class QuteAction extends Pf2eQuteBase {
 
     public final String trigger;
-    public final List<String> alias;
+    public final List<String> aliases;
     public final List<String> traits;
 
     public final String requirements;
@@ -29,7 +29,7 @@ public class QuteAction extends Pf2eQuteBase {
             String text, List<String> tags) {
         super(sources, name, sourceText, text, tags);
         this.trigger = trigger;
-        this.alias = alias;
+        this.aliases = alias;
         this.traits = traits;
 
         this.prerequisites = prerequisites;

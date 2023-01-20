@@ -77,9 +77,17 @@ public interface NodeReader {
         return source.withArray(this.nodeName());
     }
 
-    default Stream<JsonNode> streamOf(JsonNode node) {
-        ArrayNode array = withArrayFrom(node);
-        return StreamSupport.stream(array.spliterator(), false);
+    default Stream<JsonNode> streamOf(JsonNode source) {
+        if (source == null) {
+            return Stream.of();
+        }
+        JsonNode result = source.get(this.nodeName());
+        if (result == null) {
+            return Stream.of();
+        } else if (result.isObject()) {
+            return Stream.of(result);
+        }
+        return StreamSupport.stream(result.spliterator(), false);
     }
 
     default <T> T fieldFromTo(JsonNode source, TypeReference<T> target, Tui tui) {

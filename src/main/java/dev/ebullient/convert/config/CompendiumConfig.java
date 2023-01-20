@@ -2,6 +2,7 @@ package dev.ebullient.convert.config;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -117,7 +118,9 @@ public class CompendiumConfig {
     }
 
     public String tagOf(String... tag) {
-        return tagPrefix + String.join("/", tag);
+        return tagPrefix + Arrays.stream(tag)
+                .map(s -> Tui.slugify(s))
+                .collect(Collectors.joining("/"));
     }
 
     public List<String> getBooks() {

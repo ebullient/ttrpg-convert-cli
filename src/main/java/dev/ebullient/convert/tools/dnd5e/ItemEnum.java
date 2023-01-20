@@ -144,7 +144,7 @@ public enum ItemEnum {
         } else if (isGear()) {
             tag.append("/gear");
             if (!this.specializedType.isEmpty()) {
-                tag.append("/").append(tui.slugify(this.specializedType));
+                tag.append("/").append(Tui.slugify(this.specializedType));
             }
             if (properties.contains(PropertyEnum.POISON)) {
                 tag.append("/poison");
@@ -154,7 +154,7 @@ public enum ItemEnum {
         } else if (isWondrousItem()) {
             tag.append("/wondrous");
             if (this != WONDROUS) {
-                tag.append("/").append(tui.slugify(genericType));
+                tag.append("/").append(Tui.slugify(genericType));
             }
         } else if (isMoney()) {
             tag.append("/wealth");

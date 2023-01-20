@@ -255,7 +255,7 @@ public class Tui {
         spec.commandLine().usage(err, ansi);
     }
 
-    public String slugify(String s) {
+    public static String slugify(String s) {
         return slugifier().slugify(s);
     }
 
@@ -396,7 +396,7 @@ public class Tui {
     public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
                 "actions.json", "books.json", "book/book-crb.json",
-                "conditions.json", "skills.json");
+                "conditions.json", "skills.json", "traits.json");
 
         if (toolsBase.resolve("archetypes.json").toFile().exists()
                 && toolsBase.resolve("book/book-crb.json").toFile().exists()) {

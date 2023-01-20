@@ -7,10 +7,10 @@ tags:
 - {tag}
 {/for}
 {/if}
-aliases: ["{resource.name}"{#each resource.alias}, "{it}"{/each}]
+aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
 # {resource.name}{#if resource.basic} (basic){/if}{#if resource.activity} [{resource.activity.caption}]({resource.activity.rulesPath}){/if}
-{#if resource.traits }{#each resource.traits}***{it}***{#if it_hasNext} {/if}{/each}
+{#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if}*Source: {resource.source}*  
 
 {#if resource.actionType }{resource.actionType}
