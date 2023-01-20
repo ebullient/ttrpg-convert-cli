@@ -37,4 +37,9 @@ public class QuteNote extends QuteBase {
     public String targetPath() {
         return ".";
     }
+
+    @Override
+    public String template() {
+        return "note2md.txt";
+    }
 }

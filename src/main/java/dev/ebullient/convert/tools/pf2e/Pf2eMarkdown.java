@@ -108,6 +108,9 @@ public class Pf2eMarkdown implements MarkdownConverter {
             append(value.type, (QuteNote) value.build(), compendium, rules);
         }
 
+        // Custom indices
+        append(Pf2eIndexType.trait, Json2QuteTrait.buildIndex(index), compendium, rules);
+
         writer.writeNotes(index.compendiumPath(), compendium);
         writer.writeNotes(index.rulesPath(), rules);
 

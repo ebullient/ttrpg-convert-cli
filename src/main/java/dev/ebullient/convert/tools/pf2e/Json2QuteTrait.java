@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTrait;
+import dev.ebullient.convert.tools.pf2e.qute.QuteTraitIndex;
 
 public class Json2QuteTrait extends Json2QuteBase {
 
@@ -21,16 +23,17 @@ public class Json2QuteTrait extends Json2QuteBase {
         List<String> categories = new ArrayList<>();
 
         Field.categories.getListOfStrings(rootNode, tui()).forEach(c -> {
-            tags.add(cfg().tagOf("trait-category", c));
+            tags.add(cfg().traitCategoryTagOf(c));
+
             JsonNode implied = Field.implies.getFrom(rootNode);
             if (implied != null) {
                 implied.fieldNames().forEachRemaining(n -> {
                     if ("spell".equals(n.toLowerCase())) {
                         String school = implied.get(n).get("_fSchool").asText();
-                        tags.add(cfg().tagOf("trait-category", "spell", school));
+                        tags.add(cfg().traitCategoryTagOf("spell", school));
                         categories.add(String.format("%s (%s)", c, school));
                     } else {
-                        tags.add(cfg().tagOf("trait-category", n));
+                        tags.add(cfg().traitCategoryTagOf(n));
                     }
                 });
             } else {
@@ -40,7 +43,6 @@ public class Json2QuteTrait extends Json2QuteBase {
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
 
-        // TODO Auto-generated method stub
         return new QuteTrait(
                 getSources(),
                 getSources().getName(),
@@ -51,4 +53,9 @@ public class Json2QuteTrait extends Json2QuteBase {
                 tags);
     }
 
+    static QuteNote buildIndex(Pf2eIndex index) {
+        Pf2eSources sources = Pf2eSources.constructSyntheticSource("Trait Index");
+
+        return new QuteTraitIndex(sources, index.categoryTraitMap());
+    }
 }

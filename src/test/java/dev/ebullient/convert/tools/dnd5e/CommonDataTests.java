@@ -53,11 +53,6 @@ public class CommonDataTests {
             }
             tui.read5eTools(TestUtils.TOOLS_PATH_5E, index::importTree);
             index.prepare();
-
-            tui.debugf("Changeling (origin present): ", index.getOrigin("race|changeling|mpmm"));
-            tui.debugf("Changeling (filtered present): ", index.getNode("race|changeling|mpmm"));
-            tui.debugf("Tree blight (present): %s", index.getNode("monster|tree blight|cos"));
-            tui.debugf("Expert (absent): %s", index.getNode("monster|expert|dc"));
         }
     }
 
