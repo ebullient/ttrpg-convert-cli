@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAction;
+import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteAction extends Json2QuteBase {
@@ -20,7 +20,7 @@ public class Json2QuteAction extends Json2QuteBase {
         super(index, type, node, Pf2eSources.findSources(node));
     }
 
-    public Pf2eQuteBase build() {
+    public QuteAction build() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
@@ -32,9 +32,9 @@ public class Json2QuteAction extends Json2QuteBase {
 
         String trigger = replaceText(Field.trigger.getTextOrNull(rootNode));
         String cost = replaceText(Field.cost.getTextOrNull(rootNode));
-        List<String> alias = transform(Field.alias);
-        List<String> prerequisites = transform(Field.prerequisites);
-        List<String> requirements = transform(Field.requirements);
+        List<String> alias = transform(rootNode, Field.alias);
+        List<String> prerequisites = transform(rootNode, Field.prerequisites);
+        List<String> requirements = transform(rootNode, Field.requirements);
 
         List<String> traits = Field.traits.getListOfStrings(rootNode, tui()).stream()
                 .sorted()
@@ -49,24 +49,14 @@ public class Json2QuteAction extends Json2QuteBase {
 
         return new QuteAction(
                 getSources(),
-                getSources().getName(),
-                getSources().getSourceText(),
                 cost, trigger, alias, traits,
                 String.join(", ", prerequisites),
                 String.join(", ", requirements),
                 getFrequency(rootNode),
-                jsonActivity == null ? null : jsonActivity.build(this),
+                jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
                 actionType == null ? null : actionType.build(this),
                 String.join("\n", text),
                 tags);
-    }
-
-    List<String> transform(Field field) {
-        List<String> list = field.getListOfStrings(rootNode, tui());
-        if (list == null || list.isEmpty()) {
-            return List.of();
-        }
-        return list.stream().map(s -> replaceText(s)).collect(Collectors.toList());
     }
 
     @RegisterForReflection
@@ -226,7 +216,7 @@ public class Json2QuteAction extends Json2QuteBase {
         public String unit;
         public String entry;
 
-        public QuteAction.ActivityType build(JsonSource convert) {
+        public QuteActivityType toQuteActivity(JsonSource convert) {
             String extra = entry == null || entry.toLowerCase().contains("varies")
                     ? ""
                     : " (" + convert.replaceText(entry) + ")";
@@ -235,33 +225,33 @@ public class Json2QuteAction extends Json2QuteBase {
                 case "action":
                 case "free":
                 case "reaction":
-                    Pf2eActivityType activity = Pf2eActivityType.toActivity(unit, number);
+                    Pf2eTypeActivity activity = Pf2eTypeActivity.toActivity(unit, number);
                     return createActivity(convert,
                             String.format("%s%s", activity.getCaption(), extra),
                             activity);
                 case "varies":
                     return createActivity(convert,
-                            String.format("%s%s", Pf2eActivityType.varies.getCaption(), extra),
-                            Pf2eActivityType.varies);
+                            String.format("%s%s", Pf2eTypeActivity.varies.getCaption(), extra),
+                            Pf2eTypeActivity.varies);
                 case "day":
                 case "minute":
                 case "hour":
                 case "round":
                     return createActivity(convert,
                             String.format("%s %s%s", number, unit, extra),
-                            Pf2eActivityType.timed);
+                            Pf2eTypeActivity.timed);
                 default:
                     throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
             }
         }
 
-        QuteAction.ActivityType createActivity(JsonSource convert, String text, Pf2eActivityType activity) {
+        QuteActivityType createActivity(JsonSource convert, String text, Pf2eTypeActivity activity) {
             String fileName = activity.getGlyph();
             int x = fileName.lastIndexOf('.');
             Path target = Path.of("img",
                     Tui.slugify(fileName.substring(0, x)) + fileName.substring(x));
 
-            return new QuteAction.ActivityType(
+            return new QuteActivityType(
                     text,
                     new ImageRef.Builder()
                             .setStreamSource(activity.getGlyph())
@@ -269,7 +259,7 @@ public class Json2QuteAction extends Json2QuteBase {
                             .setMarkdownPath(activity.getCaption(), convert.index().rulesRoot())
                             .build(),
                     activity.getTextGlyph(),
-                    "/rules/something.md");
+                    activity.getRulesPath(convert.index().rulesRoot()));
         }
     }
 

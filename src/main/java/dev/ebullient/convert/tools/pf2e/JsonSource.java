@@ -15,7 +15,6 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 
 public interface JsonSource extends JsonTextReplacement {
-
     default void appendEntryToText(List<String> text, JsonNode node, String heading) {
         if (node == null || node.isNull()) {
             // do nothing
@@ -288,7 +287,6 @@ public interface JsonSource extends JsonTextReplacement {
             }
         }
         text.addAll(inner);
-        text.add("\nCHECK ME: ABILITY ABOVE");
     }
 
     default void appendSuccessDegree(List<String> text, JsonNode node) {
@@ -309,14 +307,13 @@ public interface JsonSource extends JsonTextReplacement {
         if (field != null) {
             prependTextMakeListItem(inner, field, "**Failure** ");
         }
-        field = Field.criticalSuccess.getFrom(entries);
+        field = Field.criticalFailure.getFrom(entries);
         if (field != null) {
             prependTextMakeListItem(inner, field, "**Critical Failure** ");
         }
 
         maybeAddBlankLine(text);
         inner.forEach(x -> text.add("> " + x));
-        text.add("\nCHECK ME: SUCCESS DEGREE");
     }
 
     default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend) {
@@ -417,7 +414,9 @@ public interface JsonSource extends JsonTextReplacement {
         JsonNode footnotes = Field.footnotes.getFrom(tableNode);
         if (footnotes != null) {
             maybeAddBlankLine(text);
-            appendCallout(text, footnotes, "pf-table-footnotes");
+            readingFootnotes.set(true);
+            appendEntryToText(text, footnotes, null);
+            readingFootnotes.set(false);
         }
         JsonNode outro = Field.outro.getFrom(tableNode);
         if (outro != null) {
