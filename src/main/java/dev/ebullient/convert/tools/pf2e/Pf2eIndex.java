@@ -59,6 +59,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.spell.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.trait.withArrayFrom(node, this::addToIndex);
 
         Pf2eIndexType.adventure.withArrayFrom(node, this::addToIndex);
@@ -191,6 +192,17 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         tui().writeJsonFile(outputFile, Map.of("keys", keys));
     }
 
+    public Set<Map.Entry<String, JsonNode>> filteredEntries() {
+        if (notPrepared()) {
+            throw new IllegalStateException("Index must be prepared before writing indexes");
+        }
+        return filteredIndex.entrySet();
+    }
+
+    public Map<String, Collection<String>> categoryTraitMap() {
+        return categoryToTraits;
+    }
+
     // ---- JsonSource overrides ------
 
     @Override
@@ -208,14 +220,4 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         return null;
     }
 
-    public Set<Map.Entry<String, JsonNode>> filteredEntries() {
-        if (notPrepared()) {
-            throw new IllegalStateException("Index must be prepared before writing indexes");
-        }
-        return filteredIndex.entrySet();
-    }
-
-    public Map<String, Collection<String>> categoryTraitMap() {
-        return categoryToTraits;
-    }
 }

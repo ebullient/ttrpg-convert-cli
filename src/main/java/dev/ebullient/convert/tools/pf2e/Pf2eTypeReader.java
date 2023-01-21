@@ -1,69 +1,65 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.NodeReader;
+
 public interface Pf2eTypeReader extends JsonSource {
 
-    enum Pf2eActivityType {
-        single("Single Action", "\\[>\\]", "single_action.svg"),
-        two("Two-Action activity", "\\[>>\\]", "two_actions.svg"),
-        three("Three-Action activity", "\\[>>>\\]", "three_actions.svg"),
-        free("Free Action", "\\[F\\]", "delay.svg"),
-        reaction("Reaction", "\\[R\\]", "reaction.svg"),
-        varies("Varies", "\\[?\\]", "load.svg"),
-        timed("Duration or Frequency", "\\[⏲\\]", "hour-glass.svg");
+    enum Pf2eTypeTradition implements NodeReader.FieldValue {
+        arcane,
+        divine,
+        occult,
+        primal;
 
-        String caption;
-        String textGlyph;
-        String glyph;
-
-        Pf2eActivityType(String caption, String textGlyph, String glyph) {
-            this.caption = caption;
-            this.textGlyph = textGlyph;
-            this.glyph = glyph;
-        }
-
-        public static Pf2eActivityType toActivity(String unit, int number) {
-            switch (unit) {
-                case "action":
-                    switch (number) {
-                        case 1:
-                            return single;
-                        case 2:
-                            return two;
-                        case 3:
-                            return three;
-                    }
-                    break;
-                case "free":
-                    return free;
-                case "reaction":
-                    return reaction;
-                case "varies":
-                    return varies;
-                case "timed":
-                    return timed;
-            }
-            throw new IllegalArgumentException("Unable to find Activity for " + number + " " + unit);
-        }
-
-        public String getCaption() {
-            return this.caption;
-        }
-
-        public String getTextGlyph() {
-            return this.textGlyph;
-        }
-
-        public String getGlyph() {
-            return this.glyph;
+        @Override
+        public String value() {
+            return this.name();
         }
     }
 
-    default String getFrequency(JsonNode rootNode) {
-        JsonNode frequency = Field.frequency.getFrom(rootNode);
+    enum Pf2eSpellcastingType implements NodeReader.FieldValue {
+        innate,
+        prepared,
+        focus;
+
+        @Override
+        public String value() {
+            return this.name();
+        }
+    }
+
+    enum Pf2eSavingThrowType implements NodeReader.FieldValue {
+        fortitude("F"),
+        reflex("R"),
+        will("W");
+
+        String encoding;
+
+        Pf2eSavingThrowType(String encoding) {
+            this.encoding = encoding;
+        }
+
+        @Override
+        public String value() {
+            return encoding;
+        }
+    }
+
+    default List<String> transform(JsonNode node, Field field) {
+        List<String> list = field.getListOfStrings(node, tui());
+        if (list == null || list.isEmpty()) {
+            return List.of();
+        }
+        return list.stream().map(s -> replaceText(s)).collect(Collectors.toList());
+    }
+
+    default String getFrequency(JsonNode node) {
+        JsonNode frequency = Field.frequency.getFrom(node);
         if (frequency == null) {
             return null;
         }
@@ -87,8 +83,8 @@ public interface Pf2eTypeReader extends JsonSource {
                 overcharge ? ", plus overcharge" : "");
     }
 
-    default String numberToText(JsonNode rootNode, Field field, boolean freq) {
-        JsonNode node = field.getFrom(rootNode);
+    default String numberToText(JsonNode baseNode, Field field, boolean freq) {
+        JsonNode node = field.getFrom(baseNode);
         if (node == null) {
             throw new IllegalArgumentException("undefined or null object");
         } else if (node.isTextual()) {

@@ -20,14 +20,14 @@ public class QuteAction extends Pf2eQuteBase {
     public final String cost;
 
     public final ActionType actionType;
-    public final ActivityType activity;
+    public final QuteActivityType activity;
 
-    public QuteAction(Pf2eSources sources, String name, String sourceText,
+    public QuteAction(Pf2eSources sources,
             String cost, String trigger, List<String> alias, List<String> traits,
             String prerequisites, String requirements, String frequency,
-            ActivityType activity, ActionType actionType,
+            QuteActivityType activity, ActionType actionType,
             String text, List<String> tags) {
-        super(sources, name, sourceText, text, tags);
+        super(sources, sources.getName(), sources.getSourceText(), text, tags);
         this.trigger = trigger;
         this.aliases = alias;
         this.traits = traits;
@@ -121,33 +121,6 @@ public class QuteAction extends Pf2eQuteBase {
                 entries.add("**Variant Rule** " + String.join(", ", variantrule));
             }
             return String.join("\n", entries);
-        }
-    }
-
-    @RegisterForReflection
-    public static class ActivityType {
-        public final ImageRef glyph;
-        public final String text;
-        public final String textGlyph;
-        public final String rulesPath;
-
-        public ActivityType(String text, ImageRef glyph, String textGlyph, String rulesPath) {
-            this.glyph = glyph;
-            this.text = text;
-            this.textGlyph = textGlyph;
-            this.rulesPath = rulesPath;
-        }
-
-        public String getCaption() {
-            return glyph != null ? glyph.caption : text;
-        }
-
-        public String toString() {
-            return String.format("[%s](%s)", text, rulesPath);
-        }
-
-        public List<ImageRef> image() {
-            return glyph == null ? List.of() : List.of(glyph);
         }
     }
 }

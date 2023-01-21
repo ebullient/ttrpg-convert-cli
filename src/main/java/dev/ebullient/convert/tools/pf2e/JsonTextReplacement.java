@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,11 +17,14 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
 
 public interface JsonTextReplacement {
+    static AtomicBoolean readingFootnotes = new AtomicBoolean(); // only works because we're single threaded
+
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^|}]+)[^}]*}");
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
+    Pattern footnotePattern = Pattern.compile("\\{@sup ([^}]+)}");
 
     Pf2eIndex index();
 
@@ -80,8 +84,14 @@ public interface JsonTextReplacement {
         result = asPattern.matcher(result)
                 .replaceAll(this::replaceAs);
 
+        result = footnotePattern.matcher(result)
+                .replaceAll(this::replaceFootnote);
+
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
+                    if (readingFootnotes.get()) {
+                        return match.group(2);
+                    }
                     List<String> text = new ArrayList<>();
                     text.add("> [!note]");
                     for (String line : match.group(2).split("\n")) {
@@ -133,24 +143,39 @@ public interface JsonTextReplacement {
         return result;
     }
 
+    default String replaceFootnote(MatchResult match) {
+        return String.format("[^%s]%s", match.group(1),
+                readingFootnotes.get() ? ": " : "");
+    }
+
     default String replaceAs(MatchResult match) {
+        final Pf2eTypeActivity type;
         switch (match.group(1).toLowerCase()) {
             case "1":
             case "a":
-                return "<s data-symbol=\"\\[>\\]\"></s>";
+                type = Pf2eTypeActivity.single;
+                break;
             case "2":
             case "d":
-                return "<s data-symbol=\"\\[>>\\]\"></s>";
+                type = Pf2eTypeActivity.two;
+                break;
             case "3":
             case "t":
-                return "<s data-symbol=\"\\[>>>\\]\"></s>";
+                type = Pf2eTypeActivity.three;
+                break;
             case "f":
-                return "<s data-symbol=\"\\[F\\]\"></s>";
+                type = Pf2eTypeActivity.free;
+                break;
             case "r":
-                return "<s data-symbol=\"\\[R\\]\"></s>";
+                type = Pf2eTypeActivity.reaction;
+                break;
             default:
-                return "<s data-symbol=\"\\[?\\]\"></s>";
+                type = Pf2eTypeActivity.varies;
+                break;
         }
+        String link = type.linkify(index().rulesRoot());
+        tui().debugf("AS LINK for %s (%s): %s", match, type, link);
+        return link;
     }
 
     default String linkifyRules(String text, String rules) {
@@ -203,7 +228,8 @@ public interface JsonTextReplacement {
             source = parts[1].isBlank() ? source : parts[1];
         }
         if (targetType == Pf2eIndexType.condition) {
-            return linkifyRules(linkText, "conditions", toTitleCase(parts[0]));
+            return linkifyRules(linkText.replaceAll("\\s\\d+$", ""),
+                    "conditions", toTitleCase(parts[0].replaceAll("\\s\\d+$", "")));
         }
 
         if (targetType.relativePath() == null) {
