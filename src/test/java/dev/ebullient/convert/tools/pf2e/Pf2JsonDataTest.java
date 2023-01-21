@@ -53,9 +53,10 @@ public class Pf2JsonDataTest {
         tui = Arc.container().instance(Tui.class).get();
         tui.init(null, true, false);
 
+        TtrpgConfig.init(tui, Datasource.toolsPf2e);
+
         configureIndex();
 
-        TtrpgConfig.init(tui, Datasource.toolsPf2e);
         templates = Arc.container().instance(Templates.class).get();
         templates.setCustomTemplates(TtrpgConfig.getConfig());
 

@@ -15,22 +15,23 @@ public class QuteSpell extends Pf2eQuteBase {
     public final List<String> traits;
     public final List<String> aliases;
 
-    public final Casting casting;
-    public final Targeting targeting;
-    public final SaveDuration saveDuration;
+    public final QuteSpellCasting casting;
+    public final QuteSpellTarget targeting;
+    public final QuteSpellSaveDuration saveDuration;
+    public final QuteSpellAmp amp;
 
     public final List<String> domains;
     public final List<String> traditions;
     public final List<String> spellLists;
 
-    public final Subclass subclass;
+    public final List<QuteSpellSubclass> subclass;
     public final Map<String, String> heightened;
 
     public QuteSpell(Pf2eSources sources, String text, Collection<String> tags,
             String level, String spellType, List<String> traits, List<String> aliases,
-            Casting casting, Targeting targeting, SaveDuration saveDuration,
+            QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSaveDuration saveDuration,
             List<String> domains, List<String> traditions, List<String> spellLists,
-            Subclass subclass, Map<String, String> heightened) {
+            List<QuteSpellSubclass> subclass, Map<String, String> heightened, QuteSpellAmp amp) {
         super(sources, sources.getName(), sources.getSourceText(), text, tags);
 
         this.level = level;
@@ -45,10 +46,16 @@ public class QuteSpell extends Pf2eQuteBase {
         this.spellLists = spellLists;
         this.subclass = subclass;
         this.heightened = heightened;
+        this.amp = amp;
+    }
+
+    @Override
+    public boolean getHasSections() {
+        return super.getHasSections() || amp != null;
     }
 
     @RegisterForReflection
-    public static class Casting {
+    public static class QuteSpellCasting {
         public String cast;
         public List<String> components;
         public String cost;
@@ -56,56 +63,54 @@ public class QuteSpell extends Pf2eQuteBase {
         public String requirements;
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
+            List<String> parts = new ArrayList<>();
 
-            sb.append(cast);
-            if (components != null) {
-                sb.append(" ").append(String.join(", ", components));
-            }
+            parts.add(cast + (components != null && !components.isEmpty()
+                    ? ""
+                    : " " + String.join(", ", components)));
 
             if (cost != null) {
-                sb.append("; **Cost** ").append(cost);
+                parts.add(String.format("**Cost** %s", cost));
             }
             if (trigger != null) {
-                sb.append("; **Trigger** ").append(trigger);
+                parts.add(String.format("**Trigger** %s", trigger));
             }
             if (requirements != null) {
-                sb.append("; **Requirements** ").append(requirements);
+                parts.add(String.format("**Requirements** %s", requirements));
             }
 
-            return sb.toString();
+            return String.join("\n- ", parts);
         }
     }
 
     @RegisterForReflection
-    public static class SaveDuration {
+    public static class QuteSpellSaveDuration {
         public boolean basic;
-        public boolean hidden;
         public String savingThrow;
         public String duration;
 
         public String toString() {
             List<String> parts = new ArrayList<>();
-            if (savingThrow != null && !hidden) {
+            if (savingThrow != null) {
                 parts.add(String.format("**Saving Throw** %s%s",
-                        basic ? " basic" : "",
+                        basic ? " basic " : "",
                         savingThrow));
             }
             if (duration != null) {
                 parts.add(String.format("**Duration** %s", duration));
             }
-            return String.join("; ", parts);
+            return String.join("\n- ", parts);
         }
     }
 
     @RegisterForReflection
-    public static class Subclass {
+    public static class QuteSpellSubclass {
         public String category;
         public String text;
     }
 
     @RegisterForReflection
-    public static class Targeting {
+    public static class QuteSpellTarget {
         public String range;
         public String area;
         public String targets;
@@ -121,12 +126,12 @@ public class QuteSpell extends Pf2eQuteBase {
             if (targets != null) {
                 parts.add(String.format("**Targets** %s", targets));
             }
-            return String.join("; ", parts);
+            return String.join("\n- ", parts);
         }
     }
 
     @RegisterForReflection
-    public static class Amp {
+    public static class QuteSpellAmp {
         public String text;
         public Map<String, String> ampEffects;
     }

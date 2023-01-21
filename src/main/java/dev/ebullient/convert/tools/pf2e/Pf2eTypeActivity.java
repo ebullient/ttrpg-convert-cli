@@ -41,7 +41,7 @@ public enum Pf2eTypeActivity {
             case "timed":
                 return timed;
         }
-        throw new IllegalArgumentException("Unable to find Activity for " + number + " " + unit);
+        return null;
     }
 
     public String getCaption() {

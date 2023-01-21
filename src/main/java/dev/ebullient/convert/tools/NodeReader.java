@@ -48,7 +48,7 @@ public interface NodeReader {
     }
 
     default List<String> getListOfStrings(JsonNode source, Tui tui) {
-        JsonNode result = source.get(this.nodeName());
+        JsonNode result = getFrom(source);
         if (result == null) {
             return List.of();
         } else if (result.isTextual()) {
@@ -59,17 +59,17 @@ public interface NodeReader {
     }
 
     default boolean booleanOrDefault(JsonNode source, boolean value) {
-        JsonNode result = source.get(this.nodeName());
+        JsonNode result = getFrom(source);
         return result == null ? value : result.asBoolean(value);
     }
 
     default int intOrDefault(JsonNode source, int value) {
-        JsonNode result = source.get(this.nodeName());
+        JsonNode result = getFrom(source);
         return result == null ? value : result.asInt();
     }
 
     default Optional<Integer> getIntFrom(JsonNode source) {
-        JsonNode result = source.get(this.nodeName());
+        JsonNode result = getFrom(source);
         return result == null ? Optional.empty() : Optional.of(result.asInt());
     }
 
@@ -78,10 +78,7 @@ public interface NodeReader {
     }
 
     default Stream<JsonNode> streamOf(JsonNode source) {
-        if (source == null) {
-            return Stream.of();
-        }
-        JsonNode result = source.get(this.nodeName());
+        JsonNode result = getFrom(source);
         if (result == null) {
             return Stream.of();
         } else if (result.isObject()) {

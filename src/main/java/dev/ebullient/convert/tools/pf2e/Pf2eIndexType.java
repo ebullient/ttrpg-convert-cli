@@ -77,7 +77,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             + Stream.of(Pf2eIndexType.values())
                     .map(x -> x.templateName)
                     .collect(Collectors.joining("|"))
-            + ") ([^}]+)}");
+            + ") ([^{}}]+?)}");
 
     public String templateName() {
         return templateName;
@@ -189,7 +189,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             // Spell/Ritual
             case ritual:
             case spell:
-                return "spells/";
+                return "spells";
             // Rules --> Rules root
             case action:
             case table:

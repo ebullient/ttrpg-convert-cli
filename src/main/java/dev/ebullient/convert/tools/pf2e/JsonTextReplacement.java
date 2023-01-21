@@ -20,11 +20,11 @@ public interface JsonTextReplacement {
     static AtomicBoolean readingFootnotes = new AtomicBoolean(); // only works because we're single threaded
 
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
-    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^|}]+)[^}]*}");
+    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
-    Pattern footnotePattern = Pattern.compile("\\{@sup ([^}]+)}");
+    Pattern footnoteReference = Pattern.compile("\\{@sup ([^}]+)}");
 
     Pf2eIndex index();
 
@@ -77,15 +77,21 @@ public interface JsonTextReplacement {
         String result = input;
 
         result = dicePattern.matcher(result)
-                .replaceAll((match) -> match.group(2));
+                .replaceAll((match) -> {
+                    String[] parts = match.group(2).split("\\|");
+                    if (parts.length > 1) {
+                        return parts[1];
+                    }
+                    return parts[0];
+                });
         result = chancePattern.matcher(result)
                 .replaceAll((match) -> match.group(1) + "% chance");
 
         result = asPattern.matcher(result)
                 .replaceAll(this::replaceAs);
 
-        result = footnotePattern.matcher(result)
-                .replaceAll(this::replaceFootnote);
+        result = footnoteReference.matcher(result)
+                .replaceAll(this::replaceFootnoteReference);
 
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
@@ -132,6 +138,8 @@ public interface JsonTextReplacement {
                     .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                     .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                     .replaceAll("\\{@h}", "Hit: ")
+                    .replaceAll("\\{@s ([^}]+?)}", "$1")
+                    .replaceAll("\\{@strike ([^}]+?)}", "$1")
                     .replaceAll("\\{@b ([^}]+?)}", "**$1**")
                     .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
                     .replaceAll("\\{@i ([^}]+?)}", "_$1_")
@@ -139,11 +147,16 @@ public interface JsonTextReplacement {
         } catch (Exception e) {
             tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
         }
+
+        // second pass (nested references)
+        result = Pf2eIndexType.matchPattern.matcher(result)
+                .replaceAll(this::linkify);
+
         // TODO
         return result;
     }
 
-    default String replaceFootnote(MatchResult match) {
+    default String replaceFootnoteReference(MatchResult match) {
         return String.format("[^%s]%s", match.group(1),
                 readingFootnotes.get() ? ": " : "");
     }
@@ -174,7 +187,7 @@ public interface JsonTextReplacement {
                 break;
         }
         String link = type.linkify(index().rulesRoot());
-        tui().debugf("AS LINK for %s (%s): %s", match, type, link);
+        tui().debugf("AS LINK for %s (%s): %s", match.group(1), type, link);
         return link;
     }
 
@@ -183,11 +196,14 @@ public interface JsonTextReplacement {
     }
 
     default String linkifyRules(String text, String rules, String anchor) {
+        if (text.matches("\\[.+\\]\\(.+\\)")) {
+            // skip if already a link
+            return text;
+        }
         String link = String.format("[%s](%s%s.md#%s)",
                 text, index().rulesRoot(), rules,
                 anchor.replace(" ", "%20")
                         .replace(".", ""));
-        tui().debugf("LINK for %s (%s): %s", rules, anchor, link);
         return link;
     }
 
@@ -208,7 +224,6 @@ public interface JsonTextReplacement {
             case subclassFeature:
                 return linkifySubClassFeature(match);
             case trait:
-                tui().debugf("LINK for trait %s: #%s", match, index().getTagForTrait(match));
                 return "#" + index().getTagForTrait(match);
             default:
                 break;
@@ -221,9 +236,15 @@ public interface JsonTextReplacement {
         String[] parts = match.split("\\|");
         String linkText = parts[0];
         String source = targetType.defaultSource().name();
+
         if (parts.length > 2) {
             linkText = parts[2];
         }
+        if (linkText.matches("\\[.+\\]\\(.+\\)")) {
+            // skip if already a link
+            return linkText;
+        }
+
         if (parts.length > 1) {
             source = parts[1].isBlank() ? source : parts[1];
         }
@@ -243,7 +264,9 @@ public interface JsonTextReplacement {
                 targetType.getRepoRoot(index()),
                 targetType.relativePath(), slugify(parts[0]));
 
-        tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
+        if (targetType != Pf2eIndexType.action) {
+            tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
+        }
         return index().isIncluded(key) ? link : linkText;
     }
 
