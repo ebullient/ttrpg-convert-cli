@@ -21,4 +21,13 @@ public class Pf2eQuteBase extends QuteBase {
     public String targetPath() {
         return type.relativePath();
     }
+
+    @Override
+    public String targetFile() {
+        if (sources != null && !type.defaultSource().sameSource(sources.primarySource())) {
+            return getName() + "-" + sources.primarySource();
+        }
+        return getName();
+    }
+
 }

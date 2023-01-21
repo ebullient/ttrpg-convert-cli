@@ -87,5 +87,9 @@ public class Pf2eSources extends CompendiumSources {
         locg,
         lotg,
         som;
+
+        public boolean sameSource(String source) {
+            return this.name().equalsIgnoreCase(source);
+        }
     }
 }
