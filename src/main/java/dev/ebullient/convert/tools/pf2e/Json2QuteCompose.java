@@ -41,6 +41,7 @@ public class Json2QuteCompose extends Json2QuteBase {
 
         nodes.sort(Comparator.comparing(Field.name::getTextOrEmpty));
         nodes.forEach(x -> appendElement(x, text, tags));
+        appendFootnotes(text, 0);
 
         return new QuteNote(sources,
                 title,

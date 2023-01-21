@@ -26,15 +26,16 @@ public class Json2QuteAction extends Json2QuteBase {
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendEntryToText(text, Field.info.getFrom(rootNode), null);
+        appendFootnotes(text, 0);
 
         JsonActivity jsonActivity = Field.activity.fieldFromTo(rootNode, JsonActivity.class, tui());
         ActionType actionType = Field.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
         String trigger = replaceText(Field.trigger.getTextOrNull(rootNode));
         String cost = replaceText(Field.cost.getTextOrNull(rootNode));
-        List<String> alias = transform(rootNode, Field.alias);
-        List<String> prerequisites = transform(rootNode, Field.prerequisites);
-        List<String> requirements = transform(rootNode, Field.requirements);
+        List<String> alias = transformListFrom(rootNode, Field.alias);
+        List<String> prerequisites = transformListFrom(rootNode, Field.prerequisites);
+        List<String> requirements = transformListFrom(rootNode, Field.requirements);
 
         List<String> traits = Field.traits.getListOfStrings(rootNode, tui()).stream()
                 .sorted()
@@ -136,44 +137,44 @@ public class Json2QuteAction extends Json2QuteBase {
         }
 
         private String createSubclassLink(String subclassName) {
-            String[] cSrc = this.classType.get(0).split("|");
-            String[] scSrc = subclassName.split("|");
+            String[] cSrc = this.classType.get(0).split("\\|");
+            String[] scSrc = subclassName.split("\\|");
             return String.format("%s|%s|%s|%s|%s",
                     cSrc[0],
-                    cSrc.length > 0 ? cSrc[1] : "",
+                    cSrc.length > 1 ? cSrc[1] : "",
                     scSrc[0],
                     scSrc[0],
-                    scSrc.length > 0 ? scSrc[1] : "");
+                    scSrc.length > 1 ? scSrc[1] : "");
         }
 
         private String createAncestryLink(String ancestry) {
-            String[] aSrc = ancestry.split("|");
+            String[] aSrc = ancestry.split("\\|");
             return String.format("%s|%s",
                     aSrc[0],
-                    aSrc.length > 0 ? aSrc[1] : "");
+                    aSrc.length > 1 ? aSrc[1] : "");
         }
 
         private String createHeritageLink(String heritage) {
-            String[] aSrc = this.ancestry.get(0).split("|");
-            String[] hSrc = heritage.split("|");
+            String[] aSrc = this.ancestry.get(0).split("\\|");
+            String[] hSrc = heritage.split("\\|");
             return String.format("%s|%s|%s|%s|%s|",
                     aSrc[0],
-                    aSrc.length > 0 ? aSrc[1] : "",
+                    aSrc.length > 1 ? aSrc[1] : "",
                     hSrc[0],
                     hSrc[0],
-                    hSrc.length > 0 ? hSrc[1] : "");
+                    hSrc.length > 1 ? hSrc[1] : "");
         }
 
         private String createVersatileHeritageLink(String versatile) {
             String[] aSrc = (this.ancestry == null ? "Human|CRB" : this.ancestry.get(0))
-                    .split("|");
-            String[] vSrc = versatile.split("|");
+                    .split("\\|");
+            String[] vSrc = versatile.split("\\|");
             return String.format("%s|%s|%s|%s|%s|",
                     aSrc[0],
-                    aSrc.length > 0 ? aSrc[1] : "",
+                    aSrc.length > 1 ? aSrc[1] : "",
                     vSrc[0],
                     vSrc[0],
-                    vSrc.length > 0 ? vSrc[1] : "");
+                    vSrc.length > 1 ? vSrc[1] : "");
         }
     }
 

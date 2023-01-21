@@ -33,7 +33,7 @@ public class QuteBase {
         return source;
     }
 
-    public boolean hasSections() {
+    public boolean getHasSections() {
         return text.contains("\n## ");
     }
 
