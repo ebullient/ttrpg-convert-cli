@@ -12,6 +12,10 @@ public class Pf2eQuteBase extends QuteBase {
 
     protected Pf2eIndexType type;
 
+    public Pf2eQuteBase(Pf2eSources sources, String text, Collection<String> tags) {
+        this(sources, sources.getName(), sources.getSourceText(), text, tags);
+    }
+
     public Pf2eQuteBase(Pf2eSources sources, String name, String source, String text, Collection<String> tags) {
         super(sources, name, source, text, tags);
         this.type = sources.getType();

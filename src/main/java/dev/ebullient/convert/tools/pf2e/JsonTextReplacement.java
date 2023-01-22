@@ -150,10 +150,22 @@ public interface JsonTextReplacement {
         result = Pf2eIndexType.matchPattern.matcher(result)
                 .replaceAll(this::linkify);
 
+        // "Style tags; {@bold some text to be bolded} (alternative {@b shorthand}),
+        // {@italic some text to be italicised} (alternative {@i shorthand}),
+        // {@underline some text to be underlined} (alternative {@u shorthand}),
+        // {@strike some text to strike-through}, (alternative {@s shorthand}),
+        // {@color color|e40707} tags, {@handwriting handwritten text},
+        // {@sup some superscript,} {@sub some subscript,}
+        // {@center some centered text} {@c with alternative shorthand,}
+        // {@i nostyle {@nostyle to escape font formatting, which can be used with other entry types} {@n (see below).}}
+        // {@indentFirst You can use @indentFirst to indent the first line of text, all subsequent lines will not be indented. This is most often useful in tables, but it can be used anywhere.}
+        // {@indentSubsequent @indentSubsequent is the counterpart to @indentFirst. You can use it to indent all lines after the first. This is most often useful in sidebars, but it can be used anywhere.}",
+
         try {
             result = result
                     .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
                     .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
+                    .replaceAll("\\{@pf2etools ([^}|]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@dc ([^}]+)}", "DC $1")
                     .replaceAll("\\{@flatDC ([^}]+)}", "$1")
@@ -175,7 +187,9 @@ public interface JsonTextReplacement {
                     .replaceAll("\\{@b ([^}]+?)}", "**$1**")
                     .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
                     .replaceAll("\\{@i ([^}]+?)}", "_$1_")
-                    .replaceAll("\\{@italic ([^}]+)}", "_$1_");
+                    .replaceAll("\\{@italic ([^}]+)}", "_$1_")
+                    .replaceAll("\\{@indentFirst ([^}]+?)}", "$1")
+                    .replaceAll("\\{@indentSubsequent ([^}]+?)}", "$1");
         } catch (Exception e) {
             tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
         }
@@ -296,7 +310,7 @@ public interface JsonTextReplacement {
                 targetType.getRepoRoot(index()),
                 targetType.relativePath(), slugify(parts[0]));
 
-        if (targetType != Pf2eIndexType.action) {
+        if (targetType != Pf2eIndexType.action && targetType != Pf2eIndexType.spell && targetType != Pf2eIndexType.feat) {
             tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
         }
         return index().isIncluded(key) ? link : linkText;

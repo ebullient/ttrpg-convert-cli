@@ -23,7 +23,7 @@ public class Json2QuteSpell extends Json2QuteBase {
     static final String SPELLS = "spells";
 
     public Json2QuteSpell(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode, Pf2eSources.findSources(rootNode));
+        super(index, type, rootNode);
     }
 
     @Override
