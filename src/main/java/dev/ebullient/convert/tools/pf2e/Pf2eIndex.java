@@ -58,6 +58,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         Pf2eIndexType.ability.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.feat.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.ritual.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.spell.withArrayFrom(node, this::addToIndex);

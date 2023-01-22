@@ -13,7 +13,7 @@ public class QuteTrait extends Pf2eQuteBase {
     public QuteTrait(Pf2eSources sources, String name, String source,
             List<String> aliases, List<String> categories,
             String text, Collection<String> tags) {
-        super(sources, name, source, text, tags);
+        super(sources, text, tags);
 
         this.aliases = aliases;
         this.categories = categories;

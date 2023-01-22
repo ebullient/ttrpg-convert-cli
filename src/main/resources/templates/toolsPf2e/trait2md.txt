@@ -15,4 +15,5 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {resource.text}
 
 {#if resource.categories }
-- **Categories** {#each resource.categories}{it}{#if it_hasNext}, {/if}{/each}{/if}
+- **Categories** {#each resource.categories}{it}{#if it_hasNext}, {/if}{/each}
+{/if}

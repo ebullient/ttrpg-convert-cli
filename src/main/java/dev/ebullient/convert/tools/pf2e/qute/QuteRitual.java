@@ -29,7 +29,7 @@ public class QuteRitual extends Pf2eQuteBase {
             String level, String ritualType, List<String> traits, List<String> aliases,
             QuteRitualCasting casting, QuteRitualChecks checks, QuteSpellTarget targeting,
             String requirements, String duration, Map<String, String> heightened) {
-        super(sources, sources.getName(), sources.getSourceText(), text, tags);
+        super(sources, text, tags);
 
         this.level = level;
         this.ritualType = ritualType;

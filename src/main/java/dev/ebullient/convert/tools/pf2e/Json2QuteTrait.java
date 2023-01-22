@@ -13,7 +13,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteTraitIndex;
 public class Json2QuteTrait extends Json2QuteBase {
 
     public Json2QuteTrait(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode, Pf2eSources.findSources(rootNode));
+        super(index, type, rootNode);
     }
 
     @Override

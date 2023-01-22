@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -7,7 +8,11 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
 
@@ -138,6 +143,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
+    @RegisterForReflection
     static class NumberUnitEntry {
         public Integer number;
         public String unit;
@@ -165,9 +171,55 @@ public interface Pf2eTypeReader extends JsonSource {
             }
             return unit;
         }
+
+        public QuteActivityType toQuteActivity(JsonSource convert) {
+            String extra = entry == null || entry.toLowerCase().contains("varies")
+                    ? ""
+                    : " (" + convert.replaceText(entry) + ")";
+
+            switch (unit) {
+                case "action":
+                case "free":
+                case "reaction":
+                    Pf2eTypeActivity activity = Pf2eTypeActivity.toActivity(unit, number);
+                    return createActivity(convert,
+                            String.format("%s%s", activity.getCaption(), extra),
+                            activity);
+                case "varies":
+                    return createActivity(convert,
+                            String.format("%s%s", Pf2eTypeActivity.varies.getCaption(), extra),
+                            Pf2eTypeActivity.varies);
+                case "day":
+                case "minute":
+                case "hour":
+                case "round":
+                    return createActivity(convert,
+                            String.format("%s %s%s", number, unit, extra),
+                            Pf2eTypeActivity.timed);
+                default:
+                    throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
+            }
+        }
+
+        QuteActivityType createActivity(JsonSource convert, String text, Pf2eTypeActivity activity) {
+            String fileName = activity.getGlyph();
+            int x = fileName.lastIndexOf('.');
+            Path target = Path.of("img",
+                    Tui.slugify(fileName.substring(0, x)) + fileName.substring(x));
+
+            return new QuteActivityType(
+                    text,
+                    new ImageRef.Builder()
+                            .setStreamSource(activity.getGlyph())
+                            .setTargetPath(convert.index().rulesPath(), target)
+                            .setMarkdownPath(activity.getCaption(), convert.index().rulesRoot())
+                            .build(),
+                    activity.getTextGlyph(),
+                    activity.getRulesPath(convert.index().rulesRoot()));
+        }
     }
 
-    default List<String> transformListFrom(JsonNode node, Field field) {
+    default List<String> transformListFrom(JsonNode node, NodeReader field) {
         List<String> list = field.getListOfStrings(node, tui());
         if (list == null || list.isEmpty()) {
             return List.of();
@@ -203,7 +255,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
         String special = Field.special.getTextOrNull(frequency);
         if (special != null) {
-            return special;
+            return replaceText(special);
         }
 
         String number = numberToText(frequency, Field.freq, true);

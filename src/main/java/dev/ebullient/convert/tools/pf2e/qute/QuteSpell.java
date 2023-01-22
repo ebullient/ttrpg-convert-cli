@@ -32,7 +32,7 @@ public class QuteSpell extends Pf2eQuteBase {
             QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSaveDuration saveDuration,
             List<String> domains, List<String> traditions, List<String> spellLists,
             List<QuteSpellSubclass> subclass, Map<String, String> heightened, QuteSpellAmp amp) {
-        super(sources, sources.getName(), sources.getSourceText(), text, tags);
+        super(sources, text, tags);
 
         this.level = level;
         this.spellType = spellType;
