@@ -110,7 +110,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public String createKey(String name, String source) {
-        if (source == null) {
+        if (source == null || this == data) {
             return String.format("%s|%s", this.name(), name).toLowerCase();
         }
         return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
@@ -188,6 +188,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
                 return "setting/deities";
             // Spell/Ritual
             case ritual:
+                return "rituals";
             case spell:
                 return "spells";
             // Rules --> Rules root

@@ -40,11 +40,11 @@ public class TtrpgConfig {
     }
 
     public static String sourceToLongName(String src) {
-        return activeConfig().abvToName.getOrDefault(sourceToAbbreviation(src), src);
+        return activeConfig().abvToName.getOrDefault(sourceToAbbreviation(src).toLowerCase(), src);
     }
 
     public static String sourceToAbbreviation(String src) {
-        return activeConfig().longToAbv.getOrDefault(src, src);
+        return activeConfig().longToAbv.getOrDefault(src.toLowerCase(), src);
     }
 
     public static Map<String, String> imageFallbackPaths() {
@@ -58,14 +58,15 @@ public class TtrpgConfig {
     public static void checkKnown(Collection<String> bookSources) {
         DatasourceConfig activeConfig = activeConfig();
         bookSources.forEach(s -> {
-            if (activeConfig.abvToName.containsKey(s)) {
+            String check = s.toLowerCase();
+            if (activeConfig.abvToName.containsKey(check)) {
                 return;
             }
-            String alternate = activeConfig.longToAbv.get(s);
+            String alternate = activeConfig.longToAbv.get(check);
             if (alternate != null) {
                 return;
             }
-            if (missingSourceName.add(s)) {
+            if (missingSourceName.add(check)) {
                 tui.warnf("Source %s is unknown", s);
             }
         });
@@ -94,16 +95,16 @@ public class TtrpgConfig {
                 if (srdEntries != null) {
                     config.data.put(ConfigKeys.srdEntries.name(), srdEntries);
                 }
-                config.abvToName.putAll(ConfigKeys.abvToName.getAsMap(config5e));
-                config.longToAbv.putAll(ConfigKeys.longToAbv.getAsMap(config5e));
+                config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(config5e));
+                config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(config5e));
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(config5e));
             }
         }
         if (datasource == Datasource.toolsPf2e) {
             JsonNode configPf2e = ConfigKeys.configPf2e.get(node);
             if (configPf2e != null) {
-                config.abvToName.putAll(ConfigKeys.abvToName.getAsMap(configPf2e));
-                config.longToAbv.putAll(ConfigKeys.longToAbv.getAsMap(configPf2e));
+                config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(configPf2e));
+                config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(configPf2e));
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(configPf2e));
             }
         }
@@ -134,6 +135,16 @@ public class TtrpgConfig {
             return map == null
                     ? Map.of()
                     : Tui.MAPPER.convertValue(map, Tui.MAP_STRING_STRING);
+        }
+
+        Map<String, String> getAsKeyLowerMap(JsonNode node) {
+            JsonNode map = node.get(this.name());
+            if (map == null) {
+                return Map.of();
+            }
+            Map<String, String> result = new HashMap<>();
+            map.fields().forEachRemaining(e -> result.put(e.getKey().toLowerCase(), e.getValue().asText()));
+            return result;
         }
     }
 

@@ -58,6 +58,9 @@ public class Pf2eMarkdown implements MarkdownConverter {
                 case action:
                     converted = new Json2QuteAction(index, type, node).build();
                     break;
+                case ritual:
+                    converted = new Json2QuteRitual(index, type, node).build();
+                    break;
                 case spell:
                     converted = new Json2QuteSpell(index, type, node).build();
                     break;

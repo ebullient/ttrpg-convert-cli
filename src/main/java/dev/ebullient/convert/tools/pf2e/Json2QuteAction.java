@@ -31,17 +31,6 @@ public class Json2QuteAction extends Json2QuteBase {
         JsonActivity jsonActivity = Field.activity.fieldFromTo(rootNode, JsonActivity.class, tui());
         ActionType actionType = Field.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
-        String trigger = replaceText(Field.trigger.getTextOrNull(rootNode));
-        String cost = replaceText(Field.cost.getTextOrNull(rootNode));
-        List<String> alias = transformListFrom(rootNode, Field.alias);
-        List<String> prerequisites = transformListFrom(rootNode, Field.prerequisites);
-        List<String> requirements = transformListFrom(rootNode, Field.requirements);
-
-        List<String> traits = Field.traits.getListOfStrings(rootNode, tui()).stream()
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.trait, s))
-                .collect(Collectors.toList());
-
         if (actionType == null) {
             tags.add(cfg().tagOf("action"));
         } else {
@@ -50,9 +39,12 @@ public class Json2QuteAction extends Json2QuteBase {
 
         return new QuteAction(
                 getSources(),
-                cost, trigger, alias, traits,
-                String.join(", ", prerequisites),
-                String.join(", ", requirements),
+                transformTextFrom(rootNode, Field.cost, ", "),
+                transformTextFrom(rootNode, Field.trigger, ", "),
+                transformListFrom(rootNode, Field.alias),
+                collectTraits(),
+                transformTextFrom(rootNode, Field.prerequisites, ", "),
+                transformTextFrom(rootNode, Field.requirements, ", "),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
                 actionType == null ? null : actionType.build(this),
@@ -103,7 +95,7 @@ public class Json2QuteAction extends Json2QuteBase {
         public QuteAction.ActionType build(JsonSource convert) {
             return new QuteAction.ActionType(isBasic(), isItem(),
                     skill == null ? null
-                            : skill.toString(convert),
+                            : skill.buildString(convert),
                     classType == null ? null
                             : classType.stream()
                                     .map(s -> convert.linkify(Pf2eIndexType.classtype, s))
@@ -185,7 +177,7 @@ public class Json2QuteAction extends Json2QuteBase {
         public List<String> expert;
         public List<String> legendary;
 
-        public String toString(JsonSource convert) {
+        public String buildString(JsonSource convert) {
             List<String> allSkills = new ArrayList<>();
             if (untrained != null) {
                 List<String> inner = new ArrayList<>();

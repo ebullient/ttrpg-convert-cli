@@ -10,6 +10,9 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import dev.ebullient.convert.config.TtrpgConfig.ConfigKeys;
 import dev.ebullient.convert.io.Tui;
 import io.quarkus.arc.Arc;
 import io.quarkus.test.junit.QuarkusTest;
@@ -26,11 +29,12 @@ public class ConfigurationExampleTest {
 
     @Test
     public void exportSourceMap() throws Exception {
-        TtrpgConfig.init(tui, Datasource.tools5e);
-        TtrpgConfig.init(tui, Datasource.toolsPf2e);
-
         Path in = Path.of("src/test/resources/sourcemap.txt");
         Path out = Path.of("examples/config/sourceMap.md");
+
+        JsonNode node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/sourceMap.json"));
+        JsonNode config5e = ConfigKeys.config5e.get(node);
+        JsonNode configPf2e = ConfigKeys.configPf2e.get(node);
 
         StringBuilder tools5e = new StringBuilder();
 
@@ -40,11 +44,11 @@ public class ConfigurationExampleTest {
         StringBuilder toolsPf2e = new StringBuilder();
         toolsPf2e.append(tools5e.toString());
 
-        TtrpgConfig.globalConfig.get(Datasource.tools5e).abvToName.entrySet()
+        ConfigKeys.abvToName.getAsMap(config5e).entrySet()
                 .stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
                 .forEach(e -> tools5e.append("| ").append(e.getKey()).append(" | ").append(e.getValue()).append(" |\n"));
 
-        TtrpgConfig.globalConfig.get(Datasource.toolsPf2e).abvToName.entrySet()
+        ConfigKeys.abvToName.getAsMap(configPf2e).entrySet()
                 .stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
                 .forEach(e -> toolsPf2e.append("| ").append(e.getKey()).append(" | ").append(e.getValue()).append(" |\n"));
 
