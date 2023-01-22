@@ -131,6 +131,11 @@ public class Pf2JsonDataTest {
     }
 
     @Test
+    public void testRitual_p2fe() throws Exception {
+        generateNotesForType(Pf2eIndexType.ritual);
+    }
+
+    @Test
     public void testSpell_p2fe() throws Exception {
         generateNotesForType(Pf2eIndexType.spell);
     }

@@ -28,7 +28,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -406,7 +408,8 @@ public class Tui {
     public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
                 "actions.json", "books.json", "book/book-crb.json",
-                "conditions.json", "skills.json", "spells", "traits.json");
+                "conditions.json", "rituals.json",
+                "skills.json", "spells", "traits.json");
 
         if (toolsBase.resolve("archetypes.json").toFile().exists()
                 && toolsBase.resolve("book/book-crb.json").toFile().exists()) {
@@ -440,5 +443,14 @@ public class Tui {
 
     public void writeYamlFile(Path outputFile, Map<String, Object> map) throws IOException {
         yamlMapper().writer().writeValue(outputFile.toFile(), map);
+    }
+
+    static class ToLowerDeserializer extends KeyDeserializer {
+
+        @Override
+        public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException {
+            return key.toLowerCase();
+        }
+
     }
 }

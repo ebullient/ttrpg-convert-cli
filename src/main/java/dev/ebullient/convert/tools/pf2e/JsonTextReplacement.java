@@ -42,6 +42,38 @@ public interface JsonTextReplacement {
         return index().cfg();
     }
 
+    default String joinConjunct(List<String> list, String lastJoiner) {
+        return joinConjunct(list, ", ", " or ", false);
+    }
+
+    default String joinConjunct(List<String> list, String joiner, String lastJoiner, boolean nonOxford) {
+        if (list == null || list.isEmpty()) {
+            return "";
+        }
+        if (list.size() == 1) {
+            return list.get(0);
+        }
+        if (list.size() == 2) {
+            return String.join(lastJoiner, list);
+        }
+
+        int pause = list.size() - 2;
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < list.size(); ++i) {
+            out.append(list.get(i));
+
+            if (i < pause) {
+                out.append(joiner);
+            } else if (i == pause) {
+                if (!nonOxford) {
+                    out.append(joiner.trim());
+                }
+                out.append(lastJoiner);
+            }
+        }
+        return out.toString();
+    };
+
     default Stream<JsonNode> streamOf(ArrayNode array) {
         return StreamSupport.stream(array.spliterator(), false);
     }

@@ -138,7 +138,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    static class DurationRange {
+    static class NumberUnitEntry {
         public Integer number;
         public String unit;
         public String entry;
@@ -173,6 +173,14 @@ public interface Pf2eTypeReader extends JsonSource {
             return List.of();
         }
         return list.stream().map(s -> replaceText(s)).collect(Collectors.toList());
+    }
+
+    default String transformTextFrom(JsonNode node, NodeReader field, String join) {
+        List<String> list = field.getListOfStrings(node, tui());
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.stream().map(s -> replaceText(s)).collect(Collectors.joining(join));
     }
 
     default String getOrdinalForm(String level) {

@@ -17,6 +17,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellCasting;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSaveDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSubclass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteSpell extends Json2QuteBase {
     static final String SPELLS = "spells";
@@ -33,10 +34,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        List<String> traits = Field.traits.getListOfStrings(rootNode, tui()).stream()
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.trait, s))
-                .collect(Collectors.toList());
+        List<String> traits = collectTraits();
 
         boolean focus = SpellFields.focus.booleanOrDefault(rootNode, false);
         String level = SpellFields.level.getTextOrDefault(rootNode, "1");
@@ -103,17 +101,19 @@ public class Json2QuteSpell extends Json2QuteBase {
     }
 
     QuteSpellCasting getQuteSpellCasting() {
-        DurationRange cast = SpellFields.cast.fieldFromTo(rootNode, DurationRange.class, tui());
         QuteSpellCasting quteCast = new QuteSpellCasting();
 
+        NumberUnitEntry cast = SpellFields.cast.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         quteCast.cast = cast.convertToDurationString(this);
+
         quteCast.components = SpellFields.components.getNestedListOfStrings(rootNode, tui())
                 .stream()
                 .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesRoot()))
                 .collect(Collectors.toList());
-        quteCast.cost = replaceText(SpellFields.cost.getTextOrNull(rootNode));
-        quteCast.trigger = replaceText(SpellFields.trigger.getTextOrNull(rootNode));
-        quteCast.requirements = replaceText(SpellFields.requirements.getTextOrNull(rootNode));
+
+        quteCast.cost = transformTextFrom(rootNode, SpellFields.cost, ", ");
+        quteCast.trigger = transformTextFrom(rootNode, SpellFields.trigger, ", ");
+        quteCast.requirements = transformTextFrom(rootNode, Field.requirements, ", ");
 
         return quteCast;
     }
@@ -144,8 +144,8 @@ public class Json2QuteSpell extends Json2QuteBase {
     }
 
     QuteSpellTarget getQuteSpellTarget(List<String> tags) {
-        String targets = SpellFields.targets.getTextOrNull(rootNode);
-        DurationRange range = SpellFields.range.fieldFromTo(rootNode, DurationRange.class, tui());
+        String targets = replaceText(SpellFields.targets.getTextOrNull(rootNode));
+        NumberUnitEntry range = SpellFields.range.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         SpellArea area = SpellFields.area.fieldFromTo(rootNode, SpellArea.class, tui());
         if (targets == null && area == null && range == null) {
             return null;
@@ -238,7 +238,8 @@ public class Json2QuteSpell extends Json2QuteBase {
         return amp;
     }
 
-    static class SpellDuration extends DurationRange {
+    @RegisterForReflection
+    static class SpellDuration extends NumberUnitEntry {
         public Boolean sustained;
         public Boolean dismiss;
 
@@ -260,6 +261,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         }
     }
 
+    @RegisterForReflection
     static class SpellArea {
         public List<String> types;
         public String entry;
@@ -279,9 +281,11 @@ public class Json2QuteSpell extends Json2QuteBase {
         hidden,
         level,
         plusX,
+        primaryCheck, // ritual
         range,
-        requirements,
         savingThrow,
+        secondaryCasters, //ritual
+        secondaryCheck, // ritual
         spellLists,
         subclass,
         targets,

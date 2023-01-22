@@ -32,6 +32,14 @@ public interface NodeReader {
         return source.get(this.nodeName());
     }
 
+    default JsonNode getFieldFrom(JsonNode source, NodeReader field) {
+        JsonNode targetNode = getFrom(source);
+        if (targetNode == null) {
+            return null;
+        }
+        return targetNode.get(field.nodeName());
+    }
+
     default String getTextOrNull(JsonNode x) {
         JsonNode text = getFrom(x);
         return text == null ? null : text.asText();

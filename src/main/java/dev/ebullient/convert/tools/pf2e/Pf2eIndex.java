@@ -58,6 +58,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         Pf2eIndexType.ability.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.ritual.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.spell.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.trait.withArrayFrom(node, this::addToIndex);
@@ -107,6 +108,10 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         newNode.put("filename", filename);
         newNode.set("data", data);
 
+        int dash = name.lastIndexOf("-");
+        if (dash >= 0) {
+            newNode.put("source", name.substring(dash + 1));
+        }
         TtrpgValue.indexKey.addToNode(newNode, key); // backlink
         imported.put(key, newNode);
     }
@@ -133,9 +138,6 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         imported.entrySet().stream()
                 .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
                 .forEach(e -> filteredIndex.put(e.getKey(), e.getValue()));
-
-        // categorize traits
-
     }
 
     boolean keyIsIncluded(String key, JsonNode node) {

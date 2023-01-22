@@ -1,0 +1,36 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e-ritual
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
+---
+# {resource.name}
+*{resource.ritualType} {resource.level}*  
+{#if resource.traits }{#each resource.traits}{it}  {/each}
+{/if}  
+
+- **Cast** {resource.casting}
+{#if resource.checks }
+- {resource.checks}
+{/if}{#if resource.targeting }
+- {resource.targeting}
+{/if}{#if resource.requirements }
+- **Requirements**: {resource.requirements}
+{/if}
+
+{resource.text}
+
+{#if resource.heightened }
+{#each resource.heightened}**{it.key}** {it.value}
+
+{/each}{/if}
+{#if resource.hasSections }
+## Summary
+
+{/if}
+Source: *{resource.source}*
