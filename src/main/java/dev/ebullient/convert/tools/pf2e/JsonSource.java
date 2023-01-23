@@ -1,8 +1,9 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,9 +15,18 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 
 public interface JsonSource extends JsonTextReplacement {
     Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
+
+    default List<String> collectTraitsFrom(JsonNode sourceNode) {
+        return Field.traits.getListOfStrings(sourceNode, tui()).stream()
+                .sorted()
+                .map(s -> linkify(Pf2eIndexType.trait, s))
+                .collect(Collectors.toList());
+    }
 
     default int appendFootnotes(List<String> text, int count) {
         readingFootnotes.set(true);
@@ -150,11 +160,17 @@ public interface JsonSource extends JsonTextReplacement {
                 case successDegree:
                     appendSuccessDegree(text, node);
                     break;
+                case affliction:
+                    appendAffliction(text, node);
+                    break;
 
                 default:
                     tui().debugf("TODO / How did I get here?: %s %s", type, node.toString());
-                    break;
+                    appendEntryToText(text, Field.entry.getFrom(node), heading);
+                    appendEntryToText(text, Field.entries.getFrom(node), heading);
             }
+            // we had a type field! do nothing else
+            return;
         }
         appendEntryToText(text, Field.entry.getFrom(node), heading);
         appendEntryToText(text, Field.entries.getFrom(node), heading);
@@ -326,25 +342,75 @@ public interface JsonSource extends JsonTextReplacement {
         List<String> inner = new ArrayList<>();
         inner.add("[!success-degree] ");
 
-        JsonNode field = Field.criticalSuccess.getFrom(entries);
+        JsonNode field = SuccessDegree.criticalSuccess.getFrom(entries);
         if (field != null) {
             prependTextMakeListItem(inner, field, "**Critical Success** ");
         }
-        field = Field.success.getFrom(entries);
+        field = SuccessDegree.success.getFrom(entries);
         if (field != null) {
             prependTextMakeListItem(inner, field, "**Success** ");
         }
-        field = Field.failure.getFrom(entries);
+        field = SuccessDegree.failure.getFrom(entries);
         if (field != null) {
             prependTextMakeListItem(inner, field, "**Failure** ");
         }
-        field = Field.criticalFailure.getFrom(entries);
+        field = SuccessDegree.criticalFailure.getFrom(entries);
         if (field != null) {
             prependTextMakeListItem(inner, field, "**Critical Failure** ");
         }
 
         maybeAddBlankLine(text);
         inner.forEach(x -> text.add("> " + x));
+    }
+
+    default void appendAffliction(List<String> text, JsonNode node) {
+        String name = Field.name.getTextOrNull(node);
+        String level = null;
+
+        String savingThrow = toTitleCase(AfflictionField.savingThrow.getTextOrEmpty(node));
+        String dc = AfflictionField.DC.getTextOrNull(node);
+        String savingThrowString = replaceText((dc == null ? "" : "DC " + dc + " ") + savingThrow);
+
+        List<String> traits = collectTraitsFrom(node);
+        List<String> tags = new ArrayList<>();
+
+        JsonNode field = AfflictionField.level.getFrom(node);
+        if (field != null) {
+            level = "Level " + replaceText(field.asText());
+            tags.add(cfg().tagOf("affliction", "level", level));
+        }
+
+        List<String> note = new ArrayList<>();
+        appendEntryToText(note, AfflictionField.note.getFrom(node), null);
+
+        List<String> effect = new ArrayList<>();
+        appendEntryToText(effect, Field.entries.getFrom(node), null);
+
+        Map<String, QuteAfflictionStage> stages = new LinkedHashMap<>();
+        AfflictionField.stages.withArrayFrom(node).forEach(stageNode -> {
+            String title = String.format("Stage %s",
+                    AfflictionField.stage.getTextOrDefault(stageNode, "1"));
+
+            List<String> stageInner = new ArrayList<>();
+            appendEntryToText(stageInner, Field.entry.getFrom(stageNode), title);
+
+            QuteAfflictionStage stage = new QuteAfflictionStage();
+            stage.duration = replaceText(AfflictionField.duration.getTextOrNull(stageNode));
+            stage.text = join(stageInner, "\n");
+
+            stages.put(title, stage);
+        });
+
+        QuteInlineAffliction inlineAffliction = new QuteInlineAffliction(
+                name, note, tags, traits, level,
+                replaceText(AfflictionField.maxDuration.getTextOrNull(node)),
+                replaceText(AfflictionField.onset.getTextOrNull(node)),
+                savingThrowString,
+                join(effect, "\n"),
+                stages);
+
+        maybeAddBlankLine(text);
+        text.add(tui().applyTemplate(inlineAffliction));
     }
 
     default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend) {
@@ -357,80 +423,20 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendTable(List<String> text, JsonNode tableNode) {
-        List<String> table = new ArrayList<>();
 
-        String blockid = "";
+        List<String> table = new ArrayList<>();
 
         String name = Field.name.getTextOrEmpty(tableNode);
         String id = Field.id.getTextOrEmpty(tableNode);
 
-        ArrayNode rows = Field.rows.withArrayFrom(tableNode);
-        List<Integer> labelIdx = Field.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
-
-        if (!name.isEmpty()) {
-            blockid = slugify(name + " " + id);
+        String blockid = "";
+        if (TableField.spans.getFrom(tableNode) == null) {
+            blockid = appendMarkdownTable(tableNode, table, id, name);
+        } else {
+            blockid = appendHtmlTable(tableNode, table, id, name);
         }
 
-        if (labelIdx == null) {
-            int length = rows.get(0).size();
-            String[] array = new String[length];
-            Arrays.fill(array, " ");
-            String header = "|" + String.join(" | ", array) + " |";
-            table.add(header);
-            table.add(header.replaceAll("[^|]", "-"));
-        }
-
-        for (int r = 0; r < rows.size(); r++) {
-            JsonNode rowNode = rows.get(r);
-
-            if (labelIdx != null && labelIdx.contains(r)) {
-                final int ri = r;
-                String header = StreamSupport.stream(rowNode.spliterator(), false)
-                        .map(x -> replaceText(x.asText()))
-                        .map(x -> ri != 0 ? "**" + x + "**" : x)
-                        .collect(Collectors.joining(" | "));
-
-                // make rollable dice headers
-                header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
-
-                if (r == 0 && blockid.isBlank()) {
-                    blockid = slugify(header.replaceAll("d\\d+", "")
-                            .replace("|", "")
-                            .replaceAll("\\s+", " ")
-                            .trim());
-                } else {
-                    if (!blockid.isEmpty()) {
-                        table.add("^" + blockid + "-" + r);
-                    }
-                    table.add("");
-                }
-                table.add(header);
-                table.add(header.replaceAll("[^|]", "-"));
-            } else if (FieldValue.multiRow.isValueOfField(rows, Field.type)) {
-                ArrayNode rows2 = Field.rows.withArrayFrom(rowNode);
-                for (int j = 0; j < rows2.size(); j++) {
-                    final int rindex = j;
-                    String row = "| " +
-                            StreamSupport.stream(rowNode.spliterator(), false)
-                                    .map(x -> replaceText(x.asText()))
-                                    .map(x -> rindex == 0 ? "**" + x + "**" : x)
-                                    .collect(Collectors.joining(" | "))
-                            +
-                            " |";
-                    table.add(row);
-                }
-            } else {
-                String row = "| " +
-                        StreamSupport.stream(rowNode.spliterator(), false)
-                                .map(x -> replaceText(x.asText()))
-                                .collect(Collectors.joining(" | "))
-                        +
-                        " |";
-                table.add(row);
-            }
-        }
-
-        JsonNode intro = Field.intro.getFrom(tableNode);
+        JsonNode intro = TableField.intro.getFrom(tableNode);
         if (intro != null) {
             maybeAddBlankLine(text);
             appendEntryToText(text, intro, null);
@@ -449,11 +455,175 @@ public interface JsonSource extends JsonTextReplacement {
             appendEntryToText(text, footnotes, null);
             readingFootnotes.set(false);
         }
-        JsonNode outro = Field.outro.getFrom(tableNode);
+        JsonNode outro = TableField.outro.getFrom(tableNode);
         if (outro != null) {
             maybeAddBlankLine(text);
             appendEntryToText(text, outro, null);
         }
+    }
+
+    default String appendHtmlTable(JsonNode tableNode, List<String> table, String id, String name) {
+        ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
+        JsonNode colStyles = TableField.colStyles.getFrom(tableNode);
+        int numCols = colStyles != null
+                ? colStyles.size()
+                : TableField.rows.streamOf(tableNode)
+                        .map(x -> x.size())
+                        .max(Integer::compare).get();
+
+        ArrayNode spans = TableField.spans.withArrayFrom(tableNode);
+        int spanIdx = 0;
+
+        List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
+        if (labelIdx == null) {
+            labelIdx = List.of(0);
+        }
+
+        String blockid = slugify(id);
+        if (!name.isEmpty()) {
+            blockid = slugify(name + " " + id);
+        }
+
+        for (int r = 0; r < rows.size(); r++) {
+            ArrayNode rowNode = (ArrayNode) rows.get(r);
+            int cols = rowNode.size(); // varies by row
+
+            if (FieldValue.multiRow.isValueOfField(rowNode, Field.type)) {
+                ArrayNode rows2 = TableField.rows.withArrayFrom(rowNode);
+                List<List<String>> multicol = new ArrayList<>();
+                for (int r2 = 0; r2 < rows2.size(); r2++) {
+                    ArrayNode row = (ArrayNode) rows2.get(r2);
+                    for (int c = 0; c < row.size(); c++) {
+                        if (multicol.size() <= c) {
+                            multicol.add(new ArrayList<>());
+                        }
+                        multicol.get(c).add(replaceHtmlText(row.get(c)));
+                    }
+                }
+                table.add("<tr>");
+                table.add("  <td>"
+                        + multicol.stream()
+                                .map(x -> String.join("</br>", x))
+                                .collect(Collectors.joining("</td>\n  <td>"))
+                        + "</td>");
+                table.add("</tr>");
+            } else if (cols != numCols) {
+                String cellFormat = labelIdx.contains(r)
+                        ? "  <th colspan=\"%s\">%s</th>"
+                        : "  <td colspan=\"%s\">%s</td>";
+
+                ArrayNode spanSizes = (ArrayNode) spans.get(spanIdx);
+                int last = 0;
+                table.add("<tr>");
+
+                for (int i = 0; i < cols; i++) {
+                    ArrayNode colSpan = (ArrayNode) spanSizes.get(i);
+                    JsonNode cell = rowNode.get(i);
+
+                    int start = colSpan.get(0).asInt();
+                    int end = colSpan.get(1).asInt();
+
+                    if (i == 0 && start > 1) {
+                        table.add(String.format(cellFormat, start, ""));
+                    } else {
+                        table.add(String.format(cellFormat,
+                                end - last, replaceHtmlText(cell)));
+                    }
+                    last = end;
+                }
+                table.add("</tr>");
+                spanIdx++;
+            } else {
+                final String row;
+                table.add("<tr>");
+                if (labelIdx.contains(r)) {
+                    table.add("  <th>"
+                            + StreamSupport.stream(rowNode.spliterator(), false)
+                                    .map(x -> replaceHtmlText(x))
+                                    .collect(Collectors.joining("</th>\n  <th>"))
+                            + "</th>");
+                } else {
+                    table.add("  <td>"
+                            + StreamSupport.stream(rowNode.spliterator(), false)
+                                    .map(x -> replaceHtmlText(x))
+                                    .collect(Collectors.joining("</td>\n  <td>"))
+                            + "</td>");
+                }
+                table.add("</tr>");
+            }
+        }
+        return blockid;
+    }
+
+    default String replaceHtmlText(JsonNode cell) {
+        return replaceText(cell.asText().trim())
+                .replaceAll("\\n", "<br/>");
+    }
+
+    default String appendMarkdownTable(JsonNode tableNode, List<String> table, String id, String name) {
+        ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
+        List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
+
+        String blockid = slugify(id);
+        if (!name.isEmpty()) {
+            blockid = slugify(name + " " + id);
+        }
+
+        if (labelIdx == null) {
+            labelIdx = List.of(0);
+        }
+
+        for (int r = 0; r < rows.size(); r++) {
+            JsonNode rowNode = rows.get(r);
+
+            if (labelIdx.contains(r)) {
+                String header = StreamSupport.stream(rowNode.spliterator(), false)
+                        .map(x -> replaceText(x.asText()))
+                        .collect(Collectors.joining(" | "));
+
+                // make rollable dice headers
+                header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
+
+                if (r == 0 && blockid.isBlank()) {
+                    blockid = slugify(header.replaceAll("d\\d+", "")
+                            .replace("|", "")
+                            .replaceAll("\\s+", " ")
+                            .trim());
+                } else if (r != 0) {
+                    if (!blockid.isEmpty()) {
+                        table.add("^" + blockid + "-" + r);
+                    }
+                    table.add("");
+                }
+                table.add(header);
+                table.add(header.replaceAll("[^|]", "-"));
+            } else if (FieldValue.multiRow.isValueOfField(rows, Field.type)) {
+                ArrayNode rows2 = TableField.rows.withArrayFrom(rowNode);
+                for (int j = 0; j < rows2.size(); j++) {
+                    final int rindex = j;
+                    String row = "| " +
+                            StreamSupport.stream(rowNode.spliterator(), false)
+                                    .map(x -> replaceText(x.asText()))
+                                    .map(x -> rindex == 0 ? "**" + x + "**" : x)
+                                    .collect(Collectors.joining(" | "))
+                            +
+                            " |";
+                    table.add(row);
+                }
+            } else {
+                String row = "| " +
+                        StreamSupport.stream(rowNode.spliterator(), false)
+                                .map(x -> x.asText())
+                                .map(x -> x.replaceAll("trait sweep$", "trait sweep}"))
+                                .map(x -> x.replaceAll("group Knife]", "group Knife}"))
+                                .map(x -> replaceText(x))
+                                .collect(Collectors.joining(" | "))
+                        +
+                        " |";
+                table.add(row);
+            }
+        }
+        return blockid;
     }
 
     default void maybeAddBlankLine(List<String> text) {
@@ -491,13 +661,50 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
+    enum SuccessDegree implements NodeReader {
+        criticalSuccess("Critical Success"),
+        success("Success"),
+        failure("Failure"),
+        criticalFailure("Critical Failure");
+
+        final String nodeName;
+
+        SuccessDegree(String nodeName) {
+            this.nodeName = nodeName;
+        }
+
+        public String nodeName() {
+            return nodeName;
+        }
+    }
+
+    enum AfflictionField implements NodeReader {
+        DC,
+        duration,
+        level,
+        maxDuration,
+        note,
+        onset,
+        savingThrow,
+        stage,
+        stages,
+        temptedCurse,
+        type,
+    }
+
+    enum TableField implements NodeReader {
+        colStyles,
+        intro,
+        labelRowIdx,
+        outro,
+        rows,
+        spans,
+    }
+
     enum Field implements NodeReader {
-        activity,
-        actionType,
         alias,
         by,
-        categories,
-        cost,
+        categories, // trait categories for indexing
         customUnit,
         entry,
         entries,
@@ -507,49 +714,23 @@ public interface JsonSource extends JsonTextReplacement {
         group,
         head,
         id,
-        implies,
-        info,
-        intro,
         interval,
         items,
-        labelRowIdx,
         name,
         number,
         overcharge,
-        outro,
         page,
-        prerequisites,
         recurs,
         requirements,
-        rows,
         signature,
         source,
         special,
         style,
         title,
         traits,
-        trigger,
         type,
         unit,
-        criticalSuccess("Critical Success"),
-        success("Success"),
-        failure("Failure"),
-        criticalFailure("Critical Failure"),
         ;
-
-        final String nodeName;
-
-        Field() {
-            this.nodeName = this.name();
-        }
-
-        Field(String nodeName) {
-            this.nodeName = nodeName;
-        }
-
-        public String nodeName() {
-            return nodeName;
-        }
     }
 
     enum AppendTypeValue implements NodeReader.FieldValue {

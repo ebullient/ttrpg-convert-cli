@@ -57,11 +57,14 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         // data ingest. Minimal processing.
         Pf2eIndexType.ability.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.curse.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.disease.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.feat.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.ritual.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.spell.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.table.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.trait.withArrayFrom(node, this::addToIndex);
 
         Pf2eIndexType.adventure.withArrayFrom(node, this::addToIndex);
@@ -162,9 +165,18 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         return !isIncluded(key);
     }
 
-    public String getTagForTrait(String trait) {
-        return traitToTag.get(trait.toLowerCase());
-    }
+    // public String getTagForTrait(String trait) {
+    //     String traitTag = traitToTag.get(trait.toLowerCase());
+    //     if (traitTag == null && trait.contains("<")) {
+    //         String[] pieces = trait.split(" ");
+    //         return cfg().traitTagOf(pieces);
+    //     }
+    //     if (traitTag == null) {
+    //         tui().warnf("Unknown trait %s, not in index", trait);
+    //         traitTag = cfg().traitTagOf(trait);
+    //     }
+    //     return traitTag;
+    // }
 
     // --------- Write indexes ---------
 

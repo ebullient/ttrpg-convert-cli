@@ -10,9 +10,8 @@ public class QuteTrait extends Pf2eQuteBase {
     public final List<String> aliases;
     public final List<String> categories;
 
-    public QuteTrait(Pf2eSources sources, String name, String source,
-            List<String> aliases, List<String> categories,
-            String text, Collection<String> tags) {
+    public QuteTrait(Pf2eSources sources, List<String> text, Collection<String> tags,
+            List<String> aliases, List<String> categories) {
         super(sources, text, tags);
 
         this.aliases = aliases;

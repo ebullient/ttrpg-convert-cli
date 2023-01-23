@@ -100,12 +100,13 @@ public class MarkdownWriter {
 
     public void writeNotes(Path dir, Collection<QuteNote> notes) {
         Path targetDir = output.resolve(dir);
-        targetDir.toFile().mkdirs();
 
         for (QuteNote n : notes) {
             String fn = n.targetFile();
+            Path fd = targetDir.resolve(n.targetPath()).normalize();
+            fd.toFile().mkdirs();
             String fileName = Tui.slugify(fn) + (fn.endsWith(".md") ? "" : ".md");
-            writeNote(targetDir, fileName, n);
+            writeNote(fd, fileName, n);
         }
 
         tui.outPrintf("✅ Wrote %s notes (rules and tables).%n", notes.size());

@@ -42,6 +42,13 @@ public interface JsonTextReplacement {
         return index().cfg();
     }
 
+    default String join(List<String> list, String joiner) {
+        if (list == null || list.isEmpty()) {
+            return "";
+        }
+        return String.join(joiner, list).trim();
+    }
+
     default String joinConjunct(List<String> list, String lastJoiner) {
         return joinConjunct(list, ", ", " or ", false);
     }
@@ -177,7 +184,6 @@ public interface JsonTextReplacement {
                     .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                     .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
                     .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                     .replaceAll("\\{@hit ([^}<]+)}", "+$1")
@@ -254,7 +260,10 @@ public interface JsonTextReplacement {
     }
 
     default String linkify(MatchResult match) {
-        Pf2eIndexType targetType = Pf2eIndexType.fromTemplateName(match.group(1));
+        Pf2eIndexType targetType = Pf2eIndexType.fromText(match.group(1));
+        if (targetType == null) {
+            throw new IllegalStateException("Unknown type to linkify (how?)" + match.group(0));
+        }
         return linkify(targetType, match.group(2));
     }
 
@@ -269,8 +278,10 @@ public interface JsonTextReplacement {
                 return linkifyClassFeature(match);
             case subclassFeature:
                 return linkifySubClassFeature(match);
-            case trait:
-                return "#" + index().getTagForTrait(match);
+            case curse:
+            case disease:
+                tui().debugf("LINK FOR AFFLICTION? %s", match);
+                break;
             default:
                 break;
         }
@@ -279,6 +290,7 @@ public interface JsonTextReplacement {
 
         // "{@b Actions:} {@action strike} assumes CRB by default, {@action act together|som} can have sources added with a pipe, {@action devise a stratagem|apg|and optional link text added with another pipe}.",
         // "{@b Conditions:} {@condition stunned} assumes CRB by default, {@condition stunned|crb} can have sources added with a pipe (not that it's ever useful), {@condition stunned|crb|and optional link text added with another pipe}.",
+        // "{@b Tables:} {@table ability modifiers} assumes CRB by default, {@table automatic bonus progression|gmg} can have sources added with a pipe, {@table domains|logm|and optional link text added with another pipe}.",
         String[] parts = match.split("\\|");
         String linkText = parts[0];
         String source = targetType.defaultSource().name();
@@ -289,6 +301,10 @@ public interface JsonTextReplacement {
         if (linkText.matches("\\[.+\\]\\(.+\\)")) {
             // skip if already a link
             return linkText;
+        }
+        if (targetType == Pf2eIndexType.trait && parts.length < 2 && linkText.contains("<")) {
+            String[] pieces = parts[0].split(" ");
+            parts[0] = pieces[0];
         }
 
         if (parts.length > 1) {
@@ -310,7 +326,8 @@ public interface JsonTextReplacement {
                 targetType.getRepoRoot(index()),
                 targetType.relativePath(), slugify(parts[0]));
 
-        if (targetType != Pf2eIndexType.action && targetType != Pf2eIndexType.spell && targetType != Pf2eIndexType.feat) {
+        if (targetType != Pf2eIndexType.action && targetType != Pf2eIndexType.spell && targetType != Pf2eIndexType.feat
+                && targetType != Pf2eIndexType.trait) {
             tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
         }
         return index().isIncluded(key) ? link : linkText;

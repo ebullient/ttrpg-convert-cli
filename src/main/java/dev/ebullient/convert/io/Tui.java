@@ -39,6 +39,7 @@ import com.github.slugify.Slugify;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.QuteNote;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
@@ -130,6 +131,7 @@ public class Tui {
     PrintWriter out;
     PrintWriter err;
 
+    private Templates templates;
     private CommandLine commandLine;
     private boolean debug;
     private boolean verbose;
@@ -161,6 +163,10 @@ public class Tui {
 
     public void setOutputPath(Path output) {
         this.output = output;
+    }
+
+    public void setTemplates(Templates templates) {
+        this.templates = templates;
     }
 
     public void close() {
@@ -407,9 +413,9 @@ public class Tui {
 
     public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
-                "actions.json", "books.json", "book/book-crb.json",
+                "actions.json", "afflictions.json", "books.json", "book/book-crb.json",
                 "conditions.json", "feats", "rituals.json",
-                "skills.json", "spells", "traits.json");
+                "skills.json", "spells", "tables.json", "traits.json");
 
         if (toolsBase.resolve("archetypes.json").toFile().exists()
                 && toolsBase.resolve("book/book-crb.json").toFile().exists()) {
@@ -443,6 +449,10 @@ public class Tui {
 
     public void writeYamlFile(Path outputFile, Map<String, Object> map) throws IOException {
         yamlMapper().writer().writeValue(outputFile.toFile(), map);
+    }
+
+    public String applyTemplate(QuteNote note) {
+        return templates.renderNote(note);
     }
 
     static class ToLowerDeserializer extends KeyDeserializer {

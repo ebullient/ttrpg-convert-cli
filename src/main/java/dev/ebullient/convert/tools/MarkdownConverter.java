@@ -6,7 +6,7 @@ public interface MarkdownConverter {
 
     MarkdownConverter writeAll();
 
-    MarkdownConverter writeFiles(List<IndexType> types);
+    MarkdownConverter writeFiles(List<? extends IndexType> types);
 
     MarkdownConverter writeNotesAndTables();
 

@@ -56,7 +56,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             return null;
         }
 
-        return new QuteNote(title, null, String.join("\n", text), tags);
+        return new QuteNote(title, null, text, tags);
     }
 
     private void appendElement(JsonNode entry, List<String> text, Set<String> tags) {
@@ -137,7 +137,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             appendEntryObjectToText(text, entry, "###");
         });
 
-        return new QuteNote(title, null, String.join("\n", text), tags);
+        return new QuteNote(title, null, text, tags);
     }
 
     public QuteNote buildLoot() {
@@ -149,7 +149,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             return null;
         }
 
-        return new QuteNote(title, null, String.join("\n", text), tags);
+        return new QuteNote(title, null, text, tags);
     }
 
     private void appendLootElement(JsonNode entry, List<String> text) {
@@ -219,7 +219,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             return null;
         }
 
-        return new QuteNote(title, null, String.join("\n", text), tags);
+        return new QuteNote(title, null, text, tags);
     }
 
     private void appendAction(JsonNode entry, List<String> text, Map<String, String> actionDuration, Set<String> tags) {

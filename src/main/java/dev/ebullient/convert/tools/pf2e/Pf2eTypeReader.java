@@ -133,6 +133,10 @@ public interface Pf2eTypeReader extends JsonSource {
             return encoding;
         }
 
+        public String toTitleCase(JsonSource convert) {
+            return convert.toTitleCase(this.name());
+        }
+
         static Pf2eSavingThrowType valueFromEncoding(String value) {
             if (value == null || value.isBlank()) {
                 return null;

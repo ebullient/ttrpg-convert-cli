@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -22,22 +23,31 @@ public class Json2QuteFeat extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        return new QuteFeat(sources, String.join("\n", text), tags,
-                collectTraits(),
+        List<String> leadsTo = FeatField.leadsTo.getListOfStrings(rootNode, tui())
+                .stream()
+                .map(x -> linkify(Pf2eIndexType.feat, x))
+                .collect(Collectors.toList());
+
+        return new QuteFeat(sources, text, tags,
+                collectTraitsFrom(rootNode),
                 transformListFrom(rootNode, Field.alias),
-                FeatFields.level.getTextOrDefault(rootNode, "1"),
-                transformTextFrom(rootNode, FeatFields.access, ", "),
+                FeatField.level.getTextOrDefault(rootNode, "1"),
+                transformTextFrom(rootNode, FeatField.access, ", "),
                 getFrequency(rootNode),
-                transformTextFrom(rootNode, Field.trigger, ", "),
-                transformTextFrom(rootNode, Field.cost, ", "),
+                transformTextFrom(rootNode, FeatField.trigger, ", "),
+                transformTextFrom(rootNode, FeatField.cost, ", "),
                 transformTextFrom(rootNode, Field.requirements, ", "),
-                transformTextFrom(rootNode, Field.prerequisites, ", "),
-                transformListFrom(rootNode, FeatFields.leadsTo));
+                transformTextFrom(rootNode, FeatField.prerequisites, ", "),
+                leadsTo);
     }
 
-    enum FeatFields implements NodeReader {
+    enum FeatField implements NodeReader {
         access,
+        cost,
         leadsTo,
-        level;
+        level,
+        prerequisites,
+        trigger,
+        ;
     }
 }

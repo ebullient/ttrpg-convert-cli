@@ -34,7 +34,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        List<String> traits = collectTraits();
+        List<String> traits = collectTraitsFrom(rootNode);
 
         boolean focus = SpellFields.focus.booleanOrDefault(rootNode, false);
         String level = SpellFields.level.getTextOrDefault(rootNode, "1");
@@ -46,7 +46,7 @@ public class Json2QuteSpell extends Json2QuteBase {
             type = "focus";
             tags.add(cfg().tagOf(SPELLS, type, level));
         } else {
-            tags.add(cfg().tagOf(SPELLS, level));
+            tags.add(cfg().tagOf(SPELLS, "level", level));
         }
 
         // traditions --> map tradition to trait
@@ -84,8 +84,7 @@ public class Json2QuteSpell extends Json2QuteBase {
             });
         }
 
-        return new QuteSpell(sources,
-                String.join("\n", text), tags,
+        return new QuteSpell(sources, text, tags,
                 level, toTitleCase(type),
                 traits,
                 transformListFrom(rootNode, Field.alias),

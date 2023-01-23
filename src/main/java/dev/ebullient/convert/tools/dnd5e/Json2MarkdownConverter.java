@@ -46,7 +46,7 @@ public class Json2MarkdownConverter implements MarkdownConverter {
         return writeFiles(List.of(type));
     }
 
-    public Json2MarkdownConverter writeFiles(List<IndexType> types) {
+    public Json2MarkdownConverter writeFiles(List<? extends IndexType> types) {
         if (index.notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing files");
         }
