@@ -278,10 +278,6 @@ public interface JsonTextReplacement {
                 return linkifyClassFeature(match);
             case subclassFeature:
                 return linkifySubClassFeature(match);
-            case curse:
-            case disease:
-                tui().debugf("LINK FOR AFFLICTION? %s", match);
-                break;
             default:
                 break;
         }
@@ -302,9 +298,15 @@ public interface JsonTextReplacement {
             // skip if already a link
             return linkText;
         }
-        if (targetType == Pf2eIndexType.trait && parts.length < 2 && linkText.contains("<")) {
-            String[] pieces = parts[0].split(" ");
-            parts[0] = pieces[0];
+        if (targetType == Pf2eIndexType.trait) {
+            if (parts.length < 2 && linkText.contains("<")) {
+                String[] pieces = parts[0].split(" ");
+                parts[0] = pieces[0];
+            } else if (parts[0].startsWith("[")) {
+                // Do the same replacement we did when doing the initial import
+                // [...] becomes "Any ..."
+                parts[0].replaceAll("\\[(.*)\\]", "Any $1");
+            }
         }
 
         if (parts.length > 1) {

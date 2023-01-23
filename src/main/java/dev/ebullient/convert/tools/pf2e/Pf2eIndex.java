@@ -26,10 +26,10 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     static final String CORE_RULES = "book-crb.json";
     final CompendiumConfig config;
 
+    private final Map<String, String> alias = new HashMap<>();
     private final Map<String, JsonNode> imported = new HashMap<>();
     private final Map<String, JsonNode> filteredIndex = new HashMap<>();
 
-    private final Map<String, String> traitToTag = new HashMap<>();
     private final Map<String, Collection<String>> categoryToTraits = new TreeMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
@@ -78,21 +78,31 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     void addToIndex(Pf2eIndexType type, JsonNode node) {
         // TODO: Variants? Reprints?
         String key = type.createKey(node);
-        TtrpgValue.indexKey.addToNode(node, key); // backlink
-        imported.put(key, node);
 
-        // Precreate tag index/lookup
+        // Change the indexed name for [...] traits
+        String name = Field.name.getTextOrEmpty(node);
+        if (type == Pf2eIndexType.trait && name.startsWith("[")) {
+            name = name.replaceAll("\\[(.*)\\]", "Any $1");
+            ((ObjectNode) node).put("name", name);
+
+            String newKey = type.createKey(node);
+            alias.put(key, newKey);
+            key = newKey;
+        }
+
+        // Add the node + key to the index, and store the key in the node
+        imported.put(key, node);
+        TtrpgValue.indexKey.addToNode(node, key);
+
+        // Precreate index/lookup for traits
         if (type == Pf2eIndexType.trait) {
-            String trait = Field.name.getTextOrEmpty(node);
-            String traitTag = cfg().traitTagOf(trait);
-            traitToTag.put(trait.toLowerCase(), traitTag);
+            String traitLink = linkify(type, name);
 
             Field.categories.getListOfStrings(node, tui()).stream()
                     .filter(c -> !c.equals("_alignAbv"))
                     .forEach(c -> {
-                        String categoryTag = cfg().traitCategoryTagOf(c);
-                        categoryToTraits.computeIfAbsent(categoryTag, k -> new TreeSet<>())
-                                .add(traitTag);
+                        categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
+                                .add(traitLink);
                     });
         }
     }
@@ -164,19 +174,6 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     public boolean isExcluded(String key) {
         return !isIncluded(key);
     }
-
-    // public String getTagForTrait(String trait) {
-    //     String traitTag = traitToTag.get(trait.toLowerCase());
-    //     if (traitTag == null && trait.contains("<")) {
-    //         String[] pieces = trait.split(" ");
-    //         return cfg().traitTagOf(pieces);
-    //     }
-    //     if (traitTag == null) {
-    //         tui().warnf("Unknown trait %s, not in index", trait);
-    //         traitTag = cfg().traitTagOf(trait);
-    //     }
-    //     return traitTag;
-    // }
 
     // --------- Write indexes ---------
 

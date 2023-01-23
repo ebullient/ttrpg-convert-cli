@@ -125,18 +125,6 @@ public class CompendiumConfig {
                 .collect(Collectors.joining("/"));
     }
 
-    public String traitTagOf(String... tag) {
-        return tagPrefix + "trait/" + Arrays.stream(tag)
-                .map(s -> Tui.slugify(s))
-                .collect(Collectors.joining("/"));
-    }
-
-    public String traitCategoryTagOf(String... tag) {
-        return tagPrefix + "trait/category/" + Arrays.stream(tag)
-                .map(s -> Tui.slugify(s))
-                .collect(Collectors.joining("/"));
-    }
-
     public List<String> getBooks() {
         // works for 5eTools and pf2eTools
         return books.stream()

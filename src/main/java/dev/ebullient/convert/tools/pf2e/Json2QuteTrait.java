@@ -24,17 +24,17 @@ public class Json2QuteTrait extends Json2QuteBase {
         List<String> categories = new ArrayList<>();
 
         Field.categories.getListOfStrings(rootNode, tui()).forEach(c -> {
-            tags.add(cfg().traitCategoryTagOf(c));
+            tags.add(cfg().tagOf("trait", "category", c));
 
             JsonNode implied = TraitField.implies.getFrom(rootNode);
             if (implied != null) {
                 implied.fieldNames().forEachRemaining(n -> {
                     if ("spell".equals(n.toLowerCase())) {
                         String school = implied.get(n).get("_fSchool").asText();
-                        tags.add(cfg().traitCategoryTagOf("spell", school));
+                        tags.add(cfg().tagOf("trait", "category", "spell", school));
                         categories.add(String.format("%s (%s)", c, school));
                     } else {
-                        tags.add(cfg().traitCategoryTagOf(n));
+                        tags.add(cfg().tagOf("trait", "category", n));
                     }
                 });
             } else {
@@ -45,9 +45,7 @@ public class Json2QuteTrait extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        return new QuteTrait(sources, text, tags,
-                List.of(index().linkify(Pf2eIndexType.trait, getSources().getName())),
-                categories);
+        return new QuteTrait(sources, text, tags, List.of(), categories);
     }
 
     static QuteNote buildIndex(Pf2eIndex index) {

@@ -74,14 +74,16 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendEntryObjectToText(List<String> text, JsonNode node, String heading) {
+        AppendTypeValue type = AppendTypeValue.valueFrom(node, Field.type);
         String source = Field.source.getTextOrEmpty(node);
+
+        // entriesOtherSource handled here.
         if (!source.isEmpty() && !cfg().sourceIncluded(source)) {
             if (!cfg().sourceIncluded(getSources().alternateSource())) {
                 return;
             }
         }
 
-        AppendTypeValue type = AppendTypeValue.valueFrom(node, Field.type);
         if (type != null) {
             switch (type) {
                 case section:
@@ -153,19 +155,24 @@ public interface JsonSource extends JsonTextReplacement {
                     appendQuote(text, node);
                     break;
 
-                // pf2-abilities
+                // special inline types
                 case ability:
                     appendAbility(text, node);
-                    break;
-                case successDegree:
-                    appendSuccessDegree(text, node);
                     break;
                 case affliction:
                     appendAffliction(text, node);
                     break;
+                case lvlEffect:
+                    appendLevelEffect(text, node);
+                    break;
+                case successDegree:
+                    appendSuccessDegree(text, node);
+                    break;
 
                 default:
-                    tui().debugf("TODO / How did I get here?: %s %s", type, node.toString());
+                    if (type != AppendTypeValue.entriesOtherSource) {
+                        tui().errorf("TODO / How did I get here?: %s %s", type, node.toString());
+                    }
                     appendEntryToText(text, Field.entry.getFrom(node), heading);
                     appendEntryToText(text, Field.entries.getFrom(node), heading);
             }
@@ -284,6 +291,12 @@ public interface JsonSource extends JsonTextReplacement {
         appendEntryToText(quoteText, Field.entry.getFrom(entry), null);
         appendEntryToText(quoteText, Field.entries.getFrom(entry), null);
 
+        String from = Field.by.getTextOrEmpty(entry);
+        if (!from.isEmpty()) {
+            maybeAddBlankLine(quoteText);
+            quoteText.add("-- " + from);
+        }
+
         maybeAddBlankLine(text);
         quoteText.forEach(x -> text.add("> " + x));
         maybeAddBlankLine(text);
@@ -334,6 +347,15 @@ public interface JsonSource extends JsonTextReplacement {
             }
         }
         text.addAll(inner);
+    }
+
+    default void appendLevelEffect(List<String> text, JsonNode node) {
+        maybeAddBlankLine(text);
+
+        Field.entries.streamOf(node).forEach(e -> {
+            String range = Field.range.getTextOrEmpty(e);
+            prependTextMakeListItem(text, e, "**" + range + "** ");
+        });
     }
 
     default void appendSuccessDegree(List<String> text, JsonNode node) {
@@ -720,6 +742,7 @@ public interface JsonSource extends JsonTextReplacement {
         number,
         overcharge,
         page,
+        range, // level effect
         recurs,
         requirements,
         signature,
