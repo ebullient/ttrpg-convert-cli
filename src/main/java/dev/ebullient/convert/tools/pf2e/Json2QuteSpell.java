@@ -39,7 +39,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         boolean focus = SpellFields.focus.booleanOrDefault(rootNode, false);
         String level = SpellFields.level.getTextOrDefault(rootNode, "1");
         String type = "spell";
-        if (traits.contains(cfg().traitTagOf("cantrip"))) {
+        if (join(traits, "").contains("cantrip")) {
             type = "cantrip";
             tags.add(cfg().tagOf(SPELLS, type));
         } else if (focus) {
