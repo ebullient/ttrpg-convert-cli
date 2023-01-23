@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTrait;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTraitIndex;
@@ -25,7 +26,7 @@ public class Json2QuteTrait extends Json2QuteBase {
         Field.categories.getListOfStrings(rootNode, tui()).forEach(c -> {
             tags.add(cfg().traitCategoryTagOf(c));
 
-            JsonNode implied = Field.implies.getFrom(rootNode);
+            JsonNode implied = TraitField.implies.getFrom(rootNode);
             if (implied != null) {
                 implied.fieldNames().forEachRemaining(n -> {
                     if ("spell".equals(n.toLowerCase())) {
@@ -44,19 +45,18 @@ public class Json2QuteTrait extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        return new QuteTrait(
-                getSources(),
-                getSources().getName(),
-                getSources().getSourceText(),
+        return new QuteTrait(sources, text, tags,
                 List.of(index().linkify(Pf2eIndexType.trait, getSources().getName())),
-                categories,
-                String.join("\n", text),
-                tags);
+                categories);
     }
 
     static QuteNote buildIndex(Pf2eIndex index) {
         Pf2eSources sources = Pf2eSources.constructSyntheticSource("Trait Index");
 
         return new QuteTraitIndex(sources, index.categoryTraitMap());
+    }
+
+    enum TraitField implements NodeReader {
+        implies,
     }
 }

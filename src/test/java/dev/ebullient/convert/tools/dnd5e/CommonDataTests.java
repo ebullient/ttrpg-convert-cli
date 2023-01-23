@@ -32,6 +32,7 @@ public class CommonDataTests {
         tui.init(null, true, false);
 
         templates = Arc.container().instance(Templates.class).get();
+        tui.setTemplates(templates);
 
         TtrpgConfig.init(tui, Datasource.tools5e);
         configurator = new Configurator(tui);

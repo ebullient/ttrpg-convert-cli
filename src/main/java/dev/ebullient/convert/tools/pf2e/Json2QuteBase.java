@@ -1,8 +1,5 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.QuteBase;
@@ -22,13 +19,6 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
         this.type = type;
         this.rootNode = rootNode;
         this.sources = sources;
-    }
-
-    public List<String> collectTraits() {
-        return Field.traits.getListOfStrings(rootNode, tui()).stream()
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.trait, s))
-                .collect(Collectors.toList());
     }
 
     @Override

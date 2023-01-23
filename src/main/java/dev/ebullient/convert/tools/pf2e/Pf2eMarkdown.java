@@ -16,6 +16,7 @@ import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
 public class Pf2eMarkdown implements MarkdownConverter {
     final Pf2eIndex index;
@@ -40,7 +41,24 @@ public class Pf2eMarkdown implements MarkdownConverter {
     }
 
     @Override
-    public Pf2eMarkdown writeFiles(List<IndexType> types) {
+    public Pf2eMarkdown writeFiles(List<? extends IndexType> types) {
+        if (types == null) {
+        } else {
+            writePf2eQuteBase(types.stream()
+                    .filter(x -> !((Pf2eIndexType) x).useQuteNote())
+                    .collect(Collectors.toList()));
+            writeNotesAndTables(types.stream()
+                    .filter(x -> ((Pf2eIndexType) x).useQuteNote())
+                    .collect(Collectors.toList()));
+        }
+        return this;
+    }
+
+    private Pf2eMarkdown writePf2eQuteBase(List<? extends IndexType> types) {
+        if (types != null && types.isEmpty()) {
+            return this;
+        }
+
         List<Pf2eQuteBase> compendium = new ArrayList<>();
         List<Pf2eQuteBase> rules = new ArrayList<>();
 
@@ -49,7 +67,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
             final JsonNode node = e.getValue();
             final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
 
-            if (!types.contains(type)) {
+            if (types != null && !types.contains(type)) {
                 continue;
             }
 
@@ -57,6 +75,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
             switch (type) {
                 case action:
                     converted = new Json2QuteAction(index, type, node).build();
+                    break;
+                case curse:
+                case disease:
+                    converted = new Json2QuteAffliction(index, type, node).build();
                     break;
                 case feat:
                     converted = new Json2QuteFeat(index, type, node).build();
@@ -88,6 +110,14 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
     @Override
     public Pf2eMarkdown writeNotesAndTables() {
+        return writeNotesAndTables(null);
+    }
+
+    private Pf2eMarkdown writeNotesAndTables(List<? extends IndexType> types) {
+        if (types != null && types.isEmpty()) {
+            return this;
+        }
+
         List<QuteNote> compendium = new ArrayList<>();
         List<QuteNote> rules = new ArrayList<>();
 
@@ -96,6 +126,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
             final String key = e.getKey();
             final JsonNode node = e.getValue();
             final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
+
+            if (types != null && !types.contains(type)) {
+                continue;
+            }
 
             switch (type) {
                 case skill:
@@ -107,6 +141,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
                     Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
                             t -> new Json2QuteCompose(type, index, "Conditions"));
                     conditions.add(node);
+                    break;
+                case table:
+                    Pf2eQuteNote table = new Json2QuteTable(index, type, node).build();
+                    rules.add(table);
                     break;
                 default:
                     break;

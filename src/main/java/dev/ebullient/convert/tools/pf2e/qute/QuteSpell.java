@@ -27,7 +27,7 @@ public class QuteSpell extends Pf2eQuteBase {
     public final List<QuteSpellSubclass> subclass;
     public final Map<String, String> heightened;
 
-    public QuteSpell(Pf2eSources sources, String text, Collection<String> tags,
+    public QuteSpell(Pf2eSources sources, List<String> text, Collection<String> tags,
             String level, String spellType, List<String> traits, List<String> aliases,
             QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSaveDuration saveDuration,
             List<String> domains, List<String> traditions, List<String> spellLists,

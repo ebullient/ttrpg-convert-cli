@@ -1,0 +1,35 @@
+```ad-affliction
+{#if resource.name }
+title: {resource.name}{#if resource.level } _{resource.level}_{/if}
+
+{#else if resource.savingThrow }
+title: {resource.savingThrow}
+
+{/if}
+{#if resource.traits }{#each resource.traits}{it}  {/each}
+
+{/if}
+{#if resource.text }{resource.text}
+
+{/if}{#if resource.savingThrow }
+- **Saving Throws**: {resource.savingThrow}
+{/if}{#if resource.onset }
+- **Onset**: {resource.onset}
+{/if}{#if resource.maxDuration }
+- **Maximum Duration**: {resource.maxDuration}
+{/if}
+{#if resource.stages }
+
+## Stages
+
+{#each resource.stages}**{it.key}** {it.value.text}{#if it.value.duration } ({it.value.duration}){/if}
+
+{/each}{/if}{#if resource.effect }
+
+## Effects
+
+{resource.effect}
+{/if}{#if resource.tags }
+
+%% {#each resource.tags}{it}  {/each} %%{/if}
+```

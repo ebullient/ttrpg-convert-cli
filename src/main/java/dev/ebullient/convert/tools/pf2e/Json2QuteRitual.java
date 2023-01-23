@@ -31,10 +31,9 @@ public class Json2QuteRitual extends Json2QuteSpell {
         String level = SpellFields.level.getTextOrDefault(rootNode, "1");
         tags.add(cfg().tagOf(RITUALS, level));
 
-        return new QuteRitual(sources,
-                String.join("\n", text), tags,
+        return new QuteRitual(sources, text, tags,
                 level, "Ritual",
-                collectTraits(),
+                collectTraitsFrom(rootNode),
                 transformListFrom(rootNode, Field.alias),
                 getQuteRitualCast(),
                 getQuteRitualChecks(),

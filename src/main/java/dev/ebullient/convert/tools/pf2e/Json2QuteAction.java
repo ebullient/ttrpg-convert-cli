@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAction;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -21,11 +22,11 @@ public class Json2QuteAction extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
-        appendEntryToText(text, Field.info.getFrom(rootNode), null);
+        appendEntryToText(text, ActionField.info.getFrom(rootNode), null);
         appendFootnotes(text, 0);
 
-        NumberUnitEntry jsonActivity = Field.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
-        ActionType actionType = Field.actionType.fieldFromTo(rootNode, ActionType.class, tui());
+        NumberUnitEntry jsonActivity = ActionField.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
+        ActionType actionType = ActionField.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
         if (actionType == null) {
             tags.add(cfg().tagOf("action"));
@@ -34,12 +35,12 @@ public class Json2QuteAction extends Json2QuteBase {
         }
 
         return new QuteAction(
-                getSources(), String.join("\n", text), tags,
-                transformTextFrom(rootNode, Field.cost, ", "),
-                transformTextFrom(rootNode, Field.trigger, ", "),
+                getSources(), text, tags,
+                transformTextFrom(rootNode, ActionField.cost, ", "),
+                transformTextFrom(rootNode, ActionField.trigger, ", "),
                 transformListFrom(rootNode, Field.alias),
-                collectTraits(),
-                transformTextFrom(rootNode, Field.prerequisites, ", "),
+                collectTraitsFrom(rootNode),
+                transformTextFrom(rootNode, ActionField.prerequisites, ", "),
                 transformTextFrom(rootNode, Field.requirements, ", "),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
@@ -195,5 +196,15 @@ public class Json2QuteAction extends Json2QuteBase {
             }
             return String.join("; ", allSkills);
         }
+    }
+
+    enum ActionField implements NodeReader {
+        activity,
+        actionType,
+        cost,
+        info,
+        prerequisites,
+        trigger,
+
     }
 }

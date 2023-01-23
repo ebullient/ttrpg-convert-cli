@@ -40,9 +40,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
                 .map(x -> x.replaceAll("^\\|\\s*\\d+\\s*", ""))
                 .collect(Collectors.toList());
 
-        notes.add(new QuteNote(title, null,
-                String.join("\n", listToTable(title, text)),
-                List.of()));
+        notes.add(new QuteNote(title, null, listToTable(title, text), List.of()));
     }
 
     private void addIdealsIfPresent(List<QuteNote> notes) {
@@ -157,9 +155,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         maybeAddBlankLine(text);
         text.addAll(tableSection("Universal Ideals (Any)", any));
 
-        notes.add(new QuteNote("Ideals", null,
-                String.join("\n", text),
-                List.of()));
+        notes.add(new QuteNote("Ideals", null, text, List.of()));
     }
 
     List<String> tableSection(String title, List<String> elements) {

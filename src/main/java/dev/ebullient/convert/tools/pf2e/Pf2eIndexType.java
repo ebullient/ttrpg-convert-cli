@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,10 +30,10 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     condition,
     creature, // B1
     creatureTemplate, // B1
-    curse, // GMG
+    curse("affliction"), // GMG
     data, // data from any source
     deity,
-    disease, // GMG
+    disease("affliction"), // GMG
     domain,
     eidolon, // SoM
     event, // LOTG
@@ -75,7 +76,8 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public static Pattern matchPattern = Pattern.compile("\\{@("
             + Stream.of(Pf2eIndexType.values())
-                    .map(x -> x.templateName)
+                    .flatMap(x -> List.of(x.templateName, x.name()).stream())
+                    .distinct()
                     .collect(Collectors.joining("|"))
             + ") ([^{}}]+?)}");
 
@@ -87,9 +89,9 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         node.withArray(this.nodeName()).forEach(x -> callback.accept(this, x));
     }
 
-    public static Pf2eIndexType fromTemplateName(String name) {
+    public static Pf2eIndexType fromText(String name) {
         return Stream.of(Pf2eIndexType.values())
-                .filter(x -> x.templateName.equals(name))
+                .filter(x -> x.templateName.equals(name) || x.name().equalsIgnoreCase(name))
                 .findFirst().orElse(null);
     }
 
@@ -130,9 +132,20 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             case book:
             case data:
             case syntheticGroup:
-                return false; // use rules
+                return false; // don't check copy/reprint fields
             default:
-                return true; // use compendium
+                return true;
+        }
+    }
+
+    public boolean useQuteNote() {
+        switch (this) {
+            case skill:
+            case condition:
+            case table:
+                return true; // QuteNote-based
+            default:
+                return false;
         }
     }
 
@@ -164,25 +177,26 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             case item:
             case vehicle:
                 return "equipment/" + this.name() + 's';
-            case relicGift:
-                return "equipment/relics-gifts";
             // Feats
             case feat:
                 return this.name() + 's';
             // GM
-            case affliction:
+            case curse:
+            case disease:
+                return "gm/afflictions";
             case creature:
             case hazard:
                 return "gm/" + this.name() + 's';
+            case relicGift:
+                return "gm/relics-gifts";
             // Setting
             case adventure:
             case domain:
-            case event:
-            case group:
             case language:
             case organization:
             case place:
             case plane:
+            case event:
                 return "setting/" + this.name() + 's';
             case deity:
                 return "setting/deities";

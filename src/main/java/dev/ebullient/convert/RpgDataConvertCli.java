@@ -152,6 +152,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         }
 
         boolean allOk = true;
+        tui.setTemplates(tpl);
         tui.setOutputPath(output);
         TtrpgConfig.init(tui, game);
 

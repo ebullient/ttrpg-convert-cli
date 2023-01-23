@@ -3,7 +3,11 @@ package dev.ebullient.convert.tools.pf2e;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -59,6 +63,7 @@ public class Pf2JsonDataTest {
 
         templates = Arc.container().instance(Templates.class).get();
         templates.setCustomTemplates(TtrpgConfig.getConfig());
+        tui.setTemplates(templates);
 
         index = new Pf2eIndex(TtrpgConfig.getConfig());
 
@@ -109,25 +114,39 @@ public class Pf2JsonDataTest {
     }
 
     Path generateNotesForType(Pf2eIndexType type) {
-        Path typeDir = outputPath.resolve(type.getBasePath(index))
-                .resolve(type.relativePath());
+        return generateNotesForType(List.of(type)).values().iterator().next();
+    }
+
+    Map<Pf2eIndexType, Path> generateNotesForType(List<Pf2eIndexType> types) {
+        Map<Pf2eIndexType, Path> map = new HashMap<>();
+        Set<Path> paths = new HashSet<>();
+        types.forEach(t -> {
+            Path p = outputPath.resolve(t.getBasePath(index))
+                    .resolve(t.relativePath());
+            map.put(t, p);
+            paths.add(p);
+        });
 
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
-            TestUtils.deleteDir(typeDir);
+            paths.forEach(p -> TestUtils.deleteDir(p));
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(type);
+                    .writeFiles(types);
 
-            TestUtils.assertDirectoryContents(typeDir, tui);
+            paths.forEach(p -> TestUtils.assertDirectoryContents(p, tui));
         }
-
-        return typeDir;
+        return map;
     }
 
     @Test
     public void testAction_p2fe() throws Exception {
         generateNotesForType(Pf2eIndexType.action);
+    }
+
+    @Test
+    public void testAffliction_p2fe() throws Exception {
+        generateNotesForType(List.of(Pf2eIndexType.curse, Pf2eIndexType.disease));
     }
 
     @Test
@@ -143,6 +162,11 @@ public class Pf2JsonDataTest {
     @Test
     public void testSpell_p2fe() throws Exception {
         generateNotesForType(Pf2eIndexType.spell);
+    }
+
+    @Test
+    public void testTable_p2fe() throws Exception {
+        generateNotesForType(Pf2eIndexType.table);
     }
 
     @Test
