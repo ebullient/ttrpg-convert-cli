@@ -150,6 +150,11 @@ public class Pf2JsonDataTest {
     }
 
     @Test
+    public void testArchetype_p2fe() throws Exception {
+        generateNotesForType(Pf2eIndexType.archetype);
+    }
+
+    @Test
     public void testFeat_p2fe() throws Exception {
         generateNotesForType(Pf2eIndexType.feat);
     }

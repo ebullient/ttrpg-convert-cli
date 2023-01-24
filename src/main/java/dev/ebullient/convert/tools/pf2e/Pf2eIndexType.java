@@ -13,6 +13,7 @@ import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources.DefaultSource;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 
 public enum Pf2eIndexType implements IndexType, NodeReader {
     ability, // B1
@@ -125,6 +126,28 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public Path getBasePath(Pf2eIndex index) {
         return useCompendiumPath() ? index.compendiumPath() : index.rulesPath();
+    }
+
+    public Pf2eQuteBase convertJson2QuteBase(Pf2eIndex index, JsonNode node) {
+        switch (this) {
+            case action:
+                return new Json2QuteAction(index, this, node).build();
+            case archetype:
+                return new Json2QuteArchetype(index, this, node).build();
+            case curse:
+            case disease:
+                return new Json2QuteAffliction(index, this, node).build();
+            case feat:
+                return new Json2QuteFeat(index, this, node).build();
+            case ritual:
+                return new Json2QuteRitual(index, this, node).build();
+            case spell:
+                return new Json2QuteSpell(index, this, node).build();
+            case trait:
+                return new Json2QuteTrait(index, this, node).build();
+            default:
+                return null;
+        }
     }
 
     public boolean checkCopiesAndReprints() {

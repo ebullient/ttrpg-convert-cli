@@ -9,7 +9,7 @@ tags:
 {/if}
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
-# {resource.name}  
+# {resource.name}{#if resource.activity} [{resource.activity.caption}]({resource.activity.rulesPath}){/if}  
 *Feat {resource.level}*  
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if} 
@@ -26,11 +26,16 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 - **Cost**: {resource.cost}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
+{/if}{#if resource.activity }
+- **Activity** {resource.activity}
 {/if}
 
 {resource.text}
 
-{#if resource.leadsTo }
+{#if resource.special }
+**Special** {resource.special}
+
+{/if}{#if resource.leadsTo }
 ## {resource.name} leads to...
 
 {#each resource.leadsTo}{it}{#if it_hasNext}, {/if}{/each}
