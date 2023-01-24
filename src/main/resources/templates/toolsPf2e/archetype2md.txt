@@ -1,0 +1,31 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e-archetype
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*Dedication Level {resource.dedicationLevel}*  
+{#if resource.traits }{#each resource.traits}{it}  {/each}
+{/if} 
+
+{resource.text}
+
+{#if resource.extraFeats }
+
+## Extra feats
+
+{#each resource.extraFeats}
+{it}  
+
+{/each}
+{/if}{#if resource.hasSections }
+## Summary
+
+{/if}
+Source: *{resource.source}*

@@ -71,31 +71,11 @@ public class Pf2eMarkdown implements MarkdownConverter {
                 continue;
             }
 
-            Pf2eQuteBase converted = null;
-            switch (type) {
-                case action:
-                    converted = new Json2QuteAction(index, type, node).build();
-                    break;
-                case curse:
-                case disease:
-                    converted = new Json2QuteAffliction(index, type, node).build();
-                    break;
-                case feat:
-                    converted = new Json2QuteFeat(index, type, node).build();
-                    break;
-                case ritual:
-                    converted = new Json2QuteRitual(index, type, node).build();
-                    break;
-                case spell:
-                    converted = new Json2QuteSpell(index, type, node).build();
-                    break;
-                case trait:
-                    converted = new Json2QuteTrait(index, type, node).build();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported type " + type);
+            // Moved to index type -- also used by embedded rendering
+            Pf2eQuteBase converted = type.convertJson2QuteBase(index, node);
+            if (converted != null) {
+                append(type, converted, compendium, rules);
             }
-            append(type, converted, compendium, rules);
         }
 
         writer.writeFiles(index.compendiumPath(), compendium);

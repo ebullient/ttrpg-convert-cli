@@ -39,6 +39,7 @@ import com.github.slugify.Slugify;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
@@ -413,7 +414,8 @@ public class Tui {
 
     public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         List<String> inputs = List.of(
-                "actions.json", "afflictions.json", "books.json", "book/book-crb.json",
+                "books.json", "book/book-crb.json",
+                "actions.json", "afflictions.json", "archetypes.json",
                 "conditions.json", "feats", "rituals.json",
                 "skills.json", "spells", "tables.json", "traits.json");
 
@@ -449,6 +451,10 @@ public class Tui {
 
     public void writeYamlFile(Path outputFile, Map<String, Object> map) throws IOException {
         yamlMapper().writer().writeValue(outputFile.toFile(), map);
+    }
+
+    public String applyTemplate(QuteBase resource) {
+        return templates.render(resource);
     }
 
     public String applyTemplate(QuteNote note) {

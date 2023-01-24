@@ -57,6 +57,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         // data ingest. Minimal processing.
         Pf2eIndexType.ability.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.archetype.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.curse.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.disease.withArrayFrom(node, this::addToIndex);
@@ -173,6 +174,12 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
 
     public boolean isExcluded(String key) {
         return !isIncluded(key);
+    }
+
+    // --------- Node retrieval --------
+
+    public JsonNode getIncludedNode(String key) {
+        return filteredIndex.get(key);
     }
 
     // --------- Write indexes ---------

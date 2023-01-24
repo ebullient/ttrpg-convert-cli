@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 
@@ -162,6 +163,9 @@ public interface JsonSource extends JsonTextReplacement {
                 case affliction:
                     appendAffliction(text, node);
                     break;
+                case data:
+                    embedData(text, node);
+                    break;
                 case lvlEffect:
                     appendLevelEffect(text, node);
                     break;
@@ -181,37 +185,6 @@ public interface JsonSource extends JsonTextReplacement {
         }
         appendEntryToText(text, Field.entry.getFrom(node), heading);
         appendEntryToText(text, Field.entries.getFrom(node), heading);
-    }
-
-    default void prependText(String prefix, List<String> inner) {
-        if (inner.isEmpty()) {
-            inner.add(prefix);
-        } else {
-            if (inner.get(0).isEmpty() && inner.size() > 1) {
-                inner.set(1, prependText(prefix, inner.get(1)));
-            } else {
-                inner.set(0, prependText(prefix, inner.get(0)));
-            }
-        }
-    }
-
-    default String prependText(String prefix, String text) {
-        return text.startsWith(prefix) ? text : prefix + text;
-    }
-
-    default boolean prependField(JsonNode entry, Field field, List<String> inner) {
-        String n = field.getTextOrNull(entry);
-        if (n != null) {
-            if (inner.isEmpty()) {
-                inner.add(n);
-            } else {
-                n = replaceText(n.trim().replace(":", ""));
-                n = "**" + n + ".** ";
-                inner.set(0, n + inner.get(0));
-                return true;
-            }
-        }
-        return false;
     }
 
     default void appendTextHeaderBlock(List<String> text, JsonNode node, String heading) {
@@ -435,15 +408,6 @@ public interface JsonSource extends JsonTextReplacement {
         text.add(tui().applyTemplate(inlineAffliction));
     }
 
-    default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend) {
-        List<String> inner = new ArrayList<>();
-        appendEntryToText(inner, e, null);
-        if (inner.size() > 0) {
-            prependText("- " + prepend, inner);
-            text.add(String.join("  \n    ", inner).trim()); // preserve line items
-        }
-    }
-
     default void appendTable(List<String> text, JsonNode tableNode) {
 
         List<String> table = new ArrayList<>();
@@ -506,6 +470,7 @@ public interface JsonSource extends JsonTextReplacement {
             blockid = slugify(name + " " + id);
         }
 
+        table.add("<table>");
         for (int r = 0; r < rows.size(); r++) {
             ArrayNode rowNode = (ArrayNode) rows.get(r);
             int cols = rowNode.size(); // varies by row
@@ -574,6 +539,8 @@ public interface JsonSource extends JsonTextReplacement {
                 table.add("</tr>");
             }
         }
+        table.add("</table>");
+
         return blockid;
     }
 
@@ -646,6 +613,80 @@ public interface JsonSource extends JsonTextReplacement {
             }
         }
         return blockid;
+    }
+
+    default void embedData(List<String> text, JsonNode dataNode) {
+        String tag = Field.tag.getTextOrNull(dataNode);
+        Pf2eIndexType dataType = Pf2eIndexType.fromText(tag);
+        if (dataType == null) {
+            tui().errorf("Unknown data type %s from: %s", tag, dataNode.toString());
+            return;
+        }
+
+        JsonNode data = Field.data.getFrom(dataNode);
+        if (data == null) {
+            String name = Field.name.getTextOrNull(dataNode);
+            String source = Field.source.getTextOrNull(dataNode);
+            String link = linkify(dataType, name + "|" + source);
+            if (dataType == Pf2eIndexType.creature) {
+                link = link.replace(".md)", ".md#^statblock)");
+            }
+            maybeAddBlankLine(text);
+            text.add("!" + link);
+            maybeAddBlankLine(text);
+        } else {
+            Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
+            if (converted != null) {
+                String rendered = tui().applyTemplate(converted);
+                int begin = rendered.indexOf("# ");
+                rendered = "[!embed-" + tag + "]\n" + rendered.substring(begin);
+                maybeAddBlankLine(text);
+                Stream.of(rendered.split("\n")).forEach(x -> text.add("> " + x));
+                maybeAddBlankLine(text);
+            } else {
+                tui().errorf("Unable to process data for type: %s", tag, data.toString());
+            }
+        }
+    }
+
+    default void prependText(String prefix, List<String> inner) {
+        if (inner.isEmpty()) {
+            inner.add(prefix);
+        } else {
+            if (inner.get(0).isEmpty() && inner.size() > 1) {
+                inner.set(1, prependText(prefix, inner.get(1)));
+            } else {
+                inner.set(0, prependText(prefix, inner.get(0)));
+            }
+        }
+    }
+
+    default String prependText(String prefix, String text) {
+        return text.startsWith(prefix) ? text : prefix + text;
+    }
+
+    default boolean prependField(JsonNode entry, Field field, List<String> inner) {
+        String n = field.getTextOrNull(entry);
+        if (n != null) {
+            if (inner.isEmpty()) {
+                inner.add(n);
+            } else {
+                n = replaceText(n.trim().replace(":", ""));
+                n = "**" + n + ".** ";
+                inner.set(0, n + inner.get(0));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend) {
+        List<String> inner = new ArrayList<>();
+        appendEntryToText(inner, e, null);
+        if (inner.size() > 0) {
+            prependText("- " + prepend, inner);
+            text.add(String.join("  \n    ", inner).trim()); // preserve line items
+        }
     }
 
     default void maybeAddBlankLine(List<String> text) {
@@ -728,6 +769,7 @@ public interface JsonSource extends JsonTextReplacement {
         by,
         categories, // trait categories for indexing
         customUnit,
+        data, // embedded data
         entry,
         entries,
         footnotes,
@@ -749,6 +791,7 @@ public interface JsonSource extends JsonTextReplacement {
         source,
         special,
         style,
+        tag, // embedded data
         title,
         traits,
         type,
