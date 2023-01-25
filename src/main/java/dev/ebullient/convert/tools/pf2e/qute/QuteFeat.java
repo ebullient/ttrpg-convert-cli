@@ -21,12 +21,13 @@ public class QuteFeat extends Pf2eQuteBase {
     public final String prerequisites;
     public final String special;
     public final List<String> leadsTo;
+    public final String note;
 
     public QuteFeat(Pf2eSources sources, List<String> text, Collection<String> tags,
             List<String> traits, List<String> aliases,
             String level, String access, String frequency, QuteActivityType activity, String trigger,
             String cost, String requirements, String prerequisites,
-            String special, List<String> leadsTo) {
+            String special, String note, List<String> leadsTo) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -40,6 +41,7 @@ public class QuteFeat extends Pf2eQuteBase {
         this.requirements = requirements;
         this.prerequisites = prerequisites;
         this.special = special;
+        this.note = note;
         this.leadsTo = leadsTo;
     }
 

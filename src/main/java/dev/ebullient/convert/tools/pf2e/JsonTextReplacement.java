@@ -7,11 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
@@ -81,12 +76,31 @@ public interface JsonTextReplacement {
         return out.toString();
     };
 
-    default Stream<JsonNode> streamOf(ArrayNode array) {
-        return StreamSupport.stream(array.spliterator(), false);
+    default String nestedEmbed(List<String> content) {
+        int embedDepth = content.stream()
+                .filter(s -> s.matches("^`+$"))
+                .map(s -> s.length())
+                .max(Integer::compare).orElse(2);
+        char[] ticks = new char[embedDepth + 1];
+        Arrays.fill(ticks, '`');
+        return new String(ticks);
     }
 
-    default boolean textContains(List<String> haystack, String needle) {
-        return haystack.stream().anyMatch(x -> x.contains(needle));
+    default List<String> removePreamble(List<String> content) {
+        int start = -1;
+        for (int i = 0; i < content.size(); i++) {
+            String line = content.get(i);
+            if (line.startsWith("%%--")) {
+                start = i;
+                break;
+            }
+        }
+        if (start >= 0) {
+            for (int i = 0; i <= start; i++) {
+                content.remove(0); // remove until start
+            }
+        }
+        return content;
     }
 
     default String toTitleCase(String text) {
@@ -241,10 +255,6 @@ public interface JsonTextReplacement {
         String link = type.linkify(index().rulesRoot());
         tui().debugf("AS LINK for %s (%s): %s", match.group(1), type, link);
         return link;
-    }
-
-    default String linkifyRules(String text, String rules) {
-        return linkifyRules(text, rules, text);
     }
 
     default String linkifyRules(String text, String rules, String anchor) {

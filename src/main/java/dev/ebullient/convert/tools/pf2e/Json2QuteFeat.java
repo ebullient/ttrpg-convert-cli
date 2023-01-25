@@ -41,6 +41,7 @@ public class Json2QuteFeat extends Json2QuteBase {
                 Field.requirements.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.special.transformTextFrom(rootNode, "\n", tui(), this),
+                null,
                 leadsTo);
     }
 
@@ -48,13 +49,12 @@ public class Json2QuteFeat extends Json2QuteBase {
         String featLevel = Pf2eFeat.level.getTextOrDefault(rootNode, "1");
         List<String> text = new ArrayList<>();
 
+        String note = null;
         if (dedicationLevel != featLevel) {
-            maybeAddBlankLine(text);
-            text.add(String.format(
+            note = String.format(
                     "> [!note] This version of %s is intended for use with the %s Archetype. Its level has been changed accordingly.",
                     index.linkify(this.type, String.join("|", List.of(sources.getName(), sources.primarySource()))),
-                    archetypeName));
-            maybeAddBlankLine(text);
+                    archetypeName);
         }
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
@@ -74,6 +74,7 @@ public class Json2QuteFeat extends Json2QuteBase {
                 Field.requirements.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.special.transformTextFrom(rootNode, ", ", tui(), this),
+                note,
                 List.of());
     }
 
