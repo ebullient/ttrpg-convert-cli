@@ -16,6 +16,20 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
 
+    enum Pf2eFeat implements NodeReader {
+        access,
+        activity,
+        archetype, // child of featType
+        cost,
+        featType,
+        leadsTo,
+        level,
+        prerequisites,
+        special,
+        trigger,
+        ;
+    }
+
     enum Pf2eTypeTradition implements NodeReader.FieldValue {
         arcane,
         divine,

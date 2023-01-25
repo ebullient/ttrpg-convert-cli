@@ -33,7 +33,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {resource.text}
 
 {#if resource.special }
-**Special** {resource.special}
+**Special.** {resource.special}
 
 {/if}{#if resource.leadsTo }
 ## {resource.name} leads to...

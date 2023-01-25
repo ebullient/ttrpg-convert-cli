@@ -271,7 +271,10 @@ public interface JsonTextReplacement {
         switch (targetType) {
             case skill:
                 //	"Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception}",
-                return linkifyRules(toTitleCase(match), "skills");
+                // {@skill Lore||Farming Lore}
+                String[] parts = match.split("\\|");
+                String linkText = parts.length > 1 ? parts[2] : parts[0];
+                return linkifyRules(linkText, "skills", toTitleCase(parts[0]));
             case classtype:
                 return linkifyClass(match);
             case classFeature:
