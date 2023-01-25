@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
+import dev.ebullient.convert.tools.pf2e.JsonTextReplacement;
 
 public interface NodeReader {
 
@@ -56,14 +58,34 @@ public interface NodeReader {
     }
 
     default List<String> getListOfStrings(JsonNode source, Tui tui) {
-        JsonNode result = getFrom(source);
-        if (result == null) {
+        JsonNode target = getFrom(source);
+        if (target == null) {
             return List.of();
-        } else if (result.isTextual()) {
-            return List.of(result.asText());
-        } else {
-            return fieldFromTo(source, Tui.LIST_STRING, tui);
+        } else if (target.isTextual()) {
+            return List.of(target.asText());
         }
+        List<String> list = fieldFromTo(source, Tui.LIST_STRING, tui);
+        return list == null ? List.of() : list;
+    }
+
+    default String replaceTextFrom(JsonNode node, JsonTextReplacement replacer) {
+        return replacer.replaceText(getTextOrEmpty(node));
+    }
+
+    default String transformTextFrom(JsonNode node, String join, Tui tui, JsonTextReplacement replacer) {
+        List<String> list = getListOfStrings(node, tui);
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.stream().map(s -> replacer.replaceText(s)).collect(Collectors.joining(join));
+    }
+
+    default List<String> transformListFrom(JsonNode node, Tui tui, JsonTextReplacement replacer) {
+        List<String> list = getListOfStrings(node, tui);
+        if (list.isEmpty()) {
+            return List.of();
+        }
+        return list.stream().map(s -> replacer.replaceText(s)).collect(Collectors.toList());
     }
 
     default boolean booleanOrDefault(JsonNode source, boolean value) {

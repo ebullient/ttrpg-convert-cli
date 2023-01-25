@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAction;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -36,12 +35,12 @@ public class Json2QuteAction extends Json2QuteBase {
 
         return new QuteAction(
                 getSources(), text, tags,
-                transformTextFrom(rootNode, ActionField.cost, ", "),
-                transformTextFrom(rootNode, ActionField.trigger, ", "),
-                transformListFrom(rootNode, Field.alias),
+                ActionField.cost.transformTextFrom(rootNode, ", ", tui(), this),
+                ActionField.trigger.transformTextFrom(rootNode, ", ", tui(), this),
+                Field.alias.transformListFrom(rootNode, tui(), this),
                 collectTraitsFrom(rootNode),
-                transformTextFrom(rootNode, ActionField.prerequisites, ", "),
-                transformTextFrom(rootNode, Field.requirements, ", "),
+                ActionField.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
+                Field.requirements.replaceTextFrom(rootNode, this),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
                 actionType == null ? null : actionType.build(this));
@@ -198,13 +197,4 @@ public class Json2QuteAction extends Json2QuteBase {
         }
     }
 
-    enum ActionField implements NodeReader {
-        activity,
-        actionType,
-        cost,
-        info,
-        prerequisites,
-        trigger,
-
-    }
 }

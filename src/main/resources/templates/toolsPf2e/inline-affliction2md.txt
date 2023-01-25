@@ -26,7 +26,7 @@ title: {resource.savingThrow}
 
 {/each}{/if}{#if resource.effect }
 
-## Effects
+## Effect
 
 {resource.effect}
 {/if}{#if resource.tags }

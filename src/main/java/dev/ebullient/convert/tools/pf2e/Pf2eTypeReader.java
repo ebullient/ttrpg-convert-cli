@@ -1,9 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -161,6 +159,16 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
+    enum ActionField implements NodeReader {
+        activity,
+        actionType,
+        cost,
+        info,
+        prerequisites,
+        trigger,
+
+    }
+
     @RegisterForReflection
     static class NumberUnitEntry {
         public Integer number;
@@ -235,22 +243,6 @@ public interface Pf2eTypeReader extends JsonSource {
                     activity.getTextGlyph(),
                     activity.getRulesPath(convert.index().rulesRoot()));
         }
-    }
-
-    default List<String> transformListFrom(JsonNode node, NodeReader field) {
-        List<String> list = field.getListOfStrings(node, tui());
-        if (list == null || list.isEmpty()) {
-            return List.of();
-        }
-        return list.stream().map(s -> replaceText(s)).collect(Collectors.toList());
-    }
-
-    default String transformTextFrom(JsonNode node, NodeReader field, String join) {
-        List<String> list = field.getListOfStrings(node, tui());
-        if (list == null || list.isEmpty()) {
-            return null;
-        }
-        return list.stream().map(s -> replaceText(s)).collect(Collectors.joining(join));
     }
 
     default String getOrdinalForm(String level) {

@@ -17,6 +17,7 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 
@@ -296,26 +297,6 @@ public interface JsonSource extends JsonTextReplacement {
         insetText.forEach(x -> text.add("> " + x));
     }
 
-    default void appendAbility(List<String> text, JsonNode node) {
-        List<String> inner = new ArrayList<>();
-
-        appendEntryToText(inner, Field.entry.getFrom(node), null);
-        appendEntryToText(inner, Field.entries.getFrom(node), null);
-
-        String name = Field.name.getTextOrNull(node);
-        if (name != null) {
-            if (inner.isEmpty()) {
-                inner.add(name);
-            } else {
-                name = replaceText(name.trim().replace(":", ""));
-                name = "***" + name + ".*** ";
-                inner.set(0, name + inner.get(0));
-                maybeAddBlankLine(text);
-            }
-        }
-        text.addAll(inner);
-    }
-
     default void appendLevelEffect(List<String> text, JsonNode node) {
         maybeAddBlankLine(text);
 
@@ -350,6 +331,31 @@ public interface JsonSource extends JsonTextReplacement {
 
         maybeAddBlankLine(text);
         inner.forEach(x -> text.add("> " + x));
+    }
+
+    default void appendAbility(List<String> text, JsonNode node) {
+        String name = Field.name.getTextOrDefault(node, "Activate");
+        Pf2eTypeReader.NumberUnitEntry jsonActivity = Pf2eTypeReader.Pf2eFeat.activity.fieldFromTo(node,
+                Pf2eTypeReader.NumberUnitEntry.class, tui());
+
+        List<String> abilityText = new ArrayList<>();
+        appendEntryToText(abilityText, Field.entries.getFrom(node), null);
+
+        AbilityField.note.debugIfExists(node, tui());
+        AbilityField.range.debugIfExists(node, tui());
+
+        QuteInlineAbility inlineAbility = new QuteInlineAbility(
+                name, abilityText, List.of(), collectTraitsFrom(node),
+                jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
+                AbilityField.components.replaceTextFrom(node, this),
+                AbilityField.requirements.replaceTextFrom(node, this),
+                AbilityField.cost.replaceTextFrom(node, this),
+                AbilityField.trigger.replaceTextFrom(node, this),
+                index().getFrequency(AbilityField.frequency.getFrom(node)),
+                AbilityField.special.replaceTextFrom(node, this));
+
+        maybeAddBlankLine(text);
+        text.add(tui().applyTemplate(inlineAbility));
     }
 
     default void appendAffliction(List<String> text, JsonNode node) {
@@ -732,6 +738,25 @@ public interface JsonSource extends JsonTextReplacement {
 
         public String nodeName() {
             return nodeName;
+        }
+    }
+
+    enum AbilityField implements NodeReader {
+        activity,
+        components,
+        cost,
+        creature,
+        frequency,
+        note,
+        range,
+        requirements,
+        trigger,
+        special;
+
+        void debugIfExists(JsonNode node, Tui tui) {
+            if (existsIn(node)) {
+                tui.errorf(this.name() + " is defined in " + node.toPrettyString());
+            }
         }
     }
 
