@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -127,19 +126,16 @@ public class Json2QuteArchetype extends Json2QuteBase {
     String render(QuteFeat quteFeat) {
         String rendered = tui().applyTemplate(quteFeat);
         int begin = rendered.indexOf("# ");
-
-        List<String> inner = Stream.of(rendered.substring(begin).split("\n")).collect(Collectors.toList());
-        inner.remove(0); // remove H1
-        if (inner.get(0).startsWith("*")) {
-            inner.remove(0);
-        }
+        List<String> inner = removePreamble(new ArrayList<>(
+                List.of(rendered.substring(begin).split("\n"))));
+        String backticks = nestedEmbed(inner);
 
         inner.add(0, "collapse: closed");
-        inner.add(0, String.format("title: %s, Feat %s*",
+        inner.add(0, String.format("title: %s, Feat %s",
                 quteFeat.getName(),
-                quteFeat.level));
-        inner.add(0, "```ad-embed-feat");
-        inner.add("```");
+                quteFeat.level + (rendered.contains("> [!note] This version of ") ? "*" : "")));
+        inner.add(0, backticks + "ad-embed-feat");
+        inner.add(backticks);
 
         return String.join("\n", inner);
     }

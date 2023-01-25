@@ -117,11 +117,11 @@ public interface NodeReader {
         return StreamSupport.stream(result.spliterator(), false);
     }
 
-    default <T> T fieldFromTo(JsonNode source, TypeReference<T> target, Tui tui) {
+    default <T> T fieldFromTo(JsonNode source, TypeReference<T> targetRef, Tui tui) {
         JsonNode node = source.get(this.nodeName());
         if (node != null) {
             try {
-                return Tui.MAPPER.readValue(node.toString(), target);
+                return Tui.MAPPER.readValue(node.toString(), targetRef);
             } catch (JsonProcessingException e) {
                 tui.errorf(e, "Unable to convert field %s from %s", this.nodeName(), node.toString());
             }
@@ -129,11 +129,11 @@ public interface NodeReader {
         return null;
     }
 
-    default <T> T fieldFromTo(JsonNode source, Class<T> target, Tui tui) {
+    default <T> T fieldFromTo(JsonNode source, Class<T> classTarget, Tui tui) {
         JsonNode node = source.get(this.nodeName());
         if (node != null) {
             try {
-                return Tui.MAPPER.readValue(node.toString(), target);
+                return Tui.MAPPER.readValue(node.toString(), classTarget);
             } catch (JsonProcessingException e) {
                 tui.errorf(e, "Unable to convert field %s from %s", this.nodeName(), node.toString());
             }
