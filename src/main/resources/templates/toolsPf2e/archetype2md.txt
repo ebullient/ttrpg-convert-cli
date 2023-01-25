@@ -16,11 +16,9 @@ aliases: ["{resource.name}"]
 
 {resource.text}
 
-{#if resource.extraFeats }
+{#if resource.feats }
 
-## Extra feats
-
-{#each resource.extraFeats}
+{#each resource.feats}
 {it}  
 
 {/each}

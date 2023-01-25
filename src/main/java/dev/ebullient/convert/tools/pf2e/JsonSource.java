@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
@@ -121,9 +122,8 @@ public interface JsonSource extends JsonTextReplacement {
                 case pf2brownBox:
                     appendCallout(text, node, "pf2-brown");
                     break;
-
                 case pf2keyAbility:
-                    appendKeyAbility(text, node, "pf2-key-box");
+                    appendCallout(text, node, "pf2-key-ability");
                     break;
                 case pf2keyBox:
                     appendCallout(text, node, "pf2-key-box");
@@ -280,26 +280,20 @@ public interface JsonSource extends JsonTextReplacement {
         String name = Field.name.getTextOrEmpty(entry);
 
         insetText.add("[!" + callout + "] " + replaceText(name));
-        appendEntryToText(insetText, Field.entry.getFrom(entry), null);
-        appendEntryToText(insetText, Field.entries.getFrom(entry), null);
+
+        JsonNode autoReference = Field.recurs.getFieldFrom(entry, Field.auto);
+        if (Field.auto.booleanOrDefault(Field.reference.getFrom(entry), false)) {
+            String page = Field.page.getTextOrNull(entry);
+            insetText.add(String.format("See %s%s",
+                    page == null ? "" : "page " + page + " of ",
+                    TtrpgConfig.sourceToLongName(Field.source.getTextOrEmpty(entry))));
+        } else {
+            appendEntryToText(insetText, Field.entry.getFrom(entry), null);
+            appendEntryToText(insetText, Field.entries.getFrom(entry), null);
+        }
 
         maybeAddBlankLine(text);
         insetText.forEach(x -> text.add("> " + x));
-    }
-
-    default void appendKeyAbility(List<String> text, JsonNode entry, String callout) {
-        List<String> insetText = new ArrayList<>();
-        String name = Field.name.getTextOrEmpty(entry);
-
-        insetText.add("[!" + callout + "] " + replaceText(name));
-        // TODO
-
-        appendEntryToText(insetText, Field.entry.getFrom(entry), null);
-        appendEntryToText(insetText, Field.entries.getFrom(entry), null);
-
-        maybeAddBlankLine(text);
-        insetText.forEach(x -> text.add("> " + x));
-        text.add("\nCHECK ME: KEY ABILITY ABOVE");
     }
 
     default void appendAbility(List<String> text, JsonNode node) {
@@ -766,6 +760,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     enum Field implements NodeReader {
         alias,
+        auto,
         by,
         categories, // trait categories for indexing
         customUnit,
@@ -786,6 +781,7 @@ public interface JsonSource extends JsonTextReplacement {
         page,
         range, // level effect
         recurs,
+        reference,
         requirements,
         signature,
         source,

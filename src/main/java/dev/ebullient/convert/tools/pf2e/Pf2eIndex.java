@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
-public class Pf2eIndex implements ToolsIndex, JsonSource {
+public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     static final String CORE_RULES = "book-crb.json";
     final CompendiumConfig config;
 
@@ -31,6 +32,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     private final Map<String, JsonNode> filteredIndex = new HashMap<>();
 
     private final Map<String, Collection<String>> categoryToTraits = new TreeMap<>();
+    private final Map<String, Set<String>> archetypeToFeats = new TreeMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
     boolean coreRulesIncluded = false;
@@ -79,33 +81,40 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     void addToIndex(Pf2eIndexType type, JsonNode node) {
         // TODO: Variants? Reprints?
         String key = type.createKey(node);
-
-        // Change the indexed name for [...] traits
-        String name = Field.name.getTextOrEmpty(node);
-        if (type == Pf2eIndexType.trait && name.startsWith("[")) {
-            name = name.replaceAll("\\[(.*)\\]", "Any $1");
-            ((ObjectNode) node).put("name", name);
-
-            String newKey = type.createKey(node);
-            alias.put(key, newKey);
-            key = newKey;
+        if (type == Pf2eIndexType.trait) {
+            key = prepareTrait(key, node);
         }
 
         // Add the node + key to the index, and store the key in the node
         imported.put(key, node);
         TtrpgValue.indexKey.addToNode(node, key);
+    }
 
-        // Precreate index/lookup for traits
-        if (type == Pf2eIndexType.trait) {
-            String traitLink = linkify(type, name);
+    String prepareTrait(String key, JsonNode node) {
+        String name = Field.name.getTextOrEmpty(node);
 
-            Field.categories.getListOfStrings(node, tui()).stream()
-                    .filter(c -> !c.equals("_alignAbv"))
-                    .forEach(c -> {
-                        categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
-                                .add(traitLink);
-                    });
+        // Change the indexed name for [...] traits
+        if (name.startsWith("[")) {
+            // Update name & object node
+            name = name.replaceAll("\\[(.*)\\]", "Any $1");
+            ((ObjectNode) node).put("name", name);
+
+            // Create new key, add alias from old key
+            String oldKey = key;
+            key = Pf2eIndexType.trait.createKey(node);
+            alias.put(oldKey, key);
         }
+
+        // Precreate category mapping for traits
+        String traitLink = linkify(Pf2eIndexType.trait, name);
+        Field.categories.getListOfStrings(node, tui()).stream()
+                .filter(c -> !c.equals("_alignAbv"))
+                .forEach(c -> {
+                    categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
+                            .add(traitLink);
+                });
+
+        return key;
     }
 
     void addDataToIndex(JsonNode data, String filename) {
@@ -147,12 +156,28 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
                 // check for / manage copies first (creatures, fluff)
                 node = copier.handleCopy(type, node);
             }
-            Pf2eSources.constructSources(type, node); // pre-construct sources
+            Pf2eSources sources = Pf2eSources.constructSources(type, node); // pre-construct sources
+
+            if (type == Pf2eIndexType.feat) {
+                createArchetypeReference(key, node, sources);
+            }
         });
 
         imported.entrySet().stream()
                 .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
                 .forEach(e -> filteredIndex.put(e.getKey(), e.getValue()));
+    }
+
+    void createArchetypeReference(String key, JsonNode node, Pf2eSources sources) {
+        JsonNode featType = Pf2eFeat.featType.getFrom(node);
+        if (featType != null) {
+            List<String> archetype = Pf2eFeat.archetype.getListOfStrings(featType, tui());
+            archetype.forEach(a -> {
+                String aKey = Pf2eIndexType.archetype.createKey(a, sources.primarySource());
+                archetypeToFeats.computeIfAbsent(aKey, k -> new HashSet<>())
+                        .add(key);
+            });
+        }
     }
 
     boolean keyIsIncluded(String key, JsonNode node) {
@@ -180,6 +205,10 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
 
     public JsonNode getIncludedNode(String key) {
         return filteredIndex.get(key);
+    }
+
+    public Set<String> featKeys(String archetypeKey) {
+        return archetypeToFeats.get(archetypeKey);
     }
 
     // --------- Write indexes ---------

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
 public class Json2QuteFeat extends Json2QuteBase {
@@ -23,9 +22,9 @@ public class Json2QuteFeat extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        NumberUnitEntry jsonActivity = FeatField.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
+        NumberUnitEntry jsonActivity = Pf2eFeat.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
 
-        List<String> leadsTo = FeatField.leadsTo.getListOfStrings(rootNode, tui())
+        List<String> leadsTo = Pf2eFeat.leadsTo.getListOfStrings(rootNode, tui())
                 .stream()
                 .map(x -> linkify(Pf2eIndexType.feat, x))
                 .collect(Collectors.toList());
@@ -33,20 +32,20 @@ public class Json2QuteFeat extends Json2QuteBase {
         return new QuteFeat(sources, text, tags,
                 collectTraitsFrom(rootNode),
                 transformListFrom(rootNode, Field.alias),
-                FeatField.level.getTextOrDefault(rootNode, "1"),
-                transformTextFrom(rootNode, FeatField.access, ", "),
+                Pf2eFeat.level.getTextOrDefault(rootNode, "1"),
+                transformTextFrom(rootNode, Pf2eFeat.access, ", "),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
-                transformTextFrom(rootNode, FeatField.trigger, ", "),
-                transformTextFrom(rootNode, FeatField.cost, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.trigger, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.cost, ", "),
                 transformTextFrom(rootNode, Field.requirements, ", "),
-                transformTextFrom(rootNode, FeatField.prerequisites, ", "),
-                transformTextFrom(rootNode, FeatField.special, "\n"),
+                transformTextFrom(rootNode, Pf2eFeat.prerequisites, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.special, "\n"),
                 leadsTo);
     }
 
     public QuteFeat buildArchetype(String archetypeName, String dedicationLevel) {
-        String featLevel = FeatField.level.getTextOrDefault(rootNode, "1");
+        String featLevel = Pf2eFeat.level.getTextOrDefault(rootNode, "1");
         List<String> text = new ArrayList<>();
 
         if (dedicationLevel != featLevel) {
@@ -61,33 +60,21 @@ public class Json2QuteFeat extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        NumberUnitEntry jsonActivity = FeatField.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
+        NumberUnitEntry jsonActivity = Pf2eFeat.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
 
         return new QuteFeat(sources, text, List.of(),
                 collectTraitsFrom(rootNode),
                 List.of(),
                 dedicationLevel,
-                transformTextFrom(rootNode, FeatField.access, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.access, ", "),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
-                transformTextFrom(rootNode, FeatField.trigger, ", "),
-                transformTextFrom(rootNode, FeatField.cost, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.trigger, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.cost, ", "),
                 transformTextFrom(rootNode, Field.requirements, ", "),
-                transformTextFrom(rootNode, FeatField.prerequisites, ", "),
-                transformTextFrom(rootNode, FeatField.special, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.prerequisites, ", "),
+                transformTextFrom(rootNode, Pf2eFeat.special, ", "),
                 List.of());
     }
 
-    enum FeatField implements NodeReader {
-        access,
-        activity,
-        cost,
-        featType,
-        leadsTo,
-        level,
-        prerequisites,
-        special,
-        trigger,
-        ;
-    }
 }
