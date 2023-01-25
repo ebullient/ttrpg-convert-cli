@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e.qute;
 import java.util.Collection;
 import java.util.List;
 
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 
 public class QuteFeat extends Pf2eQuteBase {
@@ -40,6 +41,11 @@ public class QuteFeat extends Pf2eQuteBase {
         this.prerequisites = prerequisites;
         this.special = special;
         this.leadsTo = leadsTo;
+    }
+
+    @Override
+    public List<ImageRef> images() {
+        return activity == null ? List.of() : activity.image();
     }
 
     @Override

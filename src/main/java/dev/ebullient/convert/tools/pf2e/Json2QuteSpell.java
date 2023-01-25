@@ -87,7 +87,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         return new QuteSpell(sources, text, tags,
                 level, toTitleCase(type),
                 traits,
-                transformListFrom(rootNode, Field.alias),
+                Field.alias.transformListFrom(rootNode, tui(), this),
                 getQuteSpellCasting(),
                 getQuteSpellTarget(tags),
                 getQuteSaveDuration(),
@@ -110,9 +110,9 @@ public class Json2QuteSpell extends Json2QuteBase {
                 .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesRoot()))
                 .collect(Collectors.toList());
 
-        quteCast.cost = transformTextFrom(rootNode, SpellFields.cost, ", ");
-        quteCast.trigger = transformTextFrom(rootNode, SpellFields.trigger, ", ");
-        quteCast.requirements = transformTextFrom(rootNode, Field.requirements, ", ");
+        quteCast.cost = SpellFields.cost.transformTextFrom(rootNode, ", ", tui(), this);
+        quteCast.trigger = SpellFields.trigger.transformTextFrom(rootNode, ", ", tui(), this);
+        quteCast.requirements = Field.requirements.transformTextFrom(rootNode, ", ", tui(), this);
 
         return quteCast;
     }

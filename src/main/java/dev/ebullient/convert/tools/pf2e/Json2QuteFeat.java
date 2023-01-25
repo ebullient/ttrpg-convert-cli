@@ -31,16 +31,16 @@ public class Json2QuteFeat extends Json2QuteBase {
 
         return new QuteFeat(sources, text, tags,
                 collectTraitsFrom(rootNode),
-                transformListFrom(rootNode, Field.alias),
+                Field.alias.transformListFrom(rootNode, tui(), this),
                 Pf2eFeat.level.getTextOrDefault(rootNode, "1"),
-                transformTextFrom(rootNode, Pf2eFeat.access, ", "),
+                Pf2eFeat.access.transformTextFrom(rootNode, ", ", tui(), this),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
-                transformTextFrom(rootNode, Pf2eFeat.trigger, ", "),
-                transformTextFrom(rootNode, Pf2eFeat.cost, ", "),
-                transformTextFrom(rootNode, Field.requirements, ", "),
-                transformTextFrom(rootNode, Pf2eFeat.prerequisites, ", "),
-                transformTextFrom(rootNode, Pf2eFeat.special, "\n"),
+                Pf2eFeat.trigger.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eFeat.cost.transformTextFrom(rootNode, ", ", tui(), this),
+                Field.requirements.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eFeat.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eFeat.special.transformTextFrom(rootNode, "\n", tui(), this),
                 leadsTo);
     }
 
@@ -66,14 +66,14 @@ public class Json2QuteFeat extends Json2QuteBase {
                 collectTraitsFrom(rootNode),
                 List.of(),
                 dedicationLevel,
-                transformTextFrom(rootNode, Pf2eFeat.access, ", "),
+                Pf2eFeat.access.transformTextFrom(rootNode, ", ", tui(), this),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
-                transformTextFrom(rootNode, Pf2eFeat.trigger, ", "),
-                transformTextFrom(rootNode, Pf2eFeat.cost, ", "),
-                transformTextFrom(rootNode, Field.requirements, ", "),
-                transformTextFrom(rootNode, Pf2eFeat.prerequisites, ", "),
-                transformTextFrom(rootNode, Pf2eFeat.special, ", "),
+                Pf2eFeat.trigger.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eFeat.cost.transformTextFrom(rootNode, ", ", tui(), this),
+                Field.requirements.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eFeat.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eFeat.special.transformTextFrom(rootNode, ", ", tui(), this),
                 List.of());
     }
 
