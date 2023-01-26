@@ -122,7 +122,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
                 return convert.replaceText(entry);
             }
             return String.format("%s (%s%s)", skillsToString(convert), prof,
-                    mustBe == null ? "" : String.format("; you must be a %s", convert.joinConjunct(mustBe, " or ")));
+                    mustBe == null ? "" : String.format("; you must be a %s", convert.joinConjunct(" or ", mustBe)));
         }
 
         public String buildSecondaryString(JsonSource convert) {
@@ -138,7 +138,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
             List<String> converted = skills.stream()
                     .map(s -> convert.linkify(Pf2eIndexType.skill, s))
                     .collect(Collectors.toList());
-            return convert.joinConjunct(converted, " or ");
+            return convert.joinConjunct(" or ", converted);
         }
     }
 }

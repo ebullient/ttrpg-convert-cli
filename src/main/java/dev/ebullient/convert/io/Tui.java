@@ -55,6 +55,8 @@ public class Tui {
     };
     public final static TypeReference<Map<String, String>> MAP_STRING_STRING = new TypeReference<>() {
     };
+    public final static TypeReference<Map<String, List<String>>> MAP_STRING_LIST_STRING = new TypeReference<>() {
+    };
 
     public final static ObjectMapper MAPPER = initMapper(new ObjectMapper());
 

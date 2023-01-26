@@ -11,7 +11,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
 # {resource.name}
 *{resource.affliction} {resource.level}*  
-%%-- Embedded/inline feat starts on the next line. --%%
+%%-- Embedded/inline affliction starts on the next line. --%%
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if} 
 

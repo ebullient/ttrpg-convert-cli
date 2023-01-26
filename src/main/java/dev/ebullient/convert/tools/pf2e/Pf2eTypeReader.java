@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -15,6 +16,43 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
 
+    enum Pf2eAlignmentValue implements NodeReader.FieldValue {
+        ce("Chaotic Evil"),
+        cg("Chaotic Good"),
+        cn("Chaotic Neutral"),
+        le("Lawful Evil"),
+        lg("Lawful Goo"),
+        ln("Lawful Neutral"),
+        n("Neutral"),
+        ne("Neutral Evil"),
+        ng("Neutral Good");
+
+        final String longName;
+
+        Pf2eAlignmentValue(String s) {
+            longName = s;
+        }
+
+        @Override
+        public String value() {
+            return this.name();
+        }
+
+        @Override
+        public boolean matches(String value) {
+            return this.value().equalsIgnoreCase(value) || this.longName.equalsIgnoreCase(value);
+        }
+
+        public static Pf2eAlignmentValue fromString(String name) {
+            if (name == null) {
+                return null;
+            }
+            return Stream.of(Pf2eAlignmentValue.values())
+                    .filter((t) -> t.matches(name))
+                    .findFirst().orElse(null);
+        }
+    }
+
     enum Pf2eFeat implements NodeReader {
         access,
         activity,
@@ -25,8 +63,7 @@ public interface Pf2eTypeReader extends JsonSource {
         level,
         prerequisites,
         special,
-        trigger,
-        ;
+        trigger
     }
 
     enum Pf2eSavingThrowType implements NodeReader.FieldValue {
@@ -34,7 +71,7 @@ public interface Pf2eTypeReader extends JsonSource {
         reflex("R"),
         will("W");
 
-        String encoding;
+        final String encoding;
 
         Pf2eSavingThrowType(String encoding) {
             this.encoding = encoding;
@@ -45,8 +82,9 @@ public interface Pf2eTypeReader extends JsonSource {
             return encoding;
         }
 
-        public String toTitleCase(JsonSource convert) {
-            return convert.toTitleCase(this.name());
+        @Override
+        public boolean matches(String value) {
+            return this.encoding.equals(value) || this.name().equalsIgnoreCase(value);
         }
 
         static Pf2eSavingThrowType valueFromEncoding(String value) {
@@ -54,7 +92,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 return null;
             }
             return Stream.of(Pf2eSavingThrowType.values())
-                    .filter((t) -> t.encoding.equals(value) || t.name().equalsIgnoreCase(value))
+                    .filter((t) -> t.matches(value))
                     .findFirst().orElse(null);
         }
     }
@@ -115,7 +153,7 @@ public interface Pf2eTypeReader extends JsonSource {
         somatic("S"),
         verbal("V");
 
-        String encoding;
+        final String encoding;
 
         Pf2eSpellComponent(String encoding) {
             this.encoding = encoding;
@@ -124,6 +162,11 @@ public interface Pf2eTypeReader extends JsonSource {
         @Override
         public String value() {
             return encoding;
+        }
+
+        @Override
+        public boolean matches(String value) {
+            return this.encoding.equals(value) || this.name().equalsIgnoreCase(value);
         }
 
         public String linkify(String rulesRoot) {
@@ -142,7 +185,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 return null;
             }
             return Stream.of(Pf2eSpellComponent.values())
-                    .filter((t) -> t.encoding.equals(value) || t.name().equalsIgnoreCase(value))
+                    .filter((t) -> t.matches(value))
                     .findFirst().orElse(null);
         }
 
@@ -158,7 +201,39 @@ public interface Pf2eTypeReader extends JsonSource {
     }
 
     @RegisterForReflection
-    static class NumberUnitEntry {
+    class Speed {
+        public Integer walk;
+        public Integer climb;
+        public Integer fly;
+        public Integer burrow;
+        public Integer swim;
+        public Integer dimensional;
+        public String speedNote;
+
+        public String speedToString(Pf2eTypeReader convert) {
+            List<String> parts = new ArrayList<>();
+            if (climb != null) {
+                parts.add("climb " + climb + " feet");
+            }
+            if (fly != null) {
+                parts.add("fly " + fly + " feet");
+            }
+            if (burrow != null) {
+                parts.add("burrow " + burrow + " feet");
+            }
+            if (swim != null) {
+                parts.add("swim " + swim + " feet");
+            }
+
+            return String.format("%s%s%s",
+                    walk == null ? "no land Speed" : "Speed " + walk + " feet",
+                    (walk == null || parts.isEmpty()) ? "" : ", ",
+                    convert.join(", ", parts));
+        }
+    }
+
+    @RegisterForReflection
+    class NumberUnitEntry {
         public Integer number;
         public String unit;
         public String entry;
@@ -197,7 +272,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 case "reaction":
                     Pf2eTypeActivity activity = Pf2eTypeActivity.toActivity(unit, number);
                     return createActivity(convert,
-                            String.format("%s%s", activity.getCaption(), extra),
+                            String.format("%s%s", activity == null ? "unknown" : activity.getCaption(), extra),
                             activity);
                 case "varies":
                     return createActivity(convert,

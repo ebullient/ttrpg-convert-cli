@@ -25,6 +25,6 @@ public class Json2QuteTable extends Json2QuteBase {
         return new Pf2eQuteNote(type,
                 sources.getName(),
                 sources.getSourceText(),
-                join(text, "\n"), tags);
+                join("\n", text), tags);
     }
 }

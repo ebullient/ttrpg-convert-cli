@@ -1,5 +1,11 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.nio.file.Path;
+
+import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
+
 public enum Pf2eTypeActivity {
     single("Single Action", ">", "single_action.svg"),
     two("Two-Action activity", ">>", "two_actions.svg"),
@@ -64,5 +70,22 @@ public enum Pf2eTypeActivity {
         return String.format("%sTODO.md#%s",
                 rulesRoot, this.caption.replace(" ", "%20")
                         .replace(".", ""));
+    }
+
+    public QuteActivityType toQuteActivityType(JsonSource convert) {
+        String fileName = this.getGlyph();
+        int x = fileName.lastIndexOf('.');
+        Path target = Path.of("img",
+                Tui.slugify(fileName.substring(0, x)) + fileName.substring(x));
+
+        return new QuteActivityType(
+                getCaption(),
+                new ImageRef.Builder()
+                        .setStreamSource(this.getGlyph())
+                        .setTargetPath(convert.index().rulesPath(), target)
+                        .setMarkdownPath(this.getCaption(), convert.index().rulesRoot())
+                        .build(),
+                this.getTextGlyph(),
+                this.getRulesPath(convert.index().rulesRoot()));
     }
 }

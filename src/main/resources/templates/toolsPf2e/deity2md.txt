@@ -1,0 +1,45 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e,pf2e-deity
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
+---
+# {resource.name}{#if resource.aliases } ({#each resource.aliases}{it}{#if it_hasNext}, {/if}{/each}){/if} *({resource.alignment})*  
+%%-- Embedded/inline deity starts on the next line. --%%
+{#if resource.text }
+
+{resource.text}
+{/if}
+
+- **Category**: {resource.category}{#if resource.genericCategory } ({resource.genericCategory}){/if}
+{#if resource.edicts }
+- **Edicts** {resource.edicts}
+{/if}{#if resource.anathema }
+- **Anathema**: {resource.anathema}
+{/if}{#if resource.areasOfConcern }
+- **Areas of Concern**: {resource.areasOfConcern}
+{/if}{#if resource.followerAlignment }
+- **Follower Alignments**: {resource.followerAlignment}
+{/if}
+{#if resource.cleric }
+
+## Devotee benefits
+
+{resource.cleric}
+{/if}
+{#if resource.avatar }
+
+{resource.avatar}
+{/if}
+
+## Summary
+
+{#if resource.pantheon }
+- **Pantheon Members**: {resource.pantheon}
+{/if}
+Source: *{resource.source}*

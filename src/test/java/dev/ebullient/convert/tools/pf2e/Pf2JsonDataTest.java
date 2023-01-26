@@ -155,6 +155,11 @@ public class Pf2JsonDataTest {
     }
 
     @Test
+    public void testDeity_p2fe() throws Exception {
+        generateNotesForType(Pf2eIndexType.deity);
+    }
+
+    @Test
     public void testDomain_p2fe() throws Exception {
         generateNotesForType(Pf2eIndexType.domain);
     }
