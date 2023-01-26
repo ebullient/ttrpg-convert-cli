@@ -148,7 +148,11 @@ public interface NodeReader {
         String value();
 
         default boolean isValueOfField(JsonNode source, Field field) {
-            return this.value().equals(field.getTextOrNull(source));
+            return matches(field.getTextOrEmpty(source));
+        }
+
+        default boolean matches(String value) {
+            return this.value().equalsIgnoreCase(value);
         }
     }
 }

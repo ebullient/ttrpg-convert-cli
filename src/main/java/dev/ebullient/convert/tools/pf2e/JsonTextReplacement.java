@@ -12,7 +12,7 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
 
 public interface JsonTextReplacement {
-    static AtomicBoolean readingFootnotes = new AtomicBoolean(); // only works because we're single threaded
+    AtomicBoolean readingFootnotes = new AtomicBoolean(); // only works because we're single threaded
 
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
@@ -37,15 +37,15 @@ public interface JsonTextReplacement {
         return index().cfg();
     }
 
-    default String join(List<String> list, String joiner) {
+    default String join(String joiner, List<String> list) {
         if (list == null || list.isEmpty()) {
             return "";
         }
         return String.join(joiner, list).trim();
     }
 
-    default String joinConjunct(List<String> list, String lastJoiner) {
-        return joinConjunct(list, ", ", " or ", false);
+    default String joinConjunct(String lastJoiner, List<String> list) {
+        return joinConjunct(list, ", ", lastJoiner, false);
     }
 
     default String joinConjunct(List<String> list, String joiner, String lastJoiner, boolean nonOxford) {
@@ -74,12 +74,12 @@ public interface JsonTextReplacement {
             }
         }
         return out.toString();
-    };
+    }
 
     default String nestedEmbed(List<String> content) {
         int embedDepth = content.stream()
                 .filter(s -> s.matches("^`+$"))
-                .map(s -> s.length())
+                .map(String::length)
                 .max(Integer::compare).orElse(2);
         char[] ticks = new char[embedDepth + 1];
         Arrays.fill(ticks, '`');
@@ -106,9 +106,8 @@ public interface JsonTextReplacement {
             start = endYaml; // if no other marker present, lop off the yaml header
         }
         if (start >= 0) {
-            for (int i = 0; i <= start; i++) {
-                content.remove(0); // remove until start
-            }
+            // remove until start
+            content.subList(0, start + 1).clear();
         }
         return content;
     }
@@ -127,12 +126,6 @@ public interface JsonTextReplacement {
                 .collect(Collectors.joining(" "));
     }
 
-    /**
-     * Remove/replace syntax within text
-     *
-     * @param input
-     * @return
-     */
     default String replaceText(String input) {
         if (input == null || input.isEmpty()) {
             return input;
@@ -268,15 +261,14 @@ public interface JsonTextReplacement {
     }
 
     default String linkifyRules(String text, String rules, String anchor) {
-        if (text.matches("\\[.+\\]\\(.+\\)")) {
+        if (text.matches("\\[.+]\\(.+\\)")) {
             // skip if already a link
             return text;
         }
-        String link = String.format("[%s](%s%s.md#%s)",
+        return String.format("[%s](%s%s.md#%s)",
                 text, index().rulesRoot(), rules,
                 anchor.replace(" ", "%20")
                         .replace(".", ""));
-        return link;
     }
 
     default String linkify(MatchResult match) {
@@ -317,7 +309,7 @@ public interface JsonTextReplacement {
         if (parts.length > 2) {
             linkText = parts[2];
         }
-        if (linkText.matches("\\[.+\\]\\(.+\\)")) {
+        if (linkText.matches("\\[.+]\\(.+\\)")) {
             // skip if already a link
             return linkText;
         }
@@ -328,10 +320,15 @@ public interface JsonTextReplacement {
             } else if (parts[0].startsWith("[")) {
                 // Do the same replacement we did when doing the initial import
                 // [...] becomes "Any ..."
-                parts[0].replaceAll("\\[(.*)\\]", "Any $1");
+                parts[0] = parts[0].replaceAll("\\[(.*)]", "Any $1");
+            } else if (parts[0].length() <= 2) {
+                Pf2eTypeReader.Pf2eAlignmentValue alignment = Pf2eTypeReader.Pf2eAlignmentValue.fromString(parts[0]);
+                parts[0] = alignment == null ? parts[0] : alignment.longName;
             }
         } else if (targetType == Pf2eIndexType.domain) {
             parts[0] = parts[0].replaceAll("\\s+\\(Apocryphal\\)", "");
+        } else if (targetType == Pf2eIndexType.spell) {
+            parts[0] = parts[0].replaceAll("\\s+\\(.*\\)$", "");
         }
 
         if (parts.length > 1) {
@@ -340,10 +337,6 @@ public interface JsonTextReplacement {
         if (targetType == Pf2eIndexType.condition) {
             return linkifyRules(linkText.replaceAll("\\s\\d+$", ""),
                     "conditions", toTitleCase(parts[0].replaceAll("\\s\\d+$", "")));
-        }
-
-        if (targetType.relativePath() == null) {
-            return linkText;
         }
 
         // TODO: aliases?

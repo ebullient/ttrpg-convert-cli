@@ -391,7 +391,7 @@ public interface JsonSource extends JsonTextReplacement {
 
             QuteAfflictionStage stage = new QuteAfflictionStage();
             stage.duration = replaceText(AfflictionField.duration.getTextOrNull(stageNode));
-            stage.text = join(stageInner, "\n");
+            stage.text = join("\n", stageInner);
 
             stages.put(title, stage);
         });
@@ -401,7 +401,7 @@ public interface JsonSource extends JsonTextReplacement {
                 replaceText(AfflictionField.maxDuration.getTextOrNull(node)),
                 replaceText(AfflictionField.onset.getTextOrNull(node)),
                 savingThrowString,
-                join(effect, "\n"),
+                join("\n", effect),
                 stages);
 
         renderInlineTemplate(text, inlineAffliction, "affliction");
@@ -887,13 +887,18 @@ public interface JsonSource extends JsonTextReplacement {
             return this.nodeValue;
         }
 
+        @Override
+        public boolean matches(String value) {
+            return this.value().equals(value) || this.name().equalsIgnoreCase(value);
+        }
+
         static AppendTypeValue valueFrom(JsonNode source, Field field) {
             String textOrNull = field.getTextOrNull(source);
             if (textOrNull == null) {
                 return null;
             }
             return Stream.of(AppendTypeValue.values())
-                    .filter((t) -> t.nodeValue.equals(textOrNull) || t.name().equalsIgnoreCase(textOrNull))
+                    .filter((t) -> t.matches(textOrNull))
                     .findFirst().orElse(null);
         }
     }

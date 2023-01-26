@@ -63,6 +63,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         Pf2eIndexType.archetype.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.curse.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.deity.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.disease.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.domain.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.feat.withArrayFrom(node, this::addToIndex);
@@ -94,11 +95,14 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
 
     String prepareTrait(String key, JsonNode node) {
         String name = Field.name.getTextOrEmpty(node);
+        Pf2eAlignmentValue alignment = Pf2eAlignmentValue.fromString(name);
 
         // Change the indexed name for [...] traits
-        if (name.startsWith("[")) {
+        if (name.startsWith("[") || alignment != null) {
             // Update name & object node
-            name = name.replaceAll("\\[(.*)]", "Any $1");
+            name = alignment == null
+                    ? name.replaceAll("\\[(.*)]", "Any $1")
+                    : alignment.longName;
             ((ObjectNode) node).put("name", name);
 
             // Create new key, add alias from old key
@@ -110,7 +114,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         // Precreate category mapping for traits
         String traitLink = linkify(Pf2eIndexType.trait, name);
         Field.categories.getListOfStrings(node, tui()).stream()
-                .filter(c -> !c.equals("_alignAbv"))
+                .filter(c -> !c.equalsIgnoreCase("_alignAbv"))
                 .forEach(c -> categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
                         .add(traitLink));
 
@@ -202,13 +206,17 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     public boolean isIncluded(String key) {
-        return filteredIndex.containsKey(key);
+        return filteredIndex.containsKey(aliasOrDefault(key));
     }
 
     // --------- Node retrieval --------
 
+    public String aliasOrDefault(String key) {
+        return alias.getOrDefault(key, key);
+    }
+
     public JsonNode getIncludedNode(String key) {
-        return filteredIndex.get(key);
+        return filteredIndex.get(aliasOrDefault(key));
     }
 
     public Set<String> featKeys(String archetypeKey) {
