@@ -171,7 +171,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         if (configPath != null) {
             if (configPath.toFile().exists()) {
                 // Read configuration
-                allOk &= configurator.readConfiguration(configPath);
+                allOk = configurator.readConfiguration(configPath);
             } else {
                 tui.errorf("Specified config file does not exist: %s", configPath);
                 allOk = false;
@@ -194,11 +194,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             tui.outPrintf("⏱  Reading %s%n", inputPath);
             if (inputPath.toFile().isDirectory()) {
                 toolsBase = inputPath.toAbsolutePath();
-                if (game == Datasource.toolsPf2e) {
-                    allOk &= tui.readPf2eTools(toolsBase, index::importTree);
-                } else {
-                    allOk &= tui.read5eTools(toolsBase, index::importTree);
-                }
+                allOk &= tui.readToolsDir(toolsBase, index::importTree);
             } else {
                 allOk &= tui.readFile(inputPath, index::importTree);
             }

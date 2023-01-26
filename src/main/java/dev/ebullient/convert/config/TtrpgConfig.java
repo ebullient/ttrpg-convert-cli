@@ -1,9 +1,12 @@
 package dev.ebullient.convert.config;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,8 +16,8 @@ import dev.ebullient.convert.io.Tui;
 
 public class TtrpgConfig {
 
-    static final Map<Datasource, DatasourceConfig> globalConfig = new HashMap<Datasource, DatasourceConfig>();
-    static final Map<Datasource, CompendiumConfig> userConfig = new HashMap<Datasource, CompendiumConfig>();
+    static final Map<Datasource, DatasourceConfig> globalConfig = new HashMap<>();
+    static final Map<Datasource, CompendiumConfig> userConfig = new HashMap<>();
     static final Set<String> missingSourceName = new HashSet<>();
 
     private static Datasource datasource = Datasource.tools5e;
@@ -72,6 +75,16 @@ public class TtrpgConfig {
         });
     }
 
+    public static List<String> getMarkerFiles() {
+        DatasourceConfig activeConfig = activeConfig();
+        return Collections.unmodifiableList(activeConfig.markerFiles);
+    }
+
+    public static List<String> getFileSources() {
+        DatasourceConfig activeConfig = activeConfig();
+        return Collections.unmodifiableList(activeConfig.sources);
+    }
+
     private static void readSystemConfig() {
         try {
             JsonNode node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/convertData.json"));
@@ -98,6 +111,8 @@ public class TtrpgConfig {
                 config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(config5e));
                 config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(config5e));
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(config5e));
+                config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(config5e));
+                config.sources.addAll(ConfigKeys.sources.getAsList(config5e));
             }
         }
         if (datasource == Datasource.toolsPf2e) {
@@ -106,6 +121,8 @@ public class TtrpgConfig {
                 config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(configPf2e));
                 config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(configPf2e));
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(configPf2e));
+                config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(configPf2e));
+                config.sources.addAll(ConfigKeys.sources.getAsList(configPf2e));
             }
         }
     }
@@ -115,14 +132,18 @@ public class TtrpgConfig {
         final Map<String, String> abvToName = new HashMap<>();
         final Map<String, String> longToAbv = new HashMap<>();
         final Map<String, String> fallbackImagePaths = new HashMap<>();
+        final List<String> sources = new ArrayList<>();
+        final List<String> markerFiles = new ArrayList<>();
     }
 
     enum ConfigKeys {
         fallbackImage,
         config5e,
         configPf2e,
+        markerFiles,
         srdEntries,
         properties,
+        sources,
         abvToName,
         longToAbv;
 
@@ -145,6 +166,13 @@ public class TtrpgConfig {
             Map<String, String> result = new HashMap<>();
             map.fields().forEachRemaining(e -> result.put(e.getKey().toLowerCase(), e.getValue().asText()));
             return result;
+        }
+
+        List<String> getAsList(JsonNode node) {
+            JsonNode list = node.get(this.name());
+            return list == null
+                    ? List.of()
+                    : Tui.MAPPER.convertValue(list, Tui.LIST_STRING);
         }
     }
 

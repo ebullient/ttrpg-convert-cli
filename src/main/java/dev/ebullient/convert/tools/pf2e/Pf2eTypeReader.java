@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -28,56 +29,83 @@ public interface Pf2eTypeReader extends JsonSource {
         ;
     }
 
-    enum Pf2eTypeTradition implements NodeReader.FieldValue {
-        arcane,
-        divine,
-        occult,
-        primal;
+    enum Pf2eSavingThrowType implements NodeReader.FieldValue {
+        fortitude("F"),
+        reflex("R"),
+        will("W");
+
+        String encoding;
+
+        Pf2eSavingThrowType(String encoding) {
+            this.encoding = encoding;
+        }
 
         @Override
         public String value() {
-            return this.name();
+            return encoding;
+        }
+
+        public String toTitleCase(JsonSource convert) {
+            return convert.toTitleCase(this.name());
+        }
+
+        static Pf2eSavingThrowType valueFromEncoding(String value) {
+            if (value == null || value.isBlank()) {
+                return null;
+            }
+            return Stream.of(Pf2eSavingThrowType.values())
+                    .filter((t) -> t.encoding.equals(value) || t.name().equalsIgnoreCase(value))
+                    .findFirst().orElse(null);
         }
     }
 
-    enum Pf2eSpellSchoolTitle implements NodeReader.FieldValue {
-        abjuration,
-        conjuration,
-        divination,
-        enchantment,
-        evocation,
-        illusion,
-        necromancy,
-        transmutation;
+    enum Pf2eAction implements NodeReader {
+        activity,
+        actionType,
+        cost,
+        info,
+        prerequisites,
+        trigger,
 
-        @Override
-        public String value() {
-            return this.name();
-        }
     }
 
-    enum Pf2eSpellcastingType implements NodeReader.FieldValue {
-        innate,
-        prepared,
-        focus;
+    enum Pf2eSpell implements NodeReader {
+        amp,
+        area,
+        basic,
+        cast,
+        components, // nested array
+        cost,
+        domains,
+        duration,
+        focus,
+        heightened,
+        hidden,
+        level,
+        plusX,
+        primaryCheck, // ritual
+        range,
+        savingThrow,
+        secondaryCasters, //ritual
+        secondaryCheck, // ritual
+        spellLists,
+        subclass,
+        targets,
+        traditions,
+        trigger,
+        type,
+        X;
 
-        @Override
-        public String value() {
-            return this.name();
-        }
-    }
-
-    enum Pf2eSpellAreaType implements NodeReader.FieldValue {
-        burst,
-        emanation,
-        cone,
-        cylinder,
-        line,
-        misc;
-
-        @Override
-        public String value() {
-            return this.name();
+        List<String> getNestedListOfStrings(JsonNode source, Tui tui) {
+            JsonNode result = source.get(this.nodeName());
+            if (result == null) {
+                return List.of();
+            } else if (result.isTextual()) {
+                return List.of(result.asText());
+            } else {
+                JsonNode first = result.get(0);
+                return getListOfStrings(first, tui);
+            }
         }
     }
 
@@ -127,46 +155,6 @@ public interface Pf2eTypeReader extends JsonSource {
         public Pf2eSources getSources() {
             throw new IllegalStateException("Don't call this method");
         }
-    }
-
-    enum Pf2eSavingThrowType implements NodeReader.FieldValue {
-        fortitude("F"),
-        reflex("R"),
-        will("W");
-
-        String encoding;
-
-        Pf2eSavingThrowType(String encoding) {
-            this.encoding = encoding;
-        }
-
-        @Override
-        public String value() {
-            return encoding;
-        }
-
-        public String toTitleCase(JsonSource convert) {
-            return convert.toTitleCase(this.name());
-        }
-
-        static Pf2eSavingThrowType valueFromEncoding(String value) {
-            if (value == null || value.isBlank()) {
-                return null;
-            }
-            return Stream.of(Pf2eSavingThrowType.values())
-                    .filter((t) -> t.encoding.equals(value) || t.name().equalsIgnoreCase(value))
-                    .findFirst().orElse(null);
-        }
-    }
-
-    enum ActionField implements NodeReader {
-        activity,
-        actionType,
-        cost,
-        info,
-        prerequisites,
-        trigger,
-
     }
 
     @RegisterForReflection

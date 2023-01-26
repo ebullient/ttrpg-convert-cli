@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
 import dev.ebullient.convert.tools.pf2e.JsonTextReplacement;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
 public interface NodeReader {
 
@@ -82,10 +83,12 @@ public interface NodeReader {
 
     default List<String> transformListFrom(JsonNode node, Tui tui, JsonTextReplacement replacer) {
         List<String> list = getListOfStrings(node, tui);
-        if (list.isEmpty()) {
-            return List.of();
-        }
         return list.stream().map(s -> replacer.replaceText(s)).collect(Collectors.toList());
+    }
+
+    default List<String> linkifyListFrom(JsonNode node, Pf2eIndexType type, Tui tui, JsonTextReplacement replacer) {
+        List<String> list = getListOfStrings(node, tui);
+        return list.stream().map(s -> replacer.linkify(type, s)).collect(Collectors.toList());
     }
 
     default boolean booleanOrDefault(JsonNode source, boolean value) {

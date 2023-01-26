@@ -28,7 +28,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        String level = SpellFields.level.getTextOrDefault(rootNode, "1");
+        String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");
         tags.add(cfg().tagOf(RITUALS, level));
 
         return new QuteRitual(sources, text, tags,
@@ -44,9 +44,9 @@ public class Json2QuteRitual extends Json2QuteSpell {
     }
 
     QuteSpellTarget getQuteRitualSpellTarget(List<String> tags) {
-        String targets = replaceText(SpellFields.targets.getTextOrNull(rootNode));
-        JsonNode rangeEntry = SpellFields.range.getFieldFrom(rootNode, Field.entry);
-        SpellArea area = SpellFields.area.fieldFromTo(rootNode, SpellArea.class, tui());
+        String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
+        JsonNode rangeEntry = Pf2eSpell.range.getFieldFrom(rootNode, Field.entry);
+        SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
         if (targets == null && rangeEntry == null && area == null) {
             return null;
         }
@@ -66,12 +66,12 @@ public class Json2QuteRitual extends Json2QuteSpell {
     }
 
     QuteRitualCasting getQuteRitualCast() {
-        NumberUnitEntry cast = SpellFields.cast.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
-        RitualSecondaryCaster casters = SpellFields.secondaryCasters.fieldFromTo(rootNode, RitualSecondaryCaster.class, tui());
+        NumberUnitEntry cast = Pf2eSpell.cast.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
+        RitualSecondaryCaster casters = Pf2eSpell.secondaryCasters.fieldFromTo(rootNode, RitualSecondaryCaster.class, tui());
 
         QuteRitualCasting quteCast = new QuteRitualCasting();
         quteCast.cast = cast.convertToDurationString(this);
-        quteCast.cost = SpellFields.cost.transformTextFrom(rootNode, ", ", tui(), this);
+        quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", tui(), this);
         if (casters != null) {
             quteCast.secondaryCasters = casters.buildString(this);
         }
@@ -79,8 +79,8 @@ public class Json2QuteRitual extends Json2QuteSpell {
     }
 
     QuteRitualChecks getQuteRitualChecks() {
-        RitualCheck primary = SpellFields.primaryCheck.fieldFromTo(rootNode, RitualCheck.class, tui());
-        RitualCheck secondary = SpellFields.secondaryCheck.fieldFromTo(rootNode, RitualCheck.class, tui());
+        RitualCheck primary = Pf2eSpell.primaryCheck.fieldFromTo(rootNode, RitualCheck.class, tui());
+        RitualCheck secondary = Pf2eSpell.secondaryCheck.fieldFromTo(rootNode, RitualCheck.class, tui());
         if (primary == null && secondary == null) {
             return null;
         }

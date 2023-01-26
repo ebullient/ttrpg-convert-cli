@@ -21,11 +21,11 @@ public class Json2QuteAction extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
-        appendEntryToText(text, ActionField.info.getFrom(rootNode), null);
+        appendEntryToText(text, Pf2eAction.info.getFrom(rootNode), null);
         appendFootnotes(text, 0);
 
-        NumberUnitEntry jsonActivity = ActionField.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
-        ActionType actionType = ActionField.actionType.fieldFromTo(rootNode, ActionType.class, tui());
+        NumberUnitEntry jsonActivity = Pf2eAction.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
+        ActionType actionType = Pf2eAction.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
         if (actionType == null) {
             tags.add(cfg().tagOf("action"));
@@ -35,11 +35,11 @@ public class Json2QuteAction extends Json2QuteBase {
 
         return new QuteAction(
                 getSources(), text, tags,
-                ActionField.cost.transformTextFrom(rootNode, ", ", tui(), this),
-                ActionField.trigger.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eAction.cost.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eAction.trigger.transformTextFrom(rootNode, ", ", tui(), this),
                 Field.alias.transformListFrom(rootNode, tui(), this),
                 collectTraitsFrom(rootNode),
-                ActionField.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
                 Field.requirements.replaceTextFrom(rootNode, this),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),

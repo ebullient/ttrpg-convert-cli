@@ -167,6 +167,32 @@
     "fallbackImage": {
       "img/bestiary/SDW/Lhammaruntosz.jpg": "img/SDW/Lhammaruntosz.png",
       "img/items/CRCotN/Medal of the Maze.jpg": "img/items/CRCotN/Medal of the Maze.webp"
-    }
+    },
+    "markerFile": [
+      "cultsboons.json", "book/book-phb.json"
+    ],
+    "sources": [
+      "adventures.json", "books.json", "names.json", "variantrules.json",
+      "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
+      "bestiary", "bestiary/traits.json", "bestiary/legendarygroups.json",
+      "backgrounds.json", "fluff-backgrounds.json",
+      "class",
+      "deities.json",
+      "feats.json", "optionalfeatures.json",
+      "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
+      "races.json", "fluff-races.json",
+      "spells"
+    ]
+  },
+  "configPf2e": {
+    "markerFile": [
+      "archetypes.json", "book/book-crb.json"
+    ],
+    "sources": [
+      "books.json", "book/book-crb.json",
+      "actions.json", "afflictions.json", "archetypes.json",
+      "conditions.json", "domains.json", "feats", "rituals.json",
+      "skills.json", "spells", "tables.json", "traits.json"
+    ]
   }
 }
