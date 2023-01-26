@@ -26,6 +26,10 @@ public class Pf2eQuteBase extends QuteBase {
         this.type = sources.getType();
     }
 
+    public String title() {
+        return getName();
+    }
+
     @Override
     public String targetPath() {
         return type.relativePath();

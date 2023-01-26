@@ -10,21 +10,20 @@ tags:
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
 # {resource.name}
-*{resource.type} {resource.level}*  
+*{resource.affliction} {resource.level}*  
+%%-- Embedded/inline feat starts on the next line. --%%
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if} 
 
 {resource.text}
-
 {#if resource.temptedCurse }
 
 ## Tempting Curse
 
 {resource.temptedCurse}
-{/if}
-{#if resource.hasSections }
+{/if}{#if resource.hasSections }
 
 ## Summary
-
 {/if}
+
 Source: *{resource.source}*

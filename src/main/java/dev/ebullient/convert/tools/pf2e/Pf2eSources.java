@@ -40,6 +40,20 @@ public class Pf2eSources extends CompendiumSources {
         return new Pf2eSources(Pf2eIndexType.syntheticGroup, key, null);
     }
 
+    public static Pf2eSources findOrTemporary(Pf2eIndexType type, JsonNode node) {
+        if (node == null) {
+            throw new IllegalArgumentException("Must pass a JsonNode");
+        }
+        String key = JsonSource.TtrpgValue.indexKey.getFromNode(node);
+        if (key == null) {
+            key = type.createKey(node);
+        }
+        Pf2eSources sources = findSources(key);
+        return sources == null
+                ? new Pf2eSources(type, key, node)
+                : sources;
+    }
+
     Pf2eIndexType type;
 
     private Pf2eSources(Pf2eIndexType type, String key, JsonNode node) {

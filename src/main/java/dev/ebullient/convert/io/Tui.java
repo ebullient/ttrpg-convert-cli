@@ -35,6 +35,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
 import com.github.slugify.Slugify;
 
+import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
@@ -256,14 +257,6 @@ public class Tui {
         }
     }
 
-    public void showUsage(CommandSpec spec) {
-        spec.commandLine().usage(out, ansi);
-    }
-
-    public void errShowUsage(CommandSpec spec) {
-        spec.commandLine().usage(err, ansi);
-    }
-
     public static String slugify(String s) {
         return slugifier().slugify(s);
     }
@@ -328,18 +321,6 @@ public class Tui {
         }
     }
 
-    public boolean readResource(String name, BiConsumer<String, JsonNode> callback) {
-        try {
-            JsonNode node = MAPPER.readTree(this.getClass().getResourceAsStream(name));
-            callback.accept(name, node);
-            verbosef("🔖 Finished reading %s", name);
-        } catch (IOException e) {
-            errorf(e, "Unable to read resource %s", name);
-            return false;
-        }
-        return true;
-    }
-
     public boolean readFile(Path p, BiConsumer<String, JsonNode> callback) {
         inputRoot.add(p.getParent().toAbsolutePath());
         try {
@@ -361,6 +342,10 @@ public class Tui {
 
         boolean result = true;
         String basename = dir.getFileName().toString();
+        if ("ancestries".equals(basename)) {
+            basename = "ancestry";
+        } else if (TtrpgConfig.getConfig().datasource() == Datasource.toolsPf2e && "bestiary".equals(basename))
+            basename = "creature";
         try (Stream<Path> stream = Files.list(dir)) {
             Iterator<Path> i = stream.iterator();
             while (i.hasNext()) {
@@ -415,12 +400,11 @@ public class Tui {
         yamlMapper().writer().writeValue(outputFile.toFile(), map);
     }
 
-    public String applyTemplate(QuteBase resource) {
-        return templates.render(resource);
+    public String renderEmbedded(QuteBase resource) {
+        return templates.renderEmbedded(resource);
     }
 
-    public String applyTemplate(QuteNote note) {
-        return templates.renderNote(note);
+    public String renderEmbedded(QuteNote note) {
+        return templates.renderEmbedded(note);
     }
-
 }

@@ -189,10 +189,14 @@
       "archetypes.json", "book/book-crb.json"
     ],
     "sources": [
-      "books.json", "book/book-crb.json",
-      "actions.json", "afflictions.json", "archetypes.json",
-      "conditions.json", "domains.json", "feats", "rituals.json",
-      "skills.json", "spells", "tables.json", "traits.json"
+      "ancestries", "backgrounds", "bestiary", "book", "class", "feats", "items", "spells",
+      "books.json", "book/book-crb.json", "items/baseitems.json",
+      "abilities.json", "actions.json", "afflictions.json", "archetypes.json",
+      "companionsfamiliars.json", "conditions.json", "deities.json", "domains.json", 
+      "events.json", "groups.json", "hazards.json", "languages.json",
+      "optionalfeatures.json", "organizations.json", "places.json", "quickrules.json",
+      "relicgifts.json", "rituals.json","skills.json", "sources.json", 
+      "tables.json", "traits.json", "variantrules.json", "vehicles.json"
     ]
   }
 }

@@ -1,4 +1,4 @@
-title: {resource.name}{#if resource.activity} [{resource.activity.caption}]({resource.activity.rulesPath}){/if}{#if resource.components} {resource.components}{/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
+title: {resource.name}{#if resource.activity} { resource.activity }{/if}{#if resource.components} {resource.components}{/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
 
 {#if resource.cost }
 - **Cost**: {resource.cost}

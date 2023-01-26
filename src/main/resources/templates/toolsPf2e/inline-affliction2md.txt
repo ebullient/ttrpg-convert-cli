@@ -2,32 +2,33 @@
 title: {resource.name}{#if resource.level } _{resource.level}_{/if}
 
 {#else if resource.savingThrow }
-title: {resource.savingThrow}
+title: Saving Throw: {resource.savingThrow}
 
-{/if}
-{#if resource.traits }{#each resource.traits}{it}  {/each}
+{/if}{#if resource.traits }
+{#each resource.traits}{it}  {/each}
+{/if}{#if resource.text }
+{resource.text}
 
-{/if}
-{#if resource.text }{resource.text}
-
-{/if}{#if resource.savingThrow }
+{/if}{#if resource.savingThrow && resource.name }
 - **Saving Throws**: {resource.savingThrow}
 {/if}{#if resource.onset }
 - **Onset**: {resource.onset}
 {/if}{#if resource.maxDuration }
 - **Maximum Duration**: {resource.maxDuration}
-{/if}
-{#if resource.stages }
+{/if}{#if resource.stages }
 
 ## Stages
 
 {#each resource.stages}**{it.key}** {it.value.text}{#if it.value.duration } ({it.value.duration}){/if}
 
-{/each}{/if}{#if resource.effect }
+{/each}{#if resource.effect }
 
 ## Effect
 
 {resource.effect}
+{/if}{#else if resource.effect}
+**Effect** {resource.effect}
 {/if}{#if resource.tags }
 
-%% {#each resource.tags}{it}  {/each} %%{/if}
+%% {#each resource.tags}{it}  {/each} %%{/if}{#if resource.source }
+Source: *{resource.source}*{/if}

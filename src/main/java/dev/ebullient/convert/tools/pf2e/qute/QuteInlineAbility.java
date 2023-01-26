@@ -2,11 +2,11 @@ package dev.ebullient.convert.tools.pf2e.qute;
 
 import java.util.List;
 
-import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class QuteInlineAbility extends QuteNote {
+public class QuteInlineAbility extends Pf2eQuteNote {
 
     public final List<String> traits;
     public final String components;
@@ -23,7 +23,7 @@ public class QuteInlineAbility extends QuteNote {
             List<String> traits, QuteActivityType activity,
             String components, String requirements,
             String cost, String trigger, String frequency, String special) {
-        super(name, null, text, tags);
+        super(Pf2eIndexType.ability, name, null, text, tags);
         this.traits = traits;
 
         this.activity = activity;

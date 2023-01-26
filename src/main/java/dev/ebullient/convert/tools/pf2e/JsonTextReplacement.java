@@ -87,13 +87,23 @@ public interface JsonTextReplacement {
     }
 
     default List<String> removePreamble(List<String> content) {
+        if (content == null || content.isEmpty()) {
+            return List.of();
+        }
+        boolean hasYaml = content.get(0).equals("---");
+        int endYaml = -1;
         int start = -1;
         for (int i = 0; i < content.size(); i++) {
             String line = content.get(i);
-            if (line.startsWith("%%--")) {
+            if (line.equals("---") && hasYaml && i > 0 && endYaml < 0) {
+                endYaml = i;
+            } else if (line.startsWith("%%--")) {
                 start = i;
                 break;
             }
+        }
+        if (start < 0 && endYaml > 0) {
+            start = endYaml; // if no other marker present, lop off the yaml header
         }
         if (start >= 0) {
             for (int i = 0; i <= start; i++) {
@@ -141,7 +151,7 @@ public interface JsonTextReplacement {
                 .replaceAll((match) -> match.group(1) + "% chance");
 
         result = asPattern.matcher(result)
-                .replaceAll(this::replaceAs);
+                .replaceAll(this::replaceActionAs);
 
         result = footnoteReference.matcher(result)
                 .replaceAll(this::replaceFootnoteReference);
@@ -227,7 +237,7 @@ public interface JsonTextReplacement {
                 readingFootnotes.get() ? ": " : "");
     }
 
-    default String replaceAs(MatchResult match) {
+    default String replaceActionAs(MatchResult match) {
         final Pf2eTypeActivity type;
         switch (match.group(1).toLowerCase()) {
             case "1":

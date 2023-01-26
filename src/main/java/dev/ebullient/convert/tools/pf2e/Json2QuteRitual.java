@@ -118,25 +118,19 @@ public class Json2QuteRitual extends Json2QuteSpell {
         public List<String> mustBe;
 
         public String buildPrimaryString(JsonSource convert) {
-            // ${ritual.primaryCheck.entry
-            //      ? renderer.render(ritual.primaryCheck.entry)
-            //      : `${ritual.primaryCheck.skills.map(s => `{@skill ${s}}`).joinConjunct(", ", " or ")}
-            //  (${ritual.primaryCheck.prof}${ritual.primaryCheck.mustBe
-            //      ? `; you must be a ${ritual.primaryCheck.mustBe.joinConjunct(", ", " or ")}`
-            //      : ""})
-            return String.format("%s (%s%s)",
-                    entry == null ? skillsToString(convert) : convert.replaceText(entry),
-                    prof,
+            if (entry != null) {
+                return convert.replaceText(entry);
+            }
+            return String.format("%s (%s%s)", skillsToString(convert), prof,
                     mustBe == null ? "" : String.format("; you must be a %s", convert.joinConjunct(mustBe, " or ")));
         }
 
         public String buildSecondaryString(JsonSource convert) {
-            // `${ritual.secondaryCheck.entry
-            //      ? renderer.render(ritual.secondaryCheck.entry)
-            //      : `${ritual.secondaryCheck.skills.map(s => `{@skill ${s}}`).joinConjunct(", ", " or ")}
-            //  ${ritual.secondaryCheck.prof ? `(${ritual.secondaryCheck.prof})` : ""}`}
+            if (entry != null) {
+                return convert.replaceText(entry);
+            }
             return String.format("%s%s",
-                    entry == null ? skillsToString(convert) : convert.replaceText(entry),
+                    skillsToString(convert),
                     prof == null ? "" : String.format(" (%s)", prof));
         }
 
