@@ -11,7 +11,7 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
     protected final Pf2eSources sources;
 
     public Json2QuteBase(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        this(index, type, rootNode, Pf2eSources.findSources(rootNode));
+        this(index, type, rootNode, Pf2eSources.findOrTemporary(type, rootNode));
     }
 
     public Json2QuteBase(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode, Pf2eSources sources) {

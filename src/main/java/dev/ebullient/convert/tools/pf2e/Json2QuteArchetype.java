@@ -97,7 +97,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
         });
 
         return quteFeats.stream()
-                .map(x -> render(x))
+                .map(x -> render(x, x.note != null && x.note.contains("[!note] This version of")))
                 .collect(Collectors.toList());
     }
 
@@ -123,19 +123,11 @@ public class Json2QuteArchetype extends Json2QuteBase {
         return json2Qute.buildArchetype(sources.getName(), parts[0]);
     }
 
-    String render(QuteFeat quteFeat) {
-        String rendered = tui().applyTemplate(quteFeat);
-        int begin = rendered.indexOf("# ");
-        List<String> inner = removePreamble(new ArrayList<>(
-                List.of(rendered.split("\n"))));
-        String backticks = nestedEmbed(inner);
-
-        inner.add(0, "collapse: closed");
-        inner.add(0, String.format("title: %s, Feat %s",
-                quteFeat.getName(),
-                quteFeat.level + (rendered.contains("> [!note] This version of ") ? "*" : "")));
-        inner.add(0, backticks + "ad-embed-feat");
-        inner.add(backticks);
+    String render(QuteFeat quteFeat, boolean archetypeFeat) {
+        List<String> inner = new ArrayList<>();
+        renderEmbeddedTemplate(inner, quteFeat, "feat", List.of(
+                String.format("title: %s, Feat %s", quteFeat.getName(), quteFeat.level + (archetypeFeat ? "*" : "")),
+                "collapse: closed"));
 
         return String.join("\n", inner);
     }

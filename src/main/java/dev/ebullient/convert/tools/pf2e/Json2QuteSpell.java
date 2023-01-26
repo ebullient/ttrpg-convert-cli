@@ -47,6 +47,8 @@ public class Json2QuteSpell extends Json2QuteBase {
             tags.add(cfg().tagOf(SPELLS, "level", level));
         }
 
+        Pf2eIndexType.domain.getListOfStrings(rootNode, tui()).forEach(d -> tags.add(cfg().tagOf("domain", d, "spell")));
+
         // subclass --> link to subclass definition
         List<QuteSpellSubclass> subclass = new ArrayList<>();
         JsonNode scNode = Pf2eSpell.subclass.getFrom(rootNode);

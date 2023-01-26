@@ -66,7 +66,9 @@ public class Templates {
         Template tpl = customTemplateOrDefault(key);
         return tpl
                 .data("resource", resource)
-                .render().trim();
+                .render()
+                .replaceAll("%%-- .*? --%%\\n", "")
+                .trim();
     }
 
     public String renderIndex(String name, Collection<FileMap> resources) {
@@ -81,7 +83,9 @@ public class Templates {
         Template tpl = customTemplateOrDefault("name2md.txt");
         return tpl
                 .data("resource", resource)
-                .render().trim();
+                .render()
+                .replaceAll("%%-- .*? --%%\\n", "")
+                .trim();
     }
 
     public String renderNote(QuteNote resource) {
@@ -90,4 +94,21 @@ public class Templates {
                 .data("resource", resource)
                 .render().trim();
     }
+
+    public String renderEmbedded(QuteBase resource) {
+        IndexType type = resource.type();
+        String key = String.format("%s2md.txt", type.templateName());
+        Template tpl = customTemplateOrDefault(key);
+        return tpl
+                .data("resource", resource)
+                .render().trim();
+    }
+
+    public String renderEmbedded(QuteNote resource) {
+        Template tpl = customTemplateOrDefault(resource.template());
+        return tpl
+                .data("resource", resource)
+                .render().trim();
+    }
+
 }

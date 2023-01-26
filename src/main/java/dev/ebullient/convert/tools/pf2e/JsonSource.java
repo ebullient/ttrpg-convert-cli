@@ -17,6 +17,7 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
@@ -354,8 +355,7 @@ public interface JsonSource extends JsonTextReplacement {
                 index().getFrequency(AbilityField.frequency.getFrom(node)),
                 AbilityField.special.replaceTextFrom(node, this));
 
-        maybeAddBlankLine(text);
-        text.add(tui().applyTemplate(inlineAbility));
+        renderInlineTemplate(text, inlineAbility, "ability");
     }
 
     default void appendAffliction(List<String> text, JsonNode node) {
@@ -404,8 +404,7 @@ public interface JsonSource extends JsonTextReplacement {
                 join(effect, "\n"),
                 stages);
 
-        maybeAddBlankLine(text);
-        text.add(tui().applyTemplate(inlineAffliction));
+        renderInlineTemplate(text, inlineAffliction, "affliction");
     }
 
     default void appendTable(List<String> text, JsonNode tableNode) {
@@ -637,18 +636,37 @@ public interface JsonSource extends JsonTextReplacement {
         } else {
             Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
             if (converted != null) {
-                String rendered = tui().applyTemplate(converted);
-                List<String> inner = removePreamble(new ArrayList<>(
-                        List.of(rendered.split("\n"))));
-                inner.add(0, "[!embed-" + tag + "]");
-
-                maybeAddBlankLine(text);
-                inner.forEach(x -> text.add("> " + x));
-                maybeAddBlankLine(text);
+                renderEmbeddedTemplate(text, converted, tag,
+                        List.of(String.format("title: %s", converted.title()),
+                                "collapse: closed"));
             } else {
-                tui().errorf("Unable to process data for type: %s", tag, data.toString());
+                tui().errorf("Unable to process data for %s: %s", tag, dataNode.toString());
             }
         }
+    }
+
+    default void renderEmbeddedTemplate(List<String> text, Pf2eQuteBase resource, String admonition, List<String> prepend) {
+        String rendered = tui().renderEmbedded(resource);
+        List<String> inner = removePreamble(new ArrayList<>(
+                List.of(rendered.split("\n"))));
+
+        String backticks = nestedEmbed(inner);
+        maybeAddBlankLine(text);
+        text.add(backticks + "ad-embed-" + admonition);
+        prepend.forEach(l -> text.add(l));
+        text.addAll(inner);
+        text.add(backticks);
+    }
+
+    default void renderInlineTemplate(List<String> text, Pf2eQuteNote resource, String admonition) {
+        String rendered = tui().renderEmbedded(resource);
+        List<String> inner = List.of(rendered.split("\n"));
+
+        String backticks = nestedEmbed(inner);
+        maybeAddBlankLine(text);
+        text.add(backticks + "ad-inline-" + admonition);
+        text.addAll(inner);
+        text.add(backticks);
     }
 
     default void prependText(String prefix, List<String> inner) {

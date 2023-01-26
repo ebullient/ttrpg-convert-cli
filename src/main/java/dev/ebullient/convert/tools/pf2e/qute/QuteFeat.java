@@ -54,4 +54,12 @@ public class QuteFeat extends Pf2eQuteBase {
     public boolean getHasSections() {
         return super.getHasSections() || (leadsTo != null && !leadsTo.isEmpty());
     }
+
+    public String title() {
+        return String.format("%s%s, _Feat %s_", getName(),
+                activity == null
+                        ? ""
+                        : " " + activity,
+                level);
+    }
 }

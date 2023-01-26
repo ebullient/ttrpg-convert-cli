@@ -11,7 +11,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
 # {resource.name}{#if resource.activity} [{resource.activity.caption}]({resource.activity.rulesPath}){/if}  
 *Feat {resource.level}*
-%%-- Embedded/inline feat starts here (%%-- is the important bit). Will be removed from final --%%
+%%-- Embedded/inline feat starts on the next line. --%%
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if} 
 

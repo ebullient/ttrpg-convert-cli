@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     syntheticGroup, // for this tool only
     ;
 
-    String templateName;
+    final String templateName;
 
     Pf2eIndexType() {
         this.templateName = this.name();
@@ -75,12 +74,12 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         this.templateName = templateName;
     }
 
-    public static Pattern matchPattern = Pattern.compile("\\{@("
+    public static final Pattern matchPattern = Pattern.compile("\\{@("
             + Stream.of(Pf2eIndexType.values())
-                    .flatMap(x -> List.of(x.templateName, x.name()).stream())
+                    .flatMap(x -> Stream.of(x.templateName, x.name()))
                     .distinct()
                     .collect(Collectors.joining("|"))
-            + ") ([^{}}]+?)}");
+            + ") ([^{}]+?)}");
 
     public String templateName() {
         return templateName;
@@ -129,14 +128,17 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public Pf2eQuteBase convertJson2QuteBase(Pf2eIndex index, JsonNode node) {
+        Pf2eIndexType type = this;
         switch (this) {
             case action:
                 return new Json2QuteAction(index, this, node).build();
             case archetype:
                 return new Json2QuteArchetype(index, this, node).build();
+            case affliction:
+                type = Pf2eIndexType.fromText(Field.type.getTextOrDefault(node, "Disease"));
             case curse:
             case disease:
-                return new Json2QuteAffliction(index, this, node).build();
+                return new Json2QuteAffliction(index, type, node).build();
             case feat:
                 return new Json2QuteFeat(index, this, node).build();
             case ritual:

@@ -1,18 +1,17 @@
 package dev.ebullient.convert.tools.pf2e;
 
 public enum Pf2eTypeActivity {
-    single("Single Action", "\\[>\\]", "single_action.svg"),
-    two("Two-Action activity", "\\[>>\\]", "two_actions.svg"),
-    three("Three-Action activity", "\\[>>>\\]", "three_actions.svg"),
-    free("Free Action", "\\[F\\]", "delay.svg"),
-    reaction("Reaction", "\\[R\\]", "reaction.svg"),
-    varies("Varies", "\\[?\\]", "load.svg"),
-    timed("Duration or Frequency", "\\[⏲\\]", "hour-glass.svg");
+    single("Single Action", ">", "single_action.svg"),
+    two("Two-Action activity", ">>", "two_actions.svg"),
+    three("Three-Action activity", ">>>", "three_actions.svg"),
+    free("Free Action", "F", "delay.svg"),
+    reaction("Reaction", "R", "reaction.svg"),
+    varies("Varies", "V", "load.svg"),
+    timed("Duration or Frequency", "⏲", "hour-glass.svg");
 
     String caption;
     String textGlyph;
     String glyph;
-    String rulesPath;
 
     Pf2eTypeActivity(String caption, String textGlyph, String glyph) {
         this.caption = caption;
@@ -57,8 +56,8 @@ public enum Pf2eTypeActivity {
     }
 
     public String linkify(String rulesRoot) {
-        return String.format("[%s](%s)",
-                caption, getRulesPath(rulesRoot));
+        return String.format("[%s](%s \"%s\")",
+                this.textGlyph, getRulesPath(rulesRoot), caption);
     }
 
     public String getRulesPath(String rulesRoot) {

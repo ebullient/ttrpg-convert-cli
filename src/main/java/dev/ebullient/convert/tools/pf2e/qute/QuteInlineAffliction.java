@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-public class QuteInlineAffliction extends QuteNote {
+public class QuteInlineAffliction extends Pf2eQuteNote {
 
     public final List<String> traits;
     public final String level;
@@ -21,7 +21,7 @@ public class QuteInlineAffliction extends QuteNote {
             List<String> traits, String level,
             String maxDuration, String onset, String savingThrow,
             String effect, Map<String, QuteAfflictionStage> stages) {
-        super(name, null, text, tags);
+        super(Pf2eIndexType.affliction, name, null, text, tags);
 
         this.level = level;
         this.traits = traits;
