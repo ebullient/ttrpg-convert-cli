@@ -52,7 +52,7 @@ public class CommonDataTests {
                     "book/book-vgm.json", "book/book-phb.json")) {
                 tui.readFile(TestUtils.TOOLS_PATH_5E.resolve(x), index::importTree);
             }
-            tui.read5eTools(TestUtils.TOOLS_PATH_5E, index::importTree);
+            tui.readToolsDir(TestUtils.TOOLS_PATH_5E, index::importTree);
             index.prepare();
         }
     }

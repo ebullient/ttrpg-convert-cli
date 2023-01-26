@@ -638,10 +638,12 @@ public interface JsonSource extends JsonTextReplacement {
             Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
             if (converted != null) {
                 String rendered = tui().applyTemplate(converted);
-                int begin = rendered.indexOf("# ");
-                rendered = "[!embed-" + tag + "]\n" + rendered.substring(begin);
+                List<String> inner = removePreamble(new ArrayList<>(
+                        List.of(rendered.split("\n"))));
+                inner.add(0, "[!embed-" + tag + "]");
+
                 maybeAddBlankLine(text);
-                Stream.of(rendered.split("\n")).forEach(x -> text.add("> " + x));
+                inner.forEach(x -> text.add("> " + x));
                 maybeAddBlankLine(text);
             } else {
                 tui().errorf("Unable to process data for type: %s", tag, data.toString());

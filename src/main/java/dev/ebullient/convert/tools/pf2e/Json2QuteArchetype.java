@@ -127,7 +127,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
         String rendered = tui().applyTemplate(quteFeat);
         int begin = rendered.indexOf("# ");
         List<String> inner = removePreamble(new ArrayList<>(
-                List.of(rendered.substring(begin).split("\n"))));
+                List.of(rendered.split("\n"))));
         String backticks = nestedEmbed(inner);
 
         inner.add(0, "collapse: closed");

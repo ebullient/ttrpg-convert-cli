@@ -166,6 +166,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         switch (this) {
             case skill:
             case condition:
+            case domain:
             case table:
                 return true; // QuteNote-based
             default:
@@ -188,6 +189,13 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public String relativePath() {
         switch (this) {
+            // Simple suffix subdir (rules or compendium)
+            case feat:
+            case action:
+            case table:
+            case trait:
+            case variantrule:
+                return this.name() + 's';
             // Character
             case ancestry:
                 return "character/ancestries";
@@ -201,9 +209,6 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             case item:
             case vehicle:
                 return "equipment/" + this.name() + 's';
-            // Feats
-            case feat:
-                return this.name() + 's';
             // GM
             case curse:
             case disease:
@@ -214,8 +219,9 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             case relicGift:
                 return "gm/relics-gifts";
             // Setting
-            case adventure:
             case domain:
+                return "setting";
+            case adventure:
             case language:
             case organization:
             case place:
@@ -229,14 +235,8 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
                 return "rituals";
             case spell:
                 return "spells";
-            // Rules --> Rules root
-            case action:
-            case table:
-            case trait:
-            case variantrule:
-                return this.name() + 's';
             default:
-                return null;
+                return ".";
         }
     }
 

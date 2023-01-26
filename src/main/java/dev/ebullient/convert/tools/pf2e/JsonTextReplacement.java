@@ -320,6 +320,8 @@ public interface JsonTextReplacement {
                 // [...] becomes "Any ..."
                 parts[0].replaceAll("\\[(.*)\\]", "Any $1");
             }
+        } else if (targetType == Pf2eIndexType.domain) {
+            parts[0] = parts[0].replaceAll("\\s+\\(Apocryphal\\)", "");
         }
 
         if (parts.length > 1) {

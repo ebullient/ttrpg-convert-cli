@@ -33,6 +33,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
 
     private final Map<String, Collection<String>> categoryToTraits = new TreeMap<>();
     private final Map<String, Set<String>> archetypeToFeats = new TreeMap<>();
+    private final Map<String, Set<String>> domainToSpells = new TreeMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
     boolean coreRulesIncluded = false;
@@ -63,6 +64,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         Pf2eIndexType.curse.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.disease.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.domain.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.feat.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.ritual.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
@@ -96,7 +98,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         // Change the indexed name for [...] traits
         if (name.startsWith("[")) {
             // Update name & object node
-            name = name.replaceAll("\\[(.*)\\]", "Any $1");
+            name = name.replaceAll("\\[(.*)]", "Any $1");
             ((ObjectNode) node).put("name", name);
 
             // Create new key, add alias from old key
@@ -109,10 +111,8 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         String traitLink = linkify(Pf2eIndexType.trait, name);
         Field.categories.getListOfStrings(node, tui()).stream()
                 .filter(c -> !c.equals("_alignAbv"))
-                .forEach(c -> {
-                    categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
-                            .add(traitLink);
-                });
+                .forEach(c -> categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
+                        .add(traitLink));
 
         return key;
     }
@@ -158,8 +158,10 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
             }
             Pf2eSources sources = Pf2eSources.constructSources(type, node); // pre-construct sources
 
-            if (type == Pf2eIndexType.feat) {
+            if (type == Pf2eIndexType.feat && keyIsIncluded(key, node)) {
                 createArchetypeReference(key, node, sources);
+            } else if (type == Pf2eIndexType.spell && keyIsIncluded(key, node)) {
+                createDomainReference(key, node);
             }
         });
 
@@ -180,6 +182,12 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         }
     }
 
+    void createDomainReference(String key, JsonNode node) {
+        Pf2eSpell.domains.getListOfStrings(node, tui())
+                .forEach(d -> domainToSpells.computeIfAbsent(d.toLowerCase(), k -> new HashSet<>())
+                        .add(key));
+    }
+
     boolean keyIsIncluded(String key, JsonNode node) {
         // Check against include/exclude rules (srdKeys allowed when there are no sources)
         Optional<Boolean> rulesAllow = config.keyIsIncluded(key, node);
@@ -197,10 +205,6 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         return filteredIndex.containsKey(key);
     }
 
-    public boolean isExcluded(String key) {
-        return !isIncluded(key);
-    }
-
     // --------- Node retrieval --------
 
     public JsonNode getIncludedNode(String key) {
@@ -208,7 +212,13 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     public Set<String> featKeys(String archetypeKey) {
-        return archetypeToFeats.get(archetypeKey);
+        Set<String> feats = archetypeToFeats.get(archetypeKey);
+        return feats == null ? Set.of() : feats;
+    }
+
+    public Set<String> domainSpells(String domain) {
+        Set<String> spells = domainToSpells.get(domain.toLowerCase());
+        return spells == null ? Set.of() : spells;
     }
 
     // --------- Write indexes ---------
@@ -224,7 +234,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
             throw new IllegalStateException("Index must be prepared before writing indexes");
         }
         Map<String, Object> allKeys = new HashMap<>();
-        List<String> keys = new ArrayList<>(filteredIndex.keySet());
+        List<String> keys = new ArrayList<>(imported.keySet());
         Collections.sort(keys);
         allKeys.put("keys", keys);
         tui().writeJsonFile(outputFile, allKeys);

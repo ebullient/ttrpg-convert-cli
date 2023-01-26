@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: pf2e-feat
+cssclass: pf2e,pf2e-feat
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}

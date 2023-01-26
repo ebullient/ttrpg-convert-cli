@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: pf2e-note
+cssclass: pf2e,pf2e-note
 aliases: ["{resource.name}"]
 ---
 # {resource.name}

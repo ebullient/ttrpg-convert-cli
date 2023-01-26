@@ -73,7 +73,7 @@ public class Pf2JsonDataTest {
                 tui.readFile(TestUtils.TOOLS_PATH_PF2E.resolve(x), index::importTree);
             }
 
-            tui.readPf2eTools(TestUtils.TOOLS_PATH_PF2E, index::importTree);
+            tui.readToolsDir(TestUtils.TOOLS_PATH_PF2E, index::importTree);
             index.prepare();
         }
     }
@@ -152,6 +152,11 @@ public class Pf2JsonDataTest {
     @Test
     public void testArchetype_p2fe() throws Exception {
         generateNotesForType(Pf2eIndexType.archetype);
+    }
+
+    @Test
+    public void testDomain_p2fe() throws Exception {
+        generateNotesForType(Pf2eIndexType.domain);
     }
 
     @Test

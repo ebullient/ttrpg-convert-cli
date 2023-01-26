@@ -28,9 +28,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -175,10 +173,6 @@ public class Tui {
         err.flush();
     }
 
-    public CommandLine getCommandLine() {
-        return commandLine;
-    }
-
     public boolean isDebug() {
         return debug || picocliDebugEnabled;
     }
@@ -217,10 +211,6 @@ public class Tui {
 
     public void warn(String output) {
         out.println(ansi.new Text("🔸 " + output));
-    }
-
-    public void donef(String format, Object... params) {
-        done(String.format(format, params));
     }
 
     public void done(String output) {
@@ -390,52 +380,24 @@ public class Tui {
         return result;
     }
 
-    public boolean read5eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
-        List<String> inputs = List.of(
-                "adventures.json", "books.json", "names.json", "variantrules.json",
-                "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
-                "bestiary", "bestiary/traits.json", "bestiary/legendarygroups.json",
-                "backgrounds.json", "fluff-backgrounds.json",
-                "class",
-                "deities.json",
-                "feats.json", "optionalfeatures.json",
-                "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
-                "races.json", "fluff-races.json",
-                "spells");
+    public boolean readToolsDir(Path toolsBase, BiConsumer<String, JsonNode> callback) {
+        List<String> inputs = TtrpgConfig.getFileSources();
+        List<String> markers = TtrpgConfig.getMarkerFiles();
 
-        if (!toolsBase.resolve("adventures.json").toFile().exists()) {
-            debugf("Unable to find 5eTools data: %s", toolsBase.toString());
+        if (!markers.stream().allMatch(f -> toolsBase.resolve(f).toFile().exists())) {
+            debugf("Unable to find tools data: %s", toolsBase.toString());
             return false;
         }
+
         inputRoot.add(toolsBase.getParent());
 
-        return readToolsList(toolsBase, inputs, callback);
-    }
-
-    public boolean readPf2eTools(Path toolsBase, BiConsumer<String, JsonNode> callback) {
-        List<String> inputs = List.of(
-                "books.json", "book/book-crb.json",
-                "actions.json", "afflictions.json", "archetypes.json",
-                "conditions.json", "feats", "rituals.json",
-                "skills.json", "spells", "tables.json", "traits.json");
-
-        if (toolsBase.resolve("archetypes.json").toFile().exists()
-                && toolsBase.resolve("book/book-crb.json").toFile().exists()) {
-            inputRoot.add(toolsBase.getParent());
-            return readToolsList(toolsBase, inputs, callback);
-        }
-        debugf("Unable to find pf2e data: %s", toolsBase.toString());
-        return false;
-    }
-
-    private boolean readToolsList(Path toolsBase, List<String> inputs, BiConsumer<String, JsonNode> callback) {
         boolean result = true;
         for (String input : inputs) {
             Path p = toolsBase.resolve(input);
             if (p.toFile().isFile()) {
-                result |= readFile(p, callback);
+                result &= readFile(p, callback);
             } else {
-                result |= readDirectory(p, callback);
+                result &= readDirectory(p, callback);
             }
         }
         return result;
@@ -461,12 +423,4 @@ public class Tui {
         return templates.renderNote(note);
     }
 
-    static class ToLowerDeserializer extends KeyDeserializer {
-
-        @Override
-        public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException {
-            return key.toLowerCase();
-        }
-
-    }
 }

@@ -1,4 +1,3 @@
-```ad-ability
 title: {resource.name}{#if resource.activity} [{resource.activity.caption}]({resource.activity.rulesPath}){/if}{#if resource.components} {resource.components}{/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
 
 {#if resource.cost }
@@ -15,4 +14,3 @@ title: {resource.name}{#if resource.activity} [{resource.activity.caption}]({res
      
 **Special** {resource.special}{/if}{#if resource.tags }
 %% {#each resource.tags}{it}  {/each} %%{/if}
-```

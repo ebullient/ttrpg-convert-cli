@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp;
@@ -36,8 +34,8 @@ public class Json2QuteSpell extends Json2QuteBase {
 
         List<String> traits = collectTraitsFrom(rootNode);
 
-        boolean focus = SpellFields.focus.booleanOrDefault(rootNode, false);
-        String level = SpellFields.level.getTextOrDefault(rootNode, "1");
+        boolean focus = Pf2eSpell.focus.booleanOrDefault(rootNode, false);
+        String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");
         String type = "spell";
         if (join(traits, "").contains("cantrip")) {
             type = "cantrip";
@@ -49,25 +47,12 @@ public class Json2QuteSpell extends Json2QuteBase {
             tags.add(cfg().tagOf(SPELLS, "level", level));
         }
 
-        // traditions --> map tradition to trait
-        List<String> traditions = SpellFields.traditions.getListOfStrings(rootNode, tui()).stream()
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.trait, s))
-                .collect(Collectors.toList());
-
-        // domain --> link to deity|domain, replace (Apocryphal)
-        List<String> domains = SpellFields.domain.getListOfStrings(rootNode, tui()).stream()
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.domain, s))
-                .collect(Collectors.toList());
-
         // subclass --> link to subclass definition
-        List<QuteSpellSubclass> subclass = null;
-        JsonNode scNode = SpellFields.subclass.getFrom(rootNode);
+        List<QuteSpellSubclass> subclass = new ArrayList<>();
+        JsonNode scNode = Pf2eSpell.subclass.getFrom(rootNode);
         if (scNode != null) {
             scNode.fields().forEachRemaining(e -> {
                 QuteSpellSubclass sc = new QuteSpellSubclass();
-
                 String[] parts = e.getKey().split("\\|");
                 sc.category = parts[0];
 
@@ -81,6 +66,8 @@ public class Json2QuteSpell extends Json2QuteBase {
                                 parts.length > 2 ? parts[2] : Pf2eIndexType.classtype.defaultSource(),
                                 vParts[0].toLowerCase(),
                                 value));
+
+                subclass.add(sc);
             });
         }
 
@@ -91,9 +78,9 @@ public class Json2QuteSpell extends Json2QuteBase {
                 getQuteSpellCasting(),
                 getQuteSpellTarget(tags),
                 getQuteSaveDuration(),
-                domains,
-                traditions,
-                SpellFields.spellLists.getListOfStrings(rootNode, tui()),
+                Pf2eSpell.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, tui(), this),
+                Pf2eSpell.traditions.linkifyListFrom(rootNode, Pf2eIndexType.trait, tui(), this),
+                Pf2eSpell.spellLists.getListOfStrings(rootNode, tui()),
                 subclass,
                 getHeightenedCast(),
                 getAmpEffects());
@@ -102,37 +89,37 @@ public class Json2QuteSpell extends Json2QuteBase {
     QuteSpellCasting getQuteSpellCasting() {
         QuteSpellCasting quteCast = new QuteSpellCasting();
 
-        NumberUnitEntry cast = SpellFields.cast.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
+        NumberUnitEntry cast = Pf2eSpell.cast.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         quteCast.cast = cast.convertToDurationString(this);
 
-        quteCast.components = SpellFields.components.getNestedListOfStrings(rootNode, tui())
+        quteCast.components = Pf2eSpell.components.getNestedListOfStrings(rootNode, tui())
                 .stream()
                 .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesRoot()))
                 .collect(Collectors.toList());
 
-        quteCast.cost = SpellFields.cost.transformTextFrom(rootNode, ", ", tui(), this);
-        quteCast.trigger = SpellFields.trigger.transformTextFrom(rootNode, ", ", tui(), this);
+        quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", tui(), this);
+        quteCast.trigger = Pf2eSpell.trigger.transformTextFrom(rootNode, ", ", tui(), this);
         quteCast.requirements = Field.requirements.transformTextFrom(rootNode, ", ", tui(), this);
 
         return quteCast;
     }
 
     QuteSpellSaveDuration getQuteSaveDuration() {
-        JsonNode savingThrow = SpellFields.savingThrow.getFrom(rootNode);
-        SpellDuration duration = SpellFields.duration.fieldFromTo(rootNode, SpellDuration.class, tui());
+        JsonNode savingThrow = Pf2eSpell.savingThrow.getFrom(rootNode);
+        SpellDuration duration = Pf2eSpell.duration.fieldFromTo(rootNode, SpellDuration.class, tui());
         if (savingThrow == null && duration == null) {
             return null;
         }
         QuteSpellSaveDuration saveDuration = new QuteSpellSaveDuration();
 
-        boolean hidden = SpellFields.hidden.booleanOrDefault(savingThrow, false);
-        String throwString = SpellFields.type.getListOfStrings(savingThrow, tui())
+        boolean hidden = Pf2eSpell.hidden.booleanOrDefault(savingThrow, false);
+        String throwString = Pf2eSpell.type.getListOfStrings(savingThrow, tui())
                 .stream()
                 .map(t -> Pf2eSavingThrowType.valueFromEncoding(t))
                 .map(t -> toTitleCase(t.name()))
                 .collect(Collectors.joining(" or "));
         if (!hidden && !throwString.isEmpty()) {
-            saveDuration.basic = SpellFields.basic.booleanOrDefault(savingThrow, false);
+            saveDuration.basic = Pf2eSpell.basic.booleanOrDefault(savingThrow, false);
             saveDuration.savingThrow = throwString;
         }
         if (duration != null) {
@@ -143,9 +130,9 @@ public class Json2QuteSpell extends Json2QuteBase {
     }
 
     QuteSpellTarget getQuteSpellTarget(List<String> tags) {
-        String targets = replaceText(SpellFields.targets.getTextOrNull(rootNode));
-        NumberUnitEntry range = SpellFields.range.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
-        SpellArea area = SpellFields.area.fieldFromTo(rootNode, SpellArea.class, tui());
+        String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
+        NumberUnitEntry range = Pf2eSpell.range.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
+        SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
         if (targets == null && area == null && range == null) {
             return null;
         }
@@ -164,14 +151,14 @@ public class Json2QuteSpell extends Json2QuteBase {
     }
 
     Map<String, String> getHeightenedCast() {
-        JsonNode heightened = SpellFields.heightened.getFrom(rootNode);
+        JsonNode heightened = Pf2eSpell.heightened.getFrom(rootNode);
         if (heightened == null) {
             return null;
         }
         Map<String, String> heightenedCast = new LinkedHashMap<>();
         heightened.fields().forEachRemaining(e -> {
-            JsonNode plusX = SpellFields.plusX.getFrom(heightened);
-            JsonNode X = SpellFields.X.getFrom(heightened);
+            JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
+            JsonNode X = Pf2eSpell.X.getFrom(heightened);
             if (plusX != null) {
                 plusX.fields().forEachRemaining(x -> {
                     heightenedCast.put(
@@ -197,7 +184,7 @@ public class Json2QuteSpell extends Json2QuteBase {
     }
 
     QuteSpellAmp getAmpEffects() {
-        JsonNode ampNode = SpellFields.amp.getFrom(rootNode);
+        JsonNode ampNode = Pf2eSpell.amp.getFrom(rootNode);
         if (ampNode == null) {
             return null;
         }
@@ -211,12 +198,12 @@ public class Json2QuteSpell extends Json2QuteBase {
             amp.text = String.join("\n", inner);
         }
 
-        JsonNode heightened = SpellFields.heightened.getFrom(ampNode);
+        JsonNode heightened = Pf2eSpell.heightened.getFrom(ampNode);
         if (heightened != null) {
             amp.ampEffects = new LinkedHashMap<>();
             heightened.fields().forEachRemaining(e -> {
-                JsonNode plusX = SpellFields.plusX.getFrom(heightened);
-                JsonNode X = SpellFields.X.getFrom(heightened);
+                JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
+                JsonNode X = Pf2eSpell.X.getFrom(heightened);
                 if (plusX != null) {
                     plusX.fields().forEachRemaining(x -> {
                         amp.ampEffects.put(
@@ -266,43 +253,4 @@ public class Json2QuteSpell extends Json2QuteBase {
         public String entry;
     }
 
-    enum SpellFields implements NodeReader {
-        amp,
-        area,
-        basic,
-        cast,
-        components, // nested array
-        cost,
-        domain,
-        duration,
-        focus,
-        heightened,
-        hidden,
-        level,
-        plusX,
-        primaryCheck, // ritual
-        range,
-        savingThrow,
-        secondaryCasters, //ritual
-        secondaryCheck, // ritual
-        spellLists,
-        subclass,
-        targets,
-        traditions,
-        trigger,
-        type,
-        X;
-
-        List<String> getNestedListOfStrings(JsonNode source, Tui tui) {
-            JsonNode result = source.get(this.nodeName());
-            if (result == null) {
-                return List.of();
-            } else if (result.isTextual()) {
-                return List.of(result.asText());
-            } else {
-                JsonNode first = result.get(0);
-                return getListOfStrings(first, tui);
-            }
-        }
-    }
 }
