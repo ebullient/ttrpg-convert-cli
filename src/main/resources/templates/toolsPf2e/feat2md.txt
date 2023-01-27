@@ -9,8 +9,7 @@ tags:
 {/if}
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
-# {resource.name} {#if resource.activity} {resource.activity}{/if}
-*Feat {resource.level}*
+# {resource.name} {#if resource.activity} {resource.activity}{/if} *Feat {resource.level}*  
 %%-- Embedded/inline feat starts on the next line. --%%
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if} 

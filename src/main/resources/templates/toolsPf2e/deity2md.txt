@@ -10,7 +10,7 @@ tags:
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
 # {resource.name}{#if resource.aliases } ({#each resource.aliases}{it}{#if it_hasNext}, {/if}{/each}){/if} *({resource.alignment})*  
-*Source: {resource.source}*
+*Source: {resource.source}*  
 %%-- Embedded/inline deity starts on the next line. --%%
 {#if resource.text }
 

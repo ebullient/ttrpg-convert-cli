@@ -72,10 +72,10 @@ public class QuteDeity extends Pf2eQuteBase {
             if (favoredWeapon != null) {
                 lines.add("- **Favored Weapon**: " + favoredWeapon);
             }
-            if (domains != null) {
+            if (domains != null && !domains.isEmpty()) {
                 lines.add("- **Domains**: " + domains);
             }
-            if (alternateDomains != null) {
+            if (alternateDomains != null && !alternateDomains.isEmpty()) {
                 lines.add("- **Alternate Domains**: " + alternateDomains);
             }
             if (spells != null) {

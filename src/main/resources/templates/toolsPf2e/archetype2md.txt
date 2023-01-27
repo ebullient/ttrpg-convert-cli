@@ -9,10 +9,9 @@ tags:
 {/if}
 aliases: ["{resource.name}"]
 ---
-# {resource.name}
-*Dedication Level {resource.dedicationLevel}*  
+# {resource.name} *Dedication Level {resource.dedicationLevel}*  
 {#if resource.traits }{#each resource.traits}{it}  {/each}
-{/if} 
+{/if}   
 
 {resource.text}
 
