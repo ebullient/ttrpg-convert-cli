@@ -346,8 +346,9 @@ public class Tui {
         String basename = dir.getFileName().toString();
         if ("ancestries".equals(basename)) {
             basename = "ancestry";
-        } else if (TtrpgConfig.getConfig().datasource() == Datasource.toolsPf2e && "bestiary".equals(basename))
+        } else if (TtrpgConfig.getConfig().datasource() == Datasource.toolsPf2e && "bestiary".equals(basename)) {
             basename = "creature";
+        }
         try (Stream<Path> stream = Files.list(dir)) {
             Iterator<Path> i = stream.iterator();
             while (i.hasNext()) {
@@ -355,9 +356,9 @@ public class Tui {
                 File f = p.toFile();
                 String name = p.getFileName().toString();
                 if (f.isDirectory()) {
-                    result |= readDirectory(p, callback);
+                    result &= readDirectory(p, callback);
                 } else if ((name.startsWith("fluff") || name.startsWith(basename)) && name.endsWith(".json")) {
-                    result |= readFile(p, callback);
+                    result &= readFile(p, callback);
                 }
             }
         } catch (Exception e) {

@@ -220,7 +220,7 @@ public class Json2QuteDeity extends Json2QuteBase {
 
     private List<String> toAlignments(JsonNode alignNode, Pf2eDeity alignmentField) {
         return alignmentField.getListOfStrings(alignNode, tui()).stream()
-                .map(a -> a.length() > 2 ? a : linkify(Pf2eIndexType.trait, toTitleCase(a)))
+                .map(a -> a.length() > 2 ? a : linkify(Pf2eIndexType.trait, a.toUpperCase()))
                 .collect(Collectors.toList());
     }
 

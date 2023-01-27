@@ -31,4 +31,4 @@ title: Saving Throw: {resource.savingThrow}
 {/if}{#if resource.tags }
 
 %% {#each resource.tags}{it}  {/each} %%{/if}{#if resource.source }
-Source: *{resource.source}*{/if}
+*Source: {resource.source}*{/if}

@@ -5,12 +5,12 @@ title: {resource.name}{#if resource.activity} { resource.activity }{/if}{#if res
 {/if}{#if resource.frequency }
 - **Frequency**: {resource.frequency}
 {/if}{#if resource.trigger }
-- **Trigger** {resource.trigger}
+- **Trigger**: {resource.trigger}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
 {/if}{#if resource.text }
 
-**Effect** {resource.text}{/if}{#if resource.special }
+**Effect**: {resource.text}{/if}{#if resource.special }
      
-**Special** {resource.special}{/if}{#if resource.tags }
+**Special**: {resource.special}{/if}{#if resource.tags }
 %% {#each resource.tags}{it}  {/each} %%{/if}

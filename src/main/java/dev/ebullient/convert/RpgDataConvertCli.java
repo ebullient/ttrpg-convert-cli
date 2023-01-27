@@ -188,24 +188,41 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         tui.verbosef("Writing markdown to %s.\n", output);
 
         ToolsIndex index = ToolsIndex.createIndex();
-        Path toolsBase = Path.of("").toAbsolutePath();
+        Path toolsPath = null;
 
         for (Path inputPath : input) {
-            tui.outPrintf("⏱  Reading %s%n", inputPath);
-            if (inputPath.toFile().isDirectory()) {
-                toolsBase = inputPath.toAbsolutePath();
-                allOk &= tui.readToolsDir(toolsBase, index::importTree);
+            tui.outPrintf("⏱️ Reading %s%n", inputPath);
+            Path cwd = inputPath.toAbsolutePath();
+
+            if (cwd.toFile().isDirectory()) {
+                allOk &= tui.readToolsDir(cwd, index::importTree);
+                if (allOk) { // we found the tools directory
+                    toolsPath = cwd;
+                } else {
+                    // this is some other directory full of json
+                    allOk &= tui.readDirectory(cwd, index::importTree);
+                }
             } else {
-                allOk &= tui.readFile(inputPath, index::importTree);
+                allOk &= tui.readFile(cwd, index::importTree);
             }
         }
-        for (String adventure : config.getAdventures()) {
-            allOk &= tui.readFile(toolsBase.resolve(adventure), index::importTree);
-        }
-        for (String book : config.getBooks()) {
-            allOk &= tui.readFile(toolsBase.resolve(book), index::importTree);
+        if (allOk && toolsPath != null) {
+            for (String adventure : config.getAdventures()) {
+                allOk &= tui.readFile(toolsPath.resolve(adventure), index::importTree);
+            }
+            for (String book : config.getBooks()) {
+                allOk &= tui.readFile(toolsPath.resolve(book), index::importTree);
+            }
         }
 
+        if (!allOk) {
+            tui.outPrintln("❌ errors reading data. Check the following: ");
+            tui.outPrintln("- Are you specifying the right game? (-g 5e OR -g pf2e),");
+            tui.outPrintln("    Using " + TtrpgConfig.getConfig().datasource().shortName());
+            tui.outPrintln("- Check error messages to see what files couldn't be read");
+            tui.outPrintln("   For bulk conversion, specify the the <tools>/data directory");
+            return ExitCode.USAGE;
+        }
         tui.outPrintln("✅ finished reading data.");
         index.prepare();
 
