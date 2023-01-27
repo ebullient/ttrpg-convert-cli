@@ -16,7 +16,8 @@ public class Json2QuteAction extends Json2QuteBase {
         super(index, type, node);
     }
 
-    public QuteAction build() {
+    @Override
+    protected QuteAction buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 

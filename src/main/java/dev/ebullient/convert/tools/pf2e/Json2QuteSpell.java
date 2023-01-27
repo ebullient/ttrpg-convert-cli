@@ -25,7 +25,7 @@ public class Json2QuteSpell extends Json2QuteBase {
     }
 
     @Override
-    public Pf2eQuteBase build() {
+    protected Pf2eQuteBase buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 

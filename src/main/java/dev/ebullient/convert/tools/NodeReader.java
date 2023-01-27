@@ -144,6 +144,13 @@ public interface NodeReader {
         return null;
     }
 
+    default boolean valueEquals(JsonNode previous, JsonNode next) {
+        JsonNode prevValue = previous.get(this.nodeName());
+        JsonNode nextValue = next.get(this.nodeName());
+        return (prevValue == null && nextValue == null)
+                || (prevValue != null && nextValue != null && prevValue.equals(nextValue));
+    }
+
     interface FieldValue {
         String value();
 

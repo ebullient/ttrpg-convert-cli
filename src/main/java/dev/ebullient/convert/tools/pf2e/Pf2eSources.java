@@ -19,7 +19,7 @@ public class Pf2eSources extends CompendiumSources {
     }
 
     public static Pf2eSources findSources(JsonNode node) {
-        String key = JsonSource.TtrpgValue.indexKey.getFromNode(node);
+        String key = Pf2eTypeReader.TtrpgValue.indexKey.getFromNode(node);
         return keyToSources.get(key);
     }
 
@@ -27,7 +27,7 @@ public class Pf2eSources extends CompendiumSources {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
         }
-        String key = JsonSource.TtrpgValue.indexKey.getFromNode(node);
+        String key = Pf2eTypeReader.TtrpgValue.indexKey.getFromNode(node);
         return keyToSources.computeIfAbsent(key, k -> {
             Pf2eSources s = new Pf2eSources(type, key, node);
             s.checkKnown();
@@ -52,7 +52,7 @@ public class Pf2eSources extends CompendiumSources {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
         }
-        String key = JsonSource.TtrpgValue.indexKey.getFromNode(node);
+        String key = Pf2eTypeReader.TtrpgValue.indexKey.getFromNode(node);
         if (key == null) {
             key = type.createKey(node);
         }

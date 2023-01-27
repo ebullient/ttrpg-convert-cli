@@ -18,6 +18,11 @@ public class Pf2eQuteNote extends QuteNote {
         this(type, name, sourceText, String.join("\n", text), tags);
     }
 
+    public Pf2eQuteNote(Pf2eIndexType type, Pf2eSources sources, String name, List<String> text, Collection<String> tags) {
+        super(sources, name, sources.getSourceText(), String.join("\n", text), tags);
+        this.type = type;
+    }
+
     public Pf2eQuteNote(Pf2eIndexType type, String name, String sourceText, String text, Collection<String> tags) {
         super(name, sourceText, text, tags);
         this.type = type;
@@ -25,6 +30,11 @@ public class Pf2eQuteNote extends QuteNote {
 
     public Pf2eQuteNote(Pf2eIndexType type, Pf2eSources sources, String text, Collection<String> tags) {
         super(sources, sources.getName(), sources.getSourceText(), text, tags);
+        this.type = type;
+    }
+
+    public Pf2eQuteNote(Pf2eIndexType type, Pf2eSources sources, String name) { // custom indexes
+        super(sources, name, sources.getSourceText(), null, List.of());
         this.type = type;
     }
 

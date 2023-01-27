@@ -111,7 +111,6 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             return String.format("%s|%s-%s", this.name(), this.name(), id).toLowerCase();
         }
 
-        // TODO: special keys?
         String name = Field.name.getTextOrEmpty(node);
         String source = Field.source.getTextOrDefault(node, this.defaultSource().name());
         return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();

@@ -1,18 +1,104 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
 
 public interface JsonTextReplacement {
-    AtomicBoolean readingFootnotes = new AtomicBoolean(); // only works because we're single threaded
+    class ParseStateInfo {
+        final boolean inFootnotes;
+        final String src;
+        final int page;
+
+        ParseStateInfo(String src, int page, boolean inFootnotes) {
+            this.src = src;
+            this.inFootnotes = inFootnotes;
+            this.page = page;
+        }
+    }
+
+    class ParseState {
+        private final Deque<ParseStateInfo> stack = new ArrayDeque<>();
+
+        public boolean push(Pf2eSources sources) {
+            if (sources == null) {
+                return false;
+            }
+            return push(Pf2eIndex.findNode(sources));
+        }
+
+        public boolean push(JsonNode node) {
+            String src = JsonSource.Field.source.getTextOrNull(node);
+            int page = JsonSource.Field.page.intOrDefault(node, 0);
+            return push(src, page);
+        }
+
+        public boolean push(String src, int page) {
+            if (src == null && page == 0) {
+                return false;
+            }
+            ParseStateInfo current = stack.peek();
+            if (current == null) {
+                ParseStateInfo info = new ParseStateInfo(src, page, false);
+                stack.addFirst(info);
+                return true;
+            } else if (page != 0 && page != current.page) {
+                ParseStateInfo info = new ParseStateInfo(
+                        src == null ? current.src : src,
+                        page,
+                        current.inFootnotes);
+                stack.addFirst(info);
+                return true;
+            } else if (src != null && !current.src.equals(src)) {
+                ParseStateInfo info = new ParseStateInfo(src, page, current.inFootnotes);
+                stack.addFirst(info);
+                return true;
+            }
+            return false;
+        }
+
+        public boolean push(boolean inFootnotes) {
+            ParseStateInfo prev = stack.peek();
+            ParseStateInfo info = new ParseStateInfo(
+                    prev == null ? null : prev.src,
+                    prev == null ? 0 : prev.page,
+                    inFootnotes);
+            stack.addFirst(info);
+            return true;
+        }
+
+        public void pop(boolean pushed) {
+            if (pushed) {
+                stack.removeFirst();
+            }
+        }
+
+        public boolean inFootnotes() {
+            ParseStateInfo current = stack.peek();
+            return current != null && current.inFootnotes;
+        }
+
+        public String sourceAndPage() {
+            ParseStateInfo current = stack.peek();
+            if (current == null || current.page == 0) {
+                return "";
+            }
+            return String.format(" <sup>%s p. %s</sup>",
+                    current.src + " ", current.page);
+        }
+    }
+
+    ParseState parseState = new ParseState();
 
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
@@ -76,42 +162,6 @@ public interface JsonTextReplacement {
         return out.toString();
     }
 
-    default String nestedEmbed(List<String> content) {
-        int embedDepth = content.stream()
-                .filter(s -> s.matches("^`+$"))
-                .map(String::length)
-                .max(Integer::compare).orElse(2);
-        char[] ticks = new char[embedDepth + 1];
-        Arrays.fill(ticks, '`');
-        return new String(ticks);
-    }
-
-    default List<String> removePreamble(List<String> content) {
-        if (content == null || content.isEmpty()) {
-            return List.of();
-        }
-        boolean hasYaml = content.get(0).equals("---");
-        int endYaml = -1;
-        int start = -1;
-        for (int i = 0; i < content.size(); i++) {
-            String line = content.get(i);
-            if (line.equals("---") && hasYaml && i > 0 && endYaml < 0) {
-                endYaml = i;
-            } else if (line.startsWith("%%--")) {
-                start = i;
-                break;
-            }
-        }
-        if (start < 0 && endYaml > 0) {
-            start = endYaml; // if no other marker present, lop off the yaml header
-        }
-        if (start >= 0) {
-            // remove until start
-            content.subList(0, start + 1).clear();
-        }
-        return content;
-    }
-
     default String toTitleCase(String text) {
         if (text == null || text.isEmpty()) {
             return text;
@@ -151,7 +201,7 @@ public interface JsonTextReplacement {
 
         result = notePattern.matcher(result)
                 .replaceAll((match) -> {
-                    if (readingFootnotes.get()) {
+                    if (parseState.inFootnotes()) {
                         return match.group(2);
                     }
                     List<String> text = new ArrayList<>();
@@ -227,7 +277,7 @@ public interface JsonTextReplacement {
 
     default String replaceFootnoteReference(MatchResult match) {
         return String.format("[^%s]%s", match.group(1),
-                readingFootnotes.get() ? ": " : "");
+                parseState.inFootnotes() ? ": " : "");
     }
 
     default String replaceActionAs(MatchResult match) {
@@ -314,7 +364,7 @@ public interface JsonTextReplacement {
         }
 
         if (targetType == Pf2eIndexType.spell) {
-            parts[0] = parts[0].replaceAll("\\s+\\(.*\\)$", "");
+            parts[0] = parts[0].replaceAll("\\s+\\((.*)\\)$", "-$1");
         } else if (targetType == Pf2eIndexType.trait) {
             if (parts.length < 2 && linkText.contains("<")) {
                 String[] pieces = parts[0].split(" ");

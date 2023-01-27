@@ -2,7 +2,8 @@ package dev.ebullient.convert.tools.pf2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
 public abstract class Json2QuteBase implements Pf2eTypeReader {
     protected final Pf2eIndex index;
@@ -31,5 +32,31 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
         return sources;
     }
 
-    public abstract QuteBase build();
+    public Pf2eQuteBase build() {
+        boolean pushed = rootNode == null ? parseState.push(getSources()) : parseState.push(rootNode);
+        try {
+            return buildQuteResource();
+        } finally {
+            parseState.pop(pushed);
+        }
+    }
+
+    public Pf2eQuteNote buildNote() {
+        boolean pushed = rootNode == null ? parseState.push(getSources()) : parseState.push(rootNode);
+        try {
+            return buildQuteNote();
+        } finally {
+            parseState.pop(pushed);
+        }
+    }
+
+    protected Pf2eQuteBase buildQuteResource() {
+        tui().warnf("The default buildQuteResource method was called for %s. Was this intended?", sources.toString());
+        return null;
+    }
+
+    protected Pf2eQuteNote buildQuteNote() {
+        tui().warnf("The default buildQuteNote method was called for %s. Was this intended?", sources.toString());
+        return null;
+    }
 }
