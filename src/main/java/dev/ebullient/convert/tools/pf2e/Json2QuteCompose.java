@@ -36,7 +36,10 @@ public class Json2QuteCompose extends Json2QuteBase {
     }
 
     @Override
-    public Pf2eQuteNote build() {
+    public Pf2eQuteNote buildNote() {
+        // Override because we don't have global or even current sources here
+        // We have to push/pop source-related state as we work through
+        // contents (appendElement)
         Set<String> tags = new HashSet<>();
         List<String> text = new ArrayList<>();
 
@@ -57,18 +60,23 @@ public class Json2QuteCompose extends Json2QuteBase {
         String name = Field.name.getTextOrNull(entry);
 
         if (index.keyIsIncluded(key, entry)) {
-            tags.addAll(currentSources.getSourceTags());
-            maybeAddBlankLine(text);
-            text.add("## " + replaceText(name));
-            maybeAddBlankLine(text);
-            appendEntryToText(text, Field.entries.getFrom(entry), "###");
-            appendEntryToText(text, Field.entry.getFrom(entry), "###");
+            boolean pushed = parseState.push(entry);
+            try {
+                tags.addAll(currentSources.getSourceTags());
+                maybeAddBlankLine(text);
+                text.add("## " + replaceText(name));
+                maybeAddBlankLine(text);
+                appendEntryToText(text, Field.entries.getFrom(entry), "###");
+                appendEntryToText(text, Field.entry.getFrom(entry), "###");
 
-            // Special content for some types (added to text)
-            addDomainSpells(name, text);
+                // Special content for some types (added to text)
+                addDomainSpells(name, text);
 
-            maybeAddBlankLine(text);
-            text.add(String.format("_Source: %s_", currentSources.getSourceText()));
+                maybeAddBlankLine(text);
+                text.add(String.format("_Source: %s_", currentSources.getSourceText()));
+            } finally {
+                parseState.pop(pushed);
+            }
         }
     }
 

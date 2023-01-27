@@ -15,7 +15,7 @@ public class Json2QuteTable extends Json2QuteBase {
     }
 
     @Override
-    public Pf2eQuteNote build() {
+    protected Pf2eQuteNote buildQuteNote() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 

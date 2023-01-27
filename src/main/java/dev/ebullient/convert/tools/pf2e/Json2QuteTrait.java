@@ -5,9 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.NodeReader;
-import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTrait;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTraitIndex;
 
@@ -18,7 +17,7 @@ public class Json2QuteTrait extends Json2QuteBase {
     }
 
     @Override
-    public Pf2eQuteBase build() {
+    protected QuteTrait buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
         List<String> categories = new ArrayList<>();
@@ -48,7 +47,7 @@ public class Json2QuteTrait extends Json2QuteBase {
         return new QuteTrait(sources, text, tags, List.of(), categories);
     }
 
-    static QuteNote buildIndex(Pf2eIndex index) {
+    static Pf2eQuteNote buildIndex(Pf2eIndex index) {
         Pf2eSources sources = Pf2eSources.constructSyntheticSource("Trait Index");
 
         return new QuteTraitIndex(sources, index.categoryTraitMap());

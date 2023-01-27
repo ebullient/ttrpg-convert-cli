@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
-import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -23,7 +22,7 @@ public class Json2QuteDeity extends Json2QuteBase {
     }
 
     @Override
-    public Pf2eQuteBase build() {
+    protected QuteDeity buildQuteResource() {
         Set<String> tags = new TreeSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 

@@ -15,7 +15,7 @@ public class Json2QuteFeat extends Json2QuteBase {
     }
 
     @Override
-    public QuteFeat build() {
+    protected QuteFeat buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 

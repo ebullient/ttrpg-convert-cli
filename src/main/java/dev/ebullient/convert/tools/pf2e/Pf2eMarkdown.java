@@ -65,8 +65,8 @@ public class Pf2eMarkdown implements MarkdownConverter {
         for (Entry<String, JsonNode> e : index.filteredEntries()) {
             final String key = e.getKey();
             final JsonNode node = e.getValue();
-            final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
 
+            final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
             if (types != null && !types.contains(type)) {
                 continue;
             }
@@ -105,13 +105,16 @@ public class Pf2eMarkdown implements MarkdownConverter {
         for (Entry<String, JsonNode> e : index.filteredEntries()) {
             final String key = e.getKey();
             final JsonNode node = e.getValue();
-            final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
 
+            final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
             if (types != null && !types.contains(type)) {
                 continue;
             }
 
             switch (type) {
+                case book:
+                    index.tui().warnf("Looking at book: %s", e.getKey());
+                    break;
                 case condition:
                     Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
                             t -> new Json2QuteCompose(type, index, "Conditions"));
@@ -128,7 +131,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
                     skills.add(node);
                     break;
                 case table:
-                    Pf2eQuteNote table = new Json2QuteTable(index, type, node).build();
+                    Pf2eQuteNote table = new Json2QuteTable(index, type, node).buildNote();
                     rules.add(table);
                     break;
                 default:
@@ -137,7 +140,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
         }
 
         for (Json2QuteBase value : combinedDocs.values()) {
-            append(value.type, (QuteNote) value.build(), compendium, rules);
+            append(value.type, value.buildNote(), compendium, rules);
         }
 
         // Custom indices

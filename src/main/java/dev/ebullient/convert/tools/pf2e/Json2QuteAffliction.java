@@ -14,7 +14,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
     }
 
     @Override
-    public QuteAffliction build() {
+    protected QuteAffliction buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
         List<String> temptedCurse = new ArrayList<>();

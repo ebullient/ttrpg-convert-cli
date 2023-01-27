@@ -24,11 +24,11 @@ import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
 public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
-    static final String CORE_RULES = "book-crb.json";
     final CompendiumConfig config;
 
+    private static final Map<String, JsonNode> imported = new HashMap<>();
+
     private final Map<String, String> alias = new HashMap<>();
-    private final Map<String, JsonNode> imported = new HashMap<>();
     private final Map<String, JsonNode> filteredIndex = new HashMap<>();
 
     private final Map<String, String> traitToSource = new HashMap<>();
@@ -37,7 +37,6 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     private final Map<String, Set<String>> domainToSpells = new TreeMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
-    boolean coreRulesIncluded = false;
 
     public Pf2eIndex(CompendiumConfig config) {
         this.config = config;
@@ -56,7 +55,6 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
 
         // user configuration
         config.readConfigurationIfPresent(node);
-        coreRulesIncluded |= filename.endsWith(CORE_RULES);
 
         // data ingest. Minimal processing.
         Pf2eIndexType.ability.withArrayFrom(node, this::addToIndex);
@@ -85,11 +83,26 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     void addToIndex(Pf2eIndexType type, JsonNode node) {
         // TODO: Variants? Reprints?
         String key = type.createKey(node);
+        String hash = Field.add_hash.getTextOrNull(node);
         if (type == Pf2eIndexType.trait) {
             key = prepareTrait(key, node);
+        } else if (hash != null) {
+            String name = Field.name.getTextOrEmpty(node);
+            name += " (" + hash + ")";
+            key = replaceName(type, name, key, node, false);
         }
 
         // Add the node + key to the index, and store the key in the node
+        JsonNode previous = imported.get(key);
+        if (previous != null) {
+            // We include the CRB by default, otherwise, say something about skipping duplicates
+            if (!"book|book-crb".equals(key) &&
+                    (!Field.name.valueEquals(previous, node) || !Field.source.valueEquals(previous, node)
+                            || !Field.page.valueEquals(previous, node))) {
+                tui().debugf("Skipping %s, already indexed", key);
+            }
+            return;
+        }
         imported.put(key, node);
         TtrpgValue.indexKey.addToNode(node, key);
     }
@@ -104,12 +117,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
             name = alignment == null
                     ? name.replaceAll("\\[(.*)]", "Any $1")
                     : alignment.longName;
-            ((ObjectNode) node).put("name", name);
-
-            // Create new key, add alias from old key
-            String oldKey = key;
-            key = Pf2eIndexType.trait.createKey(node);
-            alias.put(oldKey, key);
+            key = replaceName(Pf2eIndexType.trait, name, key, node, true);
         }
 
         // Quick lookup for traits
@@ -126,6 +134,17 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
                 .forEach(c -> categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
                         .add(traitLink));
 
+        return key;
+    }
+
+    private String replaceName(Pf2eIndexType type, String newName, String oldKey, JsonNode node, boolean makeAlias) {
+        ((ObjectNode) node).put("name", newName);
+
+        // Create new key, add alias from old key
+        String key = type.createKey(node);
+        if (makeAlias) {
+            alias.put(oldKey, key);
+        }
         return key;
     }
 
@@ -156,10 +175,6 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     public void prepare() {
         if (!this.filteredIndex.isEmpty()) {
             return;
-        }
-
-        if (!coreRulesIncluded) {
-            tui().warn("The core rules were not found or included. Some references may be missing");
         }
 
         imported.forEach((key, node) -> {
@@ -218,6 +233,11 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     // --------- Node retrieval --------
+
+    /** Used for source/page lookup during rendering */
+    public static JsonNode findNode(Pf2eSources sources) {
+        return imported.get(sources.getKey());
+    }
 
     public String aliasOrDefault(String key) {
         return alias.getOrDefault(key, key);

@@ -19,7 +19,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
     }
 
     @Override
-    public QuteArchetype build() {
+    protected QuteArchetype buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
@@ -110,11 +110,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
         String[] parts = levelKey.split("\\|");
         String key = Pf2eIndexType.feat.createKey(parts[1], parts[2]);
         JsonNode feat = index.getIncludedNode(key);
-        if (feat == null && key.contains(" (")) {
-            int pos = parts[1].indexOf(" (");
-            key = Pf2eIndexType.feat.createKey(parts[1].substring(0, pos), parts[2]);
-            feat = index.getIncludedNode(key);
-        }
+
         if (feat == null) {
             tui().errorf("Could not find feat matching %s", levelKey);
             return null;
