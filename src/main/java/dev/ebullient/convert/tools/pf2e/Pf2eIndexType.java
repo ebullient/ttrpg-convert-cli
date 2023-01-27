@@ -62,6 +62,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     vehicle, // GMG
     versatileHeritage, // APG
     syntheticGroup, // for this tool only
+    bookReference // this tool only
     ;
 
     final String templateName;
@@ -83,6 +84,10 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public String templateName() {
         return templateName;
+    }
+
+    public boolean isDefaultSource(String source) {
+        return defaultSource().sameSource(source);
     }
 
     public void withArrayFrom(JsonNode node, BiConsumer<Pf2eIndexType, JsonNode> callback) {
@@ -120,11 +125,21 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public String getRepoRoot(Pf2eIndex index) {
-        return useCompendiumPath() ? index.compendiumRoot() : index.rulesRoot();
+        return useCompendiumBase() ? index.compendiumRoot() : index.rulesRoot();
     }
 
     public Path getBasePath(Pf2eIndex index) {
-        return useCompendiumPath() ? index.compendiumPath() : index.rulesPath();
+        return useCompendiumBase() ? index.compendiumPath() : index.rulesPath();
+    }
+
+    public String relativeRepositoryRoot(Pf2eIndex index) {
+        String root = getRepoRoot(index);
+        String relativePath = relativePath();
+
+        if (relativePath == null || relativePath.isEmpty() || ".".equals(relativePath)) {
+            return root.replaceAll("/$", "");
+        }
+        return root + relativePath;
     }
 
     public Pf2eQuteBase convertJson2QuteBase(Pf2eIndex index, JsonNode node) {
@@ -168,9 +183,9 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public boolean useQuteNote() {
         switch (this) {
-            case skill:
             case condition:
             case domain:
+            case skill:
             case table:
                 return true; // QuteNote-based
             default:
@@ -178,8 +193,9 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         }
     }
 
-    public boolean useCompendiumPath() {
+    public boolean useCompendiumBase() {
         switch (this) {
+            case ability:
             case action:
             case condition:
             case trait:
@@ -194,8 +210,10 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     public String relativePath() {
         switch (this) {
             // Simple suffix subdir (rules or compendium)
-            case feat:
             case action:
+            case feat:
+            case spell:
+            case ritual:
             case table:
             case trait:
             case variantrule:
@@ -234,11 +252,8 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
                 return "setting/" + this.name() + 's';
             case deity:
                 return "setting/deities";
-            // Spell/Ritual
-            case ritual:
-                return "rituals";
-            case spell:
-                return "spells";
+            case ability:
+                return "abilities";
             default:
                 return ".";
         }
@@ -280,6 +295,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             case table:
             case trait:
             case trap:
+            case bookReference:
                 return DefaultSource.crb;
             case affliction:
             case curse:

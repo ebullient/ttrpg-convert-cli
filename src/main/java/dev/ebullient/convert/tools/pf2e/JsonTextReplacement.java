@@ -260,17 +260,6 @@ public interface JsonTextReplacement {
         return link;
     }
 
-    default String linkifyRules(String text, String rules, String anchor) {
-        if (text.matches("\\[.+]\\(.+\\)")) {
-            // skip if already a link
-            return text;
-        }
-        return String.format("[%s](%s%s.md#%s)",
-                text, index().rulesRoot(), rules,
-                anchor.replace(" ", "%20")
-                        .replace(".", ""));
-    }
-
     default String linkify(MatchResult match) {
         Pf2eIndexType targetType = Pf2eIndexType.fromText(match.group(1));
         if (targetType == null) {
@@ -286,7 +275,7 @@ public interface JsonTextReplacement {
                 // {@skill Lore||Farming Lore}
                 String[] parts = match.split("\\|");
                 String linkText = parts.length > 1 ? parts[2] : parts[0];
-                return linkifyRules(linkText, "skills", toTitleCase(parts[0]));
+                return linkifyRules(Pf2eIndexType.skill, linkText, "skills", toTitleCase(parts[0]));
             case classtype:
                 return linkifyClass(match);
             case classFeature:
@@ -298,7 +287,6 @@ public interface JsonTextReplacement {
         }
 
         // TODO {@runeItem longsword||+1 weapon potency||flaming|}, {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}. In general, the syntax is this: (open curly brace)@runeItem base item|base item source|rune 1|rune 1 source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly brace). For each source, we assume CRB by default.",
-
         // "{@b Actions:} {@action strike} assumes CRB by default, {@action act together|som} can have sources added with a pipe, {@action devise a stratagem|apg|and optional link text added with another pipe}.",
         // "{@b Conditions:} {@condition stunned} assumes CRB by default, {@condition stunned|crb} can have sources added with a pipe (not that it's ever useful), {@condition stunned|crb|and optional link text added with another pipe}.",
         // "{@b Tables:} {@table ability modifiers} assumes CRB by default, {@table automatic bonus progression|gmg} can have sources added with a pipe, {@table domains|logm|and optional link text added with another pipe}.",
@@ -313,7 +301,21 @@ public interface JsonTextReplacement {
             // skip if already a link
             return linkText;
         }
-        if (targetType == Pf2eIndexType.trait) {
+        if (targetType == Pf2eIndexType.domain) {
+            parts[0] = parts[0].replaceAll("\\s+\\(Apocryphal\\)", "");
+            return linkifyRules(Pf2eIndexType.domain, linkText, "domains", toTitleCase(parts[0]));
+        } else if (targetType == Pf2eIndexType.condition) {
+            return linkifyRules(Pf2eIndexType.condition, linkText.replaceAll("\\s\\d+$", ""),
+                    "conditions", toTitleCase(parts[0].replaceAll("\\s\\d+$", "")));
+        }
+
+        if (parts.length > 1) {
+            source = parts[1].isBlank() ? source : parts[1];
+        }
+
+        if (targetType == Pf2eIndexType.spell) {
+            parts[0] = parts[0].replaceAll("\\s+\\(.*\\)$", "");
+        } else if (targetType == Pf2eIndexType.trait) {
             if (parts.length < 2 && linkText.contains("<")) {
                 String[] pieces = parts[0].split(" ");
                 parts[0] = pieces[0];
@@ -325,32 +327,40 @@ public interface JsonTextReplacement {
                 Pf2eTypeReader.Pf2eAlignmentValue alignment = Pf2eTypeReader.Pf2eAlignmentValue.fromString(parts[0]);
                 parts[0] = alignment == null ? parts[0] : alignment.longName;
             }
-        } else if (targetType == Pf2eIndexType.domain) {
-            parts[0] = parts[0].replaceAll("\\s+\\(Apocryphal\\)", "");
-        } else if (targetType == Pf2eIndexType.spell) {
-            parts[0] = parts[0].replaceAll("\\s+\\(.*\\)$", "");
-        }
-
-        if (parts.length > 1) {
-            source = parts[1].isBlank() ? source : parts[1];
-        }
-        if (targetType == Pf2eIndexType.condition) {
-            return linkifyRules(linkText.replaceAll("\\s\\d+$", ""),
-                    "conditions", toTitleCase(parts[0].replaceAll("\\s\\d+$", "")));
+            source = index().traitToSource(parts[0]);
         }
 
         // TODO: aliases?
         String key = targetType.createKey(parts[0], source);
-        // TODO: nested file structure for some types
-        String link = String.format("[%s](%s%s/%s.md)", linkText,
-                targetType.getRepoRoot(index()),
-                targetType.relativePath(), slugify(parts[0]));
 
-        if (targetType != Pf2eIndexType.action && targetType != Pf2eIndexType.spell && targetType != Pf2eIndexType.feat
+        // TODO: nested file structure for some types
+        String link = String.format("[%s](%s/%s%s.md)",
+                linkText,
+                targetType.relativeRepositoryRoot(index()),
+                slugify(parts[0]),
+                targetType.isDefaultSource(source) ? "" : "-" + slugify(source));
+
+        if (targetType != Pf2eIndexType.action
+                && targetType != Pf2eIndexType.spell
+                && targetType != Pf2eIndexType.feat
                 && targetType != Pf2eIndexType.trait) {
             tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
         }
+
         return index().isIncluded(key) ? link : linkText;
+    }
+
+    default String linkifyRules(Pf2eIndexType type, String text, String rules, String anchor) {
+        if (text.matches("\\[.+]\\(.+\\)")) {
+            // skip if already a link
+            return text;
+        }
+        return String.format("[%s](%s/%s.md#%s)",
+                text,
+                type.relativeRepositoryRoot(index()),
+                rules,
+                anchor.replace(" ", "%20")
+                        .replace(".", ""));
     }
 
     default String linkifyClass(String match) {

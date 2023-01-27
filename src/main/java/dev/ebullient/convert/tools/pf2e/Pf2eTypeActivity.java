@@ -8,21 +8,27 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
 
 public enum Pf2eTypeActivity {
     single("Single Action", ">", "single_action.svg"),
-    two("Two-Action activity", ">>", "two_actions.svg"),
-    three("Three-Action activity", ">>>", "three_actions.svg"),
+    two("Two-Action", ">>", "two_actions.svg"),
+    three("Three-Action", ">>>", "three_actions.svg"),
     free("Free Action", "F", "delay.svg"),
     reaction("Reaction", "R", "reaction.svg"),
     varies("Varies", "V", "load.svg"),
     timed("Duration or Frequency", "⏲", "hour-glass.svg");
 
-    String caption;
-    String textGlyph;
-    String glyph;
+    final String longName;
+    final String markdownName;
+    final String textGlyph;
+    final String glyph;
+    final String targetFileName;
 
-    Pf2eTypeActivity(String caption, String textGlyph, String glyph) {
-        this.caption = caption;
+    Pf2eTypeActivity(String longName, String textGlyph, String glyph) {
+        this.longName = longName;
+        this.markdownName = longName.replace(" ", "%20");
         this.textGlyph = textGlyph;
         this.glyph = glyph;
+
+        int x = glyph.lastIndexOf('.');
+        this.targetFileName = Tui.slugify(glyph.substring(0, x)) + glyph.substring(x);
     }
 
     public static Pf2eTypeActivity toActivity(String unit, int number) {
@@ -49,8 +55,8 @@ public enum Pf2eTypeActivity {
         return null;
     }
 
-    public String getCaption() {
-        return this.caption;
+    public String getLongName() {
+        return this.longName;
     }
 
     public String getTextGlyph() {
@@ -63,29 +69,23 @@ public enum Pf2eTypeActivity {
 
     public String linkify(String rulesRoot) {
         return String.format("[%s](%s \"%s\")",
-                this.textGlyph, getRulesPath(rulesRoot), caption);
+                this.textGlyph, getRulesPath(rulesRoot), longName);
     }
 
     public String getRulesPath(String rulesRoot) {
-        return String.format("%sTODO.md#%s",
-                rulesRoot, this.caption.replace(" ", "%20")
-                        .replace(".", ""));
+        return String.format("%sTODO.md#%s", rulesRoot, markdownName);
     }
 
-    public QuteActivityType toQuteActivityType(JsonSource convert) {
-        String fileName = this.getGlyph();
-        int x = fileName.lastIndexOf('.');
-        Path target = Path.of("img",
-                Tui.slugify(fileName.substring(0, x)) + fileName.substring(x));
-
+    public QuteActivityType toQuteActivityType(JsonSource convert, String text) {
+        Path target = Path.of("img", targetFileName);
         return new QuteActivityType(
-                getCaption(),
+                text == null ? longName : text,
                 new ImageRef.Builder()
-                        .setStreamSource(this.getGlyph())
+                        .setStreamSource(glyph)
                         .setTargetPath(convert.index().rulesPath(), target)
-                        .setMarkdownPath(this.getCaption(), convert.index().rulesRoot())
+                        .setMarkdownPath(longName, convert.index().rulesRoot())
                         .build(),
-                this.getTextGlyph(),
+                textGlyph,
                 this.getRulesPath(convert.index().rulesRoot()));
     }
 }

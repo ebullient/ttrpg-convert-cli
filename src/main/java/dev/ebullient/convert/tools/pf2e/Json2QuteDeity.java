@@ -31,7 +31,6 @@ public class Json2QuteDeity extends Json2QuteBase {
         Pf2eDeity.alternateDomains.getListOfStrings(rootNode, tui()).forEach(d -> tags.add(cfg().tagOf("domain", d, "deity")));
 
         String category = Pf2eDeity.category.getTextOrDefault(rootNode, "Deity");
-        String genericCategory = ("Philosophy".equals(category) || "Pantheon".equals(category)) ? category : "Deity";
         tags.add(cfg().tagOf("deity", category));
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
@@ -44,14 +43,34 @@ public class Json2QuteDeity extends Json2QuteBase {
         return new QuteDeity(sources, text, tags,
                 Field.alias.transformListFrom(rootNode, tui(), this),
                 category,
-                genericCategory,
                 join(", ", Pf2eDeity.pantheon.linkifyListFrom(rootNode, Pf2eIndexType.deity, tui(), this)),
                 alignment, followerAlignment,
                 Pf2eDeity.areasOfConcern.transformTextFrom(rootNode, ", ", tui(), this),
                 commandmentToString(Pf2eDeity.edict.transformListFrom(rootNode, tui(), this)),
                 commandmentToString(Pf2eDeity.anathema.transformListFrom(rootNode, tui(), this)),
                 buildCleric(),
-                buildAvatar());
+                buildAvatar(),
+                buildIntercession());
+    }
+
+    private QuteDeity.QuteDivineIntercession buildIntercession() {
+        JsonNode node = Pf2eDeity.intercession.getFrom(rootNode);
+        if (node == null) {
+            return null;
+        }
+        QuteDeity.QuteDivineIntercession intercession = new QuteDeity.QuteDivineIntercession();
+        intercession.sourceText = Pf2eSources.createEmbeddedSource(node).getSourceText();
+        intercession.flavor = Pf2eDeity.flavor.transformTextFrom(node, "\n", tui(), this);
+
+        intercession.majorBoon = Pf2eDeity.majorBoon.transformTextFrom(node, "\n", tui(), this);
+        intercession.moderateBoon = Pf2eDeity.moderateBoon.transformTextFrom(node, "\n", tui(), this);
+        intercession.minorBoon = Pf2eDeity.minorBoon.transformTextFrom(node, "\n", tui(), this);
+
+        intercession.majorCurse = Pf2eDeity.majorCurse.transformTextFrom(node, "\n", tui(), this);
+        intercession.moderateCurse = Pf2eDeity.moderateCurse.transformTextFrom(node, "\n", tui(), this);
+        intercession.minorCurse = Pf2eDeity.minorCurse.transformTextFrom(node, "\n", tui(), this);
+
+        return intercession;
     }
 
     QuteDeity.QuteDeityCleric buildCleric() {
@@ -126,13 +145,13 @@ public class Json2QuteDeity extends Json2QuteBase {
         }
 
         avatar.melee = Pf2eDeity.melee.streamOf(avatarNode)
-                .map(n -> buildAvatarAction(n))
+                .map(this::buildAvatarAction)
                 .collect(Collectors.toList());
         avatar.ranged = Pf2eDeity.ranged.streamOf(avatarNode)
-                .map(n -> buildAvatarAction(n))
+                .map(this::buildAvatarAction)
                 .collect(Collectors.toList());
         avatar.ability = Pf2eDeity.ability.streamOf(avatarNode)
-                .map(n -> buildAvatarAbility(n))
+                .map(this::buildAvatarAbility)
                 .collect(Collectors.toList());
 
         return avatar;
@@ -159,7 +178,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         String ranged = findRange(actionNode);
 
         action.actionType = ranged == null ? "Melee" : "Ranged";
-        action.activityType = Pf2eTypeActivity.single.toQuteActivityType(this);
+        action.activityType = Pf2eTypeActivity.single.toQuteActivityType(this, null);
 
         String damage = Pf2eDeity.damage.getTextOrNull(actionNode);
         String damage2 = Pf2eDeity.damage2.getTextOrNull(actionNode);
@@ -265,10 +284,18 @@ public class Json2QuteDeity extends Json2QuteBase {
         domains,
         edict,
         favoredWeapon, // cleric
+        flavor, // intercession
         followerAlignment, // alignment
         font, // cleric
         ignoreTerrain, // avatar
         immune, // avatar
+        intercession,
+        majorBoon("Major Boon"),
+        moderateBoon("Moderate Boon"),
+        minorBoon("Minor Boon"),
+        majorCurse("Major Curse"),
+        moderateCurse("Moderate Curse"),
+        minorCurse("Minor Curse"),
         melee, // avatar
         note, // avatar
         pantheon,
@@ -281,7 +308,20 @@ public class Json2QuteDeity extends Json2QuteBase {
         shield, // avatar
         speed, // avatar
         spells, // cleric
-        traitNote, // avatar
-        ;
+        traitNote; // avatar
+
+        final String nodeName;
+
+        Pf2eDeity() {
+            this.nodeName = this.name();
+        }
+
+        Pf2eDeity(String nodeName) {
+            this.nodeName = nodeName;
+        }
+
+        public String nodeName() {
+            return nodeName;
+        }
     }
 }

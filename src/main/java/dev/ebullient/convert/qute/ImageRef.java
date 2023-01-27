@@ -17,7 +17,7 @@ public class ImageRef {
         public Path sourcePath;
         public Path targetPath;
         public Path relativeTarget;
-        public String caption;
+        public String title;
         public String image;
 
         public Builder setSourcePath(Path sourcePath) {
@@ -36,11 +36,11 @@ public class ImageRef {
             return this;
         }
 
-        public Builder setMarkdownPath(String caption, String relativeRoot) {
+        public Builder setMarkdownPath(String title, String relativeRoot) {
             if (relativeTarget == null) {
                 throw new IllegalStateException("Call setTargetPath first");
             }
-            this.caption = caption;
+            this.title = title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
             this.image = String.format("%s%s", relativeRoot,
                     relativeTarget.toString().replace('\\', '/'));
             return this;
@@ -50,7 +50,7 @@ public class ImageRef {
             if (sourcePath == null || targetPath == null) {
                 throw new IllegalStateException("Call setSourcePath and setTargetPath first");
             }
-            return new ImageRef(sourcePath, targetPath, caption, image);
+            return new ImageRef(sourcePath, targetPath, title, image);
         }
     }
 

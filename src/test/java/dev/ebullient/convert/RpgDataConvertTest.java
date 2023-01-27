@@ -253,4 +253,32 @@ public class RpgDataConvertTest {
                     }));
         }
     }
+
+    @Test
+    void testCommandLiveData_Pf2eAllSources(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
+            // All, I mean it. Really for real.. ALL.
+            final Path allIndex = outputPath_pf2.resolve("all-index");
+            TestUtils.deleteDir(allIndex);
+
+            List<String> args = new ArrayList<>(List.of("--index",
+                    "-s", "ALL",
+                    "-o", allIndex.toString(),
+                    "-g", "pf2e",
+                    TestUtils.TOOLS_PATH_PF2E.toString()));
+
+            LaunchResult result = launcher.launch(args.toArray(new String[0]));
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+
+            Tui tui = new Tui();
+            tui.init(null, false, false);
+            List<String> errors = new ArrayList<>();
+            TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
+                content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
+                return List.of();
+            });
+        }
+    }
 }

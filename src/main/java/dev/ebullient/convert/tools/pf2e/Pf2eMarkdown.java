@@ -154,7 +154,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
     <T> void append(Pf2eIndexType type, T note, List<T> compendium, List<T> rules) {
         if (note != null) {
-            if (type.useCompendiumPath()) {
+            if (type.useCompendiumBase()) {
                 compendium.add(note);
             } else {
                 rules.add(note);

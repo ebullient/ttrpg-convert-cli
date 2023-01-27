@@ -5,6 +5,7 @@ import java.util.List;
 
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
+import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -19,6 +20,11 @@ public class Pf2eQuteNote extends QuteNote {
 
     public Pf2eQuteNote(Pf2eIndexType type, String name, String sourceText, String text, Collection<String> tags) {
         super(name, sourceText, text, tags);
+        this.type = type;
+    }
+
+    public Pf2eQuteNote(Pf2eIndexType type, Pf2eSources sources, String text, Collection<String> tags) {
+        super(sources, sources.getName(), sources.getSourceText(), text, tags);
         this.type = type;
     }
 
