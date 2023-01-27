@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +8,6 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -271,40 +269,24 @@ public interface Pf2eTypeReader extends JsonSource {
                 case "free":
                 case "reaction":
                     Pf2eTypeActivity activity = Pf2eTypeActivity.toActivity(unit, number);
-                    return createActivity(convert,
-                            String.format("%s%s", activity == null ? "unknown" : activity.getCaption(), extra),
-                            activity);
+                    if (activity == null) {
+                        throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
+                    }
+                    return activity.toQuteActivityType(convert,
+                            String.format("%s%s", activity.getLongName(), extra));
                 case "varies":
-                    return createActivity(convert,
-                            String.format("%s%s", Pf2eTypeActivity.varies.getCaption(), extra),
-                            Pf2eTypeActivity.varies);
+                    return Pf2eTypeActivity.varies.toQuteActivityType(convert,
+                            String.format("%s%s", Pf2eTypeActivity.varies.getLongName(), extra));
                 case "day":
                 case "minute":
                 case "hour":
                 case "round":
-                    return createActivity(convert,
-                            String.format("%s %s%s", number, unit, extra),
-                            Pf2eTypeActivity.timed);
+                    return Pf2eTypeActivity.timed.toQuteActivityType(convert,
+                            String.format("%s %s%s", number, unit, extra));
+
                 default:
                     throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
             }
-        }
-
-        QuteActivityType createActivity(JsonSource convert, String text, Pf2eTypeActivity activity) {
-            String fileName = activity.getGlyph();
-            int x = fileName.lastIndexOf('.');
-            Path target = Path.of("img",
-                    Tui.slugify(fileName.substring(0, x)) + fileName.substring(x));
-
-            return new QuteActivityType(
-                    text,
-                    new ImageRef.Builder()
-                            .setStreamSource(activity.getGlyph())
-                            .setTargetPath(convert.index().rulesPath(), target)
-                            .setMarkdownPath(activity.getCaption(), convert.index().rulesRoot())
-                            .build(),
-                    activity.getTextGlyph(),
-                    activity.getRulesPath(convert.index().rulesRoot()));
         }
     }
 

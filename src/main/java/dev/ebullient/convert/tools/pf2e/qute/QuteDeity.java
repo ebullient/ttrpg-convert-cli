@@ -14,7 +14,6 @@ public class QuteDeity extends Pf2eQuteBase {
 
     public final List<String> aliases;
     public final String category;
-    public final String genericCategory;
     public final String pantheon;
 
     // Morality
@@ -27,15 +26,15 @@ public class QuteDeity extends Pf2eQuteBase {
 
     public final QuteDeityCleric cleric;
     public final QuteDivineAvatar avatar;
+    public final QuteDivineIntercession intercession;
 
     public QuteDeity(Pf2eSources sources, List<String> text, Collection<String> tags,
-            List<String> aliases, String category, String genericCategory, String pantheon,
+            List<String> aliases, String category, String pantheon,
             String alignment, String followerAlignment, String areasOfConcern, String edicts, String anathema,
-            QuteDeityCleric cleric, QuteDivineAvatar avatar) {
+            QuteDeityCleric cleric, QuteDivineAvatar avatar, QuteDivineIntercession intercession) {
         super(sources, text, tags);
         this.aliases = aliases;
         this.category = category;
-        this.genericCategory = genericCategory;
         this.pantheon = pantheon;
 
         this.alignment = alignment;
@@ -46,6 +45,7 @@ public class QuteDeity extends Pf2eQuteBase {
 
         this.cleric = cleric;
         this.avatar = avatar;
+        this.intercession = intercession;
     }
 
     @RegisterForReflection
@@ -61,25 +61,25 @@ public class QuteDeity extends Pf2eQuteBase {
         public String toString() {
             List<String> lines = new ArrayList<>();
             if (divineAbility != null) {
-                lines.add("- **Divine Ability** " + divineAbility);
+                lines.add("- **Divine Ability**: " + divineAbility);
             }
             if (divineFont != null) {
-                lines.add("- **Divine Font** " + divineFont);
+                lines.add("- **Divine Font**: " + divineFont);
             }
             if (divineSkill != null) {
-                lines.add("- **Divine Skill** " + divineSkill);
+                lines.add("- **Divine Skill**: " + divineSkill);
             }
             if (favoredWeapon != null) {
-                lines.add("- **Favored Weapon** " + favoredWeapon);
+                lines.add("- **Favored Weapon**: " + favoredWeapon);
             }
             if (domains != null) {
-                lines.add("- **Domains** " + domains);
+                lines.add("- **Domains**: " + domains);
             }
             if (alternateDomains != null) {
-                lines.add("- **Alternate Domains** " + alternateDomains);
+                lines.add("- **Alternate Domains**: " + alternateDomains);
             }
             if (spells != null) {
-                lines.add("- **Cleric Spells** " + spells.entrySet().stream()
+                lines.add("- **Cleric Spells**: " + spells.entrySet().stream()
                         .map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("; ")));
             }
@@ -107,10 +107,10 @@ public class QuteDeity extends Pf2eQuteBase {
             lines.add("title: " + name);
             lines.add("");
             if (speed != null) {
-                lines.add("- **Speed** " + speed);
+                lines.add("- **Speed**: " + speed);
             }
             if (shield != null) {
-                lines.add("- **Shield** " + shield);
+                lines.add("- **Shield**: " + shield);
             }
             melee.forEach(m -> lines.add("- " + m));
             ranged.forEach(r -> lines.add("- " + r));
@@ -133,7 +133,7 @@ public class QuteDeity extends Pf2eQuteBase {
 
         public String toString() {
             List<String> parts = new ArrayList<>();
-            parts.add(String.format("**%s** %s", actionType, activityType));
+            parts.add(String.format("**%s**: %s", actionType, activityType));
             parts.add(name);
             if (!traits.isEmpty()) {
                 parts.add("(" + String.join(", ", traits) + "),");
@@ -152,7 +152,19 @@ public class QuteDeity extends Pf2eQuteBase {
         public String text;
 
         public String toString() {
-            return String.format("**%s** %s", name, text);
+            return String.format("**%s**: %s", name, text);
         }
+    }
+
+    @RegisterForReflection
+    public static class QuteDivineIntercession {
+        public String sourceText;
+        public String flavor;
+        public String majorBoon;
+        public String moderateBoon;
+        public String minorBoon;
+        public String majorCurse;
+        public String moderateCurse;
+        public String minorCurse;
     }
 }

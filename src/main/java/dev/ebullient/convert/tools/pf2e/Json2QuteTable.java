@@ -22,9 +22,7 @@ public class Json2QuteTable extends Json2QuteBase {
         ((ObjectNode) rootNode).put(Field.type.name(), "table");
         appendEntryToText(text, rootNode, null);
 
-        return new Pf2eQuteNote(type,
-                sources.getName(),
-                sources.getSourceText(),
+        return new Pf2eQuteNote(type, sources,
                 join("\n", text), tags);
     }
 }

@@ -415,10 +415,10 @@ public interface JsonSource extends JsonTextReplacement {
         String id = Field.id.getTextOrEmpty(tableNode);
 
         String blockid = "";
-        if (TableField.spans.getFrom(tableNode) == null) {
-            blockid = appendMarkdownTable(tableNode, table, id, name);
-        } else {
+        if (TableField.spans.getFrom(tableNode) != null) {
             blockid = appendHtmlTable(tableNode, table, id, name);
+        } else {
+            blockid = appendMarkdownTable(tableNode, table, id, name);
         }
 
         JsonNode intro = TableField.intro.getFrom(tableNode);
@@ -585,19 +585,16 @@ public interface JsonSource extends JsonTextReplacement {
                 }
                 table.add(header);
                 table.add(header.replaceAll("[^|]", "-"));
-            } else if (FieldValue.multiRow.isValueOfField(rows, Field.type)) {
-                ArrayNode rows2 = TableField.rows.withArrayFrom(rowNode);
-                for (int j = 0; j < rows2.size(); j++) {
-                    final int rindex = j;
+            } else if (FieldValue.multiRow.isValueOfField(rowNode, Field.type)) {
+                TableField.rows.withArrayFrom(rowNode).forEach(mr -> {
                     String row = "| " +
-                            StreamSupport.stream(rowNode.spliterator(), false)
+                            StreamSupport.stream(mr.spliterator(), false)
                                     .map(x -> replaceText(x.asText()))
-                                    .map(x -> rindex == 0 ? "**" + x + "**" : x)
                                     .collect(Collectors.joining(" | "))
                             +
                             " |";
                     table.add(row);
-                }
+                });
             } else {
                 String row = "| " +
                         StreamSupport.stream(rowNode.spliterator(), false)

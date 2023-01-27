@@ -26,4 +26,4 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ## Summary
 {/if}
 
-Source: *{resource.source}*
+*Source: {resource.source}*

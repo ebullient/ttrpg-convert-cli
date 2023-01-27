@@ -31,6 +31,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     private final Map<String, JsonNode> imported = new HashMap<>();
     private final Map<String, JsonNode> filteredIndex = new HashMap<>();
 
+    private final Map<String, String> traitToSource = new HashMap<>();
     private final Map<String, Collection<String>> categoryToTraits = new TreeMap<>();
     private final Map<String, Set<String>> archetypeToFeats = new TreeMap<>();
     private final Map<String, Set<String>> domainToSpells = new TreeMap<>();
@@ -109,6 +110,13 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
             String oldKey = key;
             key = Pf2eIndexType.trait.createKey(node);
             alias.put(oldKey, key);
+        }
+
+        // Quick lookup for traits
+        String oldKey = traitToSource.put(name, Field.source.getTextOrNull(node));
+        if (oldKey != null) {
+            tui().warnf("Duplicate trait name %s, from source %s and %s",
+                    name, key, oldKey);
         }
 
         // Precreate category mapping for traits
@@ -227,6 +235,10 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     public Set<String> domainSpells(String domain) {
         Set<String> spells = domainToSpells.get(domain.toLowerCase());
         return spells == null ? Set.of() : spells;
+    }
+
+    public String traitToSource(String trait) {
+        return traitToSource.get(trait);
     }
 
     // --------- Write indexes ---------

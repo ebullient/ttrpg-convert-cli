@@ -8,23 +8,23 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class QuteActivityType {
     public final ImageRef glyph;
-    public final String caption;
+    public final String text;
     public final String textGlyph;
     public final String rulesPath;
 
-    public QuteActivityType(String caption, ImageRef glyph, String textGlyph, String rulesPath) {
+    public QuteActivityType(String text, ImageRef glyph, String textGlyph, String rulesPath) {
+        this.text = text;
         this.glyph = glyph;
-        this.caption = caption;
         this.textGlyph = textGlyph;
         this.rulesPath = rulesPath;
     }
 
-    public String getCaption() {
-        return glyph != null ? glyph.caption : caption;
+    public String getText() {
+        return text == null ? glyph.caption : text;
     }
 
     public String toString() {
-        return String.format("[%s](%s \"%s\")", textGlyph, rulesPath, caption);
+        return String.format("[%s](%s \"%s\")", textGlyph, rulesPath, glyph.caption);
     }
 
     public List<ImageRef> image() {

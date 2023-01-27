@@ -10,14 +10,17 @@ tags:
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
 # {resource.name}{#if resource.aliases } ({#each resource.aliases}{it}{#if it_hasNext}, {/if}{/each}){/if} *({resource.alignment})*  
+*Source: {resource.source}*
 %%-- Embedded/inline deity starts on the next line. --%%
 {#if resource.text }
 
 {resource.text}
 {/if}
 
-- **Category**: {resource.category}{#if resource.genericCategory } ({resource.genericCategory}){/if}
-{#if resource.edicts }
+- **Category**: {resource.category}
+{#if resource.pantheon }
+- **Pantheon Members**: {resource.pantheon}
+{/if}{#if resource.edicts }
 - **Edicts** {resource.edicts}
 {/if}{#if resource.anathema }
 - **Anathema**: {resource.anathema}
@@ -31,15 +34,29 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ## Devotee benefits
 
 {resource.cleric}
-{/if}
-{#if resource.avatar }
+{/if}{#if resource.avatar }
 
 {resource.avatar}
+{/if}{#if resource.intercession }
+
+## Divine intercession
+*Source: {resource.intercession.sourceText}*
+
+{resource.intercession.flavor}
+
+{#if resource.intercession.minorBoon }
+- **Minor Boon** {resource.intercession.minorBoon}
+{/if}{#if resource.intercession.moderateBoon }
+- **Moderate Boon**: {resource.intercession.moderateBoon}
+{/if}{#if resource.intercession.majorBoon }
+- **Major Boon**: {resource.intercession.majorBoon}
 {/if}
 
-## Summary
-
-{#if resource.pantheon }
-- **Pantheon Members**: {resource.pantheon}
+{#if resource.intercession.minorCurse }
+- **Minor Curse**: {resource.intercession.minorCurse}
+{/if}{#if resource.intercession.moderateCurse }
+- **Moderate Curse** {resource.intercession.moderateCurse}
+{/if}{#if resource.intercession.majorCurse }
+- **Major Curse**: {resource.intercession.majorCurse}
 {/if}
-Source: *{resource.source}*
+{/if}

@@ -40,6 +40,14 @@ public class Pf2eSources extends CompendiumSources {
         return new Pf2eSources(Pf2eIndexType.syntheticGroup, key, null);
     }
 
+    public static Pf2eSources createEmbeddedSource(JsonNode node) {
+        if (node == null) {
+            throw new IllegalArgumentException("Must pass a JsonNode");
+        }
+        String key = Pf2eIndexType.bookReference.createKey(node);
+        return new Pf2eSources(Pf2eIndexType.bookReference, key, node);
+    }
+
     public static Pf2eSources findOrTemporary(Pf2eIndexType type, JsonNode node) {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
@@ -62,7 +70,7 @@ public class Pf2eSources extends CompendiumSources {
     }
 
     protected String findName(IndexType type, JsonNode node) {
-        if (type == Pf2eIndexType.syntheticGroup) {
+        if (type == Pf2eIndexType.syntheticGroup || type == Pf2eIndexType.bookReference) {
             return this.key.replaceAll("/.*\\|(.*)\\|/", "$1");
         }
         String name = JsonSource.Field.name.getTextOrNull(node);
