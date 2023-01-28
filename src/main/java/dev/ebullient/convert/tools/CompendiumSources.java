@@ -39,7 +39,7 @@ public abstract class CompendiumSources {
 
     public List<String> getSourceTags() {
         return List.of(
-                String.format("compendium/%s/src/%s",
+                String.format("compendium/src/%s/%s",
                         TtrpgConfig.getConfig().datasource().shortName(),
                         isSynthetic() ? "" : primarySource().toLowerCase()));
     }
