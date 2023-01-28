@@ -1,0 +1,128 @@
+name: Pf2e Tools Data
+on:
+  schedule:
+    # At 09:07 on Saturday (because why not)
+    - cron: "7 9 * * 6"
+
+  workflow_dispatch:
+
+env:
+  JAVA_VERSION: 11
+  GRAALVM_VERSION: 22.3.0
+  JAVA_DISTRO: temurin
+
+jobs:
+  cache-setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache_key: ${{ steps.test-data-key.outputs.tools_version }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Pf2e Tools release cache key
+        id: test-data-key
+        run: |
+          LATEST_RELEASE=$(curl -sLH 'Accept: application/json' https://api.github.com/repos/Pf2eToolsOrg/Pf2eTools/releases/latest)
+          LATEST_VERSION=$(echo $LATEST_RELEASE | grep tag_name | sed -e 's/.*"tag_name": "\([^"]*\)".*/\1/')
+          echo $LATEST_VERSION
+
+          echo "🔹 Use $LATEST_VERSION"
+          echo "tools_version=${LATEST_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Cache Test Data
+        id: test-data-cache
+        uses: actions/cache@v3
+        with:
+          path: sources/Pf2eTools
+          key: ${{ steps.test-data-key.outputs.tools_version }}
+
+      - name: Test Data
+        id: test-data
+        if: steps.test-data-cache.outputs.cache-hit != 'true'
+        env:
+          LATEST_VERSION: ${{ steps.test-data-key.outputs.tools_version }}
+        run: |
+          echo "🔹 Download $LATEST_VERSION"
+          ARTIFACT_URL="https://github.com/Pf2eToolsOrg/Pf2eTools/archive/refs/tags/$LATEST_VERSION.tar.gz"
+          VER=$(echo $LATEST_VERSION | cut -c 1-)
+          ROOT="Pf2eTools-$VER"
+
+          curl -LsS -o Pf2eTools.tar.gz $ARTIFACT_URL
+          tar xzf Pf2eTools.tar.gz ${ROOT}/data ${ROOT}/img
+
+          rm -rf sources/Pf2eTools
+          mv ${ROOT} sources/Pf2eTools
+
+  test-with-data:
+  
+    name: Test with data
+    needs: cache-setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache Test Data
+        id: test-data-cache
+        uses: actions/cache@v3
+        with:
+          path: sources/Pf2eTools
+          key: ${{ needs.cache-setup.outputs.cache_key }}
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+          cache: maven
+
+      - name: Build with Maven
+        id: mvn-build
+        run: |
+          ./mvnw -B -ntp -DskipFormat verify
+
+  native-test-with-data:
+  
+    name: Test on ${{ matrix.os }}
+    needs: [cache-setup, test-with-data]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      # Improve cache behavior on Windows
+      - if: runner.os == 'Windows'
+        name: Use GNU tar
+        shell: cmd
+        run: |
+          echo "Adding GNU tar to PATH"
+          echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
+      - uses: actions/checkout@v3
+
+      - name: Cache Test Data
+        id: test-data-cache
+        uses: actions/cache@v3
+        with:
+          path: sources/Pf2eTools
+          key: ${{ needs.cache-setup.outputs.cache_key }}
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: ${{ env.GRAALVM_VERSION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          components: "native-image"
+          cache: 'maven'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and run in native mode
+        id: mvn-native-build
+        env:
+          MAVEN_OPTS: "-Xmx1g"
+        run: |
+          ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat
+

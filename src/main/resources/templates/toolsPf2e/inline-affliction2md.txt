@@ -28,7 +28,7 @@ title: Saving Throw: {resource.savingThrow}
 {resource.effect}
 {/if}{#else if resource.effect}
 **Effect** {resource.effect}
-{/if}{#if resource.tags }
 
-%% {#each resource.tags}{it}  {/each} %%{/if}{#if resource.source }
-*Source: {resource.source}*{/if}
+{/if}{#if resource.source }
+*Source: {resource.source}*{/if}{#if resource.tags }
+%% {#each resource.tags}#{it} {/each}%%{/if}

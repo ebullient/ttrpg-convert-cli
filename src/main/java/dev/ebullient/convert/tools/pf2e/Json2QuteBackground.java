@@ -20,22 +20,22 @@ public class Json2QuteBackground extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         Pf2eBackground.boosts.getListOfStrings(rootNode, tui())
-            .stream()
-            .filter(b -> !b.equalsIgnoreCase("Free"))
-            .forEach(s -> tags.add(cfg().tagOf("background", "boost", s)));
+                .stream()
+                .filter(b -> !b.equalsIgnoreCase("Free"))
+                .forEach(s -> tags.add(cfg().tagOf("background", "boost", s)));
 
         Pf2eBackground.skills.getListOfStrings(rootNode, tui())
-            .forEach(s -> tags.add(cfg().tagOf("background", "skill", s)));
+                .forEach(s -> tags.add(cfg().tagOf("background", "skill", s)));
 
-            Pf2eBackground.feat.getListOfStrings(rootNode, tui())
-            .forEach(s -> tags.add(cfg().tagOf("background", "feat", s)));
+        Pf2eBackground.feat.getListOfStrings(rootNode, tui())
+                .forEach(s -> tags.add(cfg().tagOf("background", "feat", s)));
 
         appendEntryToText(text, rootNode, "##");
 
         return new QuteBackground(sources, text, tags);
     }
 
-    enum Pf2eBackground implements NodeReader  {
+    enum Pf2eBackground implements NodeReader {
         boosts,
         skills,
         feat,

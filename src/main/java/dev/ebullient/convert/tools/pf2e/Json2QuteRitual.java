@@ -33,7 +33,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
 
         return new QuteRitual(sources, text, tags,
                 level, "Ritual",
-                collectTraitsFrom(rootNode),
+                collectTraitsFrom(rootNode, tags),
                 Field.alias.transformListFrom(rootNode, tui(), this),
                 getQuteRitualCast(),
                 getQuteRitualChecks(),

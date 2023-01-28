@@ -228,11 +228,12 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             case action:
             case feat:
             case spell:
-            case ritual:
             case table:
             case trait:
             case variantrule:
                 return this.name() + 's';
+            case ritual:
+                return "spells/rituals";
             // Character
             case ancestry:
                 return "character/ancestries";

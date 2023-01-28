@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,9 @@ public interface JsonSource extends JsonTextReplacement {
      *
      * @return an empty or sorted/linkified list of traits (never null)
      */
-    default List<String> collectTraitsFrom(JsonNode sourceNode) {
+    default List<String> collectTraitsFrom(JsonNode sourceNode, Collection<String> tags) {
         return Field.traits.getListOfStrings(sourceNode, tui()).stream()
+                .peek(t -> tags.add(cfg().tagOf("trait", t)))
                 .sorted()
                 .map(s -> linkify(Pf2eIndexType.trait, s))
                 .collect(Collectors.toList());
@@ -433,9 +435,10 @@ public interface JsonSource extends JsonTextReplacement {
 
         AbilityField.note.debugIfExists(node, tui());
         AbilityField.range.debugIfExists(node, tui());
+        List<String> tags = new ArrayList<>();
 
         QuteInlineAbility inlineAbility = new QuteInlineAbility(
-                name, abilityText, List.of(), collectTraitsFrom(node),
+                name, abilityText, tags, collectTraitsFrom(node, tags),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
                 AbilityField.components.replaceTextFrom(node, this),
                 AbilityField.requirements.replaceTextFrom(node, this),
@@ -456,8 +459,8 @@ public interface JsonSource extends JsonTextReplacement {
         String dc = AfflictionField.DC.getTextOrNull(node);
         String savingThrowString = replaceText((dc == null ? "" : "DC " + dc + " ") + savingThrow);
 
-        List<String> traits = collectTraitsFrom(node);
         List<String> tags = new ArrayList<>();
+        List<String> traits = collectTraitsFrom(node, tags);
 
         JsonNode field = AfflictionField.level.getFrom(node);
         if (field != null) {

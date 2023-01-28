@@ -13,4 +13,4 @@ title: {resource.name}{#if resource.activity} { resource.activity }{/if}{#if res
 **Effect**: {resource.text}{/if}{#if resource.special }
      
 **Special**: {resource.special}{/if}{#if resource.tags }
-%% {#each resource.tags}{it}  {/each} %%{/if}
+%% {#each resource.tags}#{it} {/each}%%{/if}

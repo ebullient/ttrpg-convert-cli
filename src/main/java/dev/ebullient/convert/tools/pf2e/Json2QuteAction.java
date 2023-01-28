@@ -39,7 +39,7 @@ public class Json2QuteAction extends Json2QuteBase {
                 Pf2eAction.cost.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eAction.trigger.transformTextFrom(rootNode, ", ", tui(), this),
                 Field.alias.transformListFrom(rootNode, tui(), this),
-                collectTraitsFrom(rootNode),
+                collectTraitsFrom(rootNode, tags),
                 Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
                 Field.requirements.replaceTextFrom(rootNode, this),
                 getFrequency(rootNode),

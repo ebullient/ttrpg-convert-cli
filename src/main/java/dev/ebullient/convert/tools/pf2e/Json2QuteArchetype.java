@@ -32,7 +32,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
         int dedicationLevel = ArchetypeField.dedicationLevel.intOrDefault(rootNode, 2);
 
         return new QuteArchetype(sources, text, tags,
-                collectTraitsFrom(rootNode),
+                collectTraitsFrom(rootNode, tags),
                 dedicationLevel,
                 benefits,
                 getFeatures(dedicationLevel));

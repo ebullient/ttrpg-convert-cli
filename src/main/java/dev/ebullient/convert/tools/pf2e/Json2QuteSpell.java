@@ -32,7 +32,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        List<String> traits = collectTraitsFrom(rootNode);
+        List<String> traits = collectTraitsFrom(rootNode, tags);
 
         boolean focus = Pf2eSpell.focus.booleanOrDefault(rootNode, false);
         String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");

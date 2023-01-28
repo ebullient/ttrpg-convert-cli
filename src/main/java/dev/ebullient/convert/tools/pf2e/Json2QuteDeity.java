@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,8 +24,8 @@ public class Json2QuteDeity extends Json2QuteBase {
 
     @Override
     protected QuteDeity buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         Pf2eDeity.domains.getListOfStrings(rootNode, tui()).forEach(d -> tags.add(cfg().tagOf("domain", d, "deity")));
         Pf2eDeity.alternateDomains.getListOfStrings(rootNode, tui()).forEach(d -> tags.add(cfg().tagOf("domain", d, "deity")));
@@ -48,7 +49,7 @@ public class Json2QuteDeity extends Json2QuteBase {
                 commandmentToString(Pf2eDeity.edict.transformListFrom(rootNode, tui(), this)),
                 commandmentToString(Pf2eDeity.anathema.transformListFrom(rootNode, tui(), this)),
                 buildCleric(),
-                buildAvatar(),
+                buildAvatar(tags),
                 buildIntercession());
     }
 
@@ -105,7 +106,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         return cleric;
     }
 
-    QuteDeity.QuteDivineAvatar buildAvatar() {
+    QuteDeity.QuteDivineAvatar buildAvatar(Collection<String> tags) {
         JsonNode avatarNode = Pf2eDeity.avatar.getFrom(rootNode);
         if (avatarNode == null) {
             return null;
@@ -144,10 +145,10 @@ public class Json2QuteDeity extends Json2QuteBase {
         }
 
         avatar.melee = Pf2eDeity.melee.streamOf(avatarNode)
-                .map(this::buildAvatarAction)
+                .map(n -> buildAvatarAction(n, tags))
                 .collect(Collectors.toList());
         avatar.ranged = Pf2eDeity.ranged.streamOf(avatarNode)
-                .map(this::buildAvatarAction)
+                .map(n -> buildAvatarAction(n, tags))
                 .collect(Collectors.toList());
         avatar.ability = Pf2eDeity.ability.streamOf(avatarNode)
                 .map(this::buildAvatarAbility)
@@ -163,12 +164,12 @@ public class Json2QuteDeity extends Json2QuteBase {
         return ability;
     }
 
-    private QuteDeity.QuteDivineAvatarAction buildAvatarAction(JsonNode actionNode) {
+    private QuteDeity.QuteDivineAvatarAction buildAvatarAction(JsonNode actionNode, Collection<String> tags) {
         QuteDeity.QuteDivineAvatarAction action = new QuteDeity.QuteDivineAvatarAction();
 
         action.name = Field.name.getTextOrDefault(actionNode, "attack");
 
-        action.traits = collectTraitsFrom(actionNode);
+        action.traits = collectTraitsFrom(actionNode, tags);
         action.traits.addAll(Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()));
         String traitNote = Pf2eDeity.traitNote.getTextOrNull(actionNode);
         if (traitNote != null) {
