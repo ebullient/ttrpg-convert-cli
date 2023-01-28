@@ -23,8 +23,8 @@ jobs:
       - name: Tools release cache key
         id: test-data-key
         run: |
-          LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/5etools-mirror-1/5etools-mirror-1.github.io/releases/latest)
-          LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
+          LATEST_RELEASE=$(curl -sLH 'Accept: application/json' https://api.github.com/repos/5etools-mirror-1/5etools-mirror-1.github.io/releases/latest)
+          LATEST_VERSION=$(echo $LATEST_RELEASE | grep tag_name | sed -e 's/.*"tag_name": "\([^"]*\)".*/\1/')
           echo $LATEST_VERSION
 
           echo "🔹 Use $LATEST_VERSION"
@@ -34,7 +34,7 @@ jobs:
         id: test-data-cache
         uses: actions/cache@v3
         with:
-          path: 5etools-mirror-1.github.io
+          path: sources/5etools-mirror-1.github.io
           key: ${{ steps.test-data-key.outputs.tools_version }}
 
       - name: Test Data
@@ -48,12 +48,11 @@ jobs:
           VER=$(echo $LATEST_VERSION | cut -c 2-)
           ROOT="5etools-mirror-1.github.io-$VER"
 
-          mkdir sources
           curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
-          tar xzf 5etools.tar.gz sources/${ROOT}/data sources/${ROOT}/img
+          tar xzf 5etools.tar.gz ${ROOT}/data ${ROOT}/img
 
-          rm -rf 5etools-mirror-1.github.io
-          mv ${ROOT} 5etools-mirror-1.github.io
+          rm -rf sources/5etools-mirror-1.github.io
+          mv ${ROOT} sources/5etools-mirror-1.github.io
 
   test-with-data:
   
@@ -68,7 +67,7 @@ jobs:
         id: test-data-cache
         uses: actions/cache@v3
         with:
-          path: 5etools-mirror-1.github.io
+          path: sources/5etools-mirror-1.github.io
           key: ${{ needs.cache-setup.outputs.cache_key }}
 
       - name: Set up JDK 11
@@ -109,7 +108,7 @@ jobs:
         id: test-data-cache
         uses: actions/cache@v3
         with:
-          path: 5etools-mirror-1.github.io
+          path: sources/5etools-mirror-1.github.io
           key: ${{ needs.cache-setup.outputs.cache_key }}
 
       - uses: graalvm/setup-graalvm@v1
