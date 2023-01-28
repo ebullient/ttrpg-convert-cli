@@ -23,12 +23,12 @@ public class QuteAction extends Pf2eQuteBase {
     public final QuteActivityType activity;
 
     public QuteAction(Pf2eSources sources, List<String> text, List<String> tags,
-            String cost, String trigger, List<String> alias, List<String> traits,
+            String cost, String trigger, List<String> aliases, List<String> traits,
             String prerequisites, String requirements, String frequency,
             QuteActivityType activity, ActionType actionType) {
         super(sources, text, tags);
         this.trigger = trigger;
-        this.aliases = alias;
+        this.aliases = aliases;
         this.traits = traits;
 
         this.prerequisites = prerequisites;

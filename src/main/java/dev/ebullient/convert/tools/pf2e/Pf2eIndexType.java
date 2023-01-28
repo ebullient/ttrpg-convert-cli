@@ -144,15 +144,19 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     public Pf2eQuteBase convertJson2QuteBase(Pf2eIndex index, JsonNode node) {
         Pf2eIndexType type = this;
         switch (this) {
-            case action:
-                return new Json2QuteAction(index, this, node).build();
-            case archetype:
-                return new Json2QuteArchetype(index, this, node).build();
+            // Group: Affliction/Curse/Disease
             case affliction:
                 type = Pf2eIndexType.fromText(Field.type.getTextOrDefault(node, "Disease"));
             case curse:
             case disease:
                 return new Json2QuteAffliction(index, type, node).build();
+            // Other type
+            case action:
+                return new Json2QuteAction(index, this, node).build();
+            case archetype:
+                return new Json2QuteArchetype(index, this, node).build();
+            case background:
+                return new Json2QuteBackground(index, this, node).build();
             case deity:
                 return new Json2QuteDeity(index, this, node).build();
             case feat:

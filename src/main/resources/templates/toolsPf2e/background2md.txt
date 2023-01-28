@@ -1,0 +1,15 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e,pf2e-background
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*Source: {resource.source}*  
+
+{resource.text}

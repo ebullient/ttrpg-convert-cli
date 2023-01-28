@@ -61,6 +61,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         Pf2eIndexType.ability.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.action.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.archetype.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.background.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.curse.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.deity.withArrayFrom(node, this::addToIndex);

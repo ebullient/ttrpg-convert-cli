@@ -14,7 +14,7 @@ public class QuteArchetype extends Pf2eQuteBase {
     public final List<String> feats;
 
     public QuteArchetype(Pf2eSources sources, List<String> text, Collection<String> tags,
-            List<String> traits, int dedicationLevel, List<String> benefits, List<String> feats) {
+        List<String> traits, int dedicationLevel, List<String> benefits, List<String> feats) {
         super(sources, text, tags);
 
         this.traits = traits;
