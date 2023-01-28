@@ -30,7 +30,7 @@ public class Json2QuteFeat extends Json2QuteBase {
                 .collect(Collectors.toList());
 
         return new QuteFeat(sources, text, tags,
-                collectTraitsFrom(rootNode),
+                collectTraitsFrom(rootNode, tags),
                 Field.alias.transformListFrom(rootNode, tui(), this),
                 Pf2eFeat.level.getTextOrDefault(rootNode, "1"),
                 Pf2eFeat.access.transformTextFrom(rootNode, ", ", tui(), this),
@@ -41,13 +41,13 @@ public class Json2QuteFeat extends Json2QuteBase {
                 Field.requirements.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.special.transformTextFrom(rootNode, "\n", tui(), this),
-                null,
-                leadsTo);
+                null, leadsTo, true);
     }
 
     public QuteFeat buildArchetype(String archetypeName, String dedicationLevel) {
         String featLevel = Pf2eFeat.level.getTextOrDefault(rootNode, "1");
         List<String> text = new ArrayList<>();
+        List<String> tags = new ArrayList<>();
 
         String note = null;
         if (dedicationLevel != featLevel) {
@@ -62,8 +62,8 @@ public class Json2QuteFeat extends Json2QuteBase {
 
         NumberUnitEntry jsonActivity = Pf2eFeat.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
 
-        return new QuteFeat(sources, text, List.of(),
-                collectTraitsFrom(rootNode),
+        return new QuteFeat(sources, text, tags,
+                collectTraitsFrom(rootNode, tags),
                 List.of(),
                 dedicationLevel,
                 Pf2eFeat.access.transformTextFrom(rootNode, ", ", tui(), this),
@@ -74,8 +74,7 @@ public class Json2QuteFeat extends Json2QuteBase {
                 Field.requirements.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
                 Pf2eFeat.special.transformTextFrom(rootNode, ", ", tui(), this),
-                note,
-                List.of());
+                note, List.of(), true);
     }
 
 }

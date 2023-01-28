@@ -36,7 +36,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
         tags.add(cfg().tagOf("affliction", "level", level));
 
         return new QuteAffliction(getSources(), text, tags,
-                collectTraitsFrom(rootNode),
+                collectTraitsFrom(rootNode, tags),
                 Field.alias.transformListFrom(rootNode, tui(), this),
                 level, toTitleCase(type),
                 String.join("\n", temptedCurse));

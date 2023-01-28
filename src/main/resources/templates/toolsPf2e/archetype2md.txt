@@ -15,7 +15,7 @@ aliases: ["{resource.name}"]
 
 {resource.text}
 
-Source: *{resource.source}*{#if resource.feats }
+*Source: {resource.source}*{#if resource.feats }
 
 {#each resource.feats}
 {it}  

@@ -123,7 +123,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         }
 
         // Quick lookup for traits
-        String oldKey = traitToSource.put(name, Field.source.getTextOrNull(node));
+        String oldKey = traitToSource.put(name.toLowerCase(), Field.source.getTextOrNull(node));
         if (oldKey != null) {
             tui().warnf("Duplicate trait name %s, from source %s and %s",
                     name, key, oldKey);
@@ -267,7 +267,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     public String traitToSource(String trait) {
-        return traitToSource.get(trait);
+        return traitToSource.get(trait.toLowerCase());
     }
 
     // --------- Write indexes ---------
