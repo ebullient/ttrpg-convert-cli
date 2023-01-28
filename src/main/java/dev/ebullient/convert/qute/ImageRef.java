@@ -36,7 +36,7 @@ public class ImageRef {
             return this;
         }
 
-        public Builder setMarkdownPath(String title, String relativeRoot) {
+        public Builder setMarkdownAttributes(String title, String relativeRoot) {
             if (relativeTarget == null) {
                 throw new IllegalStateException("Call setTargetPath first");
             }

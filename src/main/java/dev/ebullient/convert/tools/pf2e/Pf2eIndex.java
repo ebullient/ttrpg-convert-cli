@@ -24,6 +24,7 @@ import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
 public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
+    static final String CORE_RULES_KEY = "book|book-crb";
     final CompendiumConfig config;
 
     private static final Map<String, JsonNode> imported = new HashMap<>();
@@ -216,10 +217,17 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     boolean keyIsIncluded(String key, JsonNode node) {
+        Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
+        if (type.alwaysInclude()) {
+            return true;
+        }
         // Check against include/exclude rules (srdKeys allowed when there are no sources)
         Optional<Boolean> rulesAllow = config.keyIsIncluded(key, node);
         if (rulesAllow.isPresent()) {
             return rulesAllow.get();
+        }
+        if (CORE_RULES_KEY.equals(key)) { // include core rules unless turned off
+            return true;
         }
         Pf2eSources sources = Pf2eSources.findSources(key);
         if (config.noSources()) {

@@ -279,13 +279,13 @@ public interface JsonSource extends JsonTextReplacement {
             text.addAll(inner);
         } else if (Field.name.existsIn(node)) {
             maybeAddBlankLine(text);
-            text.add(heading + " " + Field.name.getTextOrEmpty(node) + pageRef);
-            text.add("");
+            text.add(heading + " " + replaceText(Field.name.getTextOrEmpty(node)));
+            text.add(pageRef);
             appendEntryToText(text, Field.entry.getFrom(node), "#" + heading);
             appendEntryToText(text, Field.entries.getFrom(node), "#" + heading);
         } else {
             // headers always have names, but just in case..
-            appendEntryToText(text, node.get("entries"), heading);
+            appendEntryToText(text, Field.entries.getFrom(node), heading);
         }
     }
 
@@ -692,10 +692,7 @@ public interface JsonSource extends JsonTextReplacement {
             } else {
                 String row = "| " +
                         StreamSupport.stream(rowNode.spliterator(), false)
-                                .map(x -> x.asText())
-                                .map(x -> x.replaceAll("trait sweep$", "trait sweep}"))
-                                .map(x -> x.replaceAll("group Knife]", "group Knife}"))
-                                .map(x -> replaceText(x))
+                                .map(x -> replaceText(x.asText()))
                                 .collect(Collectors.joining(" | "))
                         +
                         " |";
@@ -809,11 +806,12 @@ public interface JsonSource extends JsonTextReplacement {
     default boolean prependField(JsonNode entry, Field field, List<String> inner) {
         String n = field.getTextOrNull(entry);
         if (n != null) {
+            n = replaceText(n.trim());
             if (inner.isEmpty()) {
                 inner.add(n);
             } else {
-                n = replaceText(n.trim().replace(":", ""));
-                n = "**" + n + ".** ";
+                n = n.replace(":", "");
+                n = "**" + n + "** ";
                 inner.set(0, n + inner.get(0));
                 return true;
             }

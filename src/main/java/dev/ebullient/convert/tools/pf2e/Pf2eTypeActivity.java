@@ -15,6 +15,8 @@ public enum Pf2eTypeActivity {
     varies("Varies", "V", "load.svg"),
     timed("Duration or Frequency", "⏲", "hour-glass.svg");
 
+    final static String DOC_PATH = "core-rulebook/chapter-9-playing-the-game.md#Actions";
+
     final String longName;
     final String markdownName;
     final String textGlyph;
@@ -33,6 +35,7 @@ public enum Pf2eTypeActivity {
 
     public static Pf2eTypeActivity toActivity(String unit, int number) {
         switch (unit) {
+            case "single":
             case "action":
                 switch (number) {
                     case 1:
@@ -73,7 +76,7 @@ public enum Pf2eTypeActivity {
     }
 
     public String getRulesPath(String rulesRoot) {
-        return String.format("%sTODO.md#%s", rulesRoot, markdownName);
+        return String.format("%s%s", rulesRoot, DOC_PATH);
     }
 
     public QuteActivityType toQuteActivityType(JsonSource convert, String text) {
@@ -83,7 +86,7 @@ public enum Pf2eTypeActivity {
                 new ImageRef.Builder()
                         .setStreamSource(glyph)
                         .setTargetPath(convert.index().rulesPath(), target)
-                        .setMarkdownPath(longName, convert.index().rulesRoot())
+                        .setMarkdownAttributes(longName, convert.index().rulesRoot())
                         .build(),
                 textGlyph,
                 this.getRulesPath(convert.index().rulesRoot()));

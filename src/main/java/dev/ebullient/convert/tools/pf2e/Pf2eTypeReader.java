@@ -285,6 +285,7 @@ public interface Pf2eTypeReader extends JsonSource {
                     : " (" + convert.replaceText(entry) + ")";
 
             switch (unit) {
+                case "single":
                 case "action":
                 case "free":
                 case "reaction":

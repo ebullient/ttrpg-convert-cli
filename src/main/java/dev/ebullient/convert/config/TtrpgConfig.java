@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
@@ -40,6 +41,11 @@ public class TtrpgConfig {
 
     private static DatasourceConfig activeConfig() {
         return globalConfig.computeIfAbsent(datasource, (k) -> new DatasourceConfig());
+    }
+
+    public static List<Fix> getFixes(String filepath) {
+        List<Fix> list = activeConfig().fixes.get(filepath);
+        return list == null ? List.of() : list;
     }
 
     public static String sourceToLongName(String src) {
@@ -113,6 +119,11 @@ public class TtrpgConfig {
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(config5e));
                 config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(config5e));
                 config.sources.addAll(ConfigKeys.sources.getAsList(config5e));
+
+                Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(config5e, FIXES);
+                if (fixes != null) {
+                    config.fixes.putAll(fixes);
+                }
             }
         }
         if (datasource == Datasource.toolsPf2e) {
@@ -123,6 +134,11 @@ public class TtrpgConfig {
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(configPf2e));
                 config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(configPf2e));
                 config.sources.addAll(ConfigKeys.sources.getAsList(configPf2e));
+
+                Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(configPf2e, FIXES);
+                if (fixes != null) {
+                    config.fixes.putAll(fixes);
+                }
             }
         }
     }
@@ -132,14 +148,24 @@ public class TtrpgConfig {
         final Map<String, String> abvToName = new HashMap<>();
         final Map<String, String> longToAbv = new HashMap<>();
         final Map<String, String> fallbackImagePaths = new HashMap<>();
+        final Map<String, List<Fix>> fixes = new HashMap<>();
         final List<String> sources = new ArrayList<>();
         final List<String> markerFiles = new ArrayList<>();
+    }
+
+    public final static TypeReference<Map<String, List<Fix>>> FIXES = new TypeReference<>() {
+    };
+
+    public static class Fix {
+        public String match;
+        public String replace;
     }
 
     enum ConfigKeys {
         fallbackImage,
         config5e,
         configPf2e,
+        fixes,
         markerFiles,
         srdEntries,
         properties,
@@ -149,6 +175,13 @@ public class TtrpgConfig {
 
         JsonNode get(JsonNode node) {
             return node.get(this.name());
+        }
+
+        public <T> T getAs(JsonNode node, TypeReference<T> ref) {
+            JsonNode obj = node.get(this.name());
+            return obj == null
+                    ? null
+                    : Tui.MAPPER.convertValue(obj, ref);
         }
 
         Map<String, String> getAsMap(JsonNode node) {

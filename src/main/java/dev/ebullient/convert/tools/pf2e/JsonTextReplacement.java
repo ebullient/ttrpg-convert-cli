@@ -93,14 +93,15 @@ public interface JsonTextReplacement {
             if (current == null || current.page == 0) {
                 return "";
             }
-            return String.format(" <sup>%s p. %s</sup>",
-                    current.src + " ", current.page);
+            return String.format("<sup>%s p. %s</sup>",
+                    current.src, current.page);
         }
     }
 
     ParseState parseState = new ParseState();
 
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
+    Pattern runeItemPattern = Pattern.compile("\\{@runeItem ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
@@ -180,16 +181,17 @@ public interface JsonTextReplacement {
         if (input == null || input.isEmpty()) {
             return input;
         }
-        String result = input;
+        String result = input.replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
 
         result = dicePattern.matcher(result)
                 .replaceAll((match) -> {
-                    String[] parts = match.group(2).split("\\|");
-                    if (parts.length > 1) {
-                        return parts[1];
+                    int pipe = match.group(2).indexOf("|");
+                    if (pipe < 0) {
+                        return match.group(2);
                     }
-                    return parts[0];
+                    return match.group(2).substring(0, pipe);
                 });
+
         result = chancePattern.matcher(result)
                 .replaceAll((match) -> match.group(1) + "% chance");
 
@@ -199,19 +201,6 @@ public interface JsonTextReplacement {
         result = footnoteReference.matcher(result)
                 .replaceAll(this::replaceFootnoteReference);
 
-        result = notePattern.matcher(result)
-                .replaceAll((match) -> {
-                    if (parseState.inFootnotes()) {
-                        return match.group(2);
-                    }
-                    List<String> text = new ArrayList<>();
-                    text.add("> [!note]");
-                    for (String line : match.group(2).split("\n")) {
-                        text.add("> " + line);
-                    }
-                    return String.join("\n", text);
-                });
-
         result = quickRefPattern.matcher(result)
                 .replaceAll((match) -> {
                     String[] parts = match.group(1).split("\\|");
@@ -220,6 +209,9 @@ public interface JsonTextReplacement {
                     }
                     return parts[0];
                 });
+
+        result = runeItemPattern.matcher(result)
+                .replaceAll(this::linkifyRuneItem);
 
         result = Pf2eIndexType.matchPattern.matcher(result)
                 .replaceAll(this::linkify);
@@ -240,6 +232,7 @@ public interface JsonTextReplacement {
                     .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
                     .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
                     .replaceAll("\\{@pf2etools ([^}|]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@Pf2eTools ([^}|]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
                     .replaceAll("\\{@dc ([^}]+)}", "DC $1")
                     .replaceAll("\\{@flatDC ([^}]+)}", "$1")
@@ -255,8 +248,11 @@ public interface JsonTextReplacement {
                     .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                     .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                     .replaceAll("\\{@h}", "Hit: ")
+                    .replaceAll("\\{@c ([^}]+?)}", "$1")
+                    .replaceAll("\\{@center ([^}]+?)}", "$1")
                     .replaceAll("\\{@s ([^}]+?)}", "$1")
                     .replaceAll("\\{@strike ([^}]+?)}", "$1")
+                    .replaceAll("\\{@n ([^}]+?)}", "$1")
                     .replaceAll("\\{@b ([^}]+?)}", "**$1**")
                     .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
                     .replaceAll("\\{@i ([^}]+?)}", "_$1_")
@@ -271,7 +267,20 @@ public interface JsonTextReplacement {
         result = Pf2eIndexType.matchPattern.matcher(result)
                 .replaceAll(this::linkify);
 
-        // TODO
+        // note pattern often wraps others. Do this one last.
+        result = notePattern.matcher(result)
+                .replaceAll((match) -> {
+                    if (parseState.inFootnotes()) {
+                        return match.group(2);
+                    }
+                    List<String> text = new ArrayList<>();
+                    text.add("> [!note]");
+                    for (String line : match.group(2).split("\n")) {
+                        text.add("> " + line);
+                    }
+                    return String.join("\n", text);
+                });
+
         return result;
     }
 
@@ -305,9 +314,20 @@ public interface JsonTextReplacement {
                 type = Pf2eTypeActivity.varies;
                 break;
         }
-        String link = type.linkify(index().rulesRoot());
-        tui().debugf("AS LINK for %s (%s): %s", match.group(1), type, link);
-        return link;
+        return type.linkify(index().rulesRoot());
+    }
+
+    default String linkifyRuneItem(MatchResult match) {
+        String[] parts = match.group(1).split("\\|");
+        String linkText = parts[0];
+        // TODO {@runeItem longsword||+1 weapon potency||flaming|},
+        //      {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}.
+        // In general, the syntax is this:
+        // (open curly brace)@runeItem base item|base item source|rune 1|rune 1 source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly brace).
+        // For each source, we assume CRB by default.",
+
+        tui().debugf("TODO RuneItem found: %s", match);
+        return linkText;
     }
 
     default String linkify(MatchResult match) {
@@ -336,7 +356,6 @@ public interface JsonTextReplacement {
                 break;
         }
 
-        // TODO {@runeItem longsword||+1 weapon potency||flaming|}, {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}. In general, the syntax is this: (open curly brace)@runeItem base item|base item source|rune 1|rune 1 source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly brace). For each source, we assume CRB by default.",
         // "{@b Actions:} {@action strike} assumes CRB by default, {@action act together|som} can have sources added with a pipe, {@action devise a stratagem|apg|and optional link text added with another pipe}.",
         // "{@b Conditions:} {@condition stunned} assumes CRB by default, {@condition stunned|crb} can have sources added with a pipe (not that it's ever useful), {@condition stunned|crb|and optional link text added with another pipe}.",
         // "{@b Tables:} {@table ability modifiers} assumes CRB by default, {@table automatic bonus progression|gmg} can have sources added with a pipe, {@table domains|logm|and optional link text added with another pipe}.",

@@ -77,7 +77,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
                     return new ImageRef.Builder()
                             .setSourcePath(sourcePath)
                             .setTargetPath(index().compendiumPath(), target)
-                            .setMarkdownPath(title, index().compendiumRoot())
+                            .setMarkdownAttributes(title, index().compendiumRoot())
                             .build();
                 }
             } catch (JsonProcessingException | IllegalArgumentException e) {
