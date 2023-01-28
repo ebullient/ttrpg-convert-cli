@@ -114,6 +114,13 @@ public class Pf2eMarkdown implements MarkdownConverter {
             switch (type) {
                 case book:
                     index.tui().warnf("Looking at book: %s", e.getKey());
+                    JsonNode data = index.getIncludedNode(key.replace("book|", "data|"));
+                    if (data == null) {
+                        index.tui().errorf("No data for %s", key);
+                    } else {
+                        List<Pf2eQuteNote> pages = new Json2QuteBook(index, type, node, data).buildBook();
+                        rules.addAll(pages);
+                    }
                     break;
                 case condition:
                     Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,

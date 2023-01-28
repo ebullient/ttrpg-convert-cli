@@ -168,6 +168,17 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         }
     }
 
+    public boolean alwaysInclude() {
+        switch (this) {
+            case bookReference:
+            case data:
+            case syntheticGroup:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public boolean checkCopiesAndReprints() {
         switch (this) {
             case adventure:
@@ -196,6 +207,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         switch (this) {
             case ability:
             case action:
+            case book:
             case condition:
             case trait:
             case table:

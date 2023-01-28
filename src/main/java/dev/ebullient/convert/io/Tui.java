@@ -37,6 +37,7 @@ import com.github.slugify.Slugify;
 
 import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.config.TtrpgConfig.Fix;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
@@ -337,8 +338,26 @@ public class Tui {
         return true;
     }
 
-    public boolean readDirectory(Path dir, BiConsumer<String, JsonNode> callback) {
-        debugf("📁 %s\n", dir);
+    boolean readFile(Path p, List<Fix> fixes, BiConsumer<String, JsonNode> callback) {
+        inputRoot.add(p.getParent().toAbsolutePath());
+        try {
+            File f = p.toFile();
+            String contents = Files.readString(p);
+            for (Fix fix : fixes) {
+                contents = contents.replaceAll(fix.match, fix.replace);
+            }
+            JsonNode node = MAPPER.readTree(contents);
+            callback.accept(f.getName(), node);
+            verbosef("🔖 Finished reading %s", p);
+        } catch (IOException e) {
+            errorf(e, "Unable to read source file at path %s", p);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean readDirectory(String relative, Path dir, BiConsumer<String, JsonNode> callback) {
+        debugf("📁 %s", dir);
 
         inputRoot.add(dir.toAbsolutePath());
 
@@ -356,9 +375,9 @@ public class Tui {
                 File f = p.toFile();
                 String name = p.getFileName().toString();
                 if (f.isDirectory()) {
-                    result &= readDirectory(p, callback);
+                    result &= readDirectory(relative + p.getFileName() + '/', p, callback);
                 } else if ((name.startsWith("fluff") || name.startsWith(basename)) && name.endsWith(".json")) {
-                    result &= readFile(p, callback);
+                    result &= readFile(p, TtrpgConfig.getFixes(relative + name), callback);
                 }
             }
         } catch (Exception e) {
@@ -383,9 +402,9 @@ public class Tui {
         for (String input : inputs) {
             Path p = toolsBase.resolve(input);
             if (p.toFile().isFile()) {
-                result &= readFile(p, callback);
+                result &= readFile(p, TtrpgConfig.getFixes(input), callback);
             } else {
-                result &= readDirectory(p, callback);
+                result &= readDirectory(input + "/", p, callback);
             }
         }
         return result;

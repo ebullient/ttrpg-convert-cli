@@ -1,0 +1,12 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e,pf2e-book
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
+---
+{resource.text}
