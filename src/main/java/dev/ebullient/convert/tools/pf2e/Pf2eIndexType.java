@@ -161,6 +161,8 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
                 return new Json2QuteDeity(index, this, node).build();
             case feat:
                 return new Json2QuteFeat(index, this, node).build();
+            case hazard:
+                return new Json2QuteHazard(index, this, node).build();
             case ritual:
                 return new Json2QuteRitual(index, this, node).build();
             case spell:

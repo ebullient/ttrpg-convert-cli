@@ -35,6 +35,18 @@ public class QuteInlineAbility extends Pf2eQuteNote {
         this.special = special;
     }
 
+    public boolean getHasBullets() {
+        return getHasEffect() || isPresent(cost);
+    }
+
+    public boolean getHasEffect() {
+        return isPresent(frequency) || isPresent(trigger) || isPresent(requirements);
+    }
+
+    boolean isPresent(String s) {
+        return s != null && !s.isEmpty();
+    }
+
     @Override
     public String template() {
         return "inline-ability2md.txt";

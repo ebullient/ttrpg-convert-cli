@@ -1,0 +1,50 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e,pf2e-hazard
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name} *Hazard {resource.level}*  
+%%-- Embedded/inline feat starts on the next line. --%%
+{#if resource.traits }{#each resource.traits}{it}  {/each}
+{/if} 
+
+- **Complexity** {resource.complexity}
+{#if resource.stealth }
+- **Stealth** {resource.stealth}  
+{/if}
+
+{resource.text}
+
+{#if resource.disable }
+- **Disable** {resource.disable}  
+{/if}{#if resource.perception }
+- **Perception** {resource.perception}  
+{/if}
+{#if resource.abilities }
+
+{#each resource.abilities}{it}
+{/each}{/if}{#if resource.defenses }
+
+{resource.defenses}
+{/if}{#if resource.actions }
+     
+{#each resource.actions}{it}
+{/each}{/if}{#if resource.routine }
+
+{resource.routineAdmonition}
+^routine
+{/if}{#if resource.reset }
+
+**Reset** {resource.reset}  
+{/if}{#if resource.hasSections }
+
+## Summary
+{/if}
+
+*Source: {resource.source}*

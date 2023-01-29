@@ -41,13 +41,13 @@ public class Json2QuteDeity extends Json2QuteBase {
         String followerAlignment = join(", ", toAlignments(alignNode, Pf2eDeity.followerAlignment));
 
         return new QuteDeity(sources, text, tags,
-                Field.alias.transformListFrom(rootNode, tui(), this),
+                Field.alias.transformListFrom(rootNode, this),
                 category,
-                join(", ", Pf2eDeity.pantheon.linkifyListFrom(rootNode, Pf2eIndexType.deity, tui(), this)),
+                join(", ", Pf2eDeity.pantheon.linkifyListFrom(rootNode, Pf2eIndexType.deity, this)),
                 alignment, followerAlignment,
-                Pf2eDeity.areasOfConcern.transformTextFrom(rootNode, ", ", tui(), this),
-                commandmentToString(Pf2eDeity.edict.transformListFrom(rootNode, tui(), this)),
-                commandmentToString(Pf2eDeity.anathema.transformListFrom(rootNode, tui(), this)),
+                Pf2eDeity.areasOfConcern.transformTextFrom(rootNode, ", ", this),
+                commandmentToString(Pf2eDeity.edict.transformListFrom(rootNode, this)),
+                commandmentToString(Pf2eDeity.anathema.transformListFrom(rootNode, this)),
                 buildCleric(),
                 buildAvatar(tags),
                 buildIntercession());
@@ -60,22 +60,22 @@ public class Json2QuteDeity extends Json2QuteBase {
         }
         QuteDeity.QuteDivineIntercession intercession = new QuteDeity.QuteDivineIntercession();
         intercession.sourceText = Pf2eSources.createEmbeddedSource(node).getSourceText();
-        intercession.flavor = Pf2eDeity.flavor.transformTextFrom(node, "\n", tui(), this);
+        intercession.flavor = Pf2eDeity.flavor.transformTextFrom(node, "\n", this);
 
-        intercession.majorBoon = Pf2eDeity.majorBoon.transformTextFrom(node, "\n", tui(), this);
-        intercession.moderateBoon = Pf2eDeity.moderateBoon.transformTextFrom(node, "\n", tui(), this);
-        intercession.minorBoon = Pf2eDeity.minorBoon.transformTextFrom(node, "\n", tui(), this);
+        intercession.majorBoon = Pf2eDeity.majorBoon.transformTextFrom(node, "\n", this);
+        intercession.moderateBoon = Pf2eDeity.moderateBoon.transformTextFrom(node, "\n", this);
+        intercession.minorBoon = Pf2eDeity.minorBoon.transformTextFrom(node, "\n", this);
 
-        intercession.majorCurse = Pf2eDeity.majorCurse.transformTextFrom(node, "\n", tui(), this);
-        intercession.moderateCurse = Pf2eDeity.moderateCurse.transformTextFrom(node, "\n", tui(), this);
-        intercession.minorCurse = Pf2eDeity.minorCurse.transformTextFrom(node, "\n", tui(), this);
+        intercession.majorCurse = Pf2eDeity.majorCurse.transformTextFrom(node, "\n", this);
+        intercession.moderateCurse = Pf2eDeity.moderateCurse.transformTextFrom(node, "\n", this);
+        intercession.minorCurse = Pf2eDeity.minorCurse.transformTextFrom(node, "\n", this);
 
         return intercession;
     }
 
     QuteDeity.QuteDeityCleric buildCleric() {
         QuteDeity.QuteDeityCleric cleric = new QuteDeity.QuteDeityCleric();
-        cleric.divineFont = join(" or ", Pf2eDeity.font.linkifyListFrom(rootNode, Pf2eIndexType.spell, tui(), this));
+        cleric.divineFont = join(" or ", Pf2eDeity.font.linkifyListFrom(rootNode, Pf2eIndexType.spell, this));
 
         EntryAndSomething entryAndSomething = Pf2eDeity.divineAbility.fieldFromTo(rootNode, EntryAndSomething.class, tui());
         if (entryAndSomething != null) {
@@ -91,9 +91,9 @@ public class Json2QuteDeity extends Json2QuteBase {
             cleric.favoredWeapon = entryAndSomething.buildFavoredWeapon(this);
         }
 
-        cleric.domains = join(", ", Pf2eDeity.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, tui(), this));
+        cleric.domains = join(", ", Pf2eDeity.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, this));
         cleric.alternateDomains = join(", ",
-                Pf2eDeity.alternateDomains.linkifyListFrom(rootNode, Pf2eIndexType.domain, tui(), this));
+                Pf2eDeity.alternateDomains.linkifyListFrom(rootNode, Pf2eIndexType.domain, this));
 
         cleric.spells = new TreeMap<>();
         Map<String, List<String>> clericSpells = Pf2eDeity.spells.fieldFromTo(rootNode, Tui.MAP_STRING_LIST_STRING, tui());
@@ -124,7 +124,7 @@ public class Json2QuteDeity extends Json2QuteBase {
             notes.add(linkify(Pf2eIndexType.spell, "air walk"));
         }
         String immunities = joinConjunct(" and ",
-                Pf2eDeity.immune.linkifyListFrom(avatarNode, Pf2eIndexType.condition, tui(), this));
+                Pf2eDeity.immune.linkifyListFrom(avatarNode, Pf2eIndexType.condition, this));
         if (!immunities.isEmpty()) {
             notes.add("immune to " + immunities);
         }
@@ -160,7 +160,7 @@ public class Json2QuteDeity extends Json2QuteBase {
     private QuteDeity.QuteDivineAvatarAbility buildAvatarAbility(JsonNode abilityNode) {
         QuteDeity.QuteDivineAvatarAbility ability = new QuteDeity.QuteDivineAvatarAbility();
         ability.name = Field.name.getTextOrNull(abilityNode);
-        ability.text = Field.entries.transformTextFrom(abilityNode, "; ", tui(), this);
+        ability.text = Field.entries.transformTextFrom(abilityNode, "; ", this);
         return ability;
     }
 

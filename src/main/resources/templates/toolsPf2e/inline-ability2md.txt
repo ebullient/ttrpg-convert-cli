@@ -1,4 +1,4 @@
-title: {resource.name}{#if resource.activity} { resource.activity }{/if}{#if resource.components} {resource.components}{/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
+title: {resource.name}{#if resource.activity} {resource.activity}{/if}{#if resource.components} {resource.components}{/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
 
 {#if resource.cost }
 - **Cost**: {resource.cost}
@@ -8,9 +8,9 @@ title: {resource.name}{#if resource.activity} { resource.activity }{/if}{#if res
 - **Trigger**: {resource.trigger}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
-{/if}{#if resource.text }
+{/if}{#if resource.hasBullets }
 
-**Effect**: {resource.text}{/if}{#if resource.special }
-     
-**Special**: {resource.special}{/if}{#if resource.tags }
+{/if}{#if resource.hasEffect }**Effect** {/if}{resource.text}  {#if resource.special }
+
+**Special**: {resource.special}  {/if}{#if resource.tags }
 %% {#each resource.tags}#{it} {/each}%%{/if}

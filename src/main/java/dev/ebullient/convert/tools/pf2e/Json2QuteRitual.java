@@ -34,11 +34,11 @@ public class Json2QuteRitual extends Json2QuteSpell {
         return new QuteRitual(sources, text, tags,
                 level, "Ritual",
                 collectTraitsFrom(rootNode, tags),
-                Field.alias.transformListFrom(rootNode, tui(), this),
+                Field.alias.transformListFrom(rootNode, this),
                 getQuteRitualCast(),
                 getQuteRitualChecks(),
                 getQuteRitualSpellTarget(tags),
-                Field.requirements.transformTextFrom(rootNode, ", ", tui(), this),
+                Field.requirements.transformTextFrom(rootNode, ", ", this),
                 null,
                 getHeightenedCast());
     }
@@ -71,7 +71,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
 
         QuteRitualCasting quteCast = new QuteRitualCasting();
         quteCast.cast = cast.convertToDurationString(this);
-        quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", tui(), this);
+        quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this);
         if (casters != null) {
             quteCast.secondaryCasters = casters.buildString(this);
         }

@@ -19,9 +19,11 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
+import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
 public interface JsonSource extends JsonTextReplacement {
     Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
@@ -63,11 +65,11 @@ public interface JsonSource extends JsonTextReplacement {
         boolean pushed = parseState.push(true);
         try {
             List<String> footnotes = new ArrayList<>();
-            for (int i = 0; i < text.size(); i++) {
+            text.replaceAll(input -> {
                 // "Footnote tags; allows a footnote to be embedded
                 // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
                 // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
-                text.set(i, footnotePattern.matcher(text.get(i))
+                return footnotePattern.matcher(input)
                         .replaceAll((match) -> {
                             int index = count + footnotes.size() + 1;
                             String footnote = replaceText(match.group(1));
@@ -76,8 +78,8 @@ public interface JsonSource extends JsonTextReplacement {
                                     parts.length > 2 ? " (" + parts[2] + ")" : ""));
 
                             return String.format("%s[^%s]", parts[0], index);
-                        }));
-            }
+                        });
+            });
 
             if (footnotes.size() > 0) {
                 maybeAddBlankLine(text);
@@ -141,11 +143,34 @@ public interface JsonSource extends JsonTextReplacement {
             String backticks = nestedEmbed(inner);
             maybeAddBlankLine(text);
             text.add(backticks + "ad-embed-" + admonition);
-            prepend.forEach(l -> text.add(l));
+            text.addAll(prepend);
             text.addAll(inner);
             text.add(backticks);
         } finally {
             parseState.pop(pushed);
+        }
+    }
+
+    /**
+     * Add rendered contents of an (always) inline template
+     * to collected text
+     *
+     * @param text List of text content should be added to
+     * @param resource Pf2eQuteNote containing required template resource data
+     * @param admonition Type of inline admonition
+     */
+    default void renderInlineTemplate(List<String> text, Pf2eQuteNote resource, String admonition) {
+        String rendered = tui().renderEmbedded(resource);
+        List<String> inner = List.of(rendered.split("\n"));
+
+        maybeAddBlankLine(text);
+        if (admonition == null) {
+            text.addAll(inner);
+        } else {
+            String backticks = nestedEmbed(inner);
+            text.add(backticks + "ad-inline-" + admonition);
+            text.addAll(inner);
+            text.add(backticks);
         }
     }
 
@@ -240,6 +265,9 @@ public interface JsonSource extends JsonTextReplacement {
                     case affliction:
                         appendAffliction(text, node);
                         break;
+                    case attack:
+                        appendAttack(text, node);
+                        break;
                     case data:
                         embedData(text, node);
                         break;
@@ -302,15 +330,21 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendList(List<String> text, ArrayNode itemArray) {
-        maybeAddBlankLine(text);
-        itemArray.forEach(e -> {
-            List<String> item = new ArrayList<>();
-            appendEntryToText(item, e, null);
-            if (item.size() > 0) {
-                prependText("- ", item);
-                text.add(String.join("  \n    ", item)); // preserve line items
-            }
-        });
+        String indent = parseState.getListIndent();
+        boolean pushed = parseState.indentList();
+        try {
+            maybeAddBlankLine(text);
+            itemArray.forEach(e -> {
+                List<String> item = new ArrayList<>();
+                appendEntryToText(item, e, null);
+                if (item.size() > 0) {
+                    prependText(indent + "- ", item);
+                    text.add(String.join("  \n" + indent, item));
+                }
+            });
+        } finally {
+            parseState.pop(pushed);
+        }
     }
 
     /** Internal */
@@ -392,62 +426,45 @@ public interface JsonSource extends JsonTextReplacement {
 
         Field.entries.streamOf(node).forEach(e -> {
             String range = Field.range.getTextOrEmpty(e);
-            prependTextMakeListItem(text, e, "**" + range + "** ");
+            prependTextMakeListItem(text, e, "**" + range + "** ", "    ");
         });
     }
 
     /** Internal */
     default void appendSuccessDegree(List<String> text, JsonNode node) {
         JsonNode entries = Field.entries.getFrom(node);
-
+        String continuation = "   "; // properly 4, but we add space with >
         List<String> inner = new ArrayList<>();
         inner.add("[!success-degree] ");
 
         JsonNode field = SuccessDegree.criticalSuccess.getFrom(entries);
         if (field != null) {
-            prependTextMakeListItem(inner, field, "**Critical Success** ");
+            prependTextMakeListItem(inner, field, "**Critical Success** ", continuation);
         }
         field = SuccessDegree.success.getFrom(entries);
         if (field != null) {
-            prependTextMakeListItem(inner, field, "**Success** ");
+            prependTextMakeListItem(inner, field, "**Success** ", continuation);
         }
         field = SuccessDegree.failure.getFrom(entries);
         if (field != null) {
-            prependTextMakeListItem(inner, field, "**Failure** ");
+            prependTextMakeListItem(inner, field, "**Failure** ", continuation);
         }
         field = SuccessDegree.criticalFailure.getFrom(entries);
         if (field != null) {
-            prependTextMakeListItem(inner, field, "**Critical Failure** ");
+            prependTextMakeListItem(inner, field, "**Critical Failure** ", continuation);
         }
 
         maybeAddBlankLine(text);
-        inner.forEach(x -> text.add("> " + x));
+        inner.forEach(x -> text.add(parseState.getListIndent()
+                + (x.isBlank() ? ">" : "> ")
+                + x));
     }
 
     /** Internal */
     default void appendAbility(List<String> text, JsonNode node) {
-        String name = Field.name.getTextOrDefault(node, "Activate");
-        Pf2eTypeReader.NumberUnitEntry jsonActivity = Pf2eTypeReader.Pf2eFeat.activity.fieldFromTo(node,
-                Pf2eTypeReader.NumberUnitEntry.class, tui());
-
-        List<String> abilityText = new ArrayList<>();
-        appendEntryToText(abilityText, Field.entries.getFrom(node), null);
-
-        AbilityField.note.debugIfExists(node, tui());
-        AbilityField.range.debugIfExists(node, tui());
-        List<String> tags = new ArrayList<>();
-
-        QuteInlineAbility inlineAbility = new QuteInlineAbility(
-                name, abilityText, tags, collectTraitsFrom(node, tags),
-                jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
-                AbilityField.components.replaceTextFrom(node, this),
-                AbilityField.requirements.replaceTextFrom(node, this),
-                AbilityField.cost.replaceTextFrom(node, this),
-                AbilityField.trigger.replaceTextFrom(node, this),
-                index().getFrequency(AbilityField.frequency.getFrom(node)),
-                AbilityField.special.replaceTextFrom(node, this));
-
-        renderInlineTemplate(text, inlineAbility, "ability");
+        renderInlineTemplate(text,
+                AbilityField.createInlineAbility(node, this),
+                "ability");
     }
 
     /** Internal */
@@ -501,6 +518,12 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     /** Internal */
+    default void appendAttack(List<String> text, JsonNode node) {
+        QuteInlineAttack inlineAttack = AttackField.createInlineAttack(node, this);
+        renderInlineTemplate(text, inlineAttack, "attack");
+    }
+
+    /** Internal */
     default void appendTable(List<String> text, JsonNode tableNode) {
 
         List<String> table = new ArrayList<>();
@@ -508,7 +531,7 @@ public interface JsonSource extends JsonTextReplacement {
         String name = Field.name.getTextOrEmpty(tableNode);
         String id = Field.id.getTextOrEmpty(tableNode);
 
-        String blockid = "";
+        String blockid;
         if (TableField.spans.getFrom(tableNode) != null) {
             blockid = appendHtmlTable(tableNode, table, id, name);
         } else {
@@ -548,7 +571,7 @@ public interface JsonSource extends JsonTextReplacement {
         int numCols = colStyles != null
                 ? colStyles.size()
                 : TableField.rows.streamOf(tableNode)
-                        .map(x -> x.size())
+                        .map(JsonNode::size)
                         .max(Integer::compare).get();
 
         ArrayNode spans = TableField.spans.withArrayFrom(tableNode);
@@ -615,18 +638,17 @@ public interface JsonSource extends JsonTextReplacement {
                 table.add("</tr>");
                 spanIdx++;
             } else {
-                final String row;
                 table.add("<tr>");
                 if (labelIdx.contains(r)) {
                     table.add("  <th>"
                             + StreamSupport.stream(rowNode.spliterator(), false)
-                                    .map(x -> replaceHtmlText(x))
+                                    .map(this::replaceHtmlText)
                                     .collect(Collectors.joining("</th>\n  <th>"))
                             + "</th>");
                 } else {
                     table.add("  <td>"
                             + StreamSupport.stream(rowNode.spliterator(), false)
-                                    .map(x -> replaceHtmlText(x))
+                                    .map(this::replaceHtmlText)
                                     .collect(Collectors.joining("</td>\n  <td>"))
                             + "</td>");
                 }
@@ -738,18 +760,6 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     /** Internal */
-    default void renderInlineTemplate(List<String> text, Pf2eQuteNote resource, String admonition) {
-        String rendered = tui().renderEmbedded(resource);
-        List<String> inner = List.of(rendered.split("\n"));
-
-        String backticks = nestedEmbed(inner);
-        maybeAddBlankLine(text);
-        text.add(backticks + "ad-inline-" + admonition);
-        text.addAll(inner);
-        text.add(backticks);
-    }
-
-    /** Internal */
     default String nestedEmbed(List<String> content) {
         int embedDepth = content.stream()
                 .filter(s -> s.matches("^`+$"))
@@ -823,12 +833,12 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     /** Internal */
-    default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend) {
+    default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend, String continuation) {
         List<String> inner = new ArrayList<>();
         appendEntryToText(inner, e, null);
         if (inner.size() > 0) {
             prependText("- " + prepend, inner);
-            text.add(String.join("  \n    ", inner).trim()); // preserve line items
+            inner.forEach(i -> text.add(i.startsWith("-") || i.isBlank() ? i : continuation + i));
         }
     }
 
@@ -875,6 +885,55 @@ public interface JsonSource extends JsonTextReplacement {
             if (existsIn(node)) {
                 tui.errorf(this.name() + " is defined in " + node.toPrettyString());
             }
+        }
+
+        public static QuteInlineAbility createInlineAbility(JsonNode node, JsonSource convert) {
+            String name = Field.name.getTextOrDefault(node, "Activate");
+            Pf2eTypeReader.NumberUnitEntry jsonActivity = Pf2eTypeReader.Pf2eFeat.activity.fieldFromTo(node,
+                    Pf2eTypeReader.NumberUnitEntry.class, convert.tui());
+
+            List<String> abilityText = new ArrayList<>();
+            convert.appendEntryToText(abilityText, Field.entries.getFrom(node), null);
+
+            note.debugIfExists(node, convert.tui());
+            range.debugIfExists(node, convert.tui());
+            List<String> tags = new ArrayList<>();
+
+            return new QuteInlineAbility(
+                    name, abilityText, tags, convert.collectTraitsFrom(node, tags),
+                    jsonActivity == null ? null : jsonActivity.toQuteActivity(convert),
+                    components.replaceTextFrom(node, convert),
+                    requirements.replaceTextFrom(node, convert),
+                    cost.replaceTextFrom(node, convert),
+                    trigger.replaceTextFrom(node, convert),
+                    convert.index().getFrequency(frequency.getFrom(node)),
+                    special.replaceTextFrom(node, convert));
+        }
+    }
+
+    enum AttackField implements NodeReader {
+        attack,
+        damage,
+        effects,
+        range,
+        types;
+
+        public static QuteInlineAttack createInlineAttack(JsonNode node, JsonSource convert) {
+            String name = convert.toTitleCase(Field.name.replaceTextFrom(node, convert));
+
+            List<String> tags = new ArrayList<>();
+            List<String> traits = convert.collectTraitsFrom(node, tags);
+
+            List<String> effects = new ArrayList<>();
+            convert.appendEntryToText(effects, AttackField.effects.getFrom(node), null);
+
+            String meleeOrRanged = AttackField.range.getTextOrDefault(node, "Melee");
+            String attack = AttackField.attack.getTextOrNull(node);
+            String damage = AttackField.damage.replaceTextFrom(node, convert);
+
+            QuteActivityType activity = Pf2eTypeActivity.single.toQuteActivityType(convert, null);
+            return new QuteInlineAttack(name, effects, tags, traits,
+                    meleeOrRanged, attack, damage, activity);
         }
     }
 
@@ -935,7 +994,7 @@ public interface JsonSource extends JsonTextReplacement {
         traits,
         type,
         unit,
-        add_hash;
+        add_hash
     }
 
     enum AppendTypeValue implements NodeReader.FieldValue {

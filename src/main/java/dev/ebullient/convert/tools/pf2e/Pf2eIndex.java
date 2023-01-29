@@ -68,6 +68,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         Pf2eIndexType.disease.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.domain.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.feat.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.hazard.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.ritual.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.spell.withArrayFrom(node, this::addToIndex);
