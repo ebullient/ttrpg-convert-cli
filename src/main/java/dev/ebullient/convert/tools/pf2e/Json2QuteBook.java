@@ -2,8 +2,10 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,6 +34,7 @@ public class Json2QuteBook extends Json2QuteBase {
         boolean pushed = parseState.push(rootNode); // set source
         try {
             List<Pf2eQuteNote> pages = new ArrayList<>();
+            Map<String, String> nameToPath = new HashMap<>();
 
             JsonNode cover = null;
             ArrayNode data = Pf2eBook.data.withArrayFrom(dataNode);
@@ -44,10 +47,13 @@ public class Json2QuteBook extends Json2QuteBase {
                     }
                     continue;
                 }
-                pages.add(chapterPage(name, node));
+                Pf2eQuteNote page = chapterPage(name, node);
+                tui().debugf("Created new page %s for %s", page.targetFile(), name);
+                nameToPath.put(name, page.targetFile());
+                pages.add(page);
             }
 
-            pages.add(coverPage(cover));
+            pages.add(coverPage(cover, nameToPath));
 
             return pages;
         } finally {
@@ -55,7 +61,7 @@ public class Json2QuteBook extends Json2QuteBase {
         }
     }
 
-    Pf2eQuteNote coverPage(JsonNode cover) {
+    Pf2eQuteNote coverPage(JsonNode cover, Map<String, String> nameToPath) {
         Set<String> tags = new HashSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
@@ -88,15 +94,20 @@ public class Json2QuteBook extends Json2QuteBase {
             }
 
             String heading = String.format("%s%s", prefix, name);
-            String filename = slugify(heading) + ".md";
+            String filename = nameToPath.get(name);
+            if (filename == null) {
+                filename = nameToPath.getOrDefault(heading, heading);
+            }
+            filename = slugify(heading) + ".md";
 
             maybeAddBlankLine(text);
             text.add(String.format("**[%s](%s%s/%s)**", heading,
                     index.rulesVaultRoot(), bookRelativePath, filename));
             text.add("");
 
+            final String f = filename;
             headers.forEach(h -> text.add(String.format("- [%s](%s%s/%s#%s)", h,
-                    index.rulesVaultRoot(), bookRelativePath, filename,
+                    index.rulesVaultRoot(), bookRelativePath, f,
                     h.replace(" ", "%20")
                             .replace(".", ""))));
         });

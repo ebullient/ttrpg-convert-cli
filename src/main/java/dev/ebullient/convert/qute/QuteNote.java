@@ -43,7 +43,6 @@ public class QuteNote extends QuteBase {
         return ".";
     }
 
-    @Override
     public String template() {
         return "note2md.txt";
     }

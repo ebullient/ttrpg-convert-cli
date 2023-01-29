@@ -140,6 +140,11 @@ public class Pf2JsonDataTest {
     }
 
     @Test
+    public void testAbility_p2fe() throws Exception {
+        generateNotesForType(Pf2eIndexType.ability);
+    }
+
+    @Test
     public void testAction_p2fe() throws Exception {
         generateNotesForType(Pf2eIndexType.action);
     }

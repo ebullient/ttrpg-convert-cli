@@ -425,11 +425,11 @@ public class Tui {
     }
 
     public String renderEmbedded(QuteBase resource) {
-        return templates.renderEmbedded(resource);
+        return templates.render(resource);
     }
 
     public String renderEmbedded(QuteNote note) {
-        return templates.renderEmbedded(note);
+        return templates.render(note);
     }
 
     public <T> T readJsonValue(JsonNode node, TypeReference<T> targetRef) {

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.qute.TemplateData;
 
-@RegisterForReflection
+@TemplateData
 public class QuteAction extends Pf2eQuteBase {
 
     public final String trigger;
@@ -47,7 +47,7 @@ public class QuteAction extends Pf2eQuteBase {
         return actionType == null ? false : actionType.item;
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class ActionType {
         public final boolean basic;
         public final boolean item;

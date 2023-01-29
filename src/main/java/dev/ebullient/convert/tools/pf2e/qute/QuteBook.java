@@ -5,8 +5,9 @@ import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteBook extends Pf2eQuteNote {
 
     public final List<String> aliases;
@@ -36,7 +37,7 @@ public class QuteBook extends Pf2eQuteNote {
         return "book2md.txt";
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class BookInfo {
         public String name;
         public String id;

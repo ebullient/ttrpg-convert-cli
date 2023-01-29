@@ -43,10 +43,9 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 
 {#each resource.leadsTo}{it}{#if it_hasNext}, {/if}{/each}
 
-{/if}{#if resource.hasSections }
+{/if}{#if resource.hasSections && resource.source }
 ## Summary
 
-{/if}
-*Source: {resource.source}*
-{#if resource.embedded && resource.tags }
+{/if}{#if resource.source }
+*Source: {resource.source}*  {/if}{#if resource.embedded && resource.tags }
 %% {#each resource.tags}#{it} {/each}%%{/if}

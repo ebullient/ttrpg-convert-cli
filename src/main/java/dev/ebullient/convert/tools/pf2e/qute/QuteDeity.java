@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.qute.TemplateData;
 
-@RegisterForReflection
+@TemplateData
 public class QuteDeity extends Pf2eQuteBase {
 
     public final List<String> aliases;
@@ -48,7 +48,7 @@ public class QuteDeity extends Pf2eQuteBase {
         this.intercession = intercession;
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteDeityCleric {
         public String divineFont;
         public String divineAbility;
@@ -87,7 +87,7 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteDivineAvatar {
         public String preface;
         public String name;
@@ -121,7 +121,7 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteDivineAvatarAction {
         public String actionType;
         public String name;
@@ -146,7 +146,7 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteDivineAvatarAbility {
         public String name;
         public String text;
@@ -156,7 +156,7 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteDivineIntercession {
         public String sourceText;
         public String flavor;

@@ -70,6 +70,18 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
+    enum Pf2eWeaponData implements NodeReader {
+        ammunition,
+        damage,
+        damageType,
+        damage2,
+        damageType2,
+        group,
+        hands,
+        range,
+        reload;
+    }
+
     enum Pf2eDefenses implements NodeReader {
         abilities,
         ac,

@@ -7,8 +7,9 @@ import java.util.Map;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteRitual extends Pf2eQuteBase {
 
     public final String level;
@@ -43,7 +44,7 @@ public class QuteRitual extends Pf2eQuteBase {
         this.heightened = heightened;
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteRitualCasting {
         public String cast;
         public String cost;
@@ -65,7 +66,7 @@ public class QuteRitual extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteRitualChecks {
         public String primaryChecks;
         public String secondaryChecks;
