@@ -96,7 +96,7 @@ public class Json2QuteSpell extends Json2QuteBase {
 
         quteCast.components = Pf2eSpell.components.getNestedListOfStrings(rootNode, tui())
                 .stream()
-                .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesRoot()))
+                .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesVaultRoot()))
                 .collect(Collectors.toList());
 
         quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this);

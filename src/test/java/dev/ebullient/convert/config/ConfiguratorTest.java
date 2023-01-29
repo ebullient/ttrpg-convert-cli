@@ -35,10 +35,10 @@ public class ConfiguratorTest {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
             assertThat(config).isNotNull();
-            assertThat(config.compendiumRoot()).isEqualTo("/");
-            assertThat(config.compendiumPath()).isEqualTo(CompendiumConfig.CWD);
-            assertThat(config.rulesRoot()).isEqualTo("/rules/");
-            assertThat(config.rulesPath()).isEqualTo(Path.of("rules/"));
+            assertThat(config.compendiumVaultRoot()).isEqualTo("/");
+            assertThat(config.compendiumFilePath()).isEqualTo(CompendiumConfig.CWD);
+            assertThat(config.rulesVaultRoot()).isEqualTo("/rules/");
+            assertThat(config.rulesFilePath()).isEqualTo(Path.of("rules/"));
         });
     }
 
@@ -58,10 +58,10 @@ public class ConfiguratorTest {
 
             assertThat(config).isNotNull();
             assertThat(config).isNotNull();
-            assertThat(config.compendiumRoot()).isEqualTo("/");
-            assertThat(config.compendiumPath()).isEqualTo(CompendiumConfig.CWD);
-            assertThat(config.rulesRoot()).isEqualTo("/rules/");
-            assertThat(config.rulesPath()).isEqualTo(Path.of("rules/"));
+            assertThat(config.compendiumVaultRoot()).isEqualTo("/");
+            assertThat(config.compendiumFilePath()).isEqualTo(CompendiumConfig.CWD);
+            assertThat(config.rulesVaultRoot()).isEqualTo("/rules/");
+            assertThat(config.rulesFilePath()).isEqualTo(Path.of("rules/"));
         });
 
     }
@@ -118,10 +118,10 @@ public class ConfiguratorTest {
             assertThat(books).contains("book/book-phb.json");
             assertThat(adventures).contains("adventure/adventure-wbtw.json");
 
-            assertThat(config.compendiumRoot()).isEqualTo("/compend%20ium/");
-            assertThat(config.compendiumPath()).isEqualTo(Path.of("compend ium/"));
-            assertThat(config.rulesRoot()).isEqualTo("/ru%20les/");
-            assertThat(config.rulesPath()).isEqualTo(Path.of("ru les/"));
+            assertThat(config.compendiumVaultRoot()).isEqualTo("/compend%20ium/");
+            assertThat(config.compendiumFilePath()).isEqualTo(Path.of("compend ium/"));
+            assertThat(config.rulesVaultRoot()).isEqualTo("/ru%20les/");
+            assertThat(config.rulesFilePath()).isEqualTo(Path.of("ru les/"));
         });
     }
 

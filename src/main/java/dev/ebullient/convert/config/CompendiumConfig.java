@@ -103,20 +103,20 @@ public class CompendiumConfig {
         return includedGroups.contains(group);
     }
 
-    public String rulesRoot() {
-        return getPaths().rulesRoot;
+    public String rulesVaultRoot() {
+        return getPaths().rulesVaultRoot;
     }
 
-    public String compendiumRoot() {
-        return getPaths().compendiumRoot;
+    public String compendiumVaultRoot() {
+        return getPaths().compendiumVaultRoot;
     }
 
-    public Path rulesPath() {
-        return getPaths().rulesPath;
+    public Path rulesFilePath() {
+        return getPaths().rulesFilePath;
     }
 
-    public Path compendiumPath() {
-        return getPaths().compendiumPath;
+    public Path compendiumFilePath() {
+        return getPaths().compendiumFilePath;
     }
 
     public String tagOf(String... tag) {
@@ -290,11 +290,11 @@ public class CompendiumConfig {
     }
 
     private static class PathAttributes {
-        String rulesRoot = "/rules/";
-        String compendiumRoot = "/compendium/";
+        String rulesVaultRoot = "/rules/";
+        String compendiumVaultRoot = "/compendium/";
 
-        Path rulesPath = Path.of("rules/");
-        Path compendiumPath = Path.of("compendium/");
+        Path rulesFilePath = Path.of("rules/");
+        Path compendiumFilePath = Path.of("compendium/");
 
         PathAttributes() {
         }
@@ -303,19 +303,19 @@ public class CompendiumConfig {
             String root;
             if (paths.rules != null) {
                 root = toRoot(paths.rules);
-                rulesPath = rootToPath(root);
-                rulesRoot = rootToMarkdown(root);
+                rulesFilePath = toFilesystemRoot(root);
+                rulesVaultRoot = toVaultRoot(root);
             } else if (old != null) {
-                rulesPath = old.rulesPath;
-                rulesRoot = old.rulesRoot;
+                rulesFilePath = old.rulesFilePath;
+                rulesVaultRoot = old.rulesVaultRoot;
             }
             if (paths.compendium != null) {
                 root = toRoot(paths.compendium);
-                compendiumPath = rootToPath(root);
-                compendiumRoot = rootToMarkdown(root);
+                compendiumFilePath = toFilesystemRoot(root);
+                compendiumVaultRoot = toVaultRoot(root);
             } else if (old != null) {
-                compendiumPath = old.compendiumPath;
-                compendiumRoot = old.compendiumRoot;
+                compendiumFilePath = old.compendiumFilePath;
+                compendiumVaultRoot = old.compendiumVaultRoot;
             }
         }
 
@@ -325,14 +325,14 @@ public class CompendiumConfig {
                     .replaceAll("/+", "/");
         }
 
-        private static Path rootToPath(String root) {
+        private static Path toFilesystemRoot(String root) {
             if (root.equals("/")) {
                 return CWD;
             }
             return Path.of(root.substring(1));
         }
 
-        private static String rootToMarkdown(String root) {
+        private static String toVaultRoot(String root) {
             return root.replaceAll(" ", "%20");
         }
     }

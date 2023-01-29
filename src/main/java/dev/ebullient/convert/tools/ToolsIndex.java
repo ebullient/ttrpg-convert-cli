@@ -31,20 +31,20 @@ public interface ToolsIndex {
 
     CompendiumConfig cfg();
 
-    default String rulesRoot() {
-        return cfg().rulesRoot();
+    default String rulesVaultRoot() {
+        return cfg().rulesVaultRoot();
     }
 
-    default String compendiumRoot() {
-        return cfg().compendiumRoot();
+    default String compendiumVaultRoot() {
+        return cfg().compendiumVaultRoot();
     }
 
-    default Path rulesPath() {
-        return cfg().rulesPath();
+    default Path rulesFilePath() {
+        return cfg().rulesFilePath();
     }
 
-    default Path compendiumPath() {
-        return cfg().compendiumPath();
+    default Path compendiumFilePath() {
+        return cfg().compendiumFilePath();
     }
 
     void prepare();

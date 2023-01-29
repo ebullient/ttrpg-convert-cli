@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.pf2e.qute;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -46,11 +45,6 @@ public class QuteAction extends Pf2eQuteBase {
 
     public boolean isItem() {
         return actionType == null ? false : actionType.item;
-    }
-
-    @Override
-    public List<ImageRef> images() {
-        return activity == null ? List.of() : activity.image();
     }
 
     @RegisterForReflection

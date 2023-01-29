@@ -1,7 +1,5 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.List;
-
 import dev.ebullient.convert.qute.ImageRef;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -20,14 +18,10 @@ public class QuteActivityType {
     }
 
     public String getText() {
-        return text == null ? glyph.caption : text;
+        return text == null ? glyph.title : text;
     }
 
     public String toString() {
-        return String.format("[%s](%s \"%s\")", textGlyph, rulesPath, glyph.caption);
-    }
-
-    public List<ImageRef> image() {
-        return glyph == null ? List.of() : List.of(glyph);
+        return String.format("[%s](%s \"%s\")", textGlyph, rulesPath, glyph.title);
     }
 }

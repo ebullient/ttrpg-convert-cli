@@ -82,7 +82,7 @@ public class Json2MarkdownConverter implements MarkdownConverter {
             }
         }
 
-        writer.writeFiles(index.compendiumPath(), sources);
+        writer.writeFiles(index.compendiumFilePath(), sources);
 
         List<ImageRef> images = sources.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
@@ -183,8 +183,8 @@ public class Json2MarkdownConverter implements MarkdownConverter {
 
         addItemProperties(rules, srdEntries.get("properties"));
 
-        Path rulesPath = index.rulesPath();
-        Path compendiumPath = index.compendiumPath();
+        Path rulesPath = index.rulesFilePath();
+        Path compendiumPath = index.compendiumFilePath();
 
         if (!Json2QuteBackground.traits.isEmpty()) {
             List<QuteNote> notes = new BackgroundTraits2Note(index).buildNotes();

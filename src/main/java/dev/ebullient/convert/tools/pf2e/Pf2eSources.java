@@ -1,10 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
 import io.quarkus.qute.TemplateData;
@@ -13,6 +16,7 @@ import io.quarkus.qute.TemplateData;
 public class Pf2eSources extends CompendiumSources {
 
     private static final Map<String, Pf2eSources> keyToSources = new HashMap<>();
+    private static final Map<String, ImageRef> imageSourceToRef = new HashMap<>();
 
     public static Pf2eSources findSources(String key) {
         return keyToSources.get(key);
@@ -60,6 +64,39 @@ public class Pf2eSources extends CompendiumSources {
         return sources == null
                 ? new Pf2eSources(type, key, node)
                 : sources;
+    }
+
+    public static ImageRef buildStreamImageRef(Pf2eIndex index, String sourcePath, Path relativeTarget, String title) {
+        ImageRef imageRef = new ImageRef.Builder()
+                .setStreamSource(sourcePath)
+                .setRelativePath(Path.of("assets").resolve(relativeTarget))
+                .setTitle(title)
+                .setRootFilepath(index.rulesFilePath())
+                .setVaultRoot(index.rulesVaultRoot())
+                .build();
+        imageSourceToRef.put(imageRef.sourcePath().toString(), imageRef);
+        return imageRef;
+    }
+
+    public static ImageRef buildImageRef(Pf2eIndexType type, Pf2eIndex index, Path sourcePath, String title) {
+        return buildImageRef(type, index, sourcePath, sourcePath, title);
+    }
+
+    public static ImageRef buildImageRef(Pf2eIndexType type, Pf2eIndex index, Path sourcePath, Path relativeTarget,
+            String title) {
+        ImageRef imageRef = new ImageRef.Builder()
+                .setSourcePath(sourcePath)
+                .setRelativePath(Path.of("assets").resolve(relativeTarget))
+                .setRootFilepath(type.getFilePath(index))
+                .setVaultRoot(type.getVaultRoot(index))
+                .setTitle(title)
+                .build();
+        imageSourceToRef.put(imageRef.sourcePath().toString(), imageRef);
+        return imageRef;
+    }
+
+    public static Collection<ImageRef> getImages() {
+        return imageSourceToRef.values();
     }
 
     Pf2eIndexType type;

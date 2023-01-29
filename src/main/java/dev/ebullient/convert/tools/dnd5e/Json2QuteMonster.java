@@ -491,8 +491,9 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
             return new ImageRef.Builder()
                     .setSourcePath(sourcePath)
-                    .setTargetPath(index().compendiumPath(), target)
-                    .setMarkdownAttributes("", index().compendiumRoot())
+                    .setRelativePath(target)
+                    .setRootFilepath(index().compendiumFilePath())
+                    .setVaultRoot(index().compendiumVaultRoot())
                     .build();
         }
         return null;

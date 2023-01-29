@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -264,41 +265,42 @@ public class Tui {
         return slugifier().slugify(s);
     }
 
-    public void copyImages(List<ImageRef> images, Map<String, String> fallbackPaths) {
+    public void copyImages(Collection<ImageRef> images, Map<String, String> fallbackPaths) {
         for (ImageRef image : images) {
-            if (image.sourcePath.toString().startsWith("stream/")) {
+            Path targetPath = output.resolve(image.targetFilePath());
+            if (targetPath.toFile().exists()) {
+                continue;
+            }
+            if (image.sourcePath().toString().startsWith("stream/")) {
                 copyImageResource(image);
                 continue;
             }
 
+            // find the right source root (there could be several)
             Optional<Path> sourceRoot = inputRoot.stream()
-                    .filter(x -> x.resolve(image.sourcePath).toFile().exists())
+                    .filter(x -> x.resolve(image.sourcePath()).toFile().exists())
                     .findFirst();
 
-            Path basePath = image.sourcePath;
-
+            // adjust basePath for relocated image
+            Path relativeImagePath = image.sourcePath();
             if (sourceRoot.isEmpty()) {
-                String path = image.sourcePath.toString();
-
-                // Find relocated image
-                String adjustedPath = fallbackPaths.get(path);
+                String adjustedPath = fallbackPaths.get(image.sourcePath().toString());
                 if (adjustedPath != null) {
                     sourceRoot = inputRoot.stream()
                             .filter(x -> x.resolve(adjustedPath).toFile().exists())
                             .findFirst();
-                    basePath = Path.of(adjustedPath);
+                    relativeImagePath = Path.of(adjustedPath);
                 }
 
                 // If the file is still not found, bail..
                 if (sourceRoot.isEmpty()) {
-                    errorf("Unable to find image for %s", image.sourcePath);
+                    errorf("Unable to find image for %s", image.sourcePath());
                     continue;
                 }
             }
 
             // Resolve the image path from data against the correct parent path
-            Path sourcePath = sourceRoot.get().resolve(basePath);
-            Path targetPath = output.resolve(image.targetPath);
+            Path sourcePath = sourceRoot.get().resolve(relativeImagePath);
 
             // target path must be pre-resolved to compendium or rules root
             // so just make sure the image dir exists
@@ -306,21 +308,21 @@ public class Tui {
             try {
                 Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                errorf(e, "Unable to copy image from %s to %s", image.sourcePath, image.targetPath);
+                errorf(e, "Unable to copy image from %s to %s", image.sourcePath(), image.targetFilePath());
             }
         }
     }
 
-    public void copyImageResource(ImageRef image) {
-        String sourcePath = image.sourcePath.toString().replace("stream", "");
-        Path targetPath = output.resolve(image.targetPath);
+    private void copyImageResource(ImageRef image) {
+        String sourcePath = image.sourcePath().toString().replace("stream", "");
+        Path targetPath = output.resolve(image.targetFilePath());
         targetPath.getParent().toFile().mkdirs();
 
         try {
             InputStream in = TtrpgConfig.class.getResourceAsStream(sourcePath);
             Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            errorf(e, "Unable to copy resource from %s to %s", sourcePath, image.targetPath);
+            errorf(e, "Unable to copy resource from %s to %s", sourcePath, image.targetFilePath());
         }
     }
 

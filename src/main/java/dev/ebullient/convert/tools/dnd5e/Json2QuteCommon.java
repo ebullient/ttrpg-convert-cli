@@ -111,8 +111,10 @@ public abstract class Json2QuteCommon implements JsonSource {
 
                 return new ImageRef.Builder()
                         .setSourcePath(sourcePath)
-                        .setTargetPath(index().compendiumPath(), target)
-                        .setMarkdownAttributes(title, index().compendiumRoot())
+                        .setRelativePath(target)
+                        .setRootFilepath(index().compendiumFilePath())
+                        .setTitle(title)
+                        .setVaultRoot(index().compendiumVaultRoot())
                         .build();
             } else {
                 throw new IllegalArgumentException("We have an ImageRef with no path");

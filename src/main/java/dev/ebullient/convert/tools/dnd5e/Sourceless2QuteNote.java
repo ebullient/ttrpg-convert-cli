@@ -279,7 +279,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             return variant + " from " + TtrpgConfig.sourceToLongName(parts[1]);
         } else {
             return String.format("[%s](%svariant-rules/%s.md)",
-                    variant, index().rulesRoot(), slugify(variant));
+                    variant, index().rulesVaultRoot(), slugify(variant));
         }
     }
 }

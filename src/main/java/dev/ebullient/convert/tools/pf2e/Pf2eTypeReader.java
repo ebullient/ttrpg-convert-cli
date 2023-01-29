@@ -368,7 +368,7 @@ public interface Pf2eTypeReader extends JsonSource {
             }
             Pf2eTypeActivity activity = Pf2eTypeActivity.toActivity(unit, number);
             if (activity != null && activity != Pf2eTypeActivity.timed) {
-                return activity.linkify(convert.cfg().rulesRoot());
+                return activity.linkify(convert.cfg().rulesVaultRoot());
             }
             return String.format("%s %s%s", number, unit, number > 1 ? "s" : "");
         }

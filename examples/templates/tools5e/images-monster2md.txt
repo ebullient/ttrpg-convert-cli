@@ -14,22 +14,22 @@ aliases: ["{resource.name}"]
 
 {#if resource.description }
 {#if resource.fluffImages && resource.fluffImages.0 }
-![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
+![{resource.fluffImages.0.title}]({resource.fluffImages.0.vaultPath}#right)  
 {/if}
 {resource.description}
 
 {#each resource.fluffImages}{#if it_index != 0 }
-![{it.caption}]({it.path}#center)  
+![{it.title}]({it.vaultPath}#center)  
 {/if}{/each}
 {#else}
 {#each resource.fluffImages}
-![{it.caption}]({it.path}#center)  
+![{it.title}]({it.vaultPath}#center)  
 {/each}
 {/if}
 
 ```ad-statblock
 title: {resource.name}{#if resource.token}
-![{resource.token.caption}]({resource.token.path}#token){/if}
+![{resource.token.title}]({resource.token.vaultPath}#token){/if}
 *{resource.size} {resource.fullType}, {resource.alignment}*
 
 - **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }({resource.acText}){/if}
