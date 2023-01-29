@@ -121,7 +121,7 @@ public class Pf2JsonDataTest {
         Map<Pf2eIndexType, Path> map = new HashMap<>();
         Set<Path> paths = new HashSet<>();
         types.forEach(t -> {
-            Path p = outputPath.resolve(t.getBasePath(index))
+            Path p = outputPath.resolve(t.getFilePath(index))
                     .resolve(t.relativePath());
             map.put(t, p);
             paths.add(p);
@@ -201,8 +201,8 @@ public class Pf2JsonDataTest {
 
     @Test
     public void testNotes_p2fe() throws Exception {
-        Path rulesDir = outputPath.resolve(index.rulesPath());
-        Path compendiumDir = outputPath.resolve(index.compendiumPath());
+        Path rulesDir = outputPath.resolve(index.rulesFilePath());
+        Path compendiumDir = outputPath.resolve(index.compendiumFilePath());
 
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);

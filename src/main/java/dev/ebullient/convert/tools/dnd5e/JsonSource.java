@@ -954,7 +954,7 @@ public interface JsonSource {
 
     default String linkifyRules(String text, String rules) {
         return String.format("[%s](%s%s.md#%s)",
-                text, index().rulesRoot(), rules,
+                text, index().rulesVaultRoot(), rules,
                 text.replace(" ", "%20")
                         .replace(".", ""));
     }
@@ -1012,7 +1012,7 @@ public interface JsonSource {
     default String linkOrText(String linkText, String key, String dirName, String resourceName) {
         return index().isIncluded(key)
                 ? String.format("[%s](%s%s/%s.md)",
-                        linkText, index().compendiumRoot(), dirName, slugify(resourceName)
+                        linkText, index().compendiumVaultRoot(), dirName, slugify(resourceName)
                                 .replace("-dmg-dmg", "-dmg")) // bad combo for some race names
                 : linkText;
     }

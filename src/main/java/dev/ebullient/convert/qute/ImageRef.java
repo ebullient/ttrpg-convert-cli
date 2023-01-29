@@ -8,17 +8,41 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @TemplateData
 @RegisterForReflection
 public class ImageRef {
-    public final Path sourcePath;
-    public final Path targetPath;
-    public final String caption;
-    public final String path;
+    final Path sourcePath;
+    final Path targetFilePath;
+    public final String title;
+    public final String vaultPath;
+
+    private ImageRef(Path sourcePath, Path targetFilePath, String title, String vaultPath) {
+        this.sourcePath = sourcePath;
+        this.targetFilePath = targetFilePath;
+        this.title = title == null ? "" : title;
+        this.vaultPath = vaultPath;
+    }
+
+    public String getEmbeddedLinkWithTitle(String anchor) {
+        return String.format("![%s](%s#%s)", title, vaultPath, anchor);
+    }
+
+    /** Not available in templates */
+    public Path sourcePath() {
+        return sourcePath;
+    }
+
+    /** Not available in templates */
+    public Path targetFilePath() {
+        return targetFilePath;
+    }
 
     public static class Builder {
-        public Path sourcePath;
-        public Path targetPath;
-        public Path relativeTarget;
-        public String title;
-        public String image;
+        private Path sourcePath;
+        private Path targetFilePath;
+        private Path relativeTarget;
+        private String title = "";
+        private String vaultPath;
+
+        private String vaultRoot;
+        private Path rootFilePath;
 
         public Builder setSourcePath(Path sourcePath) {
             this.sourcePath = sourcePath;
@@ -30,34 +54,35 @@ public class ImageRef {
             return this;
         }
 
-        public Builder setTargetPath(Path rootPath, Path relativeTarget) {
-            this.targetPath = rootPath.resolve(relativeTarget);
+        public Builder setTitle(String title) {
+            this.title = title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
+            return this;
+        }
+
+        public Builder setVaultRoot(String vaultRoot) {
+            this.vaultRoot = vaultRoot;
+            return this;
+        }
+
+        public Builder setRootFilepath(Path rootFilePath) {
+            this.rootFilePath = rootFilePath;
+            return this;
+        }
+
+        public Builder setRelativePath(Path relativeTarget) {
             this.relativeTarget = relativeTarget;
             return this;
         }
 
-        public Builder setMarkdownAttributes(String title, String relativeRoot) {
-            if (relativeTarget == null) {
-                throw new IllegalStateException("Call setTargetPath first");
-            }
-            this.title = title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
-            this.image = String.format("%s%s", relativeRoot,
-                    relativeTarget.toString().replace('\\', '/'));
-            return this;
-        }
-
         public ImageRef build() {
-            if (sourcePath == null || targetPath == null) {
-                throw new IllegalStateException("Call setSourcePath and setTargetPath first");
+            if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
+                throw new IllegalStateException("Set paths first (source, relative, vaultRoot, fileRoot) first");
             }
-            return new ImageRef(sourcePath, targetPath, title, image);
-        }
-    }
+            this.targetFilePath = rootFilePath.resolve(relativeTarget);
+            this.vaultPath = String.format("%s%s", vaultRoot,
+                    relativeTarget.toString().replace('\\', '/'));
 
-    private ImageRef(Path sourcePath, Path targetPath, String caption, String image) {
-        this.sourcePath = sourcePath;
-        this.targetPath = targetPath;
-        this.caption = caption == null ? "" : caption;
-        this.path = image;
+            return new ImageRef(sourcePath, targetFilePath, title, vaultPath);
+        }
     }
 }

@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.pf2e;
 import java.nio.file.Path;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
 
 public enum Pf2eTypeActivity {
@@ -80,15 +79,11 @@ public enum Pf2eTypeActivity {
     }
 
     public QuteActivityType toQuteActivityType(JsonSource convert, String text) {
-        Path target = Path.of("img", targetFileName);
+        Path relativeTarget = Path.of("img", targetFileName);
         return new QuteActivityType(
                 text == null ? longName : text,
-                new ImageRef.Builder()
-                        .setStreamSource(glyph)
-                        .setTargetPath(convert.index().rulesPath(), target)
-                        .setMarkdownAttributes(longName, convert.index().rulesRoot())
-                        .build(),
+                Pf2eSources.buildStreamImageRef(convert.index(), glyph, relativeTarget, longName),
                 textGlyph,
-                this.getRulesPath(convert.index().rulesRoot()));
+                this.getRulesPath(convert.index().rulesVaultRoot()));
     }
 }

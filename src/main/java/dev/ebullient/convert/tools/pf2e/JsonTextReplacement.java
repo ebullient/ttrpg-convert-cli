@@ -241,7 +241,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                 type = Pf2eTypeActivity.varies;
                 break;
         }
-        return type.linkify(index().rulesRoot());
+        return type.linkify(index().rulesVaultRoot());
     }
 
     default String linkifyRuneItem(MatchResult match) {

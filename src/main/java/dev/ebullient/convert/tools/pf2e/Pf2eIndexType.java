@@ -123,16 +123,16 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
     }
 
-    public String getRepoRoot(Pf2eIndex index) {
-        return useCompendiumBase() ? index.compendiumRoot() : index.rulesRoot();
+    public String getVaultRoot(Pf2eIndex index) {
+        return useCompendiumBase() ? index.compendiumVaultRoot() : index.rulesVaultRoot();
     }
 
-    public Path getBasePath(Pf2eIndex index) {
-        return useCompendiumBase() ? index.compendiumPath() : index.rulesPath();
+    public Path getFilePath(Pf2eIndex index) {
+        return useCompendiumBase() ? index.compendiumFilePath() : index.rulesFilePath();
     }
 
     public String relativeRepositoryRoot(Pf2eIndex index) {
-        String root = getRepoRoot(index);
+        String root = getVaultRoot(index);
         String relativePath = relativePath();
 
         if (relativePath == null || relativePath.isEmpty() || ".".equals(relativePath)) {

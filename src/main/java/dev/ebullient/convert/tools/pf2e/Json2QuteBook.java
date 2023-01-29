@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.tools.pf2e.Pf2eIndexType.book;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,7 +11,6 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteBook;
@@ -72,11 +73,7 @@ public class Json2QuteBook extends Json2QuteBase {
         String coverUrl = Pf2eBook.coverUrl.getTextOrNull(rootNode);
         if (coverUrl != null) {
             Path coverPath = Path.of(coverUrl);
-            bookInfo.cover = new ImageRef.Builder()
-                    .setSourcePath(coverPath)
-                    .setTargetPath(index().rulesPath(), coverPath)
-                    .setMarkdownAttributes(sources.getName(), index().rulesRoot())
-                    .build();
+            bookInfo.cover = Pf2eSources.buildImageRef(Pf2eIndexType.book, index, coverPath, sources.getName());
         }
 
         Pf2eBook.contents.withArrayFrom(rootNode).forEach(n -> {
@@ -97,11 +94,11 @@ public class Json2QuteBook extends Json2QuteBase {
 
             maybeAddBlankLine(text);
             text.add(String.format("**[%s](%s%s/%s)**", heading,
-                    index.rulesRoot(), bookRelativePath, filename));
+                    index.rulesVaultRoot(), bookRelativePath, filename));
             text.add("");
 
             headers.forEach(h -> text.add(String.format("- [%s](%s%s/%s#%s)", h,
-                    index.rulesRoot(), bookRelativePath, filename,
+                    index.rulesVaultRoot(), bookRelativePath, filename,
                     h.replace(" ", "%20")
                             .replace(".", ""))));
         });

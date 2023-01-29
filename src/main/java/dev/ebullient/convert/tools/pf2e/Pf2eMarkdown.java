@@ -78,13 +78,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
             }
         }
 
-        writer.writeFiles(index.compendiumPath(), compendium);
-        writer.writeFiles(index.rulesPath(), rules);
+        writer.writeFiles(index.compendiumFilePath(), compendium);
+        writer.writeFiles(index.rulesFilePath(), rules);
 
-        List<ImageRef> images = Stream.concat(compendium.stream(), rules.stream())
-                .flatMap(s -> s.images().stream()).collect(Collectors.toList());
-
-        index.tui().copyImages(images, fallbackPaths);
+        index.tui().copyImages(Pf2eSources.getImages(), fallbackPaths);
         return this;
     }
 
@@ -153,8 +150,8 @@ public class Pf2eMarkdown implements MarkdownConverter {
         // Custom indices
         append(Pf2eIndexType.trait, Json2QuteTrait.buildIndex(index), compendium, rules);
 
-        writer.writeNotes(index.compendiumPath(), compendium);
-        writer.writeNotes(index.rulesPath(), rules);
+        writer.writeNotes(index.compendiumFilePath(), compendium);
+        writer.writeNotes(index.rulesFilePath(), rules);
 
         List<ImageRef> images = rules.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
