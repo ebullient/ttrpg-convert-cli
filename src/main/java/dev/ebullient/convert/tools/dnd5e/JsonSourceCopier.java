@@ -138,6 +138,9 @@ public class JsonSourceCopier implements JsonSource {
         if (_preserve == null || !_preserve.has("additionalSources")) {
             target.remove("additionalSources");
         }
+        if (_preserve == null || !_preserve.has("hasToken")) {
+            target.remove("hasToken");
+        }
 
         for (Iterator<String> it = overlayNode.fieldNames(); it.hasNext();) {
             String f = it.next();

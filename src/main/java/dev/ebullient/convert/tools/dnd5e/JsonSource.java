@@ -743,7 +743,7 @@ public interface JsonSource {
 
         for (JsonNode n : entry.withArray("blocks")) {
             maybeAddBlankLine(text);
-            text.add("> [!flowchart] " + n.get("name").asText());
+            text.add("> [!flowchart] " + getTextOrEmpty(n, "name"));
             for (JsonNode e : n.withArray("entries")) {
                 text.add("> " + replaceText(e.asText()));
             }
