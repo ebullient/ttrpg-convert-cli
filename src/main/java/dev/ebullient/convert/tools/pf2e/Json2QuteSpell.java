@@ -20,7 +20,11 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class Json2QuteSpell extends Json2QuteBase {
     static final String SPELLS = "spells";
 
-    public Json2QuteSpell(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
+    public Json2QuteSpell(Pf2eIndex index, JsonNode rootNode) {
+        this(index, Pf2eIndexType.spell, rootNode);
+    }
+
+    protected Json2QuteSpell(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
         super(index, type, rootNode);
     }
 

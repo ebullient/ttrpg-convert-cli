@@ -16,8 +16,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class Json2QuteRitual extends Json2QuteSpell {
     static final String RITUALS = "rituals";
 
-    public Json2QuteRitual(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    public Json2QuteRitual(Pf2eIndex index, JsonNode rootNode) {
+        super(index, Pf2eIndexType.ritual, rootNode);
     }
 
     @Override

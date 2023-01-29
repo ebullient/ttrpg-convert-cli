@@ -18,8 +18,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteDeity extends Json2QuteBase {
 
-    public Json2QuteDeity(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    public Json2QuteDeity(Pf2eIndex index, JsonNode rootNode) {
+        super(index, Pf2eIndexType.background, rootNode);
     }
 
     @Override

@@ -10,8 +10,8 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteBackground;
 
 public class Json2QuteBackground extends Json2QuteBase {
 
-    public Json2QuteBackground(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    public Json2QuteBackground(Pf2eIndex index, JsonNode rootNode) {
+        super(index, Pf2eIndexType.background, rootNode);
     }
 
     @Override

@@ -12,8 +12,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteAction extends Json2QuteBase {
 
-    public Json2QuteAction(Pf2eIndex index, Pf2eIndexType type, JsonNode node) {
-        super(index, type, node);
+    public Json2QuteAction(Pf2eIndex index, JsonNode node) {
+        super(index, Pf2eIndexType.action, node);
     }
 
     @Override

@@ -10,8 +10,8 @@ import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
 public class Json2QuteTable extends Json2QuteBase {
 
-    public Json2QuteTable(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    public Json2QuteTable(Pf2eIndex index, JsonNode rootNode) {
+        super(index, Pf2eIndexType.table, rootNode);
     }
 
     @Override

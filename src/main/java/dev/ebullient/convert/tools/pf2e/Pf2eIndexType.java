@@ -152,23 +152,23 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
                 return new Json2QuteAffliction(index, type, node).build();
             // Other type
             case action:
-                return new Json2QuteAction(index, this, node).build();
+                return new Json2QuteAction(index, node).build();
             case archetype:
-                return new Json2QuteArchetype(index, this, node).build();
+                return new Json2QuteArchetype(index, node).build();
             case background:
-                return new Json2QuteBackground(index, this, node).build();
+                return new Json2QuteBackground(index, node).build();
             case deity:
-                return new Json2QuteDeity(index, this, node).build();
+                return new Json2QuteDeity(index, node).build();
             case feat:
-                return new Json2QuteFeat(index, this, node).build();
+                return new Json2QuteFeat(index, node).build();
             case hazard:
-                return new Json2QuteHazard(index, this, node).build();
+                return new Json2QuteHazard(index, node).build();
             case ritual:
-                return new Json2QuteRitual(index, this, node).build();
+                return new Json2QuteRitual(index, node).build();
             case spell:
-                return new Json2QuteSpell(index, this, node).build();
+                return new Json2QuteSpell(index, node).build();
             case trait:
-                return new Json2QuteTrait(index, this, node).build();
+                return new Json2QuteTrait(index, node).build();
             default:
                 return null;
         }

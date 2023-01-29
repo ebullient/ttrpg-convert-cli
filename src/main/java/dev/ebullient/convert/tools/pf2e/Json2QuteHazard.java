@@ -14,8 +14,8 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses;
 
 public class Json2QuteHazard extends Json2QuteBase {
 
-    public Json2QuteHazard(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    public Json2QuteHazard(Pf2eIndex index, JsonNode rootNode) {
+        super(index, Pf2eIndexType.hazard, rootNode);
     }
 
     @Override
