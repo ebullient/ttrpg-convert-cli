@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
+import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses;
 
 public class Json2QuteHazard extends Json2QuteBase {
@@ -54,15 +54,16 @@ public class Json2QuteHazard extends Json2QuteBase {
             return null;
         }
         QuteInlineDefenses defenses = Pf2eDefenses.createInlineDefenses(defenseNode, this);
-        return render(defenses, null);
+        return render(defenses, null); // not an admonition
     }
 
     List<String> buildAbilities() {
-        List<QuteInlineAbility> inlineAbilities = new ArrayList<>();
+        List<QuteAbility> inlineAbilities = new ArrayList<>();
         Pf2eHazard.abilities.withArrayFrom(rootNode)
-                .forEach(a -> inlineAbilities.add(AbilityField.createInlineAbility(a, this)));
+                .forEach(a -> inlineAbilities.add(Pf2eTypeAbility.createAbility(a, this, true)));
+
         return inlineAbilities.stream()
-                .map(x -> render(x, "ability"))
+                .map(x -> render(x, Pf2eIndexType.ability))
                 .collect(Collectors.toList());
     }
 
@@ -73,18 +74,23 @@ public class Json2QuteHazard extends Json2QuteBase {
                     if (AppendTypeValue.attack.isValueOfField(a, Field.type)) {
                         inlineThings.add(AttackField.createInlineAttack(a, this));
                     } else {
-                        inlineThings.add(AbilityField.createInlineAbility(a, this));
+                        inlineThings.add(Pf2eTypeAbility.createAbility(a, this, true));
                     }
                 });
 
         return inlineThings.stream()
-                .map(x -> render(x, x.type == Pf2eIndexType.syntheticGroup ? "attack" : x.type.name()))
+                .map(x -> render(x, x.type))
                 .collect(Collectors.toList());
     }
 
-    String render(Pf2eQuteNote inlineAbility, String type) {
+    String render(Pf2eQuteNote inlineAbility, Pf2eIndexType type) {
         List<String> inner = new ArrayList<>();
-        renderInlineTemplate(inner, inlineAbility, type);
+        if (type == Pf2eIndexType.ability) {
+            renderEmbeddedTemplate(inner, inlineAbility, type.name(), List.of());
+        } else {
+            String admonition = type == null ? null : (type == Pf2eIndexType.syntheticGroup ? "attack" : type.name());
+            renderInlineTemplate(inner, inlineAbility, admonition);
+        }
         return String.join("\n", inner);
     }
 

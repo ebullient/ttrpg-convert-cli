@@ -70,6 +70,7 @@ public class QuteBase {
     }
 
     public String template() {
-        return null;
+        IndexType type = type();
+        return String.format("%s2md.txt", type.templateName());
     }
 }

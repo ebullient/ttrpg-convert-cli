@@ -129,7 +129,7 @@ public class MarkdownWriter {
 
     public void writeNote(Path targetDir, String fileName, QuteNote n) {
         Path target = targetDir.resolve(fileName);
-        String content = templates.renderNote(n);
+        String content = templates.render(n);
         try {
             Files.write(target, content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -143,7 +143,7 @@ public class MarkdownWriter {
 
         names.forEach(n -> {
             Path target = rootDir.resolve("names-" + Tui.slugify(n.getName()) + ".md");
-            String content = templates.renderName(n);
+            String content = templates.render(n);
             try {
                 Files.write(target, content.getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {

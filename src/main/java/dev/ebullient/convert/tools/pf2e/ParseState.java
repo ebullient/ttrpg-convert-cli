@@ -160,4 +160,12 @@ public class ParseState {
         return String.format("<sup>%s p. %s</sup>",
                 current.src, current.page);
     }
+
+    public String getSource(Pf2eIndexType type) {
+        ParseState.ParseStateInfo current = stack.peek();
+        if (current == null || current.src == null) {
+            return type == null ? null : type.defaultSource().toString();
+        }
+        return current.src;
+    }
 }

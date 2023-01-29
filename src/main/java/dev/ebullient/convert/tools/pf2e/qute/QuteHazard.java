@@ -6,7 +6,9 @@ import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteHazard extends Pf2eQuteBase {
 
     public final List<String> traits;
@@ -66,6 +68,7 @@ public class QuteHazard extends Pf2eQuteBase {
                 + backticks;
     }
 
+    @TemplateData
     public static class QuteHazardAttributes {
         public Integer dc;
         public Integer bonus;

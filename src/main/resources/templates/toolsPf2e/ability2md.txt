@@ -1,0 +1,30 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e,pf2e-feat
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}]
+---
+%%-- Embedded/inline feat starts on the next line. --%%
+{#if resource.embedded && resource.tags }title: {#else}# {/if}{resource.name}{#if resource.activity} {resource.activity}{/if}{#if resource.components} {resource.components}{/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
+
+{#if resource.cost }
+- **Cost**: {resource.cost}
+{/if}{#if resource.frequency }
+- **Frequency**: {resource.frequency}
+{/if}{#if resource.trigger }
+- **Trigger**: {resource.trigger}
+{/if}{#if resource.requirements }
+- **Requirements**: {resource.requirements}
+{/if}{#if resource.hasBullets }
+
+{/if}{#if resource.hasEffect }**Effect** {/if}{resource.text}  {#if resource.special }
+
+**Special**: {resource.special}  {/if}{#if resource.source }
+
+*Source: {resource.source}*  {/if}{#if resource.embedded && resource.tags }
+%% {#each resource.tags}#{it} {/each}%%{/if}

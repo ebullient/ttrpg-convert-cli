@@ -199,6 +199,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public boolean useQuteNote() {
         switch (this) {
+            case ability:
             case condition:
             case domain:
             case skill:

@@ -9,8 +9,7 @@ tags:
 {/if}
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
-# {resource.name}
-*{resource.ritualType} {resource.level}*  
+# {resource.name} *{resource.ritualType} {resource.level}*  
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if}  
 

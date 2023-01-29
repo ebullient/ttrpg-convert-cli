@@ -44,6 +44,11 @@ public class QuteName extends QuteSource {
         return tables;
     }
 
+    @Override
+    public String template() {
+        return "name2md.txt";
+    }
+
     @TemplateData
     @RegisterForReflection
     public static class LookupTable {

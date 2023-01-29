@@ -16,11 +16,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
-import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
@@ -128,11 +127,11 @@ public interface JsonSource extends JsonTextReplacement {
      * Embed rendered contents of the specified resource
      *
      * @param text List of text content should be added to
-     * @param resource Pf2eQuteBase containing required template resource data
+     * @param resource QuteBase containing required template resource data
      * @param admonition Type of embedded/encapsulating admonition
      * @param prepend Text to prepend at beginning of admonition (e.g. title)
      */
-    default void renderEmbeddedTemplate(List<String> text, Pf2eQuteBase resource, String admonition, List<String> prepend) {
+    default void renderEmbeddedTemplate(List<String> text, QuteBase resource, String admonition, List<String> prepend) {
         prepend = prepend == null ? List.of() : prepend; // ensure non-null
         boolean pushed = parseState.push((Pf2eSources) resource.sources());
         try {
@@ -156,10 +155,10 @@ public interface JsonSource extends JsonTextReplacement {
      * to collected text
      *
      * @param text List of text content should be added to
-     * @param resource Pf2eQuteNote containing required template resource data
+     * @param resource QuteBase containing required template resource data
      * @param admonition Type of inline admonition
      */
-    default void renderInlineTemplate(List<String> text, Pf2eQuteNote resource, String admonition) {
+    default void renderInlineTemplate(List<String> text, QuteBase resource, String admonition) {
         String rendered = tui().renderEmbedded(resource);
         List<String> inner = List.of(rendered.split("\n"));
 
@@ -463,7 +462,7 @@ public interface JsonSource extends JsonTextReplacement {
     /** Internal */
     default void appendAbility(List<String> text, JsonNode node) {
         renderInlineTemplate(text,
-                AbilityField.createInlineAbility(node, this),
+                Pf2eTypeAbility.createAbility(node, this, true),
                 "ability");
     }
 
@@ -866,48 +865,6 @@ public interface JsonSource extends JsonTextReplacement {
 
         public String nodeName() {
             return nodeName;
-        }
-    }
-
-    enum AbilityField implements NodeReader {
-        activity,
-        components,
-        cost,
-        creature,
-        frequency,
-        note,
-        range,
-        requirements,
-        trigger,
-        special;
-
-        void debugIfExists(JsonNode node, Tui tui) {
-            if (existsIn(node)) {
-                tui.errorf(this.name() + " is defined in " + node.toPrettyString());
-            }
-        }
-
-        public static QuteInlineAbility createInlineAbility(JsonNode node, JsonSource convert) {
-            String name = Field.name.getTextOrDefault(node, "Activate");
-            Pf2eTypeReader.NumberUnitEntry jsonActivity = Pf2eTypeReader.Pf2eFeat.activity.fieldFromTo(node,
-                    Pf2eTypeReader.NumberUnitEntry.class, convert.tui());
-
-            List<String> abilityText = new ArrayList<>();
-            convert.appendEntryToText(abilityText, Field.entries.getFrom(node), null);
-
-            note.debugIfExists(node, convert.tui());
-            range.debugIfExists(node, convert.tui());
-            List<String> tags = new ArrayList<>();
-
-            return new QuteInlineAbility(
-                    name, abilityText, tags, convert.collectTraitsFrom(node, tags),
-                    jsonActivity == null ? null : jsonActivity.toQuteActivity(convert),
-                    components.replaceTextFrom(node, convert),
-                    requirements.replaceTextFrom(node, convert),
-                    cost.replaceTextFrom(node, convert),
-                    trigger.replaceTextFrom(node, convert),
-                    convert.index().getFrequency(frequency.getFrom(node)),
-                    special.replaceTextFrom(node, convert));
         }
     }
 

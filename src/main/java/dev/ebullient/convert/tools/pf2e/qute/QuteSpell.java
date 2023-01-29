@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteSpell extends Pf2eQuteBase {
 
     public final String level;
@@ -54,7 +55,7 @@ public class QuteSpell extends Pf2eQuteBase {
         return super.getHasSections() || amp != null;
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteSpellCasting {
         public String cast;
         public List<String> components;
@@ -83,7 +84,7 @@ public class QuteSpell extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteSpellSaveDuration {
         public boolean basic;
         public String savingThrow;
@@ -103,13 +104,13 @@ public class QuteSpell extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteSpellSubclass {
         public String category;
         public String text;
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteSpellTarget {
         public String range;
         public String area;
@@ -130,7 +131,7 @@ public class QuteSpell extends Pf2eQuteBase {
         }
     }
 
-    @RegisterForReflection
+    @TemplateData
     public static class QuteSpellAmp {
         public String text;
         public Map<String, String> ampEffects;

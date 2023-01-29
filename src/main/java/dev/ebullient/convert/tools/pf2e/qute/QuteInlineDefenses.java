@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteInlineDefenses extends Pf2eQuteNote {
 
     public final QuteArmorClass ac;
@@ -31,6 +33,7 @@ public class QuteInlineDefenses extends Pf2eQuteNote {
         return "inline-defenses2md.txt";
     }
 
+    @TemplateData
     public static class QuteArmorClass {
         public Map<String, String> armorClass;
         public String note;
@@ -45,6 +48,7 @@ public class QuteInlineDefenses extends Pf2eQuteNote {
         }
     }
 
+    @TemplateData
     public static class QuteSavingThrows {
         public Map<String, String> savingThrows;
         public String abilities;
@@ -57,6 +61,7 @@ public class QuteInlineDefenses extends Pf2eQuteNote {
         }
     }
 
+    @TemplateData
     public static class QuteHitPoints {
         public String name;
         public String hpNotes;
