@@ -14,8 +14,8 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
 public class Json2QuteArchetype extends Json2QuteBase {
 
-    public Json2QuteArchetype(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    public Json2QuteArchetype(Pf2eIndex index, JsonNode rootNode) {
+        super(index, Pf2eIndexType.archetype, rootNode);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
     }
 
     QuteFeat createQuteFeat(JsonNode feat, String level) {
-        Json2QuteFeat json2Qute = new Json2QuteFeat(index, Pf2eIndexType.feat, feat);
+        Json2QuteFeat json2Qute = new Json2QuteFeat(index, feat);
         return json2Qute.buildArchetype(sources.getName(), level);
     }
 
@@ -115,7 +115,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
             tui().errorf("Could not find feat matching %s", levelKey);
             return null;
         }
-        Json2QuteFeat json2Qute = new Json2QuteFeat(index, Pf2eIndexType.feat, feat);
+        Json2QuteFeat json2Qute = new Json2QuteFeat(index, feat);
         return json2Qute.buildArchetype(sources.getName(), parts[0]);
     }
 

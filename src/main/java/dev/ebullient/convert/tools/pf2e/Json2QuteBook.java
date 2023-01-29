@@ -1,7 +1,5 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import static dev.ebullient.convert.tools.pf2e.Pf2eIndexType.book;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -82,11 +80,11 @@ public class Json2QuteBook extends Json2QuteBase {
                 return;
             }
             List<String> headers = Pf2eBook.headers.getListOfStrings(n, tui());
-            Ordinal o = Pf2eBook.ordinal.fieldFromTo(n, Ordinal.class, tui());
+            Ordinal ordinal = Pf2eBook.ordinal.fieldFromTo(n, Ordinal.class, tui());
 
-            String prefix = null;
-            if (o != null) {
-                prefix = String.format("%s %s: ", toTitleCase(o.type), o.identifier);
+            String prefix = "";
+            if (ordinal != null) {
+                prefix = String.format("%s %s: ", toTitleCase(ordinal.type), ordinal.identifier);
             }
 
             String heading = String.format("%s%s", prefix, name);

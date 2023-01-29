@@ -135,7 +135,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
                     skills.add(node);
                     break;
                 case table:
-                    Pf2eQuteNote table = new Json2QuteTable(index, type, node).buildNote();
+                    Pf2eQuteNote table = new Json2QuteTable(index, node).buildNote();
                     rules.add(table);
                     break;
                 default:

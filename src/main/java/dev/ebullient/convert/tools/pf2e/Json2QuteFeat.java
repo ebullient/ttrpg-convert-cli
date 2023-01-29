@@ -10,8 +10,8 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
 public class Json2QuteFeat extends Json2QuteBase {
 
-    public Json2QuteFeat(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    public Json2QuteFeat(Pf2eIndex index, JsonNode rootNode) {
+        super(index, Pf2eIndexType.feat, rootNode);
     }
 
     @Override
