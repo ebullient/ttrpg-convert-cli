@@ -1,8 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,9 +16,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses.QuteArmorClass;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses.QuteHitPoints;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses.QuteSavingThrows;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
+
+    enum Pf2eAction implements NodeReader {
+        activity,
+        actionType,
+        cost,
+        info,
+        prerequisites,
+        trigger
+    }
 
     enum Pf2eAlignmentValue implements NodeReader.FieldValue {
         ce("Chaotic Evil"),
@@ -52,6 +70,132 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
+    enum Pf2eDefenses implements NodeReader {
+        abilities,
+        ac,
+        hardness,
+        hp,
+        bt,
+        immunities,
+        note,
+        notes,
+        resistances,
+        savingThrows,
+        std,
+        weaknesses;
+
+        public static QuteInlineDefenses createInlineDefenses(JsonNode source, Pf2eTypeReader convert) {
+            List<String> text = new ArrayList<>();
+            JsonNode notesNode = notes.getFrom(source);
+            if (notesNode != null) {
+                convert.tui().warnf("Defenses has notes: %s", source.toString());
+            }
+            return new QuteInlineDefenses(text,
+                    getAcString(source, convert),
+                    getSavingThrowString(source, convert),
+                    getHpHardness(source, convert), // hp hardness
+                    immunities.linkifyListFrom(source, Pf2eIndexType.trait, convert), // immunities
+                    getWeakResist(resistances, source, convert), // resistances
+                    getWeakResist(weaknesses, source, convert));
+        }
+
+        // "hardness": {
+        //     "notes": {
+        //         "std": "per mirror"
+        //     },
+        //     "std": 13
+        // },
+        // "hp": {
+        //     "std": 54,
+        //     "Reflection ": 30
+        // },
+        // "bt": {
+        //     "std": 27
+        // },
+        public static List<QuteHitPoints> getHpHardness(JsonNode source, Pf2eTypeReader convert) {
+            // First pass: for hazards. TODO: creatures
+            JsonNode btValueNode = bt.getFromOrEmptyObjectNode(source);
+            JsonNode hpValueNode = hp.getFromOrEmptyObjectNode(source);
+            Map<String, String> hpNotes = notes.getMapOfStrings(hpValueNode, convert.tui());
+            JsonNode hardValueNode = hardness.getFromOrEmptyObjectNode(source);
+            Map<String, String> hardNotes = notes.getMapOfStrings(hardValueNode, convert.tui());
+
+            // Collect all keys
+            Set<String> keys = new HashSet<>();
+            hpValueNode.fieldNames().forEachRemaining(keys::add);
+            btValueNode.fieldNames().forEachRemaining(keys::add);
+            hardValueNode.fieldNames().forEachRemaining(keys::add);
+            keys.removeIf(k -> k.equalsIgnoreCase("notes"));
+
+            List<QuteHitPoints> items = new ArrayList<>();
+            for (String k : keys) {
+                QuteHitPoints qhp = new QuteHitPoints();
+                qhp.name = k.equals("std") ? "" : k;
+                qhp.hardnessNotes = convert.replaceText(hardNotes.get(k));
+                qhp.hpNotes = convert.replaceText(hpNotes.get(k));
+                qhp.hardnessValue = convert.replaceText(hardValueNode.get(k));
+                qhp.hpValue = convert.replaceText(hpValueNode.get(k));
+                qhp.brokenThreshold = convert.replaceText(btValueNode.get(k));
+                items.add(qhp);
+            }
+            items.sort(Comparator.comparing(a -> a.name));
+            return items;
+        }
+
+        public static List<String> getWeakResist(Pf2eDefenses field, JsonNode source, Pf2eTypeReader convert) {
+            List<String> items = new ArrayList<>();
+            field.withArrayFrom(source).forEach(wr -> {
+                NameAmountNote nmn = convert.tui().readJsonValue(wr, NameAmountNote.class);
+                items.add(nmn.flatten(convert));
+            });
+            return items;
+        }
+
+        public static QuteArmorClass getAcString(JsonNode source, Pf2eTypeReader convert) {
+            JsonNode acNode = ac.getFrom(source);
+            if (acNode == null) {
+                return null;
+            }
+            QuteArmorClass ac = new QuteArmorClass();
+            ac.armorClass = new LinkedHashMap<>();
+            acNode.fields().forEachRemaining(e -> {
+                if (e.getKey().equals(note.name()) || e.getKey().equals(abilities.name())) {
+                    return; // skip these two
+                }
+                ac.armorClass.put(
+                        (e.getKey().equals("std") ? "AC" : e.getKey() + " AC"),
+                        "" + e.getValue());
+            });
+            ac.note = convert.replaceText(note.getTextOrEmpty(acNode));
+            ac.abilities = convert.replaceText(abilities.getTextOrNull(acNode));
+            return ac;
+        }
+
+        public static QuteSavingThrows getSavingThrowString(JsonNode source, Pf2eTypeReader convert) {
+            JsonNode stNode = savingThrows.getFrom(source);
+            if (stNode == null) {
+                return null;
+            }
+            QuteSavingThrows svt = new QuteSavingThrows();
+
+            svt.savingThrows = new LinkedHashMap<>();
+            stNode.fields().forEachRemaining(e -> {
+                if (e.getKey().equals(abilities.name())) {
+                    convert.tui().warnf("Found a saving throw block with abilities in it: %s", source.toPrettyString());
+                    return; // skip this one
+                }
+                if (e.getValue().size() > 1) {
+                    convert.tui().warnf("Found a saving throw block with other things in it: %s", source.toPrettyString());
+                }
+                int sv = std.intOrDefault(e.getValue(), 0);
+                svt.savingThrows.put(convert.toTitleCase(e.getKey()),
+                        (sv >= 0 ? "+" : "-") + sv);
+            });
+            svt.abilities = convert.replaceText(abilities.getTextOrNull(stNode));
+            return svt;
+        }
+    }
+
     enum Pf2eFeat implements NodeReader {
         access,
         activity,
@@ -66,24 +210,18 @@ public interface Pf2eTypeReader extends JsonSource {
     }
 
     enum Pf2eSavingThrowType implements NodeReader.FieldValue {
-        fortitude("F"),
-        reflex("R"),
-        will("W");
-
-        final String encoding;
-
-        Pf2eSavingThrowType(String encoding) {
-            this.encoding = encoding;
-        }
+        fortitude,
+        reflex,
+        will;
 
         @Override
         public String value() {
-            return encoding;
+            return this.name();
         }
 
         @Override
         public boolean matches(String value) {
-            return this.encoding.equals(value) || this.name().equalsIgnoreCase(value);
+            return this.name().startsWith(value.toLowerCase());
         }
 
         static Pf2eSavingThrowType valueFromEncoding(String value) {
@@ -94,16 +232,6 @@ public interface Pf2eTypeReader extends JsonSource {
                     .filter((t) -> t.matches(value))
                     .findFirst().orElse(null);
         }
-    }
-
-    enum Pf2eAction implements NodeReader {
-        activity,
-        actionType,
-        cost,
-        info,
-        prerequisites,
-        trigger,
-
     }
 
     enum Pf2eSpell implements NodeReader {
@@ -146,7 +274,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpellComponent implements NodeReader.FieldValue, JsonTextReplacement {
+    enum Pf2eSpellComponent implements NodeReader.FieldValue {
         focus("F"),
         material("M"),
         somatic("S"),
@@ -168,11 +296,6 @@ public interface Pf2eTypeReader extends JsonSource {
             return this.encoding.equals(value) || this.name().equalsIgnoreCase(value);
         }
 
-        public String linkify(String rulesRoot) {
-            return String.format("[%s](%s)",
-                    toTitleCase(this.name()), getRulesPath(rulesRoot));
-        }
-
         public String getRulesPath(String rulesRoot) {
             return String.format("%sTODO.md#%s",
                     rulesRoot, this.name().replace(" ", "%20")
@@ -187,30 +310,14 @@ public interface Pf2eTypeReader extends JsonSource {
                     .filter((t) -> t.matches(value))
                     .findFirst().orElse(null);
         }
-
-        @Override
-        public Pf2eIndex index() {
-            throw new IllegalStateException("Don't call this method");
-        }
-
-        @Override
-        public Pf2eSources getSources() {
-            throw new IllegalStateException("Don't call this method");
-        }
     }
 
     // Special one-offs for accounting/tracking
     enum TtrpgValue implements NodeReader {
-        categoryTag,
-        traitTag,
         indexKey;
 
         public void addToNode(JsonNode node, String value) {
             ((ObjectNode) node).put(this.name(), value);
-        }
-
-        public void addToNode(JsonNode node, List<String> categories) {
-            ((ObjectNode) node).set(this.name(), Tui.MAPPER.valueToTree(categories));
         }
 
         public String getFromNode(JsonNode node) {
@@ -242,7 +349,6 @@ public interface Pf2eTypeReader extends JsonSource {
             if (swim != null) {
                 parts.add("swim " + swim + " feet");
             }
-
             return String.format("%s%s%s",
                     walk == null ? "no land Speed" : "Speed " + walk + " feet",
                     (walk == null || parts.isEmpty()) ? "" : ", ",
@@ -308,6 +414,25 @@ public interface Pf2eTypeReader extends JsonSource {
                 default:
                     throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
             }
+        }
+    }
+
+    class NameAmountNote {
+        public String name;
+        public Integer amount;
+        public String note;
+
+        public NameAmountNote() {
+        }
+
+        public NameAmountNote(String value) {
+            note = value;
+        }
+
+        public String flatten(Pf2eTypeReader convert) {
+            return name
+                    + (amount == null ? "" : " " + amount)
+                    + (note == null ? "" : convert.replaceText(note));
         }
     }
 

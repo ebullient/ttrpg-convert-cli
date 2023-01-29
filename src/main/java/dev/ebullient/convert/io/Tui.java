@@ -429,4 +429,26 @@ public class Tui {
     public String renderEmbedded(QuteNote note) {
         return templates.renderEmbedded(note);
     }
+
+    public <T> T readJsonValue(JsonNode node, TypeReference<T> targetRef) {
+        if (node != null) {
+            try {
+                return Tui.MAPPER.convertValue(node, targetRef);
+            } catch (RuntimeException e) {
+                errorf(e, "Unable to convert %s", node.toString());
+            }
+        }
+        return null;
+    }
+
+    public <T> T readJsonValue(JsonNode node, Class<T> classTarget) {
+        if (node != null) {
+            try {
+                return Tui.MAPPER.convertValue(node, classTarget);
+            } catch (RuntimeException e) {
+                errorf(e, "Unable to convert %s", node.toString());
+            }
+        }
+        return null;
+    }
 }

@@ -19,6 +19,9 @@ public class Json2QuteBackground extends Json2QuteBase {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
+        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendFootnotes(text, 0);
+
         Pf2eBackground.boosts.getListOfStrings(rootNode, tui())
                 .stream()
                 .filter(b -> !b.equalsIgnoreCase("Free"))
@@ -29,8 +32,6 @@ public class Json2QuteBackground extends Json2QuteBase {
 
         Pf2eBackground.feat.getListOfStrings(rootNode, tui())
                 .forEach(s -> tags.add(cfg().tagOf("background", "feat", s)));
-
-        appendEntryToText(text, rootNode, "##");
 
         return new QuteBackground(sources, text, tags);
     }

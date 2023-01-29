@@ -1,22 +1,32 @@
 package dev.ebullient.convert.tools;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
-import dev.ebullient.convert.tools.pf2e.JsonTextReplacement;
-import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
 public interface NodeReader {
+
+    interface Converter<T extends IndexType> {
+        String replaceText(String s);
+
+        void appendEntryToText(List<String> inner, JsonNode target, String join);
+
+        String join(String join, List<String> inner);
+
+        String linkify(T type, String s);
+
+        Tui tui();
+    }
 
     String name();
 
@@ -33,6 +43,16 @@ public interface NodeReader {
             return null;
         }
         return source.get(this.nodeName());
+    }
+
+    default JsonNode getFromOrEmptyObjectNode(JsonNode source) {
+        if (source == null) {
+            return Tui.MAPPER.createObjectNode();
+        }
+        JsonNode result = source.get(this.nodeName());
+        return result == null
+                ? Tui.MAPPER.createObjectNode()
+                : result;
     }
 
     default JsonNode getFieldFrom(JsonNode source, NodeReader field) {
@@ -69,26 +89,37 @@ public interface NodeReader {
         return list == null ? List.of() : list;
     }
 
-    default String replaceTextFrom(JsonNode node, JsonTextReplacement replacer) {
+    default Map<String, String> getMapOfStrings(JsonNode source, Tui tui) {
+        JsonNode target = getFrom(source);
+        if (target == null) {
+            return Map.of();
+        }
+        Map<String, String> map = fieldFromTo(source, Tui.MAP_STRING_STRING, tui);
+        return map == null ? Map.of() : map;
+    }
+
+    default String replaceTextFrom(JsonNode node, Converter<?> replacer) {
         return replacer.replaceText(getTextOrEmpty(node));
     }
 
-    default String transformTextFrom(JsonNode node, String join, Tui tui, JsonTextReplacement replacer) {
-        List<String> list = getListOfStrings(node, tui);
-        if (list.isEmpty()) {
+    default String transformTextFrom(JsonNode source, String join, Converter<?> replacer) {
+        JsonNode target = getFrom(source);
+        if (target == null) {
             return null;
         }
-        return list.stream().map(s -> replacer.replaceText(s)).collect(Collectors.joining(join));
+        List<String> inner = new ArrayList<>();
+        replacer.appendEntryToText(inner, target, join);
+        return replacer.join(join, inner);
     }
 
-    default List<String> transformListFrom(JsonNode node, Tui tui, JsonTextReplacement replacer) {
-        List<String> list = getListOfStrings(node, tui);
-        return list.stream().map(s -> replacer.replaceText(s)).collect(Collectors.toList());
+    default List<String> transformListFrom(JsonNode node, Converter<?> convert) {
+        List<String> list = getListOfStrings(node, convert.tui());
+        return list.stream().map(s -> convert.replaceText(s)).collect(Collectors.toList());
     }
 
-    default List<String> linkifyListFrom(JsonNode node, Pf2eIndexType type, Tui tui, JsonTextReplacement replacer) {
-        List<String> list = getListOfStrings(node, tui);
-        return list.stream().map(s -> replacer.linkify(type, s)).collect(Collectors.toList());
+    default <T extends IndexType> List<String> linkifyListFrom(JsonNode node, T type, Converter<T> convert) {
+        List<String> list = getListOfStrings(node, convert.tui());
+        return list.stream().map(s -> convert.linkify(type, s)).collect(Collectors.toList());
     }
 
     default boolean booleanOrDefault(JsonNode source, boolean value) {
@@ -121,27 +152,11 @@ public interface NodeReader {
     }
 
     default <T> T fieldFromTo(JsonNode source, TypeReference<T> targetRef, Tui tui) {
-        JsonNode node = source.get(this.nodeName());
-        if (node != null) {
-            try {
-                return Tui.MAPPER.readValue(node.toString(), targetRef);
-            } catch (JsonProcessingException e) {
-                tui.errorf(e, "Unable to convert field %s from %s", this.nodeName(), node.toString());
-            }
-        }
-        return null;
+        return tui.readJsonValue(source.get(this.nodeName()), targetRef);
     }
 
     default <T> T fieldFromTo(JsonNode source, Class<T> classTarget, Tui tui) {
-        JsonNode node = source.get(this.nodeName());
-        if (node != null) {
-            try {
-                return Tui.MAPPER.readValue(node.toString(), classTarget);
-            } catch (JsonProcessingException e) {
-                tui.errorf(e, "Unable to convert field %s from %s", this.nodeName(), node.toString());
-            }
-        }
-        return null;
+        return tui.readJsonValue(source.get(this.nodeName()), classTarget);
     }
 
     default boolean valueEquals(JsonNode previous, JsonNode next) {
@@ -154,7 +169,7 @@ public interface NodeReader {
     interface FieldValue {
         String value();
 
-        default boolean isValueOfField(JsonNode source, Field field) {
+        default boolean isValueOfField(JsonNode source, NodeReader field) {
             return matches(field.getTextOrEmpty(source));
         }
 

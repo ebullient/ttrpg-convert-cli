@@ -76,12 +76,12 @@ public class Json2QuteSpell extends Json2QuteBase {
         return new QuteSpell(sources, text, tags,
                 level, toTitleCase(type),
                 traits,
-                Field.alias.transformListFrom(rootNode, tui(), this),
+                Field.alias.transformListFrom(rootNode, this),
                 getQuteSpellCasting(),
                 getQuteSpellTarget(tags),
                 getQuteSaveDuration(),
-                Pf2eSpell.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, tui(), this),
-                Pf2eSpell.traditions.linkifyListFrom(rootNode, Pf2eIndexType.trait, tui(), this),
+                Pf2eSpell.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, this),
+                Pf2eSpell.traditions.linkifyListFrom(rootNode, Pf2eIndexType.trait, this),
                 Pf2eSpell.spellLists.getListOfStrings(rootNode, tui()),
                 subclass,
                 getHeightenedCast(),
@@ -99,9 +99,9 @@ public class Json2QuteSpell extends Json2QuteBase {
                 .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesRoot()))
                 .collect(Collectors.toList());
 
-        quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", tui(), this);
-        quteCast.trigger = Pf2eSpell.trigger.transformTextFrom(rootNode, ", ", tui(), this);
-        quteCast.requirements = Field.requirements.transformTextFrom(rootNode, ", ", tui(), this);
+        quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this);
+        quteCast.trigger = Pf2eSpell.trigger.transformTextFrom(rootNode, ", ", this);
+        quteCast.requirements = Field.requirements.transformTextFrom(rootNode, ", ", this);
 
         return quteCast;
     }

@@ -1,9 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -13,90 +11,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.NodeReader;
 
-public interface JsonTextReplacement {
-    class ParseStateInfo {
-        final boolean inFootnotes;
-        final String src;
-        final int page;
-
-        ParseStateInfo(String src, int page, boolean inFootnotes) {
-            this.src = src;
-            this.inFootnotes = inFootnotes;
-            this.page = page;
-        }
-    }
-
-    class ParseState {
-        private final Deque<ParseStateInfo> stack = new ArrayDeque<>();
-
-        public boolean push(Pf2eSources sources) {
-            if (sources == null) {
-                return false;
-            }
-            return push(Pf2eIndex.findNode(sources));
-        }
-
-        public boolean push(JsonNode node) {
-            String src = JsonSource.Field.source.getTextOrNull(node);
-            int page = JsonSource.Field.page.intOrDefault(node, 0);
-            return push(src, page);
-        }
-
-        public boolean push(String src, int page) {
-            if (src == null && page == 0) {
-                return false;
-            }
-            ParseStateInfo current = stack.peek();
-            if (current == null) {
-                ParseStateInfo info = new ParseStateInfo(src, page, false);
-                stack.addFirst(info);
-                return true;
-            } else if (page != 0 && page != current.page) {
-                ParseStateInfo info = new ParseStateInfo(
-                        src == null ? current.src : src,
-                        page,
-                        current.inFootnotes);
-                stack.addFirst(info);
-                return true;
-            } else if (src != null && !current.src.equals(src)) {
-                ParseStateInfo info = new ParseStateInfo(src, page, current.inFootnotes);
-                stack.addFirst(info);
-                return true;
-            }
-            return false;
-        }
-
-        public boolean push(boolean inFootnotes) {
-            ParseStateInfo prev = stack.peek();
-            ParseStateInfo info = new ParseStateInfo(
-                    prev == null ? null : prev.src,
-                    prev == null ? 0 : prev.page,
-                    inFootnotes);
-            stack.addFirst(info);
-            return true;
-        }
-
-        public void pop(boolean pushed) {
-            if (pushed) {
-                stack.removeFirst();
-            }
-        }
-
-        public boolean inFootnotes() {
-            ParseStateInfo current = stack.peek();
-            return current != null && current.inFootnotes;
-        }
-
-        public String sourceAndPage() {
-            ParseStateInfo current = stack.peek();
-            if (current == null || current.page == 0) {
-                return "";
-            }
-            return String.format("<sup>%s p. %s</sup>",
-                    current.src, current.page);
-        }
-    }
+public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType> {
 
     ParseState parseState = new ParseState();
 
@@ -175,6 +92,16 @@ public interface JsonTextReplacement {
                                 .substring(1)
                                 .toLowerCase())
                 .collect(Collectors.joining(" "));
+    }
+
+    default String replaceText(JsonNode input) {
+        if (input == null) {
+            return null;
+        }
+        if (input.isObject() || input.isArray()) {
+            throw new IllegalArgumentException("Can only replace text for textual nodes: " + input.toString());
+        }
+        return replaceText(input.asText());
     }
 
     default String replaceText(String input) {

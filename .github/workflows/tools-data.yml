@@ -47,11 +47,12 @@ jobs:
           ARTIFACT_URL="https://github.com/5etools-mirror-1/5etools-mirror-1.github.io/archive/refs/tags/$LATEST_VERSION.tar.gz"
           VER=$(echo $LATEST_VERSION | cut -c 2-)
           ROOT="5etools-mirror-1.github.io-$VER"
-
+          
           curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
           tar xzf 5etools.tar.gz ${ROOT}/data ${ROOT}/img
 
-          rm -rf sources/5etools-mirror-1.github.io
+          mkdir -p sources
+          rm -rvf sources/5etools-mirror-1.github.io
           mv ${ROOT} sources/5etools-mirror-1.github.io
 
   test-with-data:

@@ -36,11 +36,11 @@ public class Json2QuteAction extends Json2QuteBase {
 
         return new QuteAction(
                 getSources(), text, tags,
-                Pf2eAction.cost.transformTextFrom(rootNode, ", ", tui(), this),
-                Pf2eAction.trigger.transformTextFrom(rootNode, ", ", tui(), this),
-                Field.alias.transformListFrom(rootNode, tui(), this),
+                Pf2eAction.cost.transformTextFrom(rootNode, ", ", this),
+                Pf2eAction.trigger.transformTextFrom(rootNode, ", ", this),
+                Field.alias.transformListFrom(rootNode, this),
                 collectTraitsFrom(rootNode, tags),
-                Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", tui(), this),
+                Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", this),
                 Field.requirements.replaceTextFrom(rootNode, this),
                 getFrequency(rootNode),
                 jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
@@ -80,11 +80,11 @@ public class Json2QuteAction extends Json2QuteBase {
         }
 
         public boolean isBasic() {
-            return basic != null && basic == true;
+            return basic != null && basic;
         }
 
         public boolean isItem() {
-            return item != null && item == true;
+            return item != null && item;
         }
 
         public QuteAction.ActionType build(JsonSource convert) {
@@ -97,7 +97,7 @@ public class Json2QuteAction extends Json2QuteBase {
                                     .collect(Collectors.toList()),
                     subclass == null ? null
                             : subclass.stream()
-                                    .map(s -> createSubclassLink(s))
+                                    .map(this::createSubclassLink)
                                     .map(s -> convert.linkify(Pf2eIndexType.classtype, s))
                                     .collect(Collectors.toList()),
                     archetype == null ? null
@@ -106,16 +106,16 @@ public class Json2QuteAction extends Json2QuteBase {
                                     .collect(Collectors.toList()),
                     ancestry == null ? null
                             : ancestry.stream()
-                                    .map(s -> createAncestryLink(s))
+                                    .map(this::createAncestryLink)
                                     .map(s -> convert.linkify(Pf2eIndexType.ancestry, s))
                                     .collect(Collectors.toList()),
                     heritage == null ? null
                             : heritage.stream()
-                                    .map(s -> createHeritageLink(s))
+                                    .map(this::createHeritageLink)
                                     .collect(Collectors.toList()),
                     versatileHeritage == null ? null
                             : versatileHeritage.stream()
-                                    .map(s -> createVersatileHeritageLink(s))
+                                    .map(this::createVersatileHeritageLink)
                                     .collect(Collectors.toList()),
                     variantrule == null ? null
                             : variantrule.stream()

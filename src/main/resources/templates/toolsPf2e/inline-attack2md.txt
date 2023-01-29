@@ -1,0 +1,9 @@
+title: {resource.meleeOrRanged} {resource.activity} {resource.name}{#if resource.attack } ({resource.attack}){/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
+{#if resource.damage }
+**Damage** {resource.damage} 
+ 
+{/if}
+**Effects** {resource.text}
+
+{#if resource.tags }
+%% {#each resource.tags}#{it} {/each}%%{/if}
