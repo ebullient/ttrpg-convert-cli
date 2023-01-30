@@ -51,6 +51,7 @@ jobs:
           curl -LsS -o Pf2eTools.tar.gz $ARTIFACT_URL
           tar xzf Pf2eTools.tar.gz ${ROOT}/data ${ROOT}/img
 
+          mkdir -p sources
           rm -rf sources/Pf2eTools
           mv ${ROOT} sources/Pf2eTools
 
