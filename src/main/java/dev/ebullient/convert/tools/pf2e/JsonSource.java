@@ -289,6 +289,9 @@ public interface JsonSource extends JsonTextReplacement {
             }
             appendEntryToText(text, Field.entry.getFrom(node), heading);
             appendEntryToText(text, Field.entries.getFrom(node), heading);
+        } catch (RuntimeException ex) {
+            tui().errorf(ex, "Error occurred while parsing %s", node.toString());
+            throw ex;
         } finally {
             parseState.pop(pushed);
         }
@@ -588,7 +591,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         table.add("<table>");
         for (int r = 0; r < rows.size(); r++) {
-            ArrayNode rowNode = (ArrayNode) rows.get(r);
+            JsonNode rowNode = rows.get(r);
             int cols = rowNode.size(); // varies by row
 
             if (FieldValue.multiRow.isValueOfField(rowNode, Field.type)) {

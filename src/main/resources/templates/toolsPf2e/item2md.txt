@@ -1,0 +1,33 @@
+---
+obsidianUIMode: preview
+cssclass: pf2e,pf2e-item
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
+---
+# {resource.name}{#if resource.level } *Item {resource.level}*{/if}  
+{#if resource.traits }{#each resource.traits}{it}  {/each}
+{/if} 
+
+{#if resource.duration }
+- **Duration** {resource.duration}
+{/if}{#if resource.activate }
+- **Activate** {resource.activate}
+{/if}{#if resource.onset }
+- **Onset** {resource.onset}
+{/if}{#if resource.usage }
+- {#each resource.usage}**{it.key}** {it.value}{#if it_hasNext}; {/if}{/each}
+{/if}{#if resource.hands }
+- **Hands** {resource.hands}
+{/if}{#if resource.category || resource.group }
+- {#if resource.category }**Category** {resource.category}{#if resource.group}; {/if}{/if}{#if resource.group }**Group** {resource.group} {/if}
+{/if}
+
+{resource.text}
+{#if resource.source }
+
+*Source: {resource.source}*  {/if}

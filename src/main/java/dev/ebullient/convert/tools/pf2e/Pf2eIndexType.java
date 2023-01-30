@@ -42,6 +42,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     feat,
     group,
     hazard,
+    baseitem,
     item,
     language,
     nation, // GMG
@@ -163,6 +164,8 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
                 return new Json2QuteFeat(index, node).build();
             case hazard:
                 return new Json2QuteHazard(index, node).build();
+            case item:
+                return new Json2QuteItem(index, node).build();
             case ritual:
                 return new Json2QuteRitual(index, node).build();
             case spell:
