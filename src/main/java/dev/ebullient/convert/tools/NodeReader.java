@@ -34,6 +34,12 @@ public interface NodeReader {
         return this.name();
     }
 
+    default void debugIfExists(JsonNode node, Tui tui) {
+        if (existsIn(node)) {
+            tui.errorf(this.name() + " is defined in " + node.toPrettyString());
+        }
+    }
+
     default boolean existsIn(JsonNode source) {
         return source.has(this.nodeName());
     }

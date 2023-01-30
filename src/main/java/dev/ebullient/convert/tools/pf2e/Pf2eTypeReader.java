@@ -326,7 +326,8 @@ public interface Pf2eTypeReader extends JsonSource {
 
     // Special one-offs for accounting/tracking
     enum TtrpgValue implements NodeReader {
-        indexKey;
+        indexKey,
+        p2feInputType;
 
         public void addToNode(JsonNode node, String value) {
             ((ObjectNode) node).put(this.name(), value);

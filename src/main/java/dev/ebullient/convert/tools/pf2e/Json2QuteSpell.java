@@ -18,7 +18,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteSpell extends Json2QuteBase {
-    static final String SPELLS = "spells";
+    static final String SPELL_TAG = "spell";
 
     public Json2QuteSpell(Pf2eIndex index, JsonNode rootNode) {
         this(index, Pf2eIndexType.spell, rootNode);
@@ -43,12 +43,12 @@ public class Json2QuteSpell extends Json2QuteBase {
         String type = "spell";
         if (join("", traits).contains("cantrip")) {
             type = "cantrip";
-            tags.add(cfg().tagOf(SPELLS, type));
+            tags.add(cfg().tagOf(SPELL_TAG, type));
         } else if (focus) {
             type = "focus";
-            tags.add(cfg().tagOf(SPELLS, type, level));
+            tags.add(cfg().tagOf(SPELL_TAG, type, level));
         } else {
-            tags.add(cfg().tagOf(SPELLS, "level", level));
+            tags.add(cfg().tagOf(SPELL_TAG, "level", level));
         }
 
         Pf2eIndexType.domain.getListOfStrings(rootNode, tui()).forEach(d -> tags.add(cfg().tagOf("domain", d, "spell")));
@@ -151,7 +151,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         }
         if (area != null) {
             spellTarget.area = area.entry;
-            area.types.forEach(t -> tags.add(cfg().tagOf(SPELLS, "area", t)));
+            area.types.forEach(t -> tags.add(cfg().tagOf(SPELL_TAG, "area", t)));
         }
         return spellTarget;
     }

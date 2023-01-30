@@ -14,7 +14,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteRitual extends Json2QuteSpell {
-    static final String RITUALS = "rituals";
+    static final String RITUAL_TAG = "ritual";
 
     public Json2QuteRitual(Pf2eIndex index, JsonNode rootNode) {
         super(index, Pf2eIndexType.ritual, rootNode);
@@ -29,7 +29,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
         appendFootnotes(text, 0);
 
         String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");
-        tags.add(cfg().tagOf(RITUALS, level));
+        tags.add(cfg().tagOf(RITUAL_TAG, level));
 
         return new QuteRitual(sources, text, tags,
                 level, "Ritual",
@@ -60,7 +60,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
         }
         if (area != null) {
             spellTarget.area = area.entry;
-            area.types.forEach(t -> tags.add(cfg().tagOf(RITUALS, "area", t)));
+            area.types.forEach(t -> tags.add(cfg().tagOf(RITUAL_TAG, "area", t)));
         }
         return spellTarget;
     }

@@ -71,13 +71,13 @@ public class QuteSpell extends Pf2eQuteBase {
                     : " " + String.join(", ", components)));
 
             if (cost != null) {
-                parts.add(String.format("**Cost** %s", cost));
+                parts.add("**Cost**" + cost);
             }
             if (trigger != null) {
-                parts.add(String.format("**Trigger** %s", trigger));
+                parts.add("**Trigger**" + trigger);
             }
             if (requirements != null) {
-                parts.add(String.format("**Requirements** %s", requirements));
+                parts.add("**Requirements**" + requirements);
             }
 
             return String.join("\n- ", parts);
@@ -98,7 +98,7 @@ public class QuteSpell extends Pf2eQuteBase {
                         savingThrow));
             }
             if (duration != null) {
-                parts.add(String.format("**Duration** %s", duration));
+                parts.add("**Duration**" + duration);
             }
             return String.join("\n- ", parts);
         }
@@ -119,13 +119,13 @@ public class QuteSpell extends Pf2eQuteBase {
         public String toString() {
             List<String> parts = new ArrayList<>();
             if (range != null) {
-                parts.add(String.format("**Range** %s", range));
+                parts.add("**Range**" + range);
             }
             if (area != null) {
-                parts.add(String.format("**Area** %s", area));
+                parts.add("**Area**" + area);
             }
             if (targets != null) {
-                parts.add(String.format("**Targets** %s", targets));
+                parts.add("**Targets**" + targets);
             }
             return String.join("\n- ", parts);
         }

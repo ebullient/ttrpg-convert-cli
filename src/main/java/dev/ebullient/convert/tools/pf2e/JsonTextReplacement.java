@@ -266,6 +266,9 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
     }
 
     default String linkify(Pf2eIndexType targetType, String match) {
+        if (match == null || match.isEmpty()) {
+            return match;
+        }
         switch (targetType) {
             case skill:
                 //	"Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception}",

@@ -69,6 +69,8 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         Pf2eIndexType.domain.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.feat.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.hazard.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.baseitem.withArrayFrom(node, this::addToIndex);
+        Pf2eIndexType.item.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.ritual.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.skill.withArrayFrom(node, this::addToIndex);
         Pf2eIndexType.spell.withArrayFrom(node, this::addToIndex);
@@ -84,6 +86,11 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     void addToIndex(Pf2eIndexType type, JsonNode node) {
+        TtrpgValue.p2feInputType.addToNode(node, type.name());
+        if (type == Pf2eIndexType.baseitem) {
+            // always use item (baseitem is a detail that we have remembered if we need it)
+            type = Pf2eIndexType.item;
+        }
         // TODO: Variants? Reprints?
         String key = type.createKey(node);
         String hash = Field.add_hash.getTextOrNull(node);

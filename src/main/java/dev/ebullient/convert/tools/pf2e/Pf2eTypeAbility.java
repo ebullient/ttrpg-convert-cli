@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
@@ -21,12 +20,6 @@ public enum Pf2eTypeAbility implements NodeReader {
     requirements,
     trigger,
     special;
-
-    void debugIfExists(JsonNode node, Tui tui) {
-        if (existsIn(node)) {
-            tui.errorf(this.name() + " is defined in " + node.toPrettyString());
-        }
-    }
 
     public static QuteAbility createAbility(JsonNode node, JsonSource convert, boolean embedded) {
         boolean pushed = JsonTextReplacement.parseState.push(node);
