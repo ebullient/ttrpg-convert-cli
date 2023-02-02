@@ -1,16 +1,18 @@
 ---
 obsidianUIMode: preview
-cssclass: pf2e,pf2e-feat
+cssclass: pf2e,pf2e-ability
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}
 - {tag}
 {/for}
 {/if}
-aliases: ["{resource.name}]
+aliases: ["{resource.name}"]
 ---
-%%-- Embedded/inline feat starts on the next line. --%%
-{#if resource.embedded && resource.tags }title: {#else}# {/if}{resource.name}{#if resource.activity} {resource.activity}{/if}{#if resource.components} {resource.components}{/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
+%%-- Embedded/inline ability starts on the next line. --%%
+{#if resource.embedded }title: {#else}# {/if}{resource.name}{#if resource.activity} {resource.activity}{/if}{#if resource.components} {resource.components}{/if}
+{#if resource.traits }{#each resource.traits}{it}  {/each}
+{/if}
 
 {#if resource.cost }
 - **Cost**: {resource.cost}

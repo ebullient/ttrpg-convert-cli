@@ -13,7 +13,7 @@ public class QuteSpell extends Pf2eQuteBase {
 
     public final String level;
     public final String spellType;
-    public final List<String> traits;
+    public final Collection<String> traits;
     public final List<String> aliases;
 
     public final QuteSpellCasting casting;
@@ -29,7 +29,7 @@ public class QuteSpell extends Pf2eQuteBase {
     public final Map<String, String> heightened;
 
     public QuteSpell(Pf2eSources sources, List<String> text, Collection<String> tags,
-            String level, String spellType, List<String> traits, List<String> aliases,
+            String level, String spellType, Collection<String> traits, List<String> aliases,
             QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSaveDuration saveDuration,
             List<String> domains, List<String> traditions, List<String> spellLists,
             List<QuteSpellSubclass> subclass, Map<String, String> heightened, QuteSpellAmp amp) {

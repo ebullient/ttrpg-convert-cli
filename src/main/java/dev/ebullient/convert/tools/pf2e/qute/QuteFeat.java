@@ -4,16 +4,18 @@ import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteFeat extends Pf2eQuteBase {
 
-    public final List<String> traits;
+    public final Collection<String> traits;
     public final List<String> aliases;
 
     public final String level;
     public final String access;
     public final String frequency;
-    public final QuteActivityType activity;
+    public final QuteDataActivity activity;
     public final String trigger;
     public final String cost;
     public final String requirements;
@@ -24,8 +26,8 @@ public class QuteFeat extends Pf2eQuteBase {
     public final boolean embedded;
 
     public QuteFeat(Pf2eSources sources, List<String> text, Collection<String> tags,
-            List<String> traits, List<String> aliases,
-            String level, String access, String frequency, QuteActivityType activity, String trigger,
+            Collection<String> traits, List<String> aliases,
+            String level, String access, String frequency, QuteDataActivity activity, String trigger,
             String cost, String requirements, String prerequisites, String special, String note,
             List<String> leadsTo, boolean embedded) {
         super(sources, text, tags);

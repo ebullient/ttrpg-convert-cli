@@ -179,23 +179,7 @@ public class Json2QuteDeity extends Json2QuteBase {
 
         action.actionType = ranged == null ? "Melee" : "Ranged";
         action.activityType = Pf2eTypeActivity.single.toQuteActivityType(this, null);
-
-        String damage = Pf2eDeity.damage.getTextOrNull(actionNode);
-        String damage2 = Pf2eDeity.damage2.getTextOrNull(actionNode);
-
-        action.damage = "";
-        if (damage != null) {
-            action.damage += replaceText(String.format("{@damage %s} %s",
-                    damage,
-                    Pf2eDeity.damageType.getTextOrEmpty(actionNode)));
-        }
-        if (damage2 != null) {
-            action.damage += replaceText(String.format("%s{@damage %s} %s",
-                    damage == null ? "" : " and ",
-                    damage2,
-                    Pf2eDeity.damageType2.getTextOrEmpty(actionNode)));
-        }
-
+        action.damage = Pf2eWeaponData.getDamageString(actionNode, this);
         action.note = replaceText(Pf2eDeity.note.getTextOrNull(actionNode));
         return action;
     }

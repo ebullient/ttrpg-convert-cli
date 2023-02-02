@@ -14,7 +14,7 @@ public class QuteRitual extends Pf2eQuteBase {
 
     public final String level;
     public final String ritualType;
-    public final List<String> traits;
+    public final Collection<String> traits;
     public final List<String> aliases;
 
     public final QuteRitualCasting casting;
@@ -27,7 +27,7 @@ public class QuteRitual extends Pf2eQuteBase {
     public final Map<String, String> heightened;
 
     public QuteRitual(Pf2eSources sources, List<String> text, Collection<String> tags,
-            String level, String ritualType, List<String> traits, List<String> aliases,
+            String level, String ritualType, Collection<String> traits, List<String> aliases,
             QuteRitualCasting casting, QuteRitualChecks checks, QuteSpellTarget targeting,
             String requirements, String duration, Map<String, String> heightened) {
         super(sources, text, tags);

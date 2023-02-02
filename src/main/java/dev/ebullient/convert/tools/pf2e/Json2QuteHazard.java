@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses;
 
 public class Json2QuteHazard extends Json2QuteBase {
 
@@ -48,13 +48,12 @@ public class Json2QuteHazard extends Json2QuteBase {
         return attr;
     }
 
-    String buildDefenses() {
+    QuteDataDefenses buildDefenses() {
         JsonNode defenseNode = Pf2eHazard.defenses.getFrom(rootNode);
         if (defenseNode == null) {
             return null;
         }
-        QuteInlineDefenses defenses = Pf2eDefenses.createInlineDefenses(defenseNode, this);
-        return render(defenses, null); // not an admonition
+        return Pf2eDefenses.createInlineDefenses(defenseNode, this);
     }
 
     List<String> buildAbilities() {
@@ -83,13 +82,13 @@ public class Json2QuteHazard extends Json2QuteBase {
                 .collect(Collectors.toList());
     }
 
-    String render(Pf2eQuteNote inlineAbility, Pf2eIndexType type) {
+    String render(Pf2eQuteNote embeddedElement, Pf2eIndexType type) {
         List<String> inner = new ArrayList<>();
         if (type == Pf2eIndexType.ability) {
-            renderEmbeddedTemplate(inner, inlineAbility, type.name(), List.of());
+            renderEmbeddedTemplate(inner, embeddedElement, type.name(), List.of());
         } else {
             String admonition = type == null ? null : (type == Pf2eIndexType.syntheticGroup ? "attack" : type.name());
-            renderInlineTemplate(inner, inlineAbility, admonition);
+            renderInlineTemplate(inner, embeddedElement, admonition);
         }
         return String.join("\n", inner);
     }

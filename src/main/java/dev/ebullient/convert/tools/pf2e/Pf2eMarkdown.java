@@ -110,8 +110,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
             switch (type) {
                 case ability:
-                    Pf2eQuteNote ability = Pf2eTypeAbility.createAbility(node, index, false);
-                    rules.add(ability);
+                    rules.add(Pf2eTypeAbility.createAbility(node, index, false));
                     break;
                 case book:
                     index.tui().warnf("Looking at book: %s", e.getKey());
