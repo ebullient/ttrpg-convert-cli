@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -15,11 +16,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
-import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses.QuteArmorClass;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses.QuteHitPoints;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineDefenses.QuteSavingThrows;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardness;
+import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
@@ -77,9 +79,57 @@ public interface Pf2eTypeReader extends JsonSource {
         damage2,
         damageType2,
         group,
-        hands,
         range,
         reload;
+
+        public static QuteItemWeaponData buildWeaponData(JsonNode source,
+                Pf2eTypeReader convert, Collection<String> traits, Collection<String> tags) {
+            QuteItemWeaponData weaponData = new QuteItemWeaponData();
+
+            traits.addAll(convert.collectTraitsFrom(source, tags));
+
+            weaponData.ranged = new LinkedHashMap<>();
+            String ammunition = Pf2eWeaponData.ammunition.getTextOrNull(source);
+            if (ammunition != null) {
+                weaponData.ranged.put("Ammunution", convert.linkify(Pf2eIndexType.item, ammunition));
+            }
+            String range = Pf2eWeaponData.range.getTextOrNull(source);
+            if (range != null) {
+                weaponData.ranged.put("Range", range + " ft.");
+            }
+            String reload = Pf2eWeaponData.reload.getTextOrNull(source);
+            if (reload != null) {
+                weaponData.ranged.put("Reload", convert.replaceText(reload));
+            }
+
+            String group = Pf2eWeaponData.group.getTextOrNull(source);
+            if (group != null) {
+                weaponData.group = convert.linkify(Pf2eIndexType.group, group);
+            }
+
+            weaponData.damage = getDamageString(source, convert);
+
+            return weaponData;
+        }
+
+        public static String getDamageString(JsonNode source, Pf2eTypeReader convert) {
+            String damage = Pf2eWeaponData.damage.getTextOrNull(source);
+            String damage2 = Pf2eWeaponData.damage2.getTextOrNull(source);
+
+            String result = "";
+            if (damage != null) {
+                result += convert.replaceText(String.format("{@damage %s} %s",
+                        damage,
+                        Pf2eWeaponData.damageType.getTextOrEmpty(source)));
+            }
+            if (damage2 != null) {
+                result += convert.replaceText(String.format("%s{@damage %s} %s",
+                        damage == null ? "" : " and ",
+                        damage2,
+                        Pf2eWeaponData.damageType2.getTextOrEmpty(source)));
+            }
+            return result;
+        }
     }
 
     enum Pf2eDefenses implements NodeReader {
@@ -96,13 +146,13 @@ public interface Pf2eTypeReader extends JsonSource {
         std,
         weaknesses;
 
-        public static QuteInlineDefenses createInlineDefenses(JsonNode source, Pf2eTypeReader convert) {
+        public static QuteDataDefenses createInlineDefenses(JsonNode source, Pf2eTypeReader convert) {
             List<String> text = new ArrayList<>();
             JsonNode notesNode = notes.getFrom(source);
             if (notesNode != null) {
                 convert.tui().warnf("Defenses has notes: %s", source.toString());
             }
-            return new QuteInlineDefenses(text,
+            return new QuteDataDefenses(text,
                     getAcString(source, convert),
                     getSavingThrowString(source, convert),
                     getHpHardness(source, convert), // hp hardness
@@ -124,7 +174,7 @@ public interface Pf2eTypeReader extends JsonSource {
         // "bt": {
         //     "std": 27
         // },
-        public static List<QuteHitPoints> getHpHardness(JsonNode source, Pf2eTypeReader convert) {
+        public static List<QuteDataHpHardness> getHpHardness(JsonNode source, Pf2eTypeReader convert) {
             // First pass: for hazards. TODO: creatures
             JsonNode btValueNode = bt.getFromOrEmptyObjectNode(source);
             JsonNode hpValueNode = hp.getFromOrEmptyObjectNode(source);
@@ -139,9 +189,9 @@ public interface Pf2eTypeReader extends JsonSource {
             hardValueNode.fieldNames().forEachRemaining(keys::add);
             keys.removeIf(k -> k.equalsIgnoreCase("notes"));
 
-            List<QuteHitPoints> items = new ArrayList<>();
+            List<QuteDataHpHardness> items = new ArrayList<>();
             for (String k : keys) {
-                QuteHitPoints qhp = new QuteHitPoints();
+                QuteDataHpHardness qhp = new QuteDataHpHardness();
                 qhp.name = k.equals("std") ? "" : k;
                 qhp.hardnessNotes = convert.replaceText(hardNotes.get(k));
                 qhp.hpNotes = convert.replaceText(hpNotes.get(k));
@@ -163,12 +213,12 @@ public interface Pf2eTypeReader extends JsonSource {
             return items;
         }
 
-        public static QuteArmorClass getAcString(JsonNode source, Pf2eTypeReader convert) {
+        public static QuteDataArmorClass getAcString(JsonNode source, Pf2eTypeReader convert) {
             JsonNode acNode = ac.getFrom(source);
             if (acNode == null) {
                 return null;
             }
-            QuteArmorClass ac = new QuteArmorClass();
+            QuteDataArmorClass ac = new QuteDataArmorClass();
             ac.armorClass = new LinkedHashMap<>();
             acNode.fields().forEachRemaining(e -> {
                 if (e.getKey().equals(note.name()) || e.getKey().equals(abilities.name())) {
@@ -201,7 +251,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 }
                 int sv = std.intOrDefault(e.getValue(), 0);
                 svt.savingThrows.put(convert.toTitleCase(e.getKey()),
-                        (sv >= 0 ? "+" : "-") + sv);
+                        (sv >= 0 ? "+" : "") + sv);
             });
             svt.abilities = convert.replaceText(abilities.getTextOrNull(stNode));
             return svt;
@@ -398,7 +448,7 @@ public interface Pf2eTypeReader extends JsonSource {
             return unit;
         }
 
-        public QuteActivityType toQuteActivity(JsonSource convert) {
+        public QuteDataActivity toQuteActivity(JsonSource convert) {
             String extra = entry == null || entry.toLowerCase().contains("varies")
                     ? ""
                     : " (" + convert.replaceText(entry) + ")";

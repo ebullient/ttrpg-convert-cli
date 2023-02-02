@@ -13,15 +13,29 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if} 
 
-{#if resource.duration }
+{#if resource.access }
+- **Access** {resource.access}
+{/if}{#if resource.price }
+- **Price** {resource.price}
+{/if}{#if resource.ammunition }
+- **Ammunition** {resource.ammunition}
+{/if}{#if resource.contract }
+- {#each resource.contract}**{it.key}** {it.value}{#if it_hasNext}; {/if}{/each}
+{/if}{#if resource.usage }
+- {#each resource.usage}**{it.key}** {it.value}{#if it_hasNext}; {/if}{/each}
+{/if}{#if resource.duration }
 - **Duration** {resource.duration}
 {/if}{#if resource.activate }
 - **Activate** {resource.activate}
 {/if}{#if resource.onset }
 - **Onset** {resource.onset}
-{/if}{#if resource.usage }
-- {#each resource.usage}**{it.key}** {it.value}{#if it_hasNext}; {/if}{/each}
-{/if}{#if resource.hands }
+{/if}{#if resource.shield }
+{resource.shield}
+{/if}{#if resource.armor }
+{resource.armor}
+{/if}{#if resource.weapons }
+{#each resource.weapons}{it}{#if it_hasNext}{/if}
+{/each}{/if}{#if resource.hands }
 - **Hands** {resource.hands}
 {/if}{#if resource.category || resource.group }
 - {#if resource.category }**Category** {resource.category}{#if resource.group}; {/if}{/if}{#if resource.group }**Group** {resource.group} {/if}

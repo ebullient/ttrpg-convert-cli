@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
@@ -11,7 +12,7 @@ public class QuteAction extends Pf2eQuteBase {
 
     public final String trigger;
     public final List<String> aliases;
-    public final List<String> traits;
+    public final Collection<String> traits;
 
     public final String requirements;
     public final String prerequisites;
@@ -19,12 +20,12 @@ public class QuteAction extends Pf2eQuteBase {
     public final String cost;
 
     public final ActionType actionType;
-    public final QuteActivityType activity;
+    public final QuteDataActivity activity;
 
     public QuteAction(Pf2eSources sources, List<String> text, List<String> tags,
-            String cost, String trigger, List<String> aliases, List<String> traits,
+            String cost, String trigger, List<String> aliases, Collection<String> traits,
             String prerequisites, String requirements, String frequency,
-            QuteActivityType activity, ActionType actionType) {
+            QuteDataActivity activity, ActionType actionType) {
         super(sources, text, tags);
         this.trigger = trigger;
         this.aliases = aliases;

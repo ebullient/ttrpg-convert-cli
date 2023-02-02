@@ -125,8 +125,8 @@ public class QuteDeity extends Pf2eQuteBase {
     public static class QuteDivineAvatarAction {
         public String actionType;
         public String name;
-        public QuteActivityType activityType;
-        public List<String> traits;
+        public QuteDataActivity activityType;
+        public Collection<String> traits;
         public String range;
         public String damage;
         public String note;

@@ -3,7 +3,7 @@ package dev.ebullient.convert.tools.pf2e;
 import java.nio.file.Path;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 
 public enum Pf2eTypeActivity {
     single("Single Action", ">", "single_action.svg"),
@@ -78,9 +78,9 @@ public enum Pf2eTypeActivity {
         return String.format("%s%s", rulesRoot, DOC_PATH);
     }
 
-    public QuteActivityType toQuteActivityType(JsonSource convert, String text) {
+    public QuteDataActivity toQuteActivityType(JsonSource convert, String text) {
         Path relativeTarget = Path.of("img", targetFileName);
-        return new QuteActivityType(
+        return new QuteDataActivity(
                 text == null ? longName : text,
                 Pf2eSources.buildStreamImageRef(convert.index(), glyph, relativeTarget, longName),
                 textGlyph,

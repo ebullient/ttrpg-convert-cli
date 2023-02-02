@@ -7,7 +7,7 @@ import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 
 public class QuteAffliction extends Pf2eQuteBase {
 
-    public final List<String> traits;
+    public final Collection<String> traits;
     public final List<String> aliases;
 
     public final String level;
@@ -15,7 +15,7 @@ public class QuteAffliction extends Pf2eQuteBase {
     public final String temptedCurse;
 
     public QuteAffliction(Pf2eSources sources, List<String> text, Collection<String> tags,
-            List<String> traits, List<String> aliases,
+            Collection<String> traits, List<String> aliases,
             String level, String affliction, String temptedCurse) {
         super(sources, text, tags);
         this.traits = traits;

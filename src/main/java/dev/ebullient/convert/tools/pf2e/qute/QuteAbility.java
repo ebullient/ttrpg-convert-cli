@@ -1,14 +1,15 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.qute.TemplateData;
 
-@RegisterForReflection
+@TemplateData
 public class QuteAbility extends Pf2eQuteNote {
 
-    public final List<String> traits;
+    public final Collection<String> traits;
     public final String components;
 
     public final String trigger;
@@ -18,10 +19,10 @@ public class QuteAbility extends Pf2eQuteNote {
     public final String special;
     public final boolean embedded;
 
-    public final QuteActivityType activity;
+    public final QuteDataActivity activity;
 
     public QuteAbility(String name, List<String> text, List<String> tags,
-            List<String> traits, QuteActivityType activity,
+            Collection<String> traits, QuteDataActivity activity,
             String components, String requirements,
             String cost, String trigger, String frequency, String special, boolean embedded) {
         super(Pf2eIndexType.ability, name, null, text, tags);

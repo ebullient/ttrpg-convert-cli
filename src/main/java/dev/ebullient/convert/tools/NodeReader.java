@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public interface NodeReader {
 
         void appendEntryToText(List<String> inner, JsonNode target, String join);
 
-        String join(String join, List<String> inner);
+        String join(String join, Collection<String> inner);
 
         String linkify(T type, String s);
 
@@ -82,6 +83,18 @@ public interface NodeReader {
     default String getTextOrDefault(JsonNode x, String value) {
         String text = getTextOrNull(x);
         return text == null ? value : text;
+    }
+
+    default String bonusOrNull(JsonNode x) {
+        JsonNode value = getFrom(x);
+        if (value == null) {
+            return null;
+        }
+        if (!value.isNumber()) {
+            throw new IllegalArgumentException("Can only work with numbers: " + value);
+        }
+        int n = value.asInt();
+        return (n >= 0 ? "+" : "") + n;
     }
 
     default List<String> getListOfStrings(JsonNode source, Tui tui) {

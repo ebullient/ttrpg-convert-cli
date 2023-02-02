@@ -10,7 +10,7 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteInlineAffliction extends Pf2eQuteNote {
 
-    public final List<String> traits;
+    public final Collection<String> traits;
     public final String level;
     public final String maxDuration;
     public final String onset;
@@ -19,7 +19,7 @@ public class QuteInlineAffliction extends Pf2eQuteNote {
     public final Map<String, QuteAfflictionStage> stages;
 
     public QuteInlineAffliction(String name, List<String> text, Collection<String> tags,
-            List<String> traits, String level,
+            Collection<String> traits, String level,
             String maxDuration, String onset, String savingThrow,
             String effect, Map<String, QuteAfflictionStage> stages) {
         super(Pf2eIndexType.affliction, name, null, text, tags);

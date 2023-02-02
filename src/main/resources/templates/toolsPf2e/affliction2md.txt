@@ -13,7 +13,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 *{resource.affliction} {resource.level}*  
 %%-- Embedded/inline affliction starts on the next line. --%%
 {#if resource.traits }{#each resource.traits}{it}  {/each}
-{/if} 
+{/if}
 
 {resource.text}
 {#if resource.temptedCurse }

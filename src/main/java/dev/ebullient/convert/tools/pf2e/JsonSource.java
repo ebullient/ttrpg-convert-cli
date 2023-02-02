@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,7 +21,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
-import dev.ebullient.convert.tools.pf2e.qute.QuteActivityType;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
@@ -32,12 +34,12 @@ public interface JsonSource extends JsonTextReplacement {
      *
      * @return an empty or sorted/linkified list of traits (never null)
      */
-    default List<String> collectTraitsFrom(JsonNode sourceNode, Collection<String> tags) {
+    default Set<String> collectTraitsFrom(JsonNode sourceNode, Collection<String> tags) {
         return Field.traits.getListOfStrings(sourceNode, tui()).stream()
                 .peek(t -> tags.add(cfg().tagOf("trait", t)))
                 .sorted()
                 .map(s -> linkify(Pf2eIndexType.trait, s))
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     /**
@@ -407,6 +409,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         insetText.add("[!" + callout + "] " + replaceText(name));
 
+        // TODO
         JsonNode autoReference = Field.recurs.getFieldFrom(entry, Field.auto);
         if (Field.auto.booleanOrDefault(Field.reference.getFrom(entry), false)) {
             String page = Field.page.getTextOrNull(entry);
@@ -464,9 +467,9 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendAbility(List<String> text, JsonNode node) {
-        renderInlineTemplate(text,
+        renderEmbeddedTemplate(text,
                 Pf2eTypeAbility.createAbility(node, this, true),
-                "ability");
+                "ability", List.of());
     }
 
     /** Internal */
@@ -479,7 +482,7 @@ public interface JsonSource extends JsonTextReplacement {
         String savingThrowString = replaceText((dc == null ? "" : "DC " + dc + " ") + savingThrow);
 
         List<String> tags = new ArrayList<>();
-        List<String> traits = collectTraitsFrom(node, tags);
+        Collection<String> traits = collectTraitsFrom(node, tags);
 
         JsonNode field = AfflictionField.level.getFrom(node);
         if (field != null) {
@@ -882,7 +885,7 @@ public interface JsonSource extends JsonTextReplacement {
             String name = convert.toTitleCase(Field.name.replaceTextFrom(node, convert));
 
             List<String> tags = new ArrayList<>();
-            List<String> traits = convert.collectTraitsFrom(node, tags);
+            Collection<String> traits = convert.collectTraitsFrom(node, tags);
 
             List<String> effects = new ArrayList<>();
             convert.appendEntryToText(effects, AttackField.effects.getFrom(node), null);
@@ -891,7 +894,7 @@ public interface JsonSource extends JsonTextReplacement {
             String attack = AttackField.attack.getTextOrNull(node);
             String damage = AttackField.damage.replaceTextFrom(node, convert);
 
-            QuteActivityType activity = Pf2eTypeActivity.single.toQuteActivityType(convert, null);
+            QuteDataActivity activity = Pf2eTypeActivity.single.toQuteActivityType(convert, null);
             return new QuteInlineAttack(name, effects, tags, traits,
                     meleeOrRanged, attack, damage, activity);
         }

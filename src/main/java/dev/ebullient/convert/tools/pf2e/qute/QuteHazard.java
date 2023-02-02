@@ -11,13 +11,13 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteHazard extends Pf2eQuteBase {
 
-    public final List<String> traits;
+    public final Collection<String> traits;
 
     public final String level;
     public final String disable;
     public final String reset;
     public final String routine;
-    public final String defenses;
+    public final QuteDataDefenses defenses;
 
     public final List<String> abilities;
     public final List<String> actions;
@@ -25,8 +25,8 @@ public class QuteHazard extends Pf2eQuteBase {
     public final QuteHazardAttributes perception;
 
     public QuteHazard(Pf2eSources sources, List<String> text, Collection<String> tags,
-            List<String> traits, String level, String disable,
-            String reset, String routine, String defenses,
+            Collection<String> traits, String level, String disable,
+            String reset, String routine, QuteDataDefenses defenses,
             List<String> abilities, List<String> actions,
             QuteHazardAttributes stealth, QuteHazardAttributes perception) {
         super(sources, text, tags);
@@ -80,7 +80,7 @@ public class QuteHazard extends Pf2eQuteBase {
             if (dc != null) {
                 pieces.add("DC " + dc);
             } else if (bonus != null) {
-                pieces.add((bonus >= 0 ? "+" : "-") + bonus);
+                pieces.add((bonus >= 0 ? "+" : "") + bonus);
             }
             if (minProf != null) {
                 pieces.add(minProf);

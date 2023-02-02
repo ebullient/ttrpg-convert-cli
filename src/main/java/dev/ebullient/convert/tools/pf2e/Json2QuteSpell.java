@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        List<String> traits = collectTraitsFrom(rootNode, tags);
+        Collection<String> traits = collectTraitsFrom(rootNode, tags);
 
         boolean focus = Pf2eSpell.focus.booleanOrDefault(rootNode, false);
         String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");
