@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,7 +33,7 @@ public class Json2QuteSpell extends Json2QuteBase {
 
     @Override
     protected Pf2eQuteBase buildQuteResource() {
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");

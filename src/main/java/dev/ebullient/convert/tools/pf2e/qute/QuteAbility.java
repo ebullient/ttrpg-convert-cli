@@ -21,7 +21,7 @@ public class QuteAbility extends Pf2eQuteNote {
 
     public final QuteDataActivity activity;
 
-    public QuteAbility(String name, List<String> text, List<String> tags,
+    public QuteAbility(String name, List<String> text, Collection<String> tags,
             Collection<String> traits, QuteDataActivity activity,
             String components, String requirements,
             String cost, String trigger, String frequency, String special, boolean embedded) {

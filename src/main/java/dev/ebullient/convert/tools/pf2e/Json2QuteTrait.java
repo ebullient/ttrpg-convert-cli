@@ -2,6 +2,8 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -18,7 +20,7 @@ public class Json2QuteTrait extends Json2QuteBase {
 
     @Override
     protected QuteTrait buildQuteResource() {
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
         List<String> categories = new ArrayList<>();
 
