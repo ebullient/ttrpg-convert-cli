@@ -117,10 +117,6 @@ public interface NodeReader {
         return map == null ? Map.of() : map;
     }
 
-    default String replaceTextFrom(JsonNode node, Converter<?> replacer) {
-        return replacer.replaceText(getTextOrEmpty(node));
-    }
-
     default String transformTextFrom(JsonNode source, String join, Converter<?> replacer) {
         JsonNode target = getFrom(source);
         if (target == null) {
@@ -131,7 +127,11 @@ public interface NodeReader {
         return replacer.join(join, inner);
     }
 
-    default List<String> transformListFrom(JsonNode node, Converter<?> convert) {
+    default String replaceTextFrom(JsonNode node, Converter<?> replacer) {
+        return replacer.replaceText(getTextOrEmpty(node));
+    }
+
+    default List<String> replaceTextFromList(JsonNode node, Converter<?> convert) {
         List<String> list = getListOfStrings(node, convert.tui());
         return list.stream().map(s -> convert.replaceText(s)).collect(Collectors.toList());
     }

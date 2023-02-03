@@ -130,6 +130,49 @@ public interface Pf2eTypeReader extends JsonSource {
             }
             return result;
         }
+
+        static String getDamageType(NodeReader damageType, JsonNode source) {
+            String value = damageType.getTextOrEmpty(source);
+            switch (value) {
+                case "A":
+                    return "acid";
+                case "B":
+                    return "bludgeoning";
+                case "C":
+                    return "cold";
+                case "D":
+                    return "bleed";
+                case "E":
+                    return "electricity";
+                case "F":
+                    return "fire";
+                case "H":
+                    return "chaotic";
+                case "I":
+                    return "poison";
+                case "L":
+                    return "lawful";
+                case "M":
+                    return "mental";
+                case "Mod":
+                    return "modular";
+                case "N":
+                    return "sonic";
+                case "O":
+                    return "force";
+                case "P":
+                    return "piercing";
+                case "R":
+                    return "precision";
+                case "S":
+                    return "slashing";
+                case "+":
+                    return "positive";
+                case "-":
+                    return "negative";
+            }
+            return value;
+        }
     }
 
     enum Pf2eDefenses implements NodeReader {

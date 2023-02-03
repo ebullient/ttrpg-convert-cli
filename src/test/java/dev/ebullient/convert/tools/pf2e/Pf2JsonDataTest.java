@@ -186,6 +186,8 @@ public class Pf2JsonDataTest {
 
     @Test
     public void testItem_p2fe() throws Exception {
+        Configurator configurator = new Configurator(tui);
+        configurator.setAlwaysUseDiceRoller(true);
         generateNotesForType(Pf2eIndexType.item);
     }
 

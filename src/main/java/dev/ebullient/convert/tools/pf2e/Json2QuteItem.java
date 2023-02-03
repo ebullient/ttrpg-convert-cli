@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class Json2QuteItem extends Json2QuteBase {
     protected Pf2eQuteBase buildQuteResource() {
         Set<String> tags = new TreeSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
-        List<String> aliases = new ArrayList<>(Field.alias.transformListFrom(rootNode, this));
+        List<String> aliases = new ArrayList<>(Field.alias.replaceTextFromList(rootNode, this));
         Set<String> traits = collectTraitsFrom(rootNode, tags);
 
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
@@ -45,8 +44,8 @@ public class Json2QuteItem extends Json2QuteBase {
 
         return new QuteItem(sources, text, tags, traits, aliases,
                 buildActivate(),
-                Pf2eItem.price.getTextOrNull(rootNode),
-                Pf2eItem.ammunition.getTextOrNull(rootNode),
+                getPrice(rootNode),
+                join(", ", Pf2eItem.ammunition.linkifyListFrom(rootNode, Pf2eIndexType.item, this)),
                 Pf2eItem.level.getTextOrDefault(rootNode, "1"),
                 Pf2eItem.onset.transformTextFrom(rootNode, ", ", this),
                 replaceText(Pf2eItem.access.getTextOrNull(rootNode)),
@@ -59,6 +58,15 @@ public class Json2QuteItem extends Json2QuteBase {
                 getShieldData(),
                 getArmorData(),
                 getWeaponData(tags));
+    }
+
+    private String getPrice(JsonNode rootNode) {
+        if (Pf2eItem.price.existsIn(rootNode)) {
+            return String.format("%s %s",
+                    replaceText(Pf2eItem.price.getFieldFrom(rootNode, Pf2eItem.amount)),
+                    replaceText(Pf2eItem.price.getFieldFrom(rootNode, Pf2eItem.coin)));
+        }
+        return null;
     }
 
     private QuteItemShieldData getShieldData() {
@@ -233,14 +241,16 @@ public class Json2QuteItem extends Json2QuteBase {
         activate,
         activity,
         ammunition,
+        amount, // price
         armorData,
         bt, // shieldData
         bulk,
         category,
         checkPen, // armorData
-        contract,
+        coin, // price
         comboWeaponData,
         components,
+        contract,
         dexCap, // shieldData
         duration,
         frequency,

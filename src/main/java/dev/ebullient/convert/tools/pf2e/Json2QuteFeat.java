@@ -33,7 +33,7 @@ public class Json2QuteFeat extends Json2QuteBase {
 
         return new QuteFeat(sources, text, tags,
                 collectTraitsFrom(rootNode, tags),
-                Field.alias.transformListFrom(rootNode, this),
+                Field.alias.replaceTextFromList(rootNode, this),
                 Pf2eFeat.level.getTextOrDefault(rootNode, "1"),
                 Pf2eFeat.access.transformTextFrom(rootNode, ", ", this),
                 getFrequency(rootNode),
