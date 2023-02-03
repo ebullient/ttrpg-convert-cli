@@ -57,7 +57,7 @@ public class Json2QuteItem extends Json2QuteBase {
                 getContract(tags),
                 getShieldData(),
                 getArmorData(),
-                getWeaponData(traits, tags));
+                getWeaponData(tags));
     }
 
     private QuteItemShieldData getShieldData() {
@@ -130,17 +130,17 @@ public class Json2QuteItem extends Json2QuteBase {
         return armorData;
     }
 
-    private List<QuteItemWeaponData> getWeaponData(Collection<String> traits, Collection<String> tags) {
+    private List<QuteItemWeaponData> getWeaponData(Collection<String> tags) {
         JsonNode weaponDataNode = Pf2eItem.weaponData.getFrom(rootNode);
         if (weaponDataNode == null) {
             return null;
         }
         List<QuteItemWeaponData> weaponDataList = new ArrayList<>();
-        weaponDataList.add(Pf2eWeaponData.buildWeaponData(weaponDataNode, this, traits, tags));
+        weaponDataList.add(Pf2eWeaponData.buildWeaponData(weaponDataNode, this, tags));
 
         JsonNode comboWeaponData = Pf2eItem.comboWeaponData.getFrom(rootNode);
-        if (comboWeaponData == null) {
-            weaponDataList.add(Pf2eWeaponData.buildWeaponData(weaponDataNode, this, traits, tags));
+        if (comboWeaponData != null) {
+            weaponDataList.add(Pf2eWeaponData.buildWeaponData(comboWeaponData, this, tags));
         }
 
         return weaponDataList;
