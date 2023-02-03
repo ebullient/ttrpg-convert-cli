@@ -85,7 +85,6 @@ public interface Pf2eTypeReader extends JsonSource {
         public static QuteItemWeaponData buildWeaponData(JsonNode source,
                 Pf2eTypeReader convert, Collection<String> tags) {
 
-
             QuteItemWeaponData weaponData = new QuteItemWeaponData();
             weaponData.traits = convert.collectTraitsFrom(source, tags);
             weaponData.type = Field.type.getTextOrNull(source);

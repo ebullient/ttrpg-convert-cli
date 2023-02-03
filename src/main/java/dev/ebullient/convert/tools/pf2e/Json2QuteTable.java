@@ -2,6 +2,8 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,7 +18,7 @@ public class Json2QuteTable extends Json2QuteBase {
 
     @Override
     protected Pf2eQuteNote buildQuteNote() {
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
         ((ObjectNode) rootNode).put(Field.type.name(), "table");

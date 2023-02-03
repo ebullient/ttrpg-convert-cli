@@ -12,7 +12,7 @@ public class QuteInlineAttack extends Pf2eQuteNote {
     public final String attack;
     public final String damage;
 
-    public QuteInlineAttack(String name, List<String> text, List<String> tags, Collection<String> traits,
+    public QuteInlineAttack(String name, List<String> text, Collection<String> tags, Collection<String> traits,
             String meleeOrRanged, String attack, String damage, QuteDataActivity activity) {
         super(Pf2eIndexType.syntheticGroup, name, null, text, tags);
         this.traits = traits;
