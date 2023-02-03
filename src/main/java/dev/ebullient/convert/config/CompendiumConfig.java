@@ -31,6 +31,7 @@ public class CompendiumConfig {
     String tagPrefix = ""; // TODO: empty or ends with '/'
     PathAttributes paths;
     boolean allSources = false;
+    boolean diceRollerAlways = false;
     final Set<String> allowedSources = new HashSet<>();
     final Set<String> includedKeys = new HashSet<>();
     final Set<String> includedGroups = new HashSet<>();
@@ -51,6 +52,10 @@ public class CompendiumConfig {
 
     public Datasource datasource() {
         return datasource;
+    }
+
+    public boolean alwaysUseDiceRoller() {
+        return diceRollerAlways;
     }
 
     public boolean allSources() {
@@ -217,6 +222,11 @@ public class CompendiumConfig {
             templatePaths.verify(tui);
         }
 
+        public void setAlwaysUseDiceRoller(boolean diceRollerAlways) {
+            CompendiumConfig cfg = TtrpgConfig.getConfig();
+            cfg.diceRollerAlways = diceRollerAlways;
+        }
+
         /** Parse the config file at the given path */
         public boolean readConfiguration(Path configPath) {
             try {
@@ -264,6 +274,7 @@ public class CompendiumConfig {
             InputConfig input = Tui.MAPPER.convertValue(node, InputConfig.class);
 
             config.addSources(input.from);
+            config.diceRollerAlways |= input.diceRollerAlways;
 
             input.include.forEach(s -> config.includedKeys.add(s.toLowerCase()));
             input.includeGroup.forEach(s -> config.includedGroups.add(s.toLowerCase()));
@@ -338,6 +349,7 @@ public class CompendiumConfig {
     }
 
     private enum ConfigKeys {
+        diceRollerAlways,
         exclude,
         excludePattern,
         from,
@@ -392,6 +404,9 @@ public class CompendiumConfig {
 
         @JsonProperty(required = false)
         Map<String, String> template = new HashMap<>();
+
+        @JsonProperty(required = false)
+        boolean diceRollerAlways = false;
 
         @JsonAlias({ "convert" })
         @JsonProperty(value = "full-source", required = false)

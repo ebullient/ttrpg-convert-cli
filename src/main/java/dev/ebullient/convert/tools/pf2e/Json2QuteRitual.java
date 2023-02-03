@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -36,7 +37,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
         return new QuteRitual(sources, text, tags,
                 level, "Ritual",
                 collectTraitsFrom(rootNode, tags),
-                Field.alias.transformListFrom(rootNode, this),
+                Field.alias.replaceTextFromList(rootNode, this),
                 getQuteRitualCast(),
                 getQuteRitualChecks(),
                 getQuteRitualSpellTarget(tags),
@@ -45,7 +46,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
                 getHeightenedCast());
     }
 
-    QuteSpellTarget getQuteRitualSpellTarget(List<String> tags) {
+    QuteSpellTarget getQuteRitualSpellTarget(Collection<String> tags) {
         String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
         JsonNode rangeEntry = Pf2eSpell.range.getFieldFrom(rootNode, Field.entry);
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());

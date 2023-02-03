@@ -18,6 +18,7 @@
   - "race|.*|dmg"
   template:
     background: "examples/templates/tools5e/images-background2md.txt"
+  diceRollerAlways: false
   full-source:
     book:
     - "PHB"
@@ -39,6 +40,7 @@ pf2e:
     ]
   template: {
     }
+  diceRollerAlways: false
   full-source:
     book: [
       ]

@@ -83,7 +83,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         return new QuteSpell(sources, text, tags,
                 level, toTitleCase(type),
                 traits,
-                Field.alias.transformListFrom(rootNode, this),
+                Field.alias.replaceTextFromList(rootNode, this),
                 getQuteSpellCasting(),
                 getQuteSpellTarget(tags),
                 getQuteSaveDuration(),
@@ -138,7 +138,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         return saveDuration;
     }
 
-    QuteSpellTarget getQuteSpellTarget(List<String> tags) {
+    QuteSpellTarget getQuteSpellTarget(Collection<String> tags) {
         String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
         NumberUnitEntry range = Pf2eSpell.range.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());

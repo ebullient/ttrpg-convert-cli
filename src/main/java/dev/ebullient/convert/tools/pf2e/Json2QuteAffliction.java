@@ -39,7 +39,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
 
         return new QuteAffliction(getSources(), text, tags,
                 collectTraitsFrom(rootNode, tags),
-                Field.alias.transformListFrom(rootNode, this),
+                Field.alias.replaceTextFromList(rootNode, this),
                 level, toTitleCase(type),
                 String.join("\n", temptedCurse));
     }

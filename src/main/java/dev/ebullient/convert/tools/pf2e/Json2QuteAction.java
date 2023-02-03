@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -40,7 +41,7 @@ public class Json2QuteAction extends Json2QuteBase {
                 getSources(), text, tags,
                 Pf2eAction.cost.transformTextFrom(rootNode, ", ", this),
                 Pf2eAction.trigger.transformTextFrom(rootNode, ", ", this),
-                Field.alias.transformListFrom(rootNode, this),
+                Field.alias.replaceTextFromList(rootNode, this),
                 collectTraitsFrom(rootNode, tags),
                 Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", this),
                 Field.requirements.replaceTextFrom(rootNode, this),
@@ -63,7 +64,7 @@ public class Json2QuteAction extends Json2QuteBase {
         public List<String> subclass;
         public List<String> variantrule;
 
-        public void addTags(JsonSource convert, List<String> tags) {
+        public void addTags(JsonSource convert, Collection<String> tags) {
             if (isBasic()) {
                 tags.add(convert.cfg().tagOf("action", "basic"));
             }

@@ -125,9 +125,14 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                 .replaceAll((match) -> {
                     int pipe = match.group(2).indexOf("|");
                     if (pipe < 0) {
-                        return '`' + match.group(2) + '`';
+                        return cfg().alwaysUseDiceRoller()
+                                ? "`dice: " + match.group(2) + '`'
+                                : '`' + match.group(2) + '`';
                     }
-                    return match.group(2).substring(0, pipe);
+                    String dice = match.group(2).substring(0, pipe);
+                    return cfg().alwaysUseDiceRoller()
+                            ? "`dice: " + dice + '`'
+                            : '`' + dice + '`';
                 });
 
         result = chancePattern.matcher(result)
