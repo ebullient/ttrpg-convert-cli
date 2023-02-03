@@ -132,21 +132,32 @@ public class QuteItem extends Pf2eQuteBase {
 
     @TemplateData
     public static class QuteItemWeaponData {
+        public String type;
+        public Collection<String> traits;
         public Map<String, String> ranged;
         public String damage;
         public String group;
 
         public String toString() {
-            List<String> parts = new ArrayList<>();
+            String result = "";
+
+            String prefix = type == null ? "" : "  ";
+
+            if (type != null) {
+                result += "- **" + type + "**  \n";
+            }
             if (damage != null) {
-                parts.add("**Damage** " + damage);
+                result += prefix + "- **Damage** " + damage;
             }
-            if (ranged != null) {
-                parts.add(ranged.entrySet().stream()
+            if (ranged != null && !ranged.isEmpty()) {
+                if (damage != null) {
+                    result += "\n";
+                }
+                result += prefix + "- " + ranged.entrySet().stream()
                         .map(e -> "**" + e.getKey() + "** " + e.getValue())
-                        .collect(Collectors.joining("; ")));
+                        .collect(Collectors.joining("; "));
             }
-            return "- " + String.join("\n- ", parts);
+            return result;
         }
     }
 }

@@ -83,10 +83,13 @@ public interface Pf2eTypeReader extends JsonSource {
         reload;
 
         public static QuteItemWeaponData buildWeaponData(JsonNode source,
-                Pf2eTypeReader convert, Collection<String> traits, Collection<String> tags) {
-            QuteItemWeaponData weaponData = new QuteItemWeaponData();
+                Pf2eTypeReader convert, Collection<String> tags) {
 
-            traits.addAll(convert.collectTraitsFrom(source, tags));
+
+            QuteItemWeaponData weaponData = new QuteItemWeaponData();
+            weaponData.traits = convert.collectTraitsFrom(source, tags);
+            weaponData.type = Field.type.getTextOrNull(source);
+            weaponData.damage = getDamageString(source, convert);
 
             weaponData.ranged = new LinkedHashMap<>();
             String ammunition = Pf2eWeaponData.ammunition.getTextOrNull(source);
@@ -106,8 +109,6 @@ public interface Pf2eTypeReader extends JsonSource {
             if (group != null) {
                 weaponData.group = convert.linkify(Pf2eIndexType.group, group);
             }
-
-            weaponData.damage = getDamageString(source, convert);
 
             return weaponData;
         }
