@@ -178,7 +178,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         String ranged = findRange(actionNode);
 
         action.actionType = ranged == null ? "Melee" : "Ranged";
-        action.activityType = Pf2eTypeActivity.single.toQuteActivityType(this, null);
+        action.activityType = Pf2eActivity.single.toQuteActivity(this, null);
         action.damage = Pf2eWeaponData.getDamageString(actionNode, this);
         action.note = replaceText(Pf2eDeity.note.getTextOrNull(actionNode));
         return action;

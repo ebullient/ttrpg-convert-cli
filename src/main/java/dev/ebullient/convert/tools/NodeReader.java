@@ -170,12 +170,12 @@ public interface NodeReader {
         return StreamSupport.stream(result.spliterator(), false);
     }
 
-    default <T> T fieldFromTo(JsonNode source, TypeReference<T> targetRef, Tui tui) {
-        return tui.readJsonValue(source.get(this.nodeName()), targetRef);
-    }
-
     default <T> T fieldFromTo(JsonNode source, Class<T> classTarget, Tui tui) {
         return tui.readJsonValue(source.get(this.nodeName()), classTarget);
+    }
+
+    default <T> T fieldFromTo(JsonNode source, TypeReference<T> targetRef, Tui tui) {
+        return tui.readJsonValue(source.get(this.nodeName()), targetRef);
     }
 
     default boolean valueEquals(JsonNode previous, JsonNode next) {

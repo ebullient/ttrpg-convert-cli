@@ -462,6 +462,11 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
+    public static QuteDataActivity getQuteActivity(JsonNode source, NodeReader field, JsonSource convert) {
+        NumberUnitEntry jsonActivity = field.fieldFromTo(source, NumberUnitEntry.class, convert.tui());
+        return jsonActivity == null ? null : jsonActivity.toQuteActivity(convert);
+    }
+
     @RegisterForReflection
     class NumberUnitEntry {
         public Integer number;
@@ -472,8 +477,8 @@ public interface Pf2eTypeReader extends JsonSource {
             if (entry != null) {
                 return convert.replaceText(entry);
             }
-            Pf2eTypeActivity activity = Pf2eTypeActivity.toActivity(unit, number);
-            if (activity != null && activity != Pf2eTypeActivity.timed) {
+            Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
+            if (activity != null && activity != Pf2eActivity.timed) {
                 return activity.linkify(convert.cfg().rulesVaultRoot());
             }
             return String.format("%s %s%s", number, unit, number > 1 ? "s" : "");
@@ -491,7 +496,7 @@ public interface Pf2eTypeReader extends JsonSource {
             return unit;
         }
 
-        public QuteDataActivity toQuteActivity(JsonSource convert) {
+        private QuteDataActivity toQuteActivity(JsonSource convert) {
             String extra = entry == null || entry.toLowerCase().contains("varies")
                     ? ""
                     : " (" + convert.replaceText(entry) + ")";
@@ -501,20 +506,20 @@ public interface Pf2eTypeReader extends JsonSource {
                 case "action":
                 case "free":
                 case "reaction":
-                    Pf2eTypeActivity activity = Pf2eTypeActivity.toActivity(unit, number);
+                    Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
                     if (activity == null) {
                         throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
                     }
-                    return activity.toQuteActivityType(convert,
+                    return activity.toQuteActivity(convert,
                             String.format("%s%s", activity.getLongName(), extra));
                 case "varies":
-                    return Pf2eTypeActivity.varies.toQuteActivityType(convert,
-                            String.format("%s%s", Pf2eTypeActivity.varies.getLongName(), extra));
+                    return Pf2eActivity.varies.toQuteActivity(convert,
+                            String.format("%s%s", Pf2eActivity.varies.getLongName(), extra));
                 case "day":
                 case "minute":
                 case "hour":
                 case "round":
-                    return Pf2eTypeActivity.timed.toQuteActivityType(convert,
+                    return Pf2eActivity.timed.toQuteActivity(convert,
                             String.format("%s %s%s", number, unit, extra));
 
                 default:
@@ -523,7 +528,8 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    class NameAmountNote {
+    @RegisterForReflection
+    static class NameAmountNote {
         public String name;
         public Integer amount;
         public String note;

@@ -24,8 +24,6 @@ public class Json2QuteFeat extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        NumberUnitEntry jsonActivity = Pf2eFeat.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
-
         List<String> leadsTo = Pf2eFeat.leadsTo.getListOfStrings(rootNode, tui())
                 .stream()
                 .map(x -> linkify(Pf2eIndexType.feat, x))
@@ -37,7 +35,7 @@ public class Json2QuteFeat extends Json2QuteBase {
                 Pf2eFeat.level.getTextOrDefault(rootNode, "1"),
                 Pf2eFeat.access.transformTextFrom(rootNode, ", ", this),
                 getFrequency(rootNode),
-                jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
+                Pf2eTypeReader.getQuteActivity(rootNode, Pf2eFeat.activity, this),
                 Pf2eFeat.trigger.transformTextFrom(rootNode, ", ", this),
                 Pf2eFeat.cost.transformTextFrom(rootNode, ", ", this),
                 Field.requirements.transformTextFrom(rootNode, ", ", this),
@@ -62,15 +60,13 @@ public class Json2QuteFeat extends Json2QuteBase {
         appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
-        NumberUnitEntry jsonActivity = Pf2eFeat.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
-
         return new QuteFeat(sources, text, tags,
                 collectTraitsFrom(rootNode, tags),
                 List.of(),
                 dedicationLevel,
                 Pf2eFeat.access.transformTextFrom(rootNode, ", ", this),
                 getFrequency(rootNode),
-                jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
+                Pf2eTypeReader.getQuteActivity(rootNode, Pf2eFeat.activity, this),
                 Pf2eFeat.trigger.transformTextFrom(rootNode, ", ", this),
                 Pf2eFeat.cost.transformTextFrom(rootNode, ", ", this),
                 Field.requirements.transformTextFrom(rootNode, ", ", this),

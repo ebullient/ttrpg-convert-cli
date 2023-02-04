@@ -5,7 +5,9 @@ import java.util.Map;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteTraitIndex extends Pf2eQuteNote {
 
     public final Map<String, Collection<String>> categoryToTraits;

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class CompendiumConfig {
     final static Path CWD = Path.of(".");
@@ -383,6 +384,7 @@ public class CompendiumConfig {
         }
     }
 
+    @RegisterForReflection
     public static class InputConfig {
         @JsonProperty(required = false)
         List<String> from = new ArrayList<>();
@@ -413,6 +415,7 @@ public class CompendiumConfig {
         FullSource fullSource = new FullSource();
     }
 
+    @RegisterForReflection
     static class FullSource {
         @JsonProperty(required = false)
         List<String> book = new ArrayList<>();
@@ -421,6 +424,7 @@ public class CompendiumConfig {
         List<String> adventure = new ArrayList<>();
     }
 
+    @RegisterForReflection
     static class InputPaths {
         @JsonProperty(required = false)
         String compendium;

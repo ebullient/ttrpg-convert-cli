@@ -7,10 +7,8 @@ import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
-@RegisterForReflection
 public class Pf2eQuteNote extends QuteNote {
     public final Pf2eIndexType type;
 

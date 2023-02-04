@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteItem extends Pf2eQuteBase {
 
     public final Collection<String> traits;

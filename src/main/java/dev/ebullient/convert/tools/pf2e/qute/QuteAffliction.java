@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteAffliction extends Pf2eQuteBase {
 
     public final Collection<String> traits;

@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
+import io.quarkus.qute.TemplateData;
 
+@TemplateData
 public class QuteInlineAttack extends Pf2eQuteNote {
     public final Collection<String> traits;
     public final String meleeOrRanged;
