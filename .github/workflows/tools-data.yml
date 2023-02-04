@@ -15,7 +15,7 @@ jobs:
   cache-setup:
     runs-on: ubuntu-latest
     outputs:
-      cache_key: ${{ steps.test-data-key.outputs.tools_version }}
+      cache_key: 5etools-${{ steps.test-data-key.outputs.tools_version }}
 
     steps:
       - uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: sources/5etools-mirror-1.github.io
-          key: ${{ steps.test-data-key.outputs.tools_version }}
+          key: 5etools-${{ steps.test-data-key.outputs.tools_version }}
 
       - name: Test Data
         id: test-data
