@@ -15,7 +15,7 @@ jobs:
   cache-setup:
     runs-on: ubuntu-latest
     outputs:
-      cache_key: ${{ steps.test-data-key.outputs.tools_version }}
+      cache_key: Pf2eTools-${{ steps.test-data-key.outputs.tools_version }}
 
     steps:
       - uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: sources/Pf2eTools
-          key: ${{ steps.test-data-key.outputs.tools_version }}
+          key: Pf2eTools-${{ steps.test-data-key.outputs.tools_version }}
 
       - name: Test Data
         id: test-data
@@ -45,7 +45,7 @@ jobs:
         run: |
           echo "🔹 Download $LATEST_VERSION"
           ARTIFACT_URL="https://github.com/Pf2eToolsOrg/Pf2eTools/archive/refs/tags/$LATEST_VERSION.tar.gz"
-          VER=$(echo $LATEST_VERSION | cut -c 1-)
+          VER=$(echo $LATEST_VERSION | cut -c 2-)
           ROOT="Pf2eTools-$VER"
 
           curl -LsS -o Pf2eTools.tar.gz $ARTIFACT_URL
