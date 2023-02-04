@@ -46,13 +46,6 @@ public class ParseState {
                     prev.listIndent);
         }
 
-        private static ParseStateInfo changeSrc(ParseStateInfo prev, String src) {
-            if (prev == null) {
-                return new ParseState.ParseStateInfo(src);
-            }
-            return new ParseStateInfo(src, prev.page, prev.inFootnotes, prev.listIndent);
-        }
-
         private static ParseStateInfo changePage(ParseStateInfo prev, int page) {
             if (prev == null) {
                 throw new IllegalStateException("Page without source first?");

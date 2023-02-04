@@ -24,6 +24,16 @@ public class ImageRef {
         return String.format("![%s](%s#%s)", title, vaultPath, anchor);
     }
 
+    @Deprecated
+    public String getCaption() {
+        return title;
+    }
+
+    @Deprecated
+    public String getPath() {
+        return vaultPath;
+    }
+
     /** Not available in templates */
     public Path sourcePath() {
         return sourcePath;

@@ -233,28 +233,28 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
     }
 
     default String replaceActionAs(MatchResult match) {
-        final Pf2eTypeActivity type;
+        final Pf2eActivity type;
         switch (match.group(1).toLowerCase()) {
             case "1":
             case "a":
-                type = Pf2eTypeActivity.single;
+                type = Pf2eActivity.single;
                 break;
             case "2":
             case "d":
-                type = Pf2eTypeActivity.two;
+                type = Pf2eActivity.two;
                 break;
             case "3":
             case "t":
-                type = Pf2eTypeActivity.three;
+                type = Pf2eActivity.three;
                 break;
             case "f":
-                type = Pf2eTypeActivity.free;
+                type = Pf2eActivity.free;
                 break;
             case "r":
-                type = Pf2eTypeActivity.reaction;
+                type = Pf2eActivity.reaction;
                 break;
             default:
-                type = Pf2eTypeActivity.varies;
+                type = Pf2eActivity.varies;
                 break;
         }
         return type.linkify(index().rulesVaultRoot());

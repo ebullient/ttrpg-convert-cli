@@ -25,8 +25,6 @@ public enum Pf2eTypeAbility implements NodeReader {
         boolean pushed = JsonTextReplacement.parseState.push(node);
         try {
             String name = Field.name.getTextOrDefault(node, "Activate");
-            Pf2eTypeReader.NumberUnitEntry jsonActivity = Pf2eTypeReader.Pf2eFeat.activity.fieldFromTo(node,
-                    Pf2eTypeReader.NumberUnitEntry.class, convert.tui());
 
             List<String> abilityText = new ArrayList<>();
             convert.appendEntryToText(abilityText, Field.entries.getFrom(node), null);
@@ -39,7 +37,7 @@ public enum Pf2eTypeAbility implements NodeReader {
             List<String> tags = new ArrayList<>();
             return new QuteAbility(
                     name, abilityText, tags, convert.collectTraitsFrom(node, tags),
-                    jsonActivity == null ? null : jsonActivity.toQuteActivity(convert),
+                    Pf2eTypeReader.getQuteActivity(node, Pf2eTypeReader.Pf2eFeat.activity, convert),
                     components.replaceTextFrom(node, convert),
                     requirements.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert),

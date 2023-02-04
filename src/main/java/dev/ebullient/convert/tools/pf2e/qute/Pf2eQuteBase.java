@@ -6,9 +6,9 @@ import java.util.List;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.quarkus.qute.TemplateData;
 
-@RegisterForReflection
+@TemplateData
 public class Pf2eQuteBase extends QuteBase {
 
     protected Pf2eIndexType type;

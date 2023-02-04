@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class TtrpgConfig {
 
@@ -156,6 +157,7 @@ public class TtrpgConfig {
     public final static TypeReference<Map<String, List<Fix>>> FIXES = new TypeReference<>() {
     };
 
+    @RegisterForReflection
     public static class Fix {
         public String match;
         public String replace;

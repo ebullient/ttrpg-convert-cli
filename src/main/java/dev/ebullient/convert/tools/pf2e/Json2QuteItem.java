@@ -191,10 +191,9 @@ public class Json2QuteItem extends Json2QuteBase {
         if (activateNode == null) {
             return null;
         }
-        NumberUnitEntry jsonActivity = Pf2eItem.activity.fieldFromTo(activateNode, NumberUnitEntry.class, tui());
 
         QuteItemActivate activate = new QuteItemActivate();
-        activate.activity = jsonActivity == null ? null : jsonActivity.toQuteActivity(this);
+        activate.activity = Pf2eTypeReader.getQuteActivity(rootNode, Pf2eItem.activity, this);
         activate.components = Pf2eItem.components.transformTextFrom(activateNode, ", ", this);
         activate.requirements = Field.requirements.replaceTextFrom(activateNode, this);
         activate.frequency = getFrequency(activateNode);

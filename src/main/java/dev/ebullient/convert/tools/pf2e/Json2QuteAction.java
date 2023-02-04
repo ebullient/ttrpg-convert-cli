@@ -28,7 +28,6 @@ public class Json2QuteAction extends Json2QuteBase {
         appendEntryToText(text, Pf2eAction.info.getFrom(rootNode), null);
         appendFootnotes(text, 0);
 
-        NumberUnitEntry jsonActivity = Pf2eAction.activity.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         ActionType actionType = Pf2eAction.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
         if (actionType == null) {
@@ -46,7 +45,7 @@ public class Json2QuteAction extends Json2QuteBase {
                 Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", this),
                 Field.requirements.replaceTextFrom(rootNode, this),
                 getFrequency(rootNode),
-                jsonActivity == null ? null : jsonActivity.toQuteActivity(this),
+                Pf2eTypeReader.getQuteActivity(rootNode, Pf2eAction.activity, this),
                 actionType == null ? null : actionType.build(this));
     }
 
