@@ -29,7 +29,7 @@ public interface JsonSource {
     Pattern classPattern1 = Pattern.compile("\\{@(class) ([^}]+)}");
     Pattern deityPattern = Pattern.compile("\\{@(deity) ([^}]+)}");
     Pattern featPattern = Pattern.compile("\\{@(feat) ([^}]+)}");
-    Pattern itemPattern = Pattern.compile("\\{@(item) ([^}]+)}");
+    Pattern itemPattern = Pattern.compile("\\{@(card|deck|item) ([^}]+)}");
     Pattern racePattern = Pattern.compile("\\{@(race) ([^}]+)}");
     Pattern spellPattern = Pattern.compile("\\{@(spell) ([^}]+)}");
     Pattern creaturePattern = Pattern.compile("\\{@(creature) ([^}]+)}");
@@ -984,6 +984,13 @@ public interface JsonSource {
                 // {@feat Elven Accuracy|xge} can have sources added with a pipe,
                 // {@feat Elven Accuracy|xge|and optional link text added with another pipe}.",
                 return linkifyType(Tools5eIndexType.feat, match.group(2), QuteSource.FEATS_PATH);
+            case "card":
+                // {@card The Fates|Deck of Many Things}
+                // {@card Donjon|Deck of Several Things|LLK}
+                return linkifyCardType(match.group(2), QuteSource.ITEMS_PATH, "dmg");
+            case "deck":
+                // {@deck Tarokka Deck|CoS|tarokka deck}
+                return linkifyType(Tools5eIndexType.item, match.group(2), QuteSource.ITEMS_PATH, "dmg");
             case "item":
                 // "Items:
                 // {@item alchemy jug} assumes DMG by default,
@@ -1050,6 +1057,24 @@ public interface JsonSource {
         }
         return linkOrText(linkText, key, dirName,
                 decoratedTypeName(sources) + QuteSource.sourceIfNotCore(sources.primarySource()));
+    }
+
+    default String linkifyCardType(String match, String dirName, String defaultSource) {
+        String[] parts = match.split("\\|");
+        // {@card Donjon|Deck of Several Things|LLK}
+        String cardName = parts[0];
+        String deckName = parts[1];
+        String source = defaultSource;
+        if (parts.length > 2) {
+            source = parts[2].isBlank() ? source : parts[1];
+        }
+        String key = index().getAliasOrDefault(index().createSimpleKey(Tools5eIndexType.item, deckName, source));
+        if (index().isExcluded(key)) {
+            return cardName;
+        }
+        String resource = slugify(deckName + QuteSource.sourceIfNotCore(source));
+        return String.format("[%s](%s%s/%s.md#%s)", cardName,
+                index().compendiumVaultRoot(), dirName, resource, cardName.replace(" ", "%20"));
     }
 
     default String linkifyDeity(String match) {
