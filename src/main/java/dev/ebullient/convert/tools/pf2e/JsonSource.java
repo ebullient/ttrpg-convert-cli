@@ -426,8 +426,8 @@ public interface JsonSource extends JsonTextReplacement {
                     page == null ? "" : "page " + page + " of ",
                     TtrpgConfig.sourceToLongName(Field.source.getTextOrEmpty(entry))));
         } else {
-            appendEntryToText(insetText, Field.entry.getFrom(entry), null);
-            appendEntryToText(insetText, Field.entries.getFrom(entry), null);
+            appendEntryToText(insetText, Field.entry.getFrom(entry), "##");
+            appendEntryToText(insetText, Field.entries.getFrom(entry), "##");
         }
 
         maybeAddBlankLine(text);
