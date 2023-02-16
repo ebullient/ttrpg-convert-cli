@@ -352,7 +352,7 @@ public class Tui {
             callback.accept(f.getName(), node);
             verbosef("🔖 Finished reading %s", p);
         } catch (IOException e) {
-            errorf(e, "Unable to read source file at path %s", p);
+            errorf(e, "Unable to read source file at path %s (%s)", p, e.getMessage());
             return false;
         }
         return true;
@@ -383,7 +383,7 @@ public class Tui {
                 }
             }
         } catch (Exception e) {
-            errorf(e, "Error reading %s", dir.toString());
+            errorf(e, "Error reading %s (%s)", dir.toString(), e.getMessage());
             return false;
         }
         return result;

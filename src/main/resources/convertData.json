@@ -228,6 +228,12 @@
           "match": "weapon==sand ",
           "replace": "weapon==sand} "
         }
+      ],
+      "feats/feats-loil.json": [
+        {
+          "match": "\"name\": \"\\{@feat Faultspawn\\|LOIL}\"",
+          "replace": "\"name\": \"Faultspawn\""
+        }
       ]
     }
   }
