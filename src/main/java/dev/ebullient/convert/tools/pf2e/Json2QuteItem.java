@@ -46,7 +46,7 @@ public class Json2QuteItem extends Json2QuteBase {
                 buildActivate(),
                 getPrice(rootNode),
                 join(", ", Pf2eItem.ammunition.linkifyListFrom(rootNode, Pf2eIndexType.item, this)),
-                Pf2eItem.level.getTextOrDefault(rootNode, "1"),
+                Pf2eItem.level.getTextOrDefault(rootNode, "0"),
                 Pf2eItem.onset.transformTextFrom(rootNode, ", ", this),
                 replaceText(Pf2eItem.access.getTextOrNull(rootNode)),
                 duration,
