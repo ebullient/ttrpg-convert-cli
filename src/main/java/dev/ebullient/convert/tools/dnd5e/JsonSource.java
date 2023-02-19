@@ -893,7 +893,7 @@ public interface JsonSource {
             result = notePattern.matcher(result)
                     .replaceAll((match) -> {
                         List<String> text = new ArrayList<>();
-                        text.add("> [!note]");
+                        text.add("> [!pf2-note]");
                         for (String line : match.group(2).split("\n")) {
                             text.add("> " + line);
                         }

@@ -98,7 +98,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
         });
 
         return quteFeats.stream()
-                .map(x -> render(x, x.note != null && x.note.contains("[!note] This version of")))
+                .map(x -> render(x, x.note != null && x.note.contains("[!pf2-note] This version of")))
                 .collect(Collectors.toList());
     }
 

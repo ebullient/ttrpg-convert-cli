@@ -51,7 +51,7 @@ public class QuteHazard extends Pf2eQuteBase {
     }
 
     public String getRoutineAdmonition() {
-        return convertToEmbed(routine, "Routine", "summary");
+        return convertToEmbed(routine, "Routine", "pf2-summary");
     }
 
     public String convertToEmbed(String content, String title, String admonition) {

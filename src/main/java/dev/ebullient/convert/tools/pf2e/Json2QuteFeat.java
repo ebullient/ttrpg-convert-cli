@@ -52,7 +52,7 @@ public class Json2QuteFeat extends Json2QuteBase {
         String note = null;
         if (dedicationLevel != featLevel) {
             note = String.format(
-                    "> [!note] This version of %s is intended for use with the %s Archetype. Its level has been changed accordingly.",
+                    "> [!pf2-note] This version of %s is intended for use with the %s Archetype. Its level has been changed accordingly.",
                     index.linkify(this.type, String.join("|", List.of(sources.getName(), sources.primarySource()))),
                     archetypeName);
         }
