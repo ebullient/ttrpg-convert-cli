@@ -119,112 +119,117 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         if (input == null || input.isEmpty()) {
             return input;
         }
-        String result = input.replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
-
-        result = dicePattern.matcher(result)
-                .replaceAll((match) -> {
-                    int pipe = match.group(2).indexOf("|");
-                    if (pipe < 0) {
-                        return cfg().alwaysUseDiceRoller()
-                                ? "`dice: " + match.group(2) + '`'
-                                : '`' + match.group(2) + '`';
-                    }
-                    String dice = match.group(2).substring(0, pipe);
-                    return cfg().alwaysUseDiceRoller()
-                            ? "`dice: " + dice + '`'
-                            : '`' + dice + '`';
-                });
-
-        result = chancePattern.matcher(result)
-                .replaceAll((match) -> match.group(1) + "% chance");
-
-        result = asPattern.matcher(result)
-                .replaceAll(this::replaceActionAs);
-
-        result = footnoteReference.matcher(result)
-                .replaceAll(this::replaceFootnoteReference);
-
-        result = quickRefPattern.matcher(result)
-                .replaceAll((match) -> {
-                    String[] parts = match.group(1).split("\\|");
-                    if (parts.length > 4) {
-                        return parts[4];
-                    }
-                    return parts[0];
-                });
-
-        result = runeItemPattern.matcher(result)
-                .replaceAll(this::linkifyRuneItem);
-
-        result = Pf2eIndexType.matchPattern.matcher(result)
-                .replaceAll(this::linkify);
-
-        // "Style tags; {@bold some text to be bolded} (alternative {@b shorthand}),
-        // {@italic some text to be italicised} (alternative {@i shorthand}),
-        // {@underline some text to be underlined} (alternative {@u shorthand}),
-        // {@strike some text to strike-through}, (alternative {@s shorthand}),
-        // {@color color|e40707} tags, {@handwriting handwritten text},
-        // {@sup some superscript,} {@sub some subscript,}
-        // {@center some centered text} {@c with alternative shorthand,}
-        // {@i nostyle {@nostyle to escape font formatting, which can be used with other entry types} {@n (see below).}}
-        // {@indentFirst You can use @indentFirst to indent the first line of text, all subsequent lines will not be indented. This is most often useful in tables, but it can be used anywhere.}
-        // {@indentSubsequent @indentSubsequent is the counterpart to @indentFirst. You can use it to indent all lines after the first. This is most often useful in sidebars, but it can be used anywhere.}",
 
         try {
-            result = result
-                    .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
-                    .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
-                    .replaceAll("\\{@pf2etools ([^}|]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@Pf2eTools ([^}|]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@dc ([^}]+)}", "DC $1")
-                    .replaceAll("\\{@flatDC ([^}]+)}", "$1")
-                    .replaceAll("\\{@d20 ([^}]+?)}", "$1")
-                    .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
-                    .replaceAll("\\{@recharge}", "(Recharge 6)")
-                    .replaceAll("\\{@(scaledice|scaledamage) [^|]+\\|[^|]+\\|([^|}]+)[^}]*}", "$2")
-                    .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
-                    .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
-                    .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
-                    .replaceAll("\\{@hit ([^}<]+)}", "+$1")
-                    .replaceAll("\\{@h}", "Hit: ")
-                    .replaceAll("\\{@c ([^}]+?)}", "$1")
-                    .replaceAll("\\{@center ([^}]+?)}", "$1")
-                    .replaceAll("\\{@s ([^}]+?)}", "$1")
-                    .replaceAll("\\{@strike ([^}]+?)}", "$1")
-                    .replaceAll("\\{@n ([^}]+?)}", "$1")
-                    .replaceAll("\\{@b ([^}]+?)}", "**$1**")
-                    .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
-                    .replaceAll("\\{@i ([^}]+?)}", "_$1_")
-                    .replaceAll("\\{@italic ([^}]+)}", "_$1_")
-                    .replaceAll("\\{@indentFirst ([^}]+?)}", "$1")
-                    .replaceAll("\\{@indentSubsequent ([^}]+?)}", "$1");
-        } catch (Exception e) {
-            tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
+            String result = input.replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
+
+            result = dicePattern.matcher(result)
+                    .replaceAll((match) -> {
+                        int pipe = match.group(2).indexOf("|");
+                        if (pipe < 0) {
+                            return cfg().alwaysUseDiceRoller()
+                                    ? "`dice: " + match.group(2) + '`'
+                                    : '`' + match.group(2) + '`';
+                        }
+                        String dice = match.group(2).substring(0, pipe);
+                        return cfg().alwaysUseDiceRoller()
+                                ? "`dice: " + dice + '`'
+                                : '`' + dice + '`';
+                    });
+
+            result = chancePattern.matcher(result)
+                    .replaceAll((match) -> match.group(1) + "% chance");
+
+            result = asPattern.matcher(result)
+                    .replaceAll(this::replaceActionAs);
+
+            result = footnoteReference.matcher(result)
+                    .replaceAll(this::replaceFootnoteReference);
+
+            result = quickRefPattern.matcher(result)
+                    .replaceAll((match) -> {
+                        String[] parts = match.group(1).split("\\|");
+                        if (parts.length > 4) {
+                            return parts[4];
+                        }
+                        return parts[0];
+                    });
+
+            result = runeItemPattern.matcher(result)
+                    .replaceAll(this::linkifyRuneItem);
+
+            result = Pf2eIndexType.matchPattern.matcher(result)
+                    .replaceAll(this::linkify);
+
+            // "Style tags; {@bold some text to be bolded} (alternative {@b shorthand}),
+            // {@italic some text to be italicised} (alternative {@i shorthand}),
+            // {@underline some text to be underlined} (alternative {@u shorthand}),
+            // {@strike some text to strike-through}, (alternative {@s shorthand}),
+            // {@color color|e40707} tags, {@handwriting handwritten text},
+            // {@sup some superscript,} {@sub some subscript,}
+            // {@center some centered text} {@c with alternative shorthand,}
+            // {@i nostyle {@nostyle to escape font formatting, which can be used with other entry types} {@n (see below).}}
+            // {@indentFirst You can use @indentFirst to indent the first line of text, all subsequent lines will not be indented. This is most often useful in tables, but it can be used anywhere.}
+            // {@indentSubsequent @indentSubsequent is the counterpart to @indentFirst. You can use it to indent all lines after the first. This is most often useful in sidebars, but it can be used anywhere.}",
+
+            try {
+                result = result
+                        .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
+                        .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
+                        .replaceAll("\\{@pf2etools ([^}|]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@Pf2eTools ([^}|]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@dc ([^}]+)}", "DC $1")
+                        .replaceAll("\\{@flatDC ([^}]+)}", "$1")
+                        .replaceAll("\\{@d20 ([^}]+?)}", "$1")
+                        .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
+                        .replaceAll("\\{@recharge}", "(Recharge 6)")
+                        .replaceAll("\\{@(scaledice|scaledamage) [^|]+\\|[^|]+\\|([^|}]+)[^}]*}", "$2")
+                        .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
+                        .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
+                        .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
+                        .replaceAll("\\{@hit ([^}<]+)}", "+$1")
+                        .replaceAll("\\{@h}", "Hit: ")
+                        .replaceAll("\\{@c ([^}]+?)}", "$1")
+                        .replaceAll("\\{@center ([^}]+?)}", "$1")
+                        .replaceAll("\\{@s ([^}]+?)}", "$1")
+                        .replaceAll("\\{@strike ([^}]+?)}", "$1")
+                        .replaceAll("\\{@n ([^}]+?)}", "$1")
+                        .replaceAll("\\{@b ([^}]+?)}", "**$1**")
+                        .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
+                        .replaceAll("\\{@i ([^}]+?)}", "_$1_")
+                        .replaceAll("\\{@italic ([^}]+)}", "_$1_")
+                        .replaceAll("\\{@indentFirst ([^}]+?)}", "$1")
+                        .replaceAll("\\{@indentSubsequent ([^}]+?)}", "$1");
+            } catch (Exception e) {
+                tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
+            }
+
+            // second pass (nested references)
+            result = Pf2eIndexType.matchPattern.matcher(result)
+                    .replaceAll(this::linkify);
+
+            // note pattern often wraps others. Do this one last.
+            result = notePattern.matcher(result)
+                    .replaceAll((match) -> {
+                        if (parseState.inFootnotes()) {
+                            return match.group(2);
+                        }
+                        List<String> text = new ArrayList<>();
+                        text.add("> [!pf2-note]");
+                        for (String line : match.group(2).split("\n")) {
+                            text.add("> " + line);
+                        }
+                        return String.join("\n", text);
+                    });
+            return result;
+        } catch (IllegalArgumentException e) {
+            tui().errorf(e, "Failure replacing text: %s", e.getMessage());
         }
-
-        // second pass (nested references)
-        result = Pf2eIndexType.matchPattern.matcher(result)
-                .replaceAll(this::linkify);
-
-        // note pattern often wraps others. Do this one last.
-        result = notePattern.matcher(result)
-                .replaceAll((match) -> {
-                    if (parseState.inFootnotes()) {
-                        return match.group(2);
-                    }
-                    List<String> text = new ArrayList<>();
-                    text.add("> [!note]");
-                    for (String line : match.group(2).split("\n")) {
-                        text.add("> " + line);
-                    }
-                    return String.join("\n", text);
-                });
-
-        return result;
+        return input;
     }
 
     default String replaceFootnoteReference(MatchResult match) {

@@ -220,10 +220,10 @@ public interface JsonSource extends JsonTextReplacement {
                         appendCallout(text, node, "pf2-inset");
                         break;
                     case pf2tipsBox:
-                        appendCallout(text, node, "tip");
+                        appendCallout(text, node, "pf2-tip");
                         break;
                     case pf2sampleBox:
-                        appendCallout(text, node, "example");
+                        appendCallout(text, node, "pf2-example");
                         break;
                     case pf2beigeBox:
                         appendCallout(text, node, "pf2-beige");
@@ -335,7 +335,7 @@ public interface JsonSource extends JsonTextReplacement {
     /** Internal */
     default void appendTextHeaderFlavorBlock(List<String> text, JsonNode node) {
         List<String> inner = new ArrayList<>();
-        inner.add("[!tip] " + Field.name.getTextOrEmpty(node));
+        inner.add("[!pf2-tip] " + Field.name.getTextOrEmpty(node));
         appendEntryToText(inner, Field.entries.getFrom(node), null);
         inner.forEach(x -> text.add("> " + x));
         maybeAddBlankLine(text);
@@ -393,9 +393,9 @@ public interface JsonSource extends JsonTextReplacement {
         List<String> quoteText = new ArrayList<>();
         String by = Field.by.getTextOrEmpty(entry);
         if (by.isEmpty()) {
-            quoteText.add("[!quote]-  ");
+            quoteText.add("[!pf2-quote]-  ");
         } else {
-            quoteText.add("[!quote]- A quote from " + replaceText(by) + "  ");
+            quoteText.add("[!pf2-quote]- A quote from " + replaceText(by) + "  ");
         }
         appendEntryToText(quoteText, Field.entry.getFrom(entry), null);
         appendEntryToText(quoteText, Field.entries.getFrom(entry), null);
@@ -751,7 +751,7 @@ public interface JsonSource extends JsonTextReplacement {
             List<String> inner = embedGenericData(tag, data);
             String backticks = nestedEmbed(inner);
             maybeAddBlankLine(text);
-            text.add(backticks + "ad-note");
+            text.add(backticks + "ad-pf2-note");
             text.addAll(inner);
             text.add(backticks);
             return;
