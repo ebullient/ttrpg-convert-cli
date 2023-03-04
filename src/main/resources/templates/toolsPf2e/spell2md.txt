@@ -16,7 +16,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {#if resource.traditions }
 - **Traditions**: {#each resource.traditions}{it}{#if it_hasNext}, {/if}{/each}
 {/if}{#if resource.domains }
-- **Domains**: {resource.domains}
+- **Domains**: {#each resource.domains}{it}{#if it_hasNext}, {/if}{/each}
 {/if}{#if resource.subclass }
 - {#each resource.subclass}**{it.category}** {it.text}{#if it_hasNext}, {/if}{/each}
 {/if}
