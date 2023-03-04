@@ -96,7 +96,7 @@ public class Tui {
 
     private static ObjectMapper initMapper(ObjectMapper mapper) {
         mapper.setVisibility(VisibilityChecker.Std.defaultInstance()
-                    .with(JsonAutoDetect.Visibility.ANY));
+                .with(JsonAutoDetect.Visibility.ANY));
         return mapper;
     }
 
