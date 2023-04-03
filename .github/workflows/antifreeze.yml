@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 0
 
       - name: yq - portable yaml processor
-        uses: mikefarah/yq@v4.33.1
+        uses: mikefarah/yq@v4.33.2
 
       - name: Update snapshot tag
         if: inputs.update-snapshot-tag == true
