@@ -12,10 +12,8 @@
 
 // Local Variables
 $call-box-shadow: rgba(26, 34, 77, 0.9);
-$cont-bright: contrast(175%) brightness(103%);
 $svg-size-content: 16px;
 $svg-size: 18px;
-$theme-change: 10%;
 $half-rem: 0.5rem;
 
 
@@ -26,12 +24,9 @@ $half-rem: 0.5rem;
     --callout-content-background: #{$value};
     // Mixins Here
     @include root.root-common;
-    @include root.admon-empty;
 
     // General Styling Here
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
-    padding: 1rem;
+    box-shadow: 0 0 5px 0 $call-box-shadow;
 
     & .admonition-title {
       background-color: #{$value};
@@ -39,7 +34,6 @@ $half-rem: 0.5rem;
       @include title.title;
 
       // General Styling Here
-
 
       & .admonition-title-icon .svg-icon {
 
@@ -58,21 +52,18 @@ $half-rem: 0.5rem;
         }
       }
 
-      & .admonition-title-content {
+      & .admonition-title-inner {
         // Mixins Here
         @include title.inner-top;
 
         // General Styling Here
         font-weight: var.$weight-700;
         padding-bottom: var.$width-2-rem;
+        margin-right: var.$width-2-rem;
 
         em {
           font-weight: var.$weight-400;
         }
-      }
-
-      & .no-title {
-        @include title.no-title;
       }
     }
 
