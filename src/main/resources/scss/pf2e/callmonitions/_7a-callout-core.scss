@@ -12,10 +12,6 @@
 @each $key, $value in callout-map.$pf2e-callouts {
   .callout[data-callout='#{$key}'] {
     --callout-color: #{$value};
-    --callout-content-background: #{$value};
-    background-color: #{$value};
-    border-color: rgba(red($value), green($value), blue($value), 0.2);
-
     // Mixins Here
     @include root.root-common;
     @include root.root-link;
@@ -23,10 +19,10 @@
     @include root.callout-drop;
 
     // General Styling Here
+    background-color: #{$value};
     padding: var.$width-4-rem;
 
     & .callout-title {
-      background-color: #{$value};
 
       // Mixins Here
       @include title.title;
@@ -43,7 +39,6 @@
         @include title.inner-top;
 
         // General Styling Here
-        flex: 1;
         font-weight: var.$weight-700;
         margin-left: 1rem;
         padding-bottom: var.$width-2-rem;
@@ -54,30 +49,14 @@
       }
     }
 
-    & .callout-title .no-title {
-
-      & .callout-icon .svg-icon {
-        display: var.$no-display;
-      }
-
-    }
-
 
     & .callout-content {
-      background-color: #{$value};
 
       // Mixins Here
       @include body.content-lists;
       @include body.content-code;
 
       & blockquote {
-        $lightness: lightness($value);
-        @if ($lightness > 50) {
-          background-color: hsla(hue($value), saturation($value), $lightness, 1); /* Apply if color is light */
-        } @else {
-          background-color: hsla(hue($value), saturation($value), $lightness, 0.8); /* Apply if color is dark */
-        }
-
         @include body.content-blockquotes;
       }
 
