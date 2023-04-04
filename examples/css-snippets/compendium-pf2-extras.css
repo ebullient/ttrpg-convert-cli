@@ -177,6 +177,16 @@ body .markdown-source-view .list-bullet:after {
   width: 1rem;
 }
 
+:is(.pf2e) .list-bullet {
+  display: none;
+}
+:is(.pf2e) .list-bullet::before {
+  display: none;
+}
+:is(.pf2e) .list-bullet::after {
+  display: none;
+}
+
 .markdown-embed {
   border: none;
   border-radius: 0;
