@@ -93,3 +93,17 @@ $length: 1rem;
       }
     }
   }
+
+:is(.pf2e) {
+   & .list-bullet {
+     display: none;
+
+     &::before {
+       display: none;
+     }
+
+     &::after {
+       display: none;
+     }
+   }
+}
