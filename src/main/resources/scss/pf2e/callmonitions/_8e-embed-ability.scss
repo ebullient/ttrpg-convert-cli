@@ -1,10 +1,16 @@
 // Variables
 @use '../../variables/index-obsidian-var' as var;
 
-.admonition [data-callout='embed-ability'] {
+.admonition[data-callout='embed-ability'] {
   --callout-icon: "<svg xmlns=\"http://www.w3.org/2000/svg\"   viewBox=\"0 0 1024 1024\"><path fill=\"currentColor\" d=\"M908.682 797.44c139.17-191.525 122.422-461.107-50.286-633.818-176.21-176.21-453.266-190.09-645.372-41.652-27.817-32.566-54.723-65.058-78.801-95.832L30.954 129.413c30.778 23.828 63.451 50.248 96.266 77.522-151.767 192.241-138.96 471.937 38.483 649.38 172.129 172.129 440.475 189.331 631.878 51.674l40.78 40.778 154.422 38.458-43.596-149.283-40.504-40.502zM660.181 548.939L426.963 315.724l87.314-87.321-63.667-63.672c180.697-9.014 330.398 207.332 209.571 384.207zM446.375 164.971L342.652 268.702a11470.78 11470.78 0 0 1-39.017-43.372c46.748-38.523 95.723-57.103 142.74-60.359zm-212.31 133.097a6682.191 6682.191 0 0 1 42.134 37.09L168.442 442.922l65.666 65.67 82.032-82.037L794.61 905.02C412.147 1162.465-75.257 688.289 234.064 298.069z\"></path></svg>";
 
   & .admonition-title {
+      align-content: center;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+
 
     & .admonition-title-content {
 
@@ -14,12 +20,6 @@
 
 
   & .admonition-content {
-    & p {
-      text-align: var.$align-left;
-    }
 
-    &:is(.internal-link:is([href^='/rules/traits/'])) {
-      text-align: var.$align-center;
-    }
   }
 }

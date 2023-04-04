@@ -12,7 +12,14 @@
   padding: var.$width-2-rem;
 
   & .admonition-title {
-    & .admonition-title-icon .svg-icon {
+
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    & .admonition-icon .svg-icon {
 
     }
 

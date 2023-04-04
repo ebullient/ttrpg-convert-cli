@@ -2,15 +2,17 @@
 @use '../../variables/index-obsidian-var' as var;
 
 .callout[data-callout=pf2-note] {
-  border: outset;
   clear: both;
   font-style: var.$font-style-i;
   text-align: var.$align-center;
-  padding: var.$width-1-rem;
-  margin-top: var.$width-3-rem;
   margin-bottom: 1rem;
 
   & .callout-title {
+      align-content: center;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
 
     & .callout-title-inner {
       flex: unset;
