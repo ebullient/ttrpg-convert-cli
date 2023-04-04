@@ -1,0 +1,147 @@
+.published-container {
+  /* Page */
+  --page-width: 70vw; // 800px
+  --page-side-padding: 2rem; // 48px
+  /* Page titles */
+  --page-title-font: var(--h1-font);
+  --page-title-line-height: var(--h1-line-height);
+  --page-title-size: var(--h1-size); //2.6em
+  --page-title-style: var(--h1-style);
+  --page-title-variant: var(--h1-variant);
+  --page-title-weight: var(--h1-weight);
+  /* Component titles, e.g. backlinks, graph, table of contents */
+  --component-title-font: var(--font-ui); //inherit
+  --component-title-size: var(--font-ui-small);
+  --component-title-style: normal; //inherit
+  --component-title-transform: uppercase;
+  --component-title-variant: normal; //Inherit
+  --component-title-weight: 600;
+  /* Inputs */
+  --input-height: 40px; //32px
+  /* Graph */
+  --graph-height: 260px;
+  /* Sidebars */
+  --sidebar-font-size: 1.2rem; //14px;
+  --sidebar-left-border-width: 1px; //1px;
+  --sidebar-left-width: 280px;
+  --sidebar-right-background: transparent;
+  --sidebar-right-border-width: 0px;
+  --sidebar-right-width: 300px;
+  /* Site header */
+  --header-height: var(--h1-size);
+  --logo-height: auto;
+  --logo-max-height: 200px;
+  --logo-max-width: calc(100% - 18px);
+  --logo-radius: 8px;
+  --logo-width: auto;
+  --site-menu-icon-size: 24px;
+  --site-name-font: inherit;
+  --site-name-size: var(--h2-size);
+  --site-name-weight: 700; //600;
+  /* Navigation */
+  --nav-item-weight-active: 500;
+  --nav-parent-item-weight: 500;
+  /* Outline */
+  --outline-heading-weight-active: 600;
+  /* Footer */
+  --footer-display: block;
+}
+
+body {
+  // Publish
+  --tooltip-display: hover;
+  /* Popovers */
+  --popover-display: block;
+
+  // Redefined Variables
+  --h1-font: 'Open Sans', sans-serif;
+
+  --h1-size: 2.6rem;
+  --h2-size: 2.2rem;
+  --h3-size: 1.8rem;
+  --h4-size: 1.6rem;
+  --h5-size: 1.4rem;
+  --h6-size: 1.2rem;
+
+  --h1-style: normal;
+  --h1-line-height: 1.2;
+
+  --h1-variant: normal;
+
+  --h1-weight: bold;
+
+  --font-ui-small: 0.75rem;
+}
+
+
+.theme-dark {
+  --h1-color: #FFB347;
+  --h2-color: #FFD1DC;
+  --h3-color: #AEC6CF;
+  --h4-color: #77DD77;
+  --h5-color: #B19CD9;
+  --h6-color: #F49AC2;
+  --text-normal: #F5DEB3;
+  --text-accent: #F4A460;
+  --text-muted: #D3D3D3;
+  --text-faint: #808080;
+  --background-modifier-border: #F5DEB3;
+  --background-primary: #333333;
+  --page-title-color: #FFD1DC;
+  --component-title-color: #B0C4DE;
+  --sidebar-left-background: #2E2E2E;
+  --sidebar-left-border-color: #F5DEB3;
+  --sidebar-right-border-color: #F5DEB3;
+  --site-menu-icon-color-hover: #B0C4DE;
+  --site-menu-icon-color: #778899;
+  --site-name-color-hover: #B0C4DE;
+  --site-name-color: #FFD1DC;
+  --nav-collapse-icon-color-hover: #B0C4DE;
+  --nav-collapse-icon-color: #778899;
+  --nav-item-border-color-active: #FFD1DC;
+  --nav-item-border-color: #F5DEB3;
+  --nav-item-color-active: #FFD1DC;
+  --nav-item-color-hover: #B0C4DE;
+  --nav-item-color: #778899;
+  --nav-parent-item-color-active: #FFD1DC;
+  --nav-parent-item-color: #B0C4DE;
+  --outline-heading-color: #B0C4DE;
+  --outline-heading-color-hover: #FFD1DC;
+  --outline-heading-color-active: #FFD1DC;
+}
+
+.theme-light {
+  --h1-color: #333333;
+  --h2-color: #4c4c4c;
+  --h3-color: #666666;
+  --h4-color: #7f7f7f;
+  --h5-color: #999999;
+  --h6-color: #b3b3b3;
+  --text-normal: #333333;
+  --text-accent: #0088cc;
+  --text-muted: #b3b3b3;
+  --text-faint: #d9d9d9;
+  --background-modifier-border: #d9d9d9;
+  --background-primary: #ffffff;
+  --page-title-color: #333333;
+  --component-title-color: #4c4c4c;
+  --sidebar-left-background: #ffffff;
+  --sidebar-left-border-color: #e6e6e6;
+  --sidebar-right-border-color: #e6e6e6;
+  --site-menu-icon-color-hover: #0088cc;
+  --site-menu-icon-color: #666666;
+  --site-name-color-hover: #0088cc;
+  --site-name-color: #333333;
+  --nav-collapse-icon-color-hover: #0088cc;
+  --nav-collapse-icon-color: #666666;
+  --nav-item-border-color-active: #0088cc;
+  --nav-item-border-color: transparent;
+  --nav-item-color-active: #0088cc;
+  --nav-item-color-hover: #0088cc;
+  --nav-item-color: #666666;
+  --nav-parent-item-color-active: #0088cc;
+  --nav-parent-item-color: #666666;
+  --outline-heading-color: #4c4c4c;
+  --outline-heading-color-hover: #333333;
+  --outline-heading-color-active: #0088cc;
+}

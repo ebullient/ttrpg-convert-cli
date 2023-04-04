@@ -1,0 +1,374 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+:root {
+  --pf2e-font-monospace-default: Menlo, SFMono-Regular, Consolas, "Roboto Mono", "Source Code Pro", monospace;
+  --pf2e-font-monospace-theme: "Fira Code", Menlo, Monaco, "Courier New", "Source Code Pro", Jetbrains Mono;
+  --pf2e-font-monospace: var(--pf2e-font-monospace-theme), var(--pf2e-font-monospace-default);
+  --pf2e-font-headers-default: "Nunito", sans-serif;
+  --pf2e-font-headers-theme: "Poppins", "Montserrat", "Roboto", "Open Sans", "Helvetica Neue", sans-serif;
+  --pf2e-font-headers: var(--pf2e-font-headers-default), var(--pf2e-font-headers-theme);
+}
+
+.theme-dark {
+  --pf2e-black-text-rgb: 38, 38, 38;
+  --pf2e-black-text: #262626;
+  --pf2e-blue-headers-rgb: 11, 37, 96;
+  --pf2e-blue-headers: #0b2560;
+  --pf2e-red-headers-rgb: 85, 12, 6;
+  --pf2e-red-headers: #550c06;
+  --pf2e-light-brown-headers: #9f6a57;
+  --pf2e-light-brown-headers-rgb: 159, 106, 87;
+  --pf2e-beige-table-even-rows-rgb: 244, 239, 226;
+  --pf2e-beige-table-even-rows: #f4efe2;
+  --pf2e-tan-table-odd-rows-rgb: 236, 228, 203;
+  --pf2e-tan-table-odd-rows: #ece4cb;
+  --pf2e-brown-table-borders: #9c7566;
+  --pf2e-brown-table-borders-rgb: 156, 117, 102;
+  --pf2e-header-one: rgb(var(--pf2e-red-headers-rgb));
+  --pf2e-header-two: rgb(var(--pf2e-blue-headers-rgb));
+  --pf2e-header-three: rgb(var(--pf2e-red-headers-rgb));
+  --pf2e-header-four: rgb(var(--pf2e-light-brown-headers-rgb));
+  --scrollbar-active-thumb-bg: rgba(204, 204, 204, 1);
+  --scrollbar-hover: rgba(51, 51, 51, 1);
+  --scrollbar-thumb-bg: rgba(102, 102, 102, 1);
+}
+
+.theme-light {
+  --pf2e-black-text-rgb: 38, 38, 38;
+  --pf2e-black-text: #262626;
+  --pf2e-blue-headers-rgb: 11, 37, 96;
+  --pf2e-blue-headers: #0b2560;
+  --pf2e-red-headers-rgb: 85, 12, 6;
+  --pf2e-red-headers: #550c06;
+  --pf2e-light-brown-headers: #764f41;
+  --pf2e-light-brown-headers-rgb: 118, 79, 65;
+  --pf2e-beige-table-even-rows-rgb: 244, 239, 226;
+  --pf2e-beige-table-even-rows: #f4efe2;
+  --pf2e-tan-table-odd-rows-rgb: 236, 228, 203;
+  --pf2e-tan-table-odd-rows: #ece4cb;
+  --pf2e-brown-table-borders: var(--pf2e-light-brown-headers);
+  --pf2e-brown-table-borders-rgb: rgb(var(--pf2e-light-brown-headers-rgb));
+  --pf2e-table-hover-color: 241, 167, 162;
+  --pf2e-header-one: rgb(var(--pf2e-red-headers-rgb));
+  --pf2e-header-two: rgb(var(--pf2e-blue-headers-rgb));
+  --pf2e-header-three: rgb(var(--pf2e-red-headers-rgb));
+  --pf2e-header-four: rgb(var(--pf2e-light-brown-headers-rgb));
+  --scrollbar-active-thumb-bg: rgba(102, 102, 102, 1);
+  --scrollbar-hover: rgba(204, 204, 204, 1);
+  --scrollbar-thumb-bg: rgba(153, 153, 153, 1);
+}
+
+.theme-dark,
+.theme-light {
+  --pf2e-purple-link: rgba(77, 60, 134, 1);
+  --pf2e-blue-link: rgba(0, 72, 115, 1);
+  --pf2e-green-link: rgba(46, 139, 87, 1);
+  --pf2e-dracolich: rgba(137, 184, 176);
+  --box-alignment: #666f99;
+  --box-rare: #002664;
+  --box-size: #527a5f;
+  --box-traits: #611405;
+  --box-uncommon: #98513d;
+  --box-unique: #54166e;
+  --box-common: #404040;
+  --box-condition: #138a06;
+  --box-skills: #a96c74;
+  --box-text: #ffffff;
+  --box-tags: #a0947f;
+}
+
+@font-face {
+  font-family: "Pathfinder", sans-serif;
+  src: url("data:application/x-font-ttf;charset=utf-8;base64,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") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+body .markdown-rendered ol,
+body .markdown-rendered ul,
+body .markdown-preview-view ol,
+body .markdown-preview-view ul,
+body .markdown-source-view .list-bullet {
+  margin-left: 0;
+  padding-left: 0;
+  list-style: none;
+}
+body .markdown-rendered li,
+body .markdown-source-view .list-bullet {
+  padding-left: 1.25rem;
+  margin-top: 1.25rem;
+  margin-left: 1.25rem;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.1;
+}
+body .markdown-rendered ol,
+body .markdown-rendered ul,
+body .markdown-preview-view ol,
+body .markdown-preview-view ul {
+  place-items: center;
+}
+.list-bullet body .markdown-rendered ol,
+.list-bullet body .markdown-rendered ul,
+.list-bullet body .markdown-preview-view ol,
+.list-bullet body .markdown-preview-view ul {
+  display: none;
+}
+body .markdown-rendered ol .callout, .admonition body .markdown-rendered ol,
+body .markdown-rendered ul .callout,
+.admonition body .markdown-rendered ul,
+body .markdown-preview-view ol .callout,
+.admonition body .markdown-preview-view ol,
+body .markdown-preview-view ul .callout,
+.admonition body .markdown-preview-view ul {
+  margin-left: 0.3125rem;
+  padding-left: 0.3125rem;
+}
+body .markdown-rendered ol li:before,
+body .markdown-rendered ul li:before,
+body .markdown-preview-view ol li:before,
+body .markdown-preview-view ul li:before {
+  background-color: var(--pf2e-red-headers);
+  border-radius: 50%;
+  border: 0.125rem solid var(--pf2e-blue-headers);
+  color: var(--pf2e-black-text);
+  content: "";
+  display: block;
+  height: 16px;
+  left: -3px;
+  position: absolute;
+  top: -1px;
+  width: 16px;
+}
+body .markdown-rendered ol .markdown-rendered ul.has-list-bullet > li::marker,
+body .markdown-rendered ul .markdown-rendered ul.has-list-bullet > li::marker,
+body .markdown-preview-view ol .markdown-rendered ul.has-list-bullet > li::marker,
+body .markdown-preview-view ul .markdown-rendered ul.has-list-bullet > li::marker {
+  display: none;
+}
+body .markdown-rendered ol .markdown-rendered .list-bullet,
+body .markdown-rendered ul .markdown-rendered .list-bullet,
+body .markdown-preview-view ol .markdown-rendered .list-bullet,
+body .markdown-preview-view ul .markdown-rendered .list-bullet {
+  display: none;
+}
+body .markdown-source-view .list-bullet {
+  align-items: baseline;
+  font-size: 16px;
+  line-height: 1.2;
+  margin-left: 1rem;
+  margin-top: 1rem;
+  padding-left: 9px;
+  position: relative;
+}
+body .markdown-source-view .list-bullet:before {
+  content: "";
+}
+body .markdown-source-view .list-bullet:after {
+  background-color: var(--pf2e-red-headers);
+  border-radius: 50%;
+  border: 0.125rem solid var(--pf2e-blue-headers);
+  color: var(--pf2e-black-text);
+  content: "";
+  height: 1rem;
+  left: -3px;
+  position: absolute;
+  top: -1px;
+  width: 1rem;
+}
+
+.markdown-embed {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.markdown-embed .embed-title,
+.markdown-embed .mod-header {
+  display: none;
+  gap: 0;
+  padding: 0;
+}
+.markdown-embed-link svg,
+.markdown-embed .file-embed-link {
+  height: 18px;
+  width: 18px;
+  right: 0;
+  top: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+.markdown-embed-source-view.invisible-embed, .markdown-embed-rendered.invisible-embed {
+  --embed-border-left: 0;
+  --embed-border-right: 0;
+  --embed-padding: 0;
+}
+.markdown-embed .markdown-embed-content {
+  max-height: unset;
+  overflow: unset;
+}
+.markdown-embed .markdown-embed-content > .markdown-preview-view {
+  overflow-y: unset;
+}
+
+.markdown-source-view.internal-embed.markdown-embed-title {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  display: none;
+  gap: 0;
+  font-size: 0;
+}
+
+.markdown-preview-view h1, .markdown-preview-view h2, .markdown-preview-view h3, .markdown-preview-view h4, .markdown-preview-view h5, .markdown-preview-view h6 {
+  align-items: center;
+  display: block;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+  margin-top: 1.25rem;
+  white-space: pre-wrap;
+}
+.markdown-preview-view h1, .markdown-preview-view h2 {
+  border-bottom: 1px ridge rgb(var(--pf2e-red-headers-rgb) 0.5);
+  padding-bottom: 0.3em;
+}
+.markdown-preview-view h1 {
+  color: var(--pf2e-header-one);
+  font-weight: 900;
+}
+.markdown-preview-view h2 {
+  color: var(--pf2e-header-two);
+  font-weight: 800;
+}
+.markdown-preview-view h3 {
+  color: var(--pf2e-header-three);
+  font-weight: 700;
+}
+.markdown-preview-view h4 {
+  color: var(--pf2e-header-four);
+  font-weight: 600;
+}
+.markdown-preview-view h5,
+.markdown-preview-view h6 {
+  font-weight: 500;
+}
+.markdown-preview-view .heading-collapse-indicator {
+  color: var(--pf2e-dracolich);
+}
+
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
+  font-weight: 500;
+}
+
+.cm-header-1 {
+  font-size: var(--h1-size);
+  color: var(--pf2e-header-one);
+}
+
+.cm-header-2 {
+  font-size: var(--h2-size);
+  color: var(--pf2e-header-two);
+}
+
+.cm-header-3 {
+  font-size: var(--h3-size);
+  color: var(--pf2e-header-three);
+}
+
+.cm-header-4 {
+  font-size: var(--h4-size);
+  color: var(--pf2e-header-four);
+}
+
+.cm-header-5 {
+  font-size: var(--h5-size);
+  color: var(--h5-color);
+}
+
+.cm-header-6 {
+  font-size: var(--h6-size);
+  color: var(--h6-color);
+}
+
+a,
+.internal-link,
+.cm-hmd-internal-link,
+.cm-link,
+.cm-formatting-link,
+.cm-url {
+  text-decoration: none;
+}
+a:hover,
+.internal-link:hover,
+.cm-hmd-internal-link:hover,
+.cm-link:hover,
+.cm-formatting-link:hover,
+.cm-url:hover {
+  text-decoration: underline;
+}
+
+.cm-s-obsidian span.cm-string {
+  text-decoration: none;
+}
+
+.external-link {
+  background-image: none;
+  background-size: 0;
+  font-style: italic;
+  padding-right: 0;
+}
+.external-link:hover {
+  text-decoration: underline;
+}
+
+[class^=Pathfinder-], [class*=" Pathfinder-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "Pathfinder", serif !important;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -moz-osx-font-smoothing: grayscale;
+  text-transform: none;
+}
+
+.pathfinder-1action::before {
+  content: "⬻";
+}
+
+.pathfinder-2actions::before {
+  content: "⬺";
+}
+
+.pathfinder-3actions::before {
+  content: "⬽";
+}
+
+.pathfinder-delay::before {
+  content: "⭓";
+}
+
+.pathfinder-reaction::before {
+  content: "⬲";
+}
+
+.tag {
+  font-weight: 900;
+  background-color: var(--box-tags);
+  color: var(--box-text);
+  padding: 0.1875rem 0.3125rem;
+  border-radius: 0.3125rem;
+  letter-spacing: 0.0625rem;
+}
+
+/*# sourceMappingURL=compendium-pf2-extras.css.map */

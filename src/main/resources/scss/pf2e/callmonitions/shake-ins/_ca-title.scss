@@ -1,0 +1,34 @@
+// Variables
+@use '../../../variables/index-obsidian-var' as var;
+
+$svg-size-content: 1.25rem;
+
+@mixin title {
+  align-items: var.$align-center;
+  border: var.$no-display;
+  display: var.$flex;
+  justify-content: var.$align-center;
+  line-height: var.$line-height-2;
+  min-height: 1.5rem;
+  padding-top: 10px;
+  position: var.$relative;
+}
+
+@mixin no-title {
+  &:empty + .content {
+    background-color: var(--callout-color);
+    padding: var.$width-4-rem 0.75rem;
+    border-top-width: var.$width-1-rem;
+    border-top-style: var.$border-solid;
+  }
+}
+
+@mixin inner-top {
+  font-size: var.$h1-size;
+  justify-self: var.$align-center;
+  text-align: var.$align-center;
+
+  em {
+    font-weight: var.$weight-500;
+  }
+}

@@ -1,0 +1,93 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+//Maps
+@use '../maps/pf2e-maps' as callout-map;
+// Mixins Next
+@use 'shake-ins/ca-root' as root;
+@use 'shake-ins/ca-title' as title;
+@use 'shake-ins/ca-content' as body;
+@use 'shake-ins/ca-misc' as extras;
+
+@each $key, $value in callout-map.$pf2e-callouts {
+  .callout[data-callout='#{$key}'] {
+    --callout-color: #{$value};
+    --callout-content-background: #{$value};
+    background-color: #{$value};
+    border-color: rgba(red($value), green($value), blue($value), 0.2);
+
+    // Mixins Here
+    @include root.root-common;
+    @include root.root-link;
+    @include root.root-text;
+    @include root.callout-drop;
+
+    // General Styling Here
+    padding: var.$width-4-rem;
+
+    & .callout-title {
+      background-color: #{$value};
+
+      // Mixins Here
+      @include title.title;
+
+      // General Styling Here
+
+      & .callout-icon .svg-icon {
+        display: var.$no-display;
+      }
+
+      & .callout-title-inner {
+
+        // Mixins Here
+        @include title.inner-top;
+
+        // General Styling Here
+        flex: 1;
+        font-weight: var.$weight-700;
+        margin-left: 1rem;
+        padding-bottom: var.$width-2-rem;
+
+        em {
+          font-weight: var.$weight-400;
+        }
+      }
+    }
+
+    & .callout-title .no-title {
+
+      & .callout-icon .svg-icon {
+        display: var.$no-display;
+      }
+
+    }
+
+
+    & .callout-content {
+      background-color: #{$value};
+
+      // Mixins Here
+      @include body.content-lists;
+      @include body.content-code;
+
+      & blockquote {
+        $lightness: lightness($value);
+        @if ($lightness > 50) {
+          background-color: hsla(hue($value), saturation($value), $lightness, 1); /* Apply if color is light */
+        } @else {
+          background-color: hsla(hue($value), saturation($value), $lightness, 0.8); /* Apply if color is dark */
+        }
+
+        @include body.content-blockquotes;
+      }
+
+      @include body.linkies;
+
+      @include extras.p-bottom;
+
+
+      // General Styling Here
+
+    }
+  }
+}

@@ -1,0 +1,70 @@
+// ------------------------------------------------------
+// Naked embeds.. This code should look familiar ;)
+// Credits to Ebullient for most of this One
+// ------------------------------------------------------
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+// Mixin for common styles
+@mixin embed-common-styles() {
+  border: var.$no-display;
+  border-radius: var.$width-0-rem;
+  margin: var.$width-0-rem;
+  padding: var.$width-0-rem;
+  position: var.$relative;
+}
+ .markdown-embed {
+    // Common styles
+    @include embed-common-styles();
+
+    // Hide embedded header and create uniform padding
+    & .embed-title,
+    .mod-header {
+      display: var.$no-display;
+      gap: var.$width-0-rem;
+      padding: var.$width-0-rem;
+    }
+
+    // Style link and file embeds
+    &-link svg,
+    .file-embed-link {
+      height: 18px;
+      width: 18px;
+      right: var.$width-0-rem;
+      top: var.$width-0-rem;
+      text-align: var.$align-center;
+      vertical-align: var.$align-middle;
+    }
+
+    // Style source and rendered views
+    &-source-view.invisible-embed,
+    &-rendered.invisible-embed {
+      --embed-border-left: 0;
+      --embed-border-right: 0;
+      --embed-padding: 0;
+    }
+
+    .markdown-embed-content {
+      // Remove max height and overflow
+      max-height: var.$unset;
+      overflow: var.$unset;
+
+      > .markdown-preview-view {
+        // Remove vertical scroll
+        overflow-y: var.$unset;
+      }
+    }
+  }
+
+  .markdown-source-view {
+    &.internal-embed.markdown-embed {
+      &-title {
+        // Common styles
+        @include embed-common-styles();
+
+        display: var.$no-display;
+        gap: var.$width-0-rem;
+        font-size: var.$width-0-rem;
+      }
+    }
+  }

@@ -1,0 +1,27 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+.callout[data-callout='pf2-sidebar'] {
+  clear: var.$align-right;
+  float: var.$align-right;
+  max-height: 85vh;
+  max-width: 50vw;
+  overflow-wrap: break-word;
+  overflow-y: var.$overflow-scroll;
+
+  & .callout-title {
+
+    & .callout-icon .svg-icon {
+      display: none;
+    }
+
+
+    & .callout-title-inner {
+    color: var(--pf2e-red-headers);
+    }
+  }
+
+  & .callout-content {
+    color: var(--pf2e-red-headers);
+  }
+}

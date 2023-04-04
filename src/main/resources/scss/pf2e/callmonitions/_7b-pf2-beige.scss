@@ -1,0 +1,26 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+.callout[data-callout='pf2-beige'] {
+
+ & .callout-title {
+   & .callout-title-inner {
+     text-align: var.$align-left;
+     margin-left: 0.25rem;
+     padding-bottom: 0.25rem;
+   }
+ }
+
+  & .callout-content {
+    h2 {
+      text-align: var.$align-left;
+      padding-left: 0.25rem;
+    }
+
+    h3 {
+      text-align: var.$align-left;
+      padding-left: 0.25rem;
+    }
+  }
+
+}

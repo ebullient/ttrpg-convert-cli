@@ -1,0 +1,18 @@
+// Variable for Functions
+$dark-theme-dnd-br: 10%;
+
+
+// Darken Function
+@function darken-if($color, $amount) {
+  @if selector-nest(".theme-dark") {
+    @return darken($color, $amount);
+  } @else {
+    @return $color;
+  }
+}
+
+// Statblock Variables
+$dnd5e-stat-bg: darken-if(hsl(360deg 90% 85%), $dark-theme-dnd-br);
+$dnd5e-stat-sect-line: darken-if(hsl(330deg 5% 30%), $dark-theme-dnd-br);
+
+// Flowchart Variables

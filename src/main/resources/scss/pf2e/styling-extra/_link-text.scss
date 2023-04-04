@@ -1,0 +1,47 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+
+@mixin hover-link {
+  text-decoration: underline;
+}
+
+@mixin no-underline {
+  text-decoration: none;
+}
+
+a,
+.internal-link,
+.cm-hmd-internal-link,
+.cm-link,
+.cm-formatting-link,
+.cm-url {
+@include no-underline;
+
+  &:hover {
+    @include hover-link;
+  }
+}
+
+.cm-s-obsidian span.cm-string {
+  @include no-underline;
+
+}
+
+.external-link {
+  background-image: none;
+  background-size: 0;
+  font-style: italic;
+  padding-right: 0;
+
+  &:hover {
+    @include hover-link;
+  }
+}
+
+// I always liked the strong-ems...
+strong em,
+strong em a.internal-link,
+.cm-s-obsidian span.cm-strong.cm-em,
+.cm-s-obsidian span.cm-quote.cm-strong.cm-em {
+}

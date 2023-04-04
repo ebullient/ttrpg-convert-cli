@@ -1,0 +1,16 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+
+@mixin base-tag {;
+  font-weight: 900;
+  background-color: var(--box-tags);
+  color: var(--box-text);
+  padding: #{var.$width-3-rem} #{var.$width-5-rem};
+  border-radius: #{var.$width-5-rem};
+  letter-spacing: #{var.$width-1-rem};
+}
+
+.tag {
+    @include base-tag();
+  }

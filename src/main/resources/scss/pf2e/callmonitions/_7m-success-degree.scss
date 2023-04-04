@@ -1,0 +1,31 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+$margins: auto;
+
+.callout[data-callout='success-degree'] {
+  --callout-icon: lucide-scale;
+
+  & .callout-title {
+    display: var.$inherit;
+
+    & .callout-icon .svg-icon {
+      display: block;
+      margin-bottom: $margins;
+      margin-left: $margins;
+      margin-right: $margins;
+    }
+
+    & .callout-title-inner {
+      display: var.$no-display;
+    }
+  }
+
+  & .callout-content {
+
+    strong {
+      font-weight: 800;
+    }
+
+  }
+}

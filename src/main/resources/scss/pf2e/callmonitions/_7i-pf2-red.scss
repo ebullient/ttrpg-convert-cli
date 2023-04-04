@@ -1,0 +1,21 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+.callout[data-callout='pf2-red'] {
+color: white;
+
+  & .callout-title {
+
+    & .callout-title-inner {
+      font-family: 'Times New Roman', Times, serif;
+    }
+  }
+
+  & .callout-content {
+    table {
+      & th {
+        color: white;
+      }
+    }
+  }
+}

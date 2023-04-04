@@ -1,0 +1,28 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+$margins-example: auto;
+
+.callout.callout[data-callout='pf2-example'] {
+  & .callout-title {
+
+    & .callout-icon .svg-icon {
+      display: var.$no-display;
+    }
+
+    & .callout-title-inner {
+
+    }
+  }
+
+  & .callout-content {
+
+    strong {
+
+    }
+
+    em {
+
+    }
+  }
+}

@@ -1,0 +1,47 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+$box-length: 20px;
+
+// Common-Mixins
+@mixin link-styles {
+  cursor: help;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  padding: 2px;
+  text-align: left;
+  text-indent: 0;
+  word-break: keep-all;
+}
+
+.markdown-rendered {
+  // Box Shadows for Links
+  & .internal-link {
+    &:is([href^='/rules/traits/']) {
+      box-shadow: var.$width-0-rem var.$width-0-rem $box-length $box-length var(--box-traits) var.$border-inset;
+      color: whitesmoke !important;
+      @include link-styles;
+    }
+
+    // Any Condition from the Conditions Page
+    &:is([href*='/rules/conditions.md']) {
+      box-shadow: var.$width-0-rem var.$width-0-rem $box-length $box-length var(--box-condition) var.$border-inset;
+      color: whitesmoke !important;
+      @include link-styles;
+    }
+
+    // Any Trait from the Skills Page
+    &:is([href*='/compendium/skills.md']) {
+      box-shadow: var.$width-0-rem var.$width-0-rem $box-length $box-length var(--box-skills) var.$border-inset;
+      color: whitesmoke !important;
+      @include link-styles;
+    }
+  }
+}
+
+// Trying to Isolate Uncommon Traits
+a[href='/rules/traits/Uncommon.md'] {
+  box-shadow: var.$width-0-rem var.$width-0-rem $box-length $box-length var(--box-uncommon) var.$border-inset;
+  color: whitesmoke !important;
+  @include link-styles;
+}
