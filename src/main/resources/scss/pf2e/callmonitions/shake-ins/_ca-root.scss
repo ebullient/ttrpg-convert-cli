@@ -4,11 +4,13 @@ $call-box-shadow: rgba(26, 34, 77, 0.9);
 
 // Mixin for common styles
 @mixin root-common {
+  border-color: rgba(var(--callout-color), var(--callout-border-opacity));
+  border-style: outset;
   font-size: var.$block-body;
-  margin-top: 1rem;
   overflow-wrap: var.$overflow-word-break;
   overflow-y: scroll;
-  position: var.$relative;
+  padding: var.$width-1-rem;
+  margin-top: var.$width-3-rem;
 }
 
 // Mixin for internal links
@@ -27,16 +29,6 @@ $call-box-shadow: rgba(26, 34, 77, 0.9);
 @mixin root-text {
   & strong {
     padding-inline: var.$width-4-rem;
-  }
-}
-
-// Mixin for empty admonitions
-@mixin admon-empty {
-  &:not(.is-live-preview):is(.no-content) {
-    display: var.$no-display;
-  }
-  &:is(.is-live-preview):is(.no-content) {
-    opacity: var.$opacity-30;
   }
 }
 
