@@ -5,10 +5,16 @@
 .callout[data-callout='pf2-brown'] {
 
   & .callout-title {
-
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+    
     & .callout-title-inner {
       font-family: 'Helvetica Neue', Helvetica, Arial, 'Pathfinder', sans-serif;
       margin-left: 0.25rem;
+      text-align: center;
     }
   }
 

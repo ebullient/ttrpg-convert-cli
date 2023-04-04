@@ -6,6 +6,11 @@
 
 
   & .admonition-title {
+      align-content: stretch;
+      align-items: baseline;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
 
     & .admonition-title-inner {
 
