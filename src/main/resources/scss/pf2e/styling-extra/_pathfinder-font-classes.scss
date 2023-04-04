@@ -1,0 +1,46 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+[class^='Pathfinder-'], [class*=' Pathfinder-'] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'Pathfinder', serif !important;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -moz-osx-font-smoothing: grayscale;
+  text-transform: none;
+}
+
+.pathfinder-1action {
+  &::before {
+    content: "\2b3b";
+  }
+}
+
+.pathfinder-2actions {
+  &::before {
+    content: "\2b3a";
+  }
+}
+
+.pathfinder-3actions {
+  &::before {
+    content: "\2b3d";
+  }
+}
+
+.pathfinder-delay {
+  &::before {
+    content: "\2b53";
+  }
+}
+
+.pathfinder-reaction {
+  &::before {
+    content: "\2b32";
+  }
+}

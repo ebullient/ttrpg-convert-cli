@@ -1,0 +1,15 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+.callout[data-callout='pf2-inset'] {
+
+  & .callout-title {
+    & .callout-title-inner {
+      display: none;
+    }
+  }
+
+  & .callout-content {
+    font-weight: 700;
+  }
+}

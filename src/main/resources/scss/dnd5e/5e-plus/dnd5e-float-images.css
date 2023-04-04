@@ -1,0 +1,31 @@
+.json5e-background div[src$="#center"],
+.json5e-item div[src$="#center"],
+.json5e-monster div[src$="#center"],
+.json5e-race div[src$="#center"],
+.json5e-spell div[src$="#center"] {
+  text-align: center;
+}
+.json5e-background div[src$="#center"] img,
+.json5e-item div[src$="#center"] img,
+.json5e-monster div[src$="#center"] img,
+.json5e-race div[src$="#center"] img,
+.json5e-spell div[src$="#center"] img {
+  height: 300px;
+}
+.json5e-background div[src$="#right"],
+.json5e-item div[src$="#right"],
+.json5e-monster div[src$="#right"],
+.json5e-race div[src$="#right"],
+.json5e-spell div[src$="#right"] {
+  float: right;
+  margin-left: 5px;
+}
+.json5e-background div[src$="#right"] img,
+.json5e-item div[src$="#right"] img,
+.json5e-monster div[src$="#right"] img,
+.json5e-race div[src$="#right"] img,
+.json5e-spell div[src$="#right"] img {
+  height: 300px;
+}
+
+/*# sourceMappingURL=dnd5e-float-images.css.map */

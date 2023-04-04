@@ -1,0 +1,31 @@
+//Maps
+$pf2e-callouts: (
+        pf2-beige: rgba(240, 233, 214, 1),
+        pf2-brown: rgba(210, 190, 170, 1),
+        pf2-example: rgba(204, 219, 189, 1),
+        pf2-inset: rgba(233, 228, 217, 1),
+        pf2-key-box: rgba(85, 12, 6, 0.8),
+        pf2-paper: rgba(96, 113, 168, 0.6),
+        pf2-quote: rgba(231, 170, 212, 0.5),
+        pf2-sidebar: rgba(244, 243, 240, 0.9),
+        pf2-red: rgba(85, 12, 6, 0.8),
+        pf2-tip: rgba(209, 211, 212, 0.9),
+        pf2-note: rgba(227, 223, 187, 0.9),
+        pf2-summary: rgba(133, 173, 173, 0.9),
+        success-degree: rgb(230, 230, 180, 0.5),
+);
+
+$pf2e-admonitions: (
+        pf2-note: rgba(59, 68, 63, 0.1), // Rage of the Elements
+        pf2-summary: rgba(207, 197, 185, 0.5), // Secrets of Magic
+  // The two above appear as a callout and as an admonition
+        embed-ability: rgba(159, 179, 183, 1), // Players Guide
+        embed-action: rgba(206, 206, 197, 1), // Bestiary 1
+        embed-avatar: rgba(137, 184, 176, 1), // Bestiary 2
+        embed-disease: rgb(224, 168, 155, 1), // Bestiary 3
+        embed-feat: rgba(233, 162, 138, 1), // Core Rulebook
+        embed-item: rgba(163, 200, 209, 1), // Dark Archive
+        embed-ritual: rgba(158, 187, 144), // Book of Dead
+        inline-affliction: rgba(217, 216, 218, 1), // Gamemastery Guide
+        inline-attack: rgba(233, 195, 99, 1), //Guns and Gears
+);

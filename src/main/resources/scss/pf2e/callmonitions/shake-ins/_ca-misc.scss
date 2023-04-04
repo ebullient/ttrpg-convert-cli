@@ -1,0 +1,11 @@
+// Variables
+@use '../../../variables/index-obsidian-var' as var;
+
+@mixin p-bottom {
+  & p {
+    margin-block-start: var.$width-0-rem;
+    margin-block-end: var.$width-0-rem;
+    margin-left: 0.5em;
+    margin-bottom: 1em;
+  }
+}

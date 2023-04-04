@@ -1,0 +1,12 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+.callout[data-callout='pf2-key-box'] {
+  clear: left;
+  color: white;
+  display: inline-flex;
+  float-wrap: wrap;
+  float: left;
+  font-family: "Times New Roman", Times, serif;
+  text-transform: capitalize;
+}

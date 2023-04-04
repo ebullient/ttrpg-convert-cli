@@ -1,0 +1,102 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+//Maps
+@use '../maps/pf2e-maps' as admonition-map;
+
+// Mixins Next
+@use 'shake-ins/ca-root' as root;
+@use 'shake-ins/ca-title' as title;
+@use 'shake-ins/ca-content' as body;
+@use 'shake-ins/ca-misc' as extras;
+
+// Local Variables
+$call-box-shadow: rgba(26, 34, 77, 0.9);
+$cont-bright: contrast(175%) brightness(103%);
+$svg-size-content: 16px;
+$svg-size: 18px;
+$theme-change: 10%;
+$half-rem: 0.5rem;
+
+
+//Time to color this Seed
+@each $key, $value in admonition-map.$pf2e-admonitions {
+  .admonition[data-callout='#{$key}'] {
+    --callout-color: #{$value};
+    --callout-content-background: #{$value};
+    // Mixins Here
+    @include root.root-common;
+    @include root.admon-empty;
+
+    // General Styling Here
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    padding: 1rem;
+
+    & .admonition-title {
+      background-color: #{$value};
+      // Mixins Here
+      @include title.title;
+
+      // General Styling Here
+
+
+      & .admonition-title-icon .svg-icon {
+
+        // General Styling Here
+        display: var.$block;
+        height: 1.5rem;
+        left: $half-rem;
+        margin-left: $half-rem;
+        position: absolute;
+        top: $half-rem;
+        width: 1.5rem;
+
+        &:has(.content) {
+          height: $svg-size-content;
+          width: $svg-size-content;
+        }
+      }
+
+      & .admonition-title-content {
+        // Mixins Here
+        @include title.inner-top;
+
+        // General Styling Here
+        font-weight: var.$weight-700;
+        padding-bottom: var.$width-2-rem;
+
+        em {
+          font-weight: var.$weight-400;
+        }
+      }
+
+      & .no-title {
+        @include title.no-title;
+      }
+    }
+
+
+    & .admonition-content {
+
+      // Mixins Here
+      @include body.content-lists;
+      @include body.content-code;
+
+      & blockquote {
+        @include body.content-blockquotes;
+      }
+
+      @include body.linkies;
+
+      //General Styling Here
+      padding-left: 4px;
+      h1 {
+        text-align: var.$align-center;
+      }
+
+    }
+
+    @include body.admonition-copy;
+  }
+}

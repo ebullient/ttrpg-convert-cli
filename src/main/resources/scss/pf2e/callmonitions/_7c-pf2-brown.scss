@@ -1,0 +1,33 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+
+.callout[data-callout='pf2-brown'] {
+
+  & .callout-title {
+
+    & .callout-title-inner {
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'Pathfinder', sans-serif;
+      margin-left: 0.25rem;
+    }
+  }
+
+  & .callout-content {
+
+    strong {
+
+    }
+
+    em {
+ 
+    }
+
+    h2 {
+      text-align: var.$align-center;
+    }
+
+    h3 {
+      text-align: var.$align-center;
+    }
+  }
+}

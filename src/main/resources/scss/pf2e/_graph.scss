@@ -1,0 +1,97 @@
+// Variables
+@use '../variables/index-obsidian-var' as var;
+
+body {
+  --graph-controls-width: 240px;
+  --graph-text: var(--text-normal);
+  --graph-line: var(--color-base-35, var(--background-modifier-border-focus));
+  --graph-node: var(--text-muted);
+  --graph-node-unresolved: var(--text-faint);
+  --graph-node-focused: var(--text-accent);
+  --graph-node-tag: var(--color-green);
+  --graph-node-attachment: var(--color-yellow);
+}
+
+
+.graph-controls {
+  border-radius: var(--radius-m);
+  position: absolute;
+  right: var(--size-4-3);
+  top: var(--size-4-3);
+  padding: 0;
+  background-color: var(--background-primary);
+  width: var(--graph-controls-width);
+  overflow: auto;
+}
+
+.graph-controls.is-close .graph-controls-button.mod-animate {
+  display: flex;
+}
+
+.graph-controls.is-close > .graph-control-section {
+  display: none;
+}
+
+.graph-control-section {
+  padding: var(--size-2-3) var(--size-4-3);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.graph-control-section:last-child {
+  border-bottom: none;
+}
+
+.graph-control-section > .tree-item-self {
+  padding-left: var(--size-4-1);
+}
+
+.graph-controls-button {
+  display: none;
+  z-index: 1;
+}
+.graph-controls-button.mod-animate {
+  margin-top: var(--size-4-2);
+}
+
+.graph-controls-button.mod-close, .graph-controls-button.mod-reset {
+  position: absolute;
+  top: var(--size-4-2);
+  right: var(--size-4-2);
+  padding: var(--size-2-2);
+}
+.view-content iframe {
+  background: var(--secondary-background);
+}
+
+.graph-view.color-fill {
+  color: var(--main-node);
+}
+
+.theme-dark .graph-view.color-fill-unresolved {
+  color: var(--main-node);
+  opacity: 0.5;
+}
+* .theme-dark .graph-view.color-fill-tag {
+  color: var(--tags);
+}
+
+.theme-dark .graph-view.color-fill-attachment {
+  color: var(--attachments);
+}
+
+.graph-view.color-line {
+  color: #676767;
+}
+
+.graph-view.color-line-highlight,
+.graph-view.color-fill-highlight {
+  color: #fe6a26;
+}
+
+.graph-controls {
+  resize: horizontal;
+  max-width: none;
+}
+
+.graph-view.color-fill-focused {
+  color: var(--accent-5);
+}

@@ -1,0 +1,28 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+
+.callout[data-callout=pf2-note] {
+  border: outset;
+  clear: both;
+  font-style: var.$font-style-i;
+  text-align: var.$align-center;
+  padding: var.$width-1-rem;
+  margin-top: var.$width-3-rem;
+  margin-bottom: 1rem;
+
+  & .callout-title {
+
+    & .callout-title-inner {
+      flex: unset;
+      display: none;
+
+      .admonition & {
+        display: inline;
+      }
+    }
+  }
+
+  & .callout-content {
+    margin-bottom: -0.5rem;
+  }
+}
