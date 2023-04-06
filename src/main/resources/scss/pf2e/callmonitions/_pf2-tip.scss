@@ -1,0 +1,37 @@
+// Variables
+@use '../../variables/index-obsidian-var' as var;
+@use 'shake-ins/admon-content-styling' as content-styles;
+
+.callout[data-callout='pf2-tip'] {
+  color: var.$almost-black;
+
+   em {
+    color: mix(var.$very-soft-yellow, var.$very-light-grey, 50%);
+  }
+
+  strong {
+    color: mix(var.$very-desaturated-dark-blue, var.$very-light-grey, 50%);
+  }
+
+  strong em {
+    color: mix(var.$very-dark-grey, var.$very-desaturated-dark-blue, 50%);
+  }
+
+  & .callout-title {
+    background-color: var.$very-dark-blue;
+
+    & .callout-title-inner {
+      color: var.$very-soft-yellow;
+      margin-left: 0.25rem;
+      text-align: var.$align-left;
+
+      a {
+        color: lighten(var.$very-desaturated-red, 20);
+      }
+    }
+  }
+
+  & .callout-content {
+    @include content-styles.pft-tip-content;
+  }
+}

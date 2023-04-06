@@ -1,18 +1,15 @@
 // Variables
 @use '../../../variables/index-obsidian-var' as var;
 
-// Local Variables
-$display-settings: none;
-
 // Common Mixins for Functions
-@mixin ca-heading($level) {
+@mixin content-headings($level) {
   $sizes: (
-    1: var.$h1-size,
-    2: var.$h2-size,
-    3: var.$h3-size,
-    4: var.$h4-size,
-    5: var.$h5-size,
-    6: var.$h6-size,
+          1: var.$h1-size,
+          2: var.$h2-size,
+          3: var.$h3-size,
+          4: var.$h4-size,
+          5: var.$h5-size,
+          6: var.$h6-size,
   );
 
   $padding-bottoms: (0.125em, 0.25em, 0.125em, 0.5em, 0.25em, 0.75em);
@@ -22,16 +19,15 @@ $display-settings: none;
     & h#{$i} {
       font-size: map-get($sizes, $i);
       padding-bottom: nth($padding-bottoms, $i);
-      text-align: center;
+      text-align: var.$align-center;
       // Add custom styles for h3 here
       @if $i == 3 {
         &::before {
-          display: $display-settings;
+          display: var.$no-display;
         }
 
-        &::after,
-        .HyperMD-header-3::after {
-          display: $display-settings;
+        &::after {
+          display: var.$no-display;
         }
       }
     }
@@ -53,7 +49,6 @@ $display-settings: none;
   // Items with Strong characters
   // If they are not the only child
   // Still testing this...
-
   ul, ol {
     li {
       strong:not(a + &, p + &, h1 + &, &:last-child) {
@@ -69,8 +64,9 @@ $display-settings: none;
 // & code {
 @mixin content-code {
   & code {
-    background-color: rgba(var(--pf2e-tan-table-odd-rows), 0.4);
-    color: var(--pf2e-black-text);
+    background-color: var.$very-light-grey;
+    color: var.$dark-moderate-blue;
+    font-family: var(--pf2e-font-monospace);
   }
 }
 
@@ -86,21 +82,46 @@ $display-settings: none;
     transition: 1s opacity ease-in-out;
 
     &:hover {
-      color: mix(white, transparent, 30%);
+      color: mix(var.$very-light-grey, transparent, 30%);
     }
   }
 }
 
 // Link Fixes
-@mixin linkies {
+@mixin content-links {
 
-a {
-  color: var(--pf2e-blue-link);
-  font-weight: 600;
-}
+  a.internal-link {
+    font-weight: var.$weight-600;
+    text-decoration: var.$no-display;
 
-  & [href^="/rules/traits/"] {
-    color: whitesmoke;
+
+    &:hover {
+      text-decoration: var.$underline;
+    }
+
+    &.is-unresolved {
+      font-style: var.$font-style-i;
+      text-decoration: var.$no-display;
+
+      &:hover {
+        text-decoration: var.$underline;
+      }
+    }
   }
 
+  a.external-link {
+    font-weight: var.$weight-600;
+    text-decoration: var.$no-display;
+
+    &:hover {
+      text-decoration: var.$underline;
+    }
+  }
+}
+
+@mixin content-strong {
+
+  strong {
+    padding-inline: var.$width-4-rem;
+  }
 }

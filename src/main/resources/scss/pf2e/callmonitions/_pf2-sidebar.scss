@@ -1,7 +1,9 @@
 // Variables
 @use '../../variables/index-obsidian-var' as var;
+@use 'shake-ins/admon-content-styling' as content-styles;
 
 .callout[data-callout='pf2-sidebar'] {
+  color: var.$dark-red;
   clear: var.$align-right;
   float: var.$align-right;
   max-height: 85vh;
@@ -11,17 +13,11 @@
 
   & .callout-title {
 
-    & .callout-icon .svg-icon {
-      display: none;
-    }
-
-
     & .callout-title-inner {
-    color: var(--pf2e-red-headers);
     }
   }
 
   & .callout-content {
-    color: var(--pf2e-red-headers);
+    @include content-styles.common-admonition-typography;
   }
 }

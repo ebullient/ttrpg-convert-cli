@@ -1,11 +1,16 @@
 // Variables
 @use '../../../variables/index-obsidian-var' as var;
 
-$svg-size-content: 1.25rem;
-
 @mixin title {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: var.$align-center;
+  align-items: var.$align-center;
+  align-content: var.$align-center;
+
   border: var.$no-display;
   display: var.$flex;
+  padding-top: var.$size-4-2-rem;
   position: var.$relative;
 }
 
