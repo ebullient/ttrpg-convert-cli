@@ -1,5 +1,6 @@
 // Variables
 @use '../../variables/index-obsidian-var' as var;
+@use 'shake-ins/admon-content-styling' as content-styles;
 
 $margins: auto;
 
@@ -10,7 +11,7 @@ $margins: auto;
     display: var.$inherit;
 
     & .callout-icon .svg-icon {
-      display: block;
+      display: var.$block;
       margin-bottom: $margins;
       margin-left: $margins;
       margin-right: $margins;
@@ -22,9 +23,9 @@ $margins: auto;
   }
 
   & .callout-content {
-
+@include content-styles.common-admonition-typography;
     strong {
-      font-weight: 800;
+      font-weight: var.$weight-800;
     }
 
   }

@@ -1,11 +1,12 @@
 // Variables
 @use '../../../variables/index-obsidian-var' as var;
 
-@mixin p-bottom {
+@mixin callout-extras-p-bottom {
   & p {
+    line-height: var.$line-height-2;
     margin-block-start: var.$width-0-rem;
     margin-block-end: var.$width-0-rem;
-    margin-left: 0.5em;
-    margin-bottom: 1em;
+    margin-left: var.$size-4-2-rem;
+    margin-bottom: var.$size-4-4-rem;
   }
 }

@@ -1,0 +1,268 @@
+// Variables
+@use '../../../variables/index-obsidian-var' as var;
+
+@mixin common-admonition-typography {
+
+  a.internal-link {
+    color: var.$very-desaturated-red;
+
+
+    &:hover {
+      color: lighten(var.$very-desaturated-red, 20);
+    }
+
+    &.is-unresolved {
+      color: var.$very-dark-teal;
+
+
+      &:hover {
+        color: lighten(var.$very-dark-teal, 20%);
+
+      }
+    }
+  }
+
+  a.external-link {
+    color: var.$dark-violet;
+
+
+    &:hover {
+      color: lighten(var.$dark-violet, 20%);
+    }
+  }
+
+  em {
+    color: var.$very-dark-grey;
+  }
+
+  h1 {
+    color: var.$dark-grayish-magenta;
+  }
+  h2 {
+    color: var.$very-desaturated-blue;
+  }
+  h3 {
+    color: var.$very-dark-grey;
+  }
+  h4 {
+    color: var.$very-desaturated-dark-cyan-green;
+  }
+  h5 {
+    color: var.$very-desaturated-red;
+  }
+  h6 {
+    color: var.$almost-black;
+  }
+
+  strong {
+    color: var.$very-desaturated-dark-blue;
+  }
+
+  strong em {
+    color: mix(var.$very-dark-grey, var.$very-desaturated-dark-blue, 50%);
+  }
+
+  ol > li::marker,
+  ul > li::marker {
+    color: var.$strong-orange;
+  }
+}
+
+@mixin embed-avatar-content {
+
+  a.internal-link {
+    &.is-unresolved {
+      color: var.$very-dark-teal; // rgba(0, 72, 96, 1);
+
+
+      &:hover {
+        color: lighten(var.$very-dark-teal, 20%);
+
+      }
+    }
+  }
+
+  a.external-link {
+    color: var.$dark-violet; //rgba(107, 0, 153, 1);
+
+
+    &:hover {
+      color: darken(var.$dark-violet, 20%);
+    }
+  }
+
+  em {
+    color: var.$very-dark-grey;
+  }
+
+  h1 {
+    color: var.$very-desaturated-red;
+  }
+
+  h2 {
+    color: var.$very-desaturated-blue;
+  }
+
+  h3 {
+    color: var.$dark-grayish-magenta;
+  }
+
+  h4 {
+    color: var.$very-desaturated-dark-cyan-green;
+  }
+
+  h5 {
+    color: var.$very-dark-grey;
+  }
+
+  h6 {
+    color: var.$almost-black;
+  }
+
+  strong {
+    color: var.$very-desaturated-dark-blue;
+  }
+
+  strong em {
+    color: mix(var.$very-dark-grey, var.$very-desaturated-dark-blue, 50%);
+  }
+
+  ol > li::marker,
+  ul > li::marker {
+    color: var.$dark-lime-green;
+  }
+
+}
+
+@mixin embed-disease-content {
+
+  a.internal-link {
+    color: var.$light-yellow;
+
+
+    &:hover {
+      color: darken(var.$light-yellow, 20);
+    }
+
+    &.is-unresolved {
+      color: mix(var.$light-yellow, var.$strong-green, 25%);
+
+
+      &:hover {
+        color: darken(mix(var.$light-yellow, var.$strong-green, 25%), 20%);
+
+      }
+    }
+  }
+
+  a.external-link {
+    color: var.$very-light-violet;
+
+
+    &:hover {
+      color: darken(var.$very-light-violet, 10%);
+    }
+  }
+
+  em {
+    color: var.$strong-green;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var.$very-light-grey;
+  }
+
+  p {
+    color: var.$very-light-grey;
+  }
+
+  strong {
+    color: var.$very-light-red;
+  }
+
+  strong em {
+    color: mix(var.$strong-green, var.$very-light-red, 50%);
+  }
+
+  ol > li::marker,
+  ul > li::marker {
+    color: var.$strong-orange;
+  }
+
+  ul {
+    margin-block-end: unset;
+    margin-block-start: unset;
+    padding: 0.50em;
+  }
+}
+
+
+@mixin pft-tip-content {
+  a.internal-link {
+    color: var.$very-desaturated-red;
+
+
+    &:hover {
+      color: lighten(var.$very-desaturated-red, 20);
+    }
+
+    &.is-unresolved {
+      color: var.$very-dark-teal;
+
+
+      &:hover {
+        color: lighten(var.$very-dark-teal, 20%);
+
+      }
+    }
+  }
+
+  a.external-link {
+    color: var.$dark-violet;
+
+
+    &:hover {
+      color: lighten(var.$dark-violet, 20%);
+    }
+  }
+
+  em {
+    color: var.$very-dark-grey;
+  }
+
+  h1 {
+    color: var.$dark-grayish-magenta;
+  }
+  h2 {
+    color: var.$very-desaturated-blue;
+  }
+  h3 {
+    color: var.$very-dark-grey;
+  }
+  h4 {
+    color: var.$very-desaturated-dark-cyan-green;
+  }
+  h5 {
+    color: var.$very-desaturated-red;
+  }
+  h6 {
+    color: var.$almost-black;
+  }
+
+  strong {
+    color: var.$very-desaturated-dark-blue;
+  }
+
+  strong em {
+    color: mix(var.$very-dark-grey, var.$very-desaturated-dark-blue, 50%);
+  }
+
+  ol > li::marker,
+  ul > li::marker {
+    color: var.$strong-orange;
+  }
+
+  p {
+    text-align: justify;
+  }
+}

@@ -1,48 +1,24 @@
 // Variables
 @use '../../../variables/index-obsidian-var' as var;
-$call-box-shadow: rgba(26, 34, 77, 0.9);
 
 // Mixin for common styles
 @mixin root-common {
-  border-color: rgba(var(--callout-color), var(--callout-border-opacity));
-  border-style: outset;
   font-size: var.$block-body;
   overflow-wrap: var.$overflow-word-break;
   overflow-y: scroll;
-  padding: var.$width-1-rem;
-  margin-top: var.$width-3-rem;
-}
-
-// Mixin for internal links
-@mixin root-link {
-  & .internal-link {
-    font-weight: var.$weight-700;
-    text-decoration-line: var.$inherit;
-  }
-
-  & .internal-link.is-unresolved {
-    font-style: var.$font-style-i;
-  }
-}
-
-// Mixin for text coloration
-@mixin root-text {
-  & strong {
-    padding-inline: var.$width-4-rem;
-  }
 }
 
 // Common styles for .callout and .admonition
 @mixin common-root {
-  --callout-background-alpha: var.$opacity-20;
-  --callout-padding: var.$width-4-rem;
-  --callout-radius: var.$width-4-rem;
+  --callout-background-alpha: #{var.$opacity-20};
+  --callout-padding: #{var.$size-4-4-rem};
+  --callout-radius: #{var.$width-4-rem};
   @include root-common;
 }
 
 // Callout-drop-shadows
 @mixin callout-drop {
   &:not(.admonition).drop-shadow {
-    box-shadow: rgba(38, 57, 77, 1) 0 20px 30px -10px;
+    box-shadow: var.$very-dark-teal 0 20px 30px -10px;
   }
 }

@@ -20,13 +20,20 @@ $half-rem: 0.5rem;
 //Time to color this Seed
 @each $key, $value in admonition-map.$pf2e-admonitions {
   .admonition[data-callout='#{$key}'] {
+    --callout-border-opacity: 0.3;
     --callout-color: #{$value};
     --callout-content-background: #{$value};
     // Mixins Here
-    @include root.root-common;
+    @include root.common-root;
 
     // General Styling Here
     box-shadow: 0 0 5px 0 $call-box-shadow;
+    border-color: var(--pf2e-light-brown-headers);
+    border-style: wave;
+    border-width: var.$width-3-rem;
+    color: var.$almost-black;
+    margin: var.$width-3-rem var.$width-2-rem var.$width-2-rem;
+    padding: var.$width-2-rem;
 
     & .admonition-title {
       background-color: #{$value};
@@ -60,32 +67,31 @@ $half-rem: 0.5rem;
         font-weight: var.$weight-700;
         padding-bottom: var.$width-2-rem;
         margin-right: var.$width-2-rem;
-
-        em {
-          font-weight: var.$weight-400;
-        }
       }
     }
 
 
     & .admonition-content {
-
+      background-color: #{$value};
+      padding: var.$size-4-4-rem;
       // Mixins Here
+      @include body.content-headings(1);
+      @include body.content-headings(2);
+      @include body.content-headings(3);
+      @include body.content-headings(4);
+      @include body.content-headings(5);
+      @include body.content-headings(6);
       @include body.content-lists;
       @include body.content-code;
+      @include body.content-links;
+      @include body.content-strong;
 
       & blockquote {
         @include body.content-blockquotes;
       }
 
-      @include body.linkies;
-
       //General Styling Here
-      padding-left: 4px;
-      h1 {
-        text-align: var.$align-center;
-      }
-
+      @include extras.callout-extras-p-bottom;
     }
 
     @include body.admonition-copy;
