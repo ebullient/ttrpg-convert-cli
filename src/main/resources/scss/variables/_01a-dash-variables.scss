@@ -30,15 +30,21 @@
   --pf2e-brown-table-borders-rgb: 156, 117, 102;
 
   // Header Specifics
-  --pf2e-header-one: rgb(var(--pf2e-red-headers-rgb));
-  --pf2e-header-two: rgb(var(--pf2e-blue-headers-rgb));
-  --pf2e-header-three: rgb(var(--pf2e-red-headers-rgb));
-  --pf2e-header-four: rgb(var(--pf2e-light-brown-headers-rgb));
+  --pf2e-header-one: rgba(209, 30, 50, 1);
+  --pf2e-header-two: rgba(72, 128, 255, 1);
+  --pf2e-header-three: rgba(209, 30, 50, 1);
+  --pf2e-header-four: rgba(226, 151, 124, 1);
+
 
   // Scrollies
   --scrollbar-active-thumb-bg: rgba(204, 204, 204, 1);
   --scrollbar-hover: rgba(51, 51, 51, 1);
   --scrollbar-thumb-bg: rgba(102, 102, 102, 1);
+
+  // Links
+  --pf2e-purple-link: rgb(222, 145, 255);
+  --pf2e-blue-link: rgb(64, 105, 157);
+  --pf2e-green-link: rgb(154, 205, 50);
 }
 
 .theme-light {
@@ -71,14 +77,16 @@
   --scrollbar-active-thumb-bg: rgba(102, 102, 102, 1);
   --scrollbar-hover: rgba(204, 204, 204, 1);
   --scrollbar-thumb-bg: rgba(153, 153, 153, 1);
+
+  // Links
+  --pf2e-purple-link: rgb(107, 0, 153);
+  --pf2e-blue-link: rgb(0, 73, 97);
+  --pf2e-green-link: rgb(19, 138, 6);
+
 }
 
 .theme-dark,
 .theme-light {
-  // Links
-  --pf2e-purple-link: rgba(77, 60, 134, 1);
-  --pf2e-blue-link: rgba(0, 72, 115, 1);
-  --pf2e-green-link: rgba(46, 139, 87, 1);
   // Extras
   --pf2e-dracolich: rgba(137, 184, 176);
 
@@ -90,10 +98,6 @@
   --box-uncommon: #98513d;
   --box-unique: #54166e;
   --box-common: #404040;
-  --box-condition: #138a06;
-  --box-skills: #a96c74;
-  --box-text: #ffffff;
-  --box-tags: #a0947f;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
