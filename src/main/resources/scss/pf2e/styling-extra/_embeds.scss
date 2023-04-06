@@ -4,6 +4,7 @@
 // ------------------------------------------------------
 // Variables
 @use '../../variables/index-obsidian-var' as var;
+$svg-area: 18px;
 
 // Mixin for common styles
 @mixin embed-common-styles() {
@@ -13,7 +14,9 @@
   padding: var.$width-0-rem;
   position: var.$relative;
 }
- .markdown-embed {
+
+:is(.pf2e) {
+   .markdown-embed {
     // Common styles
     @include embed-common-styles();
 
@@ -28,8 +31,8 @@
     // Style link and file embeds
     &-link svg,
     .file-embed-link {
-      height: 18px;
-      width: 18px;
+      height: $svg-area;
+      width: $svg-area;
       right: var.$width-0-rem;
       top: var.$width-0-rem;
       text-align: var.$align-center;
@@ -68,3 +71,4 @@
       }
     }
   }
+}

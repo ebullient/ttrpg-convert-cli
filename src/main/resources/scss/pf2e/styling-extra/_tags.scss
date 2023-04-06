@@ -4,13 +4,15 @@
 
 @mixin base-tag {;
   font-weight: 900;
-  background-color: var(--box-tags);
-  color: var(--box-text);
-  padding: #{var.$width-3-rem} #{var.$width-5-rem};
-  border-radius: #{var.$width-5-rem};
-  letter-spacing: #{var.$width-1-rem};
+  background-color: var.$dark-grayish-orange;
+  color: var.$very-light-grey;
+  padding: var.$width-3-rem var.$width-5-rem;
+  border-radius: var.$width-5-rem;
+  letter-spacing: var.$width-1-rem;
 }
 
-.tag {
+:is(.pf2e) {
+  .tag {
     @include base-tag();
   }
+}

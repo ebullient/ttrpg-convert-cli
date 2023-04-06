@@ -1,16 +1,16 @@
 // Variables
 @use '../../variables/index-obsidian-var' as var;
-
-$box-length: 20px;
+$background-clip: padding-box;
 
 // Common-Mixins
 @mixin link-styles {
   border-radius: 5px;
-  cursor: help;
-  font-weight: bold;
+  color: var.$very-light-grey !important;
+  cursor: var.$cursor-help;
+  font-weight: var.$weight-700;
   margin-bottom: 0.75rem;
   padding: 2px;
-  text-align: left;
+  text-align: var.$align-left;
   text-indent: 0;
   word-break: keep-all;
 }
@@ -19,38 +19,34 @@ $box-length: 20px;
   // Box Shadows for Links
   & .internal-link {
     &:is([href^='/rules/traits/']) {
-      border: 1px solid var(--box-traits);
-      background: var(--box-traits);
-      background-clip: padding-box;
-      color: whitesmoke !important;
+      border: 1px var.$border-solid var.$box-traits;
+      background: var.$box-traits;
+      background-clip: $background-clip;
       @include link-styles;
     }
 
     // Any Condition from the Conditions Page
     &:is([href*='/rules/conditions.md']) {
-      border: 1px solid var(--box-condition);
-      background: var(--box-condition);
-      background-clip: padding-box;
-      color: whitesmoke !important;
+      border: 1px var.$border-solid var.$box-condition;
+      background: var.$box-condition;
+      background-clip: $background-clip;
       @include link-styles;
     }
 
     // Any Trait from the Skills Page
     &:is([href*='/compendium/skills.md']) {
-      border: 1px solid var(--box-skills);
-      background: var(--box-skills);
-      background-clip: padding-box;
-      color: whitesmoke !important;
+      border: 1px var.$border-solid var.$box-skills;
+      background: var.$box-skills;
+      background-clip: $background-clip;
       @include link-styles;
     }
   }
 }
 
 // Trying to Isolate Uncommon Traits
-a[href='/rules/traits/Uncommon.md'] {
-  border: 2px solid var(--box-uncommon);
+:is([href='/rules/traits/Uncommon.md']) {
+  border: 2px var.$border-solid var(--box-uncommon);
   background: var(--box-uncommon);
-  background-clip: padding-box;
-  color: whitesmoke !important;
+  background-clip: $background-clip;
   @include link-styles;
 }

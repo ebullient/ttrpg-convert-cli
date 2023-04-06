@@ -3,45 +3,45 @@
 
 
 @mixin hover-link {
-  text-decoration: underline;
+  text-decoration: var.$underline;
 }
 
 @mixin no-underline {
-  text-decoration: none;
+  text-decoration: var.$no-display;
 }
 
-a,
-.internal-link,
-.cm-hmd-internal-link,
-.cm-link,
-.cm-formatting-link,
-.cm-url {
-@include no-underline;
+:is(.pf2e) {
+  a.internal-link {
+    @include no-underline;
+    color: var(--pf2e-purple-link);
 
-  &:hover {
-    @include hover-link;
+    &:hover {
+      @include hover-link;
+      color: var(--pf2e-green-link);
+    }
   }
-}
 
-.cm-s-obsidian span.cm-string {
-  @include no-underline;
+  .cm-link .cm-underline,
+  .cm-url .cm-underline {
+    color: var(--pf2e-blue-link);
+    @include no-underline;
 
-}
-
-.external-link {
-  background-image: none;
-  background-size: 0;
-  font-style: italic;
-  padding-right: 0;
-
-  &:hover {
-    @include hover-link;
+    &:hover {
+      color: var(--pf2e-green-link);
+      @include hover-link;
+    }
   }
-}
 
-// I always liked the strong-ems...
-strong em,
-strong em a.internal-link,
-.cm-s-obsidian span.cm-strong.cm-em,
-.cm-s-obsidian span.cm-quote.cm-strong.cm-em {
+  .external-link {
+    color: var(--pf2e-green-link);
+    background-image: none;
+    background-size: 0;
+    font-style: italic;
+    padding-right: 0;
+
+    &:hover {
+      color: var(--pf2e-purple-link);
+      @include hover-link;
+    }
+  }
 }
