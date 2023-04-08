@@ -4,9 +4,6 @@
 
 .callout.callout[data-callout='pf2-example'] {
 
-  & .callout-title {
-  }
-
   & .callout-content {
     @include content-styles.common-admonition-typography;
   }

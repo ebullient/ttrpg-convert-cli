@@ -356,75 +356,6 @@ sup {
   font-size: 0;
 }
 
-:is(.pf2e) .markdown-preview-view h1, :is(.pf2e) .markdown-preview-view h2, :is(.pf2e) .markdown-preview-view h3, :is(.pf2e) .markdown-preview-view h4, :is(.pf2e) .markdown-preview-view h5, :is(.pf2e) .markdown-preview-view h6 {
-  align-items: center;
-  display: block;
-  line-height: 1.25;
-  margin-bottom: 1rem;
-  margin-top: 1.25rem;
-  white-space: pre-wrap;
-}
-:is(.pf2e) .markdown-preview-view h1, :is(.pf2e) .markdown-preview-view h2 {
-  border-bottom: 1px ridge rgba(var(--pf2e-red-headers-rgb) 0.5);
-  padding-bottom: 0.3em;
-}
-:is(.pf2e) .markdown-preview-view h1 {
-  color: var(--pf2e-header-one);
-  font-weight: 900;
-}
-:is(.pf2e) .markdown-preview-view h2 {
-  color: var(--pf2e-header-two);
-  font-weight: 800;
-}
-:is(.pf2e) .markdown-preview-view h3 {
-  color: var(--pf2e-header-three);
-  font-weight: 700;
-}
-:is(.pf2e) .markdown-preview-view h4 {
-  color: var(--pf2e-header-four);
-  font-weight: 600;
-}
-:is(.pf2e) .markdown-preview-view h5,
-:is(.pf2e) .markdown-preview-view h6 {
-  font-weight: 500;
-}
-:is(.pf2e) .markdown-preview-view .heading-collapse-indicator {
-  color: var(--pf2e-dracolich);
-}
-
-:is(.pf2e) .cm-header-1,
-:is(.pf2e) .cm-header-2,
-:is(.pf2e) .cm-header-3,
-:is(.pf2e) .cm-header-4,
-:is(.pf2e) .cm-header-5,
-:is(.pf2e) .cm-header-6 {
-  font-weight: 500;
-}
-:is(.pf2e) .cm-header-1 {
-  font-size: var(--h1-size);
-  color: var(--pf2e-header-one);
-}
-:is(.pf2e) .cm-header-2 {
-  font-size: var(--h2-size);
-  color: var(--pf2e-header-two);
-}
-:is(.pf2e) .cm-header-3 {
-  font-size: var(--h3-size);
-  color: var(--pf2e-header-three);
-}
-:is(.pf2e) .cm-header-4 {
-  font-size: var(--h4-size);
-  color: var(--pf2e-header-four);
-}
-:is(.pf2e) .cm-header-5 {
-  font-size: var(--h5-size);
-  color: var(--h5-color);
-}
-:is(.pf2e) .cm-header-6 {
-  font-size: var(--h6-size);
-  color: var(--h6-color);
-}
-
 :is(.pf2e) a.internal-link {
   text-decoration: none;
   color: var(--pf2e-purple-link);
@@ -486,15 +417,6 @@ sup {
 
 .pathfinder-reaction::before {
   content: "⬲";
-}
-
-:is(.pf2e) .tag {
-  font-weight: 900;
-  background-color: rgb(160, 148, 127);
-  color: rgb(232, 232, 232);
-  padding: 0.1875rem 0.3125rem;
-  border-radius: 0.3125rem;
-  letter-spacing: 0.0625rem;
 }
 
 .callout[data-callout=pf2-beige] {
@@ -3529,8 +3451,8 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
 
 .admonition[data-callout=pf2-note] {
   --callout-border-opacity: 0.3;
-  --callout-color: #e3dfbb;
-  --callout-content-background: #e3dfbb;
+  --callout-color: rgb(227, 223, 187);
+  --callout-content-background: rgb(227, 223, 187);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -3546,7 +3468,7 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   padding: 0.125rem;
 }
 .admonition[data-callout=pf2-note] .admonition-title {
-  background-color: #e3dfbb;
+  background-color: rgb(227, 223, 187);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -3580,7 +3502,7 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   font-weight: 500;
 }
 .admonition[data-callout=pf2-note] .admonition-content {
-  background-color: #e3dfbb;
+  background-color: rgb(227, 223, 187);
   padding: 1rem;
 }
 .admonition[data-callout=pf2-note] .admonition-content h1 {
@@ -3860,8 +3782,8 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
 
 .admonition[data-callout=pf2-summary] {
   --callout-border-opacity: 0.3;
-  --callout-color: #d1e0e0;
-  --callout-content-background: #d1e0e0;
+  --callout-color: rgb(209, 224, 224);
+  --callout-content-background: rgb(209, 224, 224);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -3877,7 +3799,7 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   padding: 0.125rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-title {
-  background-color: #d1e0e0;
+  background-color: rgb(209, 224, 224);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -3911,7 +3833,7 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   font-weight: 500;
 }
 .admonition[data-callout=pf2-summary] .admonition-content {
-  background-color: #d1e0e0;
+  background-color: rgb(209, 224, 224);
   padding: 1rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h1 {
@@ -4191,8 +4113,8 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
 
 .admonition[data-callout=embed-ability] {
   --callout-border-opacity: 0.3;
-  --callout-color: #b6c5c8;
-  --callout-content-background: #b6c5c8;
+  --callout-color: rgb(182, 197, 200);
+  --callout-content-background: rgb(182, 197, 200);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -4208,7 +4130,7 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-ability] .admonition-title {
-  background-color: #b6c5c8;
+  background-color: rgb(182, 197, 200);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -4242,7 +4164,7 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   font-weight: 500;
 }
 .admonition[data-callout=embed-ability] .admonition-content {
-  background-color: #b6c5c8;
+  background-color: rgb(182, 197, 200);
   padding: 1rem;
 }
 .admonition[data-callout=embed-ability] .admonition-content h1 {
@@ -4522,8 +4444,8 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
 
 .admonition[data-callout=embed-action] {
   --callout-border-opacity: 0.3;
-  --callout-color: #cecec5;
-  --callout-content-background: #cecec5;
+  --callout-color: rgb(206, 206, 197);
+  --callout-content-background: rgb(206, 206, 197);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -4539,7 +4461,7 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-action] .admonition-title {
-  background-color: #cecec5;
+  background-color: rgb(206, 206, 197);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -4573,7 +4495,7 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   font-weight: 500;
 }
 .admonition[data-callout=embed-action] .admonition-content {
-  background-color: #cecec5;
+  background-color: rgb(206, 206, 197);
   padding: 1rem;
 }
 .admonition[data-callout=embed-action] .admonition-content h1 {
@@ -4853,8 +4775,8 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
 
 .admonition[data-callout=embed-avatar] {
   --callout-border-opacity: 0.3;
-  --callout-color: #ecca63;
-  --callout-content-background: #ecca63;
+  --callout-color: rgb(236, 202, 99);
+  --callout-content-background: rgb(236, 202, 99);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -4870,7 +4792,7 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-title {
-  background-color: #ecca63;
+  background-color: rgb(236, 202, 99);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -4904,7 +4826,7 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   font-weight: 500;
 }
 .admonition[data-callout=embed-avatar] .admonition-content {
-  background-color: #ecca63;
+  background-color: rgb(236, 202, 99);
   padding: 1rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h1 {
@@ -5184,8 +5106,8 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
 
 .admonition[data-callout=embed-disease] {
   --callout-border-opacity: 0.3;
-  --callout-color: #242424;
-  --callout-content-background: #242424;
+  --callout-color: rgb(36, 36, 36);
+  --callout-content-background: rgb(36, 36, 36);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -5201,7 +5123,7 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-disease] .admonition-title {
-  background-color: #242424;
+  background-color: rgb(36, 36, 36);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -5235,7 +5157,7 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   font-weight: 500;
 }
 .admonition[data-callout=embed-disease] .admonition-content {
-  background-color: #242424;
+  background-color: rgb(36, 36, 36);
   padding: 1rem;
 }
 .admonition[data-callout=embed-disease] .admonition-content h1 {
@@ -5515,8 +5437,8 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
 
 .admonition[data-callout=embed-feat] {
   --callout-border-opacity: 0.3;
-  --callout-color: #efbba9;
-  --callout-content-background: #efbba9;
+  --callout-color: rgb(239, 187, 169);
+  --callout-content-background: rgb(239, 187, 169);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -5532,7 +5454,7 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-feat] .admonition-title {
-  background-color: #efbba9;
+  background-color: rgb(239, 187, 169);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -5566,7 +5488,7 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   font-weight: 500;
 }
 .admonition[data-callout=embed-feat] .admonition-content {
-  background-color: #efbba9;
+  background-color: rgb(239, 187, 169);
   padding: 1rem;
 }
 .admonition[data-callout=embed-feat] .admonition-content h1 {
@@ -5846,8 +5768,8 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
 
 .admonition[data-callout=embed-item] {
   --callout-border-opacity: 0.3;
-  --callout-color: #a3c8d1;
-  --callout-content-background: #a3c8d1;
+  --callout-color: rgb(163, 200, 209);
+  --callout-content-background: rgb(163, 200, 209);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -5863,7 +5785,7 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-item] .admonition-title {
-  background-color: #a3c8d1;
+  background-color: rgb(163, 200, 209);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -5897,7 +5819,7 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   font-weight: 500;
 }
 .admonition[data-callout=embed-item] .admonition-content {
-  background-color: #a3c8d1;
+  background-color: rgb(163, 200, 209);
   padding: 1rem;
 }
 .admonition[data-callout=embed-item] .admonition-content h1 {
@@ -6177,8 +6099,8 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
 
 .admonition[data-callout=embed-ritual] {
   --callout-border-opacity: 0.3;
-  --callout-color: #9ebb90;
-  --callout-content-background: #9ebb90;
+  --callout-color: rgb(158, 187, 144);
+  --callout-content-background: rgb(158, 187, 144);
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
@@ -6194,7 +6116,7 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-title {
-  background-color: #9ebb90;
+  background-color: rgb(158, 187, 144);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -6228,7 +6150,7 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   font-weight: 500;
 }
 .admonition[data-callout=embed-ritual] .admonition-content {
-  background-color: #9ebb90;
+  background-color: rgb(158, 187, 144);
   padding: 1rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h1 {
@@ -7396,7 +7318,7 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="church" class="svg-inline--fa fa-church fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M464.46 246.68L352 179.2V128h48c8.84 0 16-7.16 16-16V80c0-8.84-7.16-16-16-16h-48V16c0-8.84-7.16-16-16-16h-32c-8.84 0-16 7.16-16 16v48h-48c-8.84 0-16 7.16-16 16v32c0 8.84 7.16 16 16 16h48v51.2l-112.46 67.48A31.997 31.997 0 0 0 160 274.12V512h96v-96c0-35.35 28.65-64 64-64s64 28.65 64 64v96h96V274.12c0-11.24-5.9-21.66-15.54-27.44zM0 395.96V496c0 8.84 7.16 16 16 16h112V320L19.39 366.54A32.024 32.024 0 0 0 0 395.96zm620.61-29.42L512 320v192h112c8.84 0 16-7.16 16-16V395.96c0-12.8-7.63-24.37-19.39-29.42z"></path></svg>';
 }
 .admonition[data-callout=embed-avatar] a.internal-link {
-  color: rgb(100, 2, 59);
+  color: #64023b;
 }
 .admonition[data-callout=embed-avatar] a.internal-link:hover {
   color: #32011e;
@@ -7454,12 +7376,6 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   color: rgb(232, 232, 232);
   font-family: "Abril Fatface", "Cinzel Decorative", "Creepster", "Henny Penny", "IM Fell English", "Kaushan Script", "Lobster", "Montserrat Alternates", "Nosifer", "Permanent Marker", "Playfair Display", "Righteous", "Roboto Slab", "Special Elite", "UnifrakturCook", cursive;
 }
-.admonition[data-callout=embed-disease] .admonition-title {
-  align-content: stretch;
-  align-items: baseline;
-  flex-direction: row-reverse;
-  justify-content: space-around;
-}
 .admonition[data-callout=embed-disease] .admonition-content a.internal-link {
   color: rgb(255, 219, 88);
 }
@@ -7505,13 +7421,6 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
 
 .admonition[data-callout=embed-feat] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="award" class="svg-inline--fa fa-award fa-w-12" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M97.12 362.63c-8.69-8.69-4.16-6.24-25.12-11.85-9.51-2.55-17.87-7.45-25.43-13.32L1.2 448.7c-4.39 10.77 3.81 22.47 15.43 22.03l52.69-2.01L105.56 507c8 8.44 22.04 5.81 26.43-4.96l52.05-127.62c-10.84 6.04-22.87 9.58-35.31 9.58-19.5 0-37.82-7.59-51.61-21.37zM382.8 448.7l-45.37-111.24c-7.56 5.88-15.92 10.77-25.43 13.32-21.07 5.64-16.45 3.18-25.12 11.85-13.79 13.78-32.12 21.37-51.62 21.37-12.44 0-24.47-3.55-35.31-9.58L252 502.04c4.39 10.77 18.44 13.4 26.43 4.96l36.25-38.28 52.69 2.01c11.62.44 19.82-11.27 15.43-22.03zM263 340c15.28-15.55 17.03-14.21 38.79-20.14 13.89-3.79 24.75-14.84 28.47-28.98 7.48-28.4 5.54-24.97 25.95-45.75 10.17-10.35 14.14-25.44 10.42-39.58-7.47-28.38-7.48-24.42 0-52.83 3.72-14.14-.25-29.23-10.42-39.58-20.41-20.78-18.47-17.36-25.95-45.75-3.72-14.14-14.58-25.19-28.47-28.98-27.88-7.61-24.52-5.62-44.95-26.41-10.17-10.35-25-14.4-38.89-10.61-27.87 7.6-23.98 7.61-51.9 0-13.89-3.79-28.72.25-38.89 10.61-20.41 20.78-17.05 18.8-44.94 26.41-13.89 3.79-24.75 14.84-28.47 28.98-7.47 28.39-5.54 24.97-25.95 45.75-10.17 10.35-14.15 25.44-10.42 39.58 7.47 28.36 7.48 24.4 0 52.82-3.72 14.14.25 29.23 10.42 39.59 20.41 20.78 18.47 17.35 25.95 45.75 3.72 14.14 14.58 25.19 28.47 28.98C104.6 325.96 106.27 325 121 340c13.23 13.47 33.84 15.88 49.74 5.82a39.676 39.676 0 0 1 42.53 0c15.89 10.06 36.5 7.65 49.73-5.82zM97.66 175.96c0-53.03 42.24-96.02 94.34-96.02s94.34 42.99 94.34 96.02-42.24 96.02-94.34 96.02-94.34-42.99-94.34-96.02z"></path></svg>';
-}
-.admonition[data-callout=embed-feat] .admonition-title {
-  flex-direction: row-reverse;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content a.internal-link {
   color: rgb(102, 51, 51);

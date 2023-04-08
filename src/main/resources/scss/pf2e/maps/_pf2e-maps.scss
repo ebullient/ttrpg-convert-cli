@@ -15,16 +15,16 @@ $pf2e-callouts: (
 );
 
 $pf2e-admonitions: (
-        pf2-note: #e3dfbb, // Rage of the Elements
-        pf2-summary: #d1e0e0, // Secrets of Magic
+        pf2-note: rgb(227, 223, 187), // Rage of the Elements
+        pf2-summary: rgb(209, 224, 224), // Secrets of Magic
   // The two above appear as a callout and as an admonition
-        embed-ability: #b6c5c8, // Players Guide
-        embed-action: #cecec5, // Bestiary 1
-        embed-avatar: #ecca63, // Bestiary 2
-        embed-disease: #242424, // Bestiary 3
-        embed-feat: #efbba9, // Core Rulebook
-        embed-item: #a3c8d1, // Dark Archive
-        embed-ritual: #9ebb90, // Book of Dead
+        embed-ability: rgb(182, 197, 200), // Players Guide
+        embed-action: rgb(206, 206, 197), // Bestiary 1
+        embed-avatar: rgb(236, 202, 99), // Bestiary 2
+        embed-disease: rgb(36, 36, 36), // Bestiary 3
+        embed-feat: rgb(239, 187, 169), // Core Rulebook
+        embed-item: rgb(163, 200, 209), // Dark Archive
+        embed-ritual: rgb(158, 187, 144), // Book of Dead
         inline-affliction: rgba(217, 216, 218, 0.2), // Gamemastery Guide
         inline-attack: rgba(233, 195, 99, 0.2), //Guns and Gears
 );

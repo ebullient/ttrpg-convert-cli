@@ -128,75 +128,6 @@
   font-size: 0;
 }
 
-:is(.pf2e) .markdown-preview-view h1, :is(.pf2e) .markdown-preview-view h2, :is(.pf2e) .markdown-preview-view h3, :is(.pf2e) .markdown-preview-view h4, :is(.pf2e) .markdown-preview-view h5, :is(.pf2e) .markdown-preview-view h6 {
-  align-items: center;
-  display: block;
-  line-height: 1.25;
-  margin-bottom: 1rem;
-  margin-top: 1.25rem;
-  white-space: pre-wrap;
-}
-:is(.pf2e) .markdown-preview-view h1, :is(.pf2e) .markdown-preview-view h2 {
-  border-bottom: 1px ridge rgba(var(--pf2e-red-headers-rgb) 0.5);
-  padding-bottom: 0.3em;
-}
-:is(.pf2e) .markdown-preview-view h1 {
-  color: var(--pf2e-header-one);
-  font-weight: 900;
-}
-:is(.pf2e) .markdown-preview-view h2 {
-  color: var(--pf2e-header-two);
-  font-weight: 800;
-}
-:is(.pf2e) .markdown-preview-view h3 {
-  color: var(--pf2e-header-three);
-  font-weight: 700;
-}
-:is(.pf2e) .markdown-preview-view h4 {
-  color: var(--pf2e-header-four);
-  font-weight: 600;
-}
-:is(.pf2e) .markdown-preview-view h5,
-:is(.pf2e) .markdown-preview-view h6 {
-  font-weight: 500;
-}
-:is(.pf2e) .markdown-preview-view .heading-collapse-indicator {
-  color: var(--pf2e-dracolich);
-}
-
-:is(.pf2e) .cm-header-1,
-:is(.pf2e) .cm-header-2,
-:is(.pf2e) .cm-header-3,
-:is(.pf2e) .cm-header-4,
-:is(.pf2e) .cm-header-5,
-:is(.pf2e) .cm-header-6 {
-  font-weight: 500;
-}
-:is(.pf2e) .cm-header-1 {
-  font-size: var(--h1-size);
-  color: var(--pf2e-header-one);
-}
-:is(.pf2e) .cm-header-2 {
-  font-size: var(--h2-size);
-  color: var(--pf2e-header-two);
-}
-:is(.pf2e) .cm-header-3 {
-  font-size: var(--h3-size);
-  color: var(--pf2e-header-three);
-}
-:is(.pf2e) .cm-header-4 {
-  font-size: var(--h4-size);
-  color: var(--pf2e-header-four);
-}
-:is(.pf2e) .cm-header-5 {
-  font-size: var(--h5-size);
-  color: var(--h5-color);
-}
-:is(.pf2e) .cm-header-6 {
-  font-size: var(--h6-size);
-  color: var(--h6-color);
-}
-
 :is(.pf2e) a.internal-link {
   text-decoration: none;
   color: var(--pf2e-purple-link);
@@ -258,15 +189,6 @@
 
 .pathfinder-reaction::before {
   content: "⬲";
-}
-
-:is(.pf2e) .tag {
-  font-weight: 900;
-  background-color: rgb(160, 148, 127);
-  color: rgb(232, 232, 232);
-  padding: 0.1875rem 0.3125rem;
-  border-radius: 0.3125rem;
-  letter-spacing: 0.0625rem;
 }
 
 /*# sourceMappingURL=compendium-pf2-extras.css.map */
