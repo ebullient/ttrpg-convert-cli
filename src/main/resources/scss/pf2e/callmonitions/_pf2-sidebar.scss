@@ -11,12 +11,6 @@
   overflow-wrap: break-word;
   overflow-y: var.$overflow-scroll;
 
-  & .callout-title {
-
-    & .callout-title-inner {
-    }
-  }
-
   & .callout-content {
     @include content-styles.common-admonition-typography;
   }
