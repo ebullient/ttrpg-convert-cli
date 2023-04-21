@@ -1,6 +1,7 @@
 .theme-dark {
   --statblock-section-line: 201,60,60;
 }
+.theme-dark .print:not(.published-container),
 .theme-light {
   --statblock-section-line: 201,60,60;
 }
@@ -74,7 +75,6 @@
       line-height: var(--line-height);
 
       .callout-title-inner {
-        font-size: var(--h3-size);
         flex: 2;
       }
     }
