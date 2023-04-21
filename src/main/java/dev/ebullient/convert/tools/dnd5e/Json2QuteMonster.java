@@ -195,7 +195,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     hpText = health.get("original").asText();
                 }
             } else {
-                hpText = special;
+                hpText = replaceText(special);
             }
         } else {
             if (health.has("average")) {

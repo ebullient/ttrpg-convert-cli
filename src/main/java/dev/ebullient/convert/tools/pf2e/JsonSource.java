@@ -1002,7 +1002,6 @@ public interface JsonSource extends JsonTextReplacement {
         entry,
         entries,
         footnotes,
-        freq, // inside frequency
         frequency,
         group,
         head,

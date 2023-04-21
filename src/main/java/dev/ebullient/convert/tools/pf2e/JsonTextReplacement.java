@@ -360,12 +360,12 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                 slugify(parts[0]),
                 targetType.isDefaultSource(source) ? "" : "-" + slugify(source));
 
-        if (targetType != Pf2eIndexType.action
-                && targetType != Pf2eIndexType.spell
-                && targetType != Pf2eIndexType.feat
-                && targetType != Pf2eIndexType.trait) {
-            tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
-        }
+        // if (targetType != Pf2eIndexType.action
+        //         && targetType != Pf2eIndexType.spell
+        //         && targetType != Pf2eIndexType.feat
+        //         && targetType != Pf2eIndexType.trait) {
+        //     tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
+        // }
 
         return index().isIncluded(key) ? link : linkText;
     }
