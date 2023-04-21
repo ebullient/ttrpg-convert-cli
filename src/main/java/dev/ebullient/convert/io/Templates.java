@@ -5,14 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.MarkdownWriter.FileMap;
 import dev.ebullient.convert.qute.QuteBase;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.Template;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class Templates {

@@ -18,8 +18,6 @@ import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
@@ -42,6 +40,7 @@ import dev.ebullient.convert.config.TtrpgConfig.Fix;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
+import jakarta.enterprise.context.ApplicationScoped;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
