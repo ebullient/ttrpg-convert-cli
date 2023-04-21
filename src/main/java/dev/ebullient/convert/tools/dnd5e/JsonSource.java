@@ -25,23 +25,19 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface JsonSource {
-    Pattern backgroundPattern = Pattern.compile("\\{@(background) ([^}]+)}");
-    Pattern classPattern1 = Pattern.compile("\\{@(class) ([^}]+)}");
-    Pattern deityPattern = Pattern.compile("\\{@(deity) ([^}]+)}");
-    Pattern featPattern = Pattern.compile("\\{@(feat) ([^}]+)}");
-    Pattern itemPattern = Pattern.compile("\\{@(card|deck|item) ([^}]+)}");
-    Pattern racePattern = Pattern.compile("\\{@(race) ([^}]+)}");
-    Pattern spellPattern = Pattern.compile("\\{@(spell) ([^}]+)}");
-    Pattern creaturePattern = Pattern.compile("\\{@(creature) ([^}]+)}");
-    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^|}]+)[^}]*}");
+    Pattern linkifyPattern = Pattern.compile("\\{@(background|class|deity|feat|card|deck|item|race|spell|creature) ([^}]+)}");
+    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
+
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern condPattern = Pattern.compile("\\{@condition ([^|}]+)\\|?[^}]*}");
+    Pattern statusPattern = Pattern.compile("\\{@status ([^|}]+)\\|?[^}]*}");
     Pattern diseasePattern = Pattern.compile("\\{@disease ([^|}]+)\\|?[^}]*}");
     Pattern skillPattern = Pattern.compile("\\{@skill ([^}]+)}");
     Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+) ([^}]+)}"); // {@skillCheck animal_handling 5}
     Pattern sensePattern = Pattern.compile("\\{@sense ([^}]+)}");
+
     int CR_UNKNOWN = 100001;
     int CR_CUSTOM = 100000;
 
@@ -385,6 +381,8 @@ public interface JsonSource {
             // do nothing
         } else if (node.isTextual()) {
             text.add(replaceText(node.asText()));
+        } else if (node.isNumber()) {
+            text.add(node.asText());
         } else if (node.isArray()) {
             node.elements().forEachRemaining(f -> {
                 maybeAddBlankLine(text);
@@ -859,22 +857,28 @@ public interface JsonSource {
                     .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
                     .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)");
 
-            result = dicePattern.matcher(result)
-                    .replaceAll((match) -> match.group(2));
+            // Dice roller tags; {@dice 1d2-2+2d3+5} for regular dice rolls
+            //  - {@dice 1d6;2d6} for multiple options;
+            //  - {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
+            // {@dice 1d20+2|display text} and {@dice 1d20+2|display text|rolled by name}
+            result = dicePattern.matcher(result).replaceAll((match) -> {
+                String[] parts = match.group(2).split("\\|");
+                if (parts.length > 1) {
+                    return parts[1];
+                }
+                return parts[0];
+            });
+
             result = chancePattern.matcher(result)
                     .replaceAll((match) -> match.group(1) + "% chance");
 
-            result = backgroundPattern.matcher(result).replaceAll(this::linkify);
-            result = classPattern1.matcher(result).replaceAll(this::linkify);
-            result = creaturePattern.matcher(result).replaceAll(this::linkify);
-            result = deityPattern.matcher(result).replaceAll(this::linkify);
-            result = featPattern.matcher(result).replaceAll(this::linkify);
-            result = itemPattern.matcher(result).replaceAll(this::linkify);
-            result = racePattern.matcher(result).replaceAll(this::linkify);
-            result = spellPattern.matcher(result).replaceAll(this::linkify);
+            result = linkifyPattern.matcher(result).replaceAll(this::linkify);
 
             result = condPattern.matcher(result)
                     .replaceAll((match) -> linkifyRules(match.group(1), "conditions"));
+
+            result = statusPattern.matcher(result)
+                    .replaceAll((match) -> linkifyRules(match.group(1), "status"));
 
             result = diseasePattern.matcher(result)
                     .replaceAll((match) -> linkifyRules(match.group(1), "diseases"));
