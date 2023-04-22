@@ -1,0 +1,29 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+
+// Forwards for Callouts
+@forward '01-callmonition-core';
+@forward '02-pf2-beige';
+@forward '02-pf2-brown';
+@forward '02-pf2-example';
+@forward '02-pf2-inset';
+@forward '02-pf2-key-box';
+@forward '02-pf2-note';
+@forward '02-pf2-red';
+@forward '02-pf2-sidebar';
+@forward '02-pf2-tip';
+@forward '02-success-degree';
+
+// Forwards for Admonitions
+@forward '03-ad-pf2-note';
+@forward '03-embed-ability';
+@forward '03-embed-action';
+@forward '03-embed-avatar';
+@forward '03-embed-disease';
+@forward '03-embed-feat';
+@forward '03-embed-item';
+@forward '03-embed-ritual';
+@forward '03-inline-affliction';
+@forward '03-inline-attack';
+@forward '02-pf2-summary';
+@forward '04-statblock-pf2e';

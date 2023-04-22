@@ -1,0 +1,27 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+@use 'shake-ins/admon-content-styling' as content-styles;
+
+.callout[data-callout=pf2-note] {
+  clear: both;
+  font-style: var.$font-style-i;
+  text-align: var.$align-center;
+  margin-bottom: var.$size-4-4-rem;
+
+  & .callout-title {
+
+    & .callout-title-inner {
+      flex: var.$unset;
+      display: var.$no-display;
+
+      .admonition & {
+        display: inline;
+      }
+    }
+  }
+
+  & .callout-content {
+    @include content-styles.common-admonition-typography;
+    margin-bottom: -0.5rem;
+  }
+}
