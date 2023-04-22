@@ -1,6 +1,5 @@
-@use 'sass:color';
 // Variables
-@use '../../variables/30-index-obsidian-var' as var;
+@use '../30-index-obsidian-var' as var;
 
 :is(.pf2e) {
   .markdown-rendered {
