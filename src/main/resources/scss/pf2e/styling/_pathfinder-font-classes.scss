@@ -1,5 +1,5 @@
 // Variables
-@use '../../variables/30-index-obsidian-var' as var;
+@use '../30-index-obsidian-var' as var;
 
 [class^='Pathfinder-'], [class*=' Pathfinder-'] {
   /* use !important to prevent issues with browser extensions that change fonts */
