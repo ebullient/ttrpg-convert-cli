@@ -5,7 +5,6 @@ $pf2e-callouts: (
         pf2-example: #ccdbbd,
         pf2-inset: #e9e4d9,
         pf2-key-box: #550c06,
-        pf2-paper: #cdd1e4,
         pf2-quote: #e7aad4,
         pf2-sidebar: #f4f3f0,
         pf2-red: #550c06,
@@ -16,15 +15,16 @@ $pf2e-callouts: (
 
 $pf2e-admonitions: (
         pf2-note: rgb(227, 223, 187), // Rage of the Elements
-        pf2-summary: rgb(209, 224, 224), // Secrets of Magic
-  // The two above appear as a callout and as an admonition
+  // The above appear as a callout and as an admonition
         embed-ability: rgb(182, 197, 200), // Players Guide
-        embed-action: rgb(206, 206, 197), // Bestiary 1
+        embed-action: rgb(238, 221, 227), // Bestiary 1
         embed-avatar: rgb(236, 202, 99), // Bestiary 2
         embed-disease: rgb(36, 36, 36), // Bestiary 3
         embed-feat: rgb(239, 187, 169), // Core Rulebook
         embed-item: rgb(163, 200, 209), // Dark Archive
         embed-ritual: rgb(158, 187, 144), // Book of Dead
-        inline-affliction: rgba(217, 216, 218, 0.2), // Gamemastery Guide
-        inline-attack: rgba(233, 195, 99, 0.2), //Guns and Gears
+        inline-affliction: rgb(218, 216, 218), // Gamemastery Guide
+        inline-attack: rgb(245, 229, 188), //Guns and Gears
+        pf2-summary: rgb(209, 224, 224), // Secrets of Magic
+        statblock-pf2: rgb(239, 215, 143), // Pathfinder Logo
 );

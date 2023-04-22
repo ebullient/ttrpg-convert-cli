@@ -1,5 +1,5 @@
 // Variables
-@use '../../../variables/index-obsidian-var' as var;
+@use '../../../variables/30-index-obsidian-var' as var;
 
 // Common Mixins for Functions
 @mixin content-headings($level) {
@@ -124,4 +124,12 @@
   strong {
     padding-inline: var.$width-4-rem;
   }
+}
+
+@mixin admonition-callout-kids {
+   > .callout {
+     mix-blend-mode: normal;
+     margin-bottom: 1rem;
+
+   }
 }

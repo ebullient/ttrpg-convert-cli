@@ -1,5 +1,5 @@
 // Variables
-@use '../../../variables/index-obsidian-var' as var;
+@use '../../../variables/30-index-obsidian-var' as var;
 
 @mixin title {
   flex-direction: row;
@@ -11,6 +11,7 @@
   border: var.$no-display;
   display: var.$flex;
   padding-top: var.$size-4-2-rem;
+  padding-bottom: var.$size-4-2-rem;
   position: var.$relative;
 }
 

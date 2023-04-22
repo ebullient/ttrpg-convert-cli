@@ -1,10 +1,9 @@
 // Variables
-@use '../../variables/index-obsidian-var' as var;
+@use '../../variables/30-index-obsidian-var' as var;
 
 // Forwards
 @forward '8a-admonition-core';
 @forward 'ad-pf2-note';
-@forward 'pf2-summary';
 @forward 'embed-ability';
 @forward 'embed-action';
 @forward 'embed-avatar';
@@ -14,3 +13,5 @@
 @forward 'embed-ritual';
 @forward 'inline-affliction';
 @forward 'inline-attack';
+@forward 'pf2-summary';
+@forward 'statblock-pf2e';

@@ -1,5 +1,5 @@
 // Variables
-@use '../../variables/index-obsidian-var' as var;
+@use '../../variables/30-index-obsidian-var' as var;
 
 //Maps
 @use '../maps/pf2e-maps' as callout-map;
@@ -26,8 +26,8 @@
     background-color: #{$value};
     color: var.$almost-black;
     border-color: var(--pf2e-light-brown-headers);
-    border-style: wave;
-    border-width: var.$width-1-rem;
+    border-style: solid;
+    border-width: 0.05rem;
     margin: var.$width-3-rem var.$width-2-rem var.$width-2-rem;
     padding: var.$width-2-rem;
 
