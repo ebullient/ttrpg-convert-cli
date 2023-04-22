@@ -1,5 +1,5 @@
 // Variables
-@use '../../variables/index-obsidian-var' as var;
+@use '../../variables/30-index-obsidian-var' as var;
 
 //Maps
 @use '../maps/pf2e-maps' as admonition-map;
@@ -29,8 +29,8 @@ $half-rem: 0.5rem;
     // General Styling Here
     box-shadow: 0 0 5px 0 $call-box-shadow;
     border-color: var(--pf2e-light-brown-headers);
-    border-style: wave;
-    border-width: var.$width-3-rem;
+    border-style: solid;
+    border-width: 0.05rem;
     color: var.$almost-black;
     margin: var.$width-3-rem var.$width-2-rem var.$width-2-rem;
     padding: var.$width-2-rem;
@@ -92,6 +92,7 @@ $half-rem: 0.5rem;
 
       //General Styling Here
       @include extras.callout-extras-p-bottom;
+      @include body.admonition-callout-kids;
     }
 
     @include body.admonition-copy;

@@ -1,5 +1,5 @@
 // Variables
-@use '../../variables/index-obsidian-var' as var;
+@use '../../variables/30-index-obsidian-var' as var;
 
 
 // Action icons for Reader and Render Modes
@@ -24,10 +24,18 @@ $link-area: 22px;
   & a[title='Single Action'] {
     content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 0 1020 1024"><path d="M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z"/></svg>');
     @include action-gen;
+    
+    &:is(.theme-dark) {
+      content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 0 1020 1024" fill="#EFBBA9"><path d="M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z"/></svg>');
+    }
   }
   & a[title='Two-Action'] {
     content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 1600 1022"><path d="M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z"/></svg>');
     @include action-gen;
+
+    &:is(.theme-dark) {
+      content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 1600 1022" fill="#EFBBA9"><path d="M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z"/></svg>');
+    }
   }
 
   & a[title='Three-Action'] {

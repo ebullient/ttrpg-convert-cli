@@ -1,5 +1,5 @@
 // Variables
-@use '../../variables/index-obsidian-var' as var;
+@use '../../variables/30-index-obsidian-var' as var;
 
 // Forwards
 @forward '7a-callout-core';
@@ -9,7 +9,6 @@
 @forward 'pf2-inset';
 @forward 'pf2-key-box';
 @forward 'pf2-note';
-@forward 'pf2-paper';
 @forward 'pf2-red';
 @forward 'pf2-sidebar';
 @forward 'pf2-tip';
