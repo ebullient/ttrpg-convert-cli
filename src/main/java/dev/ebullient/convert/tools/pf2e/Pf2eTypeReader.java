@@ -571,7 +571,7 @@ public interface Pf2eTypeReader extends JsonSource {
             return replaceText(special);
         }
 
-        String number = numberToText(frequency, Field.freq, true);
+        String number = numberToText(frequency, Field.number, true);
         String unit = Field.unit.getTextOrEmpty(frequency);
         String customUnit = Field.customUnit.getTextOrDefault(frequency, unit);
         Optional<Integer> interval = Field.interval.getIntFrom(frequency);

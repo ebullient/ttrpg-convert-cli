@@ -44,12 +44,15 @@
       "GGR": "Guildmasters' Guide to Ravnica",
       "GoS": "Ghosts of Saltmarsh",
       "HEROES_FEAST": "Heroes' Feast",
+      "HAT-LMI": "Honor Among Thieves: Legendary Magic Items",
+      "HAT-TG": "Honor Among Thieves: Thieves' Gallery",
       "HftT": "Hunt for the Thessalhydra",
       "HoL": "The House of Lament",
       "HotDQ": "Hoard of the Dragon Queen",
       "IDRotF": "Icewind Dale: Rime of the Frostmaiden",
       "IMR": "Infernal Machine Rebuild",
       "JttRC": "Journeys through the Radiant Citadel",
+      "KftGV": "Keys from the Golden Vault",
       "KKW": "Krenko's Way",
       "LLK": "Lost Laboratory of Kwalish",
       "LMoP": "Lost Mine of Phandelver",
@@ -58,6 +61,7 @@
       "MaBJoV": "Minsc and Boo's Journal of Villainy",
       "MCV1SC": "Monstrous Compendium Volume 1: Spelljammer Creatures",
       "MCV2DC": "Monstrous Compendium Volume 2: Dragonlance Creatures",
+      "MCV3MC": "Monstrous Compendium Volume 3: Minecraft Creatures",
       "MFF": "Mordenkainen's Fiendish Folio",
       "MGELFT": "Muk's Guide To Everything He Learned From Tasha",
       "MM": "Monster Manual",
@@ -343,6 +347,7 @@
       "B1": "Bestiary",
       "B2": "Bestiary 2",
       "B3": "Bestiary 3",
+      "BB": "Beginner Box",
       "BL0": "Blood Lords Player's Guide",
       "BL1": "Blood Lords #1: Zombie Feast",
       "BL2": "Blood Lords #2: Graveclaw",
@@ -410,7 +415,8 @@
       "SoT5": "Strength of Thousands #5: Doorway to the Red Star",
       "SoT6": "Strength of Thousands #6: Shadows of the Ancients",
       "TiO": "Troubles in Otari",
-      "ToK": "Threshold of Knowledge"
+      "ToK": "Threshold of Knowledge",
+      "TV": "Treasure Vault"
     },
     "longToAbv": {
       "G&G": "GnG"

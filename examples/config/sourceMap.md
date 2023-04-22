@@ -51,6 +51,8 @@ _Support content creators. Only use or include sources that you own._
 | FTD | Fizban's Treasury of Dragons |
 | GGR | Guildmasters' Guide to Ravnica |
 | GoS | Ghosts of Saltmarsh |
+| HAT-LMI | Honor Among Thieves: Legendary Magic Items |
+| HAT-TG | Honor Among Thieves: Thieves' Gallery |
 | HEROES_FEAST | Heroes' Feast |
 | HftT | Hunt for the Thessalhydra |
 | HoL | The House of Lament |
@@ -59,12 +61,14 @@ _Support content creators. Only use or include sources that you own._
 | IMR | Infernal Machine Rebuild |
 | JttRC | Journeys through the Radiant Citadel |
 | KKW | Krenko's Way |
+| KftGV | Keys from the Golden Vault |
 | LLK | Lost Laboratory of Kwalish |
 | LMoP | Lost Mine of Phandelver |
 | LR | Locathah Rising |
 | LoX | Light of Xaryxis |
 | MCV1SC | Monstrous Compendium Volume 1: Spelljammer Creatures |
 | MCV2DC | Monstrous Compendium Volume 2: Dragonlance Creatures |
+| MCV3MC | Monstrous Compendium Volume 3: Minecraft Creatures |
 | MFF | Mordenkainen's Fiendish Folio |
 | MGELFT | Muk's Guide To Everything He Learned From Tasha |
 | MM | Monster Manual |
@@ -254,6 +258,7 @@ _Support content creators. Only use or include sources that you own._
 | B1 | Bestiary |
 | B2 | Bestiary 2 |
 | B3 | Bestiary 3 |
+| BB | Beginner Box |
 | BL0 | Blood Lords Player's Guide |
 | BL1 | Blood Lords #1: Zombie Feast |
 | BL2 | Blood Lords #2: Graveclaw |
@@ -320,6 +325,7 @@ _Support content creators. Only use or include sources that you own._
 | SoT4 | Strength of Thousands #4: Secrets of the Temple-City |
 | SoT5 | Strength of Thousands #5: Doorway to the Red Star |
 | SoT6 | Strength of Thousands #6: Shadows of the Ancients |
+| TV | Treasure Vault |
 | TiO | Troubles in Otari |
 | ToK | Threshold of Knowledge |
 
