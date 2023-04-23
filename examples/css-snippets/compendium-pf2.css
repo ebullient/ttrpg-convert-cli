@@ -83,112 +83,158 @@
   font-style: normal;
   font-display: block;
 }
-/*! General Settings for #Action Hrefs */
-.markdown-rendered a[title="Single Action"] {
-  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 0 1020 1024"><path d="M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z"/></svg>');
+/*! General Settings for #Action & [hrefs */
+h1 a[href$="#Actions"][title="Single Action"],
+a.internal-link[href$="#Actions"][title="Single Action"] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z'/%3E%3C/svg%3E%0A");
   cursor: context-menu;
   display: inline-block;
   font-size: inherit;
   height: clamp(18px, 4vw, 26px);
-  vertical-align: baseline;
+  vertical-align: bottom;
   width: clamp(18px, 4vw, 26px);
 }
-h1 .markdown-rendered a[title="Single Action"] {
+h1 h1 a[href$="#Actions"][title="Single Action"],
+h1 a.internal-link[href$="#Actions"][title="Single Action"] {
   height: 22px;
   width: 22px;
+  vertical-align: sub;
 }
-.theme-dark .markdown-rendered a[title="Single Action"] {
-  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 0 1020 1024" fill="#EFBBA9"><path d="M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z"/></svg>');
+.theme-dark h1 a[href$="#Actions"][title="Single Action"],
+.theme-dark a.internal-link[href$="#Actions"][title="Single Action"] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z' fill='red'/%3E%3C/svg%3E%0A");
 }
-.markdown-rendered a[title=Two-Action] {
-  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 1600 1022"><path d="M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z"/></svg>');
+
+h1 a[href$="#Actions"][title=Two-Action],
+a.internal-link[href$="#Actions"][title=Two-Action] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z'/%3E%3C/svg%3E");
   cursor: context-menu;
   display: inline-block;
   font-size: inherit;
   height: clamp(18px, 4vw, 26px);
-  vertical-align: baseline;
+  vertical-align: bottom;
   width: clamp(18px, 4vw, 26px);
 }
-h1 .markdown-rendered a[title=Two-Action] {
+h1 h1 a[href$="#Actions"][title=Two-Action],
+h1 a.internal-link[href$="#Actions"][title=Two-Action] {
   height: 22px;
   width: 22px;
+  vertical-align: sub;
 }
-.theme-dark .markdown-rendered a[title=Two-Action] {
-  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 1 1600 1022" fill="#EFBBA9"><path d="M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z"/></svg>');
+.theme-dark h1 a[href$="#Actions"][title=Two-Action],
+.theme-dark a.internal-link[href$="#Actions"][title=Two-Action] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z' fill='red'/%3E%3C/svg%3E");
 }
-.markdown-rendered a[title=Three-Action] {
-  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 0 2118 1024"><path d="m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z"/></svg>');
+
+h1 a[href$="#Actions"][title=Three-Action],
+a.internal-link[href$="#Actions"][title=Three-Action] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z'/%3E%3C/svg%3E");
   cursor: context-menu;
   display: inline-block;
   font-size: inherit;
   height: clamp(18px, 4vw, 26px);
-  vertical-align: baseline;
+  vertical-align: bottom;
   width: clamp(18px, 4vw, 26px);
 }
-h1 .markdown-rendered a[title=Three-Action] {
+h1 h1 a[href$="#Actions"][title=Three-Action],
+h1 a.internal-link[href$="#Actions"][title=Three-Action] {
   height: 22px;
   width: 22px;
+  vertical-align: sub;
 }
-.markdown-rendered a[title="Free Action"] {
-  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z'/%3E%3C/svg%3E");
+.theme-dark h1 a[href$="#Actions"][title=Three-Action],
+.theme-dark a.internal-link[href$="#Actions"][title=Three-Action] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z' fill='red' /%3E%3C/svg%3E");
+}
+
+h1 a[href$="#Actions"][title=Reaction],
+a.internal-link[href$="#Actions"][title=Reaction] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z'/%3E%3C/svg%3E");
   cursor: context-menu;
   display: inline-block;
   font-size: inherit;
   height: clamp(18px, 4vw, 26px);
-  vertical-align: baseline;
+  vertical-align: bottom;
   width: clamp(18px, 4vw, 26px);
 }
-h1 .markdown-rendered a[title="Free Action"] {
+h1 h1 a[href$="#Actions"][title=Reaction],
+h1 a.internal-link[href$="#Actions"][title=Reaction] {
   height: 22px;
   width: 22px;
+  vertical-align: sub;
 }
-.markdown-rendered a[title=Reaction] {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 98.24 1024.52 827.76"><path d="M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z"></path></svg>');
+.theme-dark h1 a[href$="#Actions"][title=Reaction],
+.theme-dark a.internal-link[href$="#Actions"][title=Reaction] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z'fill='red' /%3E%3C/svg%3E");
+}
+
+h1 a[href$="#Actions"][title="Free Action"],
+a.internal-link[href$="#Actions"][title="Free Action"],
+.markdown-source-view.mod-cm6 .cm-line a[href$="#Actions"][title="Free Action"],
+.cm-s-obsidian span.cm-link a[href$="#Actions"][title="Free Action"] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z'/%3E%3C/svg%3E");
   cursor: context-menu;
   display: inline-block;
   font-size: inherit;
   height: clamp(18px, 4vw, 26px);
-  vertical-align: baseline;
+  vertical-align: bottom;
   width: clamp(18px, 4vw, 26px);
 }
-h1 .markdown-rendered a[title=Reaction] {
+h1 h1 a[href$="#Actions"][title="Free Action"],
+h1 a.internal-link[href$="#Actions"][title="Free Action"],
+h1 .markdown-source-view.mod-cm6 .cm-line a[href$="#Actions"][title="Free Action"],
+h1 .cm-s-obsidian span.cm-link a[href$="#Actions"][title="Free Action"] {
   height: 22px;
   width: 22px;
+  vertical-align: sub;
 }
-.theme-dark .markdown-rendered a[title=Reaction] {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 98.24 1024.52 827.76" fill="#333333"><path d="M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z"></path></svg>');
+.theme-dark h1 a[href$="#Actions"][title="Free Action"],
+.theme-dark a.internal-link[href$="#Actions"][title="Free Action"],
+.theme-dark .markdown-source-view.mod-cm6 .cm-line a[href$="#Actions"][title="Free Action"],
+.theme-dark .cm-s-obsidian span.cm-link a[href$="#Actions"][title="Free Action"] {
+  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z' fill='red'/%3E%3C/svg%3E");
 }
-.markdown-rendered a[title=Varies] {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="2 2 28 28"><title>load</title><path d="M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z"></path></svg>');
+
+h1 a[href$="#Actions"][title=Varies],
+a.internal-link[href$="#Actions"][title=Varies] {
+  content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctitle%3Eload%3C/title%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z'%3E%3C/path%3E%3C/svg%3E");
   cursor: context-menu;
   display: inline-block;
   font-size: inherit;
   height: clamp(18px, 4vw, 26px);
-  vertical-align: baseline;
+  vertical-align: bottom;
   width: clamp(18px, 4vw, 26px);
 }
-h1 .markdown-rendered a[title=Varies] {
+h1 h1 a[href$="#Actions"][title=Varies],
+h1 a.internal-link[href$="#Actions"][title=Varies] {
   height: 22px;
   width: 22px;
+  vertical-align: sub;
 }
-.theme-dark .markdown-rendered a[title=Varies] {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="2 2 28 28" fill="#333333"><title>load</title><path d="M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z"></path></svg>');
+.theme-dark h1 a[href$="#Actions"][title=Varies],
+.theme-dark a.internal-link[href$="#Actions"][title=Varies] {
+  content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctitle%3Eload%3C/title%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z' fill='red'%3E%3C/path%3E%3C/svg%3E%0A");
 }
-.markdown-rendered a[title="Duration or Frequency"] {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="4.4 0 11.2 20"><title>hour-glass</title><path d="M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z"></path></svg>');
+
+h1 a[href$="#Actions"][title="Duration or Frequency"],
+a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
+  content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z'%3E%3C/path%3E%3C/svg%3E%0A");
   cursor: context-menu;
   display: inline-block;
   font-size: inherit;
   height: clamp(18px, 4vw, 26px);
-  vertical-align: baseline;
+  vertical-align: bottom;
   width: clamp(18px, 4vw, 26px);
 }
-h1 .markdown-rendered a[title="Duration or Frequency"] {
+h1 h1 a[href$="#Actions"][title="Duration or Frequency"],
+h1 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   height: 22px;
   width: 22px;
+  vertical-align: sub;
 }
-.theme-dark .markdown-rendered a[title="Duration or Frequency"] {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="4.4 0 11.2 20" fill="#333333"><title>hour-glass</title><path d="M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z"></path></svg>');
+.theme-dark h1 a[href$="#Actions"][title="Duration or Frequency"],
+.theme-dark a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
+  content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z' fill='red'%3E%3C/path%3E%3C/svg%3E%0A");
 }
 
 .markdown-rendered .internal-link:is([href^="/rules/traits/"]) {
@@ -234,7 +280,7 @@ h1 .markdown-rendered a[title="Duration or Frequency"] {
   word-break: keep-all;
 }
 
-:is([href="/rules/traits/Uncommon.md"]) {
+div.markdown-reading-view p:is([href="/rules/traits/Uncommon.md"]) {
   border: 2px solid var(--box-uncommon);
   background: var(--box-uncommon);
   background-clip: padding-box;
@@ -2656,555 +2702,6 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   margin-block-end: 0;
   margin-left: 0.5rem;
   margin-bottom: 1rem;
-}
-
-.callout[data-callout=pf2-beige] .callout-title .callout-title-inner {
-  margin-left: 0.25rem;
-  padding-bottom: 0.25rem;
-}
-.callout[data-callout=pf2-beige] .callout-content a.internal-link {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-beige] .callout-content a.internal-link:hover {
-  color: #aa5555;
-}
-.callout[data-callout=pf2-beige] .callout-content a.internal-link.is-unresolved {
-  color: rgb(0, 73, 97);
-}
-.callout[data-callout=pf2-beige] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
-}
-.callout[data-callout=pf2-beige] .callout-content a.external-link {
-  color: rgb(107, 0, 153);
-}
-.callout[data-callout=pf2-beige] .callout-content a.external-link:hover {
-  color: #b200ff;
-}
-.callout[data-callout=pf2-beige] .callout-content em {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-beige] .callout-content h1 {
-  color: rgb(80, 67, 79);
-}
-.callout[data-callout=pf2-beige] .callout-content h2 {
-  color: rgb(44, 70, 78);
-}
-.callout[data-callout=pf2-beige] .callout-content h3 {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-beige] .callout-content h4 {
-  color: rgb(42, 72, 62);
-}
-.callout[data-callout=pf2-beige] .callout-content h5 {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-beige] .callout-content h6 {
-  color: rgb(36, 36, 36);
-}
-.callout[data-callout=pf2-beige] .callout-content strong {
-  color: rgb(51, 66, 82);
-}
-.callout[data-callout=pf2-beige] .callout-content strong em {
-  color: #333b43;
-}
-.callout[data-callout=pf2-beige] .callout-content ol > li::marker,
-.callout[data-callout=pf2-beige] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-.callout[data-callout=pf2-beige] .callout-content h1, .callout[data-callout=pf2-beige] .callout-content h2, .callout[data-callout=pf2-beige] .callout-content h3, .callout[data-callout=pf2-beige] .callout-content h4, .callout[data-callout=pf2-beige] .callout-content h5, .callout[data-callout=pf2-beige] .callout-content h6 {
-  text-align: left;
-  padding-left: 0.25rem;
-}
-
-.callout[data-callout=pf2-brown] .callout-title .callout-title-inner {
-  font-family: "Helvetica Neue", Helvetica, Arial, "Pathfinder", sans-serif;
-  margin-left: 0.25rem;
-  text-align: center;
-}
-.callout[data-callout=pf2-brown] .callout-content a.internal-link {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-brown] .callout-content a.internal-link:hover {
-  color: #aa5555;
-}
-.callout[data-callout=pf2-brown] .callout-content a.internal-link.is-unresolved {
-  color: rgb(0, 73, 97);
-}
-.callout[data-callout=pf2-brown] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
-}
-.callout[data-callout=pf2-brown] .callout-content a.external-link {
-  color: rgb(107, 0, 153);
-}
-.callout[data-callout=pf2-brown] .callout-content a.external-link:hover {
-  color: #b200ff;
-}
-.callout[data-callout=pf2-brown] .callout-content em {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-brown] .callout-content h1 {
-  color: rgb(80, 67, 79);
-}
-.callout[data-callout=pf2-brown] .callout-content h2 {
-  color: rgb(44, 70, 78);
-}
-.callout[data-callout=pf2-brown] .callout-content h3 {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-brown] .callout-content h4 {
-  color: rgb(42, 72, 62);
-}
-.callout[data-callout=pf2-brown] .callout-content h5 {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-brown] .callout-content h6 {
-  color: rgb(36, 36, 36);
-}
-.callout[data-callout=pf2-brown] .callout-content strong {
-  color: rgb(51, 66, 82);
-}
-.callout[data-callout=pf2-brown] .callout-content strong em {
-  color: #333b43;
-}
-.callout[data-callout=pf2-brown] .callout-content ol > li::marker,
-.callout[data-callout=pf2-brown] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-
-.callout.callout[data-callout=pf2-example] .callout-content a.internal-link {
-  color: rgb(102, 51, 51);
-}
-.callout.callout[data-callout=pf2-example] .callout-content a.internal-link:hover {
-  color: #aa5555;
-}
-.callout.callout[data-callout=pf2-example] .callout-content a.internal-link.is-unresolved {
-  color: rgb(0, 73, 97);
-}
-.callout.callout[data-callout=pf2-example] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
-}
-.callout.callout[data-callout=pf2-example] .callout-content a.external-link {
-  color: rgb(107, 0, 153);
-}
-.callout.callout[data-callout=pf2-example] .callout-content a.external-link:hover {
-  color: #b200ff;
-}
-.callout.callout[data-callout=pf2-example] .callout-content em {
-  color: rgb(51, 51, 51);
-}
-.callout.callout[data-callout=pf2-example] .callout-content h1 {
-  color: rgb(80, 67, 79);
-}
-.callout.callout[data-callout=pf2-example] .callout-content h2 {
-  color: rgb(44, 70, 78);
-}
-.callout.callout[data-callout=pf2-example] .callout-content h3 {
-  color: rgb(51, 51, 51);
-}
-.callout.callout[data-callout=pf2-example] .callout-content h4 {
-  color: rgb(42, 72, 62);
-}
-.callout.callout[data-callout=pf2-example] .callout-content h5 {
-  color: rgb(102, 51, 51);
-}
-.callout.callout[data-callout=pf2-example] .callout-content h6 {
-  color: rgb(36, 36, 36);
-}
-.callout.callout[data-callout=pf2-example] .callout-content strong {
-  color: rgb(51, 66, 82);
-}
-.callout.callout[data-callout=pf2-example] .callout-content strong em {
-  color: #333b43;
-}
-.callout.callout[data-callout=pf2-example] .callout-content ol > li::marker,
-.callout.callout[data-callout=pf2-example] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-
-.callout[data-callout=pf2-inset] .callout-title .callout-title-inner {
-  display: none;
-}
-.callout[data-callout=pf2-inset] .callout-content {
-  font-weight: 700;
-}
-
-.callout[data-callout=pf2-key-box] {
-  color: rgb(232, 232, 232);
-  clear: left;
-  display: inline-flex;
-  float-wrap: wrap;
-  float: left;
-  font-family: "Times New Roman", Times, serif;
-  text-transform: capitalize;
-}
-.callout[data-callout=pf2-key-box] .callout-content a.internal-link {
-  color: rgb(255, 219, 88);
-}
-.callout[data-callout=pf2-key-box] .callout-content a.internal-link:hover {
-  color: #f1bd00;
-}
-.callout[data-callout=pf2-key-box] .callout-content a.internal-link.is-unresolved {
-  color: #b3d13c;
-}
-.callout[data-callout=pf2-key-box] .callout-content a.internal-link.is-unresolved:hover {
-  color: #728720;
-}
-.callout[data-callout=pf2-key-box] .callout-content a.external-link {
-  color: rgb(222, 145, 255);
-}
-.callout[data-callout=pf2-key-box] .callout-content a.external-link:hover {
-  color: #cf5eff;
-}
-.callout[data-callout=pf2-key-box] .callout-content em {
-  color: rgb(154, 205, 50);
-}
-.callout[data-callout=pf2-key-box] .callout-content h1, .callout[data-callout=pf2-key-box] .callout-content h2, .callout[data-callout=pf2-key-box] .callout-content h3, .callout[data-callout=pf2-key-box] .callout-content h4, .callout[data-callout=pf2-key-box] .callout-content h5, .callout[data-callout=pf2-key-box] .callout-content h6 {
-  color: rgb(232, 232, 232);
-}
-.callout[data-callout=pf2-key-box] .callout-content p {
-  color: rgb(232, 232, 232);
-}
-.callout[data-callout=pf2-key-box] .callout-content strong {
-  color: rgb(255, 143, 143);
-}
-.callout[data-callout=pf2-key-box] .callout-content strong em {
-  color: #cdae61;
-}
-.callout[data-callout=pf2-key-box] .callout-content ol > li::marker,
-.callout[data-callout=pf2-key-box] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-.callout[data-callout=pf2-key-box] .callout-content ul {
-  margin-block-end: unset;
-  margin-block-start: unset;
-  padding: 0.5em;
-}
-
-.callout[data-callout=pf2-note] {
-  clear: both;
-  font-style: italic;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-.callout[data-callout=pf2-note] .callout-title .callout-title-inner {
-  flex: unset;
-  display: none;
-}
-.admonition .callout[data-callout=pf2-note] .callout-title .callout-title-inner {
-  display: inline;
-}
-.callout[data-callout=pf2-note] .callout-content {
-  margin-bottom: -0.5rem;
-}
-.callout[data-callout=pf2-note] .callout-content a.internal-link {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-note] .callout-content a.internal-link:hover {
-  color: #aa5555;
-}
-.callout[data-callout=pf2-note] .callout-content a.internal-link.is-unresolved {
-  color: rgb(0, 73, 97);
-}
-.callout[data-callout=pf2-note] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
-}
-.callout[data-callout=pf2-note] .callout-content a.external-link {
-  color: rgb(107, 0, 153);
-}
-.callout[data-callout=pf2-note] .callout-content a.external-link:hover {
-  color: #b200ff;
-}
-.callout[data-callout=pf2-note] .callout-content em {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-note] .callout-content h1 {
-  color: rgb(80, 67, 79);
-}
-.callout[data-callout=pf2-note] .callout-content h2 {
-  color: rgb(44, 70, 78);
-}
-.callout[data-callout=pf2-note] .callout-content h3 {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-note] .callout-content h4 {
-  color: rgb(42, 72, 62);
-}
-.callout[data-callout=pf2-note] .callout-content h5 {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-note] .callout-content h6 {
-  color: rgb(36, 36, 36);
-}
-.callout[data-callout=pf2-note] .callout-content strong {
-  color: rgb(51, 66, 82);
-}
-.callout[data-callout=pf2-note] .callout-content strong em {
-  color: #333b43;
-}
-.callout[data-callout=pf2-note] .callout-content ol > li::marker,
-.callout[data-callout=pf2-note] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-
-.callout[data-callout=pf2-red] {
-  color: rgb(232, 232, 232);
-}
-.callout[data-callout=pf2-red] .callout-title .callout-title-inner {
-  font-family: "Times New Roman", Times, serif;
-}
-.callout[data-callout=pf2-red] .callout-title .callout-title-inner strong {
-  color: rgb(255, 143, 143);
-}
-.callout[data-callout=pf2-red] .callout-title .callout-title-inner a {
-  color: rgb(204, 72, 0);
-}
-.callout[data-callout=pf2-red] .callout-content a.internal-link {
-  color: rgb(255, 219, 88);
-}
-.callout[data-callout=pf2-red] .callout-content a.internal-link:hover {
-  color: #f1bd00;
-}
-.callout[data-callout=pf2-red] .callout-content a.internal-link.is-unresolved {
-  color: #b3d13c;
-}
-.callout[data-callout=pf2-red] .callout-content a.internal-link.is-unresolved:hover {
-  color: #728720;
-}
-.callout[data-callout=pf2-red] .callout-content a.external-link {
-  color: rgb(222, 145, 255);
-}
-.callout[data-callout=pf2-red] .callout-content a.external-link:hover {
-  color: #cf5eff;
-}
-.callout[data-callout=pf2-red] .callout-content em {
-  color: rgb(154, 205, 50);
-}
-.callout[data-callout=pf2-red] .callout-content h1, .callout[data-callout=pf2-red] .callout-content h2, .callout[data-callout=pf2-red] .callout-content h3, .callout[data-callout=pf2-red] .callout-content h4, .callout[data-callout=pf2-red] .callout-content h5, .callout[data-callout=pf2-red] .callout-content h6 {
-  color: rgb(232, 232, 232);
-}
-.callout[data-callout=pf2-red] .callout-content p {
-  color: rgb(232, 232, 232);
-}
-.callout[data-callout=pf2-red] .callout-content strong {
-  color: rgb(255, 143, 143);
-}
-.callout[data-callout=pf2-red] .callout-content strong em {
-  color: #cdae61;
-}
-.callout[data-callout=pf2-red] .callout-content ol > li::marker,
-.callout[data-callout=pf2-red] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-.callout[data-callout=pf2-red] .callout-content ul {
-  margin-block-end: unset;
-  margin-block-start: unset;
-  padding: 0.5em;
-}
-.callout[data-callout=pf2-red] .callout-content table th {
-  color: rgb(232, 232, 232);
-}
-
-.callout[data-callout=pf2-sidebar] {
-  color: rgb(128, 0, 0);
-  clear: right;
-  float: right;
-  max-height: 85vh;
-  max-width: 50vw;
-  overflow-wrap: break-word;
-  overflow-y: scroll;
-}
-.callout[data-callout=pf2-sidebar] .callout-content a.internal-link {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-sidebar] .callout-content a.internal-link:hover {
-  color: #aa5555;
-}
-.callout[data-callout=pf2-sidebar] .callout-content a.internal-link.is-unresolved {
-  color: rgb(0, 73, 97);
-}
-.callout[data-callout=pf2-sidebar] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
-}
-.callout[data-callout=pf2-sidebar] .callout-content a.external-link {
-  color: rgb(107, 0, 153);
-}
-.callout[data-callout=pf2-sidebar] .callout-content a.external-link:hover {
-  color: #b200ff;
-}
-.callout[data-callout=pf2-sidebar] .callout-content em {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-sidebar] .callout-content h1 {
-  color: rgb(80, 67, 79);
-}
-.callout[data-callout=pf2-sidebar] .callout-content h2 {
-  color: rgb(44, 70, 78);
-}
-.callout[data-callout=pf2-sidebar] .callout-content h3 {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-sidebar] .callout-content h4 {
-  color: rgb(42, 72, 62);
-}
-.callout[data-callout=pf2-sidebar] .callout-content h5 {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-sidebar] .callout-content h6 {
-  color: rgb(36, 36, 36);
-}
-.callout[data-callout=pf2-sidebar] .callout-content strong {
-  color: rgb(51, 66, 82);
-}
-.callout[data-callout=pf2-sidebar] .callout-content strong em {
-  color: #333b43;
-}
-.callout[data-callout=pf2-sidebar] .callout-content ol > li::marker,
-.callout[data-callout=pf2-sidebar] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-
-.callout[data-callout=pf2-tip] {
-  color: rgb(36, 36, 36);
-}
-.callout[data-callout=pf2-tip] em {
-  color: #e1daba;
-}
-.callout[data-callout=pf2-tip] strong {
-  color: #8e959d;
-}
-.callout[data-callout=pf2-tip] strong em {
-  color: #333b43;
-}
-.callout[data-callout=pf2-tip] .callout-title {
-  background-color: rgb(6, 20, 53);
-}
-.callout[data-callout=pf2-tip] .callout-title .callout-title-inner {
-  color: rgb(217, 204, 140);
-  margin-left: 0.25rem;
-  text-align: left;
-}
-.callout[data-callout=pf2-tip] .callout-title .callout-title-inner a {
-  color: #aa5555;
-}
-.callout[data-callout=pf2-tip] .callout-content a.internal-link {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-tip] .callout-content a.internal-link:hover {
-  color: #aa5555;
-}
-.callout[data-callout=pf2-tip] .callout-content a.internal-link.is-unresolved {
-  color: rgb(0, 73, 97);
-}
-.callout[data-callout=pf2-tip] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
-}
-.callout[data-callout=pf2-tip] .callout-content a.external-link {
-  color: rgb(107, 0, 153);
-}
-.callout[data-callout=pf2-tip] .callout-content a.external-link:hover {
-  color: #b200ff;
-}
-.callout[data-callout=pf2-tip] .callout-content em {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-tip] .callout-content h1 {
-  color: rgb(80, 67, 79);
-}
-.callout[data-callout=pf2-tip] .callout-content h2 {
-  color: rgb(44, 70, 78);
-}
-.callout[data-callout=pf2-tip] .callout-content h3 {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=pf2-tip] .callout-content h4 {
-  color: rgb(42, 72, 62);
-}
-.callout[data-callout=pf2-tip] .callout-content h5 {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=pf2-tip] .callout-content h6 {
-  color: rgb(36, 36, 36);
-}
-.callout[data-callout=pf2-tip] .callout-content strong {
-  color: rgb(51, 66, 82);
-}
-.callout[data-callout=pf2-tip] .callout-content strong em {
-  color: #333b43;
-}
-.callout[data-callout=pf2-tip] .callout-content ol > li::marker,
-.callout[data-callout=pf2-tip] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-.callout[data-callout=pf2-tip] .callout-content p {
-  text-align: justify;
-}
-
-.callout[data-callout=success-degree] {
-  --callout-icon: lucide-scale;
-}
-.callout[data-callout=success-degree] .callout-title {
-  display: inherit;
-}
-.callout[data-callout=success-degree] .callout-title .callout-icon .svg-icon {
-  display: block;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: auto;
-}
-.callout[data-callout=success-degree] .callout-title .callout-title-inner {
-  display: none;
-}
-.callout[data-callout=success-degree] .callout-content a.internal-link {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=success-degree] .callout-content a.internal-link:hover {
-  color: #aa5555;
-}
-.callout[data-callout=success-degree] .callout-content a.internal-link.is-unresolved {
-  color: rgb(0, 73, 97);
-}
-.callout[data-callout=success-degree] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
-}
-.callout[data-callout=success-degree] .callout-content a.external-link {
-  color: rgb(107, 0, 153);
-}
-.callout[data-callout=success-degree] .callout-content a.external-link:hover {
-  color: #b200ff;
-}
-.callout[data-callout=success-degree] .callout-content em {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=success-degree] .callout-content h1 {
-  color: rgb(80, 67, 79);
-}
-.callout[data-callout=success-degree] .callout-content h2 {
-  color: rgb(44, 70, 78);
-}
-.callout[data-callout=success-degree] .callout-content h3 {
-  color: rgb(51, 51, 51);
-}
-.callout[data-callout=success-degree] .callout-content h4 {
-  color: rgb(42, 72, 62);
-}
-.callout[data-callout=success-degree] .callout-content h5 {
-  color: rgb(102, 51, 51);
-}
-.callout[data-callout=success-degree] .callout-content h6 {
-  color: rgb(36, 36, 36);
-}
-.callout[data-callout=success-degree] .callout-content strong {
-  color: rgb(51, 66, 82);
-}
-.callout[data-callout=success-degree] .callout-content strong em {
-  color: #333b43;
-}
-.callout[data-callout=success-degree] .callout-content ol > li::marker,
-.callout[data-callout=success-degree] .callout-content ul > li::marker {
-  color: rgb(204, 72, 0);
-}
-.callout[data-callout=success-degree] .callout-content strong {
-  font-weight: 800;
 }
 
 .admonition[data-callout=pf2-note] {
@@ -7237,6 +6734,555 @@ strong:not(a + .admonition[data-callout=statblock-pf2] .admonition-content ul li
 }
 .admonition[data-callout=statblock-pf2] .admonition-content-copy:hover {
   color: rgba(232, 232, 232, 0.3);
+}
+
+.callout[data-callout=pf2-beige] .callout-title .callout-title-inner {
+  margin-left: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.callout[data-callout=pf2-beige] .callout-content a.internal-link {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-beige] .callout-content a.internal-link:hover {
+  color: #aa5555;
+}
+.callout[data-callout=pf2-beige] .callout-content a.internal-link.is-unresolved {
+  color: rgb(0, 73, 97);
+}
+.callout[data-callout=pf2-beige] .callout-content a.internal-link.is-unresolved:hover {
+  color: #0096c7;
+}
+.callout[data-callout=pf2-beige] .callout-content a.external-link {
+  color: rgb(107, 0, 153);
+}
+.callout[data-callout=pf2-beige] .callout-content a.external-link:hover {
+  color: #b200ff;
+}
+.callout[data-callout=pf2-beige] .callout-content em {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-beige] .callout-content h1 {
+  color: rgb(80, 67, 79);
+}
+.callout[data-callout=pf2-beige] .callout-content h2 {
+  color: rgb(44, 70, 78);
+}
+.callout[data-callout=pf2-beige] .callout-content h3 {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-beige] .callout-content h4 {
+  color: rgb(42, 72, 62);
+}
+.callout[data-callout=pf2-beige] .callout-content h5 {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-beige] .callout-content h6 {
+  color: rgb(36, 36, 36);
+}
+.callout[data-callout=pf2-beige] .callout-content strong {
+  color: rgb(51, 66, 82);
+}
+.callout[data-callout=pf2-beige] .callout-content strong em {
+  color: #333b43;
+}
+.callout[data-callout=pf2-beige] .callout-content ol > li::marker,
+.callout[data-callout=pf2-beige] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+.callout[data-callout=pf2-beige] .callout-content h1, .callout[data-callout=pf2-beige] .callout-content h2, .callout[data-callout=pf2-beige] .callout-content h3, .callout[data-callout=pf2-beige] .callout-content h4, .callout[data-callout=pf2-beige] .callout-content h5, .callout[data-callout=pf2-beige] .callout-content h6 {
+  text-align: left;
+  padding-left: 0.25rem;
+}
+
+.callout[data-callout=pf2-brown] .callout-title .callout-title-inner {
+  font-family: "Helvetica Neue", Helvetica, Arial, "Pathfinder", sans-serif;
+  margin-left: 0.25rem;
+  text-align: center;
+}
+.callout[data-callout=pf2-brown] .callout-content a.internal-link {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-brown] .callout-content a.internal-link:hover {
+  color: #aa5555;
+}
+.callout[data-callout=pf2-brown] .callout-content a.internal-link.is-unresolved {
+  color: rgb(0, 73, 97);
+}
+.callout[data-callout=pf2-brown] .callout-content a.internal-link.is-unresolved:hover {
+  color: #0096c7;
+}
+.callout[data-callout=pf2-brown] .callout-content a.external-link {
+  color: rgb(107, 0, 153);
+}
+.callout[data-callout=pf2-brown] .callout-content a.external-link:hover {
+  color: #b200ff;
+}
+.callout[data-callout=pf2-brown] .callout-content em {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-brown] .callout-content h1 {
+  color: rgb(80, 67, 79);
+}
+.callout[data-callout=pf2-brown] .callout-content h2 {
+  color: rgb(44, 70, 78);
+}
+.callout[data-callout=pf2-brown] .callout-content h3 {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-brown] .callout-content h4 {
+  color: rgb(42, 72, 62);
+}
+.callout[data-callout=pf2-brown] .callout-content h5 {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-brown] .callout-content h6 {
+  color: rgb(36, 36, 36);
+}
+.callout[data-callout=pf2-brown] .callout-content strong {
+  color: rgb(51, 66, 82);
+}
+.callout[data-callout=pf2-brown] .callout-content strong em {
+  color: #333b43;
+}
+.callout[data-callout=pf2-brown] .callout-content ol > li::marker,
+.callout[data-callout=pf2-brown] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+
+.callout.callout[data-callout=pf2-example] .callout-content a.internal-link {
+  color: rgb(102, 51, 51);
+}
+.callout.callout[data-callout=pf2-example] .callout-content a.internal-link:hover {
+  color: #aa5555;
+}
+.callout.callout[data-callout=pf2-example] .callout-content a.internal-link.is-unresolved {
+  color: rgb(0, 73, 97);
+}
+.callout.callout[data-callout=pf2-example] .callout-content a.internal-link.is-unresolved:hover {
+  color: #0096c7;
+}
+.callout.callout[data-callout=pf2-example] .callout-content a.external-link {
+  color: rgb(107, 0, 153);
+}
+.callout.callout[data-callout=pf2-example] .callout-content a.external-link:hover {
+  color: #b200ff;
+}
+.callout.callout[data-callout=pf2-example] .callout-content em {
+  color: rgb(51, 51, 51);
+}
+.callout.callout[data-callout=pf2-example] .callout-content h1 {
+  color: rgb(80, 67, 79);
+}
+.callout.callout[data-callout=pf2-example] .callout-content h2 {
+  color: rgb(44, 70, 78);
+}
+.callout.callout[data-callout=pf2-example] .callout-content h3 {
+  color: rgb(51, 51, 51);
+}
+.callout.callout[data-callout=pf2-example] .callout-content h4 {
+  color: rgb(42, 72, 62);
+}
+.callout.callout[data-callout=pf2-example] .callout-content h5 {
+  color: rgb(102, 51, 51);
+}
+.callout.callout[data-callout=pf2-example] .callout-content h6 {
+  color: rgb(36, 36, 36);
+}
+.callout.callout[data-callout=pf2-example] .callout-content strong {
+  color: rgb(51, 66, 82);
+}
+.callout.callout[data-callout=pf2-example] .callout-content strong em {
+  color: #333b43;
+}
+.callout.callout[data-callout=pf2-example] .callout-content ol > li::marker,
+.callout.callout[data-callout=pf2-example] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+
+.callout[data-callout=pf2-inset] .callout-title .callout-title-inner {
+  display: none;
+}
+.callout[data-callout=pf2-inset] .callout-content {
+  font-weight: 700;
+}
+
+.callout[data-callout=pf2-key-box] {
+  color: rgb(232, 232, 232);
+  clear: left;
+  display: inline-flex;
+  float-wrap: wrap;
+  float: left;
+  font-family: "Times New Roman", Times, serif;
+  text-transform: capitalize;
+}
+.callout[data-callout=pf2-key-box] .callout-content a.internal-link {
+  color: rgb(255, 219, 88);
+}
+.callout[data-callout=pf2-key-box] .callout-content a.internal-link:hover {
+  color: #f1bd00;
+}
+.callout[data-callout=pf2-key-box] .callout-content a.internal-link.is-unresolved {
+  color: #b3d13c;
+}
+.callout[data-callout=pf2-key-box] .callout-content a.internal-link.is-unresolved:hover {
+  color: #728720;
+}
+.callout[data-callout=pf2-key-box] .callout-content a.external-link {
+  color: rgb(222, 145, 255);
+}
+.callout[data-callout=pf2-key-box] .callout-content a.external-link:hover {
+  color: #cf5eff;
+}
+.callout[data-callout=pf2-key-box] .callout-content em {
+  color: rgb(154, 205, 50);
+}
+.callout[data-callout=pf2-key-box] .callout-content h1, .callout[data-callout=pf2-key-box] .callout-content h2, .callout[data-callout=pf2-key-box] .callout-content h3, .callout[data-callout=pf2-key-box] .callout-content h4, .callout[data-callout=pf2-key-box] .callout-content h5, .callout[data-callout=pf2-key-box] .callout-content h6 {
+  color: rgb(232, 232, 232);
+}
+.callout[data-callout=pf2-key-box] .callout-content p {
+  color: rgb(232, 232, 232);
+}
+.callout[data-callout=pf2-key-box] .callout-content strong {
+  color: rgb(255, 143, 143);
+}
+.callout[data-callout=pf2-key-box] .callout-content strong em {
+  color: #cdae61;
+}
+.callout[data-callout=pf2-key-box] .callout-content ol > li::marker,
+.callout[data-callout=pf2-key-box] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+.callout[data-callout=pf2-key-box] .callout-content ul {
+  margin-block-end: unset;
+  margin-block-start: unset;
+  padding: 0.5em;
+}
+
+.callout[data-callout=pf2-note] {
+  clear: both;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.callout[data-callout=pf2-note] .callout-title .callout-title-inner {
+  flex: unset;
+  display: none;
+}
+.admonition .callout[data-callout=pf2-note] .callout-title .callout-title-inner {
+  display: inline;
+}
+.callout[data-callout=pf2-note] .callout-content {
+  margin-bottom: -0.5rem;
+}
+.callout[data-callout=pf2-note] .callout-content a.internal-link {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-note] .callout-content a.internal-link:hover {
+  color: #aa5555;
+}
+.callout[data-callout=pf2-note] .callout-content a.internal-link.is-unresolved {
+  color: rgb(0, 73, 97);
+}
+.callout[data-callout=pf2-note] .callout-content a.internal-link.is-unresolved:hover {
+  color: #0096c7;
+}
+.callout[data-callout=pf2-note] .callout-content a.external-link {
+  color: rgb(107, 0, 153);
+}
+.callout[data-callout=pf2-note] .callout-content a.external-link:hover {
+  color: #b200ff;
+}
+.callout[data-callout=pf2-note] .callout-content em {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-note] .callout-content h1 {
+  color: rgb(80, 67, 79);
+}
+.callout[data-callout=pf2-note] .callout-content h2 {
+  color: rgb(44, 70, 78);
+}
+.callout[data-callout=pf2-note] .callout-content h3 {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-note] .callout-content h4 {
+  color: rgb(42, 72, 62);
+}
+.callout[data-callout=pf2-note] .callout-content h5 {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-note] .callout-content h6 {
+  color: rgb(36, 36, 36);
+}
+.callout[data-callout=pf2-note] .callout-content strong {
+  color: rgb(51, 66, 82);
+}
+.callout[data-callout=pf2-note] .callout-content strong em {
+  color: #333b43;
+}
+.callout[data-callout=pf2-note] .callout-content ol > li::marker,
+.callout[data-callout=pf2-note] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+
+.callout[data-callout=pf2-red] {
+  color: rgb(232, 232, 232);
+}
+.callout[data-callout=pf2-red] .callout-title .callout-title-inner {
+  font-family: "Times New Roman", Times, serif;
+}
+.callout[data-callout=pf2-red] .callout-title .callout-title-inner strong {
+  color: rgb(255, 143, 143);
+}
+.callout[data-callout=pf2-red] .callout-title .callout-title-inner a {
+  color: rgb(204, 72, 0);
+}
+.callout[data-callout=pf2-red] .callout-content a.internal-link {
+  color: rgb(255, 219, 88);
+}
+.callout[data-callout=pf2-red] .callout-content a.internal-link:hover {
+  color: #f1bd00;
+}
+.callout[data-callout=pf2-red] .callout-content a.internal-link.is-unresolved {
+  color: #b3d13c;
+}
+.callout[data-callout=pf2-red] .callout-content a.internal-link.is-unresolved:hover {
+  color: #728720;
+}
+.callout[data-callout=pf2-red] .callout-content a.external-link {
+  color: rgb(222, 145, 255);
+}
+.callout[data-callout=pf2-red] .callout-content a.external-link:hover {
+  color: #cf5eff;
+}
+.callout[data-callout=pf2-red] .callout-content em {
+  color: rgb(154, 205, 50);
+}
+.callout[data-callout=pf2-red] .callout-content h1, .callout[data-callout=pf2-red] .callout-content h2, .callout[data-callout=pf2-red] .callout-content h3, .callout[data-callout=pf2-red] .callout-content h4, .callout[data-callout=pf2-red] .callout-content h5, .callout[data-callout=pf2-red] .callout-content h6 {
+  color: rgb(232, 232, 232);
+}
+.callout[data-callout=pf2-red] .callout-content p {
+  color: rgb(232, 232, 232);
+}
+.callout[data-callout=pf2-red] .callout-content strong {
+  color: rgb(255, 143, 143);
+}
+.callout[data-callout=pf2-red] .callout-content strong em {
+  color: #cdae61;
+}
+.callout[data-callout=pf2-red] .callout-content ol > li::marker,
+.callout[data-callout=pf2-red] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+.callout[data-callout=pf2-red] .callout-content ul {
+  margin-block-end: unset;
+  margin-block-start: unset;
+  padding: 0.5em;
+}
+.callout[data-callout=pf2-red] .callout-content table th {
+  color: rgb(232, 232, 232);
+}
+
+.callout[data-callout=pf2-sidebar] {
+  color: rgb(128, 0, 0);
+  clear: right;
+  float: right;
+  max-height: 85vh;
+  max-width: 50vw;
+  overflow-wrap: break-word;
+  overflow-y: scroll;
+}
+.callout[data-callout=pf2-sidebar] .callout-content a.internal-link {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-sidebar] .callout-content a.internal-link:hover {
+  color: #aa5555;
+}
+.callout[data-callout=pf2-sidebar] .callout-content a.internal-link.is-unresolved {
+  color: rgb(0, 73, 97);
+}
+.callout[data-callout=pf2-sidebar] .callout-content a.internal-link.is-unresolved:hover {
+  color: #0096c7;
+}
+.callout[data-callout=pf2-sidebar] .callout-content a.external-link {
+  color: rgb(107, 0, 153);
+}
+.callout[data-callout=pf2-sidebar] .callout-content a.external-link:hover {
+  color: #b200ff;
+}
+.callout[data-callout=pf2-sidebar] .callout-content em {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-sidebar] .callout-content h1 {
+  color: rgb(80, 67, 79);
+}
+.callout[data-callout=pf2-sidebar] .callout-content h2 {
+  color: rgb(44, 70, 78);
+}
+.callout[data-callout=pf2-sidebar] .callout-content h3 {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-sidebar] .callout-content h4 {
+  color: rgb(42, 72, 62);
+}
+.callout[data-callout=pf2-sidebar] .callout-content h5 {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-sidebar] .callout-content h6 {
+  color: rgb(36, 36, 36);
+}
+.callout[data-callout=pf2-sidebar] .callout-content strong {
+  color: rgb(51, 66, 82);
+}
+.callout[data-callout=pf2-sidebar] .callout-content strong em {
+  color: #333b43;
+}
+.callout[data-callout=pf2-sidebar] .callout-content ol > li::marker,
+.callout[data-callout=pf2-sidebar] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+
+.callout[data-callout=pf2-tip] {
+  color: rgb(36, 36, 36);
+}
+.callout[data-callout=pf2-tip] em {
+  color: #e1daba;
+}
+.callout[data-callout=pf2-tip] strong {
+  color: #8e959d;
+}
+.callout[data-callout=pf2-tip] strong em {
+  color: #333b43;
+}
+.callout[data-callout=pf2-tip] .callout-title {
+  background-color: rgb(6, 20, 53);
+}
+.callout[data-callout=pf2-tip] .callout-title .callout-title-inner {
+  color: rgb(217, 204, 140);
+  margin-left: 0.25rem;
+  text-align: left;
+}
+.callout[data-callout=pf2-tip] .callout-title .callout-title-inner a {
+  color: #aa5555;
+}
+.callout[data-callout=pf2-tip] .callout-content a.internal-link {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-tip] .callout-content a.internal-link:hover {
+  color: #aa5555;
+}
+.callout[data-callout=pf2-tip] .callout-content a.internal-link.is-unresolved {
+  color: rgb(0, 73, 97);
+}
+.callout[data-callout=pf2-tip] .callout-content a.internal-link.is-unresolved:hover {
+  color: #0096c7;
+}
+.callout[data-callout=pf2-tip] .callout-content a.external-link {
+  color: rgb(107, 0, 153);
+}
+.callout[data-callout=pf2-tip] .callout-content a.external-link:hover {
+  color: #b200ff;
+}
+.callout[data-callout=pf2-tip] .callout-content em {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-tip] .callout-content h1 {
+  color: rgb(80, 67, 79);
+}
+.callout[data-callout=pf2-tip] .callout-content h2 {
+  color: rgb(44, 70, 78);
+}
+.callout[data-callout=pf2-tip] .callout-content h3 {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=pf2-tip] .callout-content h4 {
+  color: rgb(42, 72, 62);
+}
+.callout[data-callout=pf2-tip] .callout-content h5 {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=pf2-tip] .callout-content h6 {
+  color: rgb(36, 36, 36);
+}
+.callout[data-callout=pf2-tip] .callout-content strong {
+  color: rgb(51, 66, 82);
+}
+.callout[data-callout=pf2-tip] .callout-content strong em {
+  color: #333b43;
+}
+.callout[data-callout=pf2-tip] .callout-content ol > li::marker,
+.callout[data-callout=pf2-tip] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+.callout[data-callout=pf2-tip] .callout-content p {
+  text-align: justify;
+}
+
+.callout[data-callout=success-degree] {
+  --callout-icon: lucide-scale;
+}
+.callout[data-callout=success-degree] .callout-title {
+  display: inherit;
+}
+.callout[data-callout=success-degree] .callout-title .callout-icon .svg-icon {
+  display: block;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+.callout[data-callout=success-degree] .callout-title .callout-title-inner {
+  display: none;
+}
+.callout[data-callout=success-degree] .callout-content a.internal-link {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=success-degree] .callout-content a.internal-link:hover {
+  color: #aa5555;
+}
+.callout[data-callout=success-degree] .callout-content a.internal-link.is-unresolved {
+  color: rgb(0, 73, 97);
+}
+.callout[data-callout=success-degree] .callout-content a.internal-link.is-unresolved:hover {
+  color: #0096c7;
+}
+.callout[data-callout=success-degree] .callout-content a.external-link {
+  color: rgb(107, 0, 153);
+}
+.callout[data-callout=success-degree] .callout-content a.external-link:hover {
+  color: #b200ff;
+}
+.callout[data-callout=success-degree] .callout-content em {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=success-degree] .callout-content h1 {
+  color: rgb(80, 67, 79);
+}
+.callout[data-callout=success-degree] .callout-content h2 {
+  color: rgb(44, 70, 78);
+}
+.callout[data-callout=success-degree] .callout-content h3 {
+  color: rgb(51, 51, 51);
+}
+.callout[data-callout=success-degree] .callout-content h4 {
+  color: rgb(42, 72, 62);
+}
+.callout[data-callout=success-degree] .callout-content h5 {
+  color: rgb(102, 51, 51);
+}
+.callout[data-callout=success-degree] .callout-content h6 {
+  color: rgb(36, 36, 36);
+}
+.callout[data-callout=success-degree] .callout-content strong {
+  color: rgb(51, 66, 82);
+}
+.callout[data-callout=success-degree] .callout-content strong em {
+  color: #333b43;
+}
+.callout[data-callout=success-degree] .callout-content ol > li::marker,
+.callout[data-callout=success-degree] .callout-content ul > li::marker {
+  color: rgb(204, 72, 0);
+}
+.callout[data-callout=success-degree] .callout-content strong {
+  font-weight: 800;
 }
 
 .admonition.admonition[data-callout=pf2-note] {
