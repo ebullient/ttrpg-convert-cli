@@ -162,6 +162,17 @@ public interface JsonSource {
         }
     }
 
+    default Iterable<JsonNode> iterableElements(JsonNode source) {
+        return () -> source.elements();
+    }
+
+    default Stream<JsonNode> streamOfElements(JsonNode source) {
+        if (source == null) {
+            return Stream.of();
+        }
+        return StreamSupport.stream(iterableElements(source).spliterator(), false);
+    }
+
     default int levelToPb(int level) {
         // 2 + (¼ * (Level – 1))
         return 2 + ((int) (.25 * (level - 1)));

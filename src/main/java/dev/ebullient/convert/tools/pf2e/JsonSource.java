@@ -43,12 +43,15 @@ public interface JsonSource extends JsonTextReplacement {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
+    default Iterable<JsonNode> iterableElements(JsonNode source) {
+        return () -> source.elements();
+    }
+
     default Stream<JsonNode> streamOfElements(JsonNode source) {
         if (source == null) {
             return Stream.of();
         }
-        Iterable<JsonNode> it = () -> source.elements();
-        return StreamSupport.stream(it.spliterator(), false);
+        return StreamSupport.stream(iterableElements(source).spliterator(), false);
     }
 
     /**
