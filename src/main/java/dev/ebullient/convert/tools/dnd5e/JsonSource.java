@@ -173,6 +173,16 @@ public interface JsonSource {
         return StreamSupport.stream(iterableElements(source).spliterator(), false);
     }
 
+    default List<String> toListOfStrings(JsonNode source) {
+        if (source == null) {
+            return List.of();
+        } else if (source.isTextual()) {
+            return List.of(source.asText());
+        }
+        List<String> list = tui().readJsonValue(source, Tui.LIST_STRING);
+        return list == null ? List.of() : list;
+    }
+
     default int levelToPb(int level) {
         // 2 + (¼ * (Level – 1))
         return 2 + ((int) (.25 * (level - 1)));

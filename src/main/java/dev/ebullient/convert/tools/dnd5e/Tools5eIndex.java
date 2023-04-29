@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.dnd5e;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +41,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private final Map<String, JsonNode> rules = new HashMap<>();
 
     private final Map<String, JsonNode> nodeIndex = new HashMap<>();
+    private final Map<String, List<JsonNode>> optFeatureIndex = new HashMap<>();
     private final Map<String, String> aliases = new HashMap<>();
     private final Map<String, String> classRoot = new HashMap<>();
     private Map<String, JsonNode> variantIndex = null;
@@ -48,7 +50,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private final Set<String> srdKeys = new HashSet<>();
     private final Set<String> familiarKeys = new HashSet<>();
 
-    private final Map<JsonNode, Tools5eSources> nodeToSources = new HashMap<>();
+    private final Map<String, Tools5eSources> nodeToSources = new HashMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
 
@@ -156,6 +158,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 classRoot.put(lookupKey, key);
             }
         }
+        if (type == Tools5eIndexType.optionalfeature) {
+            for (String ft : toListOfStrings(node.get("featureType"))) {
+                optFeatureIndex.computeIfAbsent(ft, k -> new ArrayList<>()).add(node);
+            }
+        }
 
         if (node.has("srd")) {
             srdKeys.add(key);
@@ -229,6 +236,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 if (old != null) {
                     tui().errorf("Duplicate key: %s", v.key);
                 }
+                // store the unique key in the node
+                ((ObjectNode) v.node).put("indexKey", v.key);
             });
         });
 
@@ -398,9 +407,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (x == null) {
             throw new IllegalStateException("Unable to look up a null element: " + indexKey);
         }
-
-        return nodeToSources.computeIfAbsent(x, y -> {
-            String key = indexKey == null ? getKey(type, x) : indexKey;
+        if (indexKey == null) {
+            if (x.has("indexKey")) {
+                indexKey = x.get("indexKey").asText();
+            } else {
+                indexKey = getKey(type, x);
+            }
+        }
+        return nodeToSources.computeIfAbsent(indexKey, key -> {
             Tools5eSources s = new Tools5eSources(type, key, x);
             s.checkKnown();
             return s;
@@ -665,6 +679,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
         // TODO: Handle copies or other fill-in / fluff?
         return featureNode;
+    }
+
+    public Collection<? extends JsonNode> findOptionalFeatures(String ft) {
+        return optFeatureIndex.get(ft);
     }
 
     @Override

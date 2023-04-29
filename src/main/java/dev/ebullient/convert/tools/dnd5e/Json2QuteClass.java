@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 public class Json2QuteClass extends Json2QuteCommon {
 
     final Map<String, List<String>> startingText = new HashMap<>();
+    final Map<String, List<String>> optionalFeatureTypes = new HashMap<>();
     final Set<String> featureNames = new HashSet<>();
     final List<ClassFeature> classFeatures = new ArrayList<>();
     final List<Subclass> subclasses = new ArrayList<>();
@@ -44,6 +46,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         subclassTitle = getTextOrEmpty(node, "subclassTitle");
         findSubclasses();
         findClassFeatures();
+        findOptionalFeatures();
     }
 
     @Override
@@ -59,6 +62,25 @@ public class Json2QuteClass extends Json2QuteCommon {
             text.add("");
             text.addAll(cf.text);
         });
+
+        for (Entry<String, List<String>> entry : optionalFeatureTypes.entrySet()) {
+            maybeAddBlankLine(text);
+            text.add("## " + entry.getKey());
+            text.add("");
+            Set<JsonNode> optFeatures = new HashSet<>();
+            for (String ft : entry.getValue()) {
+                optFeatures.addAll(index.findOptionalFeatures(ft));
+            }
+            optFeatures.stream()
+                    .map(jn -> new OptionalFeature(jn, index, "####", classSource))
+                    .sorted(Comparator.comparing(x -> x.name))
+                    .forEach(cf -> {
+                        maybeAddBlankLine(text);
+                        text.add("### " + cf.name);
+                        text.add("");
+                        text.addAll(cf.text);
+                    });
+        }
 
         List<String> progression = new ArrayList<>();
         buildFeatureProgression(progression);
@@ -380,6 +402,16 @@ public class Json2QuteClass extends Json2QuteCommon {
             return null; // skipped or not found
         }
         return new ClassFeature(finalKey, featureJson, Tools5eIndexType.subclassfeature, "##", source);
+    }
+
+    void findOptionalFeatures() {
+        JsonNode optionalFeatureProgession = node.get("optionalfeatureProgression");
+        if (optionalFeatureProgession == null) {
+            return;
+        }
+        for (JsonNode ofp : iterableElements(optionalFeatureProgession)) {
+            optionalFeatureTypes.put(ofp.get("name").asText(), toListOfStrings(ofp.get("featureType")));
+        }
     }
 
     void findStartingEquipment() {
@@ -712,6 +744,29 @@ public class Json2QuteClass extends Json2QuteCommon {
                     }
                 }
             }
+        }
+    }
+
+    class OptionalFeature {
+        final String name;
+        final List<String> text;
+
+        public OptionalFeature(JsonNode source, Tools5eIndex index, String heading, String parentSource) {
+            String name = getTextOrEmpty(source, "name");
+            List<String> text = new ArrayList<>();
+
+            Tools5eSources featureSources = index.constructSources(Tools5eIndexType.optionalfeature, source);
+            name = decoratedFeatureTypeName(featureSources, source);
+
+            appendEntryToText(text, source, heading);
+
+            if (!parentSource.equals(featureSources.primarySource())) {
+                maybeAddBlankLine(text);
+                text.add("_Source: " + featureSources.getSourceText(index.srdOnly()) + "_");
+            }
+
+            this.name = name;
+            this.text = text;
         }
     }
 
