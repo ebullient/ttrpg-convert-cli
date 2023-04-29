@@ -1,6 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-public enum Tools5eIndexType implements dev.ebullient.convert.tools.IndexType {
+import dev.ebullient.convert.tools.IndexType;
+
+public enum Tools5eIndexType implements IndexType {
     background,
     backgroundfluff,
     classtype("class"),

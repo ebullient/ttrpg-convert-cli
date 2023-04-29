@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,10 +20,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-public interface JsonSource {
+public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
+
     Pattern linkifyPattern = Pattern.compile("\\{@(background|class|deity|feat|card|deck|item|race|spell|creature) ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
 
@@ -55,14 +56,6 @@ public interface JsonSource {
 
     default Tui tui() {
         return cfg().tui();
-    }
-
-    default String slugify(String s) {
-        return Tui.slugify(s);
-    }
-
-    default Stream<JsonNode> streamOf(ArrayNode array) {
-        return StreamSupport.stream(array.spliterator(), false);
     }
 
     default boolean textContains(List<String> haystack, String needle) {
@@ -160,27 +153,6 @@ public interface JsonSource {
             tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
             throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
         }
-    }
-
-    default Iterable<JsonNode> iterableElements(JsonNode source) {
-        return () -> source.elements();
-    }
-
-    default Stream<JsonNode> streamOfElements(JsonNode source) {
-        if (source == null) {
-            return Stream.of();
-        }
-        return StreamSupport.stream(iterableElements(source).spliterator(), false);
-    }
-
-    default List<String> toListOfStrings(JsonNode source) {
-        if (source == null) {
-            return List.of();
-        } else if (source.isTextual()) {
-            return List.of(source.asText());
-        }
-        List<String> list = tui().readJsonValue(source, Tui.LIST_STRING);
-        return list == null ? List.of() : list;
     }
 
     default int levelToPb(int level) {
@@ -388,12 +360,6 @@ public interface JsonSource {
                 return "3rd";
             default:
                 return level + "th";
-        }
-    }
-
-    default void maybeAddBlankLine(List<String> text) {
-        if (text.size() > 0 && !text.get(text.size() - 1).isBlank()) {
-            text.add("");
         }
     }
 
@@ -982,6 +948,11 @@ public interface JsonSource {
                 text, index().rulesVaultRoot(), rules,
                 text.replace(" ", "%20")
                         .replace(".", ""));
+    }
+
+    default String linkify(Tools5eIndexType type, String s) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'linkify'");
     }
 
     default String linkify(MatchResult match) {

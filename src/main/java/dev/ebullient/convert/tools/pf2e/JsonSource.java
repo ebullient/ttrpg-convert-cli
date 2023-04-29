@@ -43,30 +43,6 @@ public interface JsonSource extends JsonTextReplacement {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    default Iterable<JsonNode> iterableElements(JsonNode source) {
-        return () -> source.elements();
-    }
-
-    default Stream<JsonNode> streamOfElements(JsonNode source) {
-        if (source == null) {
-            return Stream.of();
-        }
-        return StreamSupport.stream(iterableElements(source).spliterator(), false);
-    }
-
-    /**
-     * Maybe add a blank line to the list containing parsed text.
-     * Imperfect, but only add a blank line if the previous line is
-     * not already blank.
-     *
-     * @param text Text to analyze and maybe add a blank line to
-     */
-    default void maybeAddBlankLine(List<String> text) {
-        if (text.size() > 0 && !text.get(text.size() - 1).isBlank()) {
-            text.add("");
-        }
-    }
-
     /**
      * Find and format footnotes referenced in the provided content
      *
