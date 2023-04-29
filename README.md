@@ -408,10 +408,9 @@ Note that the line above ends with two spaces, which serves as a line break when
 You can also use two separate blocks, such that the first image is used at the top of the document, and any others are included later: 
 
 ```
-{#if resource.fluffImages && resource.fluffImages.0 }
-![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
-{/if}
-
+{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
+![{first.title}]({first.vaultPath}#right)  
+{/let}{/if}
 ...
 
 {#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
