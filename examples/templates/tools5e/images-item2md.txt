@@ -11,9 +11,9 @@ aliases: ["{resource.name}"]
 ---
 # {resource.name}
 {#if resource.detail }*{resource.detail}*  
-{/if}{#if resource.fluffImages && resource.fluffImages.0 }
-![{resource.fluffImages.0.title}]({resource.fluffImages.0.vaultPath}#right)  
-{/if}
+{/if}{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
+![{first.title}]({first.vaultPath}#right)  
+{/let}{/if}
 
 {#if resource.armorClass }
 - **Armor Class**: {resource.armorClass}
