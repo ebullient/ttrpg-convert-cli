@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -30,55 +29,12 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
 
     Pf2eSources getSources();
 
-    default String slugify(String s) {
-        return Tui.slugify(s);
-    }
-
     default Tui tui() {
         return cfg().tui();
     }
 
     default CompendiumConfig cfg() {
         return index().cfg();
-    }
-
-    default String join(String joiner, Collection<String> list) {
-        if (list == null || list.isEmpty()) {
-            return "";
-        }
-        return String.join(joiner, list).trim();
-    }
-
-    default String joinConjunct(String lastJoiner, List<String> list) {
-        return joinConjunct(list, ", ", lastJoiner, false);
-    }
-
-    default String joinConjunct(List<String> list, String joiner, String lastJoiner, boolean nonOxford) {
-        if (list == null || list.isEmpty()) {
-            return "";
-        }
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        if (list.size() == 2) {
-            return String.join(lastJoiner, list);
-        }
-
-        int pause = list.size() - 2;
-        StringBuilder out = new StringBuilder();
-        for (int i = 0; i < list.size(); ++i) {
-            out.append(list.get(i));
-
-            if (i < pause) {
-                out.append(joiner);
-            } else if (i == pause) {
-                if (!nonOxford) {
-                    out.append(joiner.trim());
-                }
-                out.append(lastJoiner);
-            }
-        }
-        return out.toString();
     }
 
     default String toTitleCase(String text) {
@@ -93,16 +49,6 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                                 .substring(1)
                                 .toLowerCase())
                 .collect(Collectors.joining(" "));
-    }
-
-    default List<String> toListOfStrings(JsonNode source) {
-        if (source == null) {
-            return List.of();
-        } else if (source.isTextual()) {
-            return List.of(source.asText());
-        }
-        List<String> list = tui().readJsonValue(source, Tui.LIST_STRING);
-        return list == null ? List.of() : list;
     }
 
     default String replaceText(JsonNode input) {

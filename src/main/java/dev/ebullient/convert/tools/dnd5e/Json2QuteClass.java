@@ -410,7 +410,8 @@ public class Json2QuteClass extends Json2QuteCommon {
             return;
         }
         for (JsonNode ofp : iterableElements(optionalFeatureProgession)) {
-            optionalFeatureTypes.put(ofp.get("name").asText(), toListOfStrings(ofp.get("featureType")));
+            optionalFeatureTypes.put(ofp.get("name").asText(),
+                    toListOfStrings(ofp.get("featureType")));
         }
     }
 
