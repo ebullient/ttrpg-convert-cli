@@ -39,7 +39,7 @@ public class TestUtils {
     public final static Path TEST_SOURCES_BOOK_ADV_JSON_5E = PROJECT_PATH
             .resolve("src/test/resources/sources-book-adventure.json");
 
-    public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/PF2eTools/data");
+    public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
 
     final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");
 
