@@ -67,20 +67,21 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         }
 
         try {
-            String result = input.replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
+            String result = input
+                    .replace("#$prompt_number:title=Enter Alert Level$#", "Alert Level")
+                    .replace("#$prompt_number:title=Enter Charisma Modifier$#", "Charisma modifier")
+                    .replace("#$prompt_number:title=Enter Lifestyle Modifier$#", "Charisma modifier")
+                    .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
+                    .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
+                    .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
 
             result = dicePattern.matcher(result)
                     .replaceAll((match) -> {
-                        int pipe = match.group(2).indexOf("|");
-                        if (pipe < 0) {
-                            return cfg().alwaysUseDiceRoller()
-                                    ? "`dice: " + match.group(2) + '`'
-                                    : '`' + match.group(2) + '`';
+                        String[] parts = match.group(2).split("\\|");
+                        if (parts.length > 1) {
+                            return parts[1];
                         }
-                        String dice = match.group(2).substring(0, pipe);
-                        return cfg().alwaysUseDiceRoller()
-                                ? "`dice: " + dice + '`'
-                                : '`' + dice + '`';
+                        return formatDice(parts[0]);
                     });
 
             result = chancePattern.matcher(result)
@@ -238,7 +239,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         }
         switch (targetType) {
             case skill:
-                //	"Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception}",
+                // "Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception}",
                 // {@skill Lore||Farming Lore}
                 String[] parts = match.split("\\|");
                 String linkText = parts.length > 1 ? parts[2] : parts[0];

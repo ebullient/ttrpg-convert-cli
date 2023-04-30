@@ -28,6 +28,7 @@ public class QuteMonster extends QuteSource {
     public final String hpText;
     public final String hitDice;
     public final String speed;
+    private final boolean useDiceRoller;
 
     protected final AbilityScores scores;
     protected final SavesAndSkills savesSkills;
@@ -59,13 +60,13 @@ public class QuteMonster extends QuteSource {
 
     public QuteMonster(Tools5eSources sources, String name, String source, boolean isNpc, String size, String type,
             String subtype, String alignment,
-            Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed, AbilityScores scores,
-            SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
+            Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed,
+            AbilityScores scores, SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
             String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
             Map<String, Trait> legendaryGroup,
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
-            ImageRef tokenImage, List<ImageRef> fluffImages, List<String> tags) {
+            ImageRef tokenImage, List<ImageRef> fluffImages, List<String> tags, boolean useDiceRoller) {
 
         super(sources, name, source, null, tags);
 
@@ -104,6 +105,8 @@ public class QuteMonster extends QuteSource {
         this.tokenImage = tokenImage;
         this.fluffImages = fluffImages;
 
+        this.useDiceRoller = useDiceRoller;
+
         if (tokenImage != null || !fluffImages.isEmpty()) {
             allImages = new ArrayList<>();
             if (tokenImage != null) {
@@ -137,6 +140,13 @@ public class QuteMonster extends QuteSource {
         return QuteSource.monsterPath(isNpc, type);
     }
 
+    public String getHp() {
+        if (useDiceRoller && hitDice != null) {
+            return "`dice: " + hitDice + "|text(" + hp + ")`";
+        }
+        return "" + hp;
+    }
+
     public ImageRef getToken() {
         return tokenImage;
     }
@@ -164,11 +174,19 @@ public class QuteMonster extends QuteSource {
         return savesSkills.saves;
     }
 
+    public Map<String, Integer> getSaveMap() {
+        return savesSkills.saveMap;
+    }
+
     public String getSkills() {
         if (savesSkills == null) {
             return null;
         }
         return savesSkills.skills;
+    }
+
+    public Map<String, Integer> getSkillMap() {
+        return savesSkills.skillMap;
     }
 
     public String get5eInitiativeYaml() {

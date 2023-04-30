@@ -11,6 +11,7 @@ public enum SkillOrAbility {
     INT("Intelligence", false),
     WIS("Wisdom", false),
     CHA("Charisma", false),
+
     Acrobatics("Acrobatics", true),
     AnimalHandling("Animal Handling", true),
     Arcana("Arcana", true),

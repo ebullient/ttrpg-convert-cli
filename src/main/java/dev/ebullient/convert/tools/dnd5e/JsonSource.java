@@ -533,12 +533,17 @@ public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
 
     default boolean prependField(JsonNode entry, String fieldName, List<String> inner) {
         if (entry.has(fieldName)) {
-            String n = entry.get(fieldName).asText();
+            String n = replaceText(entry.get(fieldName).asText().trim());
             if (inner.isEmpty()) {
                 inner.add(n);
+            } else if (inner.get(0).startsWith("|")) {
+                // we have a table..
+                n = "**" + n + "** ";
+                inner.add(0, "");
+                inner.add(0, n);
+                return true;
             } else {
-                n = replaceText(n.trim().replace(":", ""));
-                n = "**" + n + ".** ";
+                n = "**" + n.replace(":", "") + ".** ";
                 inner.set(0, n + inner.get(0));
                 return true;
             }
@@ -827,6 +832,10 @@ public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
     }
 
     default String replaceText(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+
         String result = input;
 
         // "{@atk mw} {@hit 1} to hit, reach 5 ft., one target. {@h}1 ({@damage 1d4 ‒1})
@@ -842,18 +851,37 @@ public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
                     .replace("#$prompt_number:title=Enter Charisma Modifier$#", "Charisma modifier")
                     .replace("#$prompt_number:title=Enter Lifestyle Modifier$#", "Charisma modifier")
                     .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
-                    .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)");
+                    .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
+                    .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
+
+            if (cfg().alwaysUseDiceRoller()) {
+                result = result
+                        .replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                                "Hit: `dice: $2|avg` (`$2`)")
+                        .replaceAll("plus ([\\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                                "plus `dice: $2|avg` (`$2`)")
+                        .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                                "$1 `dice: $2|avg` (`$2`)")
+                        .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + DICE_FORMULA + ")}\\)",
+                                "$1 `dice: $2|avg` (`$2`)")
+                        .replaceAll("\\{@hit (\\d+)} to hit", "`dice: d20+$1` (+$1 to hit)")
+                        .replaceAll("\\{@hit (-\\d+)} to hit", "`dice: d20-$1` (-$1 to hit)")
+                        .replaceAll("\\{@hit (\\d+)}", "`dice: d20+$1` (+$1)")
+                        .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
+                        .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
+                        .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)");
+            }
 
             // Dice roller tags; {@dice 1d2-2+2d3+5} for regular dice rolls
-            //  - {@dice 1d6;2d6} for multiple options;
-            //  - {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
-            // {@dice 1d20+2|display text} and {@dice 1d20+2|display text|rolled by name}
+            // - {@dice 1d6;2d6} for multiple options;
+            // - {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
+            // - {@dice 1d20+2|display text} and {@dice 1d20+2|display text|rolled by name}
             result = dicePattern.matcher(result).replaceAll((match) -> {
                 String[] parts = match.group(2).split("\\|");
                 if (parts.length > 1) {
                     return parts[1];
                 }
-                return parts[0];
+                return formatDice(parts[0]);
             });
 
             result = chancePattern.matcher(result)
@@ -935,7 +963,6 @@ public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
                     .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
                     .replaceAll("\\{@i ([^}]+?)}", "_$1_")
                     .replaceAll("\\{@italic ([^}]+)}", "_$1_");
-
         } catch (Exception e) {
             tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
         }
@@ -951,11 +978,11 @@ public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
     }
 
     default String linkify(Tools5eIndexType type, String s) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'linkify'");
     }
 
     default String linkify(MatchResult match) {
+        String matchText = match.group(2);
         switch (match.group(1)) {
             case "background":
                 // "Backgrounds:
@@ -963,36 +990,36 @@ public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
                 // {@background Anthropologist|toa} can have sources added with a pipe,
                 // {@background Anthropologist|ToA|and optional link text added with another
                 // pipe}.",
-                return linkifyType(Tools5eIndexType.background, match.group(2), QuteSource.BACKGROUND_PATH);
+                return linkifyType(Tools5eIndexType.background, matchText, QuteSource.BACKGROUND_PATH);
             case "creature":
                 // "Creatures:
                 // {@creature goblin} assumes MM by default,
                 // {@creature cow|vgm} can have sources added with a pipe,
                 // {@creature cow|vgm|and optional link text added with another pipe}.",
-                return linkifyCreature(match.group(2));
+                return linkifyCreature(matchText);
             case "class":
-                return linkifyClass(match.group(2));
+                return linkifyClass(matchText);
             case "deity":
-                return linkifyDeity(match.group(2));
+                return linkifyDeity(matchText);
             case "feat":
                 // "Feats:
                 // {@feat Alert} assumes PHB by default,
                 // {@feat Elven Accuracy|xge} can have sources added with a pipe,
                 // {@feat Elven Accuracy|xge|and optional link text added with another pipe}.",
-                return linkifyType(Tools5eIndexType.feat, match.group(2), QuteSource.FEATS_PATH);
+                return linkifyType(Tools5eIndexType.feat, matchText, QuteSource.FEATS_PATH);
             case "card":
                 // {@card The Fates|Deck of Many Things}
                 // {@card Donjon|Deck of Several Things|LLK}
-                return linkifyCardType(match.group(2), QuteSource.ITEMS_PATH, "dmg");
+                return linkifyCardType(matchText, QuteSource.ITEMS_PATH, "dmg");
             case "deck":
                 // {@deck Tarokka Deck|CoS|tarokka deck}
-                return linkifyType(Tools5eIndexType.item, match.group(2), QuteSource.ITEMS_PATH, "dmg");
+                return linkifyType(Tools5eIndexType.item, matchText, QuteSource.ITEMS_PATH, "dmg");
             case "item":
                 // "Items:
                 // {@item alchemy jug} assumes DMG by default,
                 // {@item longsword|phb} can have sources added with a pipe,
                 // {@item longsword|phb|and optional link text added with another pipe}.",
-                return linkifyType(Tools5eIndexType.item, match.group(2), QuteSource.ITEMS_PATH, "dmg");
+                return linkifyType(Tools5eIndexType.item, matchText, QuteSource.ITEMS_PATH, "dmg");
             case "race":
                 // "Races:
                 // {@race Human} assumes PHB by default,
@@ -1001,13 +1028,13 @@ public interface JsonSource extends NodeReader.Converter<Tools5eIndexType> {
                 // {@race Aarakocra|eepc} can have sources added with a pipe,
                 // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
                 // {@race dwarf (hill)||Dwarf, hill}
-                return linkifyType(Tools5eIndexType.race, match.group(2), QuteSource.RACES_PATH);
+                return linkifyType(Tools5eIndexType.race, matchText, QuteSource.RACES_PATH);
             case "spell":
                 // "Spells:
                 // {@spell acid splash} assumes PHB by default,
                 // {@spell tiny servant|xge} can have sources added with a pipe,
                 // {@spell tiny servant|xge|and optional link text added with another pipe}.",
-                return linkifyType(Tools5eIndexType.spell, match.group(2), QuteSource.SPELLS_PATH);
+                return linkifyType(Tools5eIndexType.spell, matchText, QuteSource.SPELLS_PATH);
         }
         throw new IllegalArgumentException("Unknown group to linkify: " + match.group(1));
     }

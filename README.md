@@ -211,7 +211,9 @@ To run commands listed below, either:
 
 ### Additional parameters
 
-I use a json file to provide detailed configuration for sources, as doing so with command line arguments becomes tedious and error-prone. I use something like this:
+Configuration can also be provided as a JSON or YAML file instead of using command line parameters. See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general config file structure.
+
+I use something like this:
 
 ```json
 {
@@ -372,8 +374,16 @@ This application uses the [Qute Templating Engine](https://quarkus.io/guides/qut
 
 ```
 ttrpg-convert 5etools \
-  --background templates/tools5e/images-background2md.txt \
+  --background examples/templates/tools5e/images-background2md.txt \
   --index -o dm dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
+```
+
+Additional templates can also be specified in your configuration file: 
+
+```json
+  "template": {
+    "background": "examples/templates/tools5e/images-background2md.txt",
+  }
 ```
 
 > 🔹 Not everything is customizable. In some cases, formatting headings, indenting and organizing text accurately is easier to do inline as a big blob. The example templates show what is available to tweak.
@@ -391,6 +401,13 @@ Of particular note are the varied monster templates:
 - Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-yamlStatblock-header.txt)
 
 ## Changes that impact generated templates and files
+
+## 1.1.1: Dice roller in statblocks and text
+
+Set `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice }`, and `{@damage }` strings.
+This can be set differently for either "5e" or "pf2e" configurations.
+
+See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general structure of config.
 
 ## 1.1.0: Images for backgrounds, items, monsters, races, and spells
 

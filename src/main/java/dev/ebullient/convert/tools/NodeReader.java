@@ -13,13 +13,27 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
 
 public interface NodeReader {
 
     interface Converter<T extends IndexType> {
+        String DICE_FORMULA = "[ +d\\d-‒]+";
 
         void appendEntryToText(List<String> inner, JsonNode target, String join);
+
+        CompendiumConfig cfg();
+
+        default String formatDice(String diceRoll) {
+            int pos = diceRoll.indexOf(";");
+            if (pos >= 0) {
+                diceRoll = diceRoll.substring(0, pos);
+            }
+            return cfg().alwaysUseDiceRoller() && diceRoll.matches(DICE_FORMULA)
+                    ? "`dice: " + diceRoll + "|avg` (`" + diceRoll + "`)"
+                    : '`' + diceRoll + '`';
+        }
 
         default Iterable<JsonNode> iterableElements(JsonNode source) {
             return () -> source.elements();
