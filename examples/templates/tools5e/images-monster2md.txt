@@ -13,9 +13,9 @@ aliases: ["{resource.name}"]
 *Source: {resource.source}*  
 
 {#if resource.description }
-{#if resource.fluffImages && resource.fluffImages.0 }
-![{resource.fluffImages.0.title}]({resource.fluffImages.0.vaultPath}#right)  
-{/if}
+{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
+![{first.title}]({first.vaultPath}#right)  
+{/let}{/if}
 {resource.description}
 
 {#each resource.fluffImages}{#if it_index != 0 }

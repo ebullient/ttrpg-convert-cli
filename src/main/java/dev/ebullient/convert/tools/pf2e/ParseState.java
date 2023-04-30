@@ -5,7 +5,16 @@ import java.util.Deque;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.NodeReader;
+
 public class ParseState {
+
+    enum ParseStateField implements NodeReader {
+        footnotes,
+        page,
+        source
+    }
+
     public static class ParseStateInfo {
         final boolean inFootnotes;
         final String listIndent;
@@ -87,8 +96,8 @@ public class ParseState {
     }
 
     public boolean push(JsonNode node) {
-        String src = JsonSource.Field.source.getTextOrNull(node);
-        int page = JsonSource.Field.page.intOrDefault(node, 0);
+        String src = ParseStateField.source.getTextOrNull(node);
+        int page = ParseStateField.page.intOrDefault(node, 0);
         return push(src, page);
     }
 

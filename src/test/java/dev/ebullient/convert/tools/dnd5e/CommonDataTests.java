@@ -59,6 +59,8 @@ public class CommonDataTests {
 
     public void cleanup() {
         tui.close();
+        configurator.setAlwaysUseDiceRoller(false);
+        templates.setCustomTemplates(TtrpgConfig.getConfig());
     }
 
     public void testKeyIndex(Path outputPath) throws Exception {
@@ -206,6 +208,7 @@ public class CommonDataTests {
 
     public void testMonsterList(Path outputPath) {
         tui.setOutputPath(outputPath);
+        configurator.setAlwaysUseDiceRoller(true);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path bestiaryDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.MONSTERS_BASE_PATH);

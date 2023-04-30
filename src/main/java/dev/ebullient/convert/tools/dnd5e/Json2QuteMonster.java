@@ -114,7 +114,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 new ArrayList<>(sources.getBookSources()),
                 getToken(),
                 fluffImages,
-                tags);
+                tags,
+                cfg().alwaysUseDiceRoller());
     }
 
     void findType() {

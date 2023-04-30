@@ -5,7 +5,7 @@ The tool formally known as Json 5e convert CLI.
 
 CLI to convert 5eTools (🚧 and Pf2eTools) JSON into crosslinked, tagged, and formatted (with templates) markdown for use with [Obsidian.md](https://obsidian.md).
 
-The instructions below still reference the released `5e-convert` CLI. New stuff is on the way!
+The instructions below still reference the released `ttrpg-convert` CLI. New stuff is on the way!
 
 <table><tr>
 <td>Jump</td>
@@ -25,7 +25,7 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 
 ## Install the command line utility
 
-There are several options for running 5e-convert. Choose whichever you are the most comfortable with: 
+There are several options for running `ttrpg-convert`. Choose whichever you are the most comfortable with: 
 
 - [Use pre-built platform binary](#use-pre-built-platform-binary)
 - [Use Java Jar](#use-java-jar)
@@ -33,10 +33,10 @@ There are several options for running 5e-convert. Choose whichever you are the m
 
 ### Use pre-built platform binary
 
-[Download the latest release](https://github.com/ebullient/ttrpg-convert-cli/releases/latest) of the zip or tgz for your platform. Extract the archive. A `5e-convert` binary executable will be in the extracted bin directory. 
+[Download the latest release](https://github.com/ebullient/ttrpg-convert-cli/releases/latest) of the zip or tgz for your platform. Extract the archive. A `ttrpg-convert` binary executable will be in the extracted bin directory. 
 
 ```shell
-5e-convert --help
+ttrpg-convert --help
 ```
 
 Use this binary in the instructions below. Continue to notes about [Conventions](#conventions).
@@ -46,7 +46,7 @@ Notes:
 - [Open a command prompt in a folder (Windows) ](https://www.lifewire.com/open-command-prompt-in-a-folder-5185505)
 - [Running executables from the command line (Windows)](https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window)
 - To show emoji in Windows Commmand Prompt: `chcp 65001` and choose a font with emoji support (Consolas is one). You can also try the new Windows Terminal (`wt.exe`).
-- MacOS permission checking (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/5e-convert`
+- MacOS permission checking (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
 ### Use Java Jar
 
@@ -55,23 +55,23 @@ Notes:
 2. Install the pre-built release: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/1.1.1/ttrpg-convert-cli-1.1.1-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/1.1.1/ttrpg-convert-cli-1.1.1-runner.jar
     ```
 
     If you want the latest _unreleased snapshot_ (may not match this doc!): 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh https://jitpack.io/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/ttrpg-convert-cli-199-SNAPSHOT-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://jitpack.io/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/ttrpg-convert-cli-199-SNAPSHOT-runner.jar
     ```
 
     There may be a pause if you download the snapshot; it is rebuilt on demand.
 
-    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
+    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands shown below accordingly.
 
 3. Verify the install by running the command: 
 
     ```shell
-    5e-convert --help
+    ttrpg-convert --help
     ```
 
 Continue to notes about [Conventions](#conventions).
@@ -84,14 +84,14 @@ Continue to notes about [Conventions](#conventions).
 
 To run commands listed below, either: 
 
-- Replace `5e-convert` with `java -jar target/ttrpg-convert-cli-199-SNAPSHOT-runner.jar`, or
+- Replace `ttrpg-convert` with `java -jar target/ttrpg-convert-cli-199-SNAPSHOT-runner.jar`, or
 - Use JBang to create an alias that points to the built jar: 
 
     ```shell
-    jbang app install --name 5e-convert --force --fresh ~/.m2/repository/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/ttrpg-convert-cli-199-SNAPSHOT-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh ~/.m2/repository/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/ttrpg-convert-cli-199-SNAPSHOT-runner.jar
     ```
 
-    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name 5e-convert`, and adjust the commands shown below accordingly.
+    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands shown below accordingly.
 
 ## Conventions
 
@@ -105,9 +105,14 @@ To run commands listed below, either:
 
   The following directories may be created in the `compendium` directory depending on what sources you have enabled: `backgrounds`, `bestiary` (with contents organized by monster type), `classes` (separate documents for classes and subclasses), `deities`, `feats`, `items`, `names`, `races`, and `spells`.
 
-- **Styles.** Every document has a `cssclass` attribute that you can use to further tweak how page elements render: `json5e-background`, `json5e-deity`, `json5e-monster`, `json5e-class`, `json5e-feat`, `json5e-item`, `json5e-names`, `json5e-race`, and `json5e-spell`.
+- **Styles.** Every document has a `cssclass` attribute that you can use to further tweak how page elements render. `css-snippets` has some snippets you can use to customize elements of the compendium. 
+  - 5e tools: `json5e-background`, `json5e-class`, `json5e-deity`, `json5e-feat`, `json5e-item`, `json5e-monster`, `json5e-names`, `json5e-note`, `json5e-race`, and `json5e-spell`.
+  - pf2e tools: `pf2e`, `pf2e-ability`, `pf2e-action`, `pf2e-affliction`, `pf2e-archetype`, `pf2e-background`, `pf2e-book`, `pf2e-delity`, `pf2e-feat`, `pf2e-hazard`, `pf2e-index`, `pf2e-item`, `pf2e-note`, `pf2e-ritual`, `pf2e-sleep`, `pf2e-trait`, 
 
-  `css-snippets` has some snippets you can use to customize elements of the compendium.
+- **Admonitions.** 
+  - `ad-statblock`
+  - pf2e tools: `ad-embed-ability`, `ad-embed-action`, `ad-embed-affliction`, `ad-embed-avatar`, `ad-embed-disease`, `ad-embed-feat`, `ad-embed-item`, `ad-pf2-note`, `ad-pf2-ritual`.
+
 
 ## Recommended plugins 
 
@@ -135,7 +140,7 @@ To run commands listed below, either:
 2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content:
 
     ```shell
-    5e-convert \
+    ttrpg-convert \
       --index \
       -o dm \
       5etools-mirror-1.github.io/data
@@ -151,7 +156,7 @@ To run commands listed below, either:
 3. Invoke the command again, this time including sources and custom items:
 
     ```shell
-    5e-convert \
+    ttrpg-convert \
         --index \
         -o dm \
         -s PHB,DMG,SCAG \
@@ -188,7 +193,7 @@ To run commands listed below, either:
 2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content (using the alias set up when [installing the cli](#install-the-command-line-utility)):
 
     ```shell
-    5e-convert \
+    ttrpg-convert \
       -g pf2e \
       --index \
       -o dm \
@@ -206,7 +211,9 @@ To run commands listed below, either:
 
 ### Additional parameters
 
-I use a json file to provide detailed configuration for sources, as doing so with command line arguments becomes tedious and error-prone. I use something like this:
+Configuration can also be provided as a JSON or YAML file instead of using command line parameters. See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general config file structure.
+
+I use something like this:
 
 ```json
 {
@@ -366,9 +373,17 @@ The JSON looks like this:
 This application uses the [Qute Templating Engine](https://quarkus.io/guides/qute). You can make simple customizations to markdown output by copying a template from `src/main/resources/templates`, making the desired modifications, and then specifying that template on the command line.
 
 ```
-5e-convert 5etools \
-  --background templates/tools5e/images-background2md.txt \
+ttrpg-convert 5etools \
+  --background examples/templates/tools5e/images-background2md.txt \
   --index -o dm dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
+```
+
+Additional templates can also be specified in your configuration file: 
+
+```json
+  "template": {
+    "background": "examples/templates/tools5e/images-background2md.txt",
+  }
 ```
 
 > 🔹 Not everything is customizable. In some cases, formatting headings, indenting and organizing text accurately is easier to do inline as a big blob. The example templates show what is available to tweak.
@@ -387,6 +402,13 @@ Of particular note are the varied monster templates:
 
 ## Changes that impact generated templates and files
 
+## 1.1.1: Dice roller in statblocks and text
+
+Set `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice }`, and `{@damage }` strings.
+This can be set differently for either "5e" or "pf2e" configurations.
+
+See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general structure of config.
+
 ## 1.1.0: Images for backgrounds, items, monsters, races, and spells
 
 The conversion tool downloads fluff images into `img` directories within each type, e.g. `backgrounds/img` or `bestiary/aberration/img`. These images are unordered, and are not referenced in entry text. Templates must be modified to include them.
@@ -403,10 +425,9 @@ Note that the line above ends with two spaces, which serves as a line break when
 You can also use two separate blocks, such that the first image is used at the top of the document, and any others are included later: 
 
 ```
-{#if resource.fluffImages && resource.fluffImages.0 }
-![{resource.fluffImages.0.caption}]({resource.fluffImages.0.path}#right)  
-{/if}
-
+{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
+![{first.title}]({first.vaultPath}#right)  
+{/let}{/if}
 ...
 
 {#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  

@@ -22,14 +22,20 @@ import picocli.CommandLine;
 
 @QuarkusMainTest
 public class RpgDataConvertTest {
-    static final Path outputPath_5e = TestUtils.OUTPUT_ROOT_5E.resolve("test-cli");
-    static final Path outputPath_pf2 = TestUtils.OUTPUT_ROOT_PF2.resolve("test-cli");
+    static Path outputPath_5e;
+    static Path outputPath_pf2;
     static Tui tui;
 
     @BeforeAll
     public static void setupDir() {
+        setupDir("RpgDataConvertTest");
+    }
+
+    public static void setupDir(String root) {
         tui = new Tui();
         tui.init(null, false, false);
+        outputPath_5e = TestUtils.OUTPUT_ROOT_5E.resolve(root).resolve("test-cli");
+        outputPath_pf2 = TestUtils.OUTPUT_ROOT_PF2.resolve(root).resolve("test-cli");
         outputPath_5e.toFile().mkdirs();
         outputPath_pf2.toFile().mkdirs();
     }
@@ -86,6 +92,7 @@ public class RpgDataConvertTest {
                     "--item", "examples/templates/tools5e/images-item2md.txt",
                     "--monster", "examples/templates/tools5e/images-monster2md.txt",
                     "--race", "examples/templates/tools5e/images-race2md.txt",
+                    "--spell", "examples/templates/tools5e/images-spell2md.txt",
                     "-o", allIndex.toString(),
                     TestUtils.TOOLS_PATH_5E.toString()));
 

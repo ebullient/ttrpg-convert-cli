@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -30,55 +29,12 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
 
     Pf2eSources getSources();
 
-    default String slugify(String s) {
-        return Tui.slugify(s);
-    }
-
     default Tui tui() {
         return cfg().tui();
     }
 
     default CompendiumConfig cfg() {
         return index().cfg();
-    }
-
-    default String join(String joiner, Collection<String> list) {
-        if (list == null || list.isEmpty()) {
-            return "";
-        }
-        return String.join(joiner, list).trim();
-    }
-
-    default String joinConjunct(String lastJoiner, List<String> list) {
-        return joinConjunct(list, ", ", lastJoiner, false);
-    }
-
-    default String joinConjunct(List<String> list, String joiner, String lastJoiner, boolean nonOxford) {
-        if (list == null || list.isEmpty()) {
-            return "";
-        }
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        if (list.size() == 2) {
-            return String.join(lastJoiner, list);
-        }
-
-        int pause = list.size() - 2;
-        StringBuilder out = new StringBuilder();
-        for (int i = 0; i < list.size(); ++i) {
-            out.append(list.get(i));
-
-            if (i < pause) {
-                out.append(joiner);
-            } else if (i == pause) {
-                if (!nonOxford) {
-                    out.append(joiner.trim());
-                }
-                out.append(lastJoiner);
-            }
-        }
-        return out.toString();
     }
 
     default String toTitleCase(String text) {
@@ -93,16 +49,6 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                                 .substring(1)
                                 .toLowerCase())
                 .collect(Collectors.joining(" "));
-    }
-
-    default List<String> toListOfStrings(JsonNode source) {
-        if (source == null) {
-            return List.of();
-        } else if (source.isTextual()) {
-            return List.of(source.asText());
-        }
-        List<String> list = tui().readJsonValue(source, Tui.LIST_STRING);
-        return list == null ? List.of() : list;
     }
 
     default String replaceText(JsonNode input) {
@@ -121,20 +67,21 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         }
 
         try {
-            String result = input.replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
+            String result = input
+                    .replace("#$prompt_number:title=Enter Alert Level$#", "Alert Level")
+                    .replace("#$prompt_number:title=Enter Charisma Modifier$#", "Charisma modifier")
+                    .replace("#$prompt_number:title=Enter Lifestyle Modifier$#", "Charisma modifier")
+                    .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
+                    .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
+                    .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
 
             result = dicePattern.matcher(result)
                     .replaceAll((match) -> {
-                        int pipe = match.group(2).indexOf("|");
-                        if (pipe < 0) {
-                            return cfg().alwaysUseDiceRoller()
-                                    ? "`dice: " + match.group(2) + '`'
-                                    : '`' + match.group(2) + '`';
+                        String[] parts = match.group(2).split("\\|");
+                        if (parts.length > 1) {
+                            return parts[1];
                         }
-                        String dice = match.group(2).substring(0, pipe);
-                        return cfg().alwaysUseDiceRoller()
-                                ? "`dice: " + dice + '`'
-                                : '`' + dice + '`';
+                        return formatDice(parts[0]);
                     });
 
             result = chancePattern.matcher(result)
@@ -292,7 +239,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         }
         switch (targetType) {
             case skill:
-                //	"Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception}",
+                // "Skill tags; {@skill Athletics}, {@skill Lore}, {@skill Perception}",
                 // {@skill Lore||Farming Lore}
                 String[] parts = match.split("\\|");
                 String linkText = parts.length > 1 ? parts[2] : parts[0];
