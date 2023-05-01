@@ -19,8 +19,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
     }
 
     @Override
-    public QuteBase build() {
-
+    protected QuteBase buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         String pantheon = getTextOrDefault(node, "pantheon", null);

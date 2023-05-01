@@ -1,11 +1,11 @@
-package dev.ebullient.convert.tools.pf2e;
+package dev.ebullient.convert.tools;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
 public class ParseState {
 
@@ -88,11 +88,11 @@ public class ParseState {
 
     private final Deque<ParseState.ParseStateInfo> stack = new ArrayDeque<>();
 
-    public boolean push(Pf2eSources sources) {
+    public boolean push(CompendiumSources sources) {
         if (sources == null) {
             return false;
         }
-        return push(Pf2eIndex.findNode(sources));
+        return push(sources.findNode());
     }
 
     public boolean push(JsonNode node) {

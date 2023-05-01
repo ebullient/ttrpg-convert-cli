@@ -30,7 +30,7 @@ public class TestUtils {
     public final static Path OUTPUT_ROOT_PF2 = PROJECT_PATH.resolve("target/test-pf2");
 
     public final static Path TEST_SOURCES_FROM_ALL = PROJECT_PATH.resolve("src/test/resources/sources-from-all.json");
-    public final static Path TEST_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
+    public final static Path TEST_FLAT_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
     public final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
 
     // for compile/test purposes. Must clone/sync separately.

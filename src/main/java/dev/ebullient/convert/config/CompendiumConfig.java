@@ -72,7 +72,13 @@ public class CompendiumConfig {
     }
 
     public boolean sourceIncluded(String source) {
-        return allSources || allowedSources.contains(source.toLowerCase());
+        if (allSources) {
+            return true;
+        }
+        if (source == null || source.isEmpty()) {
+            return false;
+        }
+        return allowedSources.contains(source.toLowerCase());
     }
 
     public boolean excludeItem(JsonNode sourceNode, boolean allowWhenEmpty) {
