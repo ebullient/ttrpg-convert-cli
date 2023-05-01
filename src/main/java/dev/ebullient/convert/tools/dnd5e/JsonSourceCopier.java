@@ -72,20 +72,21 @@ public class JsonSourceCopier implements JsonSource {
         return jsonSource;
     }
 
-    JsonNode copyAndMergeRace(JsonNode jsonNode) {
-        if (jsonNode.has("raceName") || jsonNode.has("_copy")) {
-            Tools5eSources sources = index().constructSources(Tools5eIndexType.race, jsonNode);
-            jsonNode = cloneOrCopy(sources.getKey(),
-                    jsonNode, Tools5eIndexType.race,
-                    getTextOrDefault(jsonNode, "raceName", null),
-                    getTextOrDefault(jsonNode, "raceSource", null));
+    JsonNode copyAndMergeRace(JsonNode jsonSource) {
+        if (jsonSource.has("raceName") || jsonSource.has("_copy")) {
+            Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
+            jsonSource = cloneOrCopy(sources.getKey(),
+                    jsonSource, Tools5eIndexType.race,
+                    getTextOrDefault(jsonSource, "raceName", null),
+                    getTextOrDefault(jsonSource, "raceSource", null));
         }
-        return jsonNode;
+        return jsonSource;
     }
 
     JsonNode copyAndMergeClass(JsonNode jsonSource) {
         if (jsonSource.has("className") || jsonSource.has("_copy")) {
-            Tools5eSources sources = index().constructSources(Tools5eIndexType.classtype, jsonSource);
+            // TODO: key may need to be constructed first? Is that all we needed the sources for?
+            Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
             jsonSource = cloneOrCopy(sources.getKey(),
                     jsonSource, Tools5eIndexType.classtype,
                     getTextOrDefault(jsonSource, "className", null),

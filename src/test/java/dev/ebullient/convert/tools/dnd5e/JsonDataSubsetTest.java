@@ -58,6 +58,7 @@ public class JsonDataSubsetTest {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             // Single included race: changeling from mpmm
             Path changeling = outputPath
+                    .resolve(commonTests.compendiumFilePath())
                     .resolve(QuteSource.RACES_PATH)
                     .resolve("changeling-mpmm.md");
             assertThat(changeling).exists();
@@ -88,6 +89,7 @@ public class JsonDataSubsetTest {
             // The Wild Beyond the Witchlight --> an "otherSource".
             // The tree blight should be included when WBtW is included
             Path treeBlight = outputPath
+                    .resolve(commonTests.compendiumFilePath())
                     .resolve(QuteSource.monsterPath(false, "plant"))
                     .resolve("tree-blight-cos.md");
             assertThat(treeBlight).exists();

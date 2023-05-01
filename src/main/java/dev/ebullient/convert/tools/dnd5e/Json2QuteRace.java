@@ -17,7 +17,7 @@ public class Json2QuteRace extends Json2QuteCommon {
     }
 
     @Override
-    public QuteRace build() {
+    protected QuteRace buildQuteResource() {
         String name = decoratedRaceName(node, sources);
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
@@ -122,13 +122,16 @@ public class Json2QuteRace extends Json2QuteCommon {
     }
 
     public static List<Tuple> findRaceVariants(Tools5eIndex index, Tools5eIndexType type,
-            String key, JsonNode jsonSource) {
+            String key, JsonNode jsonSource, JsonSourceCopier copier) {
+
         List<Tuple> variants = new ArrayList<>();
         variants.add(new Tuple(key, jsonSource));
-        Tools5eSources sources = index.constructSources(type, jsonSource);
+        // For each subrace derived from the origin...
+        Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
         index.originSubraces(sources).forEach(sr -> {
-            JsonNode newNode = index.copier.handleCopy(type, sr);
-            Tools5eSources srSources = index.constructSources(Tools5eIndexType.subrace, newNode);
+            JsonNode newNode = copier.handleCopy(type, sr);
+            // TODO: create new key first?
+            Tools5eSources srSources = Tools5eSources.constructSources(newNode);
             variants.add(new Tuple(srSources.getKey(), newNode));
         });
         return variants;

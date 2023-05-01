@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.Datasource;
@@ -14,6 +15,19 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eIndex;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndex;
 
 public interface ToolsIndex {
+    // Special one-offs for accounting/tracking
+    enum TtrpgValue implements NodeReader {
+        indexKey,
+        indexInputType;
+
+        public void addToNode(JsonNode node, String value) {
+            ((ObjectNode) node).put(this.name(), value);
+        }
+
+        public String getFromNode(JsonNode node) {
+            return this.getTextOrNull(node);
+        }
+    }
 
     static ToolsIndex createIndex() {
         CompendiumConfig config = TtrpgConfig.getConfig();

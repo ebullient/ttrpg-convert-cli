@@ -77,7 +77,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public static final Pattern matchPattern = Pattern.compile("\\{@("
-            + Stream.of(Pf2eIndexType.values())
+            + Stream.of(values())
                     .flatMap(x -> Stream.of(x.templateName, x.name()))
                     .distinct()
                     .collect(Collectors.joining("|"))
@@ -96,7 +96,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public static Pf2eIndexType fromText(String name) {
-        return Stream.of(Pf2eIndexType.values())
+        return Stream.of(values())
                 .filter(x -> x.templateName.equals(name) || x.name().equalsIgnoreCase(name))
                 .findFirst().orElse(null);
     }

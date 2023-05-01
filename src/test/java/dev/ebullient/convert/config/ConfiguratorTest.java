@@ -31,7 +31,7 @@ public class ConfiguratorTest {
     public void testPath() throws Exception {
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_PATH_JSON, (f, node) -> {
+        tui.readFile(TestUtils.TEST_FLAT_PATH_JSON, (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
             assertThat(config).isNotNull();
@@ -47,7 +47,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_PATH_JSON, (f, node) -> {
+        tui.readFile(TestUtils.TEST_FLAT_PATH_JSON, (f, node) -> {
             ObjectNode parent = Tui.MAPPER.createObjectNode();
             ObjectNode ttrpg = Tui.MAPPER.createObjectNode();
             parent.set("ttrpg", ttrpg);

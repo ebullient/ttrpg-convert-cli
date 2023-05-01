@@ -86,7 +86,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     void addToIndex(Pf2eIndexType type, JsonNode node) {
-        TtrpgValue.p2feInputType.addToNode(node, type.name());
+        TtrpgValue.indexInputType.addToNode(node, type.name());
         if (type == Pf2eIndexType.baseitem) {
             // always use item (baseitem is a detail that we have remembered if we need it)
             type = Pf2eIndexType.item;

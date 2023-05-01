@@ -41,14 +41,17 @@ public class CommonDataTests {
             index = new Tools5eIndex(TtrpgConfig.getConfig());
             templates.setCustomTemplates(TtrpgConfig.getConfig());
 
-            configurator.readConfiguration(TestUtils.TEST_PATH_JSON);
             if (useSources) {
+                // use default: compendium/ and rules/
                 configurator.readConfiguration(TestUtils.TEST_SOURCES_JSON_5E);
             } else {
                 configurator.setSources(List.of("*"));
+                // use default: / and rules/
+                configurator.readConfiguration(TestUtils.TEST_FLAT_PATH_JSON);
             }
 
-            for (String x : List.of("adventures.json", "books.json", "adventure/adventure-wdh.json",
+            for (String x : List.of("adventures.json", "books.json",
+                    "adventure/adventure-wdh.json", "adventure/adventure-pota.json",
                     "book/book-vgm.json", "book/book-phb.json")) {
                 tui.readFile(TestUtils.TOOLS_PATH_5E.resolve(x), index::importTree);
             }
@@ -188,6 +191,8 @@ public class CommonDataTests {
 
             Path imageDir = deitiesDir.resolve("img");
             assertThat(imageDir.toFile()).exists();
+
+            TestUtils.assertDirectoryContents(deitiesDir, tui);
         }
     }
 
@@ -318,6 +323,12 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeNotesAndTables();
+
+            TestUtils.assertDirectoryContents(outputPath.resolve(index.rulesFilePath()), tui);
         }
+    }
+
+    public Path compendiumFilePath() {
+        return index.compendiumFilePath();
     }
 }

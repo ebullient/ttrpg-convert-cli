@@ -26,9 +26,10 @@ public class Json2QuteBackground extends Json2QuteCommon {
     }
 
     @Override
-    public QuteBase build() {
+    protected QuteBase buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
+
         appendEntryToText(text, node, "##");
 
         List<ImageRef> images = new ArrayList<>();
@@ -52,6 +53,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
         if (text.isEmpty()) {
             return null;
         }
+        appendFootnotes(text, 0);
 
         return new QuteBackground(sources,
                 backgroundName,

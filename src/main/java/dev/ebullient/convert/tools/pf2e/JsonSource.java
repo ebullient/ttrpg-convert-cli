@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -28,7 +27,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAffliction
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
 public interface JsonSource extends JsonTextReplacement {
-    Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
 
     /**
      * Collect and linkify traits from the specified node.
@@ -41,44 +39,6 @@ public interface JsonSource extends JsonTextReplacement {
                 .sorted()
                 .map(s -> linkify(Pf2eIndexType.trait, s))
                 .collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    /**
-     * Find and format footnotes referenced in the provided content
-     *
-     * @param text List of text lines (joined or not) that may contain footnotes
-     * @param count The number of footnotes found previously (to avoid duplicates)
-     * @return The number of footnotes found.
-     */
-    default int appendFootnotes(List<String> text, int count) {
-        boolean pushed = parseState.push(true);
-        try {
-            List<String> footnotes = new ArrayList<>();
-            text.replaceAll(input -> {
-                // "Footnote tags; allows a footnote to be embedded
-                // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
-                // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
-                return footnotePattern.matcher(input)
-                        .replaceAll((match) -> {
-                            int index = count + footnotes.size() + 1;
-                            String footnote = replaceText(match.group(1));
-                            String[] parts = footnote.split("\\|");
-                            footnotes.add(String.format("[^%s]: %s%s", index, parts[1],
-                                    parts.length > 2 ? " (" + parts[2] + ")" : ""));
-
-                            return String.format("%s[^%s]", parts[0], index);
-                        });
-            });
-
-            if (footnotes.size() > 0) {
-                maybeAddBlankLine(text);
-                footnotes.forEach(f -> text.add(replaceText(f)));
-
-            }
-            return count + footnotes.size();
-        } finally {
-            parseState.pop(pushed);
-        }
     }
 
     /**
