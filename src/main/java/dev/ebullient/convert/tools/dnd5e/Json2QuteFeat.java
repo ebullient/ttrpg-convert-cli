@@ -19,7 +19,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
     }
 
     @Override
-    public QuteBase build() {
+    protected QuteBase buildQuteResource() {
         String prerequisite = listPrerequisites();
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 

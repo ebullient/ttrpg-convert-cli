@@ -7,7 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName.LookupTable;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName.LookupTableRow;
@@ -60,10 +59,5 @@ public class Json2QuteName extends Json2QuteCommon {
         return new QuteName(sources.getName(),
                 sources.getSourceText(index.srdOnly()),
                 lookupTables);
-    }
-
-    @Override
-    public QuteBase build() {
-        throw new IllegalStateException("Not implemented");
     }
 }

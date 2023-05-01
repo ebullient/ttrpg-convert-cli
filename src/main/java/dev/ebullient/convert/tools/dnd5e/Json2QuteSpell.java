@@ -21,7 +21,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     @Override
-    public QuteBase build() {
+    protected QuteBase buildQuteResource() {
         boolean ritual = spellIsRitual();
         SchoolEnum school = getSchool();
         String level = node.get("level").asText();
@@ -50,6 +50,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
             appendEntryToText(text, node.get("entriesHigherLevel"),
                     textContains(text, "## ") ? "##" : null);
         }
+        appendFootnotes(text, 0);
 
         return new QuteSpell(sources,
                 decoratedName,

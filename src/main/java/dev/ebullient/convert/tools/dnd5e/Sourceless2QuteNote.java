@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 
 public class Sourceless2QuteNote extends Json2QuteCommon {
@@ -24,7 +23,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         if (jsonNode.has("source")) {
             return Tools5eIndexType.note;
         }
-        return Tools5eIndexType.sourceless;
+        return Tools5eIndexType.syntheticGroup;
     }
 
     Sourceless2QuteNote(Tools5eIndex index, JsonNode jsonNode, String title) {
@@ -43,11 +42,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     @Override
-    public QuteBase build() {
-        throw new IllegalStateException("Not implemented");
-    }
-
-    public QuteNote buildNote() {
+    protected QuteNote buildQuteNote() {
         Set<String> tags = new HashSet<>();
         List<String> text = new ArrayList<>();
 
@@ -60,7 +55,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendElement(JsonNode entry, List<String> text, Set<String> tags) {
-        currentSource = index.constructSources(Tools5eIndexType.sourceless, entry);
+        currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.syntheticGroup, entry);
         String name = entry.get("name").asText();
         if (!index.rulesSourceExcluded(entry, name)) {
             tags.addAll(currentSource.getSourceTags());
@@ -74,12 +69,17 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     public QuteNote buildVariant() {
-        currentSource = sources;
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        try {
+            currentSource = sources;
+            List<String> tags = new ArrayList<>(sources.getSourceTags());
 
-        return new QuteNote(title,
-                sources.getSourceText(index.srdOnly()),
-                getText("##"), tags);
+            return new QuteNote(title,
+                    sources.getSourceText(index.srdOnly()),
+                    getText("##"), tags);
+        } finally {
+            parseState.pop(pushed);
+        }
     }
 
     public Map<String, QuteNote> buildReference(JsonNode data) {
@@ -100,23 +100,28 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         }
 
         data.forEach(x -> {
-            List<String> text = new ArrayList<>();
-            appendEntryToText(text, x.get("entries"), "##");
-            String content = String.join("\n", text);
-            if (!content.isBlank()) {
-                String titlePage = title;
-                if (x.has("page")) {
-                    String page = x.get("page").asText();
-                    titlePage = title + ", p. " + page;
+            boolean pushed = parseState.push(x);
+            try {
+                List<String> text = new ArrayList<>();
+                appendEntryToText(text, x.get("entries"), "##");
+                String content = String.join("\n", text);
+                if (!content.isBlank()) {
+                    String titlePage = title;
+                    if (x.has("page")) {
+                        String page = x.get("page").asText();
+                        titlePage = title + ", p. " + page;
+                    }
+                    String name = getTextOrDefault(x, "name", "");
+                    QuteNote note = new QuteNote(name, titlePage, content, tags);
+                    notes.put(String.format("%s/%s-%s.md",
+                            slugify(title),
+                            String.format(pFormat, prefix.get()),
+                            slugify(name)),
+                            note);
+                    prefix.incrementAndGet();
                 }
-                String name = getTextOrDefault(x, "name", "");
-                QuteNote note = new QuteNote(name, titlePage, content, tags);
-                notes.put(String.format("%s/%s-%s.md",
-                        slugify(title),
-                        String.format(pFormat, prefix.get()),
-                        slugify(name)),
-                        note);
-                prefix.incrementAndGet();
+            } finally {
+                parseState.pop(pushed);
             }
         });
 
@@ -124,36 +129,47 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     public QuteNote buildItemProperties() {
-        Set<String> tags = new HashSet<>();
-        tags.add("compendium/src/srd");
+        boolean pushed = parseState.push(node);
+        try {
+            Set<String> tags = new HashSet<>();
+            tags.add("compendium/src/srd");
 
-        List<String> text = new ArrayList<>();
-        text.add(String.format("_Source: SRD / Basic Rules_"));
+            List<String> text = new ArrayList<>();
+            text.add("_Source: SRD / Basic Rules_");
 
-        node.forEach(entry -> {
-            maybeAddBlankLine(text);
-            text.add("## " + entry.get("name").asText());
-            maybeAddBlankLine(text);
-            appendEntryObjectToText(text, entry, "###");
-        });
+            node.forEach(entry -> {
+                maybeAddBlankLine(text);
+                text.add("## " + entry.get("name").asText());
+                maybeAddBlankLine(text);
+                appendEntryObjectToText(text, entry, "###");
+            });
 
-        return new QuteNote(title, null, text, tags);
+            return new QuteNote(title, null, text, tags);
+        } finally {
+            parseState.pop(pushed);
+        }
+
     }
 
     public QuteNote buildLoot() {
-        Set<String> tags = new HashSet<>();
-        List<String> text = new ArrayList<>();
+        boolean pushed = parseState.push(node);
+        try {
+            Set<String> tags = new HashSet<>();
+            List<String> text = new ArrayList<>();
 
-        node.forEach(entry -> appendLootElement(entry, text));
-        if (text.isEmpty()) {
-            return null;
+            node.forEach(entry -> appendLootElement(entry, text));
+            if (text.isEmpty()) {
+                return null;
+            }
+
+            return new QuteNote(title, null, text, tags);
+        } finally {
+            parseState.pop(pushed);
         }
-
-        return new QuteNote(title, null, text, tags);
     }
 
     private void appendLootElement(JsonNode entry, List<String> text) {
-        currentSource = index.constructSources(Tools5eIndexType.sourceless, entry);
+        currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.syntheticGroup, entry);
         String name = entry.get("name").asText();
         if (!index.rulesSourceExcluded(entry, name)) {
             String blockid = slugify(name);
@@ -210,20 +226,25 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     public QuteNote buildActions() {
-        Set<String> tags = new HashSet<>();
-        List<String> text = new ArrayList<>();
-        Map<String, String> actionDuration = new HashMap<>();
+        boolean pushed = parseState.push(node);
+        try {
+            Set<String> tags = new HashSet<>();
+            List<String> text = new ArrayList<>();
+            Map<String, String> actionDuration = new HashMap<>();
 
-        node.forEach(entry -> appendAction(entry, text, actionDuration, tags));
-        if (text.isEmpty()) {
-            return null;
+            node.forEach(entry -> appendAction(entry, text, actionDuration, tags));
+            if (text.isEmpty()) {
+                return null;
+            }
+
+            return new QuteNote(title, null, text, tags);
+        } finally {
+            parseState.pop(pushed);
         }
-
-        return new QuteNote(title, null, text, tags);
     }
 
     private void appendAction(JsonNode entry, List<String> text, Map<String, String> actionDuration, Set<String> tags) {
-        currentSource = index.constructSources(Tools5eIndexType.sourceless, entry);
+        currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.syntheticGroup, entry);
         String name = entry.get("name").asText();
 
         if (index.rulesSourceExcluded(entry, name)) {

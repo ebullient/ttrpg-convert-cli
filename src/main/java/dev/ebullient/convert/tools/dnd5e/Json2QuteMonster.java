@@ -62,7 +62,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     @Override
-    public QuteBase build() {
+    protected QuteBase buildQuteResource() {
         String size = getSize(node);
         String environment = joinAndReplace(node, "environment");
         String cr = monsterCr(node);
@@ -89,7 +89,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String fluff = getFluffDescription(Tools5eIndexType.monsterfluff, null, fluffImages);
 
         return new QuteMonster(sources,
-                decoratedMonsterName(node, sources),
+                decoratedMonsterName(sources),
                 sources.getSourceText(index.srdOnly()),
                 isNpc,
                 size, type, subtype, monsterAlignment(),
@@ -417,7 +417,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         if (group == null) {
             return null;
         }
-        String key = index.getKey(Tools5eIndexType.legendarygroup, group);
+        String key = Tools5eIndexType.legendarygroup.createKey(group);
         if (!index.sourceIncluded(group.get("source").asText())) {
             tui().debugf("Legendary group %s source excluded", key);
         }
@@ -566,7 +566,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         adjustedSource.replace("ac", fixed.getAc());
         adjustedSource.replace("hp", fixed.getHp());
 
-        String newKey = index.getKey(type, adjustedSource);
+        String newKey = type.createKey(adjustedSource);
         variants.add(new Tuple(newKey, adjustedSource));
     }
 

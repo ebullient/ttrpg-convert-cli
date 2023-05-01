@@ -27,6 +27,11 @@ import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
 public class Tools5eIndex implements JsonSource, ToolsIndex {
+    private static Tools5eIndex instance;
+
+    static Tools5eIndex getInstance() {
+        return instance;
+    }
 
     // classfeature|ability score improvement|monk|phb|12
     static final String classFeature_1 = "classfeature\\|[^|]+\\|[^|]+\\|";
@@ -59,6 +64,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public Tools5eIndex(CompendiumConfig config) {
         this.config = config;
+        instance = this;
     }
 
     public Tools5eIndex importTree(String filename, JsonNode node) {
@@ -135,8 +141,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     void addToIndex(Tools5eIndexType type, JsonNode node) {
-        String key = getKey(type, node);
+        String key = type.createKey(node);
+        if (nodeIndex.containsKey(key)) {
+            return;
+        }
         nodeIndex.put(key, node);
+        TtrpgValue.indexInputType.addToNode(node, type.name());
+        TtrpgValue.indexKey.addToNode(node, key);
+
         if (type == Tools5eIndexType.subclass) {
             String lookupKey = getSubclassKey(node.get("shortName").asText().trim(),
                     node.get("className").asText(), node.get("classSource").asText());
@@ -215,6 +227,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             // check for / manage copies first.
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
             JsonNode jsonSource = copier.handleCopy(type, node);
+            TtrpgValue.indexKey.addToNode(node, key);
+            Tools5eSources.constructSources(node);
 
             if (type == Tools5eIndexType.subrace ||
                     type == Tools5eIndexType.trait || type == Tools5eIndexType.legendarygroup ||
@@ -236,8 +250,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 if (old != null) {
                     tui().errorf("Duplicate key: %s", v.key);
                 }
-                // store the unique key in the node
-                ((ObjectNode) v.node).put("indexKey", v.key);
+                // store unique key / construct sources for variants
+                TtrpgValue.indexKey.addToNode(v.node, v.key);
+                Tools5eSources.constructSources(v.node);
             });
         });
 
@@ -313,7 +328,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     List<Tuple> findVariants(String key, JsonNode jsonSource) {
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
         if (type == Tools5eIndexType.race) {
-            return Json2QuteRace.findRaceVariants(this, type, key, jsonSource);
+            return Json2QuteRace.findRaceVariants(this, type, key, jsonSource, copier);
         } else if (type == Tools5eIndexType.monster && jsonSource.has("summonedBySpellLevel")) {
             return Json2QuteMonster.findConjuredMonsterVariants(this, type, key, jsonSource);
         } else if (key.contains("splugoth the returned") || key.contains("prophetess dran")) {
@@ -390,130 +405,36 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     public String getClassKey(String className, String classSource) {
-        return String.format("%s|%s|%s",
-                Tools5eIndexType.classtype, className, classSource).toLowerCase();
+        return Tools5eIndexType.classtype.createKey(className, classSource);
     }
 
     public String getSubclassKey(String name, String className, String classSource) {
-        return String.format("%s|%s|%s|%s|",
-                Tools5eIndexType.subclass, name, className, classSource).toLowerCase();
-    }
-
-    public Tools5eSources constructSources(Tools5eIndexType type, JsonNode x) {
-        return constructSources(type, null, x);
-    }
-
-    public Tools5eSources constructSources(Tools5eIndexType type, String indexKey, JsonNode x) {
-        if (x == null) {
-            throw new IllegalStateException("Unable to look up a null element: " + indexKey);
-        }
-        if (indexKey == null) {
-            if (x.has("indexKey")) {
-                indexKey = x.get("indexKey").asText();
-            } else {
-                indexKey = getKey(type, x);
-            }
-        }
-        return nodeToSources.computeIfAbsent(indexKey, key -> {
-            Tools5eSources s = new Tools5eSources(type, key, x);
-            s.checkKnown();
-            return s;
-        });
+        return Tools5eIndexType.getSubclassKey(name, className, classSource);
     }
 
     public String getKey(Tools5eIndexType type, JsonNode x) {
-        switch (type) {
-            case deity:
-                return createDeityKey(getTextOrEmpty(x, "name"),
-                        getTextOrEmpty(x, "pantheon"),
-                        x.get("source").asText());
-            case subclass:
-                return String.format("%s|%s|%s|%s|",
-                        type,
-                        getTextOrEmpty(x, "name"),
-                        getTextOrEmpty(x, "className"),
-                        getTextOrEmpty(x, "classSource"))
-                        .toLowerCase();
-            case subrace:
-                return String.format("%s|%s|%s|%s",
-                        type,
-                        getTextOrEmpty(x, "name"),
-                        getTextOrEmpty(x, "raceName"),
-                        getTextOrEmpty(x, "raceSource"))
-                        .toLowerCase();
-            case classfeature: {
-                String featureSource = getOrEmptyIfEqual(x, "source",
-                        getTextOrDefault(x, "classSource", "PHB"));
-                return String.format("%s|%s|%s|%s|%s%s",
-                        type,
-                        getTextOrEmpty(x, "name"),
-                        getTextOrEmpty(x, "className"),
-                        getOrEmptyIfEqual(x, "classSource", "PHB"),
-                        getTextOrEmpty(x, "level"),
-                        featureSource.isBlank() ? "" : "|" + featureSource)
-                        .toLowerCase();
-            }
-            case subclassfeature: {
-                String scSource = getOrEmptyIfEqual(x, "subclassSource", "PHB");
-                String scFeatureSource = getOrEmptyIfEqual(x, "source", "PHB");
-                return String.format("%s|%s|%s|%s|%s|%s|%s%s",
-                        type,
-                        getTextOrEmpty(x, "name"),
-                        getTextOrEmpty(x, "className"),
-                        getOrEmptyIfEqual(x, "classSource", "PHB"),
-                        getTextOrEmpty(x, "subclassShortName"),
-                        scSource,
-                        getTextOrEmpty(x, "level"),
-                        scFeatureSource.equals(scSource) ? "" : "|" + scFeatureSource)
-                        .toLowerCase();
-            }
-            case itementry: {
-                String itEntrySource = getOrEmptyIfEqual(x, "source", "DMG");
-                return String.format("%s|%s%s",
-                        type,
-                        getTextOrEmpty(x, "name"),
-                        itEntrySource.isBlank() ? "" : "|" + itEntrySource)
-                        .toLowerCase();
-            }
-            case optionalfeature: {
-                String opFeatureSource = getOrEmptyIfEqual(x, "source", "PHB");
-                return String.format("%s|%s%s",
-                        type,
-                        getTextOrEmpty(x, "name"),
-                        opFeatureSource.isBlank() ? "" : "|" + opFeatureSource)
-                        .toLowerCase();
-            }
-            default:
-                String name = x.get("name").asText();
-                String source = x.get("source").asText();
-                return createSimpleKey(type, name, source);
-        }
+        return type.createKey(x);
     }
 
     public String createSimpleKey(Tools5eIndexType type, String name, String source) {
-        return String.format("%s|%s|%s", type, name, source).toLowerCase();
+        return type.createKey(name, source);
     }
 
-    public String createDeityKey(String name, String pantheon, String source) {
-        return String.format("%s|%s|%s|%s", Tools5eIndexType.deity, name, pantheon, source).toLowerCase();
+    public String createClassFeatureKey(String featureName, String featureSource, String className, String classSource,
+            String level) {
+        return Tools5eIndexType.getClassFeatureKey(featureName, featureSource, className, classSource, level);
     }
 
-    public String getRefKey(Tools5eIndexType type, String crossRef) {
-        return String.format("%s|%s", type, crossRef).toLowerCase()
-                // NOTE: correct reference inconsistencies in the original data
-                .replaceAll("\\|phb\\|", "||")
-                .replaceAll("\\|tce\\|8\\|tce", "|tce|8");
+    public String createOptionalFeatureKey(String featureName, String featureSource) {
+        return Tools5eIndexType.optionalfeature.createKey(featureName, featureSource);
     }
 
     public String getDataKey(String value) {
-        return String.format("%s|%s", Tools5eIndexType.reference, value)
-                .toLowerCase();
+        return Tools5eIndexType.reference.createKey(value, null);
     }
 
     public String getDataKey(String type, String id) {
-        return String.format("%s|%s-%s",
-                Tools5eIndexType.reference, type, id)
-                .toLowerCase();
+        return Tools5eIndexType.reference.createKey(type, id);
     }
 
     public String getAlias(String key) {
@@ -521,7 +442,13 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     public String getAliasOrDefault(String key) {
-        return aliases.getOrDefault(key, key);
+        String previous;
+        String value = key;
+        do {
+            previous = value;
+            value = aliases.getOrDefault(previous, previous);
+        } while (!value.equals(previous));
+        return value;
     }
 
     /**
@@ -547,22 +474,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         String key = String.format("%s|%s|%s", type, name, source)
                 .toLowerCase();
         return nodeIndex.get(key);
-    }
-
-    /**
-     * Find the full JsonNode based on information from the node
-     * passed in. Used for fluff nodes, and to find the original node
-     * for a copy.
-     *
-     * @param type Type of object
-     * @param x JsonNode providing lookup elements (name, source)
-     * @return JsonNode or null
-     */
-    public JsonNode getNode(Tools5eIndexType type, JsonNode x) {
-        if (x == null) {
-            return null;
-        }
-        return filteredIndex.get(getKey(type, x));
     }
 
     public JsonNode getOrigin(Tools5eIndexType type, JsonNode x) {
@@ -643,7 +554,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return true;
         }
 
-        Tools5eSources sources = constructSources(Tools5eIndexType.getTypeFromKey(key), key, node);
+        Tools5eSources sources = Tools5eSources.findSources(key);
         return sources.getBookSources().stream().anyMatch((s) -> config.sourceIncluded(s));
     }
 
