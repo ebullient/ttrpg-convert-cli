@@ -378,8 +378,6 @@ ttrpg-convert 5etools \
   --index -o dm dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
 ```
 
-Note that in specifying the template, either on the command line or in a config file, the flag used corresponds to the type of template being used. Valid keys are one of the following: background, class, deity, feat, item, monster, name, note, race, spell, subclass.
-
 Additional templates can also be specified in your configuration file: 
 
 ```json
@@ -389,9 +387,14 @@ Additional templates can also be specified in your configuration file:
   }
 ```
 
-> 🔹 Not everything is customizable. In some cases, formatting headings, indenting and organizing text accurately is easier to do inline as a big blob. The example templates show what is available to tweak.
+The flag used to specify a template (either on the command line or in a config file) corresponds to the type of template being used. In general, take the file name of a [default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates) and remove the `2md.txt` suffix.
+
+- Valid keys for 5etools: `background`, `class`, `deity`, `feat`, `item`, `monster`, `name`, `note`, `race`, `spell`, `subclass`
+- Valid keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-affliction`, `inline-attack`, `item`, `monster`, `note`, `ritual`, `spell`, `trait`.
 
 ### Built-in / example templates
+
+Not everything is customizable. In some cases, indenting, organizing, formatting, and linking text accurately is easier to do inline as a big blob. The default and example templates show what is available to tweak.
 
 - [Default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates)
 - [Example templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates)
