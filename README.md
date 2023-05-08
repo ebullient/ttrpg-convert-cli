@@ -378,11 +378,14 @@ ttrpg-convert 5etools \
   --index -o dm dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
 ```
 
+Note that in specifying the template, either on the command line or in a config file, the flag used corresponds to the type of template being used. Valid keys are one of the following: background, class, deity, feat, item, monster, name, note, race, spell, subclass.
+
 Additional templates can also be specified in your configuration file: 
 
 ```json
   "template": {
     "background": "examples/templates/tools5e/images-background2md.txt",
+    "monster": "examples/templates/tools5e/monster2md-scores.txt"
   }
 ```
 
