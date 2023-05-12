@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface JsonSource extends JsonTextReplacement {
@@ -77,10 +78,11 @@ public interface JsonSource extends JsonTextReplacement {
             } else if (node.isNumber()) {
                 text.add(node.asText());
             } else if (node.isArray()) {
-                node.elements().forEachRemaining(f -> {
+                for (JsonNode f : iterableElements(node)) {
                     maybeAddBlankLine(text);
                     appendEntryToText(text, f, heading);
-                });
+                }
+                ;
             } else if (node.isObject()) {
                 appendEntryObjectToText(text, node, heading);
             } else {
@@ -114,7 +116,7 @@ public interface JsonSource extends JsonTextReplacement {
                             text.addAll(inner);
                         } else if (node.has("name")) {
                             maybeAddBlankLine(text);
-                            text.add(heading + " " + node.get("name").asText());
+                            text.add(heading + " " + replaceText(node.get("name")));
                             text.add("");
                             appendEntryToText(text, node.get("entries"), "#" + heading);
                         } else {
@@ -210,15 +212,42 @@ public interface JsonSource extends JsonTextReplacement {
                     case "flowchart":
                         appendFlowchart(text, node, heading);
                         break;
-                    case "refClassFeature":
-                        text.add(node.get("classFeature").asText());
+                    case "refClassFeature": {
+                        ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.classfeature, node,
+                                "classFeature");
+                        if (parseState.inList()) {
+                            // emit as list item (minus list decoration, see optionlist)
+                            cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.classfeature));
+                        } else {
+                            // emit inline as proper section
+                            cf.appendText(this, text, parseState.getSource(Tools5eIndexType.classfeature));
+                        }
                         break;
-                    case "refOptionalfeature":
-                        text.add(node.get("optionalfeature").asText());
+                    }
+                    case "refOptionalfeature": {
+                        String lookup = node.get("optionalfeature").asText();
+                        if (parseState.inList()) {
+                            text.add(linkifyOptionalFeature(lookup));
+                        } else {
+                            text.add("TODO refOptionalfeature "
+                                    + lookup
+                                    + "\n-> " + Tools5eIndexType.optionalfeature.fromRawKey(lookup)
+                                    + "\n-> " + parseState.inList());
+                        }
                         break;
-                    case "refSubclassFeature":
-                        text.add(node.get("subclassFeature").asText());
+                    }
+                    case "refSubclassFeature": {
+                        ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.subclassfeature, node,
+                                "subclassFeature");
+                        if (parseState.inList()) {
+                            // emit as list item (minus list decoration, see optionlist)
+                            cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.subclassfeature));
+                        } else {
+                            // emit inline as proper section
+                            cf.appendText(this, text, parseState.getSource(Tools5eIndexType.subclassfeature));
+                        }
                         break;
+                    }
                     case "gallery":
                     case "image":
                         // TODO: maybe someday?
@@ -309,8 +338,9 @@ public interface JsonSource extends JsonTextReplacement {
                 List<String> item = new ArrayList<>();
                 appendEntryToText(item, e, null);
                 if (item.size() > 0) {
-                    prependText(indent + "- ", item);
-                    text.add(String.join("  \n" + indent, item));
+                    text.add(indent + "- " + item.get(0) + "  ");
+                    item.remove(0);
+                    item.forEach(x -> text.add(x.isEmpty() ? "" : indent + "    " + x + "  "));
                 }
             });
         } finally {
@@ -397,22 +427,31 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendOptions(List<String> text, JsonNode entry) {
-        List<String> list = new ArrayList<>();
-        entry.withArray("entries").forEach(e -> {
-            List<String> item = new ArrayList<>();
-            appendEntryToText(item, e, null);
-            if (item.size() > 0) {
-                prependText("- ", item);
-                list.add(String.join("  \n    ", item)); // preserve line items
+        String indent = parseState.getListIndent();
+        boolean pushed = parseState.indentList();
+        try {
+            List<String> list = new ArrayList<>();
+            for (JsonNode e : iterableEntries(entry)) {
+                List<String> item = new ArrayList<>();
+                appendEntryToText(item, e, null);
+                if (item.size() > 0) {
+                    text.add(indent + "- " + item.get(0) + "  ");
+                    item.remove(0);
+                    item.forEach(x -> text.add(x.isEmpty() ? "" : indent + "    " + x + "  "));
+                }
             }
-        });
-        if (list.size() > 0) {
-            maybeAddBlankLine(text);
-            int count = intOrDefault(entry, "count", 0);
-            text.add(String.format("Options%s:",
-                    count > 0 ? " (choose " + count + ")" : ""));
-            maybeAddBlankLine(text);
-            text.addAll(list);
+            ;
+
+            if (list.size() > 0) {
+                maybeAddBlankLine(text);
+                int count = intOrDefault(entry, "count", 0);
+                text.add(String.format("Options%s:",
+                        count > 0 ? " (choose " + count + ")" : ""));
+                maybeAddBlankLine(text);
+                text.addAll(list);
+            }
+        } finally {
+            parseState.pop(pushed);
         }
     }
 

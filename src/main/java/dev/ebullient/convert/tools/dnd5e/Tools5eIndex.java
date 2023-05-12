@@ -396,12 +396,13 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return filteredIndex == null || variantIndex == null;
     }
 
-    public Stream<JsonNode> classElementsMatching(Tools5eIndexType type, String className, String classSource) {
+    public List<JsonNode> classElementsMatching(Tools5eIndexType type, String className, String classSource) {
         String pattern = String.format("%s\\|[^|]+\\|%s\\|%s\\|.*", type, className, classSource)
                 .toLowerCase();
         return filteredIndex.entrySet().stream()
                 .filter(e -> e.getKey().matches(pattern))
-                .map(Entry::getValue);
+                .map(Entry::getValue)
+                .collect(Collectors.toList());
     }
 
     public String getClassKey(String className, String classSource) {
@@ -574,10 +575,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return filteredIndex.entrySet();
     }
 
-    public JsonNode resolveClassFeatureNode(String finalKey, String originClassKey) {
+    public JsonNode resolveClassFeatureNode(String finalKey) {
         JsonNode featureNode = getOrigin(finalKey);
         if (featureNode == null) {
-            tui().debugf("%s: %s not found", originClassKey, finalKey);
+            tui().debugf("%s not found", finalKey);
             return null; // skip this
         }
         return resolveClassFeatureNode(finalKey, featureNode);

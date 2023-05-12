@@ -82,7 +82,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         IndexFields.className.getTextOrEmpty(x),
                         "phb".equalsIgnoreCase(classSource) ? "" : classSource,
                         IndexFields.level.getTextOrEmpty(x),
-                        source.equalsIgnoreCase(classSource) ? "" : source)
+                        source.equalsIgnoreCase(classSource) ? "" : "|" + source)
                         .toLowerCase();
             }
             case deity: {
@@ -126,7 +126,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         IndexFields.subclassShortName.getTextOrEmpty(x),
                         "phb".equalsIgnoreCase(scSource) ? "" : scSource,
                         IndexFields.level.getTextOrEmpty(x),
-                        source.equalsIgnoreCase(scSource) ? "" : source)
+                        source.equalsIgnoreCase(scSource) ? "" : "|" + source)
                         .toLowerCase();
             }
             case subrace: {
@@ -184,6 +184,22 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 level,
                 featureSource.equalsIgnoreCase(classSource) ? "" : "|" + featureSource)
                 .toLowerCase();
+    }
+
+    public Object defaultSource() {
+        switch (this) {
+            case item:
+            case itemfluff:
+            case itemvariant:
+            case itementry:
+                return "DMG";
+            case legendarygroup:
+            case monster:
+            case monsterfluff:
+                return "MM";
+            default:
+                return "PHB";
+        }
     }
 
     enum IndexFields implements NodeReader {

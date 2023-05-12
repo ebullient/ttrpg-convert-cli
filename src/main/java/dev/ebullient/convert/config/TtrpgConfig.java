@@ -1,6 +1,5 @@
 package dev.ebullient.convert.config;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,15 +92,11 @@ public class TtrpgConfig {
     }
 
     private static void readSystemConfig() {
-        try {
-            JsonNode node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/convertData.json"));
-            readSystemConfig(node);
+        JsonNode node = Tui.readTreeFromResource("/convertData.json");
+        readSystemConfig(node);
 
-            node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/sourceMap.json"));
-            readSystemConfig(node);
-        } catch (IOException e) {
-            tui.error(e, "Error reading system config: /convertData.json");
-        }
+        node = Tui.readTreeFromResource("/sourceMap.json");
+        readSystemConfig(node);
     }
 
     // Global config: path mapping for missing images
