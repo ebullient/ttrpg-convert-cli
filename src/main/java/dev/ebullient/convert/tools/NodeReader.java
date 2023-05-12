@@ -184,10 +184,24 @@ public interface NodeReader {
         }
 
         Tui tui();
+
+        default String toAnchorTag(String x) {
+            return x.replace(" ", "%20")
+                    .replace(":", "")
+                    .replace(".", "")
+                    .replace('‑', '-');
+        }
     }
 
     interface FieldValue {
         String value();
+
+        default String toAnchorTag(String x) {
+            return x.replace(" ", "%20")
+                    .replace(":", "")
+                    .replace(".", "")
+                    .replace('‑', '-');
+        }
 
         default boolean isValueOfField(JsonNode source, NodeReader field) {
             return matches(field.getTextOrEmpty(source));

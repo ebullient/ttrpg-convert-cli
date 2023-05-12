@@ -45,7 +45,6 @@ public class Json2QuteClass extends Json2QuteCommon {
 
             // class features can be text elements or object elements (classFeature field)
             findClassFeatures(Tools5eIndexType.classfeature, jsonNode.get("classFeatures"), classFeatures, "classFeature");
-
             findSubclasses();
         } finally {
             parseState.pop(pushed); // restore state
@@ -63,7 +62,6 @@ public class Json2QuteClass extends Json2QuteCommon {
         for (ClassFeature cf : classFeatures) {
             cf.appendText(this, text, sources.primarySource());
         }
-        ;
 
         addOptionalFeatureText(node, text);
 
@@ -125,7 +123,6 @@ public class Json2QuteClass extends Json2QuteCommon {
                 parseState.pop(pushed);
             }
         }
-        ;
 
         return quteSc;
     }
@@ -145,6 +142,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         row_levels.get(0).add("Features");
         // Values
         for (int level = 1; level < row_levels.size(); level++) {
+            final int featureLevel = level;
             row_levels.get(level).add(JsonSource.levelToString(level));
             row_levels.get(level).add("+" + levelToPb(level));
 
@@ -153,7 +151,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 row_levels.get(level).add("⏤");
             } else {
                 row_levels.get(level).add(features.stream()
-                        .map(x -> markdownLinkify(x.getName()))
+                        .map(x -> markdownLinkify(x.getName(), featureLevel))
                         .collect(Collectors.joining(", ")));
             }
         }
@@ -686,10 +684,11 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     String markdownLinkify(String x) {
-        return String.format("[%s](#%s)", x,
-                x.replace(" ", "%20")
-                        .replace(":", "")
-                        .replace(".", ""));
+        return String.format("[%s](#%s)", x, toAnchorTag(x));
+    }
+
+    String markdownLinkify(String x, int level) {
+        return String.format("[%s](#%s)", x, toAnchorTag(x + " (Level " + level + ")"));
     }
 
     String columnValue(JsonNode c) {
