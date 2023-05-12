@@ -95,7 +95,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendEntryObjectToText(List<String> text, JsonNode node, String heading) {
         if (node.has("source") && !index().sourceIncluded(node.get("source").asText())) {
-            if (!index().sourceIncluded(getSources().alternateSource())) {
+            if (getSources() != null && !index().sourceIncluded(getSources().alternateSource())) {
                 return;
             }
         }
@@ -215,6 +215,9 @@ public interface JsonSource extends JsonTextReplacement {
                     case "refClassFeature": {
                         ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.classfeature, node,
                                 "classFeature");
+                        if (cf == null) {
+                            break; // skipped or not found
+                        }
                         if (parseState.inList()) {
                             // emit as list item (minus list decoration, see optionlist)
                             cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.classfeature));
@@ -229,16 +232,17 @@ public interface JsonSource extends JsonTextReplacement {
                         if (parseState.inList()) {
                             text.add(linkifyOptionalFeature(lookup));
                         } else {
-                            text.add("TODO refOptionalfeature "
-                                    + lookup
-                                    + "\n-> " + Tools5eIndexType.optionalfeature.fromRawKey(lookup)
-                                    + "\n-> " + parseState.inList());
+                            tui().errorf("TODO refOptionalfeature %s -> %s",
+                                    lookup, Tools5eIndexType.optionalfeature.fromRawKey(lookup));
                         }
                         break;
                     }
                     case "refSubclassFeature": {
                         ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.subclassfeature, node,
                                 "subclassFeature");
+                        if (cf == null) {
+                            break; // skipped or not found
+                        }
                         if (parseState.inList()) {
                             // emit as list item (minus list decoration, see optionlist)
                             cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.subclassfeature));

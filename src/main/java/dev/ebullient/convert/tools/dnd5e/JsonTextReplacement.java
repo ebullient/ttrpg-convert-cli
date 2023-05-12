@@ -163,8 +163,10 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             result = diseasePattern.matcher(result)
                     .replaceAll((match) -> linkifyRules(match.group(1), "diseases"));
 
-            result = sensePattern.matcher(result)
-                    .replaceAll((match) -> linkifyRules(match.group(1), "senses"));
+            result = sensePattern.matcher(result).replaceAll((match) -> {
+                String[] parts = match.group(1).split("\\|");
+                return linkifyRules(parts[0], "senses");
+            });
 
             result = skillPattern.matcher(result)
                     .replaceAll((match) -> linkifyRules(match.group(1), "skills"));
@@ -198,6 +200,8 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                         .replaceAll("\\{@action ([^}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@hazard ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@vehupgrade ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@vehicle ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@dc ([^}]+)}", "DC $1")
                         .replaceAll("\\{@d20 ([^}]+?)}", "$1")
                         .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
@@ -256,9 +260,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
 
     default String linkifyRules(String text, String rules) {
         return String.format("[%s](%s%s.md#%s)",
-                text, index().rulesVaultRoot(), rules,
-                text.replace(" ", "%20")
-                        .replace(".", ""));
+                text, index().rulesVaultRoot(), rules, toAnchorTag(text));
     }
 
     default String linkify(Tools5eIndexType type, String s) {
@@ -480,9 +482,9 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
         String resource = slugify(className + QuteSource.sourceIfNotCore(classSource));
 
-        return String.format("TODO classfeature [%s](%s%s/%s.md#%s)", linkText,
+        return String.format("[%s](%s%s/%s.md#%s)", linkText,
                 index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
-                resource, headerName.replace(" ", "%20"));
+                resource, toAnchorTag(headerName));
     }
 
     default String linkifyOptionalFeature(String match) {
@@ -506,42 +508,63 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         Tools5eSources featureSources = Tools5eSources.findSources(featureKey);
 
         String featureType = getFirstValue(featureJson.get("featureType"));
-        String resource = featureTypeToClass(featureType);
 
-        return String.format("TODO optionalfeature [%s](%s%s/%s.md#%s)",
+        return String.format("[%s](%s%s/%s.md#%s)",
                 linkText,
                 index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
-                resource, featureSources.getName().replace(" ", "%20"));
+                featureTypeToClass(featureType),
+                featureSources.getName().replace(" ", "%20"));
     }
 
     default String linkifySubclassFeature(String match) {
         //"Subclass Features:
         // {@subclassFeature Path of the Berserker|Barbarian||Berserker||3},
         // {@subclassFeature Alchemist|Artificer|TCE|Alchemist|TCE|3},
-        // {@subclassFeature Path of the Battlerager|Barbarian||Battlerager|SCAG|3},
-        // {@subclassFeature Blessed Strikes|Cleric||Life||8|UAClassFeatureVariants},
+        // {@subclassFeature Path of the Battlerager|Barbarian||Battlerager|SCAG|3},  --> "barbarian-path-of-the-... "
+        // {@subclassFeature Blessed Strikes|Cleric||Life||8|UAClassFeatureVariants}, --> "-domain"
+        // {@subclassFeature Blessed Strikes|Cleric|PHB|Twilight|TCE|8|TCE}
         // {@subclassFeature Path of the Berserker|Barbarian||Berserker||3||optional display text}.
         // Class source is assumed to be PHB. Subclass source is assumed to be PHB.
         // Subclass feature source is assumed to be the same as subclass source.",
 
         String[] parts = match.split("\\|");
-        String featureName = parts[0];
-        String linkText = featureName;
+        String linkText = parts[0];
+        String className = parts[1];
+        String classSource = parts[2].isBlank() ? "phb" : parts[2];
+        String subclass = parts[3];
+        String level = parts[5];
+
         if (parts.length > 7) {
             linkText = parts[7];
             int pos = match.lastIndexOf("|");
             match = match.substring(0, pos);
         }
-        String featureKey = index().getAliasOrDefault(Tools5eIndexType.subclassfeature.fromRawKey(match));
-        if (index().isExcluded(featureKey)) {
+
+        String classFeatureKey = index().getAliasOrDefault(Tools5eIndexType.subclassfeature.fromRawKey(match));
+        if (index().isExcluded(classFeatureKey)) {
             return linkText;
         }
 
-        // TODO: THIS IS WRONG
-        return String.format("TODO subclassfeature [%s](%s%s/%s.md#%s)",
+        // look up alias for subclass so link is correct, e.g.
+        // "subclass|redemption|paladin|phb|" : "subclass|oath of redemption|paladin|phb|",
+        // "subclass|twilight|cleric|phb|"    : "subclass|twilight domain|cleric|phb|"
+        String subclassKey = index().getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclass, className, classSource));
+        int first = subclassKey.indexOf('|');
+        subclass = subclassKey.substring(first + 1, subclassKey.indexOf('|', first + 1));
+
+        JsonNode featureJson = index().getNode(classFeatureKey);
+        Tools5eSources featureSources = Tools5eSources.findSources(classFeatureKey);
+        String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
+
+        String resource = slugify(QuteSource.getSubclassResourceName(subclass, className)
+                + QuteSource.sourceIfNotCore(classSource));
+
+        return String.format("TODO [%s](%s%s/%s.md#%s)",
                 linkText,
                 index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
-                "TODO", featureName.replace(" ", "%20"));
+                resource,
+                toAnchorTag(headerName));
+
     }
 
     default String linkifyCreature(String match) {
@@ -703,7 +726,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             case "AI":
                 return "artificer";
             case "ED":
-                return "monk";
+                return "monk-way-of-the-four-elements";
             case "EI":
             case "PB":
                 return "warlock";

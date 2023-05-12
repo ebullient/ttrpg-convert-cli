@@ -29,7 +29,7 @@ import dev.ebullient.convert.tools.ToolsIndex;
 public class Tools5eIndex implements JsonSource, ToolsIndex {
     private static Tools5eIndex instance;
 
-    static Tools5eIndex getInstance() {
+    public static Tools5eIndex getInstance() {
         return instance;
     }
 
@@ -91,31 +91,33 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         addRulesIfPresent(node, "variantrule");
 
         // Reference/Internal Types
-        node.withArray("backgroundFluff").forEach(x -> addToIndex(Tools5eIndexType.backgroundfluff, x));
-        node.withArray("itemEntry").forEach(x -> addToIndex(Tools5eIndexType.itementry, x));
-        node.withArray("itemFluff").forEach(x -> addToIndex(Tools5eIndexType.itemfluff, x));
-        node.withArray("monsterFluff").forEach(x -> addToIndex(Tools5eIndexType.monsterfluff, x));
-        node.withArray("raceFluff").forEach(x -> addToIndex(Tools5eIndexType.racefluff, x));
-        node.withArray("spellFluff").forEach(x -> addToIndex(Tools5eIndexType.spellfluff, x));
-        node.withArray("subrace").forEach(x -> addToIndex(Tools5eIndexType.subrace, x));
-        node.withArray("trait").forEach(x -> addToIndex(Tools5eIndexType.trait, x));
-        node.withArray("legendaryGroup").forEach(x -> addToIndex(Tools5eIndexType.legendarygroup, x));
-        node.withArray("subclass").forEach(x -> addToIndex(Tools5eIndexType.subclass, x));
-        node.withArray("classFeature").forEach(x -> addToIndex(Tools5eIndexType.classfeature, x));
-        node.withArray("optionalfeature").forEach(x -> addToIndex(Tools5eIndexType.optionalfeature, x));
-        node.withArray("subclassFeature").forEach(x -> addToIndex(Tools5eIndexType.subclassfeature, x));
-        // TODO: node.withArray("variant").forEach(x -> addToIndex(IndexType.itemvariant, x));
+        Tools5eIndexType.backgroundfluff.withArrayFrom(node, "backgroundFluff", this::addToIndex);
+        Tools5eIndexType.itementry.withArrayFrom(node, "itemEntry", this::addToIndex);
+        Tools5eIndexType.itemfluff.withArrayFrom(node, "itemFluff", this::addToIndex);
+        Tools5eIndexType.itemproperty.withArrayFrom(node, "itemProperty", this::addToIndex);
+        Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.monsterfluff.withArrayFrom(node, "monsterFluff", this::addToIndex);
+        Tools5eIndexType.racefluff.withArrayFrom(node, "raceFluff", this::addToIndex);
+        Tools5eIndexType.spellfluff.withArrayFrom(node, "spellFluff", this::addToIndex);
+        Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.trait.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.legendarygroup.withArrayFrom(node, "legendaryGroup", this::addToIndex);
+        Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
+        Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.subclassfeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
 
         // Output Types
-        node.withArray("background").forEach(x -> addToIndex(Tools5eIndexType.background, x));
-        node.withArray("class").forEach(x -> addToIndex(Tools5eIndexType.classtype, x));
-        node.withArray("deity").forEach(x -> addToIndex(Tools5eIndexType.deity, x));
-        node.withArray("feat").forEach(x -> addToIndex(Tools5eIndexType.feat, x));
-        node.withArray("baseitem").forEach(x -> addToIndex(Tools5eIndexType.item, x));
-        node.withArray("item").forEach(x -> addToIndex(Tools5eIndexType.item, x));
-        node.withArray("monster").forEach(x -> addToIndex(Tools5eIndexType.monster, x));
-        node.withArray("race").forEach(x -> addToIndex(Tools5eIndexType.race, x));
-        node.withArray("spell").forEach(x -> addToIndex(Tools5eIndexType.spell, x));
+        Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
+        Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.feat.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.item.withArrayFrom(node, "baseitem", this::addToIndex);
+        Tools5eIndexType.item.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.monster.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.race.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.spell.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.vehicle.withArrayFrom(node, this::addToIndex);
 
         if (node.has("name") && node.get("name").isArray()) {
             ArrayNode names = node.withArray("name");
@@ -231,7 +233,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             Tools5eSources.constructSources(node);
 
             if (type == Tools5eIndexType.subrace ||
-                    type == Tools5eIndexType.trait || type == Tools5eIndexType.legendarygroup ||
+                    type == Tools5eIndexType.trait ||
+                    type == Tools5eIndexType.legendarygroup ||
                     type == Tools5eIndexType.deity) {
                 // subraces are pulled in by races
                 // traits and legendary groups are pulled in my monsters
