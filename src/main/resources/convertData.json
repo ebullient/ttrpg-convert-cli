@@ -171,6 +171,30 @@
     "markerFile": [
       "cultsboons.json", "book/book-phb.json"
     ],
+    "fixes": {
+      "class/class-artificer.json": [
+        {
+          "match": "(\"page\":\\s*\\d+,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"Alchemist)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Alchemical Formula\", \"featureType\": [ \"AF\" ] } ],$2$3"
+        }
+      ],
+      "class/class-bard.json": [
+        {
+          "match": "(\"isReprinted\": true,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"College of Swords)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Fighting Style\", \"featureType\": [ \"FS:B\" ], \"progression\": { \"3\": 1 } } ],$2$3"
+        },
+        {
+          "match": "(\"page\":\\s*\\d+,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"College of Swords)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Fighting Style\", \"featureType\": [ \"FS:B\" ], \"progression\": { \"3\": 1 } } ],$2$3"
+        }
+      ],
+      "class/class-wizard.json": [
+        {
+          "match": "(\\],)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"Onomancy)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Onomancy Resonant\", \"featureType\": [ \"OR\" ] } ],$2$3"
+        }
+      ]
+    },
     "sources": [
       "adventures.json", "books.json", "names.json", "variantrules.json",
       "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",

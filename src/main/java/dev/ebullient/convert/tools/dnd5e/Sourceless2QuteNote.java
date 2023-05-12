@@ -98,32 +98,36 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         } else {
             pFormat = "%01d";
         }
-
-        data.forEach(x -> {
-            boolean pushed = parseState.push(x);
-            try {
-                List<String> text = new ArrayList<>();
-                appendEntryToText(text, x.get("entries"), "##");
-                String content = String.join("\n", text);
-                if (!content.isBlank()) {
-                    String titlePage = title;
-                    if (x.has("page")) {
-                        String page = x.get("page").asText();
-                        titlePage = title + ", p. " + page;
+        boolean p1 = parseState.push(data); // outer node
+        try {
+            for (JsonNode x : iterableElements(data)) {
+                boolean p2 = parseState.push(x); // inner node
+                try {
+                    List<String> text = new ArrayList<>();
+                    appendEntryToText(text, x.get("entries"), "##");
+                    String content = String.join("\n", text);
+                    if (!content.isBlank()) {
+                        String titlePage = title;
+                        if (x.has("page")) {
+                            String page = x.get("page").asText();
+                            titlePage = title + ", p. " + page;
+                        }
+                        String name = getTextOrDefault(x, "name", "");
+                        QuteNote note = new QuteNote(name, titlePage, content, tags);
+                        notes.put(String.format("%s/%s-%s.md",
+                                slugify(title),
+                                String.format(pFormat, prefix.get()),
+                                slugify(name)),
+                                note);
+                        prefix.incrementAndGet();
                     }
-                    String name = getTextOrDefault(x, "name", "");
-                    QuteNote note = new QuteNote(name, titlePage, content, tags);
-                    notes.put(String.format("%s/%s-%s.md",
-                            slugify(title),
-                            String.format(pFormat, prefix.get()),
-                            slugify(name)),
-                            note);
-                    prefix.incrementAndGet();
+                } finally {
+                    parseState.pop(p2);
                 }
-            } finally {
-                parseState.pop(pushed);
             }
-        });
+        } finally {
+            parseState.pop(p1);
+        }
 
         return notes;
     }

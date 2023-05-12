@@ -76,6 +76,7 @@ _Support content creators. Only use or include sources that you own._
 | MPMM | Mordenkainen Presents: Monsters of the Multiverse |
 | MTF | Mordenkainen's Tome of Foes |
 | MaBJoV | Minsc and Boo's Journal of Villainy |
+| MisMV1 | Misplaced Monsters: Volume 1 |
 | NRH | NERDS Restoring Harmony |
 | NRH-ASS | NERDS Restoring Harmony: A Sticky Situation |
 | NRH-AT | NERDS Restoring Harmony: Adventure Together |

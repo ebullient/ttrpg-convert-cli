@@ -88,7 +88,18 @@ public interface NodeReader {
         }
 
         default Iterable<JsonNode> iterableElements(JsonNode source) {
+            if (source == null) {
+                return List.of();
+            }
             return () -> source.elements();
+        }
+
+        default Iterable<JsonNode> iterableEntries(JsonNode source) {
+            JsonNode entries = source.get("entries");
+            if (entries == null) {
+                return List.of();
+            }
+            return () -> entries.elements();
         }
 
         default String join(String joiner, Collection<String> list) {

@@ -5,6 +5,7 @@ import java.util.Deque;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
 public class ParseState {
@@ -16,32 +17,43 @@ public class ParseState {
     }
 
     public static class ParseStateInfo {
-        final boolean inFootnotes;
+        boolean inFootnotes;
+        boolean inList;
         final String listIndent;
         final String src;
         final int page;
 
         private ParseStateInfo() {
-            this(null, 0, false, "");
+            this(null, 0, "");
         }
 
         private ParseStateInfo(String src) {
-            this(src, 0, false, "");
+            this(src, 0, "");
         }
 
         private ParseStateInfo(String src, int page) {
-            this(src, page, false, "");
+            this(src, page, "");
         }
 
         private ParseStateInfo(boolean inFootnotes) {
-            this(null, 0, inFootnotes, "");
+            this(null, 0, "");
+            this.inFootnotes = inFootnotes;
         }
 
-        private ParseStateInfo(String src, int page, boolean inFootnotes, String listIndent) {
+        private ParseStateInfo(String src, int page, String listIndent) {
             this.src = src;
-            this.inFootnotes = inFootnotes;
             this.listIndent = listIndent;
             this.page = page;
+        }
+
+        private ParseStateInfo setInList(boolean inList) {
+            this.inList = inList;
+            return this;
+        }
+
+        private ParseStateInfo setInFootnotes(boolean inFootnotes) {
+            this.inFootnotes = inFootnotes;
+            return this;
         }
 
         private static ParseStateInfo srcAndPage(ParseStateInfo prev, String src, int page) {
@@ -51,38 +63,45 @@ public class ParseState {
             return new ParseState.ParseStateInfo(
                     src == null ? prev.src : src,
                     page,
-                    prev.inFootnotes,
-                    prev.listIndent);
+                    prev.listIndent)
+                    .setInFootnotes(prev.inFootnotes)
+                    .setInList(prev.inList);
         }
 
         private static ParseStateInfo changePage(ParseStateInfo prev, int page) {
             if (prev == null) {
                 throw new IllegalStateException("Page without source first?");
             }
-            return new ParseStateInfo(prev.src, page, prev.inFootnotes, prev.listIndent);
+            return new ParseStateInfo(prev.src, page, prev.listIndent)
+                    .setInFootnotes(prev.inFootnotes)
+                    .setInList(prev.inList);
         }
 
         private static ParseStateInfo inFootnotes(ParseStateInfo prev, boolean inFootnotes) {
             if (prev == null) {
                 return new ParseStateInfo(inFootnotes);
             }
-            return new ParseState.ParseStateInfo(prev.src, prev.page, inFootnotes, prev.listIndent);
+            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
+                    .setInFootnotes(prev.inFootnotes)
+                    .setInList(prev.inList);
         }
 
         private static ParseStateInfo indentList(ParseStateInfo prev) {
             if (prev == null) {
-                throw new IllegalStateException("List indent outside of src/page?");
+                return new ParseStateInfo().setInList(true);
             }
-            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.inFootnotes,
-                    prev.listIndent + "    ");
+            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent + "    ")
+                    .setInFootnotes(prev.inFootnotes)
+                    .setInList(true);
         }
 
         private static ParseStateInfo indentList(ParseStateInfo prev, String value) {
             if (prev == null) {
-                throw new IllegalStateException("List indent outside of src/page?");
+                return new ParseStateInfo().setInList(true);
             }
-            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.inFootnotes,
-                    value);
+            return new ParseState.ParseStateInfo(prev.src, prev.page, value)
+                    .setInFootnotes(prev.inFootnotes)
+                    .setInList(true);
         }
     }
 
@@ -154,6 +173,11 @@ public class ParseState {
         return current != null && current.inFootnotes;
     }
 
+    public boolean inList() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current != null && current.inList;
+    }
+
     public String sourceAndPage() {
         ParseState.ParseStateInfo current = stack.peek();
         if (current == null || current.page == 0) {
@@ -161,6 +185,14 @@ public class ParseState {
         }
         return String.format("<sup>%s p. %s</sup>",
                 current.src, current.page);
+    }
+
+    public String getSource(Tools5eIndexType type) {
+        ParseState.ParseStateInfo current = stack.peek();
+        if (current == null || current.src == null) {
+            return type == null ? null : type.defaultSource().toString();
+        }
+        return current.src;
     }
 
     public String getSource(Pf2eIndexType type) {
