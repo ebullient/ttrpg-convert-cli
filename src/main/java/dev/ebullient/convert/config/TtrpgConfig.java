@@ -44,8 +44,7 @@ public class TtrpgConfig {
     }
 
     public static List<Fix> getFixes(String filepath) {
-        List<Fix> list = activeConfig().fixes.get(filepath);
-        return list == null ? List.of() : list;
+        return activeConfig().findFixesFor(filepath);
     }
 
     public static String sourceToLongName(String src) {
@@ -147,6 +146,15 @@ public class TtrpgConfig {
         final Map<String, List<Fix>> fixes = new HashMap<>();
         final List<String> sources = new ArrayList<>();
         final List<String> markerFiles = new ArrayList<>();
+
+        public List<Fix> findFixesFor(String filepath) {
+            for (Map.Entry<String, List<Fix>> entry : fixes.entrySet()) {
+                if (filepath.endsWith(entry.getKey())) {
+                    return entry.getValue();
+                }
+            }
+            return List.of();
+        }
     }
 
     public final static TypeReference<Map<String, List<Fix>>> FIXES = new TypeReference<>() {

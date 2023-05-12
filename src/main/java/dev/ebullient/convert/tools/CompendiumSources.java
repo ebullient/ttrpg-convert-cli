@@ -159,7 +159,7 @@ public abstract class CompendiumSources {
         String source;
         String page;
 
-        SourceAndPage(JsonNode jsonElement) {
+        public SourceAndPage(JsonNode jsonElement) {
             source = Fields.source.getTextOrNull(jsonElement);
             page = Fields.page.getTextOrNull(jsonElement);
         }

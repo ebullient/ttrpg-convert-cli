@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.CompendiumSources.SourceAndPage;
 
 public class Sourceless2QuteNote extends Json2QuteCommon {
 
@@ -144,8 +145,12 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             node.forEach(entry -> {
                 maybeAddBlankLine(text);
                 text.add("## " + entry.get("name").asText());
+                if (!entry.has("srd")) {
+                    SourceAndPage sourceAndPage = new SourceAndPage(entry);
+                    text.add("_Source: " + sourceAndPage.toString() + "_");
+                }
                 maybeAddBlankLine(text);
-                appendEntryObjectToText(text, entry, "###");
+                appendEntryToText(text, entry.get("entries"), "###");
             });
 
             return new QuteNote(title, null, text, tags);

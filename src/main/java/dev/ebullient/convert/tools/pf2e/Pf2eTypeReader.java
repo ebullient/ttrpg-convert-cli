@@ -402,8 +402,7 @@ public interface Pf2eTypeReader extends JsonSource {
 
         public String getRulesPath(String rulesRoot) {
             return String.format("%sTODO.md#%s",
-                    rulesRoot, this.name().replace(" ", "%20")
-                            .replace(".", ""));
+                    rulesRoot, toAnchorTag(this.name()));
         }
 
         static Pf2eSpellComponent valueFromEncoding(String value) {

@@ -53,7 +53,7 @@ public class CommonDataTests {
             for (String x : List.of("adventures.json", "books.json",
                     "adventure/adventure-wdh.json", "adventure/adventure-pota.json",
                     "book/book-vgm.json", "book/book-phb.json")) {
-                tui.readFile(TestUtils.TOOLS_PATH_5E.resolve(x), index::importTree);
+                tui.readFile(TestUtils.TOOLS_PATH_5E.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
             }
             tui.readToolsDir(TestUtils.TOOLS_PATH_5E, index::importTree);
             index.prepare();

@@ -286,7 +286,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
             return linkText;
         }
         if (targetType == Pf2eIndexType.domain) {
-            parts[0] = parts[0].replaceAll("\\s+\\(Apocryphal\\)", "");
+            parts[0] = parts[0].replaceAll("\\s+\\([Aa]pocryphal\\)", "");
             return linkifyRules(Pf2eIndexType.domain, linkText, "domains", toTitleCase(parts[0]));
         } else if (targetType == Pf2eIndexType.condition) {
             return linkifyRules(Pf2eIndexType.condition, linkText.replaceAll("\\s\\d+$", ""),
@@ -343,8 +343,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                 text,
                 type.relativeRepositoryRoot(index()),
                 rules,
-                anchor.replace(" ", "%20")
-                        .replace(".", ""));
+                toAnchorTag(anchor));
     }
 
     default String linkifyClass(String match) {

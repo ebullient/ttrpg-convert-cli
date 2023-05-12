@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,8 +20,9 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     item,
     itementry,
     itemfluff,
-    itemvariant,
+    itemproperty,
     legendarygroup,
+    magicvariant,
     monster,
     monsterfluff,
     race,
@@ -35,7 +37,9 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     trait,
     syntheticGroup,
     note,
-    reference;
+    reference,
+    vehicle,
+    vehicleupgrade;
 
     String templateName;
 
@@ -186,17 +190,20 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 .toLowerCase();
     }
 
-    public Object defaultSource() {
+    public String defaultSource() {
         switch (this) {
             case item:
             case itemfluff:
-            case itemvariant:
+            case itemproperty:
             case itementry:
                 return "DMG";
             case legendarygroup:
             case monster:
             case monsterfluff:
                 return "MM";
+            case vehicle:
+            case vehicleupgrade:
+                return "GoS";
             default:
                 return "PHB";
         }
@@ -212,5 +219,13 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
         raceSource,
         subclassSource,
         subclassShortName
+    }
+
+    public void withArrayFrom(JsonNode node, BiConsumer<Tools5eIndexType, JsonNode> callback) {
+        node.withArray(this.nodeName()).forEach(x -> callback.accept(this, x));
+    }
+
+    public void withArrayFrom(JsonNode node, String field, BiConsumer<Tools5eIndexType, JsonNode> callback) {
+        node.withArray(field).forEach(x -> callback.accept(this, x));
     }
 }

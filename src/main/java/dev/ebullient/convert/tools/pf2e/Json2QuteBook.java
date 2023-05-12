@@ -108,8 +108,7 @@ public class Json2QuteBook extends Json2QuteBase {
             final String f = filename;
             headers.forEach(h -> text.add(String.format("- [%s](%s%s/%s#%s)", h,
                     index.rulesVaultRoot(), bookRelativePath, f,
-                    h.replace(" ", "%20")
-                            .replace(".", ""))));
+                    toAnchorTag(h))));
         });
 
         return new QuteBook(sources.getName(), text, tags, bookRelativePath, bookInfo, List.of());
