@@ -232,7 +232,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             result = notePattern.matcher(result)
                     .replaceAll((match) -> {
                         List<String> text = new ArrayList<>();
-                        text.add("> [!pf2-note]");
+                        text.add("> [!note]");
                         for (String line : match.group(2).split("\n")) {
                             text.add("> " + line);
                         }
@@ -480,7 +480,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
         String resource = slugify(className + QuteSource.sourceIfNotCore(classSource));
 
-        return String.format("[%s](%s%s/%s.md#%s)", linkText,
+        return String.format("TODO classfeature [%s](%s%s/%s.md#%s)", linkText,
                 index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
                 resource, headerName.replace(" ", "%20"));
     }
@@ -508,7 +508,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         String featureType = getFirstValue(featureJson.get("featureType"));
         String resource = featureTypeToClass(featureType);
 
-        return String.format("[%s](%s%s/%s.md#%s)",
+        return String.format("TODO optionalfeature [%s](%s%s/%s.md#%s)",
                 linkText,
                 index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
                 resource, featureSources.getName().replace(" ", "%20"));
@@ -538,7 +538,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         }
 
         // TODO: THIS IS WRONG
-        return String.format("[%s](%s%s/%s.md#%s)",
+        return String.format("TODO subclassfeature [%s](%s%s/%s.md#%s)",
                 linkText,
                 index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
                 "TODO", featureName.replace(" ", "%20"));
@@ -622,7 +622,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
     }
 
     default String decoratedFeatureTypeName(Tools5eSources valueSources, JsonNode value) {
-        String name = decoratedTypeName(valueSources);
+        String name = valueSources.getName();
         String type = IndexFields.featureType.getTextOrEmpty(value);
 
         if (!type.isEmpty()) {
@@ -674,36 +674,64 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         return name;
     }
 
+    // Parser.OPT_FEATURE_TYPE_TO_FULL = {
+    //     AI: "Artificer Infusion",
+    //     ED: "Elemental Discipline",
+    //     EI: "Eldritch Invocation",
+    //     MM: "Metamagic",
+    //     "MV": "Maneuver",
+    //     "MV:B": "Maneuver, Battle Master",
+    //     "MV:C2-UA": "Maneuver, Cavalier V2 (UA)",
+    //     "AS:V1-UA": "Arcane Shot, V1 (UA)",
+    //     "AS:V2-UA": "Arcane Shot, V2 (UA)",
+    //     "AS": "Arcane Shot",
+    //     OTH: "Other",
+    //     "FS:F": "Fighting Style; Fighter",
+    //     "FS:B": "Fighting Style; Bard",
+    //     "FS:P": "Fighting Style; Paladin",
+    //     "FS:R": "Fighting Style; Ranger",
+    //     "PB": "Pact Boon",
+    //     "OR": "Onomancy Resonant",
+    //     "RN": "Rune Knight Rune",
+    //     "AF": "Alchemical Formula",
+    // };
+
     default String featureTypeToClass(String type) {
         switch (type) {
+            case "AF":
+                return "artificer-alchemist-uaartificer";
+            case "AI":
+                return "artificer";
             case "ED":
                 return "monk";
             case "EI":
+            case "PB":
                 return "warlock";
             case "MM":
                 return "sorcerer";
             case "AS":
             case "AS:V1-UA":
             case "AS:V2-UA":
+                return "fighter-arcane-archer";
             case "FS:F":
+                return "fighter";
             case "MV":
             case "MV:B":
+                return "fighter-battle-master";
             case "MV:C2-UA":
             case "RN":
-                return "fighter";
+                return "fighter-rune-knight";
             case "FS:B":
-                return "bard";
+                return "bard-college-of-swords";
             case "FS:R":
                 return "ranger";
             case "FS:P":
                 return "paladin";
-            case "PB":
-                return "warlock";
-            case "AF":
-            case "AI":
-                return "artificer";
+            case "OR":
+                return "wizard-onomancy-ua";
             default:
-                throw new IllegalArgumentException("Unknown reature type: " + type);
+                tui().errorf("Unknown class for feature type %s", type);
+                return "unknown";
         }
     }
 }
