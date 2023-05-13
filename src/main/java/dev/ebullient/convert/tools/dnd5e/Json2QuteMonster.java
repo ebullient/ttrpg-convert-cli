@@ -463,7 +463,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
             List<String> text = new ArrayList<>();
             appendEntryToText(text, e.get("entry"), null);
             appendEntryToText(text, e.get("entries"), null);
-            traits.add(new Trait(name, String.join("\n", text)));
+
+            String body = String.join("\n", text);
+            if (body.startsWith(">")) {
+                body = "\n" + body;
+            }
+            traits.add(new Trait(name, body));
         });
         return traits;
     }

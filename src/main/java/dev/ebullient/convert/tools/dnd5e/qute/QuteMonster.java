@@ -246,6 +246,7 @@ public class QuteMonster extends QuteSource {
 
         // De-markdown-ify
         return Tui.quotedYaml().dump(map).trim()
+                .replaceAll("`", "")
                 .replaceAll("\\*([^*]+)\\*", "$1") // em
                 .replaceAll("\\*([^*]+)\\*", "$1") // bold
                 .replaceAll("\\*([^*]+)\\*", "$1"); // bold em

@@ -559,12 +559,11 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         String resource = slugify(QuteSource.getSubclassResourceName(subclass, className)
                 + QuteSource.sourceIfNotCore(classSource));
 
-        return String.format("TODO [%s](%s%s/%s.md#%s)",
+        return String.format("[%s](%s%s/%s.md#%s)",
                 linkText,
                 index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
                 resource,
                 toAnchorTag(headerName));
-
     }
 
     default String linkifyCreature(String match) {
