@@ -28,7 +28,7 @@
         <url>https://github.com/ebullient/ttrpg-convert-cli/issues</url>
     </issueManagement>
     <properties>
-        <revision>199-SNAPSHOT</revision>
+        <revision>1.1.2</revision>
         <!-- Build -->
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <maven.compiler.release>11</maven.compiler.release>
