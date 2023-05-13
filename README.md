@@ -410,8 +410,10 @@ Of particular note are the varied monster templates:
 
 ## 1.1.1: Dice roller in statblocks and text
 
-Set `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice }`, and `{@damage }` strings.
-This can be set differently for either "5e" or "pf2e" configurations.
+If you are using the default templates and want to render dice rolls, set
+`useDiceRoller` to true to use dice roller strings when replacing dice `{@dice
+}`, and `{@damage }` strings. This can be set differently for either "5e" or
+"pf2e" configurations. Please note that if you are using a custom template and fantasy statblocks, you do **not** need to set the dice roller in your config. Fantasy statblocks will take care of the rendering itself. 
 
 See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general structure of config.
 
