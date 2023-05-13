@@ -3,6 +3,37 @@
     "srdEntries": {
       "properties": [
         {
+          "type": "entries",
+          "name": "Attunement",
+          "basicRules": true,
+          "srd":true,
+          "entries": [
+            "Some magic items require a creature to form a bond with them before their magical properties can be used. This bond is called attunement, and certain items have a prerequisite for it. If the prerequisite is a class, a creature must be a member of that class to attune to the item. (If the class is a spellcasting class, a monster qualifies if it has spell slots and uses that class's spell list.) If the prerequisite is to be a spellcaster, a creature qualifies if it can cast at least one spell using its traits or features, not using a magic item or the like.",
+            "Without becoming attuned to an item that requires attunement, a creature gains only its nonmagical benefits, unless its description states otherwise. For example, a magic shield that requires attunement provides the benefits of a normal shield to a creature not attuned to it, but none of its magical properties.",
+            "Attuning to an item requires a creature to spend a short rest focused on only that item while being in physical contact with it (this can't be the same short rest used to learn the item's properties). This focus can take the form of weapon practice (for a weapon), meditation (for a wondrous item), or some other appropriate activity. If the short rest is interrupted, the attunement attempt fails. Otherwise, at the end of the short rest, the creature gains an intuitive understanding of how to activate any magical properties of the item, including any necessary command words.",
+            "An item can be attuned to only one creature at a time, and a creature can be attuned to no more than three magic items at a time. Any attempt to attune to a fourth item fails; the creature must end its attunement to an item first. Additionally, a creature can't attune to more than one copy of an item. For example, a creature can't attune to more than one ring of protection at a time.",
+            "A creature's attunement to an item ends if the creature no longer satisfies the prerequisites for attunement, if the item has been more than 100 feet away for at least 24 hours, if the creature dies, or if another creature attunes to the item. A creature can also voluntarily end attunement by spending another short rest focused on the item, unless the item is cursed.",
+            {
+              "type": "entries",
+              "name": "Optional Attunement",
+              "srd": true,
+              "basicRules": true,
+              "entries": [
+                "Attunement may be required for this item."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Requires Attunement",
+              "srd": true,
+              "basicRules": true,
+              "entries": [
+                "Attunement is required for this item."
+              ]
+            }
+          ]
+        },
+        {
           "name": "Weapon Properties",
           "srd": true,
           "basicRules": true,
@@ -10,11 +41,31 @@
             {
               "type": "entries",
               "name": "Ammunition",
+              "itemType": "A",
               "srd": true,
               "basicRules": true,
               "entries": [
                 "You can use a weapon that has the ammunition property to make a ranged attack only if you have ammunition to fire from the weapon. Each time you attack with the weapon, you expend one piece of ammunition. Drawing the ammunition from a quiver, case, or other container is part of the attack. Loading a one-handed weapon requires a free hand. At the end of the battle, you can recover half your expended ammunition by taking a minute to search the battlefield.",
                 "If you use a weapon that has the ammunition property to make a melee attack, you treat the weapon as an improvised weapon. A sling must be loaded to deal any damage when used in this way."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Ammunition (Firearm)",
+              "itemType": "AF",
+              "page": 267,
+              "source": "DMG",
+              "entries": [
+                "The ammunition of a firearm is destroyed upon use. Renaissance and modern firearms use bullets. Futuristic firearms are powered by a special type of ammunition called energy cells. An energy cell contains enough power for all the shots its firearm can make."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Burst Fire",
+              "page": 267,
+              "source": "DMG",
+              "entries": [
+                "A weapon that has the burst fire property can make a normal single-target attack, or it can spray a 10-foot-cube area within normal range with shots. Each creature in the area must succeed on a DC 15 Dexterity saving throw or take the weapon's normal damage. This action uses ten pieces of ammunition."
               ]
             },
             {
@@ -55,7 +106,63 @@
             },
             {
               "type": "entries",
+              "name": "Martial",
+              "srd": true,
+              "basicRules" : true,
+              "entries": [
+                "Martial weapons, including swords, axes, and polearms, require more specialized training to use effectively. Most warriors use martial weapons because these weapons put their fighting style and training to best use."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Poison",
+              "source": "DMG",
+              "page": 257,
+              "entries": [
+                "Given their insidious and deadly nature, poisons are illegal in most societies but are a favorite tool among assassins, drow, and other evil creatures.",
+                "Poisons come in the following four types.",
+                {
+                  "type": "entries",
+                  "name": "Contact",
+                  "page": 257,
+                  "entries": [
+                    "Contact poison can be smeared on an object and remains potent until it is touched or washed off. A creature that touches contact poison with exposed skin suffers its effects."
+                  ],
+                  "id": "2f9"
+                },
+                {
+                  "type": "entries",
+                  "name": "Ingested",
+                  "page": 257,
+                  "entries": [
+                    "A creature must swallow an entire dose of ingested poison to suffer its effects. You might decide that a partial dose has a reduced effect, such as allowing advantage on the saving throw or dealing only half damage on a failed save. The dose can be delivered in food or a liquid."
+                  ],
+                  "id": "2fa"
+                },
+                {
+                  "type": "entries",
+                  "name": "Inhaled",
+                  "page": 257,
+                  "entries": [
+                    "These poisons are powders or gases that take effect when inhaled. Blowing the powder or releasing the gas subjects creatures in a 5-foot cube to its effect. The resulting cloud dissipates immediately afterward. Holding one's breath is ineffective against inhaled poisons, as they affect nasal membranes, tear ducts, and other parts of the body."
+                  ],
+                  "id": "2fb"
+                },
+                {
+                  "type": "entries",
+                  "name": "Injury",
+                  "page": 257,
+                  "entries": [
+                    "Injury poison can be applied to weapons, ammunition, trap components, and other objects that deal piercing or slashing damage and remains potent until delivered through a wound or washed off. A creature that takes piercing or slashing damage from an object coated with the poison is exposed to its effects."
+                  ],
+                  "id": "2fc"
+                }
+              ]
+            },
+            {
+              "type": "entries",
               "name": "Range",
+              "itemType": "R",
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -69,6 +176,15 @@
               "basicRules": true,
               "entries": [
                 "This weapon adds 5 feet to your reach when you attack with it. This property also determines your reach for opportunity attacks with a reach weapon."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Reload",
+              "source": "DMG",
+              "page": 267,
+              "entries": [
+                "A limited number of shots can be made with a weapon that has the reload property. A character must then reload it using an action or a bonus action (the character's choice)."
               ]
             },
             {
@@ -149,18 +265,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Requires Attunement",
-          "srd": true,
-          "basicRules": true,
-          "entries": [
-            "Some magic items require a creature to form a bond with them before their magical properties can be used. This bond is called attunement, and certain items have a prerequisite for it. If the prerequisite is to be a spellcaster, a creature qualifies if it can cast at least one spell using its traits or features, not using a magic item or the like. (If the class is a spellcasting class, a monster qualifies if that creature has spell slots and uses that class's spell list.)",
-            "Without becoming attuned to an item that requires attunement, a creature gains only its nonmagical benefits, unless its description states otherwise. For example, a magic shield that requires attunement provides the benefits of a normal shield to a creature not attuned to it, but none of its magical properties.",
-            "Attuning to an item requires a creature to spend a short rest focused on only that item while being in physical contact with it (this can't be the same short rest used to learn the item's properties). This focus can take the form of weapon practice (for a weapon), meditation (for a wondrous item), or some other appropriate activity. If the short rest is interrupted, the attunement attempt fails. Otherwise, at the end of the short rest, the creature gains an intuitive understanding of how to activate any magical properties of the item, including any necessary command words.",
-            "An item can be attuned to only one creature at a time, and a creature can be attuned to no more than three magic items at a time. Any attempt to attune to a fourth item fails; the creature must end its attunement to an item first. Additionally, a creature can't attune to more than one copy of an item. For example, a creature can't attune to more than one ring of protection at a time.",
-            "A creature's attunement to an item ends if the creature no longer satisfies the prerequisites for attunement, if the item has been more than 100 feet away for at least 24 hours, if the creature dies, or if another creature attunes to the item. A creature can also voluntarily end attunement by spending another short rest focused on the item, unless the item is cursed."
-          ]
         }
       ]
     },
@@ -171,6 +275,36 @@
     "markerFile": [
       "cultsboons.json", "book/book-phb.json"
     ],
+    "fixes": {
+      "adventure/adventure-lr.json": [
+        {
+          "match": " \\(see the \\\\\\\"\\{@condition Bluerot\\|GoS}\\\\\\\" sidebar\\)",
+          "replace": ""
+        }
+      ],
+      "class/class-artificer.json": [
+        {
+          "match": "(\"page\":\\s*\\d+,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"Alchemist)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Alchemical Formula\", \"featureType\": [ \"AF\" ] } ],$2$3"
+        }
+      ],
+      "class/class-bard.json": [
+        {
+          "match": "(\"isReprinted\": true,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"College of Swords)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Fighting Style\", \"featureType\": [ \"FS:B\" ], \"progression\": { \"3\": 1 } } ],$2$3"
+        },
+        {
+          "match": "(\"page\":\\s*\\d+,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"College of Swords)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Fighting Style\", \"featureType\": [ \"FS:B\" ], \"progression\": { \"3\": 1 } } ],$2$3"
+        }
+      ],
+      "class/class-wizard.json": [
+        {
+          "match": "(\\],)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"Onomancy)",
+          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Onomancy Resonant\", \"featureType\": [ \"OR\" ] } ],$2$3"
+        }
+      ]
+    },
     "sources": [
       "adventures.json", "books.json", "names.json", "variantrules.json",
       "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
@@ -199,6 +333,22 @@
       "tables.json", "traits.json", "variantrules.json", "vehicles.json"
     ],
     "fixes": {
+      "actions.json": [
+        {
+          "match": "\\{@skill Craft}",
+          "replace": "{@skill Crafting||Craft}"
+        },
+        {
+          "match": "\\{@skill Intimidate}",
+          "replace": "{@skill Intimidation}"
+        }
+      ],
+      "books.json": [
+        {
+          "match": "Activating Magic Items",
+          "replace": "Activating Items"
+        }
+      ],
       "book/book-crb.json": [
         {
           "match": "\\{@b \\{@action Identify Magic}, particularly divine magic.",
@@ -207,16 +357,22 @@
         {
           "match": "\\{@b circumstance penalties \\{@b status penalties}",
           "replace": "{@b circumstance penalties}, {@b status penalties}"
-        }
-      ],
-      "tables.json": [
-        {
-          "match": "trait sweep$",
-          "replace": "trait sweep}"
         },
         {
-          "match": "group Knife]",
-          "replace": "group Knife}"
+          "match": "\"name\": \"Crafting Goods for the Market (\\{@skill Crafting})\"",
+          "replace": "\"name\": \"Crafting Goods for the Market\""
+        }
+      ],
+      "book/book-gmg.json": [
+        {
+          "match": "\"name\": \"\\{@action Strike||Strikes}\"",
+          "replace": "\"name\": \"Strikes\""
+        }
+      ],
+      "book/book-som.json": [
+        {
+          "match": "somebody use the \\{@skill Craft}",
+          "replace": "somebody use the {@action Craft}"
         }
       ],
       "feats/feats-crb.json": [
@@ -233,6 +389,38 @@
         {
           "match": "\"name\": \"\\{@feat Faultspawn\\|LOIL}\"",
           "replace": "\"name\": \"Faultspawn\""
+        }
+      ],
+      "hazards.json": [
+        {
+          "match": "\\{@skill Intimidate}",
+          "replace": "{@skill Intimidation}"
+        }
+      ],
+      "items/items-lopsg.json": [
+        {
+          "match": "\\{@skill Games Lore}",
+          "replace": "{@skill Lore||Games Lore}"
+        }
+      ],
+      "items/items-lotgb.json": [
+        {
+          "match": "\\{@condition concealment}",
+          "replace": "{@condition concealed||concealment}"
+        }
+      ],
+      "tables.json": [
+        {
+          "match": "trait sweep$",
+          "replace": "trait sweep}"
+        },
+        {
+          "match": "group Knife]",
+          "replace": "group Knife}"
+        },
+        {
+          "match": "\\{@condition flat-flooted}",
+          "replace": "\\{@condition flat-footed}"
         }
       ]
     }

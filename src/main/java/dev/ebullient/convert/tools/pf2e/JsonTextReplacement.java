@@ -15,8 +15,6 @@ import dev.ebullient.convert.tools.NodeReader;
 
 public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType> {
 
-    ParseState parseState = new ParseState();
-
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
     Pattern runeItemPattern = Pattern.compile("\\{@runeItem ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
@@ -74,6 +72,25 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                     .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
                     .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
                     .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
+
+            // TODO: review against Pf2e formatting patterns
+            if (cfg().alwaysUseDiceRoller()) {
+                result = result
+                        .replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                                "Hit: `dice: $2|avg` (`$2`)")
+                        .replaceAll("plus ([\\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                                "plus `dice: $2|avg` (`$2`)")
+                        .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                                "$1 `dice: $2|avg` (`$2`)")
+                        .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + DICE_FORMULA + ")}\\)",
+                                "$1 `dice: $2|avg` (`$2`)")
+                        .replaceAll("\\{@hit (\\d+)} to hit", "`dice: d20+$1` (+$1 to hit)")
+                        .replaceAll("\\{@hit (-\\d+)} to hit", "`dice: d20-$1` (-$1 to hit)")
+                        .replaceAll("\\{@hit (\\d+)}", "`dice: d20+$1` (+$1)")
+                        .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
+                        .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
+                        .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)");
+            }
 
             result = dicePattern.matcher(result)
                     .replaceAll((match) -> {
@@ -269,7 +286,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
             return linkText;
         }
         if (targetType == Pf2eIndexType.domain) {
-            parts[0] = parts[0].replaceAll("\\s+\\(Apocryphal\\)", "");
+            parts[0] = parts[0].replaceAll("\\s+\\([Aa]pocryphal\\)", "");
             return linkifyRules(Pf2eIndexType.domain, linkText, "domains", toTitleCase(parts[0]));
         } else if (targetType == Pf2eIndexType.condition) {
             return linkifyRules(Pf2eIndexType.condition, linkText.replaceAll("\\s\\d+$", ""),
@@ -326,8 +343,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                 text,
                 type.relativeRepositoryRoot(index()),
                 rules,
-                anchor.replace(" ", "%20")
-                        .replace(".", ""));
+                toAnchorTag(anchor));
     }
 
     default String linkifyClass(String match) {

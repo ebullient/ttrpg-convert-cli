@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -23,7 +24,7 @@ public class Pf2eSources extends CompendiumSources {
     }
 
     public static Pf2eSources findSources(JsonNode node) {
-        String key = Pf2eTypeReader.TtrpgValue.indexKey.getFromNode(node);
+        String key = TtrpgValue.indexKey.getFromNode(node);
         return keyToSources.get(key);
     }
 
@@ -31,7 +32,7 @@ public class Pf2eSources extends CompendiumSources {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
         }
-        String key = Pf2eTypeReader.TtrpgValue.indexKey.getFromNode(node);
+        String key = TtrpgValue.indexKey.getFromNode(node);
         return keyToSources.computeIfAbsent(key, k -> {
             Pf2eSources s = new Pf2eSources(type, key, node);
             s.checkKnown();
@@ -56,7 +57,7 @@ public class Pf2eSources extends CompendiumSources {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
         }
-        String key = Pf2eTypeReader.TtrpgValue.indexKey.getFromNode(node);
+        String key = TtrpgValue.indexKey.getFromNode(node);
         if (key == null) {
             key = type.createKey(node);
         }
@@ -106,9 +107,13 @@ public class Pf2eSources extends CompendiumSources {
         this.type = type;
     }
 
+    public JsonNode findNode() {
+        return Pf2eIndex.findNode(this);
+    }
+
     protected String findName(IndexType type, JsonNode node) {
         if (type == Pf2eIndexType.syntheticGroup || type == Pf2eIndexType.bookReference) {
-            return this.key.replaceAll("/.*\\|(.*)\\|/", "$1");
+            return this.key.replaceAll(".*\\|(.*)\\|", "$1");
         }
         String name = JsonSource.Field.name.getTextOrNull(node);
         if (name == null) {
@@ -120,7 +125,7 @@ public class Pf2eSources extends CompendiumSources {
     @Override
     protected String findSourceText(IndexType type, JsonNode jsonElement) {
         if (type == Pf2eIndexType.syntheticGroup) {
-            return this.key.replaceAll("/.*\\|([^|]+)$/", "$1");
+            return this.key.replaceAll(".*\\|([^|]+)$", "$1");
         }
         return super.findSourceText(type, jsonElement);
     }

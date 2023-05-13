@@ -10,17 +10,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 
-public abstract class Json2QuteCommon implements JsonSource {
+public class Json2QuteCommon implements JsonSource {
     protected final Tools5eIndex index;
     protected final Tools5eSources sources;
+    protected final Tools5eIndexType type;
     protected final JsonNode node;
 
     Json2QuteCommon(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         this.index = index;
         this.node = jsonNode;
-        this.sources = type == Tools5eIndexType.sourceless ? null : index.constructSources(type, jsonNode);
+        this.type = type;
+        this.sources = type == Tools5eIndexType.syntheticGroup ? null : Tools5eSources.findOrTemporary(type, jsonNode);
     }
 
     String getName() {
@@ -40,6 +43,7 @@ public abstract class Json2QuteCommon implements JsonSource {
     public String getText(String heading) {
         List<String> text = new ArrayList<>();
         appendEntryToText(text, node, heading);
+        appendFootnotes(text, 0);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
@@ -51,7 +55,8 @@ public abstract class Json2QuteCommon implements JsonSource {
     public List<String> getFluff(Tools5eIndexType fluffType, String heading, List<ImageRef> imageRef) {
         List<String> text = new ArrayList<>();
         if (booleanOrDefault(node, "hasFluff", false) || booleanOrDefault(node, "hasFluffImages", false)) {
-            JsonNode fluffNode = index.getNode(fluffType, node);
+            String fluffKey = fluffType.createKey(node);
+            JsonNode fluffNode = index.getNode(fluffKey);
             if (fluffNode != null) {
                 JsonSourceCopier copier = new JsonSourceCopier(index);
                 fluffNode = copier.handleCopy(fluffType, fluffNode);
@@ -77,7 +82,8 @@ public abstract class Json2QuteCommon implements JsonSource {
     public List<ImageRef> getFluffImages(Tools5eIndexType fluffType) {
         List<ImageRef> imageRef = new ArrayList<>();
         if (booleanOrDefault(node, "hasFluffImages", false)) {
-            JsonNode fluffNode = index.getNode(fluffType, node);
+            String fluffKey = fluffType.createKey(node);
+            JsonNode fluffNode = index.getNode(fluffKey);
             if (fluffNode != null) {
                 JsonSourceCopier copier = new JsonSourceCopier(index);
                 fluffNode = copier.handleCopy(fluffType, fluffNode);
@@ -145,5 +151,31 @@ public abstract class Json2QuteCommon implements JsonSource {
         }
     }
 
-    public abstract QuteBase build();
+    public final QuteBase build() {
+        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        try {
+            return buildQuteResource();
+        } finally {
+            parseState.pop(pushed);
+        }
+    }
+
+    public final QuteNote buildNote() {
+        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        try {
+            return buildQuteNote();
+        } finally {
+            parseState.pop(pushed);
+        }
+    }
+
+    protected QuteBase buildQuteResource() {
+        tui().warnf("The default buildQuteResource method was called for %s. Was this intended?", sources.toString());
+        return null;
+    }
+
+    protected QuteNote buildQuteNote() {
+        tui().warnf("The default buildQuteNote method was called for %s. Was this intended?", sources.toString());
+        return null;
+    }
 }

@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
@@ -403,8 +402,7 @@ public interface Pf2eTypeReader extends JsonSource {
 
         public String getRulesPath(String rulesRoot) {
             return String.format("%sTODO.md#%s",
-                    rulesRoot, this.name().replace(" ", "%20")
-                            .replace(".", ""));
+                    rulesRoot, toAnchorTag(this.name()));
         }
 
         static Pf2eSpellComponent valueFromEncoding(String value) {
@@ -414,20 +412,6 @@ public interface Pf2eTypeReader extends JsonSource {
             return Stream.of(Pf2eSpellComponent.values())
                     .filter((t) -> t.matches(value))
                     .findFirst().orElse(null);
-        }
-    }
-
-    // Special one-offs for accounting/tracking
-    enum TtrpgValue implements NodeReader {
-        indexKey,
-        p2feInputType;
-
-        public void addToNode(JsonNode node, String value) {
-            ((ObjectNode) node).put(this.name(), value);
-        }
-
-        public String getFromNode(JsonNode node) {
-            return this.getTextOrNull(node);
         }
     }
 

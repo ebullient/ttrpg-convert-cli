@@ -70,7 +70,7 @@ public class Pf2JsonDataTest {
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             for (String x : List.of("books.json",
                     "book/book-crb.json", "book/book-gmg.json")) {
-                tui.readFile(TestUtils.TOOLS_PATH_PF2E.resolve(x), index::importTree);
+                tui.readFile(TestUtils.TOOLS_PATH_PF2E.resolve(x), List.of(), index::importTree);
             }
 
             tui.readToolsDir(TestUtils.TOOLS_PATH_PF2E, index::importTree);

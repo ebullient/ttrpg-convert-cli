@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -20,10 +21,61 @@ public interface NodeReader {
 
     interface Converter<T extends IndexType> {
         String DICE_FORMULA = "[ +d\\d-‒]+";
+        Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
+
+        ParseState parseState = new ParseState();
 
         void appendEntryToText(List<String> inner, JsonNode target, String join);
 
+        /**
+         * Find and format footnotes referenced in the provided content
+         *
+         * @param text List of text lines (joined or not) that may contain footnotes
+         * @param count The number of footnotes found previously (to avoid duplicates)
+         * @return The number of footnotes found.
+         */
+        default int appendFootnotes(List<String> text, int count) {
+            boolean pushed = parseState.push(true);
+            try {
+                List<String> footnotes = new ArrayList<>();
+                text.replaceAll(input -> {
+                    // "Footnote tags; allows a footnote to be embedded
+                    // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
+                    // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
+                    return footnotePattern.matcher(input)
+                            .replaceAll((match) -> {
+                                int index = count + footnotes.size() + 1;
+                                String footnote = replaceText(match.group(1));
+                                String[] parts = footnote.split("\\|");
+                                footnotes.add(String.format("[^%s]: %s%s", index, parts[1],
+                                        parts.length > 2 ? " (" + parts[2] + ")" : ""));
+
+                                return String.format("%s[^%s]", parts[0], index);
+                            });
+                });
+
+                if (footnotes.size() > 0) {
+                    maybeAddBlankLine(text);
+                    footnotes.forEach(f -> text.add(replaceText(f)));
+
+                }
+                return count + footnotes.size();
+            } finally {
+                parseState.pop(pushed);
+            }
+        }
+
         CompendiumConfig cfg();
+
+        default String getFirstValue(JsonNode source) {
+            if (source == null) {
+                return null;
+            } else if (source.isTextual()) {
+                return (source.asText());
+            }
+            List<String> list = tui().readJsonValue(source, Tui.LIST_STRING);
+            return list == null || list.isEmpty() ? null : list.get(0);
+        }
 
         default String formatDice(String diceRoll) {
             int pos = diceRoll.indexOf(";");
@@ -36,7 +88,18 @@ public interface NodeReader {
         }
 
         default Iterable<JsonNode> iterableElements(JsonNode source) {
+            if (source == null) {
+                return List.of();
+            }
             return () -> source.elements();
+        }
+
+        default Iterable<JsonNode> iterableEntries(JsonNode source) {
+            JsonNode entries = source.get("entries");
+            if (entries == null) {
+                return List.of();
+            }
+            return () -> entries.elements();
         }
 
         default String join(String joiner, Collection<String> list) {
@@ -121,10 +184,24 @@ public interface NodeReader {
         }
 
         Tui tui();
+
+        default String toAnchorTag(String x) {
+            return x.replace(" ", "%20")
+                    .replace(":", "")
+                    .replace(".", "")
+                    .replace('‑', '-');
+        }
     }
 
     interface FieldValue {
         String value();
+
+        default String toAnchorTag(String x) {
+            return x.replace(" ", "%20")
+                    .replace(":", "")
+                    .replace(".", "")
+                    .replace('‑', '-');
+        }
 
         default boolean isValueOfField(JsonNode source, NodeReader field) {
             return matches(field.getTextOrEmpty(source));

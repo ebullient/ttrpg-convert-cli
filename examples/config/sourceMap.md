@@ -76,6 +76,7 @@ _Support content creators. Only use or include sources that you own._
 | MPMM | Mordenkainen Presents: Monsters of the Multiverse |
 | MTF | Mordenkainen's Tome of Foes |
 | MaBJoV | Minsc and Boo's Journal of Villainy |
+| MisMV1 | Misplaced Monsters: Volume 1 |
 | NRH | NERDS Restoring Harmony |
 | NRH-ASS | NERDS Restoring Harmony: A Sticky Situation |
 | NRH-AT | NERDS Restoring Harmony: Adventure Together |
@@ -146,11 +147,11 @@ _Support content creators. Only use or include sources that you own._
 | ToR | Tide of Retribution |
 | UA20F | Unearthed Arcana: 2020 Feats |
 | UA20POR | Unearthed Arcana: 2020 Psionic Options Revisited |
-| UA20SC1 | Unearthed Arcana: 2020 Subclasses:  Part 1 |
-| UA20SC2 | Unearthed Arcana: 2020 Subclasses:  Part 2 |
-| UA20SC3 | Unearthed Arcana: 2020 Subclasses:  Part 3 |
-| UA20SC4 | Unearthed Arcana: 2020 Subclasses:  Part 4 |
-| UA20SC5 | Unearthed Arcana: 2020 Subclasses:  Part 5 |
+| UA20SC1 | Unearthed Arcana: 2020 Subclasses: Part 1 |
+| UA20SC2 | Unearthed Arcana: 2020 Subclasses: Part 2 |
+| UA20SC3 | Unearthed Arcana: 2020 Subclasses: Part 3 |
+| UA20SC4 | Unearthed Arcana: 2020 Subclasses: Part 4 |
+| UA20SC5 | Unearthed Arcana: 2020 Subclasses: Part 5 |
 | UA20SCR | Unearthed Arcana: 2020 Subclasses Revisited |
 | UA20SMT | Unearthed Arcana: 2020 Spells and Magic Tattoos |
 | UA21DO | Unearthed Arcana: 2021 Draconic Options |
@@ -172,7 +173,7 @@ _Support content creators. Only use or include sources that you own._
 | UABPP | Unearthed Arcana: Barbarian Primal Paths |
 | UACAM | Unearthed Arcana: Centaurs and Minotaurs |
 | UACDD | Unearthed Arcana: Cleric: Divine Domains |
-| UACDW | Unearthed Arcana: Cleric, Druid:  and Wizard |
+| UACDW | Unearthed Arcana: Cleric, Druid, and Wizard |
 | UACFV | Unearthed Arcana: Class Feature Variants |
 | UAD | Unearthed Arcana: Druid |
 | UAEAG | Unearthed Arcana: Eladrin and Gith |
@@ -182,14 +183,14 @@ _Support content creators. Only use or include sources that you own._
 | UAFFR | Unearthed Arcana: Feats for Races |
 | UAFFS | Unearthed Arcana: Feats for Skills |
 | UAFO | Unearthed Arcana: Fiendish Options |
-| UAFRR | Unearthed Arcana: Fighter, Ranger:  and Rogue |
-| UAFRW | Unearthed Arcana: Fighter, Rogue:  and Wizard |
+| UAFRR | Unearthed Arcana: Fighter, Ranger, and Rogue |
+| UAFRW | Unearthed Arcana: Fighter, Rogue, and Wizard |
 | UAFT | Unearthed Arcana: Feats |
 | UAGH | Unearthed Arcana: Gothic Heroes |
 | UAGHI | Unearthed Arcana: Greyhawk Initiative |
 | UAGSS | Unearthed Arcana: Giant Soul Sorcerer |
 | UAKOO | Unearthed Arcana: Kits of Old |
-| UALDR | Unearthed Arcana: Light, Dark:  Underdark! |
+| UALDR | Unearthed Arcana: Light, Dark, Underdark! |
 | UAM | Unearthed Arcana: Monk |
 | UAMAC | Unearthed Arcana: Mass Combat |
 | UAMC | Unearthed Arcana: Modifying Classes |
@@ -211,7 +212,7 @@ _Support content creators. Only use or include sources that you own._
 | UATF | Unearthed Arcana: The Faithful |
 | UATMC | Unearthed Arcana: The Mystic Class |
 | UATOBM | Unearthed Arcana: That Old Black Magic |
-| UATRR | Unearthed Arcana: The Ranger:  Revised |
+| UATRR | Unearthed Arcana: The Ranger, Revised |
 | UATSC | Unearthed Arcana: Three Subclasses |
 | UAVR | Unearthed Arcana: Variant Rules |
 | UAWA | Unearthed Arcana: Waterborne Adventures |
@@ -328,4 +329,6 @@ _Support content creators. Only use or include sources that you own._
 | TV | Treasure Vault |
 | TiO | Troubles in Otari |
 | ToK | Threshold of Knowledge |
+
+wledge |
 

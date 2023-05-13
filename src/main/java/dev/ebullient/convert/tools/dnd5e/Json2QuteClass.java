@@ -5,27 +5,23 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 
 public class Json2QuteClass extends Json2QuteCommon {
 
+    final static Map<String, ClassFeature> keyToClassFeature = new HashMap<>();
+
     final Map<String, List<String>> startingText = new HashMap<>();
-    final Map<String, List<String>> optionalFeatureTypes = new HashMap<>();
-    final Set<String> featureNames = new HashSet<>();
     final List<ClassFeature> classFeatures = new ArrayList<>();
     final List<Subclass> subclasses = new ArrayList<>();
     boolean additionalFromBackground;
@@ -35,57 +31,46 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     Json2QuteClass(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        if (!isSidekick()) {
-            findClassHitDice();
-            findStartingEquipment();
-            findClassProficiencies();
-        }
+        boolean pushed = parseState.push(node); // store state
+        try {
+            if (!isSidekick()) {
+                findClassHitDice();
+                findStartingEquipment();
+                findClassProficiencies();
+            }
 
-        decoratedClassName = decoratedTypeName(getName(), getSources());
-        classSource = node.get("source").asText();
-        subclassTitle = getTextOrEmpty(node, "subclassTitle");
-        findSubclasses();
-        findClassFeatures();
-        findOptionalFeatures();
+            decoratedClassName = decoratedTypeName(getName(), getSources());
+            classSource = jsonNode.get("source").asText();
+            subclassTitle = getTextOrEmpty(node, "subclassTitle");
+
+            // class features can be text elements or object elements (classFeature field)
+            findClassFeatures(Tools5eIndexType.classfeature, jsonNode.get("classFeatures"), classFeatures, "classFeature");
+            findSubclasses();
+        } finally {
+            parseState.pop(pushed); // restore state
+        }
     }
 
     @Override
-    public QuteClass build() {
+    protected QuteClass buildQuteResource() {
         List<String> tags = new ArrayList<>(sources.getSourceTags());
         tags.add("class/" + slugify(getName()));
 
         List<String> text = new ArrayList<>();
-        text.add("## Class Features");
-        classFeatures.forEach(cf -> {
-            maybeAddBlankLine(text);
-            text.add("### " + cf.name);
-            text.add("");
-            text.addAll(cf.text);
-        });
 
-        for (Entry<String, List<String>> entry : optionalFeatureTypes.entrySet()) {
-            maybeAddBlankLine(text);
-            text.add("## " + entry.getKey());
-            text.add("");
-            Set<JsonNode> optFeatures = new HashSet<>();
-            for (String ft : entry.getValue()) {
-                optFeatures.addAll(index.findOptionalFeatures(ft));
-            }
-            optFeatures.stream()
-                    .map(jn -> new OptionalFeature(jn, index, "####", classSource))
-                    .sorted(Comparator.comparing(x -> x.name))
-                    .forEach(cf -> {
-                        maybeAddBlankLine(text);
-                        text.add("### " + cf.name);
-                        text.add("");
-                        text.addAll(cf.text);
-                    });
+        text.add("## Class Features");
+        for (ClassFeature cf : classFeatures) {
+            cf.appendText(this, text, sources.primarySource());
         }
+
+        addOptionalFeatureText(node, text);
 
         List<String> progression = new ArrayList<>();
         buildFeatureProgression(progression);
         maybeAddBlankLine(progression);
         buildClassProgression(node, progression, "classTableGroups");
+
+        appendFootnotes(text, 0);
 
         return new QuteClass(sources,
                 decoratedClassName,
@@ -101,37 +86,43 @@ public class Json2QuteClass extends Json2QuteCommon {
     public List<QuteSubclass> buildSubclasses() {
         List<QuteSubclass> quteSc = new ArrayList<>();
 
-        subclasses.forEach(sc -> {
-            List<String> tags = new ArrayList<>(sc.sources.getSourceTags());
-            String tag = slugify(getName()) + "/" + slugify(sc.shortName);
-            tags.add("class/" + tag);
+        for (Subclass sc : subclasses) {
+            boolean pushed = parseState.push(sc.sources);
+            try {
+                List<String> tags = new ArrayList<>(sc.sources.getSourceTags());
+                String tag = slugify(getName()) + "/" + slugify(sc.shortName);
+                tags.add("class/" + tag);
 
-            if (tag.contains("cleric")) {
-                tags.add("domain/" + tag.substring(tag.lastIndexOf("/") + 1));
-            }
-
-            List<String> text = new ArrayList<>();
-
-            sc.features.forEach(scf -> {
-                maybeAddBlankLine(text);
-                if (!sc.name.startsWith(scf.name)) {
-                    text.add("## " + scf.name);
-                    text.add("");
+                if (tag.contains("cleric")) {
+                    tags.add("domain/" + tag.substring(tag.lastIndexOf("/") + 1));
                 }
-                text.addAll(scf.text);
-            });
 
-            quteSc.add(new QuteSubclass(sc.sources,
-                    sc.name,
-                    sc.sources.getSourceText(index.srdOnly()),
-                    getName(), // parentClassName
-                    String.format("[%s](%s.md)", decoratedClassName, slugify(decoratedClassName)),
-                    sc.parentClassSource, // parentClassSource
-                    subclassTitle,
-                    sc.subclassProgression,
-                    String.join("\n", text),
-                    tags));
-        });
+                List<String> text = new ArrayList<>();
+
+                text.add("## Class Features");
+                for (ClassFeature scf : sc.classFeatures) {
+                    scf.appendText(this, text, sc.sources.primarySource());
+                }
+
+                addOptionalFeatureText(sc.subclassNode, text);
+
+                List<String> progression = new ArrayList<>();
+                buildClassProgression(sc.subclassNode, progression, "subclassTableGroups");
+
+                quteSc.add(new QuteSubclass(sc.sources,
+                        sc.getName(),
+                        sc.sources.getSourceText(index.srdOnly()),
+                        getName(), // parentClassName
+                        String.format("[%s](%s.md)", decoratedClassName, slugify(decoratedClassName)),
+                        sc.parentClassSource, // parentClassSource
+                        subclassTitle,
+                        String.join("\n", progression),
+                        String.join("\n", text),
+                        tags));
+            } finally {
+                parseState.pop(pushed);
+            }
+        }
 
         return quteSc;
     }
@@ -151,6 +142,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         row_levels.get(0).add("Features");
         // Values
         for (int level = 1; level < row_levels.size(); level++) {
+            final int featureLevel = level;
             row_levels.get(level).add(JsonSource.levelToString(level));
             row_levels.get(level).add("+" + levelToPb(level));
 
@@ -159,7 +151,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 row_levels.get(level).add("⏤");
             } else {
                 row_levels.get(level).add(features.stream()
-                        .map(x -> markdownLinkify(x.name))
+                        .map(x -> markdownLinkify(x.getName(), featureLevel))
                         .collect(Collectors.joining(", ")));
             }
         }
@@ -335,83 +327,100 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
     }
 
-    void findSubclasses() {
-        findSubclassesForClassSource(getSources().getName(), classSource);
-        for (String aliasKey : index.getAliasesTo(sources.getKey())) {
-            int lastSegment = aliasKey.lastIndexOf('|');
-            String aliasSource = aliasKey.substring(lastSegment + 1);
-            findSubclassesForClassSource(getSources().getName(), aliasSource);
-        }
-    }
+    void findClassFeatures(Tools5eIndexType type, JsonNode arrayElement, List<ClassFeature> features, String fieldName) {
+        for (JsonNode cf : iterableElements(arrayElement)) {
 
-    private void findSubclassesForClassSource(String parentClassName, String parentClassSource) {
-        index().classElementsMatching(Tools5eIndexType.subclass, parentClassName, parentClassSource).forEach(s -> {
-            String scKey = index.getKey(Tools5eIndexType.subclass, s);
-            JsonNode resolved = index.resolveClassFeatureNode(scKey, s);
-            if (resolved == null) {
-                return; // e.g. excluded
+            ClassFeature feature = findClassFeature(this, type, cf, fieldName);
+            if (feature == null) {
+                return;
             }
 
-            Subclass sc = new Subclass();
-            sc.parentClassSource = parentClassSource;
-            sc.shortName = resolved.get("shortName").asText();
-            sc.sources = index.constructSources(Tools5eIndexType.subclass, scKey, resolved);
-            sc.name = sc.sources.getName();
+            features.add(feature);
 
-            // Subclass features
-            s.withArray("subclassFeatures").forEach(f -> {
-                ClassFeature scf = lookupSubclassFeature(f.asText(),
-                        sc.sources.primarySource());
-                if (scf != null) {
-                    sc.features.add(scf);
-                }
-            });
-
-            List<String> progression = new ArrayList<>();
-            buildClassProgression(resolved, progression, "subclassTableGroups");
-            sc.subclassProgression = String.join("\n", progression);
-
-            subclasses.add(sc);
-        });
-    }
-
-    void findClassFeatures() {
-        for (Iterator<JsonNode> i = node.withArray("classFeatures").elements(); i.hasNext();) {
-            JsonNode f = i.next();
-            if (f.isTextual()) {
-                lookupClassFeature(f.asText());
-            } else {
-                lookupClassFeature(f.get("classFeature").asText());
+            if (isSidekick() && "1".equals(feature.level) && feature.getName().equals("Bonus Proficiencies")) {
+                sidekickProficiencies(feature.cfNode);
             }
         }
     }
 
-    private void lookupClassFeature(String lookup) {
-        String finalKey = index.getRefKey(Tools5eIndexType.classfeature, lookup);
-        JsonNode featureJson = index.resolveClassFeatureNode(finalKey, getSources().getKey());
-        if (featureJson == null) {
-            return; // skipped or not found
-        }
-        classFeatures.add(new ClassFeature(finalKey, featureJson, Tools5eIndexType.classfeature, "####", classSource));
-    }
+    static ClassFeature findClassFeature(JsonSource converter, Tools5eIndexType type, JsonNode cf, String fieldName) {
+        String lookup = cf.isTextual() ? cf.asText() : cf.get(fieldName).asText();
 
-    private ClassFeature lookupSubclassFeature(String lookup, String source) {
-        String finalKey = index.getRefKey(Tools5eIndexType.subclassfeature, lookup);
-        JsonNode featureJson = index.resolveClassFeatureNode(finalKey, getSources().getKey());
+        String finalKey = type.fromRawKey(lookup);
+        JsonNode featureJson = converter.index().resolveClassFeatureNode(finalKey);
+
         if (featureJson == null) {
             return null; // skipped or not found
         }
-        return new ClassFeature(finalKey, featureJson, Tools5eIndexType.subclassfeature, "##", source);
+
+        ClassFeature feature = keyToClassFeature.get(finalKey);
+        if (feature == null) {
+            feature = new ClassFeature();
+            feature.cfNode = featureJson;
+            feature.cfType = type;
+            feature.level = lookup.replaceAll(".*\\|(\\d+)\\|?.*", "$1");
+            feature.sources = Tools5eSources.findSources(finalKey);
+
+            keyToClassFeature.put(finalKey, feature);
+        }
+        return feature;
     }
 
-    void findOptionalFeatures() {
-        JsonNode optionalFeatureProgession = node.get("optionalfeatureProgression");
+    void findSubclasses() {
+        Map<JsonNode, String> scNodes = new HashMap<>();
+        for (JsonNode x : index().classElementsMatching(Tools5eIndexType.subclass, getSources().getName(), classSource)) {
+            scNodes.put(x, classSource);
+        }
+        for (String aliasKey : index.getAliasesTo(getSources().getKey())) {
+            int lastSegment = aliasKey.lastIndexOf('|');
+            String aliasSource = aliasKey.substring(lastSegment + 1);
+            for (JsonNode x : index().classElementsMatching(Tools5eIndexType.subclass, getSources().getName(), aliasSource)) {
+                scNodes.put(x, aliasSource);
+            }
+        }
+
+        for (JsonNode scNode : scNodes.keySet()) {
+            String parentClassSource = scNodes.get(scNode);
+            String scKey = Tools5eIndexType.subclass.createKey(scNode);
+            JsonNode resolved = index.resolveClassFeatureNode(scKey, scNode);
+            if (resolved == null) {
+                continue; // e.g. excluded
+            }
+
+            Subclass sc = new Subclass();
+            sc.subclassNode = resolved;
+            sc.parentClassSource = parentClassSource; // e.g. PHB or DMG
+            sc.parentKey = getSources().getKey();
+            sc.shortName = resolved.get("shortName").asText();
+            sc.sources = Tools5eSources.findSources(scKey);
+
+            // subclass features are text elements (null field)
+            findClassFeatures(Tools5eIndexType.subclassfeature, resolved.get("subclassFeatures"), sc.classFeatures, null);
+
+            subclasses.add(sc);
+        }
+    }
+
+    void addOptionalFeatureText(JsonNode entry, List<String> text) {
+        JsonNode optionalFeatureProgession = entry.get("optionalfeatureProgression");
         if (optionalFeatureProgession == null) {
             return;
         }
         for (JsonNode ofp : iterableElements(optionalFeatureProgession)) {
-            optionalFeatureTypes.put(ofp.get("name").asText(),
-                    toListOfStrings(ofp.get("featureType")));
+            maybeAddBlankLine(text);
+            text.add("## " + replaceText(ofp.get("name").asText()));
+
+            List<String> types = toListOfStrings(ofp.get("featureType"));
+
+            Set<JsonNode> optFeatures = new HashSet<>();
+            for (String ft : types) {
+                optFeatures.addAll(index.findOptionalFeatures(ft));
+            }
+
+            optFeatures.stream()
+                    .map(jn -> new OptionalFeature(jn))
+                    .sorted(Comparator.comparing(x -> x.name))
+                    .forEach(of -> of.appendText(this, text, parseState.getSource(Tools5eIndexType.optionalfeature)));
         }
     }
 
@@ -603,179 +612,83 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
     }
 
-    class Subclass {
-        String name;
-        String shortName;
-        String parentClassSource;
+    static class ClassFeature {
+        JsonNode cfNode;
+        String level;
 
-        String subclassProgression;
         Tools5eSources sources;
-        final List<ClassFeature> features = new ArrayList<>();
+        Tools5eIndexType cfType;
+
+        boolean showSource = true;
+
+        public String getName() {
+            return sources.getName();
+        }
+
+        void appendText(JsonSource converter, List<String> text, String pageSource) {
+            converter.maybeAddBlankLine(text);
+            text.add("### " + converter.decoratedFeatureTypeName(sources, cfNode) + " (Level " + level + ")");
+            if (!sources.primarySource().equalsIgnoreCase(pageSource)) {
+                text.add("_Source: " + sources.getSourceText(converter.index().srdOnly()) + "_");
+            }
+            text.add("");
+            converter.appendEntryToText(text, cfNode.get("entries"), "####");
+        }
+
+        public void appendListItemText(JsonSource converter, List<String> text, String pageSource) {
+            text.add("**" + converter.decoratedFeatureTypeName(sources, cfNode) + "**");
+            if (!sources.primarySource().equalsIgnoreCase(pageSource)) {
+                text.add("_Source: " + sources.getSourceText(converter.index().srdOnly()) + "_");
+            }
+            text.add("");
+            converter.appendEntryToText(text, cfNode.get("entries"), null);
+            text.add("");
+        }
     }
 
-    class ClassFeature {
-        final String name;
-        final String level;
-        final boolean optional;
-        final List<String> text;
+    class Subclass {
+        public String parentKey;
+        JsonNode subclassNode;
+        String shortName;
 
-        public ClassFeature(String lookup, JsonNode featureJson, Tools5eIndexType type, String heading, String parentSource) {
-            String level = lookup.replaceAll(".*\\|(\\d+)\\|?.*", "$1");
+        Tools5eSources sources;
+        String parentClassSource;
 
-            Tools5eSources featureSources = new Tools5eSources(type, lookup, featureJson);
-            String name = decoratedFeatureTypeName(featureSources, featureJson);
-            if (!featureNames.add(name)) {
-                // A class feature already uses this name. Add the level.
-                name += " (Level " + level + ")";
-            }
-            boolean optional = type == Tools5eIndexType.optionalfeature
-                    || booleanOrDefault(featureJson, "isClassFeatureVariant", false);
+        final List<ClassFeature> classFeatures = new ArrayList<>();
 
-            List<String> text = new ArrayList<>();
-            replaceElementRefs(featureJson, text, heading, featureSources);
-
-            if (!parentSource.equals(featureSources.primarySource())) {
-                maybeAddBlankLine(text);
-                text.add("_Source: " + featureSources.getSourceText(index.srdOnly()) + "_");
-            }
-
-            if (isSidekick() && "1".equals(level) && name.equals("Bonus Proficiencies")) {
-                sidekickProficiencies(featureJson);
-            }
-
-            this.name = name;
-            this.level = level;
-            this.optional = optional;
-            this.text = text;
-        }
-
-        void replaceElementRefs(JsonNode featureJson, List<String> text, String heading, Tools5eSources parentSource) {
-            JsonNode field = featureJson.get("entries");
-            if (field == null) {
-                return;
-            }
-            if (containsReference(field.toString())) {
-                ArrayNode copy = (ArrayNode) copyNode(field);
-                replaceNodes((ArrayNode) field, copy, parentSource.primarySource(), parentSource.getKey());
-                appendEntryToText(text, copy, heading);
-            } else {
-                appendEntryToText(text, field, heading);
-            }
-        }
-
-        boolean containsReference(String allEntries) {
-            return allEntries.contains("refSubclassFeature")
-                    || allEntries.contains("refOptionalfeature")
-                    || allEntries.contains("refClassFeature");
-        }
-
-        Tools5eIndexType referenceType(String referenceType) {
-            switch (referenceType) {
-                case "refSubclassFeature":
-                    return Tools5eIndexType.subclassfeature;
-                case "refOptionalfeature":
-                    return Tools5eIndexType.optionalfeature;
-                case "refClassFeature":
-                    return Tools5eIndexType.classfeature;
-                default:
-                    return null;
-            }
-        }
-
-        String referenceField(String referenceType) {
-            switch (referenceType) {
-                case "refSubclassFeature":
-                    return "subclassFeature";
-                case "refOptionalfeature":
-                    return "optionalfeature";
-                case "refClassFeature":
-                    return "classFeature";
-                default:
-                    return null;
-            }
-        }
-
-        void replaceNodes(ArrayNode origin, ArrayNode copy, String parentSource, String parentKey) {
-            // work backwards to preserve index values
-            for (int i = origin.size() - 1; i >= 0; i--) {
-                if (origin.get(i).isObject() && origin.get(i).has("type")) {
-                    String typeField = getTextOrEmpty(origin.get(i), "type");
-                    final Tools5eIndexType refType = referenceType(typeField);
-                    final String refField = referenceField(typeField);
-                    if (refField != null) {
-                        // replace refClassFeature with class feature entries
-                        String refKey = index.getRefKey(refType, copy.get(i).get(refField).asText());
-                        JsonNode refJson = index.resolveClassFeatureNode(refKey, parentKey);
-                        if (refJson == null) {
-                            copy.remove(i);
-                            continue; // skipped. Not included
-                        }
-                        String refSource = refJson.get("source").asText();
-
-                        // Recurse...
-                        ArrayNode replaceEntries = (ArrayNode) copyNode(refJson.get("entries"));
-                        replaceNodes(refJson.withArray("entries"), replaceEntries, refSource, refKey);
-
-                        ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
-                        replace.remove(refField);
-                        replace.set("type", new TextNode("entries"));
-                        replace.set("name", refJson.get("name"));
-                        replace.set("entries", replaceEntries);
-
-                        // Add a source entry if this feature comes from a different source than the parent
-                        if (!refSource.equals(parentSource)) {
-                            Tools5eSources sources = index().constructSources(refType, refJson);
-                            replace.set("entry", new TextNode("_Source: " + sources.getSourceText(index.srdOnly()) + "_"));
-                        }
-                        copy.set(i, replace);
-                    } else if (typeField.equals("options") || typeField.equals("entries")) {
-                        ArrayNode replaceEntries = (ArrayNode) copyNode(copy.get(i).get("entries"));
-                        replaceNodes(copy.get(i).withArray("entries"), replaceEntries, parentSource, parentKey);
-
-                        ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
-                        replace.set("entries", replaceEntries);
-                        copy.set(i, replace);
-                    } else if (typeField.equals("list")) {
-                        ArrayNode replaceEntries = (ArrayNode) copyNode(copy.get(i).get("items"));
-                        replaceNodes(copy.get(i).withArray("items"), replaceEntries, parentSource, parentKey);
-
-                        ObjectNode replace = (ObjectNode) copyNode(copy.get(i));
-                        replace.set("items", replaceEntries);
-                        copy.set(i, replace);
-                    }
-                }
-            }
+        public String getName() {
+            return sources.getName();
         }
     }
 
     class OptionalFeature {
         final String name;
-        final List<String> text;
+        final JsonNode ofNode;
+        final Tools5eSources featureSources;
 
-        public OptionalFeature(JsonNode source, Tools5eIndex index, String heading, String parentSource) {
-            String name = getTextOrEmpty(source, "name");
-            List<String> text = new ArrayList<>();
+        public OptionalFeature(JsonNode source) {
+            this.featureSources = Tools5eSources.findSources(source);
+            this.name = decoratedFeatureTypeName(featureSources, source);
+            this.ofNode = source;
+        }
 
-            Tools5eSources featureSources = index.constructSources(Tools5eIndexType.optionalfeature, source);
-            name = decoratedFeatureTypeName(featureSources, source);
-
-            appendEntryToText(text, source, heading);
-
-            if (!parentSource.equals(featureSources.primarySource())) {
-                maybeAddBlankLine(text);
+        void appendText(JsonSource converter, List<String> text, String pageSource) {
+            converter.maybeAddBlankLine(text);
+            text.add("### " + name);
+            if (!pageSource.equals(featureSources.primarySource())) {
                 text.add("_Source: " + featureSources.getSourceText(index.srdOnly()) + "_");
             }
-
-            this.name = name;
-            this.text = text;
+            text.add("");
+            converter.appendEntryToText(text, ofNode.get("entries"), "####");
         }
     }
 
     String markdownLinkify(String x) {
-        return String.format("[%s](#%s)", x,
-                x.replace(" ", "%20")
-                        .replace(":", "")
-                        .replace(".", ""));
+        return String.format("[%s](#%s)", x, toAnchorTag(x));
+    }
+
+    String markdownLinkify(String x, int level) {
+        return String.format("[%s](#%s)", x, toAnchorTag(x + " (Level " + level + ")"));
     }
 
     String columnValue(JsonNode c) {

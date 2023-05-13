@@ -1,6 +1,5 @@
 package dev.ebullient.convert.config;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,8 +44,7 @@ public class TtrpgConfig {
     }
 
     public static List<Fix> getFixes(String filepath) {
-        List<Fix> list = activeConfig().fixes.get(filepath);
-        return list == null ? List.of() : list;
+        return activeConfig().findFixesFor(filepath);
     }
 
     public static String sourceToLongName(String src) {
@@ -93,15 +91,11 @@ public class TtrpgConfig {
     }
 
     private static void readSystemConfig() {
-        try {
-            JsonNode node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/convertData.json"));
-            readSystemConfig(node);
+        JsonNode node = Tui.readTreeFromResource("/convertData.json");
+        readSystemConfig(node);
 
-            node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/sourceMap.json"));
-            readSystemConfig(node);
-        } catch (IOException e) {
-            tui.error(e, "Error reading system config: /convertData.json");
-        }
+        node = Tui.readTreeFromResource("/sourceMap.json");
+        readSystemConfig(node);
     }
 
     // Global config: path mapping for missing images
@@ -152,6 +146,15 @@ public class TtrpgConfig {
         final Map<String, List<Fix>> fixes = new HashMap<>();
         final List<String> sources = new ArrayList<>();
         final List<String> markerFiles = new ArrayList<>();
+
+        public List<Fix> findFixesFor(String filepath) {
+            for (Map.Entry<String, List<Fix>> entry : fixes.entrySet()) {
+                if (filepath.endsWith(entry.getKey())) {
+                    return entry.getValue();
+                }
+            }
+            return List.of();
+        }
     }
 
     public final static TypeReference<Map<String, List<Fix>>> FIXES = new TypeReference<>() {

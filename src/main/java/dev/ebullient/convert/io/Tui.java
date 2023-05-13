@@ -324,21 +324,7 @@ public class Tui {
         }
     }
 
-    public boolean readFile(Path p, BiConsumer<String, JsonNode> callback) {
-        inputRoot.add(p.getParent().toAbsolutePath());
-        try {
-            File f = p.toFile();
-            JsonNode node = MAPPER.readTree(f);
-            callback.accept(f.getName(), node);
-            verbosef("🔖 Finished reading %s", p);
-        } catch (IOException e) {
-            errorf(e, "Unable to read source file at path %s", p);
-            return false;
-        }
-        return true;
-    }
-
-    boolean readFile(Path p, List<Fix> fixes, BiConsumer<String, JsonNode> callback) {
+    public boolean readFile(Path p, List<Fix> fixes, BiConsumer<String, JsonNode> callback) {
         inputRoot.add(p.getParent().toAbsolutePath());
         try {
             File f = p.toFile();
@@ -450,5 +436,13 @@ public class Tui {
             }
         }
         return null;
+    }
+
+    public static JsonNode readTreeFromResource(String resource) {
+        try {
+            return Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream(resource));
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read or parse required resource " + resource, e);
+        }
     }
 }

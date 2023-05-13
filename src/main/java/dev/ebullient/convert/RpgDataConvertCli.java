@@ -202,15 +202,15 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                     allOk &= tui.readDirectory("", input, index::importTree);
                 }
             } else {
-                allOk &= tui.readFile(input, index::importTree);
+                allOk &= tui.readFile(input, TtrpgConfig.getFixes(inputPath.toString()), index::importTree);
             }
         }
         if (allOk && toolsPath != null) {
             for (String adventure : config.getAdventures()) {
-                allOk &= tui.readFile(toolsPath.resolve(adventure), index::importTree);
+                allOk &= tui.readFile(toolsPath.resolve(adventure), TtrpgConfig.getFixes(adventure), index::importTree);
             }
             for (String book : config.getBooks()) {
-                allOk &= tui.readFile(toolsPath.resolve(book), index::importTree);
+                allOk &= tui.readFile(toolsPath.resolve(book), TtrpgConfig.getFixes(book), index::importTree);
             }
         }
 

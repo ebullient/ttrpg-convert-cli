@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.ToolsIndex;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
 public class Json2QuteCompose extends Json2QuteBase {
@@ -55,7 +56,7 @@ public class Json2QuteCompose extends Json2QuteBase {
     }
 
     private void appendElement(JsonNode entry, List<String> text, Set<String> tags) {
-        String key = TtrpgValue.indexKey.getFromNode(entry);
+        String key = ToolsIndex.TtrpgValue.indexKey.getFromNode(entry);
         currentSources = Pf2eSources.findSources(key);
         String name = Field.name.getTextOrNull(entry);
 
@@ -65,6 +66,7 @@ public class Json2QuteCompose extends Json2QuteBase {
                 tags.addAll(currentSources.getSourceTags());
                 maybeAddBlankLine(text);
                 text.add("## " + replaceText(name));
+                text.add(String.format("_Source: %s_", currentSources.getSourceText()));
                 maybeAddBlankLine(text);
                 appendEntryToText(text, Field.entries.getFrom(entry), "###");
                 appendEntryToText(text, Field.entry.getFrom(entry), "###");
@@ -73,7 +75,6 @@ public class Json2QuteCompose extends Json2QuteBase {
                 addDomainSpells(name, text);
 
                 maybeAddBlankLine(text);
-                text.add(String.format("_Source: %s_", currentSources.getSourceText()));
             } finally {
                 parseState.pop(pushed);
             }

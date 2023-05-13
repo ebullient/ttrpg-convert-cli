@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.qute.TemplateData;
 
@@ -43,6 +44,8 @@ public abstract class CompendiumSources {
                         TtrpgConfig.getConfig().datasource().shortName(),
                         isSynthetic() ? "" : primarySource().toLowerCase()));
     }
+
+    public abstract JsonNode findNode();
 
     protected abstract String findName(IndexType type, JsonNode jsonElement);
 
@@ -139,7 +142,7 @@ public abstract class CompendiumSources {
     }
 
     boolean isSynthetic() {
-        return type == Pf2eIndexType.syntheticGroup;
+        return type == Pf2eIndexType.syntheticGroup || type == Tools5eIndexType.syntheticGroup;
     }
 
     protected enum Fields implements NodeReader {
@@ -156,7 +159,7 @@ public abstract class CompendiumSources {
         String source;
         String page;
 
-        SourceAndPage(JsonNode jsonElement) {
+        public SourceAndPage(JsonNode jsonElement) {
             source = Fields.source.getTextOrNull(jsonElement);
             page = Fields.page.getTextOrNull(jsonElement);
         }

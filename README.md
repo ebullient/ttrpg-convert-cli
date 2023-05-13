@@ -55,7 +55,7 @@ Notes:
 2. Install the pre-built release: 
 
     ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/1.1.1/ttrpg-convert-cli-1.1.1-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/1.1.2/ttrpg-convert-cli-1.1.2-runner.jar
     ```
 
     If you want the latest _unreleased snapshot_ (may not match this doc!): 
@@ -119,8 +119,8 @@ To run commands listed below, either:
 - **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: One of the templates for rendering monsters uses the code-style format supported by the admonitions plugin to render human-readable text (and avoid blockquote line wrapping).
   - Create a custom admonition called `statblock` (I recommend a dragon icon)
   - Create a custom admonition called `flowchart` (I recommend a map icon)
-  - Either set the appearance/icon for the style in the plugin, or use/modify [this snippet](css-snippets/admonition_callout.css) to style the admonition.
-  - The [compendium snippet](css-snippets/compendium.css) defines styles for the contents of the statblock, including setting the size of the token image based on the #token anchor in the link.
+  - Either set the appearance/icon for the style in the plugin, or use/modify [this snippet](examples/css-snippets/admonition_callout.css) to style the admonition.
+  - The [compendium snippet](examples/css-snippets/compendium.css) defines styles for the contents of the statblock, including setting the size of the token image based on the #token anchor in the link.
 
 - **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read only. Specifically, I ensure the plugin has the following options enabled: "Ignore open files" (so that if I have toggled to edit mode, it doesn't fight with me over it), and "Ignore force view when not in front matter" (so that the setting isn't applied to documents that don't have the front matter tag).
 
@@ -383,12 +383,18 @@ Additional templates can also be specified in your configuration file:
 ```json
   "template": {
     "background": "examples/templates/tools5e/images-background2md.txt",
+    "monster": "examples/templates/tools5e/monster2md-scores.txt"
   }
 ```
 
-> 🔹 Not everything is customizable. In some cases, formatting headings, indenting and organizing text accurately is easier to do inline as a big blob. The example templates show what is available to tweak.
+The flag used to specify a template (either on the command line or in a config file) corresponds to the type of template being used. In general, take the file name of a [default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates) and remove the `2md.txt` suffix.
+
+- Valid keys for 5etools: `background`, `class`, `deity`, `feat`, `item`, `monster`, `name`, `note`, `race`, `spell`, `subclass`
+- Valid keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-affliction`, `inline-attack`, `item`, `monster`, `note`, `ritual`, `spell`, `trait`.
 
 ### Built-in / example templates
+
+Not everything is customizable. In some cases, indenting, organizing, formatting, and linking text accurately is easier to do inline as a big blob. The default and example templates show what is available to tweak.
 
 - [Default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates)
 - [Example templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates)

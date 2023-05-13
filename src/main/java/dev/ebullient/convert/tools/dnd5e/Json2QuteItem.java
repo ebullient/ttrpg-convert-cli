@@ -24,7 +24,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     @Override
-    public QuteBase build() {
+    protected QuteBase buildQuteResource() {
         Set<PropertyEnum> propertyEnums = new TreeSet<>(); // stable order
 
         findProperties(propertyEnums);
@@ -123,11 +123,12 @@ public class Json2QuteItem extends Json2QuteCommon {
         PropertyEnum.findAdditionalProperties(getName(),
                 itemType, propertyEnums, s -> text.stream().anyMatch(l -> l.matches(s)));
 
+        appendFootnotes(text, 0);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
     void insertItemRefText(List<String> text, String input) {
-        String finalKey = index.getRefKey(Tools5eIndexType.itementry, input.replaceAll("\\{#itemEntry (.*)}", "$1"));
+        String finalKey = Tools5eIndexType.itementry.fromRawKey(input.replaceAll("\\{#itemEntry (.*)}", "$1"));
         if (index.isExcluded(finalKey)) {
             return;
         }

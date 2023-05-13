@@ -86,7 +86,7 @@ public enum PropertyEnum {
             return longName;
         }
         return String.format("[%s](%s)", longName,
-                index.rulesVaultRoot() + "item-properties.md#" + longName.replaceAll(" ", "%20"));
+                index.rulesVaultRoot() + "item-properties.md#" + index.toAnchorTag(longName));
     }
 
     public static PropertyEnum fromValue(String v) {
