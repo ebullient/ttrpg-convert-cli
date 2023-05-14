@@ -41,7 +41,9 @@ public class Templates {
             if (customPath != null) {
                 tui.verbosef("📝 %s template: %s", id, customPath);
                 try {
-                    return engine.parse(Files.readString(customPath));
+                    Template template = engine.parse(Files.readString(customPath));
+                    engine.putTemplate(id, template);
+                    return template;
                 } catch (IOException e) {
                     tui.errorf(e, "Failed reading template for %s from %s", id, customPath);
                 }
