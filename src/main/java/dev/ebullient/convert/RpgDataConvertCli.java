@@ -223,25 +223,34 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             return ExitCode.USAGE;
         }
         tui.outPrintln("✅ finished reading data.");
-        index.prepare();
+        try {
+            index.prepare();
 
-        if (writeIndex) {
-            try {
-                index.writeFullIndex(output.resolve("all-index.json"));
-                index.writeFilteredIndex(output.resolve("src-index.json"));
-            } catch (IOException e) {
-                tui.error(e, "  Exception: " + e.getMessage());
-                allOk = false;
+            if (writeIndex) {
+                try {
+                    index.writeFullIndex(output.resolve("all-index.json"));
+                    index.writeFilteredIndex(output.resolve("src-index.json"));
+                } catch (IOException e) {
+                    tui.error(e, "  Exception: " + e.getMessage());
+                    allOk = false;
+                }
             }
+
+            tui.outPrintln("💡 Writing files to " + output);
+            tpl.setCustomTemplates(config);
+
+            MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeAll()
+                    .writeNotesAndTables();
+        } catch (Throwable e) {
+            String message = e.getMessage();
+            if (message == null) {
+                message = e.getClass().getSimpleName();
+            }
+            tui.errorf(e, "An error occurred: %s.%n%nRun with --debug for details.", message);
+            allOk = false;
         }
-
-        tui.outPrintln("💡 Writing files to " + output);
-        tpl.setCustomTemplates(config);
-
-        MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
-        index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                .writeAll()
-                .writeNotesAndTables();
 
         return allOk ? ExitCode.OK : ExitCode.SOFTWARE;
     }
