@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
@@ -33,6 +34,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class Json2QuteMonster extends Json2QuteCommon {
 
     private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|\\d+)");
+    private static final List<String> LEGENDARY_IGNORE_LIST = List.of("name", "source", "page",
+            TtrpgValue.indexInputType.name(), TtrpgValue.indexKey.name());
 
     public static boolean isNpc(JsonNode source) {
         if (source.has("isNpc")) {
@@ -426,10 +429,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
             tui().debugf("No legendary group content for %s", key);
             return null;
         }
+
         Map<String, Trait> map = new HashMap<>();
         content.fields().forEachRemaining(field -> {
             String fieldName = field.getKey();
-            if ("name".equals(fieldName) || "source".equals(fieldName) || "additionalSources".equals(fieldName)) {
+            if (LEGENDARY_IGNORE_LIST.contains(fieldName)) {
                 return;
             }
             fieldName = fieldName.substring(0, 1).toUpperCase()
