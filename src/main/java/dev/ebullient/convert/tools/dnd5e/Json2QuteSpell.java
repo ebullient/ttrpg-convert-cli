@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -26,7 +27,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
         SchoolEnum school = getSchool();
         String level = node.get("level").asText();
 
-        Collection<String> classes = spellClasses(school);
+        Set<String> classes = indexedSpellClasses();
+        classes.addAll(spellClasses(school)); // legacy
 
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
@@ -210,6 +212,25 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 time.get("unit").asText());
     }
 
+    Set<String> indexedSpellClasses() {
+        Collection<String> list = index().classesForSpell(this.sources.getKey());
+
+        return list.stream()
+                .filter(k -> index().isIncluded(k))
+                .map(k -> {
+                    Tools5eSources sources = Tools5eSources.findSources(k);
+                    Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(k);
+                    if (type == Tools5eIndexType.subclass) {
+                        JsonNode subclassNode = index().getOrigin(k);
+                        return String.format("%s (%s)",
+                                subclassNode.get("className").asText().trim(),
+                                sources.getName());
+                    }
+                    return sources.getName();
+                })
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
     Collection<String> spellClasses(SchoolEnum school) {
         JsonNode classesNode = node.get("classes");
         if (classesNode == null || classesNode.isNull()) {
@@ -238,7 +259,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
             }
             String classSource = s.get("class").get("source").asText();
             String subclassName = s.get("subclass").get("name").asText();
-            if (includeSubclass(className, classSource, subclassName)) {
+            String subclassSource = s.get("subclass").get("source").asText();
+            if (includeSubclass(className, classSource, subclassName, subclassSource)) {
                 classes.add(String.format("%s (%s)", className, subclassName));
             }
         });
@@ -254,12 +276,13 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     private boolean includeClass(String className, String classSource) {
-        String finalKey = index().getClassKey(className, classSource);
+        String finalKey = Tools5eIndexType.classtype.createKey(className, classSource);
         return index().isIncluded(finalKey);
     }
 
-    private boolean includeSubclass(String className, String classSource, String subclassName) {
-        String finalKey = index().getSubclassKey(subclassName.trim(), className.trim(), classSource.trim());
+    private boolean includeSubclass(String className, String classSource, String subclassName, String subclassSource) {
+        String finalKey = Tools5eIndexType.getSubclassKey(subclassName.trim(), className.trim(), classSource.trim(),
+                subclassSource.trim());
         return index().isIncluded(finalKey);
     }
 }

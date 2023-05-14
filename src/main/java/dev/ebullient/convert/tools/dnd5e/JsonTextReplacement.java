@@ -419,29 +419,20 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         // {@class artificer|uaartificer} can have sources added with a pipe,
         // {@class fighter|phb|optional link text added with another pipe},
         // {@class fighter|phb|subclasses added|Eldritch Knight} with another pipe,
-        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with
-        // another pipe
+        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with another pipe
         // (first number is level index (0-19), second number is feature index (0-n)).",
         // {@class Barbarian|phb|Path of the Ancestral Guardian|Ancestral Guardian|xge}
         // {@class Fighter|phb|Samurai|Samurai|xge}
         String[] parts = match.split("\\|");
         String className = parts[0];
-        String classSource = "phb";
-        String linkText = className;
-        String subclass = null;
-
-        if (parts.length > 3) {
-            subclass = parts[3];
-        }
-        if (parts.length > 2) {
-            linkText = parts[2];
-        }
-        if (parts.length > 1) {
-            classSource = parts[1];
-        }
+        String classSource = parts.length < 2 || parts[1].isEmpty() ? "phb" : parts[1];
+        String linkText = parts.length < 3 || parts[2].isEmpty() ? className : parts[2];
+        String subclass = parts.length < 4 || parts[3].isEmpty() ? null : parts[3];
+        String subclassSource = parts.length < 5 || parts[4].isEmpty() ? classSource : parts[4];
 
         if (subclass != null) {
-            String key = index().getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclass, className, classSource));
+            String key = index()
+                    .getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclass, className, classSource, subclassSource));
             // "subclass|path of wild magic|barbarian|phb|"
             int first = key.indexOf('|');
             int second = key.indexOf('|', first + 1);
@@ -525,7 +516,8 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         // {@subclassFeature Blessed Strikes|Cleric||Life||8|UAClassFeatureVariants}, --> "-domain"
         // {@subclassFeature Blessed Strikes|Cleric|PHB|Twilight|TCE|8|TCE}
         // {@subclassFeature Path of the Berserker|Barbarian||Berserker||3||optional display text}.
-        // Class source is assumed to be PHB. Subclass source is assumed to be PHB.
+        // Class source is assumed to be PHB.
+        // Subclass source is assumed to be PHB.
         // Subclass feature source is assumed to be the same as subclass source.",
 
         String[] parts = match.split("\\|");
@@ -533,6 +525,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         String className = parts[1];
         String classSource = parts[2].isBlank() ? "phb" : parts[2];
         String subclass = parts[3];
+        String subclassSource = parts[4].isBlank() ? classSource : parts[4];
         String level = parts[5];
 
         if (parts.length > 7) {
@@ -548,8 +541,9 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
 
         // look up alias for subclass so link is correct, e.g.
         // "subclass|redemption|paladin|phb|" : "subclass|oath of redemption|paladin|phb|",
-        // "subclass|twilight|cleric|phb|"    : "subclass|twilight domain|cleric|phb|"
-        String subclassKey = index().getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclass, className, classSource));
+        // "subclass|twilight|cleric|phb|tce"    : "subclass|twilight domain|cleric|phb|tce"
+        String subclassKey = index()
+                .getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclass, className, classSource, subclassSource));
         int first = subclassKey.indexOf('|');
         subclass = subclassKey.substring(first + 1, subclassKey.indexOf('|', first + 1));
 

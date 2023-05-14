@@ -1,5 +1,7 @@
 package dev.ebullient.convert.config;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,10 +9,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import dev.ebullient.convert.io.Tui;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -57,6 +61,21 @@ public class TtrpgConfig {
 
     public static Map<String, String> imageFallbackPaths() {
         return activeConfig().fallbackImagePaths;
+    }
+
+    public static JsonNode readIndex(String key) {
+        String file = activeConfig().indexes.get(key);
+        Optional<Path> root = file == null ? Optional.empty() : tui.resolvePath(Path.of(file));
+        if (root.isEmpty()) {
+            return NullNode.getInstance();
+        }
+        File indexFile = root.get().resolve(file).toFile();
+        try {
+            return Tui.MAPPER.readTree(indexFile);
+        } catch (Exception e) {
+            tui.errorf("Failed to read index file %s: %s", indexFile, e.getMessage());
+            return NullNode.getInstance();
+        }
     }
 
     public static JsonNode activeGlobalConfig(String key) {
@@ -114,6 +133,7 @@ public class TtrpgConfig {
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(config5e));
                 config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(config5e));
                 config.sources.addAll(ConfigKeys.sources.getAsList(config5e));
+                config.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(config5e));
 
                 Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(config5e, FIXES);
                 if (fixes != null) {
@@ -129,6 +149,7 @@ public class TtrpgConfig {
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(configPf2e));
                 config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(configPf2e));
                 config.sources.addAll(ConfigKeys.sources.getAsList(configPf2e));
+                config.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(configPf2e));
 
                 Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(configPf2e, FIXES);
                 if (fixes != null) {
@@ -144,6 +165,7 @@ public class TtrpgConfig {
         final Map<String, String> longToAbv = new HashMap<>();
         final Map<String, String> fallbackImagePaths = new HashMap<>();
         final Map<String, List<Fix>> fixes = new HashMap<>();
+        final Map<String, String> indexes = new HashMap<>();
         final List<String> sources = new ArrayList<>();
         final List<String> markerFiles = new ArrayList<>();
 
@@ -171,6 +193,7 @@ public class TtrpgConfig {
         config5e,
         configPf2e,
         fixes,
+        indexes,
         markerFiles,
         srdEntries,
         properties,

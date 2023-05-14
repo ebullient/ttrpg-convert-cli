@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -100,6 +101,20 @@ public interface NodeReader {
                 return List.of();
             }
             return () -> entries.elements();
+        }
+
+        default Iterable<Entry<String, JsonNode>> iterableFields(JsonNode source) {
+            if (source == null) {
+                return List.of();
+            }
+            return () -> source.fields();
+        }
+
+        default Iterable<String> iterableFieldNames(JsonNode source) {
+            if (source == null) {
+                return List.of();
+            }
+            return () -> source.fieldNames();
         }
 
         default String join(String joiner, Collection<String> list) {

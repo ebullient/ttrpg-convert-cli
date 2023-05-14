@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
@@ -51,11 +52,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private final Map<String, String> classRoot = new HashMap<>();
     private Map<String, JsonNode> variantIndex = null;
     private Map<String, JsonNode> filteredIndex = null;
+    private Map<String, Set<String>> spellClassIndex = new HashMap<>();
 
     private final Set<String> srdKeys = new HashSet<>();
     private final Set<String> familiarKeys = new HashSet<>();
-
-    private final Map<String, Tools5eSources> nodeToSources = new HashMap<>();
 
     final JsonSourceCopier copier = new JsonSourceCopier(this);
 
@@ -152,8 +152,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         TtrpgValue.indexKey.addToNode(node, key);
 
         if (type == Tools5eIndexType.subclass) {
-            String lookupKey = getSubclassKey(node.get("shortName").asText().trim(),
-                    node.get("className").asText(), node.get("classSource").asText());
+            String lookupKey = Tools5eIndexType.getSubclassKey(
+                    getTextOrEmpty(node, "shortName"),
+                    getTextOrEmpty(node, "className"),
+                    getTextOrEmpty(node, "classSource"),
+                    getTextOrEmpty(node, "source"));
             // add subclass to alias. Referenced from spells
             addAlias(lookupKey, key);
         }
@@ -240,12 +243,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (variantIndex != null || filteredIndex != null) {
             return;
         }
+        variantIndex = new HashMap<>();
 
         setClassFeaturePatterns();
 
-        variantIndex = new HashMap<>();
+        for (Entry<String, JsonNode> entry : nodeIndex.entrySet()) {
+            String key = entry.getKey();
+            JsonNode node = entry.getValue();
 
-        nodeIndex.forEach((key, node) -> {
             // check for / manage copies first.
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
             JsonNode jsonSource = copier.handleCopy(type, node);
@@ -259,7 +264,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 // subraces are pulled in by races
                 // traits and legendary groups are pulled in my monsters
                 // deities are a hot mess
-                return;
+                continue;
             }
 
             // Find variants
@@ -277,7 +282,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 TtrpgValue.indexKey.addToNode(v.node, v.key);
                 Tools5eSources.constructSources(v.node);
             });
-        });
+        }
 
         // Find/Merge deities (this will also exclude based on sources)
         List<Tuple> deities = findDeities(nodeIndex.entrySet().stream()
@@ -299,6 +304,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .filter(e -> !isReprinted(e.getKey(), e.getValue()))
                 .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        // And finally, create an index of classes/subclasses/feats for spells
+        // based on included sources & avaiable spells.
+        buildSpellSourceIndex();
     }
 
     private List<Tuple> findDeities(List<Tuple> allDeities) {
@@ -361,6 +370,56 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return List.of(new Tuple(key, copy));
         }
         return List.of(new Tuple(key, jsonSource));
+    }
+
+    private void buildSpellSourceIndex() {
+        // index key in resources/convertData.json
+        JsonNode indexNode = TtrpgConfig.readIndex("spell-source");
+        if (indexNode.isNull()) {
+            return;
+        }
+        // structure is interesting:
+        // "spell source" -> "spell" -> "class", "subclass", "feat"  (walk your way through key construction.. )
+        for (Entry<String, JsonNode> sourceSpellMap : iterableFields(indexNode)) {
+            String spellSource = sourceSpellMap.getKey();
+            for (Entry<String, JsonNode> spellAssociation : iterableFields(sourceSpellMap.getValue())) {
+                String spellName = spellAssociation.getKey();
+                String spellKey = Tools5eIndexType.spell.createKey(spellName, spellSource);
+                if (!filteredIndex.containsKey(spellKey)) {
+                    // Spell is excluded
+                    continue;
+                }
+                Set<String> spellClassList = spellClassIndex.computeIfAbsent(spellKey, k -> new HashSet<>());
+                JsonNode spellMap = spellAssociation.getValue();
+                for (Entry<String, JsonNode> sourceClassMap : iterableFields(spellMap.get("class"))) {
+                    String classSource = sourceClassMap.getKey();
+                    for (String className : iterableFieldNames(sourceClassMap.getValue())) {
+                        String classKey = Tools5eIndexType.classtype.createKey(className, classSource);
+                        if (isIncluded(classKey)) {
+                            spellClassList.add(classKey);
+                        }
+                    }
+                }
+                for (Entry<String, JsonNode> sourceClassSubclassMap : iterableFields(spellMap.get("subclass"))) {
+                    String classSource = sourceClassSubclassMap.getKey();
+                    for (Entry<String, JsonNode> classMap : iterableFields(sourceClassSubclassMap.getValue())) {
+                        String className = classMap.getKey();
+                        for (Entry<String, JsonNode> sourceSubclassMap : iterableFields(classMap.getValue())) {
+                            String subclassSource = sourceSubclassMap.getKey();
+                            for (Entry<String, JsonNode> subclassMap : iterableFields(sourceSubclassMap.getValue())) {
+                                String subclassName = subclassMap.getKey();
+                                String subclassKey = index()
+                                        .getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclassName, className, classSource,
+                                                subclassSource));
+                                if (isIncluded(subclassKey)) {
+                                    spellClassList.add(subclassKey);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     boolean isReprinted(String finalKey, JsonNode jsonSource) {
@@ -428,31 +487,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .collect(Collectors.toList());
     }
 
-    public String getClassKey(String className, String classSource) {
-        return Tools5eIndexType.classtype.createKey(className, classSource);
-    }
-
-    public String getSubclassKey(String name, String className, String classSource) {
-        return Tools5eIndexType.getSubclassKey(name, className, classSource);
-    }
-
-    public String getKey(Tools5eIndexType type, JsonNode x) {
-        return type.createKey(x);
-    }
-
-    public String createSimpleKey(Tools5eIndexType type, String name, String source) {
-        return type.createKey(name, source);
-    }
-
-    public String createClassFeatureKey(String featureName, String featureSource, String className, String classSource,
-            String level) {
-        return Tools5eIndexType.getClassFeatureKey(featureName, featureSource, className, classSource, level);
-    }
-
-    public String createOptionalFeatureKey(String featureName, String featureSource) {
-        return Tools5eIndexType.optionalfeature.createKey(featureName, featureSource);
-    }
-
     public String getDataKey(String value) {
         return Tools5eIndexType.reference.createKey(value, null);
     }
@@ -504,7 +538,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (x == null) {
             return null;
         }
-        return nodeIndex.get(getKey(type, x));
+        return nodeIndex.get(type.createKey(x));
     }
 
     public Stream<JsonNode> originSubraces(Tools5eSources sources) {
@@ -618,6 +652,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public Collection<? extends JsonNode> findOptionalFeatures(String ft) {
         return optFeatureIndex.get(ft);
+    }
+
+    public Collection<String> classesForSpell(String spellKey) {
+        return spellClassIndex.get(spellKey);
     }
 
     @Override
