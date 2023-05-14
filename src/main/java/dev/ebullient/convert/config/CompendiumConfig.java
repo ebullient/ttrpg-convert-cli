@@ -85,13 +85,8 @@ public class CompendiumConfig {
         if (allSources) {
             return false;
         }
-        if (allowedSources.isEmpty()) {
-            // skip item when no sources are defined
+        if (allowedSources.isEmpty() || sourceNode == null || !sourceNode.isTextual()) {
             return !allowWhenEmpty;
-        }
-        if (sourceNode == null || !sourceNode.isTextual()) {
-            // unlikely, but skip items if we can't check their source
-            return true;
         }
         // skip item if the source isn't in allowed sources
         return !allowedSources.contains(sourceNode.asText().toLowerCase());
