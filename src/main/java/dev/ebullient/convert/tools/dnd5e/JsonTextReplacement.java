@@ -423,6 +423,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         // another pipe
         // (first number is level index (0-19), second number is feature index (0-n)).",
         // {@class Barbarian|phb|Path of the Ancestral Guardian|Ancestral Guardian|xge}
+        // {@class Fighter|phb|Samurai|Samurai|xge}
         String[] parts = match.split("\\|");
         String className = parts[0];
         String classSource = "phb";
@@ -440,7 +441,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         }
 
         if (subclass != null) {
-            String key = index().getAliasOrDefault(Tools5eIndexType.subclass.createKey(className, classSource));
+            String key = index().getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclass, className, classSource));
             // "subclass|path of wild magic|barbarian|phb|"
             int first = key.indexOf('|');
             int second = key.indexOf('|', first + 1);
