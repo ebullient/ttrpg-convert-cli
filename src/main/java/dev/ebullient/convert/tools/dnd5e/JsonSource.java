@@ -82,7 +82,6 @@ public interface JsonSource extends JsonTextReplacement {
                     maybeAddBlankLine(text);
                     appendEntryToText(text, f, heading);
                 }
-                ;
             } else if (node.isObject()) {
                 appendEntryObjectToText(text, node, heading);
             } else {
@@ -117,6 +116,9 @@ public interface JsonSource extends JsonTextReplacement {
                         } else if (node.has("name")) {
                             maybeAddBlankLine(text);
                             text.add(heading + " " + replaceText(node.get("name")));
+                            if (index().differentSource(getSources(), node)) {
+                                text.add(index().getSourceText(node));
+                            }
                             text.add("");
                             appendEntryToText(text, node.get("entries"), "#" + heading);
                         } else {

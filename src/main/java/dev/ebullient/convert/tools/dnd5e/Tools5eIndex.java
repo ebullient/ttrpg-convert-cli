@@ -186,6 +186,26 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
     }
 
+    public String getSourceText(JsonNode node) {
+        return getSourceText(Tools5eSources.findOrTemporary(Tools5eIndexType.reference, node));
+    }
+
+    public String getSourceText(Tools5eSources currentSource) {
+        return String.format("_Source: %s_", currentSource.getSourceText(index().srdOnly()));
+    }
+
+    public boolean differentSource(Tools5eSources sources, JsonNode node) {
+        if (sources == null && node == null) {
+            return false;
+        } else if (node == null || !node.has("source")) {
+            return false;
+        } else if (sources == null) {
+            return !(index().srdOnly() || node.has("srd") || node.has("basicRules"));
+        }
+        Tools5eSources currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.reference, node);
+        return !currentSource.primarySource().equals(currentSource.primarySource());
+    }
+
     void addAlias(String key, String alias) {
         if (key.equals(alias)) {
             return;
