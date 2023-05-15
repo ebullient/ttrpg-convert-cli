@@ -42,7 +42,7 @@ public class Templates {
                 tui.verbosef("📝 %s template: %s", id, customPath);
                 try {
                     Template template = engine.parse(Files.readString(customPath));
-                    engine.putTemplate(id, template);
+                    engine.putTemplate(key, template);
                     return template;
                 } catch (IOException e) {
                     tui.errorf(e, "Failed reading template for %s from %s", id, customPath);
