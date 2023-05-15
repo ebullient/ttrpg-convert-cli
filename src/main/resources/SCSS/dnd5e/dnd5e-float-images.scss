@@ -1,0 +1,24 @@
+.json5e-background,
+.json5e-item,
+.json5e-monster,
+.json5e-race,
+.json5e-spell {
+  div {
+    &[src$="#center"] {
+      text-align: center;
+
+      img {
+        height: 300px;
+      }
+    }
+
+    &[src$="#right"] {
+      float: right;
+      margin-left: 5px;
+
+      img {
+        height: 300px;
+      }
+    }
+  }
+}

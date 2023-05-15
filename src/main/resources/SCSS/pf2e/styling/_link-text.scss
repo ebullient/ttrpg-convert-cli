@@ -1,0 +1,47 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+
+
+@mixin hover-link {
+  text-decoration: var.$underline;
+}
+
+@mixin no-underline {
+  text-decoration: var.$no-display;
+}
+
+:is(.pf2e) {
+  a.internal-link {
+    @include no-underline;
+    color: var(--pf2e-purple-link);
+
+    &:hover {
+      @include hover-link;
+      color: var(--pf2e-green-link);
+    }
+  }
+
+  .cm-link .cm-underline,
+  .cm-url .cm-underline {
+    color: var(--pf2e-blue-link);
+    @include no-underline;
+
+    &:hover {
+      color: var(--pf2e-green-link);
+      @include hover-link;
+    }
+  }
+
+  .external-link {
+    color: var(--pf2e-green-link);
+    background-image: none;
+    background-size: 0;
+    font-style: italic;
+    padding-right: 0;
+
+    &:hover {
+      color: var(--pf2e-purple-link);
+      @include hover-link;
+    }
+  }
+}

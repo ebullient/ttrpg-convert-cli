@@ -1,0 +1,70 @@
+// Styling
+.admonition[data-callout='flowchart'] {
+  --callout-color: 150, 180, 150;
+  --callout-icon: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 576 512\'%3E%3C!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --%3E%3Cpath d=\'M565.6 36.2C572.1 40.7 576 48.1 576 56V392c0 10-6.2 18.9-15.5 22.4l-168 64c-5.2 2-10.9 2.1-16.1 .3L192.5 417.5l-160 61c-7.4 2.8-15.7 1.8-22.2-2.7S0 463.9 0 456V120c0-10 6.2-18.9 15.5-22.4l168-64c5.2-2 10.9-2.1 16.1-.3L383.5 94.5l160-61c7.4-2.8 15.7-1.8 22.2 2.7zM48 136.5V421.2l120-45.7V90.8L48 136.5zM360 422.7V137.3l-144-48V374.7l144 48zm48-1.5l120-45.7V90.8L408 136.5V421.2z\'/%3E%3C/svg%3E');
+
+  & .admonition-title {
+    line-height: var(--line-height);
+
+    & .admonition-title-content {
+      flex: 2;
+      font-size: var(--h3-size);
+    }
+  }
+
+
+  img,
+  div {
+    &[src$='#token'] {
+      float: right;
+      margin-left: 5px;
+      width: 150px;
+    }
+  }
+
+
+  & .admonition-content {
+
+    > :first-child {
+      margin-top: 0.5em;
+    }
+
+    > :last-child {
+      margin-bottom: 0.5em;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--default-font);
+      font-variant: common-ligatures small-caps;
+    }
+
+    h1 {
+      font-size: 1.4em;
+      line-height: 1.4em;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2,
+    h3 {
+      border-bottom: 1px solid rgb(165, 34, 34);
+      font-size: 1.2em;
+      line-height: 1.2em;
+      margin-bottom: .3em;
+      margin-top: .2em;
+      padding: .5em 0 0 0;
+    }
+
+    p {
+      line-height: 1.2em;
+      margin-block-start: .5em;
+    }
+
+    li {
+      line-height: 1.2em;
+      margin-block-start: .5em;
+    }
+  }
+}

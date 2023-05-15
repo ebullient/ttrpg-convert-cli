@@ -1,0 +1,160 @@
+.json5e-background div[src$="#center"],
+.json5e-item div[src$="#center"],
+.json5e-monster div[src$="#center"],
+.json5e-race div[src$="#center"],
+.json5e-spell div[src$="#center"] {
+  text-align: center;
+}
+.json5e-background div[src$="#center"] img,
+.json5e-item div[src$="#center"] img,
+.json5e-monster div[src$="#center"] img,
+.json5e-race div[src$="#center"] img,
+.json5e-spell div[src$="#center"] img {
+  height: 300px;
+}
+.json5e-background div[src$="#right"],
+.json5e-item div[src$="#right"],
+.json5e-monster div[src$="#right"],
+.json5e-race div[src$="#right"],
+.json5e-spell div[src$="#right"] {
+  float: right;
+  margin-left: 5px;
+}
+.json5e-background div[src$="#right"] img,
+.json5e-item div[src$="#right"] img,
+.json5e-monster div[src$="#right"] img,
+.json5e-race div[src$="#right"] img,
+.json5e-spell div[src$="#right"] img {
+  height: 300px;
+}
+
+.theme-dark {
+  --statblock-section-line: 201,60,60;
+}
+
+.theme-light {
+  --statblock-section-line: 201,60,60;
+}
+
+.admonition[data-callout=statblock-5e] {
+  --callout-color: 165, 34, 34;
+  --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="dragon" class="svg-inline--fa fa-dragon fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M18.32 255.78L192 223.96l-91.28 68.69c-10.08 10.08-2.94 27.31 11.31 27.31h222.7c-9.44-26.4-14.73-54.47-14.73-83.38v-42.27l-119.73-87.6c-23.82-15.88-55.29-14.01-77.06 4.59L5.81 227.64c-12.38 10.33-3.45 30.42 12.51 28.14zm556.87 34.1l-100.66-50.31A47.992 47.992 0 0 1 448 196.65v-36.69h64l28.09 22.63c6 6 14.14 9.37 22.63 9.37h30.97a32 32 0 0 0 28.62-17.69l14.31-28.62a32.005 32.005 0 0 0-3.02-33.51l-74.53-99.38C553.02 4.7 543.54 0 533.47 0H296.02c-7.13 0-10.7 8.57-5.66 13.61L352 63.96 292.42 88.8c-5.9 2.95-5.9 11.36 0 14.31L352 127.96v108.62c0 72.08 36.03 139.39 96 179.38-195.59 6.81-344.56 41.01-434.1 60.91C5.78 478.67 0 485.88 0 494.2 0 504 7.95 512 17.76 512h499.08c63.29.01 119.61-47.56 122.99-110.76 2.52-47.28-22.73-90.4-64.64-111.36zM489.18 66.25l45.65 11.41c-2.75 10.91-12.47 18.89-24.13 18.26-12.96-.71-25.85-12.53-21.52-29.67z"></path></svg>';
+}
+.admonition[data-callout=statblock-5e] .admonition-title {
+  line-height: var(--line-height);
+}
+.admonition[data-callout=statblock-5e] .admonition-title .admonition-title-content {
+  flex: 2;
+  font-size: var(--h3-size);
+}
+.admonition[data-callout=statblock-5e] img[src$="#token"],
+.admonition[data-callout=statblock-5e] div[src$="#token"] {
+  float: right;
+  margin-left: 5px;
+  width: 150px;
+}
+.admonition[data-callout=statblock-5e] .admonition-content > :first-child {
+  margin-top: 0.5em;
+}
+.admonition[data-callout=statblock-5e] .admonition-content > :last-child {
+  margin-bottom: 0.5em;
+}
+.admonition[data-callout=statblock-5e] .admonition-content h1,
+.admonition[data-callout=statblock-5e] .admonition-content h2,
+.admonition[data-callout=statblock-5e] .admonition-content h3 {
+  font-family: var(--default-font);
+  font-variant: common-ligatures small-caps;
+}
+.admonition[data-callout=statblock-5e] .admonition-content h1 {
+  font-size: 1.4em;
+  line-height: 1.4em;
+  margin: 0;
+  padding: 0;
+}
+.admonition[data-callout=statblock-5e] .admonition-content h2,
+.admonition[data-callout=statblock-5e] .admonition-content h3 {
+  border-bottom: 1px solid rgb(165, 34, 34);
+  font-size: 1.2em;
+  line-height: 1.2em;
+  margin-bottom: 0.3em;
+  margin-top: 0.2em;
+  padding: 0.5em 0 0 0;
+}
+.admonition[data-callout=statblock-5e] .admonition-content p {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+.admonition[data-callout=statblock-5e] .admonition-content li {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+
+.admonition[data-callout=flowchart] {
+  --callout-color: 150, 180, 150;
+  --callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3C!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --%3E%3Cpath d='M565.6 36.2C572.1 40.7 576 48.1 576 56V392c0 10-6.2 18.9-15.5 22.4l-168 64c-5.2 2-10.9 2.1-16.1 .3L192.5 417.5l-160 61c-7.4 2.8-15.7 1.8-22.2-2.7S0 463.9 0 456V120c0-10 6.2-18.9 15.5-22.4l168-64c5.2-2 10.9-2.1 16.1-.3L383.5 94.5l160-61c7.4-2.8 15.7-1.8 22.2 2.7zM48 136.5V421.2l120-45.7V90.8L48 136.5zM360 422.7V137.3l-144-48V374.7l144 48zm48-1.5l120-45.7V90.8L408 136.5V421.2z'/%3E%3C/svg%3E");
+}
+.admonition[data-callout=flowchart] .admonition-title {
+  line-height: var(--line-height);
+}
+.admonition[data-callout=flowchart] .admonition-title .admonition-title-content {
+  flex: 2;
+  font-size: var(--h3-size);
+}
+.admonition[data-callout=flowchart] img[src$="#token"],
+.admonition[data-callout=flowchart] div[src$="#token"] {
+  float: right;
+  margin-left: 5px;
+  width: 150px;
+}
+.admonition[data-callout=flowchart] .admonition-content > :first-child {
+  margin-top: 0.5em;
+}
+.admonition[data-callout=flowchart] .admonition-content > :last-child {
+  margin-bottom: 0.5em;
+}
+.admonition[data-callout=flowchart] .admonition-content h1,
+.admonition[data-callout=flowchart] .admonition-content h2,
+.admonition[data-callout=flowchart] .admonition-content h3 {
+  font-family: var(--default-font);
+  font-variant: common-ligatures small-caps;
+}
+.admonition[data-callout=flowchart] .admonition-content h1 {
+  font-size: 1.4em;
+  line-height: 1.4em;
+  margin: 0;
+  padding: 0;
+}
+.admonition[data-callout=flowchart] .admonition-content h2,
+.admonition[data-callout=flowchart] .admonition-content h3 {
+  border-bottom: 1px solid rgb(165, 34, 34);
+  font-size: 1.2em;
+  line-height: 1.2em;
+  margin-bottom: 0.3em;
+  margin-top: 0.2em;
+  padding: 0.5em 0 0 0;
+}
+.admonition[data-callout=flowchart] .admonition-content p {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+.admonition[data-callout=flowchart] .admonition-content li {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+
+.theme-dark {
+  --statblock-section-line: 201,60,60;
+}
+
+.theme-light {
+  --statblock-section-line: 201,60,60;
+}
+
+.creature-view-container.workspace-leaf-content {
+  background-color: var(--background-primary-alt);
+}
+.creature-view-container.workspace-leaf-content .admonition {
+  margin-top: 0;
+}
+
+/*# sourceMappingURL=compendium-dnd-5e.css.map */

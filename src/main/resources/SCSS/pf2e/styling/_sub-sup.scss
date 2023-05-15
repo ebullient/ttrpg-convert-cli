@@ -1,0 +1,21 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+
+// Common-Mixin
+@mixin shared-sub-sup {
+  font-size: 75%;
+  line-height: var.$width-0-rem;
+  position: var.$relative;
+  text-align: var.$align-center;
+  vertical-align: var.$align-baseline;
+}
+
+// Individual Mixins
+sub {
+  @include shared-sub-sup;
+  bottom: -0.25em;
+}
+
+sup {  @include shared-sub-sup;
+  top: -0.5em;
+}

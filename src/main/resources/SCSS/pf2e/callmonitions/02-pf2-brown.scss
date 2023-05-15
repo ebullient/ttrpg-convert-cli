@@ -1,0 +1,18 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+@use 'shake-ins/admon-content-styling' as content-styles;
+
+.callout[data-callout='pf2-brown'] {
+
+  & .callout-title {
+    & .callout-title-inner {
+      font-family: 'Helvetica Neue', Helvetica, Arial, 'Pathfinder', sans-serif;
+      margin-left: 0.25rem;
+      text-align: var.$align-center;
+    }
+  }
+
+  & .callout-content {
+    @include content-styles.common-admonition-typography;
+  }
+}

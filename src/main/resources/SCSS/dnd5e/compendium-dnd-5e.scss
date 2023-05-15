@@ -1,0 +1,22 @@
+@use 'dnd5e-float-images';
+@use 'statblock-5e';
+@use 'flowchart';
+
+
+// Additional
+
+.theme-dark {
+  --statblock-section-line: 201,60,60;
+}
+.theme-light {
+  --statblock-section-line: 201,60,60;
+}
+
+
+.creature-view-container.workspace-leaf-content {
+  background-color: var(--background-primary-alt);
+
+  .admonition {
+    margin-top: 0;
+  }
+}
