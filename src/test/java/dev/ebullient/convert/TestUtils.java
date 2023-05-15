@@ -93,7 +93,7 @@ public class TestUtils {
                 anchor = path.substring(hash + 1);
                 path = path.substring(0, hash);
                 if (!p.toString().endsWith(path)) {
-                    resource = Path.of(baseDir + path);
+                    resource = Path.of(baseDir, path);
                 }
 
                 Path indexResource = p.getParent().resolve(path);
