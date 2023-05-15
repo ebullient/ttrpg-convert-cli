@@ -42,8 +42,8 @@ public class QuteSource extends QuteBase {
         return Path.of(QuteSource.MONSTERS_BASE_PATH, (isNpc ? "npc" : type)).toString();
     }
 
-    public static String getSubclassResourceName(String subclass, String parentClass) {
-        return parentClass + "-" + subclass;
+    public static String getSubclassResource(String subclass, String parentClass, String subclassSource) {
+        return parentClass + "-" + subclass + QuteSource.sourceIfNotCore(subclassSource);
     }
 
     public static String getDeityResourceName(String name, String pantheon) {
