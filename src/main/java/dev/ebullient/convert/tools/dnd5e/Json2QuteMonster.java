@@ -89,7 +89,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         List<ImageRef> fluffImages = new ArrayList<>();
-        String fluff = getFluffDescription(Tools5eIndexType.monsterfluff, null, fluffImages);
+        String fluff = getFluffDescription(Tools5eIndexType.monsterfluff, "##", fluffImages);
+        if (fluff != null && fluff.contains("##")) {
+            fluff += "\n\n## Stat Block";
+        }
 
         return new QuteMonster(sources,
                 decoratedMonsterName(sources),
