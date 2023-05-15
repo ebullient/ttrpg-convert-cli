@@ -243,7 +243,6 @@ public class TestUtils {
         if (!errors.isEmpty()) {
             errors.forEach(tui::warn);
         }
-
         return errors;
     }
 

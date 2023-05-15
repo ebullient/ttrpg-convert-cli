@@ -106,10 +106,10 @@ public class RpgDataConvertTest {
 
             Tui tui = new Tui();
             tui.init(null, false, false);
-            List<String> errors = new ArrayList<>();
             TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
                 content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
-                return List.of();
+                return errors;
             });
         }
     }
@@ -281,10 +281,10 @@ public class RpgDataConvertTest {
 
             Tui tui = new Tui();
             tui.init(null, false, false);
-            List<String> errors = new ArrayList<>();
             TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
                 content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
-                return List.of();
+                return errors;
             });
         }
     }
