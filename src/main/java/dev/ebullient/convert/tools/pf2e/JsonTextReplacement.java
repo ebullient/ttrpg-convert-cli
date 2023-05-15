@@ -276,7 +276,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         // "{@b Tables:} {@table ability modifiers} assumes CRB by default, {@table automatic bonus progression|gmg} can have sources added with a pipe, {@table domains|logm|and optional link text added with another pipe}.",
         String[] parts = match.split("\\|");
         String linkText = parts[0];
-        String source = targetType.defaultSource().name();
+        String source = targetType.defaultSourceString();
 
         if (parts.length > 2) {
             linkText = parts[2];

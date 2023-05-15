@@ -5,8 +5,10 @@
         {
           "type": "entries",
           "name": "Attunement",
+          "source": "DMG",
+          "page": 136,
+          "srd": true,
           "basicRules": true,
-          "srd":true,
           "entries": [
             "Some magic items require a creature to form a bond with them before their magical properties can be used. This bond is called attunement, and certain items have a prerequisite for it. If the prerequisite is a class, a creature must be a member of that class to attune to the item. (If the class is a spellcasting class, a monster qualifies if it has spell slots and uses that class's spell list.) If the prerequisite is to be a spellcaster, a creature qualifies if it can cast at least one spell using its traits or features, not using a magic item or the like.",
             "Without becoming attuned to an item that requires attunement, a creature gains only its nonmagical benefits, unless its description states otherwise. For example, a magic shield that requires attunement provides the benefits of a normal shield to a creature not attuned to it, but none of its magical properties.",
@@ -16,8 +18,6 @@
             {
               "type": "entries",
               "name": "Optional Attunement",
-              "srd": true,
-              "basicRules": true,
               "entries": [
                 "Attunement may be required for this item."
               ]
@@ -25,8 +25,6 @@
             {
               "type": "entries",
               "name": "Requires Attunement",
-              "srd": true,
-              "basicRules": true,
               "entries": [
                 "Attunement is required for this item."
               ]
@@ -316,7 +314,10 @@
       "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
       "races.json", "fluff-races.json",
       "spells"
-    ]
+    ],
+    "indexes": {
+      "spell-source": "generated/gendata-spell-source-lookup.json"
+    }
   },
   "configPf2e": {
     "markerFile": [

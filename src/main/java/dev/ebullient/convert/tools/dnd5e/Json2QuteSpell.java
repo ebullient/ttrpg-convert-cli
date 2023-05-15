@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
 
 public class Json2QuteSpell extends Json2QuteCommon {
@@ -26,8 +28,6 @@ public class Json2QuteSpell extends Json2QuteCommon {
         SchoolEnum school = getSchool();
         String level = node.get("level").asText();
 
-        Collection<String> classes = spellClasses(school);
-
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         tags.add("spell/school/" + slugify(school.name()));
@@ -35,13 +35,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
         if (ritual) {
             tags.add("spell/ritual");
         }
-        for (String c : classes) {
-            String[] split = c.split("\\(");
-            for (int i = 0; i < split.length; i++) {
-                split[i] = slugify(split[i].trim());
-            }
-            tags.add("spell/class/" + String.join("/", split));
-        }
+
+        Set<String> classes = indexedSpellClasses(tags);
+        classes.addAll(spellClasses(school, tags)); // legacy
 
         List<String> text = new ArrayList<>();
         appendEntryToText(text, node, "##");
@@ -210,56 +206,94 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 time.get("unit").asText());
     }
 
-    Collection<String> spellClasses(SchoolEnum school) {
+    Set<String> indexedSpellClasses(List<String> tags) {
+        Collection<String> list = index().classesForSpell(this.sources.getKey());
+
+        return list.stream()
+                .filter(k -> index().isIncluded(k))
+                .map(k -> {
+                    Tools5eSources sources = Tools5eSources.findSources(k);
+                    Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(k);
+                    if (type == Tools5eIndexType.subclass) {
+                        JsonNode subclassNode = index().getOrigin(k);
+                        String subclassName = sources.getName();
+                        String className = subclassNode.get("className").asText().trim();
+                        String classSource = subclassNode.get("classSource").asText().trim();
+                        return getSubclass(tags, className, classSource, subclassName, sources.primarySource(), k);
+                    }
+                    String className = sources.getName();
+                    return getClass(tags, className, sources.primarySource(), k);
+                })
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    Set<String> spellClasses(SchoolEnum school, List<String> tags) {
         JsonNode classesNode = node.get("classes");
         if (classesNode == null || classesNode.isNull()) {
-            return List.of();
+            return Set.of();
         }
         Set<String> classes = new TreeSet<>();
         classesNode.withArray("fromClassList").forEach(c -> {
             String className = c.get("name").asText();
             String classSource = c.get("source").asText();
-            if (includeClass(className, classSource)) {
-                classes.add(className);
+            String finalKey = Tools5eIndexType.classtype.createKey(className, classSource);
+            if (index().isIncluded(finalKey)) {
+                classes.add(getClass(tags, className, classSource, finalKey));
             }
         });
         classesNode.withArray("fromClassListVariant").forEach(c -> {
             String definedInSource = c.get("definedInSource").asText();
             String className = c.get("name").asText();
             String classSource = c.get("source").asText();
-            if (index.sourceIncluded(definedInSource) && includeClass(className, classSource)) {
-                classes.add(className);
+            String finalKey = Tools5eIndexType.classtype.createKey(className, classSource);
+            if (index.sourceIncluded(definedInSource) && index().isIncluded(finalKey)) {
+                classes.add(getClass(tags, className, classSource, finalKey));
             }
         });
         classesNode.withArray("fromSubclass").forEach(s -> {
             String className = s.get("class").get("name").asText().trim();
-            if (classes.contains(className)) {
-                return;
-            }
             String classSource = s.get("class").get("source").asText();
             String subclassName = s.get("subclass").get("name").asText();
-            if (includeSubclass(className, classSource, subclassName)) {
-                classes.add(String.format("%s (%s)", className, subclassName));
+            String subclassSource = s.get("subclass").get("source").asText();
+            String finalKey = Tools5eIndexType.getSubclassKey(className.trim(), classSource.trim(), subclassName.trim(),
+                    subclassSource.trim());
+            if (index().isIncluded(finalKey)) {
+                classes.add(getSubclass(tags, className, classSource, subclassName, subclassSource, finalKey));
             }
         });
         if (classes.contains("Wizard")) {
             if (school == SchoolEnum.Abjuration || school == SchoolEnum.Evocation) {
-                classes.add("Fighter (Eldritch Knight)");
+                String finalKey = Tools5eIndexType.getSubclassKey("Fighter", "PHB", "Eldritch Knight", "PHB");
+                if (index().isIncluded(finalKey)) {
+                    classes.add(getSubclass(tags, "Fighter", "PHB", "Eldritch Knight", "PHB", finalKey));
+                }
             }
             if (school == SchoolEnum.Enchantment || school == SchoolEnum.Illusion) {
-                classes.add("Rogue (Arcane Trickster)");
+                String finalKey = Tools5eIndexType.getSubclassKey("Rogue", "PHB", "Arcane Trickster", "PHB");
+                if (index().isIncluded(finalKey)) {
+                    classes.add(getSubclass(tags, "Rogue", "PHB", "Arcane Trickster", "PHB", finalKey));
+                }
             }
         }
         return classes;
     }
 
-    private boolean includeClass(String className, String classSource) {
-        String finalKey = index().getClassKey(className, classSource);
-        return index().isIncluded(finalKey);
+    private String getClass(Collection<String> tags, String className, String classSource, String classKey) {
+        tags.add("spell/class/" + slugify(className));
+        return linkOrText(
+                className,
+                classKey,
+                QuteSource.CLASSES_PATH,
+                className + QuteSource.sourceIfNotCore(classSource));
     }
 
-    private boolean includeSubclass(String className, String classSource, String subclassName) {
-        String finalKey = index().getSubclassKey(subclassName.trim(), className.trim(), classSource.trim());
-        return index().isIncluded(finalKey);
+    private String getSubclass(Collection<String> tags, String className, String classSource, String subclassName,
+            String subclassSource, String subclassKey) {
+        tags.add("spell/class/" + slugify(className) + "/" + slugify(subclassName));
+        return linkOrText(
+                String.format("%s (%s)", className, subclassName),
+                subclassKey,
+                QuteSource.CLASSES_PATH,
+                QuteSource.getSubclassResource(subclassName, className, subclassSource));
     }
 }

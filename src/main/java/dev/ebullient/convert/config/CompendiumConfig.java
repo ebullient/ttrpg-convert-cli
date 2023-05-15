@@ -85,13 +85,8 @@ public class CompendiumConfig {
         if (allSources) {
             return false;
         }
-        if (allowedSources.isEmpty()) {
-            // skip item when no sources are defined
+        if (allowedSources.isEmpty() || sourceNode == null || !sourceNode.isTextual()) {
             return !allowWhenEmpty;
-        }
-        if (sourceNode == null || !sourceNode.isTextual()) {
-            // unlikely, but skip items if we can't check their source
-            return true;
         }
         // skip item if the source isn't in allowed sources
         return !allowedSources.contains(sourceNode.asText().toLowerCase());
@@ -308,8 +303,8 @@ public class CompendiumConfig {
     }
 
     private static class PathAttributes {
-        String rulesVaultRoot = "/rules/";
-        String compendiumVaultRoot = "/compendium/";
+        String rulesVaultRoot = "rules/";
+        String compendiumVaultRoot = "compendium/";
 
         Path rulesFilePath = Path.of("rules/");
         Path compendiumFilePath = Path.of("compendium/");
@@ -338,16 +333,17 @@ public class CompendiumConfig {
         }
 
         private static String toRoot(String value) {
-            return ('/' + value + '/')
+            String path = (value + '/')
                     .replace('\\', '/')
                     .replaceAll("/+", "/");
+            return path.startsWith("/") ? path.substring(1) : path;
         }
 
         private static Path toFilesystemRoot(String root) {
-            if (root.equals("/")) {
+            if (root.equals("/") || root.isBlank()) {
                 return CWD;
             }
-            return Path.of(root.substring(1));
+            return Path.of(root);
         }
 
         private static String toVaultRoot(String root) {

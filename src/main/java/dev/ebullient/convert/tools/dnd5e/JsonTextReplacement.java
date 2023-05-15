@@ -419,35 +419,26 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         // {@class artificer|uaartificer} can have sources added with a pipe,
         // {@class fighter|phb|optional link text added with another pipe},
         // {@class fighter|phb|subclasses added|Eldritch Knight} with another pipe,
-        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with
-        // another pipe
+        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with another pipe
         // (first number is level index (0-19), second number is feature index (0-n)).",
         // {@class Barbarian|phb|Path of the Ancestral Guardian|Ancestral Guardian|xge}
+        // {@class Fighter|phb|Samurai|Samurai|xge}
         String[] parts = match.split("\\|");
         String className = parts[0];
-        String classSource = "phb";
-        String linkText = className;
-        String subclass = null;
-
-        if (parts.length > 3) {
-            subclass = parts[3];
-        }
-        if (parts.length > 2) {
-            linkText = parts[2];
-        }
-        if (parts.length > 1) {
-            classSource = parts[1];
-        }
+        String classSource = parts.length < 2 || parts[1].isEmpty() ? "phb" : parts[1];
+        String linkText = parts.length < 3 || parts[2].isEmpty() ? className : parts[2];
+        String subclass = parts.length < 4 || parts[3].isEmpty() ? null : parts[3];
+        String subclassSource = parts.length < 5 || parts[4].isEmpty() ? classSource : parts[4];
 
         if (subclass != null) {
-            String key = index().getAliasOrDefault(Tools5eIndexType.subclass.createKey(className, classSource));
+            String key = index()
+                    .getAliasOrDefault(Tools5eIndexType.getSubclassKey(className, classSource, subclass, subclassSource));
             // "subclass|path of wild magic|barbarian|phb|"
             int first = key.indexOf('|');
             int second = key.indexOf('|', first + 1);
             subclass = key.substring(first + 1, second);
             return linkOrText(linkText, key, QuteSource.CLASSES_PATH,
-                    QuteSource.getSubclassResourceName(subclass, className)
-                            + QuteSource.sourceIfNotCore(classSource));
+                    QuteSource.getSubclassResource(subclass, className, subclassSource));
         } else {
             String key = index().getAliasOrDefault(Tools5eIndexType.classtype.createKey(className, classSource));
             return linkOrText(linkText, key, QuteSource.CLASSES_PATH,
@@ -524,7 +515,8 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         // {@subclassFeature Blessed Strikes|Cleric||Life||8|UAClassFeatureVariants}, --> "-domain"
         // {@subclassFeature Blessed Strikes|Cleric|PHB|Twilight|TCE|8|TCE}
         // {@subclassFeature Path of the Berserker|Barbarian||Berserker||3||optional display text}.
-        // Class source is assumed to be PHB. Subclass source is assumed to be PHB.
+        // Class source is assumed to be PHB.
+        // Subclass source is assumed to be PHB.
         // Subclass feature source is assumed to be the same as subclass source.",
 
         String[] parts = match.split("\\|");
@@ -532,6 +524,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         String className = parts[1];
         String classSource = parts[2].isBlank() ? "phb" : parts[2];
         String subclass = parts[3];
+        String subclassSource = parts[4].isBlank() ? classSource : parts[4];
         String level = parts[5];
 
         if (parts.length > 7) {
@@ -547,8 +540,9 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
 
         // look up alias for subclass so link is correct, e.g.
         // "subclass|redemption|paladin|phb|" : "subclass|oath of redemption|paladin|phb|",
-        // "subclass|twilight|cleric|phb|"    : "subclass|twilight domain|cleric|phb|"
-        String subclassKey = index().getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclass, className, classSource));
+        // "subclass|twilight|cleric|phb|tce"    : "subclass|twilight domain|cleric|phb|tce"
+        String subclassKey = index()
+                .getAliasOrDefault(Tools5eIndexType.getSubclassKey(className, classSource, subclass, subclassSource));
         int first = subclassKey.indexOf('|');
         subclass = subclassKey.substring(first + 1, subclassKey.indexOf('|', first + 1));
 
@@ -556,8 +550,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         Tools5eSources featureSources = Tools5eSources.findSources(classFeatureKey);
         String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
 
-        String resource = slugify(QuteSource.getSubclassResourceName(subclass, className)
-                + QuteSource.sourceIfNotCore(classSource));
+        String resource = slugify(QuteSource.getSubclassResource(subclass, className, subclassSource));
 
         return String.format("[%s](%s%s/%s.md#%s)",
                 linkText,
@@ -723,7 +716,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             case "AF":
                 return "artificer-alchemist-uaartificer";
             case "AI":
-                return "artificer";
+                return "artificer-tce";
             case "ED":
                 return "monk-way-of-the-four-elements";
             case "EI":
@@ -734,7 +727,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             case "AS":
             case "AS:V1-UA":
             case "AS:V2-UA":
-                return "fighter-arcane-archer";
+                return "fighter-arcane-archer-xge";
             case "FS:F":
                 return "fighter";
             case "MV":
@@ -742,7 +735,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                 return "fighter-battle-master";
             case "MV:C2-UA":
             case "RN":
-                return "fighter-rune-knight";
+                return "fighter-rune-knight-tce";
             case "FS:B":
                 return "bard-college-of-swords";
             case "FS:R":
@@ -750,7 +743,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             case "FS:P":
                 return "paladin";
             case "OR":
-                return "wizard-onomancy-ua";
+                return "wizard-onomancy-ua-uaclericdruidwizard";
             default:
                 tui().errorf("Unknown class for feature type %s", type);
                 return "unknown";

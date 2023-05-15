@@ -263,6 +263,16 @@ public class Tui {
         return slugifier().slugify(s);
     }
 
+    public Optional<Path> resolvePath(Path path) {
+        if (path == null) {
+            return Optional.empty();
+        }
+        // find the right source root (there could be several)
+        return inputRoot.stream()
+                .filter(x -> x.resolve(path).toFile().exists())
+                .findFirst();
+    }
+
     public void copyImages(Collection<ImageRef> images, Map<String, String> fallbackPaths) {
         for (ImageRef image : images) {
             Path targetPath = output.resolve(image.targetFilePath());
@@ -275,9 +285,7 @@ public class Tui {
             }
 
             // find the right source root (there could be several)
-            Optional<Path> sourceRoot = inputRoot.stream()
-                    .filter(x -> x.resolve(image.sourcePath()).toFile().exists())
-                    .findFirst();
+            Optional<Path> sourceRoot = resolvePath(image.sourcePath());
 
             // adjust basePath for relocated image
             Path relativeImagePath = image.sourcePath();

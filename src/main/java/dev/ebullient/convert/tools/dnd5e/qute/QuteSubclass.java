@@ -22,7 +22,8 @@ public class QuteSubclass extends QuteSource {
             String parentClass,
             String parentClassLink,
             String parentClassSource,
-            String subclassTitle, String classProgression,
+            String subclassTitle,
+            String classProgression,
             String text, List<String> tags) {
         super(sources, name, source, text, tags);
 
@@ -40,8 +41,7 @@ public class QuteSubclass extends QuteSource {
 
     @Override
     public String targetFile() {
-        return QuteSource.getSubclassResourceName(name, parentClass)
-                + QuteSource.sourceIfNotCore(parentClassSource);
+        return QuteSource.getSubclassResource(name, parentClass, sources.primarySource());
     }
 
     @Override

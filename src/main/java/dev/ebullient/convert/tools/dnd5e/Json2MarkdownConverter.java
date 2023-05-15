@@ -133,21 +133,21 @@ public class Json2MarkdownConverter implements MarkdownConverter {
             } else if (key.startsWith("names-")) {
                 addNames(names, key, node);
             } else if (key.equals("table")) {
-                node.forEach(t -> {
+                for (JsonNode t : index.iterableElements(node)) {
                     if (t.get("name").asText().equals("Damage Types")) {
                         rules.add(new Table2QuteNote(index, t).buildRules());
-                        return;
+                        continue;
                     }
                     addTable(tables, t);
-                });
+                }
             } else if (key.equals("variantrule")) {
-                node.forEach(vr -> {
+                for (JsonNode vr : index.iterableElements(node)) {
                     String title = index.replaceText(vr.get("name").asText());
                     QuteNote note = new Sourceless2QuteNote(index, vr, title).buildVariant();
                     if (note != null) {
                         variants.add(note);
                     }
-                });
+                }
             } else {
                 switch (key) {
                     case "action":

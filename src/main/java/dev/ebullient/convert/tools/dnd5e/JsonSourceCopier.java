@@ -62,7 +62,7 @@ public class JsonSourceCopier implements JsonSource {
                 // is the copy a copy?
                 baseNode = handleCopy(type, baseNode);
                 try {
-                    String originKey = index().getKey(type, jsonSource);
+                    String originKey = type.createKey(jsonSource);
                     jsonSource = mergeNodes(originKey, baseNode, jsonSource);
                 } catch (IllegalStateException | StackOverflowError e) {
                     throw new IllegalStateException("Unable to resolve copy " + _copy.toPrettyString());
@@ -213,7 +213,7 @@ public class JsonSourceCopier implements JsonSource {
         }
 
         if (_trait != null) {
-            String key = index.getKey(Tools5eIndexType.trait, _trait);
+            String key = Tools5eIndexType.trait.createKey(_trait);
             JsonNode trait = index.getOrigin(key);
             if (trait == null) {
                 tui().warn("Unable to find trait for " + key);

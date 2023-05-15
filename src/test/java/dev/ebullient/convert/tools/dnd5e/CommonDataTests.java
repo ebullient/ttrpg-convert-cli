@@ -291,7 +291,7 @@ public class CommonDataTests {
             assertThat(undead.toFile()).exists();
 
             TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {
-                List<String> e = new ArrayList<>();
+                List<String> errors = new ArrayList<>();
                 boolean found = false;
                 boolean yaml = false;
                 boolean index = false;
@@ -304,15 +304,15 @@ public class CommonDataTests {
                     } else if (l.equals("```")) {
                         yaml = false; // end yaml block
                     } else if (yaml && l.contains("*")) {
-                        e.add(String.format("Found '*' in %s: %s", p.toString(), l));
+                        errors.add(String.format("Found '*' in %s: %s", p.toString(), l));
                     }
-                    TestUtils.commonTests(p, l, e);
+                    TestUtils.commonTests(p, l, errors);
                 }
 
                 if (!found && !index) {
-                    e.add(String.format("File %s did not contain a yaml statblock", p));
+                    errors.add(String.format("File %s did not contain a yaml statblock", p));
                 }
-                return e;
+                return errors;
             });
         }
     }

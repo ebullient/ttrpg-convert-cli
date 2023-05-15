@@ -112,11 +112,15 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         .toLowerCase();
             }
             case subclass: {
-                return String.format("%s|%s|%s|%s|",
+                String classSource = IndexFields.classSource.getTextOrDefault(x, "PHB");
+                String scSource = IndexElement.source.getTextOrDefault(x, classSource);
+                // subclass|subclassName|className|classSource|subclassSource
+                return String.format("%s|%s|%s|%s|%s",
                         this.name(),
                         name,
                         IndexFields.className.getTextOrEmpty(x),
-                        IndexFields.classSource.getTextOrEmpty(x))
+                        classSource,
+                        scSource.equalsIgnoreCase(classSource) ? "" : scSource)
                         .toLowerCase();
             }
             case subclassfeature: {
@@ -173,9 +177,10 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 .replaceAll("\\|tce\\|8\\|tce", "|tce|8");
     }
 
-    public static String getSubclassKey(String name, String className, String classSource) {
-        return String.format("%s|%s|%s|%s|",
-                Tools5eIndexType.subclass, name, className, classSource).toLowerCase();
+    public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
+        return String.format("%s|%s|%s|%s|%s",
+                Tools5eIndexType.subclass, subclassName, className, classSource,
+                classSource.equals(subclassSource) ? "" : subclassSource).toLowerCase();
     }
 
     public static String getClassFeatureKey(String name, String featureSource, String className, String classSource,
@@ -190,12 +195,13 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 .toLowerCase();
     }
 
-    public String defaultSource() {
+    public String defaultSourceString() {
         switch (this) {
             case item:
             case itemfluff:
             case itemproperty:
             case itementry:
+            case magicvariant:
                 return "DMG";
             case legendarygroup:
             case monster:

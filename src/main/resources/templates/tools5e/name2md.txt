@@ -9,7 +9,7 @@ aliases: ["{resource.name} Names"]
 
 ## {table.name}
 
-| dice: d{table.diceType} | Name |
+| dice: {table.diceType} | Name |
 |------------|----------------------|
 {#for row in table.rows}
 | {row.range} | {row.result} |

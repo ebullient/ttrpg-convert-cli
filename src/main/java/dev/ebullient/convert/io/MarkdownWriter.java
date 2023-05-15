@@ -78,12 +78,13 @@ public class MarkdownWriter {
                     }
                 });
 
-        counts.forEach((k, v) -> tui.outPrintf("✅ Wrote %s files to %s.%n", v, k));
+        counts.forEach((k, v) -> tui.outPrintf("✅ Wrote %s %s files.%n", v, k));
     }
 
     <T extends QuteBase> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
         try {
             writeFile(fileMap, templates.render(qs));
+            counts.compute(qs.type().name(), (k, v) -> (v == null) ? 1 : v + 1);
         } catch (IOException e) {
             throw new WrappedIOException(e);
         }

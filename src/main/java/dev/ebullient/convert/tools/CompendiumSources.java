@@ -51,9 +51,11 @@ public abstract class CompendiumSources {
 
     protected String findSourceText(IndexType type, JsonNode jsonElement) {
         // add the primary source...
-        String primarySource = Fields.source.getTextOrEmpty(jsonElement);
+        String primarySource = Fields.source.getTextOrNull(jsonElement);
         if (primarySource != null) {
             this.bookSources.add(primarySource);
+        } else {
+            this.bookSources.add(type.defaultSourceString());
         }
 
         List<String> srcText = new ArrayList<>();

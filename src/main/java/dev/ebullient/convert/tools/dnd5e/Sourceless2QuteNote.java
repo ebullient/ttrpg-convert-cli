@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.tools.CompendiumSources.SourceAndPage;
 
 public class Sourceless2QuteNote extends Json2QuteCommon {
 
@@ -47,7 +46,9 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         Set<String> tags = new HashSet<>();
         List<String> text = new ArrayList<>();
 
-        node.forEach(entry -> appendElement(entry, text, tags));
+        for (JsonNode entry : iterableElements(node)) {
+            appendElement(entry, text, tags);
+        }
         if (text.isEmpty()) {
             return null;
         }
@@ -56,21 +57,24 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendElement(JsonNode entry, List<String> text, Set<String> tags) {
-        currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.syntheticGroup, entry);
+        Tools5eSources tempSources = Tools5eSources.findOrTemporary(getType(entry), entry);
         String name = entry.get("name").asText();
         if (!index.rulesSourceExcluded(entry, name)) {
-            tags.addAll(currentSource.getSourceTags());
+            tags.addAll(tempSources.getSourceTags());
             maybeAddBlankLine(text);
             text.add("## " + replaceText(name));
-            maybeAddBlankLine(text);
+            text.add(index().getSourceText(tempSources));
+            text.add("");
             appendEntryToText(text, entry, "###");
             maybeAddBlankLine(text);
-            text.add(String.format("_Source: %s_", currentSource.getSourceText(index.srdOnly())));
         }
     }
 
     public QuteNote buildVariant() {
-        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        if (index().rulesSourceExcluded(node, title)) {
+            return null;
+        }
+        boolean pushed = parseState.push(node);
         try {
             currentSource = sources;
             List<String> tags = new ArrayList<>(sources.getSourceTags());
@@ -88,6 +92,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         if (index().rulesSourceExcluded(node, title)) {
             return Map.of();
         }
+
         List<String> tags = new ArrayList<>(sources.getSourceTags());
 
         Map<String, QuteNote> notes = new HashMap<>();
@@ -134,30 +139,35 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     public QuteNote buildItemProperties() {
-        boolean pushed = parseState.push(node);
+        boolean p1 = parseState.push(node);
         try {
             Set<String> tags = new HashSet<>();
             tags.add("compendium/src/srd");
 
             List<String> text = new ArrayList<>();
-            text.add("_Source: SRD / Basic Rules_");
-
-            node.forEach(entry -> {
-                maybeAddBlankLine(text);
-                text.add("## " + entry.get("name").asText());
-                if (!entry.has("srd")) {
-                    SourceAndPage sourceAndPage = new SourceAndPage(entry);
-                    text.add("_Source: " + sourceAndPage.toString() + "_");
+            for (JsonNode entry : iterableElements(node)) {
+                boolean p2 = parseState.push(entry);
+                try {
+                    String name = entry.get("name").asText();
+                    if (index().rulesSourceExcluded(entry, name)) {
+                        continue;
+                    }
+                    maybeAddBlankLine(text);
+                    text.add("## " + name);
+                    if (!entry.has("srd")) {
+                        text.add(index().getSourceText(entry));
+                    }
+                    text.add("");
+                    appendEntryToText(text, entry.get("entries"), "###");
+                } finally {
+                    parseState.pop(p2);
                 }
-                maybeAddBlankLine(text);
-                appendEntryToText(text, entry.get("entries"), "###");
-            });
+            }
 
-            return new QuteNote(title, null, text, tags);
+            return new QuteNote(title, "_Source: SRD / Basic Rules_", text, tags);
         } finally {
-            parseState.pop(pushed);
+            parseState.pop(p1);
         }
-
     }
 
     public QuteNote buildLoot() {
@@ -178,12 +188,19 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendLootElement(JsonNode entry, List<String> text) {
-        currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.syntheticGroup, entry);
+        Tools5eSources tmpSources = Tools5eSources.findOrTemporary(getType(entry), entry);
+
         String name = entry.get("name").asText();
-        if (!index.rulesSourceExcluded(entry, name)) {
+        if (index.rulesSourceExcluded(entry, name)) {
+            return;
+        }
+
+        boolean pushed = parseState.push(entry);
+        try {
             String blockid = slugify(name);
             maybeAddBlankLine(text);
             text.add("## " + name);
+            text.add(index().getSourceText(tmpSources));
             text.add("");
             text.add(String.format("`dice: [](%s.md#^%s)`", slugify(title), blockid));
             text.add("");
@@ -221,7 +238,8 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             }
             text.add("^" + blockid);
             maybeAddBlankLine(text);
-            text.add(String.format("_Source: %s_", currentSource.getSourceText(index.srdOnly())));
+        } finally {
+            parseState.pop(pushed);
         }
     }
 
@@ -245,46 +263,52 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             if (text.isEmpty()) {
                 return null;
             }
-
-            return new QuteNote(title, null, text, tags);
+            return new QuteNote(title, "_Source: SRD / Basic Rules_", text, tags);
         } finally {
             parseState.pop(pushed);
         }
     }
 
     private void appendAction(JsonNode entry, List<String> text, Map<String, String> actionDuration, Set<String> tags) {
-        currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.syntheticGroup, entry);
         String name = entry.get("name").asText();
 
         if (index.rulesSourceExcluded(entry, name)) {
-            tui().debugf("Skilling action %s (excluded)", name);
+            tui().debugf("Action %s (excluded)", name);
             return;
         }
 
-        String revisedName = replaceText(name);
-        String duration = flattenActionTime(entry.get("time"));
+        boolean pushed = parseState.push(entry);
+        try {
+            String revisedName = replaceText(name);
+            String duration = flattenActionTime(entry.get("time"));
 
-        maybeAddBlankLine(text);
-        text.add("## " + revisedName);
+            Tools5eSources tmpSources = Tools5eSources.findOrTemporary(getType(entry), entry);
 
-        if (!duration.isEmpty()) {
-            actionDuration.put(revisedName, duration);
             maybeAddBlankLine(text);
-            text.add("- **Duration:** " + duration);
-        }
+            text.add("## " + revisedName);
+            text.add(index().getSourceText(tmpSources));
+            text.add("");
 
-        maybeAddBlankLine(text);
-        appendEntryToText(text, entry, "###");
+            if (!duration.isEmpty()) {
+                actionDuration.put(revisedName, duration);
+                maybeAddBlankLine(text);
+                text.add("- **Duration:** " + duration);
+            }
 
-        if (node.has("fromVariant")) {
             maybeAddBlankLine(text);
-            text.add("This action is an optional addition to the game, from the optional/variant rule "
-                    + linkifyVariant(node.get("fromVariant").asText()) + ".");
-        }
+            appendEntryToText(text, entry, "###");
 
-        maybeAddBlankLine(text);
-        text.add(String.format("_Source: %s_", currentSource.getSourceText(index.srdOnly())));
-        tags.addAll(currentSource.getSourceTags());
+            if (node.has("fromVariant")) {
+                maybeAddBlankLine(text);
+                text.add("This action is an optional addition to the game, from the optional/variant rule "
+                        + linkifyVariant(node.get("fromVariant").asText()) + ".");
+            }
+
+            maybeAddBlankLine(text);
+            tags.addAll(tmpSources.getSourceTags());
+        } finally {
+            parseState.pop(pushed);
+        }
     }
 
     private String flattenActionTime(JsonNode node) {
