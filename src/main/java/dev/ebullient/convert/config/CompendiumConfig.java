@@ -303,8 +303,8 @@ public class CompendiumConfig {
     }
 
     private static class PathAttributes {
-        String rulesVaultRoot = "/rules/";
-        String compendiumVaultRoot = "/compendium/";
+        String rulesVaultRoot = "rules/";
+        String compendiumVaultRoot = "compendium/";
 
         Path rulesFilePath = Path.of("rules/");
         Path compendiumFilePath = Path.of("compendium/");
@@ -333,16 +333,17 @@ public class CompendiumConfig {
         }
 
         private static String toRoot(String value) {
-            return ('/' + value + '/')
+            String path = (value + '/')
                     .replace('\\', '/')
                     .replaceAll("/+", "/");
+            return path.startsWith("/") ? path.substring(1) : path;
         }
 
         private static Path toFilesystemRoot(String root) {
-            if (root.equals("/")) {
+            if (root.equals("/") || root.isBlank()) {
                 return CWD;
             }
-            return Path.of(root.substring(1));
+            return Path.of(root);
         }
 
         private static String toVaultRoot(String root) {
