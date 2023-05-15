@@ -195,12 +195,13 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 .toLowerCase();
     }
 
-    public String defaultSource() {
+    public String defaultSourceString() {
         switch (this) {
             case item:
             case itemfluff:
             case itemproperty:
             case itementry:
+            case magicvariant:
                 return "DMG";
             case legendarygroup:
             case monster:

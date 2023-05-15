@@ -139,8 +139,7 @@ public class Pf2eSources extends CompendiumSources {
         if (type == Pf2eIndexType.data) {
             return true;
         }
-        DefaultSource ds = type.defaultSource();
-        return ds.name().equals(primarySource().toLowerCase());
+        return type.defaultSourceString().equals(primarySource().toLowerCase());
     }
 
     public enum DefaultSource {
