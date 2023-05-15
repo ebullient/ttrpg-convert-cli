@@ -113,7 +113,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         }
 
         String name = Field.name.getTextOrEmpty(node);
-        String source = Field.source.getTextOrDefault(node, this.defaultSource().name());
+        String source = Field.source.getTextOrDefault(node, this.defaultSourceString());
         return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
     }
 
@@ -279,6 +279,10 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
             default:
                 return ".";
         }
+    }
+
+    public String defaultSourceString() {
+        return defaultSource().name();
     }
 
     public DefaultSource defaultSource() {

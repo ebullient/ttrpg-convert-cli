@@ -190,7 +190,7 @@ public class ParseState {
     public String getSource(Tools5eIndexType type) {
         ParseState.ParseStateInfo current = stack.peek();
         if (current == null || current.src == null) {
-            return type == null ? null : type.defaultSource().toString();
+            return type == null ? null : type.defaultSourceString();
         }
         return current.src;
     }
@@ -198,7 +198,7 @@ public class ParseState {
     public String getSource(Pf2eIndexType type) {
         ParseState.ParseStateInfo current = stack.peek();
         if (current == null || current.src == null) {
-            return type == null ? null : type.defaultSource().toString();
+            return type == null ? null : type.defaultSourceString();
         }
         return current.src;
     }

@@ -6,6 +6,8 @@ public interface IndexType {
 
     String templateName();
 
+    String defaultSourceString();
+
     enum IndexElement implements NodeReader {
         name,
         source,
