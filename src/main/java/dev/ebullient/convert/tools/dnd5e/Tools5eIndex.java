@@ -153,10 +153,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         if (type == Tools5eIndexType.subclass) {
             String lookupKey = Tools5eIndexType.getSubclassKey(
-                    getTextOrEmpty(node, "shortName"),
-                    getTextOrEmpty(node, "className"),
-                    getTextOrEmpty(node, "classSource"),
-                    getTextOrEmpty(node, "source"));
+                    getTextOrEmpty(node, "className"), getTextOrEmpty(node, "classSource"),
+                    getTextOrEmpty(node, "shortName"), getTextOrEmpty(node, "source"));
             // add subclass to alias. Referenced from spells
             addAlias(lookupKey, key);
         }
@@ -409,8 +407,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                             for (Entry<String, JsonNode> subclassMap : iterableFields(sourceSubclassMap.getValue())) {
                                 String subclassName = subclassMap.getKey();
                                 String subclassKey = index()
-                                        .getAliasOrDefault(Tools5eIndexType.getSubclassKey(subclassName, className, classSource,
-                                                subclassSource));
+                                        .getAliasOrDefault(Tools5eIndexType.getSubclassKey(
+                                                className, classSource, subclassName, subclassSource));
                                 if (isIncluded(subclassKey)) {
                                     spellClassList.add(subclassKey);
                                 }
