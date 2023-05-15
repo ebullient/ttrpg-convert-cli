@@ -71,9 +71,12 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     public QuteNote buildVariant() {
-        currentSource = sources;
-        boolean pushed = node == null ? parseState.push(sources) : parseState.push(node);
+        if (index().rulesSourceExcluded(node, title)) {
+            return null;
+        }
+        boolean pushed = parseState.push(node);
         try {
+            currentSource = sources;
             List<String> tags = new ArrayList<>(sources.getSourceTags());
 
             return new QuteNote(title,
