@@ -98,7 +98,8 @@ public class TestUtils {
 
                 Path indexResource = p.getParent().resolve(path);
                 if (!resource.toFile().exists() && !indexResource.toFile().exists()) {
-                    e.add("Unresolvable: " + m.group(0));
+                    e.add(String.format("Unresolvable reference (%s) in %s", m.group(0), p));
+                    return;
                 }
             }
 
@@ -109,21 +110,17 @@ public class TestUtils {
                 if (anchor.startsWith("^")) {
                     List<String> blockRefs = findBlockRefsIn(resource);
                     if (!blockRefs.contains(anchor)) {
-                        e.add("Unresolvable block reference " + m.group(0));
+                        e.add(String.format("Unresolvable block reference (%s) %s in %s", anchor, m.group(0), p));
                     }
                 } else {
                     String heading = anchor.toLowerCase().replaceAll("%20", " ");
                     List<String> headings = findHeadingsIn(resource);
                     if (!headings.contains(heading)) {
-                        e.add("Unresolvable anchor " + m.group(0));
+                        e.add(String.format("Unresolvable anchor (%s) %s in %s", heading, m.group(0), p));
                     }
                 }
             }
         });
-        if (!e.isEmpty()) {
-            System.out.println("💢 " + p);
-            e.forEach(x -> System.out.println("- " + x));
-        }
         errors.addAll(e);
     }
 
@@ -150,7 +147,7 @@ public class TestUtils {
                     }
                 });
             } catch (UncheckedIOException | IOException e) {
-                System.err.println("🛑 Error finding headings in " + p + ": " + e.getMessage());
+                System.err.println(String.format("🛑 Error finding headings in %s: %s", p, e.toString()));
             }
             return headings;
         });
@@ -174,7 +171,7 @@ public class TestUtils {
                     }
                 });
             } catch (UncheckedIOException | IOException e) {
-                System.err.println("🛑 Error finding block references in " + p + ": " + e.getMessage());
+                System.err.println(String.format("🛑 Error finding block references in %s: %s", p, e.toString()));
             }
             return blockrefs;
         });
@@ -240,9 +237,6 @@ public class TestUtils {
             errors.add(String.format("Unable to parse files in directory %s: %s", directory, e));
         }
 
-        if (!errors.isEmpty()) {
-            errors.forEach(tui::warn);
-        }
         return errors;
     }
 

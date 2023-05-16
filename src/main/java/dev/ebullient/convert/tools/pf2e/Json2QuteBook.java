@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteBook;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteBook extends Json2QuteBase {
 
@@ -33,85 +33,76 @@ public class Json2QuteBook extends Json2QuteBase {
     public List<Pf2eQuteNote> buildBook() {
         boolean pushed = parseState.push(rootNode); // set source
         try {
-            List<Pf2eQuteNote> pages = new ArrayList<>();
-            Map<String, String> nameToPath = new HashMap<>();
+            QuteBook.BookInfo bookInfo = new QuteBook.BookInfo();
+            bookInfo.author = Pf2eBook.author.getTextOrNull(rootNode);
+            bookInfo.group = Pf2eBook.group.getTextOrNull(rootNode);
+            bookInfo.published = Pf2eBook.published.getTextOrNull(rootNode);
 
-            JsonNode cover = null;
-            ArrayNode data = Pf2eBook.data.withArrayFrom(dataNode);
-            for (int i = 0; i < data.size(); i++) {
-                JsonNode node = data.get(i);
-                String name = Field.name.getTextOrNull(node);
-                if (name == null) {
-                    if (node.toString().contains("\"style\": \"cover\"")) {
-                        cover = node;
-                    }
-                    continue;
-                }
-                Pf2eQuteNote page = chapterPage(name, node);
-                tui().debugf("Created new page %s for %s", page.targetFile(), name);
-                nameToPath.put(name, page.targetFile());
-                pages.add(page);
+            Set<String> coverTags = new HashSet<>(sources.getSourceTags());
+            coverTags.add(cfg().tagOf("book",
+                    Field.group.getTextOrDefault(rootNode, "ungrouped"),
+                    bookRelativePath));
+
+            String coverUrl = Pf2eBook.coverUrl.getTextOrNull(rootNode);
+            if (coverUrl != null) {
+                Path coverPath = Path.of(coverUrl);
+                bookInfo.cover = Pf2eSources.buildImageRef(Pf2eIndexType.book, index, coverPath, sources.getName());
             }
 
-            pages.add(coverPage(cover, nameToPath));
+            // Find coverNode and book sections
+            Map<String, JsonNode> bookSections = new HashMap<>();
+            for (JsonNode node : Pf2eBook.data.iterateArrayFrom(dataNode)) {
+                String name = Field.name.getTextOrNull(node);
+                if (name == null) {
+                    continue;
+                }
+                bookSections.put(name, node);
+            }
+
+            List<Pf2eQuteNote> pages = new ArrayList<>();
+            List<String> coverText = new ArrayList<>();
+
+            for (JsonNode n : Pf2eBook.contents.iterateArrayFrom(rootNode)) {
+                String name = Field.name.getTextOrEmpty(n);
+                if ("Cover".equals(name)) {
+                    continue;
+                }
+                Ordinal ordinal = Pf2eBook.ordinal.fieldFromTo(n, Ordinal.class, tui());
+
+                String prefix = "";
+                if (ordinal != null) {
+                    prefix = String.format("%s %s: ", toTitleCase(ordinal.type), ordinal.identifier);
+                }
+
+                final String sectionTitle = String.format("%s%s", prefix, name);
+                final String sectionFilename = slugify(sectionTitle);
+                maybeAddBlankLine(coverText);
+                coverText.add(String.format("**[%s](%s%s/%s.md)**", sectionTitle,
+                        index.rulesVaultRoot(), bookRelativePath, sectionFilename));
+                coverText.add("");
+
+                List<String> sectionHeaders = Pf2eBook.headers.getListOfStrings(n, tui());
+                for (String header : sectionHeaders) {
+                    coverText.add(String.format("- [%s](%s%s/%s.md#%s)", header,
+                            index.rulesVaultRoot(), bookRelativePath, sectionFilename,
+                            toAnchorTag(header)));
+                }
+
+                JsonNode sectionNode = bookSections.getOrDefault(sectionTitle, bookSections.get(name));
+                if (sectionNode == null) {
+                    tui().errorf("Unable to find section for %s", sectionTitle);
+                } else {
+                    pages.add(chapterPage(sectionFilename, sectionNode));
+                }
+            }
+
+            // folder note / cover
+            pages.add(new QuteBook(sources.getName(), coverText, coverTags, bookRelativePath, bookInfo, List.of()));
 
             return pages;
         } finally {
             parseState.pop(pushed);
         }
-    }
-
-    Pf2eQuteNote coverPage(JsonNode cover, Map<String, String> nameToPath) {
-        Set<String> tags = new HashSet<>(sources.getSourceTags());
-        List<String> text = new ArrayList<>();
-
-        tags.add(cfg().tagOf("book",
-                Field.group.getTextOrDefault(rootNode, "no-group"),
-                bookRelativePath));
-
-        QuteBook.BookInfo bookInfo = new QuteBook.BookInfo();
-        bookInfo.author = Pf2eBook.author.getTextOrNull(rootNode);
-        bookInfo.group = Pf2eBook.group.getTextOrNull(rootNode);
-        bookInfo.published = Pf2eBook.published.getTextOrNull(rootNode);
-
-        String coverUrl = Pf2eBook.coverUrl.getTextOrNull(rootNode);
-        if (coverUrl != null) {
-            Path coverPath = Path.of(coverUrl);
-            bookInfo.cover = Pf2eSources.buildImageRef(Pf2eIndexType.book, index, coverPath, sources.getName());
-        }
-
-        Pf2eBook.contents.withArrayFrom(rootNode).forEach(n -> {
-            String name = Field.name.getTextOrEmpty(n);
-            if ("Cover".equals(name)) {
-                return;
-            }
-            List<String> headers = Pf2eBook.headers.getListOfStrings(n, tui());
-            Ordinal ordinal = Pf2eBook.ordinal.fieldFromTo(n, Ordinal.class, tui());
-
-            String prefix = "";
-            if (ordinal != null) {
-                prefix = String.format("%s %s: ", toTitleCase(ordinal.type), ordinal.identifier);
-            }
-
-            String heading = String.format("%s%s", prefix, name);
-            String filename = nameToPath.get(name);
-            if (filename == null) {
-                filename = nameToPath.getOrDefault(heading, heading);
-            }
-            filename = slugify(heading) + ".md";
-
-            maybeAddBlankLine(text);
-            text.add(String.format("**[%s](%s%s/%s)**", heading,
-                    index.rulesVaultRoot(), bookRelativePath, filename));
-            text.add("");
-
-            final String f = filename;
-            headers.forEach(h -> text.add(String.format("- [%s](%s%s/%s#%s)", h,
-                    index.rulesVaultRoot(), bookRelativePath, f,
-                    toAnchorTag(h))));
-        });
-
-        return new QuteBook(sources.getName(), text, tags, bookRelativePath, bookInfo, List.of());
     }
 
     Pf2eQuteNote chapterPage(String name, JsonNode pageNode) {
@@ -128,6 +119,7 @@ public class Json2QuteBook extends Json2QuteBase {
         }
     }
 
+    @RegisterForReflection
     static class Ordinal {
         public String type;
         public Object identifier;

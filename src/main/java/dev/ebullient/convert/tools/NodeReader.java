@@ -382,4 +382,11 @@ public interface NodeReader {
     default ArrayNode withArrayFrom(JsonNode source) {
         return source.withArray(this.nodeName());
     }
+
+    default Iterable<JsonNode> iterateArrayFrom(JsonNode source) {
+        if (source == null) {
+            return List.of();
+        }
+        return () -> source.withArray(this.nodeName()).elements();
+    }
 }

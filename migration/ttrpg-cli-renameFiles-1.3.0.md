@@ -4,10 +4,15 @@
 
 // 1. Copy this file into your templates directory
 
-// 2. TODO: EDIT ME - Update the path to match your compendium (parent of bestiary, classes, deities, etc.)
+// 2. Update the following paths to match your setup: 
+
+// 2a. EDIT Path to the compendium (contains backgrounds, bestiary, etc) from the vault root
 const compendium = "/compendium";
 
-// 3. TODO: EDIT ME - How many files to rename at a time?
+// 2b. EDIT Path to the rules (contains actions, and rule variants) from the vault root
+const rules = "/rules";
+
+// 3. EDIT How many files to rename at a time?
 const limit = 100;
 
 // 4. Create a new/temporary note, and use the "Templater: Open Insert Template Modal"
@@ -22,15 +27,22 @@ tR += "| File | New Name |\n";
 tR += "|------|----------|\n";
 
 async function moveFile(path, oldname, newname) {
+    await moveFile(compendium, path, oldname, newname);
+}
+async function moveRulesFile(path, oldname, newname) {
+    await moveFile(rules, path, oldname, newname);
+}
+
+async function moveFile(base, path, oldname, newname) {
     if (count > limit) {
         return;
     }
     
-    const oldpath = `${compendium}/${path}/${oldname}`
+    const oldpath = `${base}/${path}/${oldname}`
     const file = await window.app.metadataCache.getFirstLinkpathDest(oldpath, "");
     
     if (file) {
-        const newpath = `${compendium}/${path}/${newname}.md`
+        const newpath = `${base}/${path}/${newname}.md`
         await this.app.fileManager.renameFile(
             file,
             newpath
@@ -40,6 +52,8 @@ async function moveFile(path, oldname, newname) {
         count++; // increment counter after moving something
     }
 }
+
+// 5e files that will be renamed if present
 
 await moveFile("classes", "barbarian-path-of-the-ancestral-guardian", "barbarian-path-of-the-ancestral-guardian-xge");
 await moveFile("classes", "barbarian-path-of-the-battlerager", "barbarian-path-of-the-battlerager-scag");
@@ -109,6 +123,10 @@ await moveFile("classes", "wizard-chronurgy-magic", "wizard-chronurgy-magic-egw"
 await moveFile("classes", "wizard-graviturgy-magic", "wizard-graviturgy-magic-egw");
 await moveFile("classes", "wizard-order-of-scribes", "wizard-order-of-scribes-tce");
 await moveFile("classes", "wizard-war-magic", "wizard-war-magic-xge");
+
+// Pf2e files that will be renamed if present
+
+await moveRulesFile("core-rulebook", "conditions-appendix", "appendix-a-conditions-appendix");
 
 tR += "\n"
 %>
