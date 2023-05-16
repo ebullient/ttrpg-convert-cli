@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.nio.file.Path;
 import java.util.Collection;
 
 import dev.ebullient.convert.qute.QuteBase;
@@ -39,7 +38,7 @@ public class QuteSource extends QuteBase {
     }
 
     public static String monsterPath(boolean isNpc, String type) {
-        return Path.of(QuteSource.MONSTERS_BASE_PATH, (isNpc ? "npc" : type)).toString();
+        return QuteSource.MONSTERS_BASE_PATH + "/" + (isNpc ? "npc" : type);
     }
 
     public static String getSubclassResource(String subclass, String parentClass, String subclassSource) {

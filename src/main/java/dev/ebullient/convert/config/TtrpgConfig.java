@@ -48,7 +48,7 @@ public class TtrpgConfig {
     }
 
     public static List<Fix> getFixes(String filepath) {
-        return activeConfig().findFixesFor(filepath);
+        return activeConfig().findFixesFor(filepath.replace('\\', '/'));
     }
 
     public static String sourceToLongName(String src) {

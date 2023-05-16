@@ -565,14 +565,9 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         // {@creature cow|vgm} can have sources added with a pipe,
         // {@creature cow|vgm|and optional link text added with another pipe}.",
         String[] parts = match.trim().split("\\|");
-        String linkText = parts[0];
-        String source = "mm";
-        if (parts.length > 2) {
-            linkText = parts[2];
-        }
-        if (parts.length > 1) {
-            source = parts[1].isBlank() ? source : parts[1];
-        }
+        String source = parts.length < 2 || parts[1].isBlank() ? "mm" : parts[1];
+        String linkText = parts.length < 3 || parts[2].isBlank() ? parts[0] : parts[2];
+
         String key = index().getAliasOrDefault(Tools5eIndexType.monster.createKey(parts[0], source));
         if (index().isExcluded(key)) {
             return linkText;
