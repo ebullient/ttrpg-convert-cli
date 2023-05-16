@@ -20,7 +20,7 @@ on:
         type: boolean
 
 env:
-  JAVA_VERSION: 11
+  JAVA_VERSION: 17
   JAVA_DISTRO: temurin
   GRAALVM_VERSION: 22.3.0
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"

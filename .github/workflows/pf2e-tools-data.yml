@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  JAVA_VERSION: 11
+  JAVA_VERSION: 17
   GRAALVM_VERSION: 22.3.0
   JAVA_DISTRO: temurin
 
@@ -74,7 +74,7 @@ jobs:
           key: ${{ needs.cache-setup.outputs.cache_key }}
           fail-on-cache-miss: true
 
-      - name: Set up JDK 11
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
           java-version: ${{ env.JAVA_VERSION }}

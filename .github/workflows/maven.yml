@@ -17,7 +17,7 @@ on:
       - "ide-config"
 
 env:
-  JAVA_VERSION: 11
+  JAVA_VERSION: 17
   GRAALVM_VERSION: 22.3.0
   JAVA_DISTRO: temurin
 
