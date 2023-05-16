@@ -376,6 +376,76 @@
           "replace": "somebody use the {@action Craft}"
         }
       ],
+      "deities.json": [
+        {
+          "match": "\"souls\"",
+          "replace": "\"soul\""
+        },
+        {
+          "match": "\"stars\"",
+          "replace": "\"star\""
+        }
+      ],
+      "domains.json": [
+        {
+          "match": "(weather.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Change\",)",
+          "replace": "$1$2{ \"name\": \"Abomination\", \"source\": \"AV3\", \"page\": 65, \"entries\": [ \"You seek to instill abhorrence and horror in those around you.\" ]},$2{ \"name\": \"Ambition\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You strive to keep up with and outpace the competition.\" ]},$2$3"  
+        },
+        {
+          "match": "(metaphysical.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Cold\",)",
+          "replace": "$1$2{ \"name\": \"Cities\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You have powers over urban environments and denizens.\" ]},$2$3"  
+        },
+        {
+          "match": "(temperatures.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Decay\",)",
+          "replace": "$1$2{ \"name\": \"Confidence\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You overcome your fear and project pride.\" ]},$2{ \"name\": \"Creation\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You have divine abilities related to crafting and art.\" ]},$2{ \"name\": \"Darkness\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You operate in the darkness and take away the light.\" ]},$2{ \"name\": \"Death\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You have the power to end lives and destroy undead.\" ]},$2$3"  
+        },
+        {
+          "match": "(restlessness.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Dust\",)",
+          "replace": "$1$2{ \"name\": \"Destruction\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You are a conduit for divine devastation.\" ]},$2{ \"name\": \"Dreams\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You have the power to enter and manipulate dreams.\" ]},$2$3"  
+        },
+        {
+          "match": "(dedication.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Glyph\",)",
+          "replace": "$1$2{ \"name\": \"Earth\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You control soil and stone.\" ]},$2{ \"name\": \"Family\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You aid and protect your family and community more effectively.\" ]},$2{ \"name\": \"Fate\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You see and understand hidden inevitabilities.\" ]},$2{ \"name\": \"Fire\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You control flame.\" ]},$2{ \"name\": \"Freedom\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You liberate yourself and others from shackles and constraints.\" ]},$2$3"  
+        },
+        {
+          "match": "(symbols.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Lightning\",)",
+          "replace": "$1$2{ \"name\": \"Healing\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"Your healing magic is particularly potent.\" ]},$2{ \"name\": \"Indulgence\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You feast mightily and can shake off the effects of overindulging.\" ]},$2{ \"name\": \"Introspection\", \"source\": \"BL6\", \"page\": 73, \"entries\": [ \"You guide others in examining their lives, emotions, and motivations to ultimately become a truer version of themselves—a difficult and often painful process.\" ]},$2{ \"name\": \"Knowledge\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You receive divine insights.\" ]},$2$3"  
+        },
+        {
+          "match": "(storms.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Plague\",)",
+          "replace": "$1$2{ \"name\": \"Luck\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You’re unnaturally lucky and keep out of harm’s way.\" ]},$2{ \"name\": \"Magic\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You perform the unexpected and inexplicable.\" ]},$2{ \"name\": \"Might\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"Your physical power is bolstered by divine strength.\" ]},$2{ \"name\": \"Moon\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You command powers associated with the moon.\" ]},$2{ \"name\": \"Naga\", \"source\": \"AoE5\", \"page\": 75, \"entries\": [ \"Like the serpentine nagas, you're in tune with cosmic forces that {@deity Ravithra} once controlled.\" ]},$2{ \"name\": \"Nature\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You hold power over animals and plants.\" ]},$2{ \"name\": \"Nightmares\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You fill minds with horror and dread.\" ]},$2{ \"name\": \"Pain\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You punish those who displease you with the sharp sting of pain.\" ]},$2{ \"name\": \"Passion\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You evoke passion, whether as love or lust.\" ]},$2{ \"name\": \"Perfection\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You strive to perfect your mind, body, and spirit.\" ]},$2$3"  
+        },
+        {
+          "match": "(weapon.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Repose\",)",
+          "replace": "$1$2{ \"name\": \"Protection\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You ward yourself and others.\" ]},$2$3"  
+        },
+        {
+          "match": "(burdens.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Sorrow\",)",
+          "replace": "$1$2{ \"name\": \"Secrecy\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You protect secrets and keep them hidden.\" ]},$2$3"  
+        },
+        {
+          "match": "(stars.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Swarm\",)",
+          "replace": "$1$2{ \"name\": \"Sun\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You harness the power of the sun and other light sources, and punish undead.\" ]},$2$3"  
+        },
+        {
+          "match": "(time.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Vigil\",)",
+          "replace": "$1$2{ \"name\": \"Toil\", \"source\": \"AoA4\", \"page\": 63, \"entries\": [ \"You work constantly and refuse to let anything stand in your way.\" ]},$2{ \"name\": \"Travel\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You have power over movement and journeys.\" ]},$2{ \"name\": \"Trickery\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You deceive others and cause mischief.\" ]},$2{ \"name\": \"Truth\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You pierce lies and discover the truth.\" ]},$2{ \"name\": \"Tyranny\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You wield power to rule and enslave others.\" ]},$2{ \"name\": \"Undeath\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"Your magic carries close ties to the undead.\" ]},$2$3"  
+        },
+        {
+          "match": "(emptiness.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\},)([\\s\\r\\n]+)(\\{[\\s\\r\\n]+\"name\": \"Wyrmkin\",)",
+          "replace": "$1$2{ \"name\": \"Water\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You control water and bodies of water.\" ]},$2{ \"name\": \"Wealth\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"You hold power over wealth, trade, and treasure.\" ]},$2$3"  
+        },
+        {
+          "match": "(creatures.\"[\\s\\r\\n]+\\][\\s\\r\\n]+\\})([\\s\\r\\n]+)(\\])",
+          "replace": "$1,$2{ \"name\": \"Zeal\", \"source\": \"CRB\", \"page\": 441, \"entries\": [ \"Your inner fire increases your combat prowess.\" ]}$2$3"  
+        }
+      ],
+      "feats/feats-botd.json": [
+        {
+          "match": "@condition ghoul fever|b1",
+          "replace": "@disease ghoul fever|b1"
+        }
+      ],
       "feats/feats-crb.json": [
         {
           "match": "weapon==sand,",
@@ -384,6 +454,10 @@
         {
           "match": "weapon==sand ",
           "replace": "weapon==sand} "
+        },
+        {
+          "match": "\\{@condition flanked}",
+          "replace": "flanked"
         }
       ],
       "feats/feats-loil.json": [
@@ -408,6 +482,16 @@
         {
           "match": "\\{@condition concealment}",
           "replace": "{@condition concealed||concealment}"
+        }
+      ],
+      "spells/spells-logm.json": [
+        {
+          "match": "\"souls\"",
+          "replace": "\"soul\""
+        },
+        {
+          "match": "\"stars\"",
+          "replace": "\"star\""
         }
       ],
       "tables.json": [
