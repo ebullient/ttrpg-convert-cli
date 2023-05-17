@@ -1,0 +1,17 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+@use 'shake-ins/admon-content-styling' as content-styles;
+
+.callout[data-callout='pf2-sidebar'] {
+  color: var.$dark-red;
+  clear: var.$align-right;
+  float: var.$align-right;
+  max-height: 85vh;
+  max-width: 50vw;
+  overflow-wrap: break-word;
+  overflow-y: var.$overflow-scroll;
+
+  & .callout-content {
+    @include content-styles.common-admonition-typography;
+  }
+}

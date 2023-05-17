@@ -1,0 +1,38 @@
+.json5e-background,
+.json5e-class,
+.json5e-deity,
+.json5e-feat,
+.json5e-item,
+.json5e-monster,
+.json5-note,
+.json5e-race,
+.json5e-spell {
+  div {
+    &[src$="#center"] {
+      text-align: center;
+    }
+    &[src$="#portrait"],
+    &[src$="#token"],
+    &[src$="#right"] {
+      float: right;
+      padding-left: 5px;
+    }
+
+    &[src$="#center"],
+    &[src$="#right"] {
+      height: 300px;
+      img {
+        max-height: 300px;
+      }
+    }
+    &[src$="#right"] {
+      max-width: 50%;
+    }
+    &[src$="#token"] {
+      width: 150px;
+    }
+    &[src$="#portrait"] {
+      width: 200px;
+    }
+  }
+}

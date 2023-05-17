@@ -21,35 +21,51 @@ If there isn't an issue yet, open one! Be as specific as you can, and include th
 ## Coding standards and Conventions
 
 Two maven tasks that will format code and sort imports to reduce whitespace/ordering churn in PRs and commits.
-Make sure to run `./mvnw package` or `./mvnw process-sources` before you commit, and everything will be formatted/sorted correctly.
+Make sure to run `./mvnw package` or `./mvnw process-sources` before you commit, and everything will be formatted correctly.
 
-This project also has a .editorconfig file that defines expected behavior for whitespace and line endings.
+This project also has a `.editorconfig` file that defines expected behavior for whitespace and line endings.
+Most IDEs have an editorconfig plugin that will automatically format your code to match these settings.
 
 ### IDE Config and Code Style
 
-If you want your IDE to format your code for you, the files in the `ide-config` file can help.
+If you want your IDE to format your code for you, the files in the `src/ide-config` directory can help.
 
 #### Eclipse Setup
 
 Open the *Preferences* window, and then navigate to _Java_ -> _Code Style_ -> _Formatter_. 
-Click _Import_ and then select the `eclipse-format.xml` file from the `ide-config` directory.
 
-Next navigate to _Java_ -> _Code Style_ -> _Organize Imports_. Click _Import_ and select the `eclipse.importorder` file from the `ide-config` directory.
+- Click _Import_ and then select `src/ide-config/eclipse-format.xml`.
+- Choose the `ttrpg-convert-cli` profile.
 
-Choose the `ttrpg-convert-cli` profile.
+Next navigate to _Java_ -> _Code Style_ -> _Organize Imports_. Click _Import_ and select `src/ide-config/eclipse.importorder`.
 
 #### VSCode Setup
 
-Add the following to your workspace settings (JSON)
+A .vscode directory is included with the project that contains formatting and import settings.
 
-```json
-    "java.format.settings.url": "/full/path/to/ide-config/eclipse-format.xml",
-    "java.format.settings.profile": "ttrpg-convert-cli",
+## Building and Testing
+
+- **Using maven:** `./mvnw install`
+- **Using Quarkus CLI**: `quarkus build`
+
+To test with actual/live data, clone 5eTools and/or PF2eTools into a sources directory: 
+
 ```
+mkdir sources
+cd sources
+git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
+git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
+```
+
+### Building CSS only
+
+- **build css**: `./mvnw sass-cli:run`
+- **watch**: `./mvnw sass-cli:watch`
+- **package**: `./mvnw sass-cli:run -Dsass.watch`
 
 ## Signing
 
 I recommend that you [sign your commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits), always. For everything.
 
 If you use SSH with Git, I have some [tips that might help](https://www.ebullient.dev/2022/10/12/signing-git-commits.html).
- 
+

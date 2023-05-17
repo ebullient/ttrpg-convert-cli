@@ -1,91 +1,73 @@
 [
   {
     "type": "charm",
-    "color": "211, 141, 159",
     "icon": {
       "name": "magic",
       "type": "font-awesome"
     },
     "title": "Charm",
     "command": false,
-    "injectColor": true,
+    "injectColor": false,
     "noTitle": false,
     "copy": false
   },
   {
     "type": "letter",
-    "color": "65, 176, 176",
     "icon": {
       "name": "envelope-open-text",
       "type": "font-awesome"
     },
     "title": "Letter",
     "command": false,
-    "injectColor": true,
+    "injectColor": false,
     "noTitle": false,
     "copy": false
   },
   {
     "type": "npc",
-    "color": "127, 164, 202",
     "icon": {
       "name": "address-card",
       "type": "font-awesome"
     },
     "title": "NPC",
     "command": false,
-    "injectColor": true,
+    "injectColor": false,
     "noTitle": false,
     "copy": false
   },
   {
     "type": "scene",
-    "color": "145, 166, 149",
     "icon": {
       "name": "archway",
       "type": "font-awesome"
     },
     "title": "Scene",
     "command": false,
-    "injectColor": true,
+    "injectColor": false,
     "noTitle": false,
     "copy": false
   },
   {
     "type": "skill",
-    "color": "196, 154, 82",
     "icon": {
       "name": "hand-sparkles",
       "type": "font-awesome"
     },
     "title": "Skill Check",
     "command": false,
-    "injectColor": true,
-    "noTitle": false,
-    "copy": false
-  },
-  {
-    "type": "statblock",
-    "color": "194, 76, 74",
-    "icon": {
-      "name": "dragon",
-      "type": "font-awesome"
-    },
-    "command": false,
-    "injectColor": true,
+    "injectColor": false,
     "noTitle": false,
     "copy": false
   },
   {
     "type": "weather",
-    "color": "167,92,112",
     "icon": {
       "name": "cloud-sun",
       "type": "font-awesome"
     },
     "title": "Weather",
     "command": false,
-    "injectColor": true,
+    "injectColor": false,
     "noTitle": false,
     "copy": false
   }

@@ -1,0 +1,60 @@
+body {
+  --statblock-accent: 201,60,60;
+}
+
+.admonition-statblock-parent {
+  clear: both;
+}
+
+.callout[data-callout=statblock] {
+  --callout-color: var(--statblock-accent);
+}
+.callout[data-callout=statblock] .callout-title {
+  line-height: var(--line-height);
+}
+.callout[data-callout=statblock] .callout-title .callout-title-content {
+  flex: 2;
+  font-size: var(--h3-size);
+}
+.callout[data-callout=statblock] .callout-content > :first-child {
+  margin-top: 0.5em;
+}
+.callout[data-callout=statblock] .callout-content > :last-child {
+  margin-bottom: 0.5em;
+}
+.callout[data-callout=statblock] .callout-content h1,
+.callout[data-callout=statblock] .callout-content h2,
+.callout[data-callout=statblock] .callout-content h3 {
+  font-family: var(--default-font);
+  font-variant: common-ligatures small-caps;
+}
+.callout[data-callout=statblock] .callout-content h1 {
+  font-size: 1.4em;
+  line-height: 1.4em;
+  margin: 0;
+  padding: 0;
+}
+.callout[data-callout=statblock] .callout-content h2,
+.callout[data-callout=statblock] .callout-content h3 {
+  font-size: 1.2em;
+  line-height: 1.2em;
+  padding: 0.5em 0 0 0;
+  margin-top: 0.2em;
+  margin-bottom: 0.3em;
+  border-bottom: 1px solid rgb(var(--statblock-accent));
+}
+.callout[data-callout=statblock] .callout-content p {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+.callout[data-callout=statblock] .callout-content li {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+
+.callout[data-callout=statblock] div[src$="#token"],
+.callout[data-callout=statblock] img[src$="#token"] {
+  float: right;
+  padding-left: 5px;
+  width: 150px;
+}

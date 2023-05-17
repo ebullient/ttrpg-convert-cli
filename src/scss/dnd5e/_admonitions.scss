@@ -1,0 +1,40 @@
+body {
+  --admonition-charm: 211,141,159;
+  --admonition-charm-text: var(--admonition-charm);
+  --admonition-letter: 98, 159, 197;
+  --admonition-npc: 102, 121, 137;
+  --admonition-scene: 139, 167, 145;
+  --admonition-skill: 196, 154, 82;
+  --admonition-skill-text: var(--admonition-skill);
+  --admonition-weather: 53,119,174;
+}
+.theme-light {
+  --admonition-charm: 222,170,184;
+  --admonition-charm-text: 167,92,112;
+  --admonition-npc: 58, 125, 127;
+  --admonition-scene: 92, 122, 99;
+  --admonition-skill-text: 141,110,59;
+}
+.callout[data-callout="charm"] {
+  --callout-color: var(--admonition-charm);
+  --callout-title-color: rgb(var(--admonition-charm-text));
+  .callout-title {
+    color: var(--callout-title-color);
+  }
+}
+.callout[data-callout="letter"] {
+  --callout-color: var(--admonition-letter);
+}
+.callout[data-callout="npc"] {
+  --callout-color: var(--admonition-npc);
+}
+.callout[data-callout="scene"] {
+  --callout-color: var(--admonition-scene);
+}
+.callout[data-callout="skill"] {
+  --callout-color: var(--admonition-skill);
+  --callout-title-color: rgb(var(--admonition-skill-text));
+}
+.callout[data-callout="weather"] {
+  --callout-color: var(--admonition-weather);
+}

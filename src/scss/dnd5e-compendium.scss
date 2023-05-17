@@ -1,0 +1,14 @@
+@use 'dnd5e/admonitions';
+@use 'dnd5e/statblock';
+@use 'dnd5e/float-images';
+@use 'dnd5e/no-inline-title';
+
+// Change background in Initiative Tracker creature view 
+// trim margin on included statblock admonitions
+.creature-view-container.workspace-leaf-content {
+  background-color: var(--background-primary-alt);
+
+  .admonition {
+    margin-top: 0;
+  }
+}

@@ -197,7 +197,7 @@ To run commands listed below, either:
       -g pf2e \
       --index \
       -o dm \
-      5etools-mirror-1.github.io/data
+      Pf2eTools/data
     ```
 
     - `-g p2fe` The target output directory. Files will be created in this directory.

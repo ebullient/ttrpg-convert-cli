@@ -1,12 +1,15 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.ebullient</groupId>
     <artifactId>ttrpg-convert-cli</artifactId>
     <version>${revision}</version>
 
     <name>ttrpg-convert-cli</name>
-    <description>TTRPG convert CLI </description>
+    <description>TTRPG convert CLI</description>
     <inceptionYear>2022</inceptionYear>
     <url>https://github.com/ebullient/ttrpg-convert-cli</url>
 
@@ -108,6 +111,27 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>us.hebi.sass</groupId>
+                <artifactId>sass-cli-maven-plugin</artifactId>
+                <version>1.0.3</version>
+                <configuration>
+                    <sassVersion>${sass.version}</sassVersion>
+                    <args> <!-- Any argument that should be forwarded to the sass cli -->
+                        <arg>${project.basedir}/src/scss:${project.basedir}/examples/css-snippets</arg>
+                        <arg>--no-source-map</arg>
+                    </args>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sass-exec</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
                 <version>${quarkus.platform.version}</version>
@@ -175,7 +199,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configFile>ide-config/eclipse-format.xml</configFile>
+                    <configFile>src/ide-config/eclipse-format.xml</configFile>
                     <skip>${skipFormat}</skip>
                 </configuration>
             </plugin>
@@ -192,7 +216,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <groups>java.,javax.,org.,com.</groups>
+                    <groups>java.,javax.,jakarta.,org.,com.</groups>
                     <staticGroups>*</staticGroups>
                     <skip>${skipFormat}</skip>
                     <removeUnused>true</removeUnused>

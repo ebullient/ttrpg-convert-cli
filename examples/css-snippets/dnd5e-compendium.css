@@ -1,0 +1,232 @@
+body {
+  --admonition-charm: 211,141,159;
+  --admonition-charm-text: var(--admonition-charm);
+  --admonition-letter: 98, 159, 197;
+  --admonition-npc: 102, 121, 137;
+  --admonition-scene: 139, 167, 145;
+  --admonition-skill: 196, 154, 82;
+  --admonition-skill-text: var(--admonition-skill);
+  --admonition-weather: 53,119,174;
+}
+
+.theme-light {
+  --admonition-charm: 222,170,184;
+  --admonition-charm-text: 167,92,112;
+  --admonition-npc: 58, 125, 127;
+  --admonition-scene: 92, 122, 99;
+  --admonition-skill-text: 141,110,59;
+}
+
+.callout[data-callout=charm] {
+  --callout-color: var(--admonition-charm);
+  --callout-title-color: rgb(var(--admonition-charm-text));
+}
+.callout[data-callout=charm] .callout-title {
+  color: var(--callout-title-color);
+}
+
+.callout[data-callout=letter] {
+  --callout-color: var(--admonition-letter);
+}
+
+.callout[data-callout=npc] {
+  --callout-color: var(--admonition-npc);
+}
+
+.callout[data-callout=scene] {
+  --callout-color: var(--admonition-scene);
+}
+
+.callout[data-callout=skill] {
+  --callout-color: var(--admonition-skill);
+  --callout-title-color: rgb(var(--admonition-skill-text));
+}
+
+.callout[data-callout=weather] {
+  --callout-color: var(--admonition-weather);
+}
+
+body {
+  --statblock-accent: 201,60,60;
+}
+
+.admonition-statblock-parent {
+  clear: both;
+}
+
+.callout[data-callout=statblock] {
+  --callout-color: var(--statblock-accent);
+}
+.callout[data-callout=statblock] .callout-title {
+  line-height: var(--line-height);
+}
+.callout[data-callout=statblock] .callout-title .callout-title-content {
+  flex: 2;
+  font-size: var(--h3-size);
+}
+.callout[data-callout=statblock] .callout-content > :first-child {
+  margin-top: 0.5em;
+}
+.callout[data-callout=statblock] .callout-content > :last-child {
+  margin-bottom: 0.5em;
+}
+.callout[data-callout=statblock] .callout-content h1,
+.callout[data-callout=statblock] .callout-content h2,
+.callout[data-callout=statblock] .callout-content h3 {
+  font-family: var(--default-font);
+  font-variant: common-ligatures small-caps;
+}
+.callout[data-callout=statblock] .callout-content h1 {
+  font-size: 1.4em;
+  line-height: 1.4em;
+  margin: 0;
+  padding: 0;
+}
+.callout[data-callout=statblock] .callout-content h2,
+.callout[data-callout=statblock] .callout-content h3 {
+  font-size: 1.2em;
+  line-height: 1.2em;
+  padding: 0.5em 0 0 0;
+  margin-top: 0.2em;
+  margin-bottom: 0.3em;
+  border-bottom: 1px solid rgb(var(--statblock-accent));
+}
+.callout[data-callout=statblock] .callout-content p {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+.callout[data-callout=statblock] .callout-content li {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+
+.json5e-background div[src$="#center"],
+.json5e-class div[src$="#center"],
+.json5e-deity div[src$="#center"],
+.json5e-feat div[src$="#center"],
+.json5e-item div[src$="#center"],
+.json5e-monster div[src$="#center"],
+.json5-note div[src$="#center"],
+.json5e-race div[src$="#center"],
+.json5e-spell div[src$="#center"] {
+  text-align: center;
+}
+.json5e-background div[src$="#portrait"], .json5e-background div[src$="#token"], .json5e-background div[src$="#right"],
+.json5e-class div[src$="#portrait"],
+.json5e-class div[src$="#token"],
+.json5e-class div[src$="#right"],
+.json5e-deity div[src$="#portrait"],
+.json5e-deity div[src$="#token"],
+.json5e-deity div[src$="#right"],
+.json5e-feat div[src$="#portrait"],
+.json5e-feat div[src$="#token"],
+.json5e-feat div[src$="#right"],
+.json5e-item div[src$="#portrait"],
+.json5e-item div[src$="#token"],
+.json5e-item div[src$="#right"],
+.json5e-monster div[src$="#portrait"],
+.json5e-monster div[src$="#token"],
+.json5e-monster div[src$="#right"],
+.json5-note div[src$="#portrait"],
+.json5-note div[src$="#token"],
+.json5-note div[src$="#right"],
+.json5e-race div[src$="#portrait"],
+.json5e-race div[src$="#token"],
+.json5e-race div[src$="#right"],
+.json5e-spell div[src$="#portrait"],
+.json5e-spell div[src$="#token"],
+.json5e-spell div[src$="#right"] {
+  float: right;
+  padding-left: 5px;
+}
+.json5e-background div[src$="#center"], .json5e-background div[src$="#right"],
+.json5e-class div[src$="#center"],
+.json5e-class div[src$="#right"],
+.json5e-deity div[src$="#center"],
+.json5e-deity div[src$="#right"],
+.json5e-feat div[src$="#center"],
+.json5e-feat div[src$="#right"],
+.json5e-item div[src$="#center"],
+.json5e-item div[src$="#right"],
+.json5e-monster div[src$="#center"],
+.json5e-monster div[src$="#right"],
+.json5-note div[src$="#center"],
+.json5-note div[src$="#right"],
+.json5e-race div[src$="#center"],
+.json5e-race div[src$="#right"],
+.json5e-spell div[src$="#center"],
+.json5e-spell div[src$="#right"] {
+  height: 300px;
+}
+.json5e-background div[src$="#center"] img, .json5e-background div[src$="#right"] img,
+.json5e-class div[src$="#center"] img,
+.json5e-class div[src$="#right"] img,
+.json5e-deity div[src$="#center"] img,
+.json5e-deity div[src$="#right"] img,
+.json5e-feat div[src$="#center"] img,
+.json5e-feat div[src$="#right"] img,
+.json5e-item div[src$="#center"] img,
+.json5e-item div[src$="#right"] img,
+.json5e-monster div[src$="#center"] img,
+.json5e-monster div[src$="#right"] img,
+.json5-note div[src$="#center"] img,
+.json5-note div[src$="#right"] img,
+.json5e-race div[src$="#center"] img,
+.json5e-race div[src$="#right"] img,
+.json5e-spell div[src$="#center"] img,
+.json5e-spell div[src$="#right"] img {
+  max-height: 300px;
+}
+.json5e-background div[src$="#right"],
+.json5e-class div[src$="#right"],
+.json5e-deity div[src$="#right"],
+.json5e-feat div[src$="#right"],
+.json5e-item div[src$="#right"],
+.json5e-monster div[src$="#right"],
+.json5-note div[src$="#right"],
+.json5e-race div[src$="#right"],
+.json5e-spell div[src$="#right"] {
+  max-width: 50%;
+}
+.json5e-background div[src$="#token"],
+.json5e-class div[src$="#token"],
+.json5e-deity div[src$="#token"],
+.json5e-feat div[src$="#token"],
+.json5e-item div[src$="#token"],
+.json5e-monster div[src$="#token"],
+.json5-note div[src$="#token"],
+.json5e-race div[src$="#token"],
+.json5e-spell div[src$="#token"] {
+  width: 150px;
+}
+.json5e-background div[src$="#portrait"],
+.json5e-class div[src$="#portrait"],
+.json5e-deity div[src$="#portrait"],
+.json5e-feat div[src$="#portrait"],
+.json5e-item div[src$="#portrait"],
+.json5e-monster div[src$="#portrait"],
+.json5-note div[src$="#portrait"],
+.json5e-race div[src$="#portrait"],
+.json5e-spell div[src$="#portrait"] {
+  width: 200px;
+}
+
+.json5e-background .inline-title,
+.json5e-class .inline-title,
+.json5e-deity .inline-title,
+.json5e-feat .inline-title,
+.json5e-item .inline-title,
+.json5e-monster .inline-title,
+.json5e-names .inline-title,
+.json5e-note .inline-title,
+.json5e-race .inline-title,
+.json5e-spell .inline-title {
+  display: none;
+}
+
+.creature-view-container.workspace-leaf-content {
+  background-color: var(--background-primary-alt);
+}
+.creature-view-container.workspace-leaf-content .admonition {
+  margin-top: 0;
+}

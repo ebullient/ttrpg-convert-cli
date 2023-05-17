@@ -1,0 +1,221 @@
+////
+// Scheme Management
+////
+$dark-theme: 12.5%;
+$light-theme: 7%;
+$lighten: 10%;
+$darken: 15%;
+$blend-lighten: lighten;
+$blend-darken: darken;
+
+/////
+// Alignments
+/////
+
+// Horizontal
+$align-center: center;
+$align-left: left;
+$align-right: right;
+
+
+// Vertical
+$align-baseline: baseline;
+$align-middle: middle;
+$align-sub: sub;
+
+
+/////
+//
+/////
+
+
+////
+// Typography
+////
+
+// Style
+$font-style-n: normal;
+$font-style-i: italic;
+$font-style-o: oblique;
+
+// Decoration
+$underline: underline;
+
+// Static Sizes
+$font-size-xs: 0.75em; // 12px
+$font-size-code: 0.80em;
+$font-size-sm: 0.875em; // 14px
+$base-font-size: 16px; // 1em
+$font-size-lg: 1.125em; // 18px
+$font-size-xl: 1.25em; // 20px
+
+// Flexing Sizes
+$h1-size: clamp(18px, 1.5em, 22px);
+$h2-size: clamp(16px, 1.3125em, 20px);
+$h3-size: clamp(14px, 1.125em, 16px);
+$h4-size: clamp(12px, 1em, 14px);
+$h5-size: clamp(10px, 0.9375em, 12px);
+$h6-size: clamp(8px, 0.8125em, 10px);
+
+$block-title: clamp(15px, 50%, 20px);
+$block-body: clamp(14px, 1.0625em, 18px);
+
+// Weights
+$weight-400: 400; // Normal
+$weight-500: 500;
+$weight-600: 600;
+$weight-700: 700; // Bold
+$weight-800: 800;
+$weight-900: 900;
+
+// Line Heights
+$line-height-0: 1.0;
+$line-height-1: 1.1; // Narrow
+$line-height-2: 1.2; // Default for Callouts
+$line-height-3: 1.3; // "My" Normal
+$line-height-4: 1.4;
+$line-height-5: 1.5; // "Obsidian Normal"
+
+// Cursors
+$cursor-help: help;
+$cursor-context: context-menu;
+$cursor-point: pointer;
+
+// Filters
+$filter-invert: invert(100%);
+
+// Opacities
+$opacity-10: 0.10;
+$opacity-20: 0.20;
+$opacity-30: 0.30;
+
+//////
+// Margins, Padding, and Sizing
+/////
+
+// Box Sizing
+$box-01: border-box;
+$box-02: content-box;
+
+// Widths in ems
+$width-0: 0;
+$width-1: 0.0625em;
+$width-2: 0.125em;
+$width-3: 0.1875em;
+$width-4: 0.25em;
+$width-5: 0.3125em;
+
+// Widths in rems
+$width-0-rem: 0;
+$width-1-rem: 0.0625rem;
+$width-2-rem: 0.125rem;
+$width-3-rem: 0.1875rem;
+$width-4-rem: 0.25rem;
+$width-5-rem: 0.3125rem;
+
+// Sizes variables converted to ems
+$size-4-2: 0.5em;
+$size-4-4: 1em;
+
+// Sizes variables converted to rems
+$size-4-2-rem: 0.5rem;
+$size-4-4-rem: 1rem;
+
+// Radius Converted
+$radius-s: 0.25rem;
+
+
+// Border Types
+$border-solid: solid;
+$border-inset: inset;
+
+// Displays
+$block: block;
+$block-in-line: inline-block;
+$flex: flex;
+
+// Positions
+
+$relative: relative;
+$absolute: absolute;
+
+/////
+// Padding
+/////
+$callout-padding: 1.5rem clamp(1rem, 5%, 3rem);
+
+
+
+/////
+// Edge Cases
+/////
+
+// Commons that Dont Fit Anywhere Else
+$overflow-scroll: scroll;
+$overflow-word-break: break-word;
+$auto-bots: auto;
+$keep-words: keep-all;
+
+// Reversions
+$no-display: none;
+$initial: initial;
+$inherit: inherit;
+$unset: unset;
+
+
+// How many variables can I have?! A LOT :D
+
+// Specific Colors to Track
+$box-condition: #138a06;
+$box-skills: #a96c74;
+$box-traits: #611405;
+
+// Blacks
+$almost-black: rgb(36, 36, 36);
+
+// Browns
+$dark-grayish-orange: rgb(160, 148, 127);
+
+// Greys
+$very-dark-grey: rgb(51, 51, 51);
+$very-light-grey: rgb(232, 232, 232);
+
+
+// Greens
+$dark-lime-green: rgb(19, 138, 6);
+$strong-green: rgb(154, 205, 50);
+$very-desaturated-dark-cyan-green: rgb(42, 72, 62);
+
+// Yellow
+$light-grayish-yellow: rgb(234, 229, 213);
+$light-yellow: rgb(255, 219, 88);
+$very-soft-yellow: rgb(217, 204, 140);
+
+
+// Blues
+$dark-moderate-blue: rgb(80, 62, 141);
+$light-moderate-blue: rgb(64, 105, 157);
+$moderate-blue: rgb(116, 90, 205);
+$very-dark-blue: rgb(6, 20, 53);
+$very-dark-teal: rgb(0, 73, 97);
+$very-desaturated-blue: rgb(44, 70, 78);
+$very-desaturated-dark-blue: rgb(51, 66, 82);
+
+// Purples
+$dark-violet: rgb(107, 0, 153);
+$tyrian-purple: #64023b;
+$very-light-violet: rgb(222, 145, 255);
+
+
+// Pinks
+
+
+// Red
+$dark-grayish-magenta: rgb(80, 67, 79);
+$dark-red: rgb(128, 0, 0);
+$very-desaturated-red: rgb(102, 51, 51);
+$very-light-red: rgb(255, 143, 143);
+
+
+// Orange
+$strong-orange: rgb(204, 72, 0);

@@ -1,0 +1,10 @@
+/* Collapse external links / markdown links in edit mode */
+div.cm-line:not(.cm-active) {
+  > .cm-string.cm-url:not(.cm-formatting) {
+    font-size: 0;
+  }
+  > .cm-string.cm-url:not(.cm-formatting)::after {
+    content: '\27B9';
+    font-size: .8rem;
+  }
+}

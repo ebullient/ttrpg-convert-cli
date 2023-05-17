@@ -1,0 +1,49 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+
+:is(.pf2e) {
+  .markdown-rendered {
+    table {
+      border: 3px var.$border-solid var(--pf2e-red-headers);
+
+      a {
+        font-weight: var.$weight-500;
+        color: var(--pf2e-purple-link);
+      }
+    }
+
+    thead {
+      background-color: var(--pf2e-red-headers);
+      border-bottom: 3px var.$border-solid rgba(var(--pf2e-brown-table-borders-rgb), 0.5);
+      color: var.$very-light-grey;
+    }
+
+    tbody {
+      background-color: rgb(var(--pf2e-tan-table-odd-rows-rgb));
+      color: var.$almost-black;
+
+      tr:nth-child(even) {
+        background-color: rgb(var(--pf2e-beige-table-even-rows-rgb));
+      }
+
+      tr:hover {
+        background-color: rgba(var(--pf2e-table-hover-color), 0.8);
+      }
+
+    }
+
+    th {
+      background-color: var(--pf2e-red-headers);
+      color: var.$very-light-grey;
+
+      &:hover {
+        background-color: rgba(var(--pf2e-table-hover-color), 0.8);
+      }
+    }
+
+    tr td:not(:last-child),
+    tr th:not(:last-child) {
+      border-right: 1px var.$border-solid var.$light-grayish-yellow;
+    }
+  }
+}

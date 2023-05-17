@@ -1,0 +1,135 @@
+// Variables
+@use '../../30-index-obsidian-var' as var;
+
+// Common Mixins for Functions
+@mixin content-headings($level) {
+  $sizes: (
+          1: var.$h1-size,
+          2: var.$h2-size,
+          3: var.$h3-size,
+          4: var.$h4-size,
+          5: var.$h5-size,
+          6: var.$h6-size,
+  );
+
+  $padding-bottoms: (0.125em, 0.25em, 0.125em, 0.5em, 0.25em, 0.75em);
+
+  // Functions
+  @for $i from 1 through 6 {
+    & h#{$i} {
+      font-size: map-get($sizes, $i);
+      padding-bottom: nth($padding-bottoms, $i);
+      text-align: var.$align-center;
+      // Add custom styles for h3 here
+      @if $i == 3 {
+        &::before {
+          display: var.$no-display;
+        }
+
+        &::after {
+          display: var.$no-display;
+        }
+      }
+    }
+  }
+}
+
+
+// Common Mixins for Callmonitions
+@mixin content-blockquotes {
+  padding: var.$width-5 var.$width-5 var.$width-5 10px;
+  border-right: var.$width-3 var.$border-solid;
+  border-left: var.$width-3 var.$border-solid;
+  margin-left: 0.75em;
+  margin-right: 0.75em;
+}
+
+@mixin content-lists {
+  // Will only add a : after Strong List 
+  // Items with Strong characters
+  // If they are not the only child
+  // Still testing this...
+  ul, ol {
+    li {
+      strong:not(a + &, p + &, h1 + &, &:last-child) {
+        &::after {
+          content: ':';
+        }
+      }
+    }
+  }
+}
+
+
+// & code {
+@mixin content-code {
+  & code {
+    background-color: var.$very-light-grey;
+    color: var.$dark-moderate-blue;
+    font-family: var(--pf2e-font-monospace);
+  }
+}
+
+// Admonition Only
+@mixin admonition-copy {
+  .admonition-content-copy {
+    cursor: var.$cursor-point;
+    opacity: var.$width-0;
+    position: var.$relative;
+    margin: var.$width-5-rem;
+    right: var.$width-0;
+    top: var.$width-0;
+    transition: 1s opacity ease-in-out;
+
+    &:hover {
+      color: mix(var.$very-light-grey, transparent, 30%);
+    }
+  }
+}
+
+// Link Fixes
+@mixin content-links {
+
+  a.internal-link {
+    font-weight: var.$weight-600;
+    text-decoration: var.$no-display;
+
+
+    &:hover {
+      text-decoration: var.$underline;
+    }
+
+    &.is-unresolved {
+      font-style: var.$font-style-i;
+      text-decoration: var.$no-display;
+
+      &:hover {
+        text-decoration: var.$underline;
+      }
+    }
+  }
+
+  a.external-link {
+    font-weight: var.$weight-600;
+    text-decoration: var.$no-display;
+
+    &:hover {
+      text-decoration: var.$underline;
+    }
+  }
+}
+
+@mixin content-strong {
+
+  strong {
+    padding-inline: var.$width-4-rem;
+  }
+}
+
+@mixin admonition-callout-kids {
+   > .callout {
+     mix-blend-mode: normal;
+     margin-bottom: 1rem;
+
+   }
+}

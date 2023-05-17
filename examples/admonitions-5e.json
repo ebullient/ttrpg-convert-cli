@@ -1,0 +1,24 @@
+[
+  {
+    "type": "statblock",
+    "icon": {
+      "name": "dragon",
+      "type": "font-awesome"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "flowchart",
+    "icon": {
+      "name": "map",
+      "type": "font-awesome"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": true,
+    "copy": false
+  }
+]

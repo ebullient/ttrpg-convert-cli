@@ -1,0 +1,66 @@
+// Overwriting Tweaks for 5e Statblocks
+body {
+  --statblock-accent: 201,60,60;
+}
+
+// force resolution of floating tokens or other images ahead of statblock
+.admonition-statblock-parent {
+  clear: both;
+}
+.callout[data-callout="statblock"] {
+  --callout-color: var(--statblock-accent);
+
+  .callout-title {
+    line-height: var(--line-height);
+
+    .callout-title-content {
+      flex: 2;
+      font-size: var(--h3-size);
+    }
+  }
+
+  .callout-content {
+
+    > :first-child {
+      margin-top: 0.5em;
+    }
+
+    > :last-child {
+      margin-bottom: 0.5em;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--default-font);
+      font-variant: common-ligatures small-caps;
+    }
+
+    h1 {
+      font-size: 1.4em;
+      line-height: 1.4em;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2,
+    h3 {
+      font-size: 1.2em;
+      line-height: 1.2em;
+      padding: .5em 0 0 0;
+      margin-top: .2em;
+      margin-bottom: .3em;
+      border-bottom: 1px solid rgb(var(--statblock-accent));
+    }
+
+    p {
+      line-height: 1.2em;
+      margin-block-start: .5em;
+    }
+
+    li {
+      line-height: 1.2em;
+      margin-block-start: .5em;
+    }
+  }
+}
