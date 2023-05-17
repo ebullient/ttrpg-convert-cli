@@ -408,7 +408,26 @@ Of particular note are the varied monster templates:
 
 ## Changes that impact generated templates and files
 
-## 1.1.1: Dice roller in statblocks and text
+### 🔥 2.0.0: File name and path changes, and styles!
+
+1. 🔥 **A leading slash (`/`) is no longer used at the beginning of compendium and root paths**. This should allow you to move these two directories around more easily. 
+    - I recommend that you keep the compendium and rules sections together as big balls of mud.
+    - If you do want to further move files around, do so from within obsidian, so obsidian can update its links.
+    
+2. 🔥 **D&D 5e subclasses now use the source of the subclass in the file name**.
+
+   > ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-1.3.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+
+3. 🎨 CSS styles for D&D 5e and Pathfinder are now available in `examples/css-snippets`. 
+
+4. 📝 Admonitions are also available for import:
+    - 🎨 [admonitions-5e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-5e.json)
+    - [admonitions-pf2e-v3.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-pf2e-v3.json)
+    - 🎨 [other-admonitions.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/other-admonitions.json)
+
+    Note: `admonitions-5e.json` and `other-admonitions.json` use colors from CSS snippets to adjust for light and dark mode.
+
+### 🔖 1.1.1: Dice roller in statblocks and text
 
 If you are using the default templates and want to render dice rolls, set
 `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice
@@ -417,7 +436,7 @@ If you are using the default templates and want to render dice rolls, set
 
 See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general structure of config.
 
-## 1.1.0: Images for backgrounds, items, monsters, races, and spells
+### 🔖 1.1.0: Images for backgrounds, items, monsters, races, and spells
 
 The conversion tool downloads fluff images into `img` directories within each type, e.g. `backgrounds/img` or `bestiary/aberration/img`. These images are unordered, and are not referenced in entry text. Templates must be modified to include them.
 
@@ -490,7 +509,7 @@ Notes:
 - There is an example for each type in the [example templates directory](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/) directory. Relevant file names start with `images-`.
 
 
-## 1.0.18: You can put more things in json input now!
+### 🔖  1.0.18: You can put more things in json input now!
 
 Use `convert` to import source text for books and adventures that you own: 
 
@@ -517,7 +536,7 @@ Be careful of paths here. Relative paths will be resolved depending on where the
 
 You can place this configuration one file or several, your choice. 
 
-### 1.0.16: Sections in Spell text
+### 🔖  1.0.16: Sections in Spell text
 
 Text for changes to spells at higher levels is added to spells a little differently depending on how complicated the spell is.
 
@@ -527,14 +546,14 @@ If a spell has sections, then "At Higher Levels" will be added as an additional 
 
 The [default spell template](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/spell2md.txt) has also been amended. It will test for sections in the spell text, and if so, now inserts a `## Summary` header above the Classes/Sources information, to ensure that the penultimate section can be embedded cleanly.
 
-### 1.0.15: Flowcharts, optfeature in text, styled rows
+### 🔖  1.0.15: Flowcharts, optfeature in text, styled rows
 
 - `optfeature` text is rendered (Tortle package)
 - `flowcharts` is rendered as a series of `flowchart` callouts  
     Use the admonition plugin to create a custom `flowchart` callout with an icon of your choice.
 - The adventuring gear tables from the PHB have been corrected
 
-### 1.0.14: Ability Scores
+### 🔖  1.0.14: Ability Scores
 
 As shown in [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
 
@@ -547,7 +566,7 @@ As shown in [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-c
 - CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
 ```
 
-### 1.0.13: Item property tags are now sorted
+### 🔖  1.0.13: Item property tags are now sorted
 
 Property tags on items are now sorted (not alphabetically) to stabilize their order in generated files. This should be a one-time bit of noise as you cross this release (using a version before to using some version after).
 
