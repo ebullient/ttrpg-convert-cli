@@ -43,10 +43,12 @@ Next navigate to _Java_ -> _Code Style_ -> _Organize Imports_. Click _Import_ an
 
 A .vscode directory is included with the project that contains formatting and import settings.
 
-## Building and Testing
+## Build and test the CLI
 
-- **Using maven:** `./mvnw install`
-- **Using Quarkus CLI**: `quarkus build`
+[Install Java](https://adoptium.net/installation/). This project requires Java 17.
+
+- **Use maven:** `./mvnw install`
+- **Use the Quarkus CLI**: `quarkus build`
 
 To test with actual/live data, clone 5eTools and/or PF2eTools into a sources directory: 
 
@@ -57,13 +59,13 @@ git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.
 git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
 ```
 
-### Building CSS only
+### Build CSS only
 
 - **build css**: `./mvnw sass-cli:run`
 - **watch**: `./mvnw sass-cli:watch`
 - **package**: `./mvnw sass-cli:run -Dsass.watch`
 
-## Signing
+## Sign commits
 
 I recommend that you [sign your commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits), always. For everything.
 
