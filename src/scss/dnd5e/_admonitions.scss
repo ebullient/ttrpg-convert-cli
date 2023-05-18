@@ -7,6 +7,7 @@ body {
   --admonition-skill: 236,201,134;
   --admonition-skill-text: var(--admonition-skill);
   --admonition-weather: 53,119,174;
+  --admonition-flowchart: 72,72,72;
 }
 .theme-light {
   --admonition-charm: 222,170,184;
@@ -39,3 +40,25 @@ body {
 .callout[data-callout="weather"] {
   --callout-color: var(--admonition-weather);
 }
+.callout[data-callout="flowchart"] {
+  --callout-color: var(--admonition-flowchart);
+  --callout-border-width: 0.10rem;
+}
+div:has(> .callout[data-callout="flowchart"]):has(+ div > .callout[data-callout="flowchart"]) {
+  position: relative;
+
+  &:after {
+    content: '\2193';
+    color: var(--admonition-flowchart);
+    display: block;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    margin-left: 7px;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
