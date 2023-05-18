@@ -79,8 +79,9 @@ Continue to notes about [Conventions](#conventions).
 ### Build and run
 
 1. Clone this repository
-2. Build this project: `quarkus build` or `./mvnw install`
-3. Verify the build: `java -jar target/ttrpg-convert-cli-199-SNAPSHOT-runner.jar --help`
+2. Ensure you have [Java installed on your system](https://adoptium.net/installation/) and active in your path.
+3. Build this project: `quarkus build` or `./mvnw install`
+4. Verify the build: `java -jar target/ttrpg-convert-cli-199-SNAPSHOT-runner.jar --help`
 
 To run commands listed below, either: 
 
