@@ -4,7 +4,7 @@ body {
   --admonition-letter: 98, 159, 197;
   --admonition-npc: 102, 121, 137;
   --admonition-scene: 139, 167, 145;
-  --admonition-skill: 196, 154, 82;
+  --admonition-skill: 236,201,134;
   --admonition-skill-text: var(--admonition-skill);
   --admonition-weather: 53,119,174;
 }
@@ -14,7 +14,8 @@ body {
   --admonition-charm-text: 167,92,112;
   --admonition-npc: 58, 125, 127;
   --admonition-scene: 92, 122, 99;
-  --admonition-skill-text: 141,110,59;
+  --admonition-skill: 221,178,84;
+  --admonition-skill-text: 157,101,83;
 }
 
 .callout[data-callout=charm] {
