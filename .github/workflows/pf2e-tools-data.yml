@@ -10,6 +10,7 @@ env:
   JAVA_VERSION: 17
   GRAALVM_VERSION: 22.3.0
   JAVA_DISTRO: temurin
+  FAIL_ISSUE: 141
 
 jobs:
   cache-setup:
@@ -137,3 +138,19 @@ jobs:
         run: |
           ./mvnw -B -ntp -Dnative -DskipTests  -DskipFormat verify
 
+  report-native-build:
+
+    name: Report errors
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    needs: [test-with-data, native-test-with-data]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: gh-issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ env.FAIL_ISSUE }} --body "[Maven build failed: ${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          gh issue reopen ${{ env.FAIL_ISSUE }}
