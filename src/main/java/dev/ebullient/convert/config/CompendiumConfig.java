@@ -333,17 +333,20 @@ public class CompendiumConfig {
         }
 
         private static String toRoot(String value) {
+            if (value == null || value.isEmpty()) {
+                return "";
+            }
             String path = (value + '/')
                     .replace('\\', '/')
                     .replaceAll("/+", "/");
-            return path.startsWith("/") ? path.substring(1) : path;
+            return path;
         }
 
         private static Path toFilesystemRoot(String root) {
             if (root.equals("/") || root.isBlank()) {
                 return CWD;
             }
-            return Path.of(root);
+            return Path.of(root.startsWith("/") ? root.substring(1) : root);
         }
 
         private static String toVaultRoot(String root) {
