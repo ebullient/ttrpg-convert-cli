@@ -4,7 +4,7 @@
 .json5e-feat,
 .json5e-item,
 .json5e-monster,
-.json5-note,
+.json5e-note,
 .json5e-race,
 .json5e-spell {
   div {
@@ -19,9 +19,8 @@
     }
     &[src$="#center"],
     &[src$="#right"] {
-      height: 300px;
       img {
-        max-height: 300px;
+        max-height: 60vh;
       }
     }
     &[src$="#right"] {

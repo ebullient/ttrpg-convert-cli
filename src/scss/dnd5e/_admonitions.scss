@@ -44,46 +44,54 @@ body {
   --callout-color: var(--admonition-flowchart);
   --callout-border-width: 0.10rem;
 }
-div:has(> .callout[data-callout="flowchart"]):has(+ div > .callout[data-callout="flowchart"]) {
-  position: relative;
-
-  &:after {
-    content: '\2193';
-    color: var(--admonition-flowchart);
-    display: block;
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    margin-left: 7px;
-    width: 14px;
-    height: 14px;
-    font-size: 14px;
-    text-align: center;
-  }
-}
-.callout[data-callout="gallery"] {
-  --callout-color: transparent;
-  --callout-border-width: 0;
-  .callout-title {
-    display: none;
-  }
-  .callout-content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-
-    p {
-      display: none;
+.json5e-background,
+.json5e-class,
+.json5e-deity,
+.json5e-feat,
+.json5e-item,
+.json5e-monster,
+.json5e-note,
+.json5e-race,
+.json5e-spell {
+  div:has(> .callout[data-callout="flowchart"]):has(+ div > .callout[data-callout="flowchart"]) {
+    position: relative;
+  
+    &:after {
+      content: '\2193';
+      color: var(--admonition-flowchart);
+      display: block;
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      margin-left: 7px;
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+      text-align: center;
     }
-
-    div[src$="#gallery"] {
-      height: 300px;
-      width: 49%;
-      max-width: 50%;
-      img {
-        max-height: 300px;
+  }
+  .callout[data-callout="gallery"] {
+    --callout-color: transparent;
+    --callout-border-width: 0;
+    .callout-content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+  
+      p {
+        display: none;
       }
+  
+      div[src$="#gallery"] {
+        max-width: 49%;
+        img {
+          max-height: 60vh;
+        }
+      }
+    }
+    .callout-title {
+      display: none;
     }
   }
 }

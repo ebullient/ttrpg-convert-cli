@@ -54,10 +54,26 @@ body {
   --callout-border-width: 0.10rem;
 }
 
-div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]) {
+.json5e-background div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-class div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-deity div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-feat div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-item div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-monster div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-note div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-race div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-spell div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]) {
   position: relative;
 }
-div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after {
+.json5e-background div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-class div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-deity div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-feat div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-item div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-monster div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-note div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-race div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-spell div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after {
   content: "↓";
   color: var(--admonition-flowchart);
   display: block;
@@ -70,30 +86,75 @@ div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=fl
   font-size: 14px;
   text-align: center;
 }
-
-.callout[data-callout=gallery] {
+.json5e-background .callout[data-callout=gallery],
+.json5e-class .callout[data-callout=gallery],
+.json5e-deity .callout[data-callout=gallery],
+.json5e-feat .callout[data-callout=gallery],
+.json5e-item .callout[data-callout=gallery],
+.json5e-monster .callout[data-callout=gallery],
+.json5e-note .callout[data-callout=gallery],
+.json5e-race .callout[data-callout=gallery],
+.json5e-spell .callout[data-callout=gallery] {
   --callout-color: transparent;
   --callout-border-width: 0;
 }
-.callout[data-callout=gallery] .callout-title {
-  display: none;
-}
-.callout[data-callout=gallery] .callout-content {
+.json5e-background .callout[data-callout=gallery] .callout-content,
+.json5e-class .callout[data-callout=gallery] .callout-content,
+.json5e-deity .callout[data-callout=gallery] .callout-content,
+.json5e-feat .callout[data-callout=gallery] .callout-content,
+.json5e-item .callout[data-callout=gallery] .callout-content,
+.json5e-monster .callout[data-callout=gallery] .callout-content,
+.json5e-note .callout[data-callout=gallery] .callout-content,
+.json5e-race .callout[data-callout=gallery] .callout-content,
+.json5e-spell .callout[data-callout=gallery] .callout-content {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
 }
-.callout[data-callout=gallery] .callout-content p {
+.json5e-background .callout[data-callout=gallery] .callout-content p,
+.json5e-class .callout[data-callout=gallery] .callout-content p,
+.json5e-deity .callout[data-callout=gallery] .callout-content p,
+.json5e-feat .callout[data-callout=gallery] .callout-content p,
+.json5e-item .callout[data-callout=gallery] .callout-content p,
+.json5e-monster .callout[data-callout=gallery] .callout-content p,
+.json5e-note .callout[data-callout=gallery] .callout-content p,
+.json5e-race .callout[data-callout=gallery] .callout-content p,
+.json5e-spell .callout[data-callout=gallery] .callout-content p {
   display: none;
 }
-.callout[data-callout=gallery] .callout-content div[src$="#gallery"] {
-  height: 300px;
-  width: 49%;
-  max-width: 50%;
+.json5e-background .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-class .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-deity .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-feat .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-item .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-monster .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-note .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-race .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-spell .callout[data-callout=gallery] .callout-content div[src$="#gallery"] {
+  max-width: 49%;
 }
-.callout[data-callout=gallery] .callout-content div[src$="#gallery"] img {
-  max-height: 300px;
+.json5e-background .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-class .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-deity .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-feat .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-item .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-monster .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-note .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-race .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-spell .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img {
+  max-height: 60vh;
+}
+.json5e-background .callout[data-callout=gallery] .callout-title,
+.json5e-class .callout[data-callout=gallery] .callout-title,
+.json5e-deity .callout[data-callout=gallery] .callout-title,
+.json5e-feat .callout[data-callout=gallery] .callout-title,
+.json5e-item .callout[data-callout=gallery] .callout-title,
+.json5e-monster .callout[data-callout=gallery] .callout-title,
+.json5e-note .callout[data-callout=gallery] .callout-title,
+.json5e-race .callout[data-callout=gallery] .callout-title,
+.json5e-spell .callout[data-callout=gallery] .callout-title {
+  display: none;
 }
 
 body {
@@ -156,7 +217,7 @@ body {
 .json5e-feat div[src$="#center"],
 .json5e-item div[src$="#center"],
 .json5e-monster div[src$="#center"],
-.json5-note div[src$="#center"],
+.json5e-note div[src$="#center"],
 .json5e-race div[src$="#center"],
 .json5e-spell div[src$="#center"] {
   text-align: center;
@@ -177,9 +238,9 @@ body {
 .json5e-monster div[src$="#portrait"],
 .json5e-monster div[src$="#token"],
 .json5e-monster div[src$="#right"],
-.json5-note div[src$="#portrait"],
-.json5-note div[src$="#token"],
-.json5-note div[src$="#right"],
+.json5e-note div[src$="#portrait"],
+.json5e-note div[src$="#token"],
+.json5e-note div[src$="#right"],
 .json5e-race div[src$="#portrait"],
 .json5e-race div[src$="#token"],
 .json5e-race div[src$="#right"],
@@ -188,25 +249,6 @@ body {
 .json5e-spell div[src$="#right"] {
   float: right;
   padding-left: 5px;
-}
-.json5e-background div[src$="#center"], .json5e-background div[src$="#right"],
-.json5e-class div[src$="#center"],
-.json5e-class div[src$="#right"],
-.json5e-deity div[src$="#center"],
-.json5e-deity div[src$="#right"],
-.json5e-feat div[src$="#center"],
-.json5e-feat div[src$="#right"],
-.json5e-item div[src$="#center"],
-.json5e-item div[src$="#right"],
-.json5e-monster div[src$="#center"],
-.json5e-monster div[src$="#right"],
-.json5-note div[src$="#center"],
-.json5-note div[src$="#right"],
-.json5e-race div[src$="#center"],
-.json5e-race div[src$="#right"],
-.json5e-spell div[src$="#center"],
-.json5e-spell div[src$="#right"] {
-  height: 300px;
 }
 .json5e-background div[src$="#center"] img, .json5e-background div[src$="#right"] img,
 .json5e-class div[src$="#center"] img,
@@ -219,13 +261,13 @@ body {
 .json5e-item div[src$="#right"] img,
 .json5e-monster div[src$="#center"] img,
 .json5e-monster div[src$="#right"] img,
-.json5-note div[src$="#center"] img,
-.json5-note div[src$="#right"] img,
+.json5e-note div[src$="#center"] img,
+.json5e-note div[src$="#right"] img,
 .json5e-race div[src$="#center"] img,
 .json5e-race div[src$="#right"] img,
 .json5e-spell div[src$="#center"] img,
 .json5e-spell div[src$="#right"] img {
-  max-height: 300px;
+  max-height: 60vh;
 }
 .json5e-background div[src$="#right"],
 .json5e-class div[src$="#right"],
@@ -233,7 +275,7 @@ body {
 .json5e-feat div[src$="#right"],
 .json5e-item div[src$="#right"],
 .json5e-monster div[src$="#right"],
-.json5-note div[src$="#right"],
+.json5e-note div[src$="#right"],
 .json5e-race div[src$="#right"],
 .json5e-spell div[src$="#right"] {
   max-width: 50%;
@@ -244,7 +286,7 @@ body {
 .json5e-feat div[src$="#token"],
 .json5e-item div[src$="#token"],
 .json5e-monster div[src$="#token"],
-.json5-note div[src$="#token"],
+.json5e-note div[src$="#token"],
 .json5e-race div[src$="#token"],
 .json5e-spell div[src$="#token"] {
   width: 150px;
@@ -255,7 +297,7 @@ body {
 .json5e-feat div[src$="#portrait"],
 .json5e-item div[src$="#portrait"],
 .json5e-monster div[src$="#portrait"],
-.json5-note div[src$="#portrait"],
+.json5e-note div[src$="#portrait"],
 .json5e-race div[src$="#portrait"],
 .json5e-spell div[src$="#portrait"] {
   width: 200px;
