@@ -20,5 +20,16 @@
     "injectColor": false,
     "noTitle": true,
     "copy": false
+  },
+  {
+    "type": "gallery",
+    "icon": {
+      "name": "image",
+      "type": "font-awesome"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": true,
+    "copy": false
   }
 ]

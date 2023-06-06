@@ -6,14 +6,16 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 
 public class QuteSource extends QuteBase {
-    public static String BACKGROUND_PATH = "backgrounds";
-    public static String CLASSES_PATH = "classes";
-    public static String DEITIES_PATH = "deities";
-    public static String FEATS_PATH = "feats";
-    public static String ITEMS_PATH = "items";
-    public static String MONSTERS_BASE_PATH = "bestiary";
-    public static String RACES_PATH = "races";
-    public static String SPELLS_PATH = "spells";
+    public static final String ADVENTURE_PATH = "adventures";
+    public static final String BOOK_PATH = "books";
+    public static final String BACKGROUND_PATH = "backgrounds";
+    public static final String CLASSES_PATH = "classes";
+    public static final String DEITIES_PATH = "deities";
+    public static final String FEATS_PATH = "feats";
+    public static final String ITEMS_PATH = "items";
+    public static final String MONSTERS_BASE_PATH = "bestiary";
+    public static final String RACES_PATH = "races";
+    public static final String SPELLS_PATH = "spells";
 
     public QuteSource(CompendiumSources sources, String name, String source, String text, Collection<String> tags) {
         super(sources, name, source, text, tags);

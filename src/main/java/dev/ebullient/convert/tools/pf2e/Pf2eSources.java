@@ -71,7 +71,7 @@ public class Pf2eSources extends CompendiumSources {
         ImageRef imageRef = new ImageRef.Builder()
                 .setStreamSource(sourcePath)
                 .setRelativePath(Path.of("assets").resolve(relativeTarget))
-                .setTitle(title)
+                .setTitle(index.replaceText(title))
                 .setRootFilepath(index.rulesFilePath())
                 .setVaultRoot(index.rulesVaultRoot())
                 .build();
@@ -90,7 +90,7 @@ public class Pf2eSources extends CompendiumSources {
                 .setRelativePath(Path.of("assets").resolve(relativeTarget))
                 .setRootFilepath(type.getFilePath(index))
                 .setVaultRoot(type.getVaultRoot(index))
-                .setTitle(title)
+                .setTitle(index.replaceText(title))
                 .build();
         imageSourceToRef.put(imageRef.sourcePath().toString(), imageRef);
         return imageRef;

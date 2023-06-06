@@ -71,6 +71,31 @@ div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=fl
   text-align: center;
 }
 
+.callout[data-callout=gallery] {
+  --callout-color: transparent;
+  --callout-border-width: 0;
+}
+.callout[data-callout=gallery] .callout-title {
+  display: none;
+}
+.callout[data-callout=gallery] .callout-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.callout[data-callout=gallery] .callout-content p {
+  display: none;
+}
+.callout[data-callout=gallery] .callout-content div[src$="#gallery"] {
+  height: 300px;
+  width: 49%;
+  max-width: 50%;
+}
+.callout[data-callout=gallery] .callout-content div[src$="#gallery"] img {
+  max-height: 300px;
+}
+
 body {
   --statblock-accent: 201,60,60;
 }

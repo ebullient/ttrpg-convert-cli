@@ -6,13 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
-import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
@@ -40,6 +38,11 @@ public class Json2MarkdownConverter implements MarkdownConverter {
                 Tools5eIndexType.monster,
                 Tools5eIndexType.race,
                 Tools5eIndexType.spell));
+    }
+
+    public Json2MarkdownConverter writeImages() {
+        index.tui().copyImages(Tools5eSources.getImages(), fallbackPaths);
+        return this;
     }
 
     public Json2MarkdownConverter writeFiles(IndexType type) {
@@ -83,10 +86,6 @@ public class Json2MarkdownConverter implements MarkdownConverter {
         }
 
         writer.writeFiles(index.compendiumFilePath(), sources);
-
-        List<ImageRef> images = sources.stream()
-                .flatMap(s -> s.images().stream()).collect(Collectors.toList());
-        index.tui().copyImages(images, fallbackPaths);
         return this;
     }
 

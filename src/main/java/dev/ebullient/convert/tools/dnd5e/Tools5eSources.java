@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,13 +15,14 @@ import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
+import dev.ebullient.convert.tools.dnd5e.JsonSource.JsonMediaHref;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
 public class Tools5eSources extends CompendiumSources {
 
     private static final Map<String, Tools5eSources> keyToSources = new HashMap<>();
-    private static final Map<String, ImageRef> imageSourceToRef = new HashMap<>();
+    private static final Map<Path, ImageRef> imageSourceToRef = new HashMap<>();
 
     public static Tools5eSources findSources(String key) {
         return keyToSources.get(key);
@@ -58,6 +61,10 @@ public class Tools5eSources extends CompendiumSources {
         return sources == null
                 ? new Tools5eSources(type, key, node)
                 : sources;
+    }
+
+    public static Collection<ImageRef> getImages() {
+        return imageSourceToRef.values();
     }
 
     final boolean srd;
@@ -140,5 +147,47 @@ public class Tools5eSources extends CompendiumSources {
         Iterator<String> i = bookSources.iterator();
         i.next(); // primary
         return i.next();
+    }
+
+    public ImageRef buildImageRef(Tools5eIndex index, Path sourcePath, Path target, boolean useCompendium) {
+        ImageRef imageRef = new ImageRef.Builder()
+                .setRelativePath(target)
+                .setSourcePath(sourcePath)
+                .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
+                .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
+                .build(imageSourceToRef.get(sourcePath));
+
+        imageSourceToRef.putIfAbsent(sourcePath, imageRef);
+        return imageRef;
+    }
+
+    public ImageRef buildImageRef(Tools5eIndex index, JsonMediaHref mediaHref, String imageBasePath, boolean useCompendium) {
+        if (mediaHref.href.path != null) {
+            String title = mediaHref.title == null ? "" : mediaHref.title;
+
+            Path sourcePath = Path.of("img", mediaHref.href.path);
+
+            String fileName = sourcePath.getFileName().toString();
+            if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note) {
+                fileName = primarySource() + "-" + fileName;
+            }
+
+            int x = fileName.lastIndexOf('.');
+            Path target = Path.of(imageBasePath, "img",
+                    index.slugify(fileName.substring(0, x)) + fileName.substring(x));
+
+            ImageRef imageRef = new ImageRef.Builder()
+                    .setTitle(index.replaceText(title))
+                    .setRelativePath(target)
+                    .setSourcePath(sourcePath)
+                    .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
+                    .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
+                    .build(imageSourceToRef.get(sourcePath));
+
+            imageSourceToRef.putIfAbsent(sourcePath, imageRef);
+            return imageRef;
+        } else {
+            throw new IllegalArgumentException("We have an ImageRef with no path");
+        }
     }
 }

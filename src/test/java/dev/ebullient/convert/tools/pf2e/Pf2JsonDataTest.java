@@ -219,7 +219,8 @@ public class Pf2JsonDataTest {
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeNotesAndTables();
+                    .writeNotesAndTables()
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(rulesDir, tui);
             assertThat(rulesDir.resolve("conditions.md")).exists();

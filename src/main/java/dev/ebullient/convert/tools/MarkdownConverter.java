@@ -11,4 +11,6 @@ public interface MarkdownConverter {
     MarkdownConverter writeNotesAndTables();
 
     MarkdownConverter writeFiles(IndexType feat);
+
+    MarkdownConverter writeImages();
 }

@@ -502,18 +502,13 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     "token",
                     slugify(filename) + ".png");
 
-            return new ImageRef.Builder()
-                    .setSourcePath(sourcePath)
-                    .setRelativePath(target)
-                    .setRootFilepath(index().compendiumFilePath())
-                    .setVaultRoot(index().compendiumVaultRoot())
-                    .build();
+            return sources.buildImageRef(index, sourcePath, target, true);
         }
         return null;
     }
 
     @Override
-    protected String getImagePath() {
+    public String getImagePath() {
         return QuteSource.monsterPath(isNpc, type);
     }
 

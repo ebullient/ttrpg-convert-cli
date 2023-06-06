@@ -112,21 +112,28 @@ To run commands listed below, either:
 
 - **Admonitions.** 
   - `ad-statblock`
+  - 5e tools: `ad-flowchart`, `ad-gallery`
   - pf2e tools: `ad-embed-ability`, `ad-embed-action`, `ad-embed-affliction`, `ad-embed-avatar`, `ad-embed-disease`, `ad-embed-feat`, `ad-embed-item`, `ad-pf2-note`, `ad-pf2-ritual`.
 
 
 ## Recommended plugins 
 
-- **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: One of the templates for rendering monsters uses the code-style format supported by the admonitions plugin to render human-readable text (and avoid blockquote line wrapping).
-  - Create a custom admonition called `statblock` (I recommend a dragon icon)
-  - Create a custom admonition called `flowchart` (I recommend a map icon)
-  - Either set the appearance/icon for the style in the plugin, or use/modify [this snippet](examples/css-snippets/admonition_callout.css) to style the admonition.
-  - The [compendium snippet](examples/css-snippets/compendium.css) defines styles for the contents of the statblock, including setting the size of the token image based on the #token anchor in the link.
+- **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: The admonitions plugin is used to render the statblocks and other admonitions. It also supports a codeblock style that is used for more complicated content like statblocks, where callout syntax would be difficult to manage. 
 
-- **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read only. Specifically, I ensure the plugin has the following options enabled: "Ignore open files" (so that if I have toggled to edit mode, it doesn't fight with me over it), and "Ignore force view when not in front matter" (so that the setting isn't applied to documents that don't have the front matter tag).
+    Import one or more admonition json files in the [examples](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples) directory to create the custom admonition types used for converted content:
 
-- **[TTRPG Statblocks](obsidian://show-plugin?id=obsidian-5e-statblocks)**: Templates for rendering monsters can define a `statblock` in the document body or provide a full or abridged yaml monster in the document header to update monsters in the plugin's bestiary.
-  - Note that in the process of creating this converter, I've discovered some corner cases that the TTRPG plugin does not handle well. I've adapted as best I can to work within what the TTRPG statblock format understands. Information will be rendered correctly in the plain statblock text for these cases.
+    - [admonitions-5e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-5e.json) for 5e tools
+    - [admonitions-pf2e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-pf2e.json) for pf2e tools
+    - [other-admonitions.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/other-admonitions.json) if they are interesting
+
+- **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read-only.  
+
+    Ensure the plugin has the following options enabled: 
+
+    - "Ignore force view when not in front matter": the plugin will only change the view mode if `obsidianUIMode` is defined in the front matter.    
+    - "Ignore open files": the plugin won't try to change the view mode if the file is already open.
+
+- **[TTRPG Statblocks](obsidian://show-plugin?id=obsidian-5e-statblocks)**: Templates for rendering monsters can define a `statblock` in the document body or provide a full or abridged yaml monster in the document header to update monsters in the plugin's bestiary. See [Templates](#templates) for more information.
 
 - **[Initiative Tracker](obsidian://show-plugin?id=initiative-tracker)**: Templates for rendering monsters can include information in the header to define monsters that initiative tracker can use when constructing encounters.
 
@@ -161,18 +168,19 @@ To run commands listed below, either:
         --index \
         -o dm \
         -s PHB,DMG,SCAG \
+        -c dm-sources.json \
         5etools-mirror-1.github.io/data \
         5etools-mirror-1.github.io/data/adventure/adventure-lox.json \
         5etools-mirror-1.github.io/data/book/book-aag.json \
-        my-items.json dm-sources.json
+        my-items.json 
     ```
 
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. 
         > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md)
 
+    - `-c dm-sources.json` contains configuration parameters (shown in detail below)
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) should be listed explicitly
     - `my-items.json` defines custom items for my campaign that follow 5etools JSON format.
-    - `dm-sources.json` contains configuration parameters (shown in detail below)
 
 > 💭 I recommend running the CLI against a separate directory, and then using a comparison tool of your choice to preview changes before you copy or merge them in.
 >

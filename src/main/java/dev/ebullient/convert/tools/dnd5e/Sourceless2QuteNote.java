@@ -13,11 +13,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 
 public class Sourceless2QuteNote extends Json2QuteCommon {
 
     final String title;
     Tools5eSources currentSource;
+    String imagePath = null;
 
     static Tools5eIndexType getType(JsonNode jsonNode) {
         if (jsonNode.has("source")) {
@@ -39,6 +41,20 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     @Override
     public Tools5eSources getSources() {
         return currentSource;
+    }
+
+    @Override
+    public String getImagePath() {
+        if (imagePath != null) {
+            return imagePath;
+        }
+        String key = getSources().getKey();
+        if (key.contains("adventure-")) {
+            return QuteSource.ADVENTURE_PATH + "/" + slugify(title);
+        } else if (key.contains("book-")) {
+            return QuteSource.BOOK_PATH + "/" + slugify(title);
+        }
+        return super.getImagePath();
     }
 
     @Override
@@ -74,16 +90,16 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         if (index().rulesSourceExcluded(node, title)) {
             return null;
         }
+        imagePath = "variant-rules";
         boolean pushed = parseState.push(node);
         try {
             currentSource = sources;
             List<String> tags = new ArrayList<>(sources.getSourceTags());
-
-            return new QuteNote(title,
-                    sources.getSourceText(index.srdOnly()),
+            return new QuteNote(title, sources.getSourceText(index.srdOnly()),
                     getText("##"), tags);
         } finally {
             parseState.pop(pushed);
+            imagePath = null;
         }
     }
 

@@ -10,11 +10,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface JsonSource extends JsonTextReplacement {
@@ -255,8 +258,10 @@ public interface JsonSource extends JsonTextReplacement {
                         break;
                     }
                     case "gallery":
+                        appendGallery(text, node);
+                        break;
                     case "image":
-                        // TODO: maybe someday?
+                        appendImage(text, node);
                         break;
                     default:
                         tui().errorf("Unknown entry object type %s from %s: %s", objectType, getSources(),
@@ -290,6 +295,63 @@ public interface JsonSource extends JsonTextReplacement {
         } finally {
             parseState.pop(pushed);
         }
+    }
+
+    default void appendGallery(List<String> text, JsonNode imageNode) {
+        text.add("> [!gallery]");
+        imageNode.withArray("images").forEach(image -> {
+            ImageRef imageRef = readImageRef(image);
+            if (imageRef != null) {
+                text.add("> " + imageRef.getEmbeddedLink("gallery"));
+            }
+        });
+    }
+
+    default void appendImage(List<String> text, JsonNode imageNode) {
+        ImageRef imageRef = readImageRef(imageNode);
+        if (imageRef != null) {
+            maybeAddBlankLine(text);
+            text.add(imageRef.getEmbeddedLink());
+        }
+    }
+
+    default ImageRef readImageRef(JsonNode imageNode) {
+        try {
+            JsonMediaHref mediaHref = mapper().treeToValue(imageNode, JsonMediaHref.class);
+            return getSources().buildImageRef(index(), mediaHref, getImagePath(), useCompendium());
+        } catch (JsonProcessingException | IllegalArgumentException e) {
+            tui().errorf(e, "Unable to read media reference from %s: %s", imageNode.toPrettyString(), e.toString());
+        }
+        return null;
+    }
+
+    default boolean useCompendium() {
+        if (getSources().getType() == Tools5eIndexType.note) {
+            return false;
+        }
+        return true;
+    }
+
+    default String getImagePath() {
+        Tools5eIndexType type = getSources().getType();
+        switch (type) {
+            // Note: Monster overrides this method
+            case background:
+                return QuteSource.BACKGROUND_PATH;
+            case deity:
+                return QuteSource.DEITIES_PATH;
+            case feat:
+                return QuteSource.FEATS_PATH;
+            case item:
+                return QuteSource.ITEMS_PATH;
+            case race:
+                return QuteSource.RACES_PATH;
+            case spell:
+                return QuteSource.SPELLS_PATH;
+            default:
+                break;
+        }
+        throw new IllegalArgumentException("We need the fluff image path for: " + type);
     }
 
     default boolean prependField(JsonNode entry, String fieldName, List<String> inner) {
@@ -770,13 +832,17 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     @RegisterForReflection
+    @JsonIgnoreProperties(ignoreUnknown = true)
     class JsonMediaHref {
         public String type;
         public JsonHref href;
         public String title;
+        public Integer width;
+        public Integer height;
     }
 
     @RegisterForReflection
+    @JsonIgnoreProperties(ignoreUnknown = true)
     static class JsonHref {
         public String type;
         public String path;

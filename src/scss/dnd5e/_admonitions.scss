@@ -61,4 +61,29 @@ div:has(> .callout[data-callout="flowchart"]):has(+ div > .callout[data-callout=
     text-align: center;
   }
 }
+.callout[data-callout="gallery"] {
+  --callout-color: transparent;
+  --callout-border-width: 0;
+  .callout-title {
+    display: none;
+  }
+  .callout-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
 
+    p {
+      display: none;
+    }
+
+    div[src$="#gallery"] {
+      height: 300px;
+      width: 49%;
+      max-width: 50%;
+      img {
+        max-height: 300px;
+      }
+    }
+  }
+}

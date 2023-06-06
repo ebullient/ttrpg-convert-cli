@@ -94,7 +94,8 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.feat);
+                    .writeFiles(Tools5eIndexType.feat)
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(featDir, tui);
         }
@@ -109,7 +110,8 @@ public class CommonDataTests {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.background)
-                    .writeNotesAndTables();
+                    .writeNotesAndTables()
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(backgroundDir, tui);
         }
@@ -124,7 +126,8 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.spell);
+                    .writeFiles(Tools5eIndexType.spell)
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(spellDir, tui);
         }
@@ -139,7 +142,8 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.race);
+                    .writeFiles(Tools5eIndexType.race)
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(raceDir, tui);
         }
@@ -154,7 +158,8 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.classtype);
+                    .writeFiles(Tools5eIndexType.classtype)
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(classDir, tui, (p, content) -> {
                 List<String> e = new ArrayList<>();
@@ -187,7 +192,8 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.deity);
+                    .writeFiles(Tools5eIndexType.deity)
+                    .writeImages();
 
             Path imageDir = deitiesDir.resolve("img");
             assertThat(imageDir.toFile()).exists();
@@ -205,7 +211,8 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.item);
+                    .writeFiles(Tools5eIndexType.item)
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(itemDir, tui);
         }
@@ -221,7 +228,8 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.monster);
+                    .writeFiles(Tools5eIndexType.monster)
+                    .writeImages();
 
             Path tokenDir = bestiaryDir.resolve("undead/token");
             assertThat(tokenDir.toFile()).exists();
@@ -322,7 +330,8 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeNotesAndTables();
+                    .writeNotesAndTables()
+                    .writeImages();
 
             TestUtils.assertDirectoryContents(outputPath.resolve(index.rulesFilePath()), tui);
         }

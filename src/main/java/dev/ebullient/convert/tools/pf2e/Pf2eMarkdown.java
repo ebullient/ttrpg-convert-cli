@@ -36,6 +36,12 @@ public class Pf2eMarkdown implements MarkdownConverter {
     }
 
     @Override
+    public Pf2eMarkdown writeImages() {
+        index.tui().copyImages(Pf2eSources.getImages(), fallbackPaths);
+        return this;
+    }
+
+    @Override
     public Pf2eMarkdown writeFiles(IndexType type) {
         return writeFiles(List.of(type));
     }
@@ -80,8 +86,6 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
         writer.writeFiles(index.compendiumFilePath(), compendium);
         writer.writeFiles(index.rulesFilePath(), rules);
-
-        index.tui().copyImages(Pf2eSources.getImages(), fallbackPaths);
         return this;
     }
 

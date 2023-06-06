@@ -10,18 +10,39 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class ImageRef {
     final Path sourcePath;
     final Path targetFilePath;
+    final Integer width;
+
     public final String title;
     public final String vaultPath;
 
-    private ImageRef(Path sourcePath, Path targetFilePath, String title, String vaultPath) {
+    private ImageRef(Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
         this.sourcePath = sourcePath;
         this.targetFilePath = targetFilePath;
         this.title = title == null ? "" : title;
         this.vaultPath = vaultPath;
+        this.width = width;
     }
 
+    public String getEmbeddedLink(String anchor) {
+        return String.format("![%s](%s%s)", title, vaultPath,
+                anchor.length() > 0 ? "#" + anchor : "");
+    }
+
+    public String getEmbeddedLink() {
+        String anchor = "center";
+        if (width != null && width < 500) {
+            anchor = "right";
+        }
+        return String.format("![%s](%s#%s%s)",
+                title.length() > 50 ? title.substring(0, 26) + "..." : title,
+                vaultPath,
+                anchor,
+                title.length() > 50 ? " \"" + title + "\"" : "");
+    }
+
+    @Deprecated
     public String getEmbeddedLinkWithTitle(String anchor) {
-        return String.format("![%s](%s#%s)", title, vaultPath, anchor);
+        return getEmbeddedLink(anchor);
     }
 
     @Deprecated
@@ -50,6 +71,7 @@ public class ImageRef {
         private Path relativeTarget;
         private String title = "";
         private String vaultPath;
+        private Integer width;
 
         private String vaultRoot;
         private Path rootFilePath;
@@ -84,6 +106,11 @@ public class ImageRef {
             return this;
         }
 
+        public Builder setWidth(Integer width) {
+            this.width = width;
+            return this;
+        }
+
         public ImageRef build() {
             if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
                 throw new IllegalStateException("Set paths first (source, relative, vaultRoot, fileRoot) first");
@@ -92,7 +119,19 @@ public class ImageRef {
             this.vaultPath = String.format("%s%s", vaultRoot,
                     relativeTarget.toString().replace('\\', '/'));
 
-            return new ImageRef(sourcePath, targetFilePath, title, vaultPath);
+            return new ImageRef(sourcePath, targetFilePath, title, vaultPath, width);
+        }
+
+        public ImageRef build(ImageRef previous) {
+            if (previous != null) {
+                return new ImageRef(previous.sourcePath,
+                        previous.targetFilePath,
+                        title,
+                        previous.vaultPath,
+                        width);
+            } else {
+                return build();
+            }
         }
     }
 }
