@@ -7,7 +7,7 @@ ARTIFACT=$(yq '.jitpack.artifact' .github/project.yml)
 GROUP=$(yq '.jitpack.group' .github/project.yml)
 
 if [[ "${DRY_RUN}" == "true" ]]; then
-  NEXT=199-SNAPSHOT
+  NEXT=299-SNAPSHOT
   echo "🔹 Dry run, use snapshot: $NEXT"
 elif [[ -z "${INPUT}" ]] || [[ "${INPUT}" == "project" ]]; then
   NEXT=$(yq '.release.next-version' .github/project.yml)

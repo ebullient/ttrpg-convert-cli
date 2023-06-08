@@ -61,7 +61,7 @@ Notes:
     If you want the latest _unreleased snapshot_ (may not match this doc!): 
 
     ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://jitpack.io/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/ttrpg-convert-cli-199-SNAPSHOT-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://jitpack.io/dev/ebullient/ttrpg-convert-cli/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar
     ```
 
     There may be a pause if you download the snapshot; it is rebuilt on demand.
@@ -81,15 +81,15 @@ Continue to notes about [Conventions](#conventions).
 1. Clone this repository
 2. Ensure you have [Java installed on your system](https://adoptium.net/installation/) and active in your path.
 3. Build this project: `quarkus build` or `./mvnw install`
-4. Verify the build: `java -jar target/ttrpg-convert-cli-199-SNAPSHOT-runner.jar --help`
+4. Verify the build: `java -jar target/ttrpg-convert-cli-299-SNAPSHOT-runner.jar --help`
 
 To run commands listed below, either: 
 
-- Replace `ttrpg-convert` with `java -jar target/ttrpg-convert-cli-199-SNAPSHOT-runner.jar`, or
+- Replace `ttrpg-convert` with `java -jar target/ttrpg-convert-cli-299-SNAPSHOT-runner.jar`, or
 - Use JBang to create an alias that points to the built jar: 
 
     ```shell
-    jbang app install --name ttrpg-convert --force --fresh ~/.m2/repository/dev/ebullient/ttrpg-convert-cli/199-SNAPSHOT/ttrpg-convert-cli-199-SNAPSHOT-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh ~/.m2/repository/dev/ebullient/ttrpg-convert-cli/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar
     ```
 
     > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands shown below accordingly.
