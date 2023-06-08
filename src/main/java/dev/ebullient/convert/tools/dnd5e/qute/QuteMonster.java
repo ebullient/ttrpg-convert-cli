@@ -121,16 +121,6 @@ public class QuteMonster extends QuteSource {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getSource() {
-        return source;
-    }
-
-    @Override
     public List<ImageRef> images() {
         return allImages;
     }

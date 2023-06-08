@@ -50,7 +50,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
             List<String> ideals = Json2QuteBackground.ideals.stream()
                     .map(x -> x.replace("**", ""))
                     .map(x -> x.replaceAll("^\\|\\s*\\d+\\s*", ""))
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<String> good = ideals.stream().filter(x -> x.contains("(Good)"))
                     .collect(Collectors.toList());

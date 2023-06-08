@@ -126,8 +126,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         }
 
-        node.withArray("adventure").forEach(x -> addReferenceToIndex(x, "adventure"));
-        node.withArray("book").forEach(x -> addReferenceToIndex(x, "book"));
+        withArrayFrom(node, "adventure").forEach(x -> addReferenceToIndex(x, "adventure"));
+        withArrayFrom(node, "book").forEach(x -> addReferenceToIndex(x, "book"));
+
         if (node.has("data") && !filename.isEmpty()) {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');

@@ -106,7 +106,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
         if (node.has("entries")) {
             maybeAddBlankLine(text);
-            node.withArray("entries").forEach(entry -> {
+            for (JsonNode entry : iterableEntries(node)) {
                 if (entry.isTextual()) {
                     String input = entry.asText();
                     if (input.startsWith("{#itemEntry ")) {
@@ -118,7 +118,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 } else {
                     appendEntryToText(text, entry, "##");
                 }
-            });
+            }
         }
         PropertyEnum.findAdditionalProperties(getName(),
                 itemType, propertyEnums, s -> text.stream().anyMatch(l -> l.matches(s)));

@@ -1,11 +1,9 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -33,20 +31,6 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
 
     default CompendiumConfig cfg() {
         return index().cfg();
-    }
-
-    default String toTitleCase(String text) {
-        if (text == null || text.isEmpty()) {
-            return text;
-        }
-        return Arrays
-                .stream(text.split(" "))
-                .map(word -> word.isEmpty()
-                        ? word
-                        : Character.toTitleCase(word.charAt(0)) + word
-                                .substring(1)
-                                .toLowerCase())
-                .collect(Collectors.joining(" "));
     }
 
     default String replaceText(JsonNode input) {

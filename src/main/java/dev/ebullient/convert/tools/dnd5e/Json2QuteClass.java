@@ -167,7 +167,6 @@ public class Json2QuteClass extends Json2QuteCommon {
         if (!node.has(field)) {
             return;
         }
-        ArrayNode classTableGroups = node.withArray(field);
 
         List<List<String>> row_levels = new ArrayList<>(21);
         for (int i = 0; i < 21; i++) {
@@ -179,9 +178,9 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
         }
 
-        classTableGroups.forEach(table -> {
+        for (JsonNode table : iterableElements(node.get(field))) {
             // Headings
-            table.withArray("colLabels").forEach(c -> {
+            for (JsonNode c : iterableElements(table.get("colLabels"))) {
                 String label = c.asText();
                 if (label.contains("|spells|")) {
                     row_levels.get(0).add(
@@ -189,7 +188,8 @@ public class Json2QuteClass extends Json2QuteCommon {
                 } else {
                     row_levels.get(0).add(replaceText(label));
                 }
-            });
+            }
+
             // Values
             if (table.has("rows")) {
                 ArrayNode rows = table.withArray("rows");
@@ -204,7 +204,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     rows.get(i).forEach(c -> row_levels.get(level).add(columnValue(c)));
                 }
             }
-        });
+        }
 
         progression.addAll(convertRowsToTable(row_levels, "Class progression",
                 List.of("- 1st-9th: Spell slots per level"), "class-progression"));
@@ -468,7 +468,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     void sidekickProficiencies(JsonNode sidekickClassFeature) {
-        sidekickClassFeature.withArray("entries").forEach(e -> {
+        for (JsonNode e : iterableEntries(sidekickClassFeature)) {
             String line = e.asText();
             if (line.contains("saving throw")) {
                 //"The sidekick gains proficiency in one saving throw of your choice: Dexterity, Intelligence, or Charisma.",
@@ -515,7 +515,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             if (line.contains("tools")) {
                 put("tools", List.of("two tools of your choice"));
             }
-        });
+        }
     }
 
     String skillChoices(Collection<String> skills, int numSkills) {

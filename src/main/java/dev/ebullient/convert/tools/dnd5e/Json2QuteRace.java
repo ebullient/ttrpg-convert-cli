@@ -46,8 +46,9 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     String creatureTypes() {
         List<String> types = new ArrayList<>();
-        node.withArray("creatureTypes").elements()
-                .forEachRemaining(x -> types.add(x.asText()));
+        for (JsonNode x : iterableElements(node.get("creatureTypes"))) {
+            types.add(x.asText());
+        }
         return types.isEmpty()
                 ? null
                 : String.join(", ", types);

@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +118,13 @@ public interface NodeReader {
             return () -> source.fieldNames();
         }
 
+        default ArrayNode withArrayFrom(JsonNode source, String fieldName) {
+            if (source == null || !source.has(fieldName)) {
+                return Tui.MAPPER.createArrayNode();
+            }
+            return source.withArray(fieldName);
+        }
+
         default String join(String joiner, Collection<String> list) {
             if (list == null || list.isEmpty()) {
                 return "";
@@ -196,6 +204,20 @@ public interface NodeReader {
             }
             List<String> list = tui().readJsonValue(source, Tui.LIST_STRING);
             return list == null ? List.of() : list;
+        }
+
+        default String toTitleCase(String text) {
+            if (text == null || text.isEmpty()) {
+                return text;
+            }
+            return Arrays
+                    .stream(text.split(" "))
+                    .map(word -> word.isEmpty()
+                            ? word
+                            : Character.toTitleCase(word.charAt(0)) + word
+                                    .substring(1)
+                                    .toLowerCase())
+                    .collect(Collectors.joining(" "));
         }
 
         Tui tui();
@@ -380,11 +402,14 @@ public interface NodeReader {
     }
 
     default ArrayNode withArrayFrom(JsonNode source) {
+        if (source == null || !source.has(this.nodeName())) {
+            return Tui.MAPPER.createArrayNode();
+        }
         return source.withArray(this.nodeName());
     }
 
     default Iterable<JsonNode> iterateArrayFrom(JsonNode source) {
-        if (source == null) {
+        if (source == null || !source.has(this.nodeName())) {
             return List.of();
         }
         return () -> source.withArray(this.nodeName()).elements();

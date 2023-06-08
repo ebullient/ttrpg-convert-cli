@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -304,21 +303,6 @@ public class JsonSourceCopier implements JsonSource {
         }
 
         return prefix + getShortNameFromName(name, isNamedCreature);
-    }
-
-    private String toTitleCase(String text) {
-        if (text == null || text.isEmpty()) {
-            return text;
-        }
-
-        return Arrays
-                .stream(text.split(" "))
-                .map(word -> word.isEmpty()
-                        ? word
-                        : Character.toTitleCase(word.charAt(0)) + word
-                                .substring(1)
-                                .toLowerCase())
-                .collect(Collectors.joining(" "));
     }
 
     private String getShortNameFromName(String name, boolean isNamedCreature) {

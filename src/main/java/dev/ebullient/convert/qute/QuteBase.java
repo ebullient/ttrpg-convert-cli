@@ -13,14 +13,14 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class QuteBase {
     protected final String name;
     protected final CompendiumSources sources;
-    public final String source;
+    public final String sourceText;
     public final String text;
     public final Collection<String> tags;
 
     public QuteBase(CompendiumSources sources, String name, String source, String text, Collection<String> tags) {
         this.sources = sources;
         this.name = name;
-        this.source = source;
+        this.sourceText = source;
         this.text = text;
         this.tags = tags;
     }
@@ -30,7 +30,7 @@ public class QuteBase {
     }
 
     public String getSource() {
-        return source;
+        return sourceText;
     }
 
     public boolean getHasSections() {

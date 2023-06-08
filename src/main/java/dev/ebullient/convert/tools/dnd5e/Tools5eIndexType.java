@@ -228,10 +228,14 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     }
 
     public void withArrayFrom(JsonNode node, BiConsumer<Tools5eIndexType, JsonNode> callback) {
-        node.withArray(this.nodeName()).forEach(x -> callback.accept(this, x));
+        if (node.has(this.nodeName())) {
+            node.withArray(this.nodeName()).forEach(x -> callback.accept(this, x));
+        }
     }
 
     public void withArrayFrom(JsonNode node, String field, BiConsumer<Tools5eIndexType, JsonNode> callback) {
-        node.withArray(field).forEach(x -> callback.accept(this, x));
+        if (node.has(field)) {
+            node.withArray(field).forEach(x -> callback.accept(this, x));
+        }
     }
 }

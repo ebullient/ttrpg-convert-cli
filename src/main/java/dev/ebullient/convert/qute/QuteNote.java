@@ -28,7 +28,7 @@ public class QuteNote extends QuteBase {
     }
 
     public String getSource() {
-        return source;
+        return sourceText;
     }
 
     public String title() {
