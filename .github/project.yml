@@ -1,7 +1,7 @@
 name: Json 5e convert CLI
 release:
-  current-version: 2.0.3
-  next-version: 2.0.3
+  current-version: 2.0.4
+  next-version: 2.0.4
   snapshot-version: 299-SNAPSHOT
 jitpack:
   group: com.github.ebullient
