@@ -314,7 +314,6 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         //         && targetType != Pf2eIndexType.trait) {
         //     tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
         // }
-
         return index().isIncluded(key) ? link : linkText;
     }
 

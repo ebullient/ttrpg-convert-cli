@@ -246,6 +246,9 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     public boolean isIncluded(String key) {
+        if (filteredIndex.isEmpty()) {
+            return keyIsIncluded(key, null);
+        }
         return filteredIndex.containsKey(aliasOrDefault(key));
     }
 

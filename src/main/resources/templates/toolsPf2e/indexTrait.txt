@@ -5,9 +5,9 @@ cssclass: pf2e,pf2e-index
 # Index of Traits
 {#for entry in resource.categoryToTraits}
 
-## #{entry.key}
+## {entry.key}
 
 {#for element in entry.value}
-- #{element}
+- {element}
 {/for}
 {/for}
