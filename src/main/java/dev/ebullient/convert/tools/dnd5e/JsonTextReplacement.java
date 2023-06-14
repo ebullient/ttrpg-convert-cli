@@ -223,6 +223,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                         .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
                         .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
                         .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
+                        .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@b ([^}]+?)}", "**$1**")
                         .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
                         .replaceAll("\\{@i ([^}]+?)}", "_$1_")
