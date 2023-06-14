@@ -8,6 +8,7 @@ on:
       - .github/workflows/maven.yml
       - .github/project.yml
       - "**.xml"
+      - "*.yml"
       - "src/**"
       - "ide-config"
   pull_request:
