@@ -9,7 +9,7 @@ The instructions below still reference the released `ttrpg-convert` CLI. New stu
 
 <table><tr>
 <td>Jump</td>
-<td><a href="#download-and-run">⬇ Download</a></td>
+<td><a href="##install-the-command-line-utility">⬇ Download</a></td>
 <td><a href="#build-and-run-optional">⚙️ Build</a></td>
 <td><a href="#conventions">📝 Conventions</a></td>
 </tr><tr>
