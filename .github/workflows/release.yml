@@ -22,7 +22,7 @@ on:
 env:
   JAVA_VERSION: 17
   JAVA_DISTRO: temurin
-  GRAALVM_VERSION: 22.3.0
+  GRAALVM_VERSION: 22.3.2
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
   JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts -od target -sp linux-x86_64 -sp windows-x86_64 -sp osx-x86_64'
