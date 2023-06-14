@@ -232,7 +232,9 @@ public class QuteMonster extends QuteSource {
         addUnlessEmpty(map, "reactions", reaction);
         addUnlessEmpty(map, "legendary_actions", legendary);
         addUnlessEmpty(map, "source", books);
-        addUnlessEmpty(map, "image", name + ".png");
+        if (tokenImage != null) {
+            map.put("image", tokenImage.vaultPath);
+        }
 
         // De-markdown-ify
         return Tui.quotedYaml().dump(map).trim()
