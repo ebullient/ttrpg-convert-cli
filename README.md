@@ -218,7 +218,7 @@ To run commands listed below, either:
     - `5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone or release of the mirror repo)
 
 
-### Additional parameters
+## Additional parameters
 
 Configuration can also be provided as a JSON or YAML file instead of using command line parameters. See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general config file structure.
 
@@ -296,7 +296,7 @@ This allows you to include a specific resource without including the whole sourc
 Note that some adventures, like _Tales from the Yawning Portal_, are treated as a collection of standalone modules. The generated index contains these as `reference` items, but it can help you find the sources you own. The three sources shown in the example above are listed in the index as `reference|adventure-wbtw`, `reference|adventure-tftyp-wpm`, and `reference|book-phb` respectively.
 
 
-#### Additional example
+### Additional example
 
 To generate player-focused reference content for a Wild Beyond the Witchlight campaign, I constrained things further. I am pulling from a smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but also used `exclude` and `excludePattern` to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners). 
 
