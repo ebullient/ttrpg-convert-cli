@@ -328,11 +328,12 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     void findClassFeatures(Tools5eIndexType type, JsonNode arrayElement, List<ClassFeature> features, String fieldName) {
+        System.out.println("findClassFeatures: " + type + " " + fieldName);
         for (JsonNode cf : iterableElements(arrayElement)) {
 
             ClassFeature feature = findClassFeature(this, type, cf, fieldName);
             if (feature == null) {
-                return;
+                continue;
             }
 
             features.add(feature);
