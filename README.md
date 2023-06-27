@@ -221,7 +221,7 @@ To run commands listed below, either:
 
 ## Additional parameters
 
-Configuration can also be provided as a JSON or YAML file instead of using command line parameters. See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general config file structure.
+Configuration can also be provided as a JSON or YAML file instead of using command line parameters. See [examples/config](examples/config) for the general config file structure.
 
 I use something like this:
 
@@ -444,7 +444,7 @@ If you are using the default templates and want to render dice rolls, set
 }`, and `{@damage }` strings. This can be set differently for either "5e" or
 "pf2e" configurations. Please note that if you are using a custom template and fantasy statblocks, you do **not** need to set the dice roller in your config. Fantasy statblocks will take care of the rendering itself. 
 
-See [config.yaml](examples/config/config.yaml) or [config.json](examples/config/config.json) for the general structure of config.
+See [examples/config](examples/config) for the general structure of config.
 
 ### 🔖 1.1.0: Images for backgrounds, items, monsters, races, and spells
 

@@ -26,6 +26,7 @@ import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -89,7 +90,8 @@ public class Tui {
             options.setDefaultFlowStyle(FlowStyle.AUTO);
             options.setPrettyFlow(true);
             yamlMapper = initMapper(new ObjectMapper(new YAMLFactoryBuilder(new YAMLFactory())
-                    .dumperOptions(options).build()));
+                    .dumperOptions(options).build()))
+                    .setSerializationInclusion(Include.NON_DEFAULT);
         }
         return yamlMapper;
     }
@@ -405,16 +407,28 @@ public class Tui {
         return result;
     }
 
-    public void writeJsonFile(Path outputFile, Map<String, Object> keys) throws IOException {
+    public void writeJsonFile(Path outputFile, Map<String, Object> values) throws IOException {
         DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
         pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
         MAPPER.writer()
                 .with(pp)
-                .writeValue(outputFile.toFile(), keys);
+                .writeValue(outputFile.toFile(), values);
     }
 
-    public void writeYamlFile(Path outputFile, Map<String, Object> map) throws IOException {
-        yamlMapper().writer().writeValue(outputFile.toFile(), map);
+    public void writeYamlFile(Path outputFile, Map<String, Object> values) throws IOException {
+        yamlMapper().writer().writeValue(outputFile.toFile(), values);
+    }
+
+    public void writeJsonFile(Path outputFile, Object obj) throws IOException {
+        DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
+        pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+        MAPPER.writer()
+                .with(pp)
+                .writeValue(outputFile.toFile(), obj);
+    }
+
+    public void writeYamlFile(Path outputFile, Object obj) throws IOException {
+        yamlMapper().writer().writeValue(outputFile.toFile(), obj);
     }
 
     public String renderEmbedded(QuteBase resource) {

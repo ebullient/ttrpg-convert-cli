@@ -1,0 +1,31 @@
+{
+  "from" : [
+    "CRB",
+    "GMG"
+  ],
+  "paths" : {
+    "compendium" : "compendium/",
+    "rules" : "compendium/rules/"
+  },
+  "include" : [
+    "ability|buck|b1"
+  ],
+  "includeGroup" : [ ],
+  "exclude" : [
+    "background|insurgent|apg"
+  ],
+  "excludePattern" : [
+    "background|.*|lowg"
+  ],
+  "template" : {
+    "ability" : "../path/to/ability2md.txt"
+  },
+  "useDiceRoller" : false,
+  "full-source" : {
+    "book" : [
+      "crb",
+      "gmg"
+    ],
+    "adventure" : [ ]
+  }
+}

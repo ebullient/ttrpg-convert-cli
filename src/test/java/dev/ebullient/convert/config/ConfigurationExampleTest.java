@@ -3,9 +3,7 @@ package dev.ebullient.convert.config;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -61,9 +59,7 @@ public class ConfigurationExampleTest {
 
     @Test
     public void exportExample() throws Exception {
-        Map<String, Object> map = new HashMap<>();
         CompendiumConfig.InputConfig tools5Config = new CompendiumConfig.InputConfig();
-        map.put(Datasource.tools5e.shortName(), tools5Config);
 
         tools5Config.from.add("PHB");
         tools5Config.paths.compendium = "/compendium/";
@@ -79,12 +75,25 @@ public class ConfigurationExampleTest {
         tools5Config.fullSource.book.add("PHB");
         tools5Config.fullSource.adventure.add("LMoP");
 
-        CompendiumConfig.InputConfig p2feConfig = new CompendiumConfig.InputConfig();
-        map.put(Datasource.toolsPf2e.shortName(), p2feConfig);
+        tui.writeJsonFile(Path.of("examples/config/config.5e.json"), tools5Config);
+        tui.writeYamlFile(Path.of("examples/config/config.5e.yaml"), tools5Config);
 
-        tools5Config.from.add("CRB");
+        CompendiumConfig.InputConfig pf2eConfig = new CompendiumConfig.InputConfig();
+        pf2eConfig.from.add("CRB");
+        pf2eConfig.from.add("GMG");
 
-        tui.writeJsonFile(Path.of("examples/config/config.json"), map);
-        tui.writeYamlFile(Path.of("examples/config/config.yaml"), map);
+        pf2eConfig.paths.compendium = "compendium/";
+        pf2eConfig.paths.rules = "compendium/rules/";
+
+        pf2eConfig.include.add("ability|buck|b1");
+        pf2eConfig.exclude.add("background|insurgent|apg");
+        pf2eConfig.excludePattern.add("background|.*|lowg");
+        pf2eConfig.template.put("ability", "../path/to/ability2md.txt");
+
+        pf2eConfig.fullSource.book.add("crb");
+        pf2eConfig.fullSource.book.add("gmg");
+
+        tui.writeJsonFile(Path.of("examples/config/config.pf2e.json"), pf2eConfig);
+        tui.writeYamlFile(Path.of("examples/config/config.pf2e.yaml"), pf2eConfig);
     }
 }

@@ -3,7 +3,7 @@
 - [5etools](#source-name-mapping-for-5etools)
 - [Pf2eTools](#source-name-mapping-for-pf2etools)
 
-Here is the name/appreviation mapping for source materials. 
+Here is the name/abbreviation mapping for source materials. 
 
 _Support content creators. Only use or include sources that you own._
 
@@ -329,6 +329,4 @@ _Support content creators. Only use or include sources that you own._
 | TV | Treasure Vault |
 | TiO | Troubles in Otari |
 | ToK | Threshold of Knowledge |
-
-wledge |
 
