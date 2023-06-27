@@ -43,6 +43,12 @@ nb-configuration.xml
 *.orig
 *.rej
 
+# Docker
+docker-data/input/config/*
+docker-data/input/data/*
+docker-data/input/templates/*
+docker-data/output/*
+
 # Local environment
 .env
 tmp*

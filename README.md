@@ -30,6 +30,7 @@ There are several options for running `ttrpg-convert`. Choose whichever you are 
 - [Use pre-built platform binary](#use-pre-built-platform-binary)
 - [Use Java Jar](#use-java-jar)
 - [Build from source](#build-and-run)
+- [Use a Docker container](#use-a-docker-container)
 - Using Windows? See the [Windows README](README-WINDOWS.md)
 
 ### Use pre-built platform binary
@@ -94,6 +95,65 @@ To run commands listed below, either:
     ```
 
     > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands shown below accordingly.
+
+### Use a Docker container
+
+If you would like to contribute to this project without installing JDK, you can also set up a Docker container to compile the source code.
+
+#### Building the container
+
+1. Clone this repository.
+2. Ensure you have [Docker installed on your system](https://www.docker.com/) and active in your path.
+3. Open a shell session and navigate to where you cloned the repository.
+4. Build the Docker image:
+
+    ```shell
+    docker build -t ttrpg-convert .
+    ```
+
+5. Test your image:
+
+    ```shell
+    docker run ttrpg-convert --help
+    ```
+
+#### Using the container
+
+To use the container image you generated:
+
+```shell
+docker run -v "$(pwd)/docker-data:/app/data" ttrpg-convert <arguments>
+```
+
+This will mount `./docker-data` as volume `/app/data` in the container. By default the container image sets `/app/data` as the working directory, so any files you put in `./docker-data` will be in the working directory of the Docker container too.
+
+#### Docker input file setup
+
+- `config.json` and `config.yaml` files go in `/docker-data/input/config`
+- Template files go in `/docker-data/input/templates`
+- Copy the root folder of your 5eTools repository to `/docker-data/input/data`.
+
+#### Docker examples
+
+- Generate the 5e SRD:
+
+```shell
+docker run -v "$(pwd)/docker-data:/app/data" ttrpg-convert \
+    --index \
+    -o output \
+    input/data/5etools-mirror-1.github.io/data
+```
+
+- Use an example config with an updated template path:
+
+```shell
+docker run -v "$(pwd)/docker-data:/app/data" ttrpg-convert \
+    --index \
+    -c config/config.json \
+    --background input/templates/images-background2md.txt \
+    -o output \
+    input/data/5etools-mirror-1.github.io/data
+```
 
 ## Conventions
 
