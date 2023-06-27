@@ -129,7 +129,7 @@ This will mount `./docker-data` as volume `/app/data` in the container. By defau
 
 #### Docker input file setup
 
-- `config.json` and `config.yaml` files go in `/docker-data/input/config`
+- `config.*.json` and `config.*.yaml` files go in `/docker-data/input/config`
 - Template files go in `/docker-data/input/templates`
 - Copy the root folder of your 5eTools repository to `/docker-data/input/data`.
 
@@ -149,7 +149,7 @@ docker run -v "$(pwd)/docker-data:/app/data" ttrpg-convert \
 ```shell
 docker run -v "$(pwd)/docker-data:/app/data" ttrpg-convert \
     --index \
-    -c config/config.json \
+    -c input/config/config.5e.json \
     --background input/templates/images-background2md.txt \
     -o output \
     input/data/5etools-mirror-1.github.io/data
