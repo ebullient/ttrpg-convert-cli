@@ -560,7 +560,7 @@ public interface JsonSource extends JsonTextReplacement {
                 table.add("<tr>");
                 table.add("  <td>"
                         + multicol.stream()
-                                .map(x -> String.join("</br>", x))
+                                .map(x -> String.join("<br />", x))
                                 .collect(Collectors.joining("</td>\n  <td>"))
                         + "</td>");
                 table.add("</tr>");

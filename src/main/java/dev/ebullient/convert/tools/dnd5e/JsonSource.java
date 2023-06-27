@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
@@ -69,6 +70,12 @@ public interface JsonSource extends JsonTextReplacement {
             tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
             throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
         }
+    }
+
+    default String flattenEntryToText(JsonNode node) {
+        List<String> text = new ArrayList<>();
+        appendEntryToText(text, node, null);
+        return text.stream().collect(Collectors.joining("\n"));
     }
 
     default void appendEntryToText(List<String> text, JsonNode node, String heading) {
@@ -455,7 +462,17 @@ public interface JsonSource extends JsonTextReplacement {
 
             String row = "| " +
                     StreamSupport.stream(cells.spliterator(), false)
-                            .map(x -> replaceText(x.asText()))
+                            .map(x -> {
+                                JsonNode roll = x.get("roll");
+                                if (roll != null) {
+                                    if (roll.has("exact")) {
+                                        return roll.get("exact");
+                                    }
+                                    return new TextNode(roll.get("min").asText() + "-" + roll.get("max").asText());
+                                }
+                                return x;
+                            })
+                            .map(x -> flattenEntryToText(x).replace("\n", "<br />"))
                             .collect(Collectors.joining(" | "))
                     +
                     " |";
