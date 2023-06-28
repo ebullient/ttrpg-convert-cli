@@ -195,8 +195,8 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             Path input = inputPath.toAbsolutePath();
 
             if (input.toFile().isDirectory()) {
-                allOk &= tui.readToolsDir(input, index::importTree);
-                if (allOk) { // we found the tools directory
+                boolean isTools = tui.readToolsDir(input, index::importTree);
+                if (isTools) { // we found the tools directory
                     toolsPath = input;
                 } else {
                     // this is some other directory full of json

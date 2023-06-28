@@ -50,6 +50,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private final Map<String, List<JsonNode>> optFeatureIndex = new HashMap<>();
     private final Map<String, String> aliases = new HashMap<>();
     private final Map<String, String> classRoot = new HashMap<>();
+    private final Map<String, String> itemProperties = new HashMap<>();
+    private final Map<String, String> itemTypes = new HashMap<>();
     private Map<String, JsonNode> variantIndex = null;
     private Map<String, JsonNode> filteredIndex = null;
     private Map<String, Set<String>> spellClassIndex = new HashMap<>();
@@ -75,6 +77,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // user configuration
         config.readConfigurationIfPresent(node);
 
+        addHomebrewSourcesIfPresent(node);
+
         addRulesIfPresent(node, "action");
         addRulesIfPresent(node, "artObjects");
         addRulesIfPresent(node, "condition");
@@ -95,6 +99,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.itementry.withArrayFrom(node, "itemEntry", this::addToIndex);
         Tools5eIndexType.itemfluff.withArrayFrom(node, "itemFluff", this::addToIndex);
         Tools5eIndexType.itemproperty.withArrayFrom(node, "itemProperty", this::addToIndex);
+        Tools5eIndexType.itemtype.withArrayFrom(node, "itemType", this::addToIndex);
         Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.monsterfluff.withArrayFrom(node, "monsterFluff", this::addToIndex);
         Tools5eIndexType.racefluff.withArrayFrom(node, "raceFluff", this::addToIndex);
@@ -129,6 +134,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         withArrayFrom(node, "adventure").forEach(x -> addReferenceToIndex(x, "adventure"));
         withArrayFrom(node, "book").forEach(x -> addReferenceToIndex(x, "book"));
 
+        // Homebrew data
+        withArrayFrom(node, "adventureData").forEach(x -> {
+            rules.put("adventure-" + slugify(x.get("id").asText()), x);
+        });
+        withArrayFrom(node, "bookData").forEach(x -> {
+            rules.put("book-" + slugify(x.get("id").asText()), x);
+        });
+
+        // 5e tools book/adventure data
         if (node.has("data") && !filename.isEmpty()) {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');
@@ -136,6 +150,28 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         return this;
+    }
+
+    private void addHomebrewSourcesIfPresent(JsonNode node) {
+        if (!node.has("_meta")) {
+            return;
+        }
+        JsonNode sources = node.get("_meta").get("sources");
+        if (sources != null) {
+            for (JsonNode source : iterableElements(sources)) {
+                String fullName = getTextOrEmpty(source, "full");
+                String abbreviation = getTextOrEmpty(source, "abbreviation");
+                String json = getTextOrEmpty(source, "json");
+                if (fullName == null) {
+                    tui().warnf("Homebrew source %s missing full name: %s", json, fullName);
+                }
+                if (abbreviation == null) {
+                    TtrpgConfig.addHomebrewSource(fullName, json);
+                } else {
+                    TtrpgConfig.addHomebrewSource(fullName, json, abbreviation);
+                }
+            }
+        }
     }
 
     private void addReferenceToIndex(JsonNode node, String type) {
@@ -178,6 +214,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             for (String ft : toListOfStrings(node.get("featureType"))) {
                 optFeatureIndex.computeIfAbsent(ft, k -> new ArrayList<>()).add(node);
             }
+        }
+
+        if (type == Tools5eIndexType.itemproperty) {
+            String[] parts = key.split("\\|");
+            itemProperties.put(parts[1], key);
+        }
+        if (type == Tools5eIndexType.itemtype) {
+            String[] parts = key.split("\\|");
+            itemTypes.put(parts[1], key);
         }
 
         if (node.has("srd")) {
@@ -521,6 +566,16 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return null;
         }
         return filteredIndex.get(finalKey);
+    }
+
+    public JsonNode findItemPropertyNode(String abbreviation) {
+        String key = itemProperties.get(abbreviation.toLowerCase());
+        return getNode(key);
+    }
+
+    public JsonNode findItemTypeNode(String abbreviation) {
+        String key = itemTypes.get(abbreviation.toLowerCase());
+        return getNode(key);
     }
 
     public JsonNode getOrigin(String finalKey) {

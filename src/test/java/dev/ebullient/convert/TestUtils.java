@@ -37,6 +37,7 @@ public class TestUtils {
 
     // for compile/test purposes. Must clone/sync separately.
     public final static Path TOOLS_PATH_5E = PROJECT_PATH.resolve("sources/5etools-mirror-1.github.io/data");
+    public final static Path HOMEBREW_PATH_5E = PROJECT_PATH.resolve("sources/5e-homebrew");
     public final static Path TEST_SOURCES_JSON_5E = PROJECT_PATH.resolve("src/test/resources/sources.json");
     public final static Path TEST_SOURCES_BOOK_ADV_JSON_5E = PROJECT_PATH
             .resolve("src/test/resources/sources-book-adventure.json");

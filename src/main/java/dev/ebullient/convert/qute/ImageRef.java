@@ -10,10 +10,20 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class ImageRef {
     final Path sourcePath;
     final Path targetFilePath;
+    final String url;
     final Integer width;
 
     public final String title;
     public final String vaultPath;
+
+    private ImageRef(String title, String url, Integer width) {
+        this.sourcePath = null;
+        this.targetFilePath = null;
+        this.title = title == null ? "" : title;
+        this.vaultPath = null;
+        this.width = width;
+        this.url = url;
+    }
 
     private ImageRef(Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
         this.sourcePath = sourcePath;
@@ -21,23 +31,35 @@ public class ImageRef {
         this.title = title == null ? "" : title;
         this.vaultPath = vaultPath;
         this.width = width;
+        this.url = null;
+    }
+
+    private String shortTitle() {
+        return title.length() > 50 ? title.substring(0, 26) + "..." : title;
+    }
+
+    private String titleAttribute() {
+        return title.length() > 50 ? " \"" + title + "\"" : "";
     }
 
     public String getEmbeddedLink(String anchor) {
-        return String.format("![%s](%s%s)", title, vaultPath,
-                anchor.length() > 0 ? "#" + anchor : "");
+        return String.format("![%s](%s%s%s)",
+                shortTitle(),
+                url == null ? vaultPath : url,
+                anchor.length() > 0 ? "#" + anchor : "",
+                titleAttribute());
     }
 
     public String getEmbeddedLink() {
         String anchor = "center";
-        if (width != null && width < 500) {
-            anchor = "right";
-        }
+        // if (width != null && width < 500) {
+        //     anchor = "right";
+        // }
         return String.format("![%s](%s#%s%s)",
-                title.length() > 50 ? title.substring(0, 26) + "..." : title,
-                vaultPath,
+                shortTitle(),
+                url == null ? vaultPath : url,
                 anchor,
-                title.length() > 50 ? " \"" + title + "\"" : "");
+                titleAttribute());
     }
 
     @Deprecated
@@ -76,6 +98,8 @@ public class ImageRef {
         private String vaultRoot;
         private Path rootFilePath;
 
+        private String url;
+
         public Builder setSourcePath(Path sourcePath) {
             this.sourcePath = sourcePath;
             return this;
@@ -111,7 +135,16 @@ public class ImageRef {
             return this;
         }
 
+        public Builder setUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
         public ImageRef build() {
+            if (url != null) {
+                return new ImageRef(title, url, width);
+            }
+
             if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
                 throw new IllegalStateException("Set paths first (source, relative, vaultRoot, fileRoot) first");
             }

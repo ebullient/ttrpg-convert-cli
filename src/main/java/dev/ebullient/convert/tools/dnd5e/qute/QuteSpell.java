@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
@@ -23,7 +24,7 @@ public class QuteSpell extends QuteSource {
     public QuteSpell(Tools5eSources sources, String name, String source, String level,
             String school, boolean ritual, String time, String range,
             String components, String duration,
-            String classes, String text, List<ImageRef> fluffImages, List<String> tags) {
+            String classes, String text, List<ImageRef> fluffImages, Collection<String> tags) {
         super(sources, name, source, text, tags);
 
         this.level = level;

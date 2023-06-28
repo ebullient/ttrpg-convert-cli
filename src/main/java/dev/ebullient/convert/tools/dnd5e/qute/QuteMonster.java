@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,7 @@ public class QuteMonster extends QuteSource {
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
             Map<String, Trait> legendaryGroup,
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
-            ImageRef tokenImage, List<ImageRef> fluffImages, List<String> tags, boolean useDiceRoller) {
+            ImageRef tokenImage, List<ImageRef> fluffImages, Collection<String> tags, boolean useDiceRoller) {
 
         super(sources, name, source, null, tags);
 

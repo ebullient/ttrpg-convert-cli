@@ -142,6 +142,37 @@ public class RpgDataConvertTest {
     }
 
     @Test
+    void testCommandLiveData_5eHomebrew(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists() && TestUtils.HOMEBREW_PATH_5E.toFile().exists()) {
+            Path target = outputPath_5e.resolve("homebrew");
+            TestUtils.deleteDir(target);
+
+            // No basics
+            LaunchResult result = launcher.launch("--debug", "--index",
+                    "-s", "PHB", "-s", "MM", "-s", "DMG",
+                    "-s", "dndwiki_bestbackgrounds",
+                    "-s", "TDCSR",
+                    "-s", "SC",
+                    "-s", "arkadia",
+                    "-s", "NerzugalsExtendedBestiary",
+                    "-s", "TheLostLands",
+                    "-o", target.toString(),
+                    TestUtils.TOOLS_PATH_5E.toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Darrington Press; Tal'Dorei Campaign Setting Reborn.json")
+                            .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("class/D&D Wiki; Swashbuckler.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("collection/Arcana Games; Arkadia.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
+                            .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("deity/Frog God Games; The Lost Lands.json").toString());
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+        }
+    }
+
+    @Test
     void testCommandTemplates_5e(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path target = outputPath_5e.resolve("srd-templates");

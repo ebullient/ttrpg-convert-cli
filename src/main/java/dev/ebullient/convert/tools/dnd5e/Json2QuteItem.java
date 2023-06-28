@@ -12,11 +12,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.tools.dnd5e.ItemProperty.CustomItemProperty;
+import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
+import dev.ebullient.convert.tools.dnd5e.ItemType.CustomItemType;
+import dev.ebullient.convert.tools.dnd5e.ItemType.ItemEnum;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteItem;
 
 public class Json2QuteItem extends Json2QuteCommon {
 
-    final ItemEnum itemType;
+    final ItemType itemType;
 
     Json2QuteItem(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
@@ -25,23 +29,23 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     @Override
     protected QuteBase buildQuteResource() {
-        Set<PropertyEnum> propertyEnums = new TreeSet<>(); // stable order
+        Set<ItemProperty> itemProperties = new TreeSet<>(ItemProperty.comparator); // stable order
 
-        findProperties(propertyEnums);
+        findProperties(itemProperties);
 
         List<ImageRef> fluffImages = new ArrayList<>();
-        String text = itemText(propertyEnums, fluffImages);
+        String text = itemText(itemProperties, fluffImages);
 
-        String detail = itemDetail(propertyEnums);
-        String properties = propertyEnums.stream()
+        String detail = itemDetail(itemProperties);
+        String properties = itemProperties.stream()
                 .filter(PropertyEnum::mundaneProperty)
                 .map(x -> x.getMarkdownLink(index))
                 .collect(Collectors.joining(", "));
 
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
-        tags.add(itemType.getItemTag(propertyEnums, tui()));
-        for (PropertyEnum p : propertyEnums) {
+        tags.add(itemType.getItemTag(itemProperties, tui()));
+        for (ItemProperty p : itemProperties) {
             tags.add("item/" + p.tagValue());
         }
 
@@ -101,7 +105,7 @@ public class Json2QuteItem extends Json2QuteCommon {
         return getSources().getName();
     }
 
-    String itemText(Collection<PropertyEnum> propertyEnums, List<ImageRef> imageRef) {
+    String itemText(Collection<ItemProperty> propertyEnums, List<ImageRef> imageRef) {
         List<String> text = getFluff(Tools5eIndexType.itemfluff, "##", imageRef);
 
         if (node.has("entries")) {
@@ -171,60 +175,83 @@ public class Json2QuteItem extends Json2QuteCommon {
         return result.toString();
     }
 
-    ItemEnum getItemType() {
+    ItemType getItemType() {
         try {
             String type = getTextOrDefault(node, "type", "");
-            if (!type.isEmpty()) {
-                return ItemEnum.fromEncodedValue(type);
+            if (type.isEmpty()) {
+                if (booleanOrDefault(node, "staff", false)) {
+                    return ItemEnum.STAFF;
+                }
+                if (booleanOrDefault(node, "poison", false)) {
+                    return ItemEnum.GEAR;
+                }
+                if (booleanOrDefault(node, "wondrous", false)
+                        || booleanOrDefault(node, "sentient", false)) {
+                    return ItemEnum.WONDROUS;
+                }
+                if (node.has("rarity")) {
+                    return ItemEnum.WONDROUS;
+                }
             }
-            if (booleanOrDefault(node, "staff", false)) {
-                return ItemEnum.STAFF;
+            ItemType itemType = ItemEnum.fromEncodedValue(type);
+            if (itemType == null) {
+                JsonNode typeNode = index().findItemTypeNode(type);
+                if (typeNode != null) {
+                    itemType = new CustomItemType(typeNode);
+                } else {
+                    tui().errorf("Unknown property %s for %s", type, getSources());
+                }
             }
-            if (booleanOrDefault(node, "poison", false)) {
-                return ItemEnum.GEAR;
-            }
-            if (booleanOrDefault(node, "wondrous", false)
-                    || booleanOrDefault(node, "sentient", false)) {
-                return ItemEnum.WONDROUS;
-            }
-            if (node.has("rarity")) {
-                return ItemEnum.WONDROUS;
-            }
-            throw new IllegalArgumentException("Unknown type");
+
+            return itemType;
         } catch (IllegalArgumentException e) {
             tui().errorf(e, "Unable to parse text for item %s", getSources());
             throw e;
         }
     }
 
-    void findProperties(Collection<PropertyEnum> propertyEnums) {
+    void findProperties(Collection<ItemProperty> itemProperties) {
         JsonNode property = node.get("property");
         if (property != null && property.isArray()) {
-            property.forEach(x -> propertyEnums.add(PropertyEnum.fromEncodedType(x.asText())));
+            for (JsonNode x : iterableElements(property)) {
+                ItemProperty prop = PropertyEnum.fromEncodedType(x.asText());
+                if (prop == null && !x.asText().isEmpty()) {
+                    JsonNode propertyNode = index().findItemPropertyNode(x.asText());
+                    if (propertyNode != null) {
+                        prop = new CustomItemProperty(propertyNode);
+                    } else {
+                        tui().errorf("Unknown property %s for %s", x.asText(), getSources());
+                    }
+                }
+
+                if (prop != null) {
+                    itemProperties.add(prop);
+                }
+            }
         }
         String category = getTextOrEmpty(node, "weaponCategory");
         if ("martial".equals(category)) {
-            propertyEnums.add(PropertyEnum.MARTIAL);
+            itemProperties.add(PropertyEnum.MARTIAL);
         }
     }
 
     /**
-     * @param propertyEnums Item properties -- ensure non-null & modifiable: side-effect, will set magic properties
+     * @param itemProperties Item properties -- ensure non-null & modifiable: side-effect, will set magic properties
      * @return String containing formatted item text
      */
-    String itemDetail(Collection<PropertyEnum> propertyEnums) {
+    String itemDetail(Collection<ItemProperty> itemProperties) {
         String tier = getTextOrDefault(node, "tier", "");
         if (!tier.isEmpty()) {
-            propertyEnums.add(PropertyEnum.fromValue(tier));
+            itemProperties.add(PropertyEnum.fromValue(tier));
         }
         String rarity = node.has("rarity")
                 ? node.get("rarity").asText()
                 : "";
         if (!rarity.isEmpty() && !"none".equals(rarity)) {
-            propertyEnums.add(PropertyEnum.fromValue(rarity));
+            itemProperties.add(PropertyEnum.fromValue(rarity));
         }
         String attunement = getTextOrDefault(node, "reqAttune", "");
-        String detail = createDetail(attunement, propertyEnums);
+        String detail = createDetail(attunement, itemProperties);
         return replaceText(detail);
     }
 
@@ -234,7 +261,7 @@ public class Json2QuteItem extends Json2QuteCommon {
      * @param properties Item properties -- ensure non-null & modifiable: side-effect, will set magic properties
      * @return detail string
      */
-    String createDetail(String attunement, Collection<PropertyEnum> properties) {
+    String createDetail(String attunement, Collection<ItemProperty> properties) {
         StringBuilder replacement = new StringBuilder();
 
         PropertyEnum.tierProperties.forEach(p -> {
@@ -253,6 +280,14 @@ public class Json2QuteItem extends Json2QuteCommon {
                 replacement.append(p.value());
             }
         });
+
+        properties.stream().filter(PropertyEnum::homebrewProperty).forEach(p -> {
+            if (replacement.length() > 0) {
+                replacement.append(", ");
+            }
+            replacement.append(p.value());
+        });
+
         if (properties.contains(PropertyEnum.POISON)) {
             if (replacement.length() > 0) {
                 replacement.append(", ");

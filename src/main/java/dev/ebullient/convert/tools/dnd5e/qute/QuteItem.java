@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
@@ -26,7 +27,7 @@ public class QuteItem extends QuteSource {
             String armorClass, String damage, String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
             String costGp, Double weightLbs, String text,
-            List<ImageRef> images, List<String> tags) {
+            List<ImageRef> images, Collection<String> tags) {
         super(sources, name, source, text, tags);
 
         this.detail = detail;

@@ -1,6 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.util.List;
+import java.util.Collection;
 
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -14,7 +14,7 @@ public class QuteFeat extends QuteSource {
     public final String prerequisite;
 
     public QuteFeat(Tools5eSources sources, String name, String source, String prerequisite, String level, String text,
-            List<String> tags) {
+            Collection<String> tags) {
         super(sources, name, source, text, tags);
         this.level = level;
         this.prerequisite = prerequisite; // optional

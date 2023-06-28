@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
@@ -16,7 +17,7 @@ public class QuteBackground extends QuteSource {
     public QuteBackground(Tools5eSources sources,
             String name, String source, String text,
             List<ImageRef> images,
-            List<String> tags) {
+            Collection<String> tags) {
         super(sources, name, source, text, tags);
         this.images = images;
     }

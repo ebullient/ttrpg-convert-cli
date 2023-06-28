@@ -130,7 +130,7 @@ public class ParseState {
             stack.addFirst(info);
             return true;
         }
-        if (src != null && !current.src.equals(src)) {
+        if (src != null && !src.equals(current.src)) {
             ParseState.ParseStateInfo info = ParseStateInfo.srcAndPage(current, src, page);
             stack.addFirst(info);
             return true;

@@ -28,7 +28,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         SchoolEnum school = getSchool();
         String level = node.get("level").asText();
 
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         tags.add("spell/school/" + slugify(school.name()));
         tags.add("spell/level/" + (level.equals("0") ? "cantrip" : level));
@@ -206,8 +206,12 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 time.get("unit").asText());
     }
 
-    Set<String> indexedSpellClasses(List<String> tags) {
+    Set<String> indexedSpellClasses(Collection<String> tags) {
         Collection<String> list = index().classesForSpell(this.sources.getKey());
+        if (list == null) {
+            tui().warnf("No classes found for %s", this.sources.getKey());
+            return new TreeSet<>();
+        }
 
         return list.stream()
                 .filter(k -> index().isIncluded(k))
@@ -227,7 +231,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    Set<String> spellClasses(SchoolEnum school, List<String> tags) {
+    Set<String> spellClasses(SchoolEnum school, Collection<String> tags) {
         JsonNode classesNode = node.get("classes");
         if (classesNode == null || classesNode.isNull()) {
             return Set.of();

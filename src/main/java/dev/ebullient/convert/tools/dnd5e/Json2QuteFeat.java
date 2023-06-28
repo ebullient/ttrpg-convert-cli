@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,7 +23,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
     @Override
     protected QuteBase buildQuteResource() {
         String prerequisite = listPrerequisites();
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         return new QuteFeat(sources,
                 decoratedTypeName(sources),

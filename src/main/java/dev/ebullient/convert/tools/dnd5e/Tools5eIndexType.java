@@ -20,6 +20,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     item,
     itementry,
     itemfluff,
+    itemtype,
     itemproperty,
     legendarygroup,
     magicvariant,
@@ -97,6 +98,15 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         source)
                         .toLowerCase();
             }
+            case itemtype:
+            case itemproperty: {
+                String abbreviation = IndexFields.abbreviation.getTextOrDefault(x, name);
+                return String.format("%s|%s|%s",
+                        this.name(),
+                        abbreviation,
+                        source)
+                        .toLowerCase();
+            }
             case itementry: {
                 return String.format("%s|%s%s",
                         this.name(),
@@ -171,10 +181,31 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     }
 
     public String fromRawKey(String crossRef) {
-        return String.format("%s|%s", this.name(), crossRef).toLowerCase()
-                // NOTE: correct reference inconsistencies in the original data
-                .replaceAll("\\|phb\\|", "||")
-                .replaceAll("\\|tce\\|8\\|tce", "|tce|8");
+        if (this.equals(subclassfeature)) {
+            String[] parts = crossRef.split("\\|");
+            // 0    name,
+            // 1    IndexFields.className.getTextOrEmpty(x),
+            // 2    "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+            // 3    IndexFields.subclassShortName.getTextOrEmpty(x),
+            // 4    "phb".equalsIgnoreCase(scSource) ? "" : scSource,
+            // 5    IndexFields.level.getTextOrEmpty(x),
+            // 6    source.equalsIgnoreCase(scSource) ? "" : "|" + source)
+            String featureSource = parts.length > 6 ? parts[6] : parts[4];
+            return getSubclassFeatureKey(parts[0], featureSource, parts[1], parts[2], parts[3], parts[4],
+                    parts[5]);
+        }
+        if (this.equals(classfeature)) {
+            String[] parts = crossRef.split("\\|");
+            // 0    name,
+            // 1    IndexFields.className.getTextOrEmpty(x),
+            // 2    "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+            // 3    IndexFields.level.getTextOrEmpty(x),
+            // 4    source.equalsIgnoreCase(classSource) ? "" : "|" + source)
+            String featureSource = parts.length > 4 ? parts[4] : parts[2];
+            return getClassFeatureKey(parts[0], featureSource, parts[1], parts[2], parts[3]);
+        }
+
+        return String.format("%s|%s", this.name(), crossRef).toLowerCase();
     }
 
     public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
@@ -192,6 +223,20 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 "phb".equalsIgnoreCase(classSource) ? "" : classSource,
                 level,
                 featureSource.equalsIgnoreCase(classSource) ? "" : "|" + featureSource)
+                .toLowerCase();
+    }
+
+    public static String getSubclassFeatureKey(String name, String featureSource, String className, String classSource,
+            String scShortName, String scSource, String level) {
+        return String.format("%s|%s|%s|%s|%s|%s|%s%s",
+                Tools5eIndexType.subclassfeature,
+                name,
+                className,
+                "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+                scShortName,
+                "phb".equalsIgnoreCase(scSource) ? "" : scSource,
+                level,
+                featureSource.equalsIgnoreCase(scSource) ? "" : "|" + featureSource)
                 .toLowerCase();
     }
 
@@ -216,15 +261,16 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     }
 
     enum IndexFields implements NodeReader {
-        level,
-        pantheon,
+        abbreviation,
         className,
         classSource,
         featureType,
+        level,
+        pantheon,
         raceName,
         raceSource,
-        subclassSource,
-        subclassShortName
+        subclassShortName,
+        subclassSource
     }
 
     public void withArrayFrom(JsonNode node, BiConsumer<Tools5eIndexType, JsonNode> callback) {

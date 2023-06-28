@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     @Override
     protected QuteClass buildQuteResource() {
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
         tags.add("class/" + slugify(getName()));
 
         List<String> text = new ArrayList<>();
@@ -89,7 +90,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         for (Subclass sc : subclasses) {
             boolean pushed = parseState.push(sc.sources);
             try {
-                List<String> tags = new ArrayList<>(sc.sources.getSourceTags());
+                Set<String> tags = new TreeSet<>(sc.sources.getSourceTags());
                 String tag = slugify(getName()) + "/" + slugify(sc.shortName);
                 tags.add("class/" + tag);
 
@@ -328,7 +329,6 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     void findClassFeatures(Tools5eIndexType type, JsonNode arrayElement, List<ClassFeature> features, String fieldName) {
-        System.out.println("findClassFeatures: " + type + " " + fieldName);
         for (JsonNode cf : iterableElements(arrayElement)) {
 
             ClassFeature feature = findClassFeature(this, type, cf, fieldName);

@@ -42,6 +42,7 @@ public class JsonSourceCopier implements JsonSource {
     }
 
     JsonNode handleCopy(Tools5eIndexType type, JsonNode jsonSource) {
+        String originKey = type.createKey(jsonSource);
         if (type == Tools5eIndexType.race) {
             return copyAndMergeRace(jsonSource);
         }
@@ -61,10 +62,10 @@ public class JsonSourceCopier implements JsonSource {
                 // is the copy a copy?
                 baseNode = handleCopy(type, baseNode);
                 try {
-                    String originKey = type.createKey(jsonSource);
                     jsonSource = mergeNodes(originKey, baseNode, jsonSource);
-                } catch (IllegalStateException | StackOverflowError e) {
-                    throw new IllegalStateException("Unable to resolve copy " + _copy.toPrettyString());
+                } catch (IllegalStateException | StackOverflowError | UnsupportedOperationException e) {
+                    tui().errorf(e, "Unable to merge nodes for %s. BaseNode: %s, JsonSource: ", originKey, baseNode,
+                            jsonSource);
                 }
             }
         }
@@ -152,12 +153,14 @@ public class JsonSourceCopier implements JsonSource {
                     // skip -- do not copy
                     break;
                 case "ability":
+                    JsonNode baseAbilityNode = baseNode.get("ability");
                     if (overlayNode.has("raceName")) {
                         target.set("ability", copyNode(overlayField));
-                    } else if ((overwrite != null && overwrite.has("ability"))
-                            || !baseNode.has("ability")) {
-                        target.set("ability", copyNode(overlayField));
-                    } else {
+                    } else if (baseAbilityNode == null) {
+                        if (overwrite != null && overwrite.has("ability")) {
+                            target.set("ability", copyNode(overlayField));
+                        }
+                    } else if (baseAbilityNode.isArray()) {
                         ArrayNode cpyAbility = target.withArray("ability");
                         if (cpyAbility.size() == 0) {
                             target.set("ability", copyNode(overlayField));

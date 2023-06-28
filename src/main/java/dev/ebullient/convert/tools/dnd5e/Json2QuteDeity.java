@@ -2,6 +2,8 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,7 +21,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
 
     @Override
     protected QuteBase buildQuteResource() {
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         String pantheon = getTextOrDefault(node, "pantheon", null);
         if (pantheon != null) {

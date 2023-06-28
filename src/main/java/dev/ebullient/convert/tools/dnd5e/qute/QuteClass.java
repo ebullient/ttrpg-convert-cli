@@ -1,6 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.util.List;
+import java.util.Collection;
 
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -17,7 +17,7 @@ public class QuteClass extends QuteSource {
     public QuteClass(Tools5eSources sources, String name, String source,
             int hitDice, String classProgression,
             String startingEquipment, String multiclassing,
-            String text, List<String> tags) {
+            String text, Collection<String> tags) {
         super(sources, name, source, text, tags);
 
         this.hitDice = hitDice;

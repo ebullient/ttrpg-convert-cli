@@ -162,9 +162,17 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     public ImageRef buildImageRef(Tools5eIndex index, JsonMediaHref mediaHref, String imageBasePath, boolean useCompendium) {
-        if (mediaHref.href.path != null) {
-            String title = mediaHref.title == null ? "" : mediaHref.title;
+        String title = mediaHref.title == null ? "" : mediaHref.title;
+        String altText = mediaHref.altText == null ? title : mediaHref.altText;
 
+        if ("external".equals(mediaHref.href.type)) {
+            return new ImageRef.Builder()
+                    .setTitle(index.replaceText(altText))
+                    .setUrl(mediaHref.href.url)
+                    .setWidth(mediaHref.width)
+                    .build();
+        }
+        if (mediaHref.href.path != null) {
             Path sourcePath = Path.of("img", mediaHref.href.path);
 
             String fileName = sourcePath.getFileName().toString();
@@ -177,6 +185,7 @@ public class Tools5eSources extends CompendiumSources {
                     index.slugify(fileName.substring(0, x)) + fileName.substring(x));
 
             ImageRef imageRef = new ImageRef.Builder()
+                    .setWidth(mediaHref.width)
                     .setTitle(index.replaceText(title))
                     .setRelativePath(target)
                     .setSourcePath(sourcePath)

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -27,7 +28,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
 
     @Override
     protected QuteBase buildQuteResource() {
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
         List<String> text = new ArrayList<>();
 
         appendEntryToText(text, node, "##");

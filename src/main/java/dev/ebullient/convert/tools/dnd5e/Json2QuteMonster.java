@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +73,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String cr = monsterCr(node);
         String pb = monsterPb(cr);
 
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         tags.add("monster/size/" + slugify(size));
         if (subtype == null || subtype.isEmpty()) {

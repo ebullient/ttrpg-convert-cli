@@ -204,6 +204,11 @@ public interface JsonSource extends JsonTextReplacement {
                         text.add(String.format("**Spell attack modifier**: your proficiency bonus + your %s modifier",
                                 asAbilityEnum(node.withArray("attributes").get(0))));
                         break;
+                    case "hr":
+                        maybeAddBlankLine(text);
+                        text.add("---");
+                        text.add("");
+                        break;
                     case "inline":
                     case "inlineBlock": {
                         List<String> inner = new ArrayList<>();
@@ -542,25 +547,35 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendInset(List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
+        appendEntryToText(insetText, entry.get("entries"), null);
+        if (insetText.isEmpty()) {
+            return; // nothing to do (empty content)
+        }
+
+        String title = null;
         String id = null;
         if (entry.has("name")) {
-            id = entry.get("name").asText();
-            insetText.add("[!quote] " + id);
-            appendEntryToText(insetText, entry.get("entries"), null);
+            title = entry.get("name").asText();
+            id = title;
         } else if (getSources().getType() == Tools5eIndexType.race) {
-            appendEntryToText(insetText, entry.get("entries"), null);
-            id = insetText.remove(0);
-            insetText.add(0, "[!quote] " + id);
-        } else {
-            if (entry.has("id")) {
-                id = entry.get("id").asText();
-            }
-            insetText.add("[!quote] ...");
-            appendEntryToText(insetText, entry.get("entries"), null);
+            title = insetText.remove(0);
+            id = title;
+        } else if (entry.has("id")) {
+            id = entry.get("id").asText();
         }
 
         maybeAddBlankLine(text);
-        insetText.forEach(x -> text.add("> " + x));
+        if (insetText.get(0).startsWith("> ")) {
+            // do not wrap empty or already inset content in another inset
+            text.addAll(insetText);
+        } else {
+            if (id != null) {
+                insetText.add(0, "");
+                insetText.add(0, "[!quote] " + (title == null ? "..." : title));
+            }
+            insetText.forEach(x -> text.add("> " + x));
+        }
+
         if (id != null) {
             text.add("^" + slugify(id));
         }
@@ -642,6 +657,8 @@ public interface JsonSource extends JsonTextReplacement {
                 return "Lawful Good";
             case "LN":
                 return "Lawful Neutral";
+            case "LELG":
+                return "Any Lawful alignment";
             case "LNXCNYE":
                 return "Any Non-Good alignment";
             case "E":
@@ -856,6 +873,8 @@ public interface JsonSource extends JsonTextReplacement {
         public String title;
         public Integer width;
         public Integer height;
+        public String altText;
+        public String credit;
     }
 
     @RegisterForReflection

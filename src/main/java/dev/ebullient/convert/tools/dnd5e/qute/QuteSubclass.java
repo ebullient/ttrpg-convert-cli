@@ -1,6 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.util.List;
+import java.util.Collection;
 
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -24,7 +24,7 @@ public class QuteSubclass extends QuteSource {
             String parentClassSource,
             String subclassTitle,
             String classProgression,
-            String text, List<String> tags) {
+            String text, Collection<String> tags) {
         super(sources, name, source, text, tags);
 
         this.parentClass = parentClass;

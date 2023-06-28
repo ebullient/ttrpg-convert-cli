@@ -59,6 +59,14 @@ public class TtrpgConfig {
         return activeConfig().longToAbv.getOrDefault(src.toLowerCase(), src);
     }
 
+    public static void addHomebrewSource(String name, String abv) {
+        activeConfig().addSource(name, abv);
+    }
+
+    public static void addHomebrewSource(String name, String abv, String longAbv) {
+        activeConfig().addSource(name, abv, longAbv);
+    }
+
     public static Map<String, String> imageFallbackPaths() {
         return activeConfig().fallbackImagePaths;
     }
@@ -176,6 +184,29 @@ public class TtrpgConfig {
                 }
             }
             return List.of();
+        }
+
+        public void addSource(String name, String abv) {
+            String key = abv.toLowerCase();
+            if (abvToName.containsKey(key)) {
+                tui.errorf("Duplicate source abbreviation %s for %s", abv, name);
+            } else {
+                abvToName.put(key, name);
+            }
+        }
+
+        public void addSource(String name, String abv, String longAbv) {
+            addSource(name, abv);
+
+            String key = abv.toLowerCase();
+            String longKey = longAbv.toLowerCase();
+            if (!key.equals(longKey)) {
+                if (longToAbv.containsKey(longKey)) {
+                    tui.errorf("Duplicate source abbreviation %s for %s -> %s", longAbv, abv, name);
+                } else {
+                    longToAbv.put(longKey, key);
+                }
+            }
         }
     }
 

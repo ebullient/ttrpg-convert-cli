@@ -2,6 +2,8 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -19,7 +21,7 @@ public class Json2QuteRace extends Json2QuteCommon {
     @Override
     protected QuteRace buildQuteResource() {
         String name = decoratedRaceName(node, sources);
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         String[] split = name.split("\\(");
         for (int i = 0; i < split.length; i++) {

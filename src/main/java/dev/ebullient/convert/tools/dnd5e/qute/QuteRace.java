@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
@@ -23,7 +24,7 @@ public class QuteRace extends QuteSource {
     public QuteRace(Tools5eSources sources, String name, String source,
             String ability, String type, String size, String speed,
             String spellcasting, String traits, String description,
-            List<ImageRef> images, List<String> tags) {
+            List<ImageRef> images, Collection<String> tags) {
         super(sources, name, source, null, tags);
         this.ability = ability;
         this.type = type;

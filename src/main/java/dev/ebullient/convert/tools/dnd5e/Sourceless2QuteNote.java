@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -94,7 +95,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         boolean pushed = parseState.push(node);
         try {
             currentSource = sources;
-            List<String> tags = new ArrayList<>(sources.getSourceTags());
+            Set<String> tags = new TreeSet<>(sources.getSourceTags());
             return new QuteNote(title, sources.getSourceText(index.srdOnly()),
                     getText("##"), tags);
         } finally {
@@ -109,7 +110,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             return Map.of();
         }
 
-        List<String> tags = new ArrayList<>(sources.getSourceTags());
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         Map<String, QuteNote> notes = new HashMap<>();
 
