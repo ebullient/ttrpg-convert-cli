@@ -51,9 +51,6 @@ public class Json2QuteBackground extends Json2QuteCommon {
             }
         }
 
-        if (text.isEmpty()) {
-            return null;
-        }
         appendFootnotes(text, 0);
 
         return new QuteBackground(sources,

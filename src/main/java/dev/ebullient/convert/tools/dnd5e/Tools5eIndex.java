@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -726,11 +728,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing indexes");
         }
-        Map<String, Object> allKeys = new HashMap<>();
-        List<String> keys = new ArrayList<>(variantIndex.keySet());
-        Collections.sort(keys);
-        allKeys.put("keys", keys);
-        allKeys.put("mapping", aliases);
+        Map<String, Object> allKeys = new TreeMap<>();
+        allKeys.put("keys", new TreeSet<>(variantIndex.keySet()));
+        allKeys.put("mapping", new TreeMap<>(aliases));
+        allKeys.put("srdKeys", new TreeSet<>(srdKeys));
         tui().writeJsonFile(outputFile, allKeys);
     }
 
