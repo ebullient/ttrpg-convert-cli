@@ -238,7 +238,7 @@ public class RpgDataConvertTest {
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
                     TestUtils.TOOLS_PATH_5E.toString(),
-                    TestUtils.TEST_SOURCES_BAD_TEMPL_JSON.toString());
+                    TestUtils.TEST_RESOURCES.resolve("sources-bad-template.json").toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command did not fail as expected. Output:%n%s", TestUtils.dump(result))
@@ -255,7 +255,7 @@ public class RpgDataConvertTest {
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
                     TestUtils.TOOLS_PATH_5E.toString(),
-                    TestUtils.TEST_SOURCES_BOOK_ADV_JSON_5E.toString());
+                    TestUtils.TEST_RESOURCES.resolve("sources-book-adventure.json").toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))

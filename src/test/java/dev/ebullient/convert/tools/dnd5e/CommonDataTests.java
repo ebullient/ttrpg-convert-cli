@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
@@ -26,8 +29,17 @@ public class CommonDataTests {
     protected final Configurator configurator;
     protected final Templates templates;
     protected Tools5eIndex index;
+    protected TestInput variant;
 
-    public CommonDataTests(boolean useSources) throws Exception {
+    enum TestInput {
+        all,
+        subset,
+        none;
+    }
+
+    public CommonDataTests(TestInput variant) throws Exception {
+        this.variant = variant;
+
         tui = Arc.container().instance(Tui.class).get();
         tui.init(null, true, false);
 
@@ -41,13 +53,19 @@ public class CommonDataTests {
             index = new Tools5eIndex(TtrpgConfig.getConfig());
             templates.setCustomTemplates(TtrpgConfig.getConfig());
 
-            if (useSources) {
-                // use default: compendium/ and rules/
-                configurator.readConfiguration(TestUtils.TEST_SOURCES_JSON_5E);
-            } else {
-                configurator.setSources(List.of("*"));
-                // use default: / and rules/
-                configurator.readConfiguration(TestUtils.TEST_FLAT_PATH_JSON);
+            switch (variant) {
+                case none:
+                    // do nothing. SRD!
+                    break;
+                case subset:
+                    // use default: compendium/ and rules/
+                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("sources.json"));
+                    break;
+                case all:
+                    configurator.setSources(List.of("*"));
+                    // use default: / and rules/
+                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("paths.json"));
+                    break;
             }
 
             for (String x : List.of("adventures.json", "books.json",
@@ -71,18 +89,21 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path p1Full = outputPath.resolve("allIndex.json");
             index.writeFullIndex(p1Full);
+
             Path p1Source = outputPath.resolve("allSourceIndex.json");
             index.writeFilteredIndex(p1Source);
 
-            // JsonIndex index2 = new JsonIndex(List.of("PHB", "DMG", "XGE"), tui);
-            // TestUtils.fullIndex(index2, TOOLS_PATH, tui);
+            assertThat(p1Full).exists();
+            JsonNode fullIndex = Tui.MAPPER.readTree(p1Full.toFile());
+            ArrayNode fullIndexKeys = fullIndex.withArray("keys");
+            assertThat(fullIndexKeys).isNotNull();
+            assertThat(fullIndexKeys).isNotEmpty();
 
-            // Path p2Full = OUTPUT_PATH.resolve("some-Index.json");
-            // index2.writeIndex(p2Full);
-            // Path p2Source = OUTPUT_PATH.resolve("some-SourceIndex.json");
-            // index2.writeSourceIndex(p2Source);
-
-            // TestUtils.assertContents(p2Full, p2Source, false); // filtered
+            assertThat(p1Source).exists();
+            JsonNode filteredIndex = Tui.MAPPER.readTree(p1Source.toFile());
+            ArrayNode filteredIndexKeys = filteredIndex.withArray("keys");
+            assertThat(filteredIndexKeys).isNotNull();
+            assertThat(filteredIndexKeys).isNotEmpty();
         }
     }
 
@@ -195,8 +216,10 @@ public class CommonDataTests {
                     .writeFiles(Tools5eIndexType.deity)
                     .writeImages();
 
-            Path imageDir = deitiesDir.resolve("img");
-            assertThat(imageDir.toFile()).exists();
+            if (variant != TestInput.none) {
+                Path imageDir = deitiesDir.resolve("img");
+                assertThat(imageDir.toFile()).exists();
+            }
 
             TestUtils.assertDirectoryContents(deitiesDir, tui);
         }

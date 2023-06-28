@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.TestUtils;
+import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -18,7 +19,7 @@ public class JsonDataTest {
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
-        commonTests = new CommonDataTests(false);
+        commonTests = new CommonDataTests(TestInput.all);
     }
 
     @AfterEach

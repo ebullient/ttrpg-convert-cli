@@ -1,7 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.AfterEach;
@@ -10,20 +8,19 @@ import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class JsonDataSubsetTest {
+public class JsonDataNoneTest {
 
     static CommonDataTests commonTests;
-    static final Path outputPath = TestUtils.OUTPUT_ROOT_5E.resolve("subset");
+    static final Path outputPath = TestUtils.OUTPUT_ROOT_5E.resolve("none");
 
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
         // This uses test/resources/sources.json to constrain sources
-        commonTests = new CommonDataTests(TestInput.subset);
+        commonTests = new CommonDataTests(TestInput.none);
     }
 
     @AfterEach
@@ -54,16 +51,6 @@ public class JsonDataSubsetTest {
     @Test
     public void testRaceList() {
         commonTests.testRaceList(outputPath);
-
-        // Changeling from mpmm is a reprint..
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            // Single included race: changeling from mpmm
-            Path changeling = outputPath
-                    .resolve(commonTests.compendiumFilePath())
-                    .resolve(QuteSource.RACES_PATH)
-                    .resolve("changeling-mpmm.md");
-            assertThat(changeling).exists();
-        }
     }
 
     @Test
@@ -84,17 +71,6 @@ public class JsonDataSubsetTest {
     @Test
     public void testMonsterList() {
         commonTests.testMonsterList(outputPath);
-
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            // Tree blight is from Curse of Strahd, but is also present in
-            // The Wild Beyond the Witchlight --> an "otherSource".
-            // The tree blight should be included when WBtW is included
-            Path treeBlight = outputPath
-                    .resolve(commonTests.compendiumFilePath())
-                    .resolve(QuteSource.monsterPath(false, "plant"))
-                    .resolve("tree-blight-cos.md");
-            assertThat(treeBlight).exists();
-        }
     }
 
     @Test

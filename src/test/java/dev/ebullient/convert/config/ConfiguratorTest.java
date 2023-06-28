@@ -32,7 +32,7 @@ public class ConfiguratorTest {
     public void testPath() throws Exception {
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_FLAT_PATH_JSON, List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("paths.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
             assertThat(config).isNotNull();
@@ -48,7 +48,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_FLAT_PATH_JSON, List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("paths.json"), List.of(), (f, node) -> {
             ObjectNode parent = Tui.MAPPER.createObjectNode();
             ObjectNode ttrpg = Tui.MAPPER.createObjectNode();
             parent.set("ttrpg", ttrpg);
@@ -72,7 +72,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_SOURCES_JSON_5E, List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
 
@@ -93,7 +93,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_SOURCES_FROM_ALL, List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources-from-all.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
 
@@ -109,7 +109,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_SOURCES_BOOK_ADV_JSON_5E, List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources-book-adventure.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
             Collection<String> books = config.getBooks();
@@ -131,7 +131,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_SOURCES_BAD_TEMPL_JSON, List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources-bad-template.json"), List.of(), (f, node) -> {
             assertThrows(IllegalArgumentException.class,
                     () -> test.readConfigIfPresent(node));
 

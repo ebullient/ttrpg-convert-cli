@@ -31,17 +31,11 @@ public class TestUtils {
     public final static Path OUTPUT_ROOT_5E = PROJECT_PATH.resolve("target/test-5e");
     public final static Path OUTPUT_ROOT_PF2 = PROJECT_PATH.resolve("target/test-pf2");
 
-    public final static Path TEST_SOURCES_FROM_ALL = PROJECT_PATH.resolve("src/test/resources/sources-from-all.json");
-    public final static Path TEST_FLAT_PATH_JSON = PROJECT_PATH.resolve("src/test/resources/paths.json");
-    public final static Path TEST_SOURCES_BAD_TEMPL_JSON = PROJECT_PATH.resolve("src/test/resources/sources-bad-template.json");
+    public final static Path TEST_RESOURCES = PROJECT_PATH.resolve("src/test/resources/");
 
     // for compile/test purposes. Must clone/sync separately.
     public final static Path TOOLS_PATH_5E = PROJECT_PATH.resolve("sources/5etools-mirror-1.github.io/data");
     public final static Path HOMEBREW_PATH_5E = PROJECT_PATH.resolve("sources/5e-homebrew");
-    public final static Path TEST_SOURCES_JSON_5E = PROJECT_PATH.resolve("src/test/resources/sources.json");
-    public final static Path TEST_SOURCES_BOOK_ADV_JSON_5E = PROJECT_PATH
-            .resolve("src/test/resources/sources-book-adventure.json");
-
     public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
 
     final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");
