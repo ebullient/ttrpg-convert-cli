@@ -131,19 +131,12 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         }
 
         // Quick lookup for traits
-        String oldKey = traitToSource.put(name.toLowerCase(), Field.source.getTextOrNull(node));
-        if (oldKey != null) {
+        String source = Field.source.getTextOrNull(node);
+        String oldSource = traitToSource.put(name.toLowerCase(), source);
+        if (oldSource != null && !oldSource.equals(source)) {
             tui().warnf("Duplicate trait name %s, from source %s and %s",
-                    name, key, oldKey);
+                    name, source, oldSource);
         }
-
-        // Precreate category mapping for traits
-        String traitLink = linkify(Pf2eIndexType.trait, name);
-        Field.categories.getListOfStrings(node, tui()).stream()
-                .filter(c -> !c.equalsIgnoreCase("_alignAbv"))
-                .forEach(c -> categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
-                        .add(traitLink));
-
         return key;
     }
 
@@ -189,6 +182,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
 
         imported.forEach((key, node) -> {
             Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
+
             if (type.checkCopiesAndReprints()) {
                 // check for / manage copies first (creatures, fluff)
                 node = copier.handleCopy(type, node);
@@ -199,12 +193,25 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
                 createArchetypeReference(key, node, sources);
             } else if (type == Pf2eIndexType.spell && keyIsIncluded(key, node)) {
                 createDomainReference(key, node);
+            } else if (type == Pf2eIndexType.trait) {
+                createTraitReference(key, node, sources);
             }
         });
 
         imported.entrySet().stream()
                 .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
                 .forEach(e -> filteredIndex.put(e.getKey(), e.getValue()));
+    }
+
+    private void createTraitReference(String key, JsonNode node, Pf2eSources sources) {
+        // Precreate category mapping for traits
+        String name = Field.name.getTextOrEmpty(node);
+        String traitLink = linkify(Pf2eIndexType.trait, name);
+
+        Field.categories.getListOfStrings(node, tui()).stream()
+                .filter(c -> !c.equalsIgnoreCase("_alignAbv"))
+                .forEach(c -> categoryToTraits.computeIfAbsent(c, k -> new TreeSet<>())
+                        .add(traitLink));
     }
 
     void createArchetypeReference(String key, JsonNode node, Pf2eSources sources) {
@@ -242,7 +249,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         if (config.noSources()) {
             return sources.fromDefaultSource();
         }
-        return sources.getBookSources().stream().anyMatch((s) -> config.sourceIncluded(s));
+        return sources != null && sources.getBookSources().stream().anyMatch((s) -> config.sourceIncluded(s));
     }
 
     public boolean isIncluded(String key) {

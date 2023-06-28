@@ -52,7 +52,8 @@ public class MarkdownWriter {
         for (T qs : elements) {
             FileMap fileMap = new FileMap(qs.title(),
                     qs.targetFile(),
-                    basePath.resolve(qs.targetPath()).normalize());
+                    basePath.resolve(qs.targetPath()).normalize(),
+                    qs.createIndex());
 
             pathMap.computeIfAbsent(fileMap, k -> new ArrayList<>()).add(qs);
         }
@@ -67,12 +68,13 @@ public class MarkdownWriter {
         }
 
         fileMappings.stream()
+                .filter(fm -> fm.renderIndex)
                 .collect(Collectors.groupingBy(fm -> fm.dir))
                 .forEach((dir, value) -> {
                     String fileName = dir.getFileName().toString();
                     String title = fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
                     try {
-                        writeFile(new FileMap(title, fileName, dir), templates.renderIndex(title, value));
+                        writeFile(new FileMap(title, fileName, dir, false), templates.renderIndex(title, value));
                     } catch (IOException ex) {
                         throw new WrappedIOException(ex);
                     }
@@ -160,11 +162,13 @@ public class MarkdownWriter {
         public final String title;
         public final String fileName;
         public final Path dir;
+        public final boolean renderIndex;
 
-        public FileMap(String title, String fileName, Path dirName) {
+        public FileMap(String title, String fileName, Path dirName, boolean renderIndex) {
             this.title = title;
             this.fileName = Tui.slugify(fileName) + (fileName.endsWith(".md") ? "" : ".md");
             this.dir = dirName;
+            this.renderIndex = renderIndex;
         }
 
         @Override
