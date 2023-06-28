@@ -288,6 +288,7 @@ _Support content creators. Only use or include sources that you own._
 | GW0 | Gatewalkers Player's Guide |
 | GW1 | Gatewalkers #1: The Seventh Arch |
 | GW2 | Gatewalkers #2: They Watched the Stars |
+| GW3 | Gatewalkers #3: Dreamers of the Nameless Spires |
 | GnG | Guns & Gears |
 | HPD | Hero Point Deck |
 | LOACLO | Lost Omens: Absalom, City of Lost Omens |
