@@ -423,7 +423,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return;
         }
         // structure is interesting:
-        // "spell source" -> "spell" -> "class", "subclass", "feat"  (walk your way through key construction.. )
+        // "spell source" -> "spell" -> ("class"|"subclass"|"feat")  (walk your way through key construction.. )
         for (Entry<String, JsonNode> sourceSpellMap : iterableFields(indexNode)) {
             String spellSource = sourceSpellMap.getKey();
             for (Entry<String, JsonNode> spellAssociation : iterableFields(sourceSpellMap.getValue())) {
@@ -438,20 +438,29 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 for (Entry<String, JsonNode> sourceClassMap : iterableFields(spellMap.get("class"))) {
                     String classSource = sourceClassMap.getKey();
                     for (String className : iterableFieldNames(sourceClassMap.getValue())) {
-                        String classKey = Tools5eIndexType.classtype.createKey(className, classSource);
+                        String classKey = index()
+                                .getAliasOrDefault(Tools5eIndexType.classtype.createKey(className, classSource));
                         if (isIncluded(classKey)) {
                             spellClassList.add(classKey);
                         }
                     }
                 }
                 for (Entry<String, JsonNode> sourceClassSubclassMap : iterableFields(spellMap.get("subclass"))) {
-                    String classSource = sourceClassSubclassMap.getKey();
+                    String classSource = sourceClassSubclassMap.getKey(); // PHB, XGE, etc
+                    if (!sourceIncluded(classSource)) {
+                        // skip it
+                        continue;
+                    }
                     for (Entry<String, JsonNode> classMap : iterableFields(sourceClassSubclassMap.getValue())) {
-                        String className = classMap.getKey();
+                        String className = classMap.getKey(); // Bard, Cleric, etc
                         for (Entry<String, JsonNode> sourceSubclassMap : iterableFields(classMap.getValue())) {
-                            String subclassSource = sourceSubclassMap.getKey();
+                            String subclassSource = sourceSubclassMap.getKey(); // PHB, XGE, etc
+                            if (!sourceIncluded(subclassSource)) {
+                                // skip it
+                                continue;
+                            }
                             for (Entry<String, JsonNode> subclassMap : iterableFields(sourceSubclassMap.getValue())) {
-                                String subclassName = subclassMap.getKey();
+                                String subclassName = subclassMap.getKey(); // College of Lore, etc
                                 String subclassKey = index()
                                         .getAliasOrDefault(Tools5eIndexType.getSubclassKey(
                                                 className, classSource, subclassName, subclassSource));
