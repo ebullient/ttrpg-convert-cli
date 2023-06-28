@@ -56,7 +56,7 @@ Notes:
 2. Install the pre-built release: 
 
     ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.0.4/ttrpg-convert-cli-2.0.4-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.0.5/ttrpg-convert-cli-2.0.5-runner.jar
     ```
 
     If you want the latest _unreleased snapshot_ (may not match this doc!): 
