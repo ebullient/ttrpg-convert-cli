@@ -17,7 +17,7 @@ $beige-padding-25: 0.25rem;
     @include content-styles.common-admonition-typography;
 
     h1, h2, h3, h4, h5, h6 {
-      text-align: var.$align-left;
+      text-align: left;
       padding-left: $beige-padding-25;
     }
   }

@@ -4,15 +4,15 @@
 
 .callout[data-callout=pf2-note] {
   clear: both;
-  font-style: var.$font-style-i;
-  text-align: var.$align-center;
-  margin-bottom: var.$size-4-4-rem;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 1rem;
 
   & .callout-title {
 
     & .callout-title-inner {
-      flex: var.$unset;
-      display: var.$no-display;
+      flex: unset;
+      display: none;
 
       .admonition & {
         display: inline;

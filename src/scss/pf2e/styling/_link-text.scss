@@ -3,11 +3,11 @@
 
 
 @mixin hover-link {
-  text-decoration: var.$underline;
+  text-decoration: underline;
 }
 
 @mixin no-underline {
-  text-decoration: var.$no-display;
+  text-decoration: none;
 }
 
 :is(.pf2e) {

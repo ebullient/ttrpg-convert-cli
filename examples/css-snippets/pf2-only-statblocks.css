@@ -1,0 +1,353 @@
+@import "https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap";
+body .callout[data-callout=statblock-pf2e] {
+  background-color: rgb(246, 244, 242);
+  border: none;
+  --callout-color: var(--statblock-pf2e);
+  color: rgb(0, 0, 0);
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.3em;
+  margin: 1rem 0;
+  min-width: 50%;
+  mix-blend-mode: normal;
+  padding: 0 0.25em;
+}
+.theme-dark body .callout[data-callout=statblock-pf2e] {
+  --statblock-pf2e: 201, 60, 60;
+}
+.theme-light body .callout[data-callout=statblock-pf2e] {
+  --statblock-pf2e: 201, 60, 60;
+}
+body .callout[data-callout=statblock-pf2e] strong {
+  color: rgb(0, 0, 0);
+}
+body .callout[data-callout=statblock-pf2e] em {
+  color: rgb(0, 0, 0);
+}
+body .callout[data-callout=statblock-pf2e] strong + em {
+  color: rgb(0, 0, 0);
+}
+body .callout[data-callout=statblock-pf2e] .callout-title {
+  background-color: rgb(246, 244, 242);
+  border: none;
+  border-radius: 0;
+  color: rgb(0, 0, 0);
+  display: flex;
+  font-family: "Oswald", sans-serif;
+  font-size: inherit;
+  gap: 0;
+  line-height: 1.3;
+  margin-bottom: 0;
+  padding: 0.25em 0 0;
+}
+body .callout[data-callout=statblock-pf2e] .callout-title .callout-icon {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-title .callout-title-inner {
+  color: rgb(0, 0, 0);
+  flex: 1;
+  font-size: 1.35em;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0;
+  margin-left: 0.25em;
+  padding-bottom: 0;
+  position: relative;
+  text-align: left;
+  text-transform: uppercase;
+}
+body .callout[data-callout=statblock-pf2e] img[src$="#token"],
+body .callout[data-callout=statblock-pf2e] div[src$="#token"] {
+  float: right;
+  margin-left: 0.3125em;
+  width: 9.375em;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content {
+  background-color: rgb(246, 244, 242);
+  margin-top: 0;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+  padding-top: 0;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content a {
+  color: rgb(51, 122, 183);
+  font-weight: 700;
+  text-decoration: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content a.external-link {
+  background-image: none;
+  background-size: 0;
+  color: rgb(150, 122, 222);
+  padding-right: 0;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content a.external-link::after {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content .internal-link.is-unresolved::after {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content blockquote {
+  background-color: rgb(246, 244, 242);
+  border: none;
+  color: rgb(0, 0, 0);
+  margin-inline-end: 1em;
+  margin-inline-start: 2em;
+  padding: 0;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > p {
+  margin-block-start: 0.5em;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content li {
+  line-height: 1.2em;
+  margin-block-start: 0.5em;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > hr {
+  border-color: rgb(0, 0, 0);
+  border-top: 1px solid;
+  height: 1px;
+  margin: 0;
+  width: 100%;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > hr::before {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > hr::after {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > hr:has(.admonition):has(.is-live-preview) {
+  margin-block-start: 0.5em;
+}
+body .admonition-statblock-pf2e-parent .admonition-content > p {
+  margin-block-end: 0.25em;
+  margin-block-start: 0.5em;
+}
+
+.creature {
+  float: right;
+  margin-right: 0.5em;
+}
+
+.sourcebook {
+  float: right;
+  margin-bottom: 0.5em;
+  margin-right: 0.5em;
+}
+
+body .callout[data-callout=statblock-pf2e] .callout[data-callout-metadata~=no-title] > .callout-title {
+  display: none;
+}
+
+body .markdown-reading-view .callout[data-callout=statblock-pf2e] {
+  width: 70%;
+}
+
+body .markdown-reading-view .callout[data-callout=statblock-pf2e]:has(.creature-statblock-container) {
+  width: 100%;
+}
+
+body .is-live-preview .callout[data-callout=statblock-pf2e] {
+  width: 70%;
+}
+
+body .is-live-preview .callout[data-callout=statblock-pf2e]:has(.creature-statblock-container) {
+  width: 100%;
+}
+
+.published-container .callout[data-callout=statblock-pf2e] {
+  max-width: 70%;
+  min-width: 40%;
+}
+
+body .callout[data-callout=statblock-pf2e][title="Uncommon Rarity Trait"] {
+  background: rgb(152, 81, 61);
+  border-color: rgb(152, 81, 61);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem 0.125rem 0.75rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+}
+li body .callout[data-callout=statblock-pf2e][title="Uncommon Rarity Trait"] {
+  margin-bottom: 0;
+}
+body .callout[data-callout=statblock-pf2e][title="Rare Rarity Trait"] {
+  background: rgb(0, 38, 100);
+  border-color: rgb(0, 38, 100);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem 0.125rem 0.75rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+}
+li body .callout[data-callout=statblock-pf2e][title="Rare Rarity Trait"] {
+  margin-bottom: 0;
+}
+body .callout[data-callout=statblock-pf2e][title="Unique Rarity Trait"] {
+  background: rgb(84, 22, 110);
+  border-color: rgb(84, 22, 110);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem 0.125rem 0.75rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+}
+li body .callout[data-callout=statblock-pf2e][title="Unique Rarity Trait"] {
+  margin-bottom: 0;
+}
+body .callout[data-callout=statblock-pf2e][title*="Alignment Trait"] {
+  background: rgb(102, 111, 153);
+  border-color: rgb(102, 111, 153);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem 0.125rem 0.75rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+}
+li body .callout[data-callout=statblock-pf2e][title*="Alignment Trait"] {
+  margin-bottom: 0;
+}
+body .callout[data-callout=statblock-pf2e][title*="Size Trait"] {
+  background: rgb(82, 122, 95);
+  border-color: rgb(82, 122, 95);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem 0.125rem 0.75rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+}
+li body .callout[data-callout=statblock-pf2e][title*="Size Trait"] {
+  margin-bottom: 0;
+}
+body .callout[data-callout=statblock-pf2e][title*="Class Trait"], body .callout[data-callout=statblock-pf2e][title*="Combat Trait"], body .callout[data-callout=statblock-pf2e][title*="Creature Trait"], body .callout[data-callout=statblock-pf2e][title*="Creature Type Trait"], body .callout[data-callout=statblock-pf2e][title*="Effect Trait"], body .callout[data-callout=statblock-pf2e][title*="Element Trait"], body .callout[data-callout=statblock-pf2e][title*="Feat Trait"], body .callout[data-callout=statblock-pf2e][title*="General Trait"], body .callout[data-callout=statblock-pf2e][title*="Hazard Trait"], body .callout[data-callout=statblock-pf2e][title*="Item Trait"], body .callout[data-callout=statblock-pf2e][title*="School Trait"], body .callout[data-callout=statblock-pf2e][title*="Spell Trait"], body .callout[data-callout=statblock-pf2e][title*="Tradition Trait"], body .callout[data-callout=statblock-pf2e][title*="Weapon Trait"] {
+  background: rgb(97, 20, 5);
+  border-color: rgb(97, 20, 5);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem 0.125rem 0.75rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+}
+li body .callout[data-callout=statblock-pf2e][title*="Class Trait"], li body .callout[data-callout=statblock-pf2e][title*="Combat Trait"], li body .callout[data-callout=statblock-pf2e][title*="Creature Trait"], li body .callout[data-callout=statblock-pf2e][title*="Creature Type Trait"], li body .callout[data-callout=statblock-pf2e][title*="Effect Trait"], li body .callout[data-callout=statblock-pf2e][title*="Element Trait"], li body .callout[data-callout=statblock-pf2e][title*="Feat Trait"], li body .callout[data-callout=statblock-pf2e][title*="General Trait"], li body .callout[data-callout=statblock-pf2e][title*="Hazard Trait"], li body .callout[data-callout=statblock-pf2e][title*="Item Trait"], li body .callout[data-callout=statblock-pf2e][title*="School Trait"], li body .callout[data-callout=statblock-pf2e][title*="Spell Trait"], li body .callout[data-callout=statblock-pf2e][title*="Tradition Trait"], li body .callout[data-callout=statblock-pf2e][title*="Weapon Trait"] {
+  margin-bottom: 0;
+}
+body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Single Action"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2040 1024'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Two-Action] {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2040 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 1.5625rem;
+  line-height: 1.5625rem;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Three-Action] {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  line-height: 1.5625rem;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Reaction] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2128 1024'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z'/%3E%3C/svg%3E");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: middle;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Free Action"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2128 1024'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z'/%3E%3C/svg%3E");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Varies] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' version='1.1' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z'%3E%3C/path%3E%3C/svg%3E%0A");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}

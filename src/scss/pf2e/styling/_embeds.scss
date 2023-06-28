@@ -8,11 +8,11 @@ $svg-area: 18px;
 
 // Mixin for common styles
 @mixin embed-common-styles() {
-  border: var.$no-display;
-  border-radius: var.$width-0-rem;
-  margin: var.$width-0-rem;
-  padding: var.$width-0-rem;
-  position: var.$relative;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  position: relative;
 }
 
 :is(.pf2e) {
@@ -23,9 +23,9 @@ $svg-area: 18px;
     // Hide embedded header and create uniform padding
     & .embed-title,
     .mod-header {
-      display: var.$no-display;
-      gap: var.$width-0-rem;
-      padding: var.$width-0-rem;
+      display: none;
+      gap: 0;
+      padding: 0;
     }
 
     // Style link and file embeds
@@ -33,10 +33,10 @@ $svg-area: 18px;
     .file-embed-link {
       height: $svg-area;
       width: $svg-area;
-      right: var.$width-0-rem;
-      top: var.$width-0-rem;
-      text-align: var.$align-center;
-      vertical-align: var.$align-middle;
+      right: 0;
+      top: 0;
+      text-align: center;
+      vertical-align: middle;
     }
 
     // Style source and rendered views
@@ -49,12 +49,12 @@ $svg-area: 18px;
 
     .markdown-embed-content {
       // Remove max height and overflow
-      max-height: var.$unset;
-      overflow: var.$unset;
+      max-height: unset;
+      overflow: unset;
 
       > .markdown-preview-view {
         // Remove vertical scroll
-        overflow-y: var.$unset;
+        overflow-y: unset;
       }
     }
   }
@@ -65,9 +65,9 @@ $svg-area: 18px;
         // Common styles
         @include embed-common-styles();
 
-        display: var.$no-display;
-        gap: var.$width-0-rem;
-        font-size: var.$width-0-rem;
+        display: none;
+        gap: 0;
+        font-size: 0;
       }
     }
   }

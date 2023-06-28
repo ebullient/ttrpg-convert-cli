@@ -1,0 +1,104 @@
+// Variables
+@use '../30-index-obsidian-var' as var;
+
+// Mixins
+
+@mixin link-styles {
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+
+  border-width: 0.0625rem;
+
+  li & {
+    margin-bottom: 0;
+  }
+
+  .callout[data-callout="statblock-pf2e"] & {
+    margin-bottom: 0.75rem;
+  }
+}
+
+a.internal-link {
+
+  // Rarity Traits
+
+  &[title="Uncommon Rarity Trait"] {
+    background: rgb(152, 81, 61);
+    border-color: rgb(152, 81, 61);
+
+    @include link-styles;
+  }
+
+  &[title="Rare Rarity Trait"] {
+    background: rgb(0, 38, 100);
+    border-color: rgb(0, 38, 100);
+
+    @include link-styles;
+  }
+
+  &[title="Unique Rarity Trait"] {
+    background: rgb(84, 22, 110);
+    border-color: rgb(84, 22, 110);
+
+    @include link-styles;
+  }
+
+  // Alignment
+
+  &[title*="Alignment Trait"] {
+    background: rgb(102, 111, 153);
+    border-color: rgb(102, 111, 153);
+
+    @include link-styles;
+  }
+
+  // Sizing
+
+  &[title*="Size Trait"] {
+    background: rgb(82, 122, 95);
+    border-color: rgb(82, 122, 95);
+
+    @include link-styles;
+  }
+
+  // Other Traits
+
+  &[title*="Class Trait"],
+  &[title*="Combat Trait"],
+  &[title*="Creature Trait"],
+  &[title*="Creature Type Trait"],
+  &[title*="Effect Trait"],
+  &[title*="Element Trait"],
+  &[title*="Feat Trait"],
+  &[title*="General Trait"],
+  &[title*="Hazard Trait"],
+  &[title*="Item Trait"],
+  &[title*="School Trait"],
+  &[title*="Spell Trait"],
+  &[title*="Tradition Trait"],
+  &[title*="Weapon Trait"] {
+    background: rgb(97, 20, 5);
+    border-color: rgb(97, 20, 5);
+
+    @include link-styles;
+  }
+
+  //// Conditions
+  //
+  //&[href*="rules/conditions"] {
+  //  border: 0.0625rem solid rgb(19, 138, 6);
+  //  background: rgb(19, 138, 6);
+  //  @include statblock-link-styles;
+  //}
+}

@@ -138,6 +138,25 @@ To run commands listed below, either:
 
 - **[Initiative Tracker](obsidian://show-plugin?id=initiative-tracker)**: Templates for rendering monsters can include information in the header to define monsters that initiative tracker can use when constructing encounters.
 
+### Optional CSS Snippets
+
+Within the `examples/css-snippets` folder, you will find some CSS snippets that have been created to further customize the look of the generated content. They include:
+- Functionality to float token images to side of a statblock.
+- Further enhancement of the admonition styles.
+- _PF2 Only_: More realistic looking Statblocks
+- _PF2 Only_: Link Test to display action icons.
+- _PF2 Only_: Light styling of pages as defined through css-classes.
+- And much more.
+
+#### Statblocks
+
+If using the entire `compendium` snippet, then you will not need to download and use the `dnd5e-only-statblocks.css` or `pf2-only-statblocks.css` snippets.
+
+However, if interested in only using the statblock snippets, you will need to download one or both of the `only-statblock.css` snippets, dependent on the system you are using.
+
+> :warning: Do not use an `only-statblock.css` snippet beside a compendium.css snippet.
+
+
 ## Use with 5eTools JSON data
 
 1. Download a release of the 5e tools mirror, or create a shallow clone of the repo (which can/should be deleted afterwards):

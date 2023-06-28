@@ -1,15 +1,22 @@
 // Variables
 @use '../../30-index-obsidian-var' as var;
 
+$h1-size: clamp(1.125rem, 1.5em, 1.375rem);
+$h2-size: clamp(1rem, 1.3125em, 1.25rem);
+$h3-size: clamp(0.875rem, 1.125em, 1rem);
+$h4-size: clamp(0.75rem, 1em, 0.875rem);
+$h5-size: clamp(0.625rem, 0.9375em, 0.75rem);
+$h6-size: clamp(0.8125em, 0.5rem, 0.625rem);
+
 // Common Mixins for Functions
 @mixin content-headings($level) {
   $sizes: (
-          1: var.$h1-size,
-          2: var.$h2-size,
-          3: var.$h3-size,
-          4: var.$h4-size,
-          5: var.$h5-size,
-          6: var.$h6-size,
+          1: $h1-size,
+          2: $h2-size,
+          3: $h3-size,
+          4: $h4-size,
+          5: $h5-size,
+          6: $h6-size,
   );
 
   $padding-bottoms: (0.125em, 0.25em, 0.125em, 0.5em, 0.25em, 0.75em);
@@ -19,15 +26,15 @@
     & h#{$i} {
       font-size: map-get($sizes, $i);
       padding-bottom: nth($padding-bottoms, $i);
-      text-align: var.$align-center;
+      text-align: center;
       // Add custom styles for h3 here
       @if $i == 3 {
         &::before {
-          display: var.$no-display;
+          display: none;
         }
 
         &::after {
-          display: var.$no-display;
+          display: none;
         }
       }
     }
@@ -37,29 +44,12 @@
 
 // Common Mixins for Callmonitions
 @mixin content-blockquotes {
-  padding: var.$width-5 var.$width-5 var.$width-5 10px;
-  border-right: var.$width-3 var.$border-solid;
-  border-left: var.$width-3 var.$border-solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
-
-@mixin content-lists {
-  // Will only add a : after Strong List 
-  // Items with Strong characters
-  // If they are not the only child
-  // Still testing this...
-  ul, ol {
-    li {
-      strong:not(a + &, p + &, h1 + &, &:last-child) {
-        &::after {
-          content: ':';
-        }
-      }
-    }
-  }
-}
-
 
 // & code {
 @mixin content-code {
@@ -73,12 +63,10 @@
 // Admonition Only
 @mixin admonition-copy {
   .admonition-content-copy {
-    cursor: var.$cursor-point;
-    opacity: var.$width-0;
-    position: var.$relative;
-    margin: var.$width-5-rem;
-    right: var.$width-0;
-    top: var.$width-0;
+    opacity: 0;
+    margin: 0.3125rem;
+    right: 0;
+    top: 0;
     transition: 1s opacity ease-in-out;
 
     &:hover {
@@ -91,30 +79,30 @@
 @mixin content-links {
 
   a.internal-link {
-    font-weight: var.$weight-600;
-    text-decoration: var.$no-display;
+    font-weight: 600;
+    text-decoration: none;
 
 
     &:hover {
-      text-decoration: var.$underline;
+      text-decoration: underline;
     }
 
     &.is-unresolved {
-      font-style: var.$font-style-i;
-      text-decoration: var.$no-display;
+      font-style: italic;
+      text-decoration: none;
 
       &:hover {
-        text-decoration: var.$underline;
+        text-decoration: underline;
       }
     }
   }
 
   a.external-link {
-    font-weight: var.$weight-600;
-    text-decoration: var.$no-display;
+    font-weight: 600;
+    text-decoration: none;
 
     &:hover {
-      text-decoration: var.$underline;
+      text-decoration: underline;
     }
   }
 }
@@ -122,7 +110,7 @@
 @mixin content-strong {
 
   strong {
-    padding-inline: var.$width-4-rem;
+    padding-inline: 0.25rem;
   }
 }
 

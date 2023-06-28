@@ -1,2 +1,142 @@
-@forward '01a-dash-variables';
-@forward '01b-sass-variables';
+// Specific Colors to Track
+$box-condition: rgb(19, 138, 6);
+$box-skills: rgb(169, 108, 116);
+$box-traits: rgb(97, 20, 5);
+
+// Blacks
+$almost-black: rgb(36, 36, 36);
+
+// Browns
+$dark-grayish-orange: rgb(160, 148, 127);
+
+// Greys
+$very-dark-grey: rgb(51, 51, 51);
+$very-light-grey: rgb(232, 232, 232);
+
+
+// Greens
+$dark-lime-green: rgb(19, 138, 6);
+$strong-green: rgb(154, 205, 50);
+$very-desaturated-dark-cyan-green: rgb(42, 72, 62);
+
+// Yellow
+$light-grayish-yellow: rgb(234, 229, 213);
+$light-yellow: rgb(255, 219, 88);
+$very-soft-yellow: rgb(217, 204, 140);
+
+
+// Blues
+$dark-moderate-blue: rgb(80, 62, 141);
+$light-moderate-blue: rgb(64, 105, 157);
+$moderate-blue: rgb(116, 90, 205);
+$very-dark-blue: rgb(6, 20, 53);
+$very-dark-teal: rgb(0, 73, 97);
+$very-desaturated-blue: rgb(44, 70, 78);
+$very-desaturated-dark-blue: rgb(51, 66, 82);
+
+// Purples
+$dark-violet: rgb(107, 0, 153);
+$tyrian-purple: rgb(100, 2, 59);
+$very-light-violet: rgb(222, 145, 255);
+
+
+// Pinks
+
+
+// Red
+$dark-grayish-magenta: rgb(80, 67, 79);
+$dark-red: rgb(128, 0, 0);
+$very-desaturated-red: rgb(102, 51, 51);
+$very-light-red: rgb(255, 143, 143);
+
+
+// Orange
+$strong-orange: rgb(204, 72, 0);
+
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+@font-face {
+  font-family: "Pathfinder";
+  src: url("data:application/x-font-ttf;charset=utf-8;base64,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") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+2B32, U+2B3A, U+2B3B, U+2B3D, U+2B53;
+}
+
+body {
+  // Font Families
+  --pf2e-font-monospace-default: Menlo, SFMono-Regular, Consolas, 'Roboto Mono', 'Source Code Pro', monospace;
+  --pf2e-font-monospace-theme: 'Fira Code', Menlo, Monaco, 'Courier New', 'Source Code Pro', Jetbrains Mono;
+  --pf2e-font-monospace: var(--pf2e-font-monospace-theme), var(--pf2e-font-monospace-default);
+  --pf2e-font-headers-default: 'Nunito', sans-serif;
+  --pf2e-font-headers-theme: 'Poppins', 'Montserrat', 'Roboto', 'Open Sans', 'Helvetica Neue', sans-serif;
+  --pf2e-font-headers: var(--pf2e-font-headers-default), var(--pf2e-font-headers-theme);
+
+
+  // On Pathfinder Brand
+  --pf2e-black-text-rgb: 38, 38, 38;
+  --pf2e-black-text: #262626;
+  --pf2e-blue-headers-rgb: 11, 37, 96;
+  --pf2e-blue-headers: #0b2560;
+  --pf2e-red-headers-rgb: 85, 12, 6;
+  --pf2e-red-headers: #550c06;
+  --pf2e-light-brown-headers: #9f6a57;
+  --pf2e-light-brown-headers-rgb: 159, 106, 87;
+
+  // Tables
+  --pf2e-beige-table-even-rows-rgb: 244, 239, 226;
+  --pf2e-beige-table-even-rows: #f4efe2;
+  --pf2e-tan-table-odd-rows-rgb: 236, 228, 203;
+  --pf2e-tan-table-odd-rows: #ece4cb;
+  --pf2e-brown-table-borders: #9c7566;
+  --pf2e-brown-table-borders-rgb: 156, 117, 102;
+
+  // Header Specifics
+  --pf2e-header-one: rgba(209, 30, 50, 1);
+  --pf2e-header-two: rgba(72, 128, 255, 1);
+  --pf2e-header-three: rgba(209, 30, 50, 1);
+  --pf2e-header-four: rgba(226, 151, 124, 1);
+
+  // Scrollies
+  --scrollbar-active-thumb-bg: rgba(204, 204, 204, 1);
+  --scrollbar-hover: rgba(51, 51, 51, 1);
+  --scrollbar-thumb-bg: rgba(102, 102, 102, 1);
+
+  // Links
+  --pf2e-purple-link: rgb(222, 145, 255);
+  --pf2e-blue-link: rgb(64, 105, 157);
+  --pf2e-green-link: rgb(154, 205, 50);
+}
+
+.theme-light {
+  // On Pathfinder Brand
+  --pf2e-black-text-rgb: 38, 38, 38;
+  --pf2e-black-text: #262626;
+  --pf2e-blue-headers-rgb: 11, 37, 96;
+  --pf2e-blue-headers: #0b2560;
+  --pf2e-red-headers-rgb: 85, 12, 6;
+  --pf2e-red-headers: #550c06;
+  --pf2e-light-brown-headers: #764f41;
+  --pf2e-light-brown-headers-rgb: 118, 79, 65;
+
+  // Tables
+  --pf2e-beige-table-even-rows-rgb: 244, 239, 226;
+  --pf2e-beige-table-even-rows: #f4efe2;
+  --pf2e-tan-table-odd-rows-rgb: 236, 228, 203;
+  --pf2e-tan-table-odd-rows: #ece4cb;
+  --pf2e-brown-table-borders: var(--pf2e-light-brown-headers);
+  --pf2e-brown-table-borders-rgb: rgb(var(--pf2e-light-brown-headers-rgb));
+  --pf2e-table-hover-color: 241, 167, 162;
+
+  // Scrollies
+  --scrollbar-active-thumb-bg: rgba(102, 102, 102, 1);
+  --scrollbar-hover: rgba(204, 204, 204, 1);
+  --scrollbar-thumb-bg: rgba(153, 153, 153, 1);
+
+  // Links
+  --pf2e-purple-link: rgb(107, 0, 153);
+  --pf2e-blue-link: rgb(0, 73, 97);
+  --pf2e-green-link: rgb(19, 138, 6);
+}

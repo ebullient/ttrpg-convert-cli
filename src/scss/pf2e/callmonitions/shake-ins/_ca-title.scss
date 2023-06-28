@@ -4,22 +4,22 @@
 @mixin title {
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: var.$align-center;
-  align-items: var.$align-center;
-  align-content: var.$align-center;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 
-  border: var.$no-display;
-  display: var.$flex;
-  padding-top: var.$size-4-2-rem;
-  padding-bottom: var.$size-4-2-rem;
-  position: var.$relative;
+  border: none;
+  display: flex;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  position: relative;
 }
 
 
 @mixin inner-top {
-  font-size: var.$h2-size;
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
 
   em {
-    font-weight: var.$weight-500;
+    font-weight: 500;
   }
 }

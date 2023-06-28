@@ -4,17 +4,17 @@
 :is(.pf2e) {
   .markdown-rendered {
     table {
-      border: 3px var.$border-solid var(--pf2e-red-headers);
+      border: 0.1875rem solid var(--pf2e-red-headers);
 
       a {
-        font-weight: var.$weight-500;
+        font-weight: 500;
         color: var(--pf2e-purple-link);
       }
     }
 
     thead {
       background-color: var(--pf2e-red-headers);
-      border-bottom: 3px var.$border-solid rgba(var(--pf2e-brown-table-borders-rgb), 0.5);
+      border-bottom: 0.1875rem solid rgba(var(--pf2e-brown-table-borders-rgb), 0.5);
       color: var.$very-light-grey;
     }
 
@@ -43,7 +43,7 @@
 
     tr td:not(:last-child),
     tr th:not(:last-child) {
-      border-right: 1px var.$border-solid var.$light-grayish-yellow;
+      border-right: 0.0625rem solid var.$light-grayish-yellow;
     }
   }
 }

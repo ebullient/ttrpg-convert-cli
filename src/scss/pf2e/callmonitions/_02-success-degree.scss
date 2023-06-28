@@ -8,24 +8,24 @@ $margins: auto;
   --callout-icon: lucide-scale;
 
   & .callout-title {
-    display: var.$inherit;
+    display: inherit;
 
     & .callout-icon .svg-icon {
-      display: var.$block;
+      display: block;
       margin-bottom: $margins;
       margin-left: $margins;
       margin-right: $margins;
     }
 
     & .callout-title-inner {
-      display: var.$no-display;
+      display: none;
     }
   }
 
   & .callout-content {
     @include content-styles.common-admonition-typography;
     strong {
-      font-weight: var.$weight-800;
+      font-weight: 800;
     }
 
   }
