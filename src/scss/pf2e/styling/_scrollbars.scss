@@ -1,6 +1,3 @@
-// Variables
-@use '../30-index-obsidian-var' as var;
-
 // Scrollbars for Callouts
 :is(.pf2e) {
   &:is(.callout, .admonition) {
@@ -14,13 +11,13 @@
 
     &::-webkit-scrollbar-track {
       background: var(--scrollbar-hover);
-      border: var.$width-4-rem var.$border-solid transparent;
-      background-clip: var.$box-02;
+      border: 0.25rem solid transparent;
+      background-clip: content-box;
     }
 
     &::-webkit-scrollbar-thumb {
       background: var(--scrollbar-active-thumb-bg);
-      border: var.$width-1-rem var.$border-solid var(--scrollbar-thumb-bg);
+      border: 0.0625rem solid var(--scrollbar-thumb-bg);
     }
   }
 }

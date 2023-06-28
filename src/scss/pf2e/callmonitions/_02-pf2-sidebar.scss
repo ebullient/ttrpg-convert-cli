@@ -4,12 +4,12 @@
 
 .callout[data-callout='pf2-sidebar'] {
   color: var.$dark-red;
-  clear: var.$align-right;
-  float: var.$align-right;
+  clear: right;
+  float: right;
   max-height: 85vh;
   max-width: 50vw;
   overflow-wrap: break-word;
-  overflow-y: var.$overflow-scroll;
+  overflow-y: scroll;
 
   & .callout-content {
     @include content-styles.common-admonition-typography;

@@ -1,5 +1,14 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import "https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap";
+@font-face {
+  font-family: "Pathfinder";
+  src: url("data:application/x-font-ttf;charset=utf-8;base64,AAEAAAANAIAAAwBQRkZUTaBf/YkAAAkkAAAAHEdERUYAJQAAAAAJDAAAABhPUy8yDzE5wAAAAVgAAABgY21hcIUPLFwAAAHcAAABcGdhc3AAAAAQAAAJBAAAAAhnbHlmv0sljgAAA2AAAAIwaGVhZCgbkG4AAADcAAAANmhoZWEMNQhqAAABFAAAACRobXR4IOUAhwAAAbgAAAAkbG9jYQGoAlQAAANMAAAAFG1heHAADgA/AAABOAAAACBuYW1l5gKtSAAABZAAAAMGcG9zdJP9aoAAAAiYAAAAbAABAAAAARmaJrDlgl8PPPUACwQAAAAAAN/r3gMAAAAA4J1UVAAA/8AIcwPAAAAACAACAAAAAAAAAAEAAAPA/8AAAAigAAAAAAhzAAEAAAAAAAAAAAAAAAAAAAAJAAEAAAAJAD0ABAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAwVCAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABAAAAIAAAAAAAAAAAAAAAAABAAAArUwPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAEEAAAAAAAAAAFVAAAAAAAABFAAKAaAACAEAAACCKAALQQgABAAAAADAAAAAwAAABwAAQAAAAAAagADAAEAAAAcAAQATgAAAAwACAACAAQAASsyKz0rU//9//8AAAAAKzIrOitT//3//wAA1NIAANS1AAAAAQAMAAAADAAAABAAAAABAAMABQAGAAAABwAAAAABBgAAAQMAAAAAAAABAgAAAAIAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAIABAAeACgALwA8AEYAAEAAAAAAAAAAAACAAA5AgABAAAAAAAAAAAAAgAAOQIAAgAoACIEMwNlADcAPAAAASYnJicmJyYHBgcGBwYHBgc2NzY3Njc2NzYXFhcWFxYXFgcGBwYHBgcGBwYnFhcWNzY3Njc2NzYBBSc3AQQdFzs8VFNlZWpLQUEzMyQkERUdHSMkKSouVVFRQ0QwMBISEBEsK0RDVRwcGxs/REVFalRUNjYVFPyNAeltOP5MAkdHOTklJQ0ODwsYGCIiKyovGhYXEhINDQcMCwsdHi4uOTo3Ny0uISAMBAECAQ4DAwoPKSg5OEVE/opnldf++wAAAAMAIP/BBmADvwAFAAkADwAACQEHCQEXAQcXNyUBBxcHFwQa/gH2AQj++Pb+vLe3twTS/kDZ6OjZAcAB//f++P749wK2t7e3CAHA2Ojo2QAAAgAC/8AD/gPAAAUACQAACQEHCQEXAQcXNwP+/gD3AQn+9/f+u7e3twHAAgD3/vf+9/cCt7e3twAEAC3/wAhzA8AABQALAA8AFQAACQEHCQEXCQEHFwcXAQcXNyUBBxcHFwQp/gD3AQn+9/cGSv6Yr7u7r/nZt7e3BNz+P9rp6doBwAIA9/73/vf3AgoBaK66u64CFre3twgBwdno6dkAAAMAEP/ABBADwAAEAAkADwAACQU3FwcnASc3JzcBAhT9/AH9AgP+BP64bW1tbQE3cfv1fAFnA8D9+v4GAgMB/f4QbW1tbf6Ecfv2fP6ZAAAAAAASAN4AAQAAAAAAAQAKABYAAQAAAAAAAgAHADEAAQAAAAAAAwAKAE8AAQAAAAAABAAKAHAAAQAAAAAABQALAJMAAQAAAAAABgAKALUAAQAAAAAACgA2AS4AAQAAAAAADQAXAZUAAQAAAAAADgAoAf8AAwABBAkAAQAUAAAAAwABBAkAAgAOACEAAwABBAkAAwAUADkAAwABBAkABAAUAFoAAwABBAkABQAWAHsAAwABBAkABgAUAJ8AAwABBAkACgBsAMAAAwABBAkADQAuAWUAAwABBAkADgBQAa0AUABhAHQAaABmAGkAbgBkAGUAcgAAUGF0aGZpbmRlcgAAUgBlAGcAdQBsAGEAcgAAUmVndWxhcgAAUABhAHQAaABmAGkAbgBkAGUAcgAAUGF0aGZpbmRlcgAAUABhAHQAaABmAGkAbgBkAGUAcgAAUGF0aGZpbmRlcgAAVgBlAHIAcwBpAG8AbgAgADEALgAxAABWZXJzaW9uIDEuMQAAUABhAHQAaABmAGkAbgBkAGUAcgAAUGF0aGZpbmRlcgAAUABhAHQAaABmAGkAbgBkAGUAcgAgADIAZQAgAEEAYwB0AGkAbwBuACAARwBsAHkAcABoAHMACgBGAG8AbgB0ACAAZwBlAG4AZQByAGEAdABlAGQAIABiAHkAIABJAGMAbwBNAG8AbwBuAC4AAFBhdGhmaW5kZXIgMmUgQWN0aW9uIEdseXBocwpGb250IGdlbmVyYXRlZCBieSBJY29Nb29uLgAAUABhAGkAegBvACAAQwBvAG0AbQB1AG4AaQB0AHkAIABMAGkAYwBlAG4AcwBlAABQYWl6byBDb21tdW5pdHkgTGljZW5zZQAAaAB0AHQAcABzADoALwAvAHAAYQBpAHoAbwAuAGMAbwBtAC8AYwBvAG0AbQB1AG4AaQB0AHkALwBjAG8AbQBtAHUAbgBpAHQAeQB1AHMAZQAAaHR0cHM6Ly9wYWl6by5jb20vY29tbXVuaXR5L2NvbW11bml0eXVzZQAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAECAAIBAwEEAQUBBgEHAQgHdW5pMDAwMAd1bmkwMDAxB3VuaTJCMzIHdW5pMkIzQQd1bmkyQjNCB3VuaTJCM0QHdW5pMkI1MwABAAH//wAPAAEAAAAMAAAAEAAAAAIAAAAEAAAAAgAAAAAAAQAAAADf1ssxAAAAAN/r3gMAAAAA4J1UVA==") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+2B32, U+2B3A, U+2B3B, U+2B3D, U+2B53;
+}
 body {
   --pf2e-font-monospace-default: Menlo, SFMono-Regular, Consolas, "Roboto Mono", "Source Code Pro", monospace;
   --pf2e-font-monospace-theme: "Fira Code", Menlo, Monaco, "Courier New", "Source Code Pro", Jetbrains Mono;
@@ -7,14 +16,6 @@ body {
   --pf2e-font-headers-default: "Nunito", sans-serif;
   --pf2e-font-headers-theme: "Poppins", "Montserrat", "Roboto", "Open Sans", "Helvetica Neue", sans-serif;
   --pf2e-font-headers: var(--pf2e-font-headers-default), var(--pf2e-font-headers-theme);
-  --pf2e-dracolich: rgba(137, 184, 176);
-  --box-alignment: #666f99;
-  --box-rare: #002664;
-  --box-size: #527a5f;
-  --box-traits: #611405;
-  --box-uncommon: #98513d;
-  --box-unique: #54166e;
-  --box-common: #404040;
   --pf2e-black-text-rgb: 38, 38, 38;
   --pf2e-black-text: #262626;
   --pf2e-blue-headers-rgb: 11, 37, 96;
@@ -57,10 +58,6 @@ body {
   --pf2e-brown-table-borders: var(--pf2e-light-brown-headers);
   --pf2e-brown-table-borders-rgb: rgb(var(--pf2e-light-brown-headers-rgb));
   --pf2e-table-hover-color: 241, 167, 162;
-  --pf2e-header-one: rgb(var(--pf2e-red-headers-rgb));
-  --pf2e-header-two: rgb(var(--pf2e-blue-headers-rgb));
-  --pf2e-header-three: rgb(var(--pf2e-red-headers-rgb));
-  --pf2e-header-four: rgb(var(--pf2e-light-brown-headers-rgb));
   --scrollbar-active-thumb-bg: rgba(102, 102, 102, 1);
   --scrollbar-hover: rgba(204, 204, 204, 1);
   --scrollbar-thumb-bg: rgba(153, 153, 153, 1);
@@ -69,95 +66,90 @@ body {
   --pf2e-green-link: rgb(19, 138, 6);
 }
 
-@font-face {
-  font-family: "Pathfinder", sans-serif;
-  src: url("data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8xOUgAAAC8AAAAYGNtYXBWj1fJAAABHAAAAHRnYXNwAAAAEAAAAZAAAAAIZ2x5ZlORXq8AAAGYAAACYGhlYWQngwOhAAAD+AAAADZoaGVhDDUIawAABDAAAAAkaG10eCWQAIcAAARUAAAAKGxvY2ECvAH8AAAEfAAAABZtYXhwAA8APwAABJQAAAAgbmFtZRV2kxAAAAS0AAACr3Bvc3QAAwAAAAAHZAAAACAAAwTLAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABAAAAIAAAAAAAAAAAAAAAAABAAAArUwPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAADAAAAAwAAABwAAQADAAAAHAADAAEAAAAcAAQAWAAAABIAEAADAAIAAQAgADArMis7Kz0rU//9//8AAAAAACAAMCsyKzorPStT//3//wAB/+P/1NTT1MzUy9S2AAMAAQAAAAAAAAAAAAAAAAAAAAAAAAABAAH//wAPAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAgAoACIEHwNXADcAPAAAASYnJicmJyYHBgcGBwYHBgc2NzY3Njc2NzYXFhcWFxYXFgcGBwYHBgcGBwYnFhcWNzY3Njc2NzYBBSc3AQQdFzs8VFNlZWpLQUEzMyQkERUdHSMkKSouVVFRQ0QwMBISEBEsK0RDVRwcGxs/REVFalRUNjYVFPyNAeltOP5MAkdHOTklJQ0ODwsYGCIiKyovGhYXEhINDQcMCwsdHi4uOTo3Ny0uISAMBAECAQ4DAwoPKSg5OEVE/opnldf++wAAAAMAIP/BBmADvwAFAAkADwAACQEHCQEXAQcXNyUBBxcHFwQa/gH2AQj++Pb+vLe3twTS/kDZ6OjZAcAB//f++P749wK2t7e3CAHA2Ojo2QAAAgAC/8AD/gPAAAUACQAACQEHCQEXAQcXNwP+/gD3AQn+9/f+u7e3twHAAgD3/vf+9/cCt7e3twAEAC3/wAhzA8AABQALAA8AFQAACQEHCQEXCQEHFwcXAQcXNyUBBxcHFwQp/gD3AQn+9/cGSv6Yr7u7r/nZt7e3BNz+P9rp6doBwAIA9/73/vf3AgoBaK66u64CFre3twgBwdno6dkAAAMAEP/ABBADwAAEAAkADwAACQQBNxcHJwEnNyc3AQIU/fwB/QID/gT+uG1tbW0BN3H79XwBZwPA/fr+BgIDAf3+EG1tbW3+hHH79nz+mQAAAQAAAAEZmuh46OhfDzz1AAsEAAAAAADf+FLFAAAAAN/4UsUAAP/ACHMDwAAAAAgAAgAAAAAAAAABAAADwP/AAAAIoAAAAAAIcwABAAAAAAAAAAAAAAAAAAAACgQAAAAAAAAAAAAAAAIAAAAEAAAABFAAKAaAACAEAAACCKAALQQgABAAAAAAAAoAFAAeACgAkAC4ANQBCAEwAAAAAQAAAAoAPQAEAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAABIA3gABAAAAAAABAAUAAAABAAAAAAACAAcBrQABAAAAAAADAAUBjwABAAAAAAAEAAUBwgABAAAAAAAFAAsBbgABAAAAAAAGAAUBngABAAAAAAAKADYAzAABAAAAAAANABcADwABAAAAAAAOACgAVAADAAEECQABAAoABQADAAEECQACAA4BtAADAAEECQADAAoBlAADAAEECQAEAAoBxwADAAEECQAFABYBeQADAAEECQAGAAoBowADAAEECQAKAGwBAgADAAEECQANAC4AJgADAAEECQAOAFAAfGZvbnRzAGYAbwBuAHQAc1BhaXpvIENvbW11bml0eSBMaWNlbnNlAFAAYQBpAHoAbwAgAEMAbwBtAG0AdQBuAGkAdAB5ACAATABpAGMAZQBuAHMAZWh0dHBzOi8vcGFpem8uY29tL2NvbW11bml0eS9jb21tdW5pdHl1c2UAaAB0AHQAcABzADoALwAvAHAAYQBpAHoAbwAuAGMAbwBtAC8AYwBvAG0AbQB1AG4AaQB0AHkALwBjAG8AbQBtAHUAbgBpAHQAeQB1AHMAZVBhdGhmaW5kZXIgMmUgQWN0aW9uIEdseXBocwpGb250IGdlbmVyYXRlZCBieSBJY29Nb29uLgBQAGEAdABoAGYAaQBuAGQAZQByACAAMgBlACAAQQBjAHQAaQBvAG4AIABHAGwAeQBwAGgAcwAKAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALlZlcnNpb24gMS4xAFYAZQByAHMAaQBvAG4AIAAxAC4AMWZvbnRzAGYAbwBuAHQAc2ZvbnRzAGYAbwBuAHQAc1JlZ3VsYXIAUgBlAGcAdQBsAGEAcmZvbnRzAGYAbwBuAHQAcwAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-/*! General Settings for #Action & [hrefs */
+/*! General Settings for #Action & [hrefs]s */
 h1 a[href$="#Actions"][title="Single Action"],
 a.internal-link[href$="#Actions"][title="Single Action"] {
-  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z'/%3E%3C/svg%3E%0A");
-  cursor: context-menu;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z'/%3E%3C/svg%3E%0A");
+  width: 1em;
+  height: 1em;
+  background-size: cover;
+  background-repeat: no-repeat;
   display: inline-block;
-  font-size: inherit;
-  height: clamp(18px, 4vw, 26px);
-  vertical-align: bottom;
-  width: clamp(18px, 4vw, 26px);
+  vertical-align: top;
+  color: transparent;
+  width: 1em;
+  height: 1em;
 }
 h1 h1 a[href$="#Actions"][title="Single Action"],
 h1 a.internal-link[href$="#Actions"][title="Single Action"] {
-  height: 1em;
-  width: 1.5em;
+  color: transparent;
+  height: 1.375rem;
+  width: 1.375rem;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title="Single Action"],
 .theme-dark a.internal-link[href$="#Actions"][title="Single Action"] {
-  content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z' fill='red'/%3E%3C/svg%3E%0A");
+  color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z' fill='red'/%3E%3C/svg%3E%0A");
 }
 
 h1 a[href$="#Actions"][title=Two-Action],
 a.internal-link[href$="#Actions"][title=Two-Action] {
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z'/%3E%3C/svg%3E");
-  cursor: context-menu;
-  display: inline-block;
-  font-size: inherit;
-  height: clamp(18px, 4vw, 26px);
-  vertical-align: bottom;
-  width: clamp(18px, 4vw, 26px);
+  color: transparent;
+  width: 1em;
+  height: 1em;
 }
 h1 h1 a[href$="#Actions"][title=Two-Action],
 h1 a.internal-link[href$="#Actions"][title=Two-Action] {
-  height: 1em;
-  width: 1.5em;
+  color: transparent;
+  height: 1.375rem;
+  width: 1.375rem;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Two-Action],
 .theme-dark a.internal-link[href$="#Actions"][title=Two-Action] {
+  color: transparent;
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z' fill='red'/%3E%3C/svg%3E");
 }
 
 h1 a[href$="#Actions"][title=Three-Action],
 a.internal-link[href$="#Actions"][title=Three-Action] {
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z'/%3E%3C/svg%3E");
-  cursor: context-menu;
-  display: inline-block;
-  font-size: inherit;
-  height: clamp(18px, 4vw, 26px);
-  vertical-align: bottom;
-  width: clamp(18px, 4vw, 26px);
+  color: transparent;
+  width: 1em;
+  height: 1em;
 }
 h1 h1 a[href$="#Actions"][title=Three-Action],
 h1 a.internal-link[href$="#Actions"][title=Three-Action] {
-  height: 1em;
-  width: 1.5em;
+  color: transparent;
+  height: 1.375rem;
+  width: 1.375rem;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Three-Action],
 .theme-dark a.internal-link[href$="#Actions"][title=Three-Action] {
+  color: transparent;
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z' fill='red' /%3E%3C/svg%3E");
 }
 
 h1 a[href$="#Actions"][title=Reaction],
 a.internal-link[href$="#Actions"][title=Reaction] {
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z'/%3E%3C/svg%3E");
-  cursor: context-menu;
-  display: inline-block;
-  font-size: inherit;
-  height: clamp(18px, 4vw, 26px);
-  vertical-align: bottom;
-  width: clamp(18px, 4vw, 26px);
+  color: transparent;
+  width: 1em;
+  height: 1em;
 }
 h1 h1 a[href$="#Actions"][title=Reaction],
 h1 a.internal-link[href$="#Actions"][title=Reaction] {
-  height: 1em;
-  width: 1.5em;
+  color: transparent;
+  height: 1.375rem;
+  width: 1.375rem;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Reaction],
 .theme-dark a.internal-link[href$="#Actions"][title=Reaction] {
+  color: transparent;
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z'fill='red' /%3E%3C/svg%3E");
 }
 
@@ -166,142 +158,284 @@ a.internal-link[href$="#Actions"][title="Free Action"],
 .markdown-source-view.mod-cm6 .cm-line a[href$="#Actions"][title="Free Action"],
 .cm-s-obsidian span.cm-link a[href$="#Actions"][title="Free Action"] {
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z'/%3E%3C/svg%3E");
-  cursor: context-menu;
-  display: inline-block;
-  font-size: inherit;
-  height: clamp(18px, 4vw, 26px);
-  vertical-align: bottom;
-  width: clamp(18px, 4vw, 26px);
+  color: transparent;
+  width: 1em;
+  height: 1em;
 }
 h1 h1 a[href$="#Actions"][title="Free Action"],
 h1 a.internal-link[href$="#Actions"][title="Free Action"],
 h1 .markdown-source-view.mod-cm6 .cm-line a[href$="#Actions"][title="Free Action"],
 h1 .cm-s-obsidian span.cm-link a[href$="#Actions"][title="Free Action"] {
-  height: 1em;
-  width: 1.5em;
+  color: transparent;
+  height: 1.375rem;
+  width: 1.375rem;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title="Free Action"],
 .theme-dark a.internal-link[href$="#Actions"][title="Free Action"],
 .theme-dark .markdown-source-view.mod-cm6 .cm-line a[href$="#Actions"][title="Free Action"],
 .theme-dark .cm-s-obsidian span.cm-link a[href$="#Actions"][title="Free Action"] {
+  color: transparent;
   content: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z' fill='red'/%3E%3C/svg%3E");
 }
 
 h1 a[href$="#Actions"][title=Varies],
 a.internal-link[href$="#Actions"][title=Varies] {
   content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctitle%3Eload%3C/title%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z'%3E%3C/path%3E%3C/svg%3E");
-  cursor: context-menu;
-  display: inline-block;
-  font-size: inherit;
-  height: clamp(18px, 4vw, 26px);
-  vertical-align: bottom;
-  width: clamp(18px, 4vw, 26px);
+  color: transparent;
+  width: 1em;
+  height: 1em;
 }
 h1 h1 a[href$="#Actions"][title=Varies],
 h1 a.internal-link[href$="#Actions"][title=Varies] {
-  height: 1em;
-  width: 1.5em;
+  color: transparent;
+  height: 1.375rem;
+  width: 1.375rem;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Varies],
 .theme-dark a.internal-link[href$="#Actions"][title=Varies] {
+  color: transparent;
   content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctitle%3Eload%3C/title%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z' fill='red'%3E%3C/path%3E%3C/svg%3E%0A");
 }
 
 h1 a[href$="#Actions"][title="Duration or Frequency"],
 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z'%3E%3C/path%3E%3C/svg%3E%0A");
-  cursor: context-menu;
-  display: inline-block;
-  font-size: inherit;
-  height: clamp(18px, 4vw, 26px);
-  vertical-align: bottom;
-  width: clamp(18px, 4vw, 26px);
+  color: transparent;
+  color: transparent;
+  width: 1em;
+  height: 1em;
 }
 h1 h1 a[href$="#Actions"][title="Duration or Frequency"],
 h1 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
-  height: 1em;
-  width: 1.5em;
+  color: transparent;
+  height: 1.375rem;
+  width: 1.375rem;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title="Duration or Frequency"],
 .theme-dark a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
+  color: transparent;
   content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z' fill='red'%3E%3C/path%3E%3C/svg%3E%0A");
 }
 
-.markdown-rendered .internal-link:is([href*="rules/traits/"]) {
-  border: 2px solid #d8c483;
-  border-style: double;
-  background: #611405;
-  background-clip: padding-box;
-  color: rgb(232, 232, 232) !important;
-  cursor: help;
-  font-weight: 700;
-  font-size: 1.3em;
-  margin-bottom: 0.75rem;
-  padding-right: 5px;
-  padding-left: 5px;
-  font-variant: small-caps;
-  text-align: left;
-  text-indent: 0;
-  text-transform: capitalize;
-  word-break: keep-all;
+.callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Single Action"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2040 1024'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
 }
-.markdown-rendered .internal-link:is([href*="rules/traits/uncommon"]){
-background: var(--box-uncommon);
+.callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Two-Action] {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2040 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 1.5625rem;
+  line-height: 1.5625rem;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
 }
-.markdown-rendered .internal-link:is([href*="rules/traits/rare"]){
-  background: var(--box-rare);
-  }
-.markdown-rendered .internal-link:is([href*="rules/conditions.md"]) {
-  border: 2px solid #d8c483;
-  border-style: double;
-  background: #138a06;
-  background-clip: padding-box;
-  border-radius: 1px;
-  color: rgb(232, 232, 232) !important;
-  cursor: help;
-  font-weight: 700;
-  font-variant: small-caps;
-  margin-bottom: 0.75rem;
-  padding: 2px;
-  text-align: left;
-  text-indent: 0;
-  text-transform: capitalize;
-  word-break: keep-all;
+.callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Three-Action] {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  line-height: 1.5625rem;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
 }
-.markdown-rendered .internal-link:is([href*="compendium/skills.md"]) {
-  border: 2px solid #d8c483;
-  border-style: double;
-  background: #a96c74;
-  background-clip: padding-box;
-  border-radius: 1px;
-  color: rgb(232, 232, 232) !important;
-  cursor: help;
-  font-weight: 700;
-  font-variant: small-caps;
-  margin-bottom: 0.75rem;
-  padding: 2px;
-  text-align: left;
-  text-indent: 0;
-  text-transform: capitalize;
-  word-break: keep-all;
+.callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Reaction] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2128 1024'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z'/%3E%3C/svg%3E");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: middle;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Free Action"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2128 1024'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z'/%3E%3C/svg%3E");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Varies] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' version='1.1' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z'%3E%3C/path%3E%3C/svg%3E%0A");
+  background-size: cover;
+  display: inline-block;
+  vertical-align: top;
+  content: "";
+  width: 1em;
+  height: 1em;
+  color: transparent;
 }
 
-div.markdown-reading-view p:is([href="rules/traits/Uncommon.md"]) {
-  border: 2px solid var(--box-uncommon);
-  background: var(--box-uncommon);
-  background-clip: padding-box;
-  border-radius: 5px;
+a.internal-link[title="Uncommon Rarity Trait"] {
+  background: rgb(152, 81, 61);
+  border-color: rgb(152, 81, 61);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
   color: rgb(232, 232, 232) !important;
   cursor: help;
   font-weight: 700;
-  margin-bottom: 0.75rem;
-  padding: 2px;
-  text-align: left;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
   text-indent: 0;
   word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li a.internal-link[title="Uncommon Rarity Trait"] {
+  margin-bottom: 0;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[title="Uncommon Rarity Trait"] {
+  margin-bottom: 0.75rem;
+}
+a.internal-link[title="Rare Rarity Trait"] {
+  background: rgb(0, 38, 100);
+  border-color: rgb(0, 38, 100);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li a.internal-link[title="Rare Rarity Trait"] {
+  margin-bottom: 0;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[title="Rare Rarity Trait"] {
+  margin-bottom: 0.75rem;
+}
+a.internal-link[title="Unique Rarity Trait"] {
+  background: rgb(84, 22, 110);
+  border-color: rgb(84, 22, 110);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li a.internal-link[title="Unique Rarity Trait"] {
+  margin-bottom: 0;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[title="Unique Rarity Trait"] {
+  margin-bottom: 0.75rem;
+}
+a.internal-link[title*="Alignment Trait"] {
+  background: rgb(102, 111, 153);
+  border-color: rgb(102, 111, 153);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li a.internal-link[title*="Alignment Trait"] {
+  margin-bottom: 0;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[title*="Alignment Trait"] {
+  margin-bottom: 0.75rem;
+}
+a.internal-link[title*="Size Trait"] {
+  background: rgb(82, 122, 95);
+  border-color: rgb(82, 122, 95);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li a.internal-link[title*="Size Trait"] {
+  margin-bottom: 0;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[title*="Size Trait"] {
+  margin-bottom: 0.75rem;
+}
+a.internal-link[title*="Class Trait"], a.internal-link[title*="Combat Trait"], a.internal-link[title*="Creature Trait"], a.internal-link[title*="Creature Type Trait"], a.internal-link[title*="Effect Trait"], a.internal-link[title*="Element Trait"], a.internal-link[title*="Feat Trait"], a.internal-link[title*="General Trait"], a.internal-link[title*="Hazard Trait"], a.internal-link[title*="Item Trait"], a.internal-link[title*="School Trait"], a.internal-link[title*="Spell Trait"], a.internal-link[title*="Tradition Trait"], a.internal-link[title*="Weapon Trait"] {
+  background: rgb(97, 20, 5);
+  border-color: rgb(97, 20, 5);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(232, 232, 232) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li a.internal-link[title*="Class Trait"], li a.internal-link[title*="Combat Trait"], li a.internal-link[title*="Creature Trait"], li a.internal-link[title*="Creature Type Trait"], li a.internal-link[title*="Effect Trait"], li a.internal-link[title*="Element Trait"], li a.internal-link[title*="Feat Trait"], li a.internal-link[title*="General Trait"], li a.internal-link[title*="Hazard Trait"], li a.internal-link[title*="Item Trait"], li a.internal-link[title*="School Trait"], li a.internal-link[title*="Spell Trait"], li a.internal-link[title*="Tradition Trait"], li a.internal-link[title*="Weapon Trait"] {
+  margin-bottom: 0;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[title*="Class Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Combat Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Creature Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Creature Type Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Effect Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Element Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Feat Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="General Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Hazard Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Item Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="School Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Spell Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Tradition Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Weapon Trait"] {
+  margin-bottom: 0.75rem;
 }
 
 :is(.pf2e) .markdown-embed {
@@ -447,7 +581,7 @@ sup {
 }
 
 :is(.pf2e) .markdown-rendered table {
-  border: 3px solid var(--pf2e-red-headers);
+  border: 0.1875rem solid var(--pf2e-red-headers);
 }
 :is(.pf2e) .markdown-rendered table a {
   font-weight: 500;
@@ -455,7 +589,7 @@ sup {
 }
 :is(.pf2e) .markdown-rendered thead {
   background-color: var(--pf2e-red-headers);
-  border-bottom: 3px solid rgba(var(--pf2e-brown-table-borders-rgb), 0.5);
+  border-bottom: 0.1875rem solid rgba(var(--pf2e-brown-table-borders-rgb), 0.5);
   color: rgb(232, 232, 232);
 }
 :is(.pf2e) .markdown-rendered tbody {
@@ -477,7 +611,7 @@ sup {
 }
 :is(.pf2e) .markdown-rendered tr td:not(:last-child),
 :is(.pf2e) .markdown-rendered tr th:not(:last-child) {
-  border-right: 1px solid rgb(234, 229, 213);
+  border-right: 0.0625rem solid rgb(234, 229, 213);
 }
 
 .callout[data-callout=pf2-beige] {
@@ -486,7 +620,7 @@ sup {
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #f0e9d6;
@@ -498,7 +632,7 @@ sup {
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-beige]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-beige] .callout-title {
   flex-direction: row;
@@ -516,7 +650,7 @@ sup {
   display: none;
 }
 .callout[data-callout=pf2-beige] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -529,17 +663,17 @@ sup {
   padding: 1rem;
 }
 .callout[data-callout=pf2-beige] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -550,32 +684,32 @@ sup {
   display: none;
 }
 .callout[data-callout=pf2-beige] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -586,32 +720,32 @@ sup {
   display: none;
 }
 .callout[data-callout=pf2-beige] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -622,22 +756,19 @@ sup {
   display: none;
 }
 .callout[data-callout=pf2-beige] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-beige] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .callout[data-callout=pf2-beige] .callout-content ul li, h1 + .callout[data-callout=pf2-beige] .callout-content ul li, .callout[data-callout=pf2-beige] .callout-content ul li:last-child, a + .callout[data-callout=pf2-beige] .callout-content ol li, p + .callout[data-callout=pf2-beige] .callout-content ol li, h1 + .callout[data-callout=pf2-beige] .callout-content ol li, .callout[data-callout=pf2-beige] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-beige] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -669,9 +800,9 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-beige] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -689,7 +820,7 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #d2beaa;
@@ -701,7 +832,7 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-brown]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-brown] .callout-title {
   flex-direction: row;
@@ -719,7 +850,7 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-brown] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -732,17 +863,17 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   padding: 1rem;
 }
 .callout[data-callout=pf2-brown] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -753,32 +884,32 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-brown] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -789,32 +920,32 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-brown] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -825,22 +956,19 @@ strong:not(a + .callout[data-callout=pf2-beige] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-brown] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-brown] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .callout[data-callout=pf2-brown] .callout-content ul li, h1 + .callout[data-callout=pf2-brown] .callout-content ul li, .callout[data-callout=pf2-brown] .callout-content ul li:last-child, a + .callout[data-callout=pf2-brown] .callout-content ol li, p + .callout[data-callout=pf2-brown] .callout-content ol li, h1 + .callout[data-callout=pf2-brown] .callout-content ol li, .callout[data-callout=pf2-brown] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-brown] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -872,9 +1000,9 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-brown] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -892,7 +1020,7 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #ccdbbd;
@@ -904,7 +1032,7 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-example]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-example] .callout-title {
   flex-direction: row;
@@ -922,7 +1050,7 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-example] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -935,17 +1063,17 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   padding: 1rem;
 }
 .callout[data-callout=pf2-example] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -956,32 +1084,32 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-example] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -992,32 +1120,32 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-example] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1028,22 +1156,19 @@ strong:not(a + .callout[data-callout=pf2-brown] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-example] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-example] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .callout[data-callout=pf2-example] .callout-content ul li, h1 + .callout[data-callout=pf2-example] .callout-content ul li, .callout[data-callout=pf2-example] .callout-content ul li:last-child, a + .callout[data-callout=pf2-example] .callout-content ol li, p + .callout[data-callout=pf2-example] .callout-content ol li, h1 + .callout[data-callout=pf2-example] .callout-content ol li, .callout[data-callout=pf2-example] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-example] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -1075,9 +1200,9 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-example] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -1095,7 +1220,7 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #e9e4d9;
@@ -1107,7 +1232,7 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-inset]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-inset] .callout-title {
   flex-direction: row;
@@ -1125,7 +1250,7 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-inset] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -1138,17 +1263,17 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   padding: 1rem;
 }
 .callout[data-callout=pf2-inset] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1159,32 +1284,32 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-inset] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1195,32 +1320,32 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-inset] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1231,22 +1356,19 @@ strong:not(a + .callout[data-callout=pf2-example] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-inset] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-inset] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .callout[data-callout=pf2-inset] .callout-content ul li, h1 + .callout[data-callout=pf2-inset] .callout-content ul li, .callout[data-callout=pf2-inset] .callout-content ul li:last-child, a + .callout[data-callout=pf2-inset] .callout-content ol li, p + .callout[data-callout=pf2-inset] .callout-content ol li, h1 + .callout[data-callout=pf2-inset] .callout-content ol li, .callout[data-callout=pf2-inset] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-inset] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -1278,9 +1400,9 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-inset] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -1298,7 +1420,7 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #550c06;
@@ -1310,7 +1432,7 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-key-box]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-key-box] .callout-title {
   flex-direction: row;
@@ -1328,7 +1450,7 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-key-box] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -1341,17 +1463,17 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   padding: 1rem;
 }
 .callout[data-callout=pf2-key-box] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1362,32 +1484,32 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-key-box] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1398,32 +1520,32 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-key-box] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1434,22 +1556,19 @@ strong:not(a + .callout[data-callout=pf2-inset] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-key-box] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-key-box] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .callout[data-callout=pf2-key-box] .callout-content ul li, h1 + .callout[data-callout=pf2-key-box] .callout-content ul li, .callout[data-callout=pf2-key-box] .callout-content ul li:last-child, a + .callout[data-callout=pf2-key-box] .callout-content ol li, p + .callout[data-callout=pf2-key-box] .callout-content ol li, h1 + .callout[data-callout=pf2-key-box] .callout-content ol li, .callout[data-callout=pf2-key-box] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-key-box] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -1481,9 +1600,9 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-key-box] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -1501,7 +1620,7 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #e7aad4;
@@ -1513,7 +1632,7 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-quote]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-quote] .callout-title {
   flex-direction: row;
@@ -1531,7 +1650,7 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-quote] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -1544,17 +1663,17 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   padding: 1rem;
 }
 .callout[data-callout=pf2-quote] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1565,32 +1684,32 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-quote] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1601,32 +1720,32 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-quote] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1637,22 +1756,19 @@ strong:not(a + .callout[data-callout=pf2-key-box] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-quote] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-quote] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .callout[data-callout=pf2-quote] .callout-content ul li, h1 + .callout[data-callout=pf2-quote] .callout-content ul li, .callout[data-callout=pf2-quote] .callout-content ul li:last-child, a + .callout[data-callout=pf2-quote] .callout-content ol li, p + .callout[data-callout=pf2-quote] .callout-content ol li, h1 + .callout[data-callout=pf2-quote] .callout-content ol li, .callout[data-callout=pf2-quote] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-quote] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -1684,9 +1800,9 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-quote] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -1704,7 +1820,7 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #f4f3f0;
@@ -1716,7 +1832,7 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-sidebar]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-sidebar] .callout-title {
   flex-direction: row;
@@ -1734,7 +1850,7 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-sidebar] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -1747,17 +1863,17 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   padding: 1rem;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1768,32 +1884,32 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1804,32 +1920,32 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1840,22 +1956,19 @@ strong:not(a + .callout[data-callout=pf2-quote] .callout-content ul li, p + .cal
   display: none;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-sidebar] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .callout[data-callout=pf2-sidebar] .callout-content ul li, h1 + .callout[data-callout=pf2-sidebar] .callout-content ul li, .callout[data-callout=pf2-sidebar] .callout-content ul li:last-child, a + .callout[data-callout=pf2-sidebar] .callout-content ol li, p + .callout[data-callout=pf2-sidebar] .callout-content ol li, h1 + .callout[data-callout=pf2-sidebar] .callout-content ol li, .callout[data-callout=pf2-sidebar] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-sidebar] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -1887,9 +2000,9 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-sidebar] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -1907,7 +2020,7 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #550c06;
@@ -1919,7 +2032,7 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-red]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-red] .callout-title {
   flex-direction: row;
@@ -1937,7 +2050,7 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-red] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -1950,17 +2063,17 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   padding: 1rem;
 }
 .callout[data-callout=pf2-red] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -1971,32 +2084,32 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-red] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2007,32 +2120,32 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-red] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2043,22 +2156,19 @@ strong:not(a + .callout[data-callout=pf2-sidebar] .callout-content ul li, p + .c
   display: none;
 }
 .callout[data-callout=pf2-red] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-red] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callout[data-callout=pf2-red] .callout-content ul li, h1 + .callout[data-callout=pf2-red] .callout-content ul li, .callout[data-callout=pf2-red] .callout-content ul li:last-child, a + .callout[data-callout=pf2-red] .callout-content ol li, p + .callout[data-callout=pf2-red] .callout-content ol li, h1 + .callout[data-callout=pf2-red] .callout-content ol li, .callout[data-callout=pf2-red] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-red] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -2090,9 +2200,9 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-red] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -2110,7 +2220,7 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #d1d3d4;
@@ -2122,7 +2232,7 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-tip]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-tip] .callout-title {
   flex-direction: row;
@@ -2140,7 +2250,7 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-tip] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -2153,17 +2263,17 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   padding: 1rem;
 }
 .callout[data-callout=pf2-tip] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2174,32 +2284,32 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-tip] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2210,32 +2320,32 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-tip] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2246,22 +2356,19 @@ strong:not(a + .callout[data-callout=pf2-red] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-tip] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-tip] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callout[data-callout=pf2-tip] .callout-content ul li, h1 + .callout[data-callout=pf2-tip] .callout-content ul li, .callout[data-callout=pf2-tip] .callout-content ul li:last-child, a + .callout[data-callout=pf2-tip] .callout-content ol li, p + .callout[data-callout=pf2-tip] .callout-content ol li, h1 + .callout[data-callout=pf2-tip] .callout-content ol li, .callout[data-callout=pf2-tip] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-tip] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -2293,9 +2400,9 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-tip] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -2313,7 +2420,7 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #e3dfbb;
@@ -2325,7 +2432,7 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   padding: 0.125rem;
 }
 .callout[data-callout=pf2-note]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=pf2-note] .callout-title {
   flex-direction: row;
@@ -2343,7 +2450,7 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-note] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -2356,17 +2463,17 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   padding: 1rem;
 }
 .callout[data-callout=pf2-note] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2377,32 +2484,32 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-note] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2413,32 +2520,32 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-note] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2449,22 +2556,19 @@ strong:not(a + .callout[data-callout=pf2-tip] .callout-content ul li, p + .callo
   display: none;
 }
 .callout[data-callout=pf2-note] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=pf2-note] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .callout[data-callout=pf2-note] .callout-content ul li, h1 + .callout[data-callout=pf2-note] .callout-content ul li, .callout[data-callout=pf2-note] .callout-content ul li:last-child, a + .callout[data-callout=pf2-note] .callout-content ol li, p + .callout[data-callout=pf2-note] .callout-content ol li, h1 + .callout[data-callout=pf2-note] .callout-content ol li, .callout[data-callout=pf2-note] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=pf2-note] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -2496,9 +2600,9 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   padding-inline: 0.25rem;
 }
 .callout[data-callout=pf2-note] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -2516,7 +2620,7 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   background-color: #e6e6b4;
@@ -2528,7 +2632,7 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   padding: 0.125rem;
 }
 .callout[data-callout=success-degree]:not(.admonition).drop-shadow {
-  box-shadow: rgb(0, 73, 97) 0 20px 30px -10px;
+  box-shadow: rgb(0, 73, 97) 0 1.25rem 1.875rem -0.625rem;
 }
 .callout[data-callout=success-degree] .callout-title {
   flex-direction: row;
@@ -2546,7 +2650,7 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   display: none;
 }
 .callout[data-callout=success-degree] .callout-title .callout-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   margin-left: 1rem;
   padding-bottom: 0.125rem;
@@ -2559,17 +2663,17 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   padding: 1rem;
 }
 .callout[data-callout=success-degree] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2580,32 +2684,32 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   display: none;
 }
 .callout[data-callout=success-degree] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2616,32 +2720,32 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   display: none;
 }
 .callout[data-callout=success-degree] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2652,22 +2756,19 @@ strong:not(a + .callout[data-callout=pf2-note] .callout-content ul li, p + .call
   display: none;
 }
 .callout[data-callout=success-degree] .callout-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .callout[data-callout=success-degree] .callout-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p + .callout[data-callout=success-degree] .callout-content ul li, h1 + .callout[data-callout=success-degree] .callout-content ul li, .callout[data-callout=success-degree] .callout-content ul li:last-child, a + .callout[data-callout=success-degree] .callout-content ol li, p + .callout[data-callout=success-degree] .callout-content ol li, h1 + .callout[data-callout=success-degree] .callout-content ol li, .callout[data-callout=success-degree] .callout-content ol li:last-child)::after {
-  content: ":";
 }
 .callout[data-callout=success-degree] .callout-content code {
   background-color: rgb(232, 232, 232);
@@ -2699,9 +2800,9 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   padding-inline: 0.25rem;
 }
 .callout[data-callout=success-degree] .callout-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -2720,7 +2821,7 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -2728,7 +2829,7 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=pf2-note] .admonition-title {
@@ -2754,11 +2855,11 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   width: 1.5rem;
 }
 .admonition[data-callout=pf2-note] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=pf2-note] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -2771,17 +2872,17 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   padding: 1rem;
 }
 .admonition[data-callout=pf2-note] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2792,32 +2893,32 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   display: none;
 }
 .admonition[data-callout=pf2-note] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2828,32 +2929,32 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   display: none;
 }
 .admonition[data-callout=pf2-note] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -2864,22 +2965,19 @@ strong:not(a + .callout[data-callout=success-degree] .callout-content ul li, p +
   display: none;
 }
 .admonition[data-callout=pf2-note] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-note] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p + .admonition[data-callout=pf2-note] .admonition-content ul li, h1 + .admonition[data-callout=pf2-note] .admonition-content ul li, .admonition[data-callout=pf2-note] .admonition-content ul li:last-child, a + .admonition[data-callout=pf2-note] .admonition-content ol li, p + .admonition[data-callout=pf2-note] .admonition-content ol li, h1 + .admonition[data-callout=pf2-note] .admonition-content ol li, .admonition[data-callout=pf2-note] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=pf2-note] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -2911,9 +3009,9 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=pf2-note] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -2929,9 +3027,7 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   margin-bottom: 1rem;
 }
 .admonition[data-callout=pf2-note] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -2948,7 +3044,7 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -2956,7 +3052,7 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-ability] .admonition-title {
@@ -2982,11 +3078,11 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   width: 1.5rem;
 }
 .admonition[data-callout=embed-ability] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=embed-ability] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -2999,17 +3095,17 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   padding: 1rem;
 }
 .admonition[data-callout=embed-ability] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3020,32 +3116,32 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   display: none;
 }
 .admonition[data-callout=embed-ability] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3056,32 +3152,32 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   display: none;
 }
 .admonition[data-callout=embed-ability] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3092,22 +3188,19 @@ strong:not(a + .admonition[data-callout=pf2-note] .admonition-content ul li, p +
   display: none;
 }
 .admonition[data-callout=embed-ability] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ability] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li, p + .admonition[data-callout=embed-ability] .admonition-content ul li, h1 + .admonition[data-callout=embed-ability] .admonition-content ul li, .admonition[data-callout=embed-ability] .admonition-content ul li:last-child, a + .admonition[data-callout=embed-ability] .admonition-content ol li, p + .admonition[data-callout=embed-ability] .admonition-content ol li, h1 + .admonition[data-callout=embed-ability] .admonition-content ol li, .admonition[data-callout=embed-ability] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=embed-ability] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -3139,9 +3232,9 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=embed-ability] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -3157,9 +3250,7 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   margin-bottom: 1rem;
 }
 .admonition[data-callout=embed-ability] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -3176,7 +3267,7 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -3184,7 +3275,7 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-action] .admonition-title {
@@ -3210,11 +3301,11 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   width: 1.5rem;
 }
 .admonition[data-callout=embed-action] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=embed-action] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -3227,17 +3318,17 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   padding: 1rem;
 }
 .admonition[data-callout=embed-action] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3248,32 +3339,32 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=embed-action] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3284,32 +3375,32 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=embed-action] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3320,22 +3411,19 @@ strong:not(a + .admonition[data-callout=embed-ability] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=embed-action] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-action] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li, p + .admonition[data-callout=embed-action] .admonition-content ul li, h1 + .admonition[data-callout=embed-action] .admonition-content ul li, .admonition[data-callout=embed-action] .admonition-content ul li:last-child, a + .admonition[data-callout=embed-action] .admonition-content ol li, p + .admonition[data-callout=embed-action] .admonition-content ol li, h1 + .admonition[data-callout=embed-action] .admonition-content ol li, .admonition[data-callout=embed-action] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=embed-action] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -3367,9 +3455,9 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=embed-action] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -3385,9 +3473,7 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   margin-bottom: 1rem;
 }
 .admonition[data-callout=embed-action] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -3404,7 +3490,7 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -3412,7 +3498,7 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-title {
@@ -3438,11 +3524,11 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   width: 1.5rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -3455,17 +3541,17 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   padding: 1rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3476,32 +3562,32 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3512,32 +3598,32 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3548,22 +3634,19 @@ strong:not(a + .admonition[data-callout=embed-action] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-avatar] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li, p + .admonition[data-callout=embed-avatar] .admonition-content ul li, h1 + .admonition[data-callout=embed-avatar] .admonition-content ul li, .admonition[data-callout=embed-avatar] .admonition-content ul li:last-child, a + .admonition[data-callout=embed-avatar] .admonition-content ol li, p + .admonition[data-callout=embed-avatar] .admonition-content ol li, h1 + .admonition[data-callout=embed-avatar] .admonition-content ol li, .admonition[data-callout=embed-avatar] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=embed-avatar] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -3595,9 +3678,9 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -3613,9 +3696,7 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   margin-bottom: 1rem;
 }
 .admonition[data-callout=embed-avatar] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -3632,7 +3713,7 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -3640,7 +3721,7 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-disease] .admonition-title {
@@ -3666,11 +3747,11 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   width: 1.5rem;
 }
 .admonition[data-callout=embed-disease] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=embed-disease] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -3683,17 +3764,17 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   padding: 1rem;
 }
 .admonition[data-callout=embed-disease] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3704,32 +3785,32 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=embed-disease] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3740,32 +3821,32 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=embed-disease] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3776,22 +3857,19 @@ strong:not(a + .admonition[data-callout=embed-avatar] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=embed-disease] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-disease] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li, p + .admonition[data-callout=embed-disease] .admonition-content ul li, h1 + .admonition[data-callout=embed-disease] .admonition-content ul li, .admonition[data-callout=embed-disease] .admonition-content ul li:last-child, a + .admonition[data-callout=embed-disease] .admonition-content ol li, p + .admonition[data-callout=embed-disease] .admonition-content ol li, h1 + .admonition[data-callout=embed-disease] .admonition-content ol li, .admonition[data-callout=embed-disease] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=embed-disease] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -3823,9 +3901,9 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=embed-disease] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -3841,9 +3919,7 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   margin-bottom: 1rem;
 }
 .admonition[data-callout=embed-disease] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -3860,7 +3936,7 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -3868,7 +3944,7 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-feat] .admonition-title {
@@ -3894,11 +3970,11 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   width: 1.5rem;
 }
 .admonition[data-callout=embed-feat] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=embed-feat] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -3911,17 +3987,17 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   padding: 1rem;
 }
 .admonition[data-callout=embed-feat] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3932,32 +4008,32 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=embed-feat] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -3968,32 +4044,32 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=embed-feat] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4004,22 +4080,19 @@ strong:not(a + .admonition[data-callout=embed-disease] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=embed-feat] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-feat] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p + .admonition[data-callout=embed-feat] .admonition-content ul li, h1 + .admonition[data-callout=embed-feat] .admonition-content ul li, .admonition[data-callout=embed-feat] .admonition-content ul li:last-child, a + .admonition[data-callout=embed-feat] .admonition-content ol li, p + .admonition[data-callout=embed-feat] .admonition-content ol li, h1 + .admonition[data-callout=embed-feat] .admonition-content ol li, .admonition[data-callout=embed-feat] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=embed-feat] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -4051,9 +4124,9 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=embed-feat] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -4069,9 +4142,7 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   margin-bottom: 1rem;
 }
 .admonition[data-callout=embed-feat] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -4088,7 +4159,7 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -4096,7 +4167,7 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-item] .admonition-title {
@@ -4122,11 +4193,11 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   width: 1.5rem;
 }
 .admonition[data-callout=embed-item] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=embed-item] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -4139,17 +4210,17 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   padding: 1rem;
 }
 .admonition[data-callout=embed-item] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4160,32 +4231,32 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   display: none;
 }
 .admonition[data-callout=embed-item] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4196,32 +4267,32 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   display: none;
 }
 .admonition[data-callout=embed-item] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4232,22 +4303,19 @@ strong:not(a + .admonition[data-callout=embed-feat] .admonition-content ul li, p
   display: none;
 }
 .admonition[data-callout=embed-item] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-item] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p + .admonition[data-callout=embed-item] .admonition-content ul li, h1 + .admonition[data-callout=embed-item] .admonition-content ul li, .admonition[data-callout=embed-item] .admonition-content ul li:last-child, a + .admonition[data-callout=embed-item] .admonition-content ol li, p + .admonition[data-callout=embed-item] .admonition-content ol li, h1 + .admonition[data-callout=embed-item] .admonition-content ol li, .admonition[data-callout=embed-item] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=embed-item] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -4279,9 +4347,9 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=embed-item] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -4297,9 +4365,7 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   margin-bottom: 1rem;
 }
 .admonition[data-callout=embed-item] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -4316,7 +4382,7 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -4324,7 +4390,7 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-title {
@@ -4350,11 +4416,11 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   width: 1.5rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -4367,17 +4433,17 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   padding: 1rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4388,32 +4454,32 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   display: none;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4424,32 +4490,32 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   display: none;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4460,22 +4526,19 @@ strong:not(a + .admonition[data-callout=embed-item] .admonition-content ul li, p
   display: none;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=embed-ritual] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li, p + .admonition[data-callout=embed-ritual] .admonition-content ul li, h1 + .admonition[data-callout=embed-ritual] .admonition-content ul li, .admonition[data-callout=embed-ritual] .admonition-content ul li:last-child, a + .admonition[data-callout=embed-ritual] .admonition-content ol li, p + .admonition[data-callout=embed-ritual] .admonition-content ol li, h1 + .admonition[data-callout=embed-ritual] .admonition-content ol li, .admonition[data-callout=embed-ritual] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=embed-ritual] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -4507,9 +4570,9 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -4525,9 +4588,7 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   margin-bottom: 1rem;
 }
 .admonition[data-callout=embed-ritual] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -4544,7 +4605,7 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -4552,7 +4613,7 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=inline-affliction] .admonition-title {
@@ -4578,11 +4639,11 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   width: 1.5rem;
 }
 .admonition[data-callout=inline-affliction] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=inline-affliction] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -4595,17 +4656,17 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   padding: 1rem;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4616,32 +4677,32 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4652,32 +4713,32 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4688,22 +4749,19 @@ strong:not(a + .admonition[data-callout=embed-ritual] .admonition-content ul li,
   display: none;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-affliction] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content ul li, p + .admonition[data-callout=inline-affliction] .admonition-content ul li, h1 + .admonition[data-callout=inline-affliction] .admonition-content ul li, .admonition[data-callout=inline-affliction] .admonition-content ul li:last-child, a + .admonition[data-callout=inline-affliction] .admonition-content ol li, p + .admonition[data-callout=inline-affliction] .admonition-content ol li, h1 + .admonition[data-callout=inline-affliction] .admonition-content ol li, .admonition[data-callout=inline-affliction] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=inline-affliction] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -4735,9 +4793,9 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=inline-affliction] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -4753,9 +4811,7 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   margin-bottom: 1rem;
 }
 .admonition[data-callout=inline-affliction] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -4772,7 +4828,7 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -4780,7 +4836,7 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=inline-attack] .admonition-title {
@@ -4806,11 +4862,11 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   width: 1.5rem;
 }
 .admonition[data-callout=inline-attack] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=inline-attack] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -4823,17 +4879,17 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   padding: 1rem;
 }
 .admonition[data-callout=inline-attack] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4844,32 +4900,32 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   display: none;
 }
 .admonition[data-callout=inline-attack] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4880,32 +4936,32 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   display: none;
 }
 .admonition[data-callout=inline-attack] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -4916,22 +4972,19 @@ strong:not(a + .admonition[data-callout=inline-affliction] .admonition-content u
   display: none;
 }
 .admonition[data-callout=inline-attack] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=inline-attack] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li, p + .admonition[data-callout=inline-attack] .admonition-content ul li, h1 + .admonition[data-callout=inline-attack] .admonition-content ul li, .admonition[data-callout=inline-attack] .admonition-content ul li:last-child, a + .admonition[data-callout=inline-attack] .admonition-content ol li, p + .admonition[data-callout=inline-attack] .admonition-content ol li, h1 + .admonition[data-callout=inline-attack] .admonition-content ol li, .admonition[data-callout=inline-attack] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=inline-attack] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -4963,9 +5016,9 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=inline-attack] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -4981,9 +5034,7 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   margin-bottom: 1rem;
 }
 .admonition[data-callout=inline-attack] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -5000,7 +5051,7 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -5008,7 +5059,7 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-title {
@@ -5034,11 +5085,11 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   width: 1.5rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -5051,17 +5102,17 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   padding: 1rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -5072,32 +5123,32 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -5108,32 +5159,32 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -5144,22 +5195,19 @@ strong:not(a + .admonition[data-callout=inline-attack] .admonition-content ul li
   display: none;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=pf2-summary] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, p + .admonition[data-callout=pf2-summary] .admonition-content ul li, h1 + .admonition[data-callout=pf2-summary] .admonition-content ul li, .admonition[data-callout=pf2-summary] .admonition-content ul li:last-child, a + .admonition[data-callout=pf2-summary] .admonition-content ol li, p + .admonition[data-callout=pf2-summary] .admonition-content ol li, h1 + .admonition[data-callout=pf2-summary] .admonition-content ol li, .admonition[data-callout=pf2-summary] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=pf2-summary] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -5191,9 +5239,9 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -5209,9 +5257,7 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   margin-bottom: 1rem;
 }
 .admonition[data-callout=pf2-summary] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -5228,7 +5274,7 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   --callout-background-alpha: 0.2;
   --callout-padding: 1rem;
   --callout-radius: 0.25rem;
-  font-size: clamp(14px, 1.0625em, 18px);
+  font-size: 1rem;
   overflow-wrap: break-word;
   overflow-y: scroll;
   box-shadow: 0 0 5px 0 rgba(26, 34, 77, 0.9);
@@ -5236,7 +5282,7 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   border-style: solid;
   border-width: 0.05rem;
   color: rgb(36, 36, 36);
-  margin: 0.1875rem 0.125rem 0.125rem;
+  margin: 3px 0.125rem 0.125rem;
   padding: 0.125rem;
 }
 .admonition[data-callout=statblock-pf2] .admonition-title {
@@ -5262,11 +5308,11 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   width: 1.5rem;
 }
 .admonition[data-callout=statblock-pf2] .admonition-title .admonition-title-icon .svg-icon:has(.content) {
-  height: 16px;
-  width: 16px;
+  height: 1rem;
+  width: 1rem;
 }
 .admonition[data-callout=statblock-pf2] .admonition-title .admonition-title-inner {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   font-weight: 700;
   padding-bottom: 0.125rem;
   margin-right: 0.125rem;
@@ -5279,17 +5325,17 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   padding: 1rem;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -5300,32 +5346,32 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   display: none;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -5336,32 +5382,32 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   display: none;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h1 {
-  font-size: clamp(18px, 1.5em, 22px);
+  font-size: clamp(1.125rem, 1.5em, 1.375rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h2 {
-  font-size: clamp(16px, 1.3125em, 20px);
+  font-size: clamp(1rem, 1.3125em, 1.25rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h3 {
-  font-size: clamp(14px, 1.125em, 16px);
+  font-size: clamp(0.875rem, 1.125em, 1rem);
   padding-bottom: 0.125em;
   text-align: center;
 }
@@ -5372,22 +5418,19 @@ strong:not(a + .admonition[data-callout=pf2-summary] .admonition-content ul li, 
   display: none;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h4 {
-  font-size: clamp(12px, 1em, 14px);
+  font-size: clamp(0.75rem, 1em, 0.875rem);
   padding-bottom: 0.5em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h5 {
-  font-size: clamp(10px, 0.9375em, 12px);
+  font-size: clamp(0.625rem, 0.9375em, 0.75rem);
   padding-bottom: 0.25em;
   text-align: center;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content h6 {
-  font-size: clamp(8px, 0.8125em, 10px);
+  font-size: clamp(0.8125em, 0.5rem, 0.625rem);
   padding-bottom: 0.75em;
   text-align: center;
-}
-strong:not(a + .admonition[data-callout=statblock-pf2] .admonition-content ul li, p + .admonition[data-callout=statblock-pf2] .admonition-content ul li, h1 + .admonition[data-callout=statblock-pf2] .admonition-content ul li, .admonition[data-callout=statblock-pf2] .admonition-content ul li:last-child, a + .admonition[data-callout=statblock-pf2] .admonition-content ol li, p + .admonition[data-callout=statblock-pf2] .admonition-content ol li, h1 + .admonition[data-callout=statblock-pf2] .admonition-content ol li, .admonition[data-callout=statblock-pf2] .admonition-content ol li:last-child)::after {
-  content: ":";
 }
 .admonition[data-callout=statblock-pf2] .admonition-content code {
   background-color: rgb(232, 232, 232);
@@ -5419,9 +5462,9 @@ strong:not(a + .admonition[data-callout=statblock-pf2] .admonition-content ul li
   padding-inline: 0.25rem;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content blockquote {
-  padding: 0.3125em 0.3125em 0.3125em 10px;
-  border-right: 0.1875em solid;
-  border-left: 0.1875em solid;
+  padding: 0.3125rem 0.3125rem 0.3125rem 0.625rem;
+  border-right: 0.1875rem solid;
+  border-left: 0.1875rem solid;
   margin-left: 0.75em;
   margin-right: 0.75em;
 }
@@ -5437,9 +5480,7 @@ strong:not(a + .admonition[data-callout=statblock-pf2] .admonition-content ul li
   margin-bottom: 1rem;
 }
 .admonition[data-callout=statblock-pf2] .admonition-content-copy {
-  cursor: pointer;
   opacity: 0;
-  position: relative;
   margin: 0.3125rem;
   right: 0;
   top: 0;
@@ -6167,7 +6208,7 @@ strong:not(a + .admonition[data-callout=statblock-pf2] .admonition-content ul li
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="church" class="svg-inline--fa fa-church fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M464.46 246.68L352 179.2V128h48c8.84 0 16-7.16 16-16V80c0-8.84-7.16-16-16-16h-48V16c0-8.84-7.16-16-16-16h-32c-8.84 0-16 7.16-16 16v48h-48c-8.84 0-16 7.16-16 16v32c0 8.84 7.16 16 16 16h48v51.2l-112.46 67.48A31.997 31.997 0 0 0 160 274.12V512h96v-96c0-35.35 28.65-64 64-64s64 28.65 64 64v96h96V274.12c0-11.24-5.9-21.66-15.54-27.44zM0 395.96V496c0 8.84 7.16 16 16 16h112V320L19.39 366.54A32.024 32.024 0 0 0 0 395.96zm620.61-29.42L512 320v192h112c8.84 0 16-7.16 16-16V395.96c0-12.8-7.63-24.37-19.39-29.42z"></path></svg>';
 }
 .admonition[data-callout=embed-avatar] a.internal-link {
-  color: #64023b;
+  color: rgb(100, 2, 59);
 }
 .admonition[data-callout=embed-avatar] a.internal-link:hover {
   color: #32011e;
@@ -6595,63 +6636,162 @@ strong:not(a + .admonition[data-callout=statblock-pf2] .admonition-content ul li
   color: rgb(204, 72, 0);
 }
 
-.theme-dark {
-  --statblock-accent: 201,60,60;
+body .callout[data-callout=statblock-pf2e] {
+  background-color: rgb(246, 244, 242);
+  border: none;
+  --callout-color: var(--statblock-pf2e);
+  color: rgb(0, 0, 0);
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.3em;
+  margin: 1rem 0;
+  min-width: 50%;
+  mix-blend-mode: normal;
+  padding: 0 0.25em;
 }
-
-.theme-light {
-  --statblock-accent: 201,60,60;
+.theme-dark body .callout[data-callout=statblock-pf2e] {
+  --statblock-pf2e: 201, 60, 60;
 }
-
-.admonition[data-callout=statblock-pf2e] {
-  --callout-color: 239, 215, 143;
-  --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="dragon" class="svg-inline--fa fa-dragon fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M18.32 255.78L192 223.96l-91.28 68.69c-10.08 10.08-2.94 27.31 11.31 27.31h222.7c-9.44-26.4-14.73-54.47-14.73-83.38v-42.27l-119.73-87.6c-23.82-15.88-55.29-14.01-77.06 4.59L5.81 227.64c-12.38 10.33-3.45 30.42 12.51 28.14zm556.87 34.1l-100.66-50.31A47.992 47.992 0 0 1 448 196.65v-36.69h64l28.09 22.63c6 6 14.14 9.37 22.63 9.37h30.97a32 32 0 0 0 28.62-17.69l14.31-28.62a32.005 32.005 0 0 0-3.02-33.51l-74.53-99.38C553.02 4.7 543.54 0 533.47 0H296.02c-7.13 0-10.7 8.57-5.66 13.61L352 63.96 292.42 88.8c-5.9 2.95-5.9 11.36 0 14.31L352 127.96v108.62c0 72.08 36.03 139.39 96 179.38-195.59 6.81-344.56 41.01-434.1 60.91C5.78 478.67 0 485.88 0 494.2 0 504 7.95 512 17.76 512h499.08c63.29.01 119.61-47.56 122.99-110.76 2.52-47.28-22.73-90.4-64.64-111.36zM489.18 66.25l45.65 11.41c-2.75 10.91-12.47 18.89-24.13 18.26-12.96-.71-25.85-12.53-21.52-29.67z"></path></svg>';
+.theme-light body .callout[data-callout=statblock-pf2e] {
+  --statblock-pf2e: 201, 60, 60;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-title {
-  line-height: var(--line-height);
+body .callout[data-callout=statblock-pf2e] strong {
+  color: rgb(0, 0, 0);
 }
-.admonition[data-callout=statblock-pf2e] .admonition-title .admonition-title-content {
-  flex: 2;
-  font-size: var(--h3-size);
+body .callout[data-callout=statblock-pf2e] em {
+  color: rgb(0, 0, 0);
 }
-.admonition[data-callout=statblock-pf2e] img[src$="#token"],
-.admonition[data-callout=statblock-pf2e] div[src$="#token"] {
+body .callout[data-callout=statblock-pf2e] strong + em {
+  color: rgb(0, 0, 0);
+}
+body .callout[data-callout=statblock-pf2e] .callout-title {
+  background-color: rgb(246, 244, 242);
+  border: none;
+  border-radius: 0;
+  color: rgb(0, 0, 0);
+  display: flex;
+  font-family: "Oswald", sans-serif;
+  font-size: inherit;
+  gap: 0;
+  line-height: 1.3;
+  margin-bottom: 0;
+  padding: 0.25em 0 0;
+}
+body .callout[data-callout=statblock-pf2e] .callout-title .callout-icon {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-title .callout-title-inner {
+  color: rgb(0, 0, 0);
+  flex: 1;
+  font-size: 1.35em;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0;
+  margin-left: 0.25em;
+  padding-bottom: 0;
+  position: relative;
+  text-align: left;
+  text-transform: uppercase;
+}
+body .callout[data-callout=statblock-pf2e] img[src$="#token"],
+body .callout[data-callout=statblock-pf2e] div[src$="#token"] {
   float: right;
-  margin-left: 5px;
-  width: 150px;
+  margin-left: 0.3125em;
+  width: 9.375em;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-content > :first-child {
-  margin-top: 0.5em;
+body .callout[data-callout=statblock-pf2e] .callout-content {
+  background-color: rgb(246, 244, 242);
+  margin-top: 0;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+  padding-top: 0;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-content > :last-child {
-  margin-bottom: 0.5em;
+body .callout[data-callout=statblock-pf2e] .callout-content a {
+  color: rgb(51, 122, 183);
+  font-weight: 700;
+  text-decoration: none;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-content h1,
-.admonition[data-callout=statblock-pf2e] .admonition-content h2,
-.admonition[data-callout=statblock-pf2e] .admonition-content h3 {
-  font-family: var(--default-font);
-  font-variant: common-ligatures small-caps;
+body .callout[data-callout=statblock-pf2e] .callout-content a.external-link {
+  background-image: none;
+  background-size: 0;
+  color: rgb(150, 122, 222);
+  padding-right: 0;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-content h1 {
-  font-size: 1.4em;
-  line-height: 1.4em;
-  margin: 0;
+body .callout[data-callout=statblock-pf2e] .callout-content a.external-link::after {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content .internal-link.is-unresolved::after {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content blockquote {
+  background-color: rgb(246, 244, 242);
+  border: none;
+  color: rgb(0, 0, 0);
+  margin-inline-end: 1em;
+  margin-inline-start: 2em;
   padding: 0;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-content h2,
-.admonition[data-callout=statblock-pf2e] .admonition-content h3 {
-  border-bottom: 1px solid rgb(239, 215, 143);
-  font-size: 1.2em;
-  line-height: 1.2em;
-  margin-bottom: 0.3em;
-  margin-top: 0.2em;
-  padding: 0.5em 0 0 0;
+body .callout[data-callout=statblock-pf2e] .callout-content > p {
+  margin-block-start: 0.5em;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-content p {
+body .callout[data-callout=statblock-pf2e] .callout-content li {
   line-height: 1.2em;
   margin-block-start: 0.5em;
 }
-.admonition[data-callout=statblock-pf2e] .admonition-content li {
-  line-height: 1.2em;
+body .callout[data-callout=statblock-pf2e] .callout-content > hr {
+  border-color: rgb(0, 0, 0);
+  border-top: 1px solid;
+  height: 1px;
+  margin: 0;
+  width: 100%;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > hr::before {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > hr::after {
+  display: none;
+}
+body .callout[data-callout=statblock-pf2e] .callout-content > hr:has(.admonition):has(.is-live-preview) {
   margin-block-start: 0.5em;
+}
+body .admonition-statblock-pf2e-parent .admonition-content > p {
+  margin-block-end: 0.25em;
+  margin-block-start: 0.5em;
+}
+
+.creature {
+  float: right;
+  margin-right: 0.5em;
+}
+
+.sourcebook {
+  float: right;
+  margin-bottom: 0.5em;
+  margin-right: 0.5em;
+}
+
+body .callout[data-callout=statblock-pf2e] .callout[data-callout-metadata~=no-title] > .callout-title {
+  display: none;
+}
+
+body .markdown-reading-view .callout[data-callout=statblock-pf2e] {
+  width: 70%;
+}
+
+body .markdown-reading-view .callout[data-callout=statblock-pf2e]:has(.creature-statblock-container) {
+  width: 100%;
+}
+
+body .is-live-preview .callout[data-callout=statblock-pf2e] {
+  width: 70%;
+}
+
+body .is-live-preview .callout[data-callout=statblock-pf2e]:has(.creature-statblock-container) {
+  width: 100%;
+}
+
+.published-container .callout[data-callout=statblock-pf2e] {
+  max-width: 70%;
+  min-width: 40%;
 }

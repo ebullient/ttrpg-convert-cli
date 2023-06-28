@@ -3,22 +3,22 @@
 
 // Mixin for common styles
 @mixin root-common {
-  font-size: var.$block-body;
-  overflow-wrap: var.$overflow-word-break;
+  font-size: 1rem;
+  overflow-wrap: break-word;
   overflow-y: scroll;
 }
 
 // Common styles for .callout and .admonition
 @mixin common-root {
-  --callout-background-alpha: #{var.$opacity-20};
-  --callout-padding: #{var.$size-4-4-rem};
-  --callout-radius: #{var.$width-4-rem};
+  --callout-background-alpha: 0.2;
+  --callout-padding: 1rem;
+  --callout-radius: 0.25rem;
   @include root-common;
 }
 
 // Callout-drop-shadows
 @mixin callout-drop {
   &:not(.admonition).drop-shadow {
-    box-shadow: var.$very-dark-teal 0 20px 30px -10px;
+    box-shadow: var.$very-dark-teal 0 1.25rem 1.875rem -0.625rem;
   }
 }

@@ -23,7 +23,7 @@
     & .callout-title-inner {
       color: var.$very-soft-yellow;
       margin-left: 0.25rem;
-      text-align: var.$align-left;
+      text-align: left;
 
       a {
         color: lighten(var.$very-desaturated-red, 20);
