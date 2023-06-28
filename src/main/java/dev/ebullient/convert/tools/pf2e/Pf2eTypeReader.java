@@ -39,7 +39,7 @@ public interface Pf2eTypeReader extends JsonSource {
         cg("Chaotic Good"),
         cn("Chaotic Neutral"),
         le("Lawful Evil"),
-        lg("Lawful Goo"),
+        lg("Lawful Good"),
         ln("Lawful Neutral"),
         n("Neutral"),
         ne("Neutral Evil"),
