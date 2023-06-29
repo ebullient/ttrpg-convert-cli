@@ -126,7 +126,7 @@ public interface JsonSource extends JsonTextReplacement {
                         } else if (node.has("name")) {
                             maybeAddBlankLine(text);
                             text.add(heading + " " + replaceText(node.get("name")));
-                            if (index().differentSource(getSources(), node)) {
+                            if (index().differentSource(getSources(), parseState.getSource())) {
                                 text.add(index().getSourceText(node));
                             }
                             text.add("");
@@ -255,17 +255,17 @@ public interface JsonSource extends JsonTextReplacement {
                         break;
                     }
                     case "refSubclassFeature": {
-                        ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.subclassfeature, node,
+                        ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.subclassFeature, node,
                                 "subclassFeature");
                         if (cf == null) {
                             break; // skipped or not found
                         }
                         if (parseState.inList()) {
                             // emit as list item (minus list decoration, see optionlist)
-                            cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.subclassfeature));
+                            cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.subclassFeature));
                         } else {
                             // emit inline as proper section
-                            cf.appendText(this, text, parseState.getSource(Tools5eIndexType.subclassfeature));
+                            cf.appendText(this, text, parseState.getSource(Tools5eIndexType.subclassFeature));
                         }
                         break;
                     }

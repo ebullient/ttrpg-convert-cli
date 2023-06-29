@@ -29,7 +29,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         if (table.isEmpty()) {
             return;
         }
-        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        boolean pushed = parseState.push(getSources(), node);
         try {
             List<String> text = table.stream()
                     .map(x -> x.replaceAll("^\\|\\s*\\d+\\s*", ""))
@@ -45,7 +45,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         if (Json2QuteBackground.ideals.isEmpty()) {
             return;
         }
-        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        boolean pushed = parseState.push(getSources(), node);
         try {
             List<String> ideals = Json2QuteBackground.ideals.stream()
                     .map(x -> x.replace("**", ""))

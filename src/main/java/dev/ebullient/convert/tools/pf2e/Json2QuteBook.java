@@ -31,7 +31,7 @@ public class Json2QuteBook extends Json2QuteBase {
      * Page state has to be maintained.
      */
     public List<Pf2eQuteNote> buildBook() {
-        boolean pushed = parseState.push(rootNode); // set source
+        boolean pushed = parseState.push(getSources()); // set source
         try {
             QuteBook.BookInfo bookInfo = new QuteBook.BookInfo();
             bookInfo.author = Pf2eBook.author.getTextOrNull(rootNode);

@@ -33,7 +33,7 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
     }
 
     public Pf2eQuteBase build() {
-        boolean pushed = rootNode == null ? parseState.push(getSources()) : parseState.push(rootNode);
+        boolean pushed = parseState.push(getSources(), rootNode);
         try {
             return buildQuteResource();
         } finally {
@@ -42,7 +42,7 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
     }
 
     public Pf2eQuteNote buildNote() {
-        boolean pushed = rootNode == null ? parseState.push(getSources()) : parseState.push(rootNode);
+        boolean pushed = parseState.push(getSources(), rootNode);
         try {
             return buildQuteNote();
         } finally {

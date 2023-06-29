@@ -30,7 +30,7 @@ public class Json2QuteRace extends Json2QuteCommon {
         tags.add("race/" + String.join("/", split));
 
         List<ImageRef> fluffImages = new ArrayList<>();
-        String fluff = getFluffDescription(Tools5eIndexType.racefluff, "###", fluffImages);
+        String fluff = getFluffDescription(Tools5eIndexType.raceFluff, "###", fluffImages);
 
         return new QuteRace(sources,
                 name,

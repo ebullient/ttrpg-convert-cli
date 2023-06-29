@@ -20,6 +20,8 @@ public abstract class CompendiumSources {
     protected final IndexType type;
     protected final String key;
     protected final String name;
+
+    // sources will only appear once, iterate by insertion order
     protected final Set<String> bookSources = new LinkedHashSet<>();
     protected final String sourceText;
 
@@ -102,10 +104,13 @@ public abstract class CompendiumSources {
     }
 
     public boolean isPrimarySource(String source) {
-        return bookSources.iterator().next().equals(source);
+        return source.equals(primarySource());
     }
 
     public String primarySource() {
+        if (bookSources.isEmpty()) {
+            return type.defaultSourceString();
+        }
         return bookSources.iterator().next();
     }
 
@@ -115,11 +120,12 @@ public abstract class CompendiumSources {
     }
 
     public String alternateSource() {
-        Iterator<String> i = bookSources.iterator();
         if (bookSources.size() > 1) {
+            Iterator<String> i = bookSources.iterator();
             i.next();
+            return i.next();
         }
-        return i.next();
+        return null;
     }
 
     public String getKey() {

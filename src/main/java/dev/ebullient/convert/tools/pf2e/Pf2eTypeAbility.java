@@ -22,7 +22,7 @@ public enum Pf2eTypeAbility implements NodeReader {
     special;
 
     public static QuteAbility createAbility(JsonNode node, JsonSource convert, boolean embedded) {
-        boolean pushed = convert.parseState.push(node);
+        boolean pushed = Converter.parseState.push(node);
         try {
             String name = Field.name.getTextOrDefault(node, "Activate");
 
@@ -32,7 +32,7 @@ public enum Pf2eTypeAbility implements NodeReader {
             note.debugIfExists(node, convert.tui());
             range.debugIfExists(node, convert.tui());
 
-            final String abilitySrc = convert.parseState.getSource(Pf2eIndexType.ability);
+            final String abilitySrc = Converter.parseState.getSource(Pf2eIndexType.ability);
 
             List<String> tags = new ArrayList<>();
             return new QuteAbility(

@@ -20,7 +20,7 @@ public class Json2QuteCommon implements JsonSource {
         this.index = index;
         this.node = jsonNode;
         this.type = type;
-        this.sources = type == Tools5eIndexType.syntheticGroup ? null : Tools5eSources.findOrTemporary(type, jsonNode);
+        this.sources = type == Tools5eIndexType.syntheticGroup ? null : Tools5eSources.findOrTemporary(jsonNode);
     }
 
     String getName() {
@@ -100,7 +100,7 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     public final QuteBase build() {
-        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        boolean pushed = parseState.push(getSources(), node);
         try {
             return buildQuteResource();
         } finally {
@@ -109,7 +109,7 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     public final QuteNote buildNote() {
-        boolean pushed = node == null ? parseState.push(getSources()) : parseState.push(node);
+        boolean pushed = parseState.push(getSources(), node);
         try {
             return buildQuteNote();
         } finally {

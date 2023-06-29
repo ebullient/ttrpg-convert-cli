@@ -74,7 +74,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendElement(JsonNode entry, List<String> text, Set<String> tags) {
-        Tools5eSources tempSources = Tools5eSources.findOrTemporary(getType(entry), entry);
+        Tools5eSources tempSources = Tools5eSources.findOrTemporary(entry);
         String name = entry.get("name").asText();
         if (!index.rulesSourceExcluded(entry, name)) {
             tags.addAll(tempSources.getSourceTags());
@@ -91,13 +91,16 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         if (index().rulesSourceExcluded(node, title)) {
             return null;
         }
+        currentSource = sources;
         imagePath = "variant-rules";
-        boolean pushed = parseState.push(node);
+        boolean pushed = parseState.push(currentSource, node);
         try {
-            currentSource = sources;
             Set<String> tags = new TreeSet<>(sources.getSourceTags());
             return new QuteNote(title, sources.getSourceText(index.srdOnly()),
                     getText("##"), tags);
+        } catch (Exception e) {
+            tui().errorf(e, "Error processing variant '%s': %s", title, e.toString());
+            throw e;
         } finally {
             parseState.pop(pushed);
             imagePath = null;
@@ -105,11 +108,9 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     public Map<String, QuteNote> buildReference(JsonNode data) {
-        currentSource = sources;
         if (index().rulesSourceExcluded(node, title)) {
             return Map.of();
         }
-
         Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         Map<String, QuteNote> notes = new HashMap<>();
@@ -121,7 +122,9 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
         } else {
             pFormat = "%01d";
         }
-        boolean p1 = parseState.push(data); // outer node
+
+        currentSource = sources;
+        boolean p1 = parseState.push(currentSource, node); // outer node
         try {
             for (JsonNode x : iterableElements(data)) {
                 boolean p2 = parseState.push(x); // inner node
@@ -205,7 +208,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
     }
 
     private void appendLootElement(JsonNode entry, List<String> text) {
-        Tools5eSources tmpSources = Tools5eSources.findOrTemporary(getType(entry), entry);
+        Tools5eSources tmpSources = Tools5eSources.findOrTemporary(entry);
 
         String name = entry.get("name").asText();
         if (index.rulesSourceExcluded(entry, name)) {
@@ -299,7 +302,7 @@ public class Sourceless2QuteNote extends Json2QuteCommon {
             String revisedName = replaceText(name);
             String duration = flattenActionTime(entry.get("time"));
 
-            Tools5eSources tmpSources = Tools5eSources.findOrTemporary(getType(entry), entry);
+            Tools5eSources tmpSources = Tools5eSources.findOrTemporary(entry);
 
             maybeAddBlankLine(text);
             text.add("## " + revisedName);

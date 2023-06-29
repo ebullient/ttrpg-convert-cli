@@ -15,6 +15,7 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
 
 public class Json2MarkdownConverter implements MarkdownConverter {
@@ -125,10 +126,10 @@ public class Json2MarkdownConverter implements MarkdownConverter {
             if (node.isNull()) {
                 continue;
             }
-            if (key.startsWith("book-")) {
-                addReference(books, key, node);
-            } else if (key.startsWith("adventure-")) {
-                addReference(adventures, key, node);
+            if (key.startsWith("book-")) { // bookdata
+                addReference(books, node);
+            } else if (key.startsWith("adventure-")) { // adventuredata
+                addReference(adventures, node);
             } else if (key.startsWith("names-")) {
                 addNames(names, key, node);
             } else if (key.equals("table")) {
@@ -226,19 +227,20 @@ public class Json2MarkdownConverter implements MarkdownConverter {
         }
     }
 
-    private void addReference(Map<String, QuteNote> notes, String key, JsonNode element) {
+    private void addReference(Map<String, QuteNote> notes, JsonNode element) {
+        String key = TtrpgValue.indexKey.getFromNode(element);
         if (!element.has("data")) {
             index.tui().errorf("No data for %s", key);
             return;
         }
-        String indexKey = index.getDataKey(key);
-        if (index.isExcluded(indexKey)) {
-            index.tui().debugf("%s is excluded", indexKey);
+        String metadataKey = key.replace("data|", "|");
+        if (index.isExcluded(metadataKey)) {
+            index.tui().debugf("%s is excluded", metadataKey);
             return;
         }
-        JsonNode metadata = index.getOrigin(indexKey);
+        JsonNode metadata = index.getOrigin(metadataKey);
         if (metadata == null) {
-            index.tui().errorf("Unable to find metadata for %s", indexKey);
+            index.tui().errorf("Unable to find metadata (%s) for %s", metadataKey, key);
             return;
         }
         String title = index.replaceText(metadata.get("name").asText());

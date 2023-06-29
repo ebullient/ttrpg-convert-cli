@@ -49,9 +49,13 @@ public class Tools5eSources extends CompendiumSources {
         });
     }
 
-    public static Tools5eSources findOrTemporary(Tools5eIndexType type, JsonNode node) {
+    public static Tools5eSources findOrTemporary(JsonNode node) {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
+        }
+        Tools5eIndexType type = Tools5eIndexType.getTypeFromNode(node);
+        if (type == null) {
+            type = Tools5eIndexType.syntheticGroup;
         }
         String key = TtrpgValue.indexKey.getFromNode(node);
         if (key == null) {

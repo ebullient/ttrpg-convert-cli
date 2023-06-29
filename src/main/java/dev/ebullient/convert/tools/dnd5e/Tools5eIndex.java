@@ -96,25 +96,56 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         addRulesIfPresent(node, "table");
         addRulesIfPresent(node, "variantrule");
 
+        // Homebrew data
+        withArrayFrom(node, "adventureData").forEach(x -> {
+            rules.put("adventure-" + slugify(x.get("id").asText()), x);
+        });
+        withArrayFrom(node, "bookData").forEach(x -> {
+            rules.put("book-" + slugify(x.get("id").asText()), x);
+        });
+
         // Reference/Internal Types
-        Tools5eIndexType.backgroundfluff.withArrayFrom(node, "backgroundFluff", this::addToIndex);
-        Tools5eIndexType.itementry.withArrayFrom(node, "itemEntry", this::addToIndex);
-        Tools5eIndexType.itemfluff.withArrayFrom(node, "itemFluff", this::addToIndex);
-        Tools5eIndexType.itemproperty.withArrayFrom(node, "itemProperty", this::addToIndex);
-        Tools5eIndexType.itemtype.withArrayFrom(node, "itemType", this::addToIndex);
+
+        Tools5eIndexType.backgroundFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.conditionFluff.withArrayFrom(node, this::addToIndex);
+
+        Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
+
         Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.monsterfluff.withArrayFrom(node, "monsterFluff", this::addToIndex);
-        Tools5eIndexType.racefluff.withArrayFrom(node, "raceFluff", this::addToIndex);
-        Tools5eIndexType.spellfluff.withArrayFrom(node, "spellFluff", this::addToIndex);
+        Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.trait.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.legendarygroup.withArrayFrom(node, "legendaryGroup", this::addToIndex);
+        Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
         Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.subclassfeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
+        Tools5eIndexType.subclassFeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
 
         // Output Types
+
+        // notes
+
+        Tools5eIndexType.action.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.condition.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.disease.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemProperty.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemType.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.sense.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.skill.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.variantrule.withArrayFrom(node, this::addToIndex);
+
+        // tables
+
+        Tools5eIndexType.artObjects.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.gems.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.table.withArrayFrom(node, this::addToIndex);
+
+        // templated types
+
         Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
         Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);
@@ -129,26 +160,25 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (node.has("name") && node.get("name").isArray()) {
             ArrayNode names = node.withArray("name");
             if (names.get(0).isObject() && names.get(0).has("tables")) {
-                names.forEach(nt -> rules.put("names-" + slugify(nt.get("name").asText()), nt));
+                /* TODO */names.forEach(nt -> rules.put("names-" + slugify(nt.get("name").asText()), nt));
+                names.forEach(nt -> addToIndex(Tools5eIndexType.nametable, nt));
             }
         }
 
-        withArrayFrom(node, "adventure").forEach(x -> addReferenceToIndex(x, "adventure"));
-        withArrayFrom(node, "book").forEach(x -> addReferenceToIndex(x, "book"));
-
-        // Homebrew data
-        withArrayFrom(node, "adventureData").forEach(x -> {
-            rules.put("adventure-" + slugify(x.get("id").asText()), x);
-        });
-        withArrayFrom(node, "bookData").forEach(x -> {
-            rules.put("book-" + slugify(x.get("id").asText()), x);
-        });
+        Tools5eIndexType.adventure.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.adventureData.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.book.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.bookData.withArrayFrom(node, this::addToIndex);
 
         // 5e tools book/adventure data
         if (node.has("data") && !filename.isEmpty()) {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');
-            rules.put(filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot), node);
+            String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
+
+            /* TODO */ rules.put(basename, node);
+            ((ObjectNode) node).put("id", basename.replace("book-", "").replace("adventure-", ""));
+            addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData, node);
         }
 
         return this;
@@ -174,11 +204,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 }
             }
         }
-    }
-
-    private void addReferenceToIndex(JsonNode node, String type) {
-        String key = getDataKey(type, node.get("id").asText());
-        nodeIndex.put(key, node);
     }
 
     void addToIndex(Tools5eIndexType type, JsonNode node) {
@@ -218,11 +243,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         }
 
-        if (type == Tools5eIndexType.itemproperty) {
+        if (type == Tools5eIndexType.itemProperty) {
             String[] parts = key.split("\\|");
             itemProperties.put(parts[1], key);
         }
-        if (type == Tools5eIndexType.itemtype) {
+        if (type == Tools5eIndexType.itemType) {
             String[] parts = key.split("\\|");
             itemTypes.put(parts[1], key);
         }
@@ -236,23 +261,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     public String getSourceText(JsonNode node) {
-        return getSourceText(Tools5eSources.findOrTemporary(Tools5eIndexType.reference, node));
+        return getSourceText(Tools5eSources.findOrTemporary(node));
     }
 
     public String getSourceText(Tools5eSources currentSource) {
         return String.format("_Source: %s_", currentSource.getSourceText(index().srdOnly()));
     }
 
-    public boolean differentSource(Tools5eSources sources, JsonNode node) {
-        if (sources == null && node == null) {
+    public boolean differentSource(Tools5eSources sources, String source) {
+        String primarySource = sources == null ? null : sources.primarySource();
+        if (primarySource == null || source == null) {
             return false;
-        } else if (node == null || !node.has("source")) {
-            return false;
-        } else if (sources == null) {
-            return !(index().srdOnly() || node.has("srd") || node.has("basicRules"));
         }
-        Tools5eSources currentSource = Tools5eSources.findOrTemporary(Tools5eIndexType.reference, node);
-        return !currentSource.primarySource().equals(currentSource.primarySource());
+        return !primarySource.equals(source);
     }
 
     void addAlias(String key, String alias) {
@@ -305,7 +326,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
             if (type == Tools5eIndexType.subrace ||
                     type == Tools5eIndexType.trait ||
-                    type == Tools5eIndexType.legendarygroup ||
+                    type == Tools5eIndexType.legendaryGroup ||
                     type == Tools5eIndexType.deity) {
                 // subraces are pulled in by races
                 // traits and legendary groups are pulled in my monsters
@@ -540,14 +561,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .filter(e -> e.getKey().matches(pattern))
                 .map(Entry::getValue)
                 .collect(Collectors.toList());
-    }
-
-    public String getDataKey(String value) {
-        return Tools5eIndexType.reference.createKey(value, null);
-    }
-
-    public String getDataKey(String type, String id) {
-        return Tools5eIndexType.reference.createKey(type, id);
     }
 
     public String getAlias(String key) {

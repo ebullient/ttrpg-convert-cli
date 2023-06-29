@@ -106,7 +106,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     String itemText(Collection<ItemProperty> propertyEnums, List<ImageRef> imageRef) {
-        List<String> text = getFluff(Tools5eIndexType.itemfluff, "##", imageRef);
+        List<String> text = getFluff(Tools5eIndexType.itemFluff, "##", imageRef);
 
         if (node.has("entries")) {
             maybeAddBlankLine(text);
@@ -132,7 +132,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     void insertItemRefText(List<String> text, String input) {
-        String finalKey = Tools5eIndexType.itementry.fromRawKey(input.replaceAll("\\{#itemEntry (.*)}", "$1"));
+        String finalKey = Tools5eIndexType.itemEntry.fromRawKey(input.replaceAll("\\{#itemEntry (.*)}", "$1"));
         if (index.isExcluded(finalKey)) {
             return;
         }

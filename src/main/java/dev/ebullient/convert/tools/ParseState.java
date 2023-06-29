@@ -107,6 +107,13 @@ public class ParseState {
 
     private final Deque<ParseState.ParseStateInfo> stack = new ArrayDeque<>();
 
+    public boolean push(CompendiumSources sources, JsonNode rootNode) {
+        if (rootNode != null && (rootNode.has("page") || rootNode.has("source"))) {
+            return push(rootNode);
+        }
+        return push(sources);
+    }
+
     public boolean push(CompendiumSources sources) {
         if (sources == null) {
             return false;
@@ -185,6 +192,11 @@ public class ParseState {
         }
         return String.format("<sup>%s p. %s</sup>",
                 current.src, current.page);
+    }
+
+    public String getSource() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current == null ? null : current.src;
     }
 
     public String getSource(Tools5eIndexType type) {

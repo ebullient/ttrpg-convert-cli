@@ -52,7 +52,7 @@ public class JsonSourceCopier implements JsonSource {
         JsonNode _copy = jsonSource.get("_copy");
         if (_copy != null) {
             // Fix infinite loop: self-referencing copy
-            if (type == Tools5eIndexType.monsterfluff
+            if (type == Tools5eIndexType.monsterFluff
                     && jsonSource.get("name").asText().equalsIgnoreCase("Derro Savant")
                     && _copy.get("name").asText().equalsIgnoreCase("Derro Savant")) {
                 ((ObjectNode) _copy).set("name", new TextNode("Derro"));

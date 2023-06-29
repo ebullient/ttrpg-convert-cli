@@ -91,7 +91,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         List<ImageRef> fluffImages = new ArrayList<>();
-        String fluff = getFluffDescription(Tools5eIndexType.monsterfluff, "##", fluffImages);
+        String fluff = getFluffDescription(Tools5eIndexType.monsterFluff, "##", fluffImages);
         if (fluff != null && fluff.contains("##")) {
             fluff += "\n\n## Stat Block";
         }
@@ -425,7 +425,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         if (group == null) {
             return null;
         }
-        String key = Tools5eIndexType.legendarygroup.createKey(group);
+        String key = Tools5eIndexType.legendaryGroup.createKey(group);
         if (!index.sourceIncluded(group.get("source").asText())) {
             tui().debugf("Legendary group %s source excluded", key);
         }

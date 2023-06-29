@@ -32,7 +32,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     Json2QuteClass(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        boolean pushed = parseState.push(node); // store state
+        boolean pushed = parseState.push(getSources(), node); // store state
         try {
             if (!isSidekick()) {
                 findClassHitDice();
@@ -396,7 +396,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             sc.sources = Tools5eSources.findSources(scKey);
 
             // subclass features are text elements (null field)
-            findClassFeatures(Tools5eIndexType.subclassfeature, resolved.get("subclassFeatures"), sc.classFeatures, null);
+            findClassFeatures(Tools5eIndexType.subclassFeature, resolved.get("subclassFeatures"), sc.classFeatures, null);
 
             subclasses.add(sc);
         }

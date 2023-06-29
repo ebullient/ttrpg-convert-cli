@@ -60,7 +60,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 spellDuration(),
                 String.join(", ", classes),
                 String.join("\n", text),
-                getFluffImages(Tools5eIndexType.spellfluff),
+                getFluffImages(Tools5eIndexType.spellFluff),
                 tags);
     }
 

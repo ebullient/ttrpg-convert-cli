@@ -34,7 +34,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
         appendEntryToText(text, node, "##");
 
         List<ImageRef> images = new ArrayList<>();
-        List<String> fluff = getFluff(Tools5eIndexType.backgroundfluff, "##", images);
+        List<String> fluff = getFluff(Tools5eIndexType.backgroundFluff, "##", images);
 
         if (fluff != null) {
             boolean found = false;

@@ -534,7 +534,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             match = match.substring(0, pos);
         }
 
-        String classFeatureKey = index().getAliasOrDefault(Tools5eIndexType.subclassfeature.fromRawKey(match));
+        String classFeatureKey = index().getAliasOrDefault(Tools5eIndexType.subclassFeature.fromRawKey(match));
         if (index().isExcluded(classFeatureKey)) {
             return linkText;
         }
