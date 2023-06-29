@@ -15,6 +15,6 @@ git fetch --all
 git checkout ${JRELEASER_PROJECT_VERSION}
 
 ./mvnw clean package -Dnative
-jreleaser assemble -s archive -scp -od target
-jreleaser release -od target -scp -xd uber-jar
+jreleaser assemble -s archive --select-current-platform --output-directory target
+jreleaser release --output-directory target --select-current-platform --exclude-distribution uber-jar
 

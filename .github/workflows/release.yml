@@ -25,7 +25,7 @@ env:
   GRAALVM_VERSION: 22.3.2
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
-  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts -od target -sp linux-x86_64 -sp windows-x86_64 -sp osx-x86_64'
+  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64'
 
 jobs:
   build_tag:
@@ -112,12 +112,21 @@ jobs:
           git tag $FLAG$NEXT
           git push --tags
 
+          zip -r target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip examples
+
       - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
         uses: actions/upload-artifact@v3
         id: upload-jar
         with:
           name: artifacts
           path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
+
+      - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip
+        uses: actions/upload-artifact@v3
+        id: upload-jar
+        with:
+          name: artifacts
+          path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip
 
   native-binaries:
     name: Build ${{ matrix.os }} binary
