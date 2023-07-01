@@ -20,6 +20,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
 
       - name: Tools release cache key
         id: test-data-key
@@ -67,6 +69,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
 
       - uses: actions/cache/restore@v3.3.1
         id: cache
@@ -101,6 +105,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
 
       - uses: actions/cache/restore@v3.3.1
         id: cache
@@ -147,6 +153,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
 
       - id: gh-issue
         env:
