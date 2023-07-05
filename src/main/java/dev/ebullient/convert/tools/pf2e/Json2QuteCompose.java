@@ -15,7 +15,6 @@ import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
 public class Json2QuteCompose extends Json2QuteBase {
     List<JsonNode> nodes = new ArrayList<>();
-    Pf2eIndexType type;
     Pf2eSources currentSources;
     String title;
 
@@ -24,7 +23,6 @@ public class Json2QuteCompose extends Json2QuteBase {
                 Pf2eSources.constructSyntheticSource(title));
         currentSources = super.getSources();
         this.title = title;
-        this.type = type;
     }
 
     public void add(JsonNode node) {
@@ -45,7 +43,9 @@ public class Json2QuteCompose extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         nodes.sort(Comparator.comparing(Field.name::getTextOrEmpty));
-        nodes.forEach(x -> appendElement(x, text, tags));
+        for (JsonNode entry : nodes) {
+            appendElement(entry, text, tags);
+        }
         appendFootnotes(text, 0);
 
         return new Pf2eQuteNote(type,

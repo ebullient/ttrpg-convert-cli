@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class BackgroundTraits2Note extends Json2QuteCommon {
 
@@ -35,7 +37,12 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
                     .map(x -> x.replaceAll("^\\|\\s*\\d+\\s*", ""))
                     .collect(Collectors.toList());
 
-            notes.add(new QuteNote(title, null, listToTable(title, text), List.of()));
+            String blockid = "^" + Tui.slugify(title);
+            text.add(0, String.format("`dice: [](%s.md#%s)`", slugify(title), blockid));
+            text.add(1, "");
+
+            notes.add(new Tools5eQuteNote(title, null, listToTable(title, text), List.of())
+                    .withTargetPath(Tools5eQuteBase.TABLES_PATH));
         } finally {
             parseState.pop(pushed);
         }
@@ -67,8 +74,6 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
 
             List<String> text = new ArrayList<>();
 
-            text.add("## Ideals");
-            text.add("");
             text.add("| All Ideals |");
             text.add("|------------|");
             text.add("| `dice: [](" + index.compendiumVaultRoot() + "tables/ideals.md#^good-ideals)` " + " |");
@@ -154,7 +159,8 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
             maybeAddBlankLine(text);
             text.addAll(tableSection("Universal Ideals (Any)", any));
 
-            notes.add(new QuteNote("Ideals", null, text, List.of()));
+            notes.add(new Tools5eQuteNote("Ideals", null, text, List.of())
+                    .withTargetPath(Tools5eQuteBase.TABLES_PATH));
         } finally {
             parseState.pop(pushed);
         }

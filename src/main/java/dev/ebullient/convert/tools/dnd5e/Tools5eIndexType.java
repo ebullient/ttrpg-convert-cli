@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
-import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
+import dev.ebullient.convert.tools.dnd5e.JsonSource.Fields;
 
 public enum Tools5eIndexType implements IndexType, NodeReader {
     action,
@@ -117,11 +117,15 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
 
     public String createKey(JsonNode x) {
         if (this == book || this == adventure || this == bookData || this == adventureData) {
-            String id = Field.id.getTextOrEmpty(x);
+            String id = Fields.id.getTextOrEmpty(x);
             return String.format("%s|%s-%s",
                     this.name(),
                     this.name().replace("Data", ""),
                     id).toLowerCase();
+        } else if (this == itemTypeAdditionalEntries) {
+            return createKey(
+                    Fields.appliesTo.getTextOrEmpty(x),
+                    Fields.source.getTextOrEmpty(x));
         }
 
         String name = IndexElement.name.getTextOrEmpty(x);
@@ -289,6 +293,66 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 .toLowerCase();
     }
 
+    public boolean multiNode() {
+        switch (this) {
+            case action:
+            case artObjects:
+            case condition:
+            case disease:
+            case gems:
+            case itemType:
+            case itemProperty:
+            case magicItems:
+            case sense:
+            case skill:
+            case status:
+            case syntheticGroup:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean writeFile() {
+        switch (this) {
+            case background:
+            case classtype:
+            case deity:
+            case feat:
+            case item:
+            case monster:
+            case race:
+            case spell:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean useQuteNote() {
+        switch (this) {
+            case action:
+            case adventureData:
+            case artObjects:
+            case bookData:
+            case condition:
+            case disease:
+            case gems:
+            case itemType:
+            case itemProperty:
+            case magicItems:
+            case nametable:
+            case sense:
+            case skill:
+            case status:
+            case table:
+            case variantrule:
+                return true; // QuteNote-based
+            default:
+                return false;
+        }
+    }
+
     public boolean useCompendiumBase() {
         switch (this) {
             case action:
@@ -335,6 +399,8 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                 return "MOT";
             case syntheticGroup:
                 return null;
+            case itemTypeAdditionalEntries:
+                return "XGE";
             default:
                 return "PHB";
         }

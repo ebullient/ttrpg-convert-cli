@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static java.util.Map.entry;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,8 +18,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface JsonSource extends JsonTextReplacement {
@@ -70,6 +72,22 @@ public interface JsonSource extends JsonTextReplacement {
             tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
             throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
         }
+    }
+
+    default String getSourceText(JsonNode node) {
+        return getSourceText(Tools5eSources.findOrTemporary(node));
+    }
+
+    default String getSourceText(Tools5eSources currentSource) {
+        return String.format("_Source: %s_", currentSource.getSourceText(index().srdOnly()));
+    }
+
+    default ImageRef buildImageRef(Tools5eIndex index, Path sourcePath, Path target) {
+        return getSources().buildImageRef(index, sourcePath, target, useCompendium());
+    }
+
+    default ImageRef buildImageRef(Tools5eIndex index, JsonMediaHref mediaHref, String imageBasePath) {
+        return getSources().buildImageRef(index, mediaHref, imageBasePath, useCompendium());
     }
 
     default String flattenEntryToText(JsonNode node) {
@@ -330,7 +348,7 @@ public interface JsonSource extends JsonTextReplacement {
     default ImageRef readImageRef(JsonNode imageNode) {
         try {
             JsonMediaHref mediaHref = mapper().treeToValue(imageNode, JsonMediaHref.class);
-            return getSources().buildImageRef(index(), mediaHref, getImagePath(), useCompendium());
+            return buildImageRef(index(), mediaHref, getImagePath());
         } catch (JsonProcessingException | IllegalArgumentException e) {
             tui().errorf(e, "Unable to read media reference from %s: %s", imageNode.toPrettyString(), e.toString());
         }
@@ -338,10 +356,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default boolean useCompendium() {
-        if (getSources().getType() == Tools5eIndexType.note) {
-            return false;
-        }
-        return true;
+        return getSources().getType().useCompendiumBase();
     }
 
     default String getImagePath() {
@@ -349,17 +364,17 @@ public interface JsonSource extends JsonTextReplacement {
         switch (type) {
             // Note: Monster overrides this method
             case background:
-                return QuteSource.BACKGROUND_PATH;
+                return Tools5eQuteBase.BACKGROUND_PATH;
             case deity:
-                return QuteSource.DEITIES_PATH;
+                return Tools5eQuteBase.DEITIES_PATH;
             case feat:
-                return QuteSource.FEATS_PATH;
+                return Tools5eQuteBase.FEATS_PATH;
             case item:
-                return QuteSource.ITEMS_PATH;
+                return Tools5eQuteBase.ITEMS_PATH;
             case race:
-                return QuteSource.RACES_PATH;
+                return Tools5eQuteBase.RACES_PATH;
             case spell:
-                return QuteSource.SPELLS_PATH;
+                return Tools5eQuteBase.SPELLS_PATH;
             default:
                 break;
         }
@@ -920,4 +935,14 @@ public interface JsonSource extends JsonTextReplacement {
             entry("28", 120000),
             entry("29", 135000),
             entry("30", 155000));
+
+    enum Fields implements NodeReader {
+        abbreviation,
+        appliesTo,
+        group,
+        id,
+        name,
+        page,
+        source,
+    }
 }

@@ -10,7 +10,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteSpell extends QuteSource {
+public class QuteSpell extends Tools5eQuteBase {
     public final String level;
     public final String school;
     public final boolean ritual;
@@ -40,7 +40,7 @@ public class QuteSpell extends QuteSource {
 
     @Override
     public String targetPath() {
-        return QuteSource.SPELLS_PATH;
+        return Tools5eQuteBase.SPELLS_PATH;
     }
 
     @Override

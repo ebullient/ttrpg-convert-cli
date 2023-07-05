@@ -46,8 +46,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     final CompendiumConfig config;
 
-    private final Map<String, JsonNode> rules = new HashMap<>();
-
     private final Map<String, JsonNode> nodeIndex = new HashMap<>();
     private final Map<String, List<JsonNode>> optFeatureIndex = new HashMap<>();
     private final Map<String, String> aliases = new HashMap<>();
@@ -81,29 +79,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         addHomebrewSourcesIfPresent(node);
 
-        addRulesIfPresent(node, "action");
-        addRulesIfPresent(node, "artObjects");
-        addRulesIfPresent(node, "condition");
-        addRulesIfPresent(node, "disease");
-        addRulesIfPresent(node, "gems");
-        addRulesIfPresent(node, "itemProperty");
-        addRulesIfPresent(node, "itemType");
-        addRulesIfPresent(node, "itemTypeAdditionalEntry");
-        addRulesIfPresent(node, "magicItems");
-        addRulesIfPresent(node, "sense");
-        addRulesIfPresent(node, "skill");
-        addRulesIfPresent(node, "status");
-        addRulesIfPresent(node, "table");
-        addRulesIfPresent(node, "variantrule");
-
-        // Homebrew data
-        withArrayFrom(node, "adventureData").forEach(x -> {
-            rules.put("adventure-" + slugify(x.get("id").asText()), x);
-        });
-        withArrayFrom(node, "bookData").forEach(x -> {
-            rules.put("book-" + slugify(x.get("id").asText()), x);
-        });
-
         // Reference/Internal Types
 
         Tools5eIndexType.backgroundFluff.withArrayFrom(node, this::addToIndex);
@@ -136,6 +111,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.itemType.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.sense.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.skill.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.status.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.variantrule.withArrayFrom(node, this::addToIndex);
 
         // tables
@@ -160,7 +136,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (node.has("name") && node.get("name").isArray()) {
             ArrayNode names = node.withArray("name");
             if (names.get(0).isObject() && names.get(0).has("tables")) {
-                /* TODO */names.forEach(nt -> rules.put("names-" + slugify(nt.get("name").asText()), nt));
                 names.forEach(nt -> addToIndex(Tools5eIndexType.nametable, nt));
             }
         }
@@ -176,7 +151,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             int dot = filename.indexOf('.');
             String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
 
-            /* TODO */ rules.put(basename, node);
             ((ObjectNode) node).put("id", basename.replace("book-", "").replace("adventure-", ""));
             addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData, node);
         }
@@ -260,14 +234,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
     }
 
-    public String getSourceText(JsonNode node) {
-        return getSourceText(Tools5eSources.findOrTemporary(node));
-    }
-
-    public String getSourceText(Tools5eSources currentSource) {
-        return String.format("_Source: %s_", currentSource.getSourceText(index().srdOnly()));
-    }
-
     public boolean differentSource(Tools5eSources sources, String source) {
         String primarySource = sources == null ? null : sources.primarySource();
         if (primarySource == null || source == null) {
@@ -291,12 +257,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .filter(e -> e.getValue().equals(targetKey))
                 .map(Entry::getKey)
                 .collect(Collectors.toList());
-    }
-
-    void addRulesIfPresent(JsonNode node, String rule) {
-        if (node.has(rule)) {
-            rules.put(rule, node.get(rule));
-        }
     }
 
     void setClassFeaturePatterns() {
@@ -557,6 +517,16 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     public List<JsonNode> classElementsMatching(Tools5eIndexType type, String className, String classSource) {
         String pattern = String.format("%s\\|[^|]+\\|%s\\|%s\\|.*", type, className, classSource)
                 .toLowerCase();
+        return nodesMatching(pattern);
+    }
+
+    public List<JsonNode> elementsMatching(Tools5eIndexType type, String middle) {
+        String pattern = String.format("%s\\|%s\\|.*", type, middle)
+                .toLowerCase();
+        return nodesMatching(pattern);
+    }
+
+    private List<JsonNode> nodesMatching(String pattern) {
         return filteredIndex.entrySet().stream()
                 .filter(e -> e.getKey().matches(pattern))
                 .map(Entry::getValue)
@@ -656,17 +626,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return config.excludeItem(itemSource, isSRD);
     }
 
-    public boolean rulesSourceExcluded(JsonNode node, String name) {
-        boolean isSRD = node.has("srd");
-        JsonNode itemSource = node.get("source");
-        if (excludeItem(itemSource, isSRD)) {
-            // skip this item: not from a specified source
-            tui().debugf("Skipped %s from %s (%s)", name, itemSource, isSRD);
-            return true;
-        }
-        return false;
-    }
-
     private boolean keyIsIncluded(String key, JsonNode node) {
 
         // Check against include/exclude rules (srdKeys allowed when there are no sources)
@@ -760,7 +719,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     @Override
     public MarkdownConverter markdownConverter(MarkdownWriter writer, Map<String, String> imageFallbackPaths) {
-        return new Json2MarkdownConverter(this, writer, imageFallbackPaths);
+        return new Tools5eMarkdownConverter(this, writer, imageFallbackPaths);
     }
 
     @Override
@@ -776,10 +735,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     @Override
     public Tools5eSources getSources() {
         return null;
-    }
-
-    public Map<String, JsonNode> getRules() {
-        return rules;
     }
 
     static class Tuple {

@@ -13,15 +13,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.NodeReader;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType.IndexFields;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexType> {
 
     Pattern linkifyPattern = Pattern.compile(
-            "\\{@(background|class|deity|feat|card|deck|item|race|spell|creature|optfeature|classFeature|subclassFeature) ([^}]+)}");
+            "\\{@(background|class|deity|feat|card|deck|item|race|spell|table|variantrule|creature|optfeature|classFeature|subclassFeature) ([^}]+)}");
 
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
 
@@ -211,8 +212,6 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                         .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                         .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
-                        .replaceAll("\\{@table ([^|}]+)\\|?[^}]*}", "$1")
-                        .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                         .replaceAll("\\{@h}", "Hit: ")
@@ -277,7 +276,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                 // {@background Anthropologist|toa} can have sources added with a pipe,
                 // {@background Anthropologist|ToA|and optional link text added with another
                 // pipe}.",
-                return linkifyType(Tools5eIndexType.background, matchText, QuteSource.BACKGROUND_PATH);
+                return linkifyType(Tools5eIndexType.background, matchText, Tools5eQuteBase.BACKGROUND_PATH);
             case "creature":
                 // "Creatures:
                 // {@creature goblin} assumes MM by default,
@@ -293,11 +292,11 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                 // {@feat Alert} assumes PHB by default,
                 // {@feat Elven Accuracy|xge} can have sources added with a pipe,
                 // {@feat Elven Accuracy|xge|and optional link text added with another pipe}.",
-                return linkifyType(Tools5eIndexType.feat, matchText, QuteSource.FEATS_PATH);
+                return linkifyType(Tools5eIndexType.feat, matchText, Tools5eQuteBase.FEATS_PATH);
             case "card":
                 // {@card The Fates|Deck of Many Things}
                 // {@card Donjon|Deck of Several Things|LLK}
-                return linkifyCardType(matchText, QuteSource.ITEMS_PATH, "dmg");
+                return linkifyCardType(matchText, Tools5eQuteBase.ITEMS_PATH);
             case "deck":
                 // {@deck Tarokka Deck|CoS|tarokka deck} // like items
             case "item":
@@ -305,7 +304,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                 // {@item alchemy jug} assumes DMG by default,
                 // {@item longsword|phb} can have sources added with a pipe,
                 // {@item longsword|phb|and optional link text added with another pipe}.",
-                return linkifyType(Tools5eIndexType.item, matchText, QuteSource.ITEMS_PATH, "dmg");
+                return linkifyType(Tools5eIndexType.item, matchText, Tools5eQuteBase.ITEMS_PATH);
             case "race":
                 // "Races:
                 // {@race Human} assumes PHB by default,
@@ -314,19 +313,23 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
                 // {@race Aarakocra|eepc} can have sources added with a pipe,
                 // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
                 // {@race dwarf (hill)||Dwarf, hill}
-                return linkifyType(Tools5eIndexType.race, matchText, QuteSource.RACES_PATH);
+                return linkifyType(Tools5eIndexType.race, matchText, Tools5eQuteBase.RACES_PATH);
             case "spell":
                 // "Spells:
                 // {@spell acid splash} assumes PHB by default,
                 // {@spell tiny servant|xge} can have sources added with a pipe,
                 // {@spell tiny servant|xge|and optional link text added with another pipe}.",
-                return linkifyType(Tools5eIndexType.spell, matchText, QuteSource.SPELLS_PATH);
+                return linkifyType(Tools5eIndexType.spell, matchText, Tools5eQuteBase.SPELLS_PATH);
             case "optfeature":
                 return linkifyOptionalFeature(matchText);
             case "classFeature":
                 return linkifyClassFeature(matchText);
             case "subclassFeature":
                 return linkifySubclassFeature(matchText);
+            case "table":
+                return linkifyType(Tools5eIndexType.table, matchText, Tools5eQuteBase.TABLES_PATH);
+            case "variantrule":
+                return linkifyVariant(matchText);
         }
         throw new IllegalArgumentException("Unknown group to linkify: " + match.group(1));
     }
@@ -340,13 +343,10 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
     }
 
     default String linkifyType(Tools5eIndexType type, String match, String dirName) {
-        return linkifyType(type, match, dirName, "phb");
-    }
-
-    default String linkifyType(Tools5eIndexType type, String match, String dirName, String defaultSource) {
         String[] parts = match.split("\\|");
         String linkText = parts[0];
-        String source = defaultSource;
+        String source = type.defaultSourceString();
+
         if (parts.length > 2) {
             linkText = parts[2];
         }
@@ -362,30 +362,30 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         if (type == Tools5eIndexType.background) {
             return linkOrText(linkText, key, dirName,
                     Json2QuteBackground.decoratedBackgroundName(parts[0])
-                            + QuteSource.sourceIfNotCore(sources.primarySource()));
+                            + Tools5eQuteBase.sourceIfNotCore(sources.primarySource()));
         } else if (type == Tools5eIndexType.item) {
-            return linkOrText(linkText, key, dirName, parts[0] + QuteSource.sourceIfNotCore(sources.primarySource()));
+            return linkOrText(linkText, key, dirName, parts[0] + Tools5eQuteBase.sourceIfNotCore(sources.primarySource()));
         } else if (type == Tools5eIndexType.race) {
             return linkOrText(linkText, key, dirName,
                     decoratedRaceName(jsonSource, sources)
-                            + QuteSource.sourceIfNotDefault(sources.primarySource(), defaultSource));
+                            + Tools5eQuteBase.sourceIfNotDefault(sources.primarySource(), type.defaultSourceString()));
         }
         return linkOrText(linkText, key, dirName,
-                decoratedTypeName(sources) + QuteSource.sourceIfNotCore(sources.primarySource()));
+                decoratedTypeName(sources) + Tools5eQuteBase.sourceIfNotCore(sources.primarySource()));
     }
 
-    default String linkifyCardType(String match, String dirName, String defaultSource) {
+    default String linkifyCardType(String match, String dirName) {
         String[] parts = match.split("\\|");
         // {@card Donjon|Deck of Several Things|LLK}
         String cardName = parts[0];
         String deckName = parts[1];
-        String source = parts.length < 3 || parts[2].isBlank() ? defaultSource : parts[2];
+        String source = parts.length < 3 || parts[2].isBlank() ? Tools5eIndexType.card.defaultSourceString() : parts[2];
 
         String key = index().getAliasOrDefault(Tools5eIndexType.item.createKey(deckName, source));
         if (index().isExcluded(key)) {
             return cardName;
         }
-        String resource = slugify(deckName + QuteSource.sourceIfNotCore(source));
+        String resource = slugify(deckName + Tools5eQuteBase.sourceIfNotCore(source));
         return String.format("[%s](%s%s/%s.md#%s)", cardName,
                 index().compendiumVaultRoot(), dirName, resource, cardName.replace(" ", "%20"));
     }
@@ -411,7 +411,8 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             pantheon = parts[1];
         }
         String key = index().getAliasOrDefault(Tools5eIndexType.deity.createKey(parts[0], source));
-        return linkOrText(linkText, key, QuteSource.DEITIES_PATH, QuteSource.getDeityResourceName(parts[0], pantheon));
+        return linkOrText(linkText, key, Tools5eQuteBase.DEITIES_PATH,
+                Tools5eQuteBase.getDeityResourceName(parts[0], pantheon));
     }
 
     default String linkifyClass(String match) {
@@ -438,12 +439,12 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             int first = key.indexOf('|');
             int second = key.indexOf('|', first + 1);
             subclass = key.substring(first + 1, second);
-            return linkOrText(linkText, key, QuteSource.CLASSES_PATH,
-                    QuteSource.getSubclassResource(subclass, className, subclassSource));
+            return linkOrText(linkText, key, Tools5eQuteBase.CLASSES_PATH,
+                    Tools5eQuteBase.getSubclassResource(subclass, className, subclassSource));
         } else {
             String key = index().getAliasOrDefault(Tools5eIndexType.classtype.createKey(className, classSource));
-            return linkOrText(linkText, key, QuteSource.CLASSES_PATH,
-                    className + QuteSource.sourceIfNotCore(classSource));
+            return linkOrText(linkText, key, Tools5eQuteBase.CLASSES_PATH,
+                    className + Tools5eQuteBase.sourceIfNotCore(classSource));
         }
     }
 
@@ -472,10 +473,10 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         Tools5eSources featureSources = Tools5eSources.findSources(classFeatureKey);
 
         String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
-        String resource = slugify(className + QuteSource.sourceIfNotCore(classSource));
+        String resource = slugify(className + Tools5eQuteBase.sourceIfNotCore(classSource));
 
         return String.format("[%s](%s%s/%s.md#%s)", linkText,
-                index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
+                index().compendiumVaultRoot(), Tools5eQuteBase.CLASSES_PATH,
                 resource, toAnchorTag(headerName));
     }
 
@@ -503,7 +504,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
 
         return String.format("[%s](%s%s/%s.md#%s)",
                 linkText,
-                index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
+                index().compendiumVaultRoot(), Tools5eQuteBase.CLASSES_PATH,
                 featureTypeToClass(featureType),
                 featureSources.getName().replace(" ", "%20"));
     }
@@ -551,11 +552,11 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
         Tools5eSources featureSources = Tools5eSources.findSources(classFeatureKey);
         String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
 
-        String resource = slugify(QuteSource.getSubclassResource(subclass, className, subclassSource));
+        String resource = slugify(Tools5eQuteBase.getSubclassResource(subclass, className, subclassSource));
 
         return String.format("[%s](%s%s/%s.md#%s)",
                 linkText,
-                index().compendiumVaultRoot(), QuteSource.CLASSES_PATH,
+                index().compendiumVaultRoot(), Tools5eQuteBase.CLASSES_PATH,
                 resource,
                 toAnchorTag(headerName));
     }
@@ -581,8 +582,21 @@ public interface JsonTextReplacement extends NodeReader.Converter<Tools5eIndexTy
             return linkText;
         }
         boolean isNpc = Json2QuteMonster.isNpc(jsonSource);
-        return linkOrText(linkText, key, QuteSource.monsterPath(isNpc, type),
-                resourceName + QuteSource.sourceIfNotCore(sources.primarySource()));
+        return linkOrText(linkText, key, Tools5eQuteBase.monsterPath(isNpc, type),
+                resourceName + Tools5eQuteBase.sourceIfNotCore(sources.primarySource()));
+    }
+
+    default String linkifyVariant(String variant) {
+        // "fromVariant": "Action Options",
+        // "fromVariant": "Spellcasting|XGE",
+        String[] parts = variant.trim().split("\\|");
+        String source = parts.length > 1 ? parts[1] : Tools5eIndexType.variantrule.defaultSourceString();
+        if (!index().sourceIncluded(source)) {
+            return variant + " from " + TtrpgConfig.sourceToLongName(source);
+        } else {
+            return String.format("[%s](%svariant-rules/%s.md)",
+                    variant, index().rulesVaultRoot(), slugify(variant) + Tools5eQuteBase.sourceIfNotCore(source));
+        }
     }
 
     default String decoratedRaceName(JsonNode jsonSource, Tools5eSources sources) {

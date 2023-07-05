@@ -10,7 +10,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteDeity extends QuteSource {
+public class QuteDeity extends Tools5eQuteBase {
 
     public final List<String> altNames;
     public final String pantheon;
@@ -53,11 +53,11 @@ public class QuteDeity extends QuteSource {
 
     @Override
     public String targetFile() {
-        return QuteSource.getDeityResourceName(name, pantheon);
+        return Tools5eQuteBase.getDeityResourceName(name, pantheon);
     }
 
     @Override
     public String targetPath() {
-        return QuteSource.DEITIES_PATH;
+        return Tools5eQuteBase.DEITIES_PATH;
     }
 }

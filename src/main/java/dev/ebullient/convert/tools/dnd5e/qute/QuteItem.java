@@ -10,7 +10,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteItem extends QuteSource {
+public class QuteItem extends Tools5eQuteBase {
+
     public final String detail;
     public final String armorClass;
     public final String damage;
@@ -45,7 +46,7 @@ public class QuteItem extends QuteSource {
 
     @Override
     public String targetPath() {
-        return QuteSource.ITEMS_PATH;
+        return Tools5eQuteBase.ITEMS_PATH;
     }
 
     @Override

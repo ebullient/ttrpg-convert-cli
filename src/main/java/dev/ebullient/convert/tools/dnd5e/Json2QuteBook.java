@@ -1,0 +1,94 @@
+package dev.ebullient.convert.tools.dnd5e;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
+
+public class Json2QuteBook extends Json2QuteCommon {
+
+    final String bookRelativePath;
+    final JsonNode dataNode;
+    final String title;
+
+    public Json2QuteBook(Tools5eIndex index, Tools5eIndexType type, JsonNode rootNode, JsonNode dataNode) {
+        super(index, type, rootNode);
+        this.dataNode = dataNode;
+        this.bookRelativePath = slugify(sources.getName());
+        this.title = replaceText(sources.getName());
+
+        String key = getSources().getKey();
+        final String basePath;
+        if (key.contains("adventure-")) {
+            basePath = Tools5eQuteBase.ADVENTURE_PATH;
+        } else if (key.contains("book-")) {
+            basePath = Tools5eQuteBase.BOOK_PATH;
+        } else {
+            basePath = ".";
+        }
+        imagePath = basePath + "/" + bookRelativePath;
+    }
+
+    @Override
+    String getName() {
+        return title;
+    }
+
+    /**
+     * From index entry and supporting data, construct a set of pages for the book.
+     * Page state has to be maintained.
+     */
+    public List<Tools5eQuteNote> buildBook() {
+        List<Tools5eQuteNote> pages = new ArrayList<>();
+        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        JsonNode data = dataNode.get("data");
+
+        AtomicInteger prefix = new AtomicInteger(1);
+        final String pFormat;
+        if (data.size() + 1 > 10) {
+            pFormat = "%02d";
+        } else {
+            pFormat = "%01d";
+        }
+
+        boolean p1 = parseState.push(getSources()); // set source
+        try {
+            for (JsonNode x : iterableElements(data)) {
+                boolean p2 = parseState.push(x); // inner node
+                try {
+                    List<String> text = new ArrayList<>();
+                    appendEntryToText(text, x.get("entries"), "##");
+
+                    String content = String.join("\n", text);
+
+                    if (!content.isBlank()) {
+                        String titlePage = title;
+                        if (x.has("page")) {
+                            String page = x.get("page").asText();
+                            titlePage = title + ", p. " + page;
+                        }
+                        String name = getTextOrDefault(x, "name", "");
+                        Tools5eQuteNote note = new Tools5eQuteNote(name, titlePage, content, tags)
+                                .withTargetPath(imagePath)
+                                .withTargeFile(String.format("%s-%s",
+                                        String.format(pFormat, prefix.get()),
+                                        slugify(name)));
+                        pages.add(note);
+                        prefix.incrementAndGet();
+                    }
+                } finally {
+                    parseState.pop(p2);
+                }
+            }
+        } finally {
+            parseState.pop(p1);
+        }
+        return pages;
+    }
+}

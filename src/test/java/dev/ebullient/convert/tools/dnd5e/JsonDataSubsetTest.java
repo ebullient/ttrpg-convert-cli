@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -60,7 +60,7 @@ public class JsonDataSubsetTest {
             // Single included race: changeling from mpmm
             Path changeling = outputPath
                     .resolve(commonTests.compendiumFilePath())
-                    .resolve(QuteSource.RACES_PATH)
+                    .resolve(Tools5eQuteBase.RACES_PATH)
                     .resolve("changeling-mpmm.md");
             assertThat(changeling).exists();
         }
@@ -91,7 +91,7 @@ public class JsonDataSubsetTest {
             // The tree blight should be included when WBtW is included
             Path treeBlight = outputPath
                     .resolve(commonTests.compendiumFilePath())
-                    .resolve(QuteSource.monsterPath(false, "plant"))
+                    .resolve(Tools5eQuteBase.monsterPath(false, "plant"))
                     .resolve("tree-blight-cos.md");
             assertThat(treeBlight).exists();
         }

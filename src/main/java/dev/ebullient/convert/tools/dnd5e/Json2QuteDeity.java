@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteDeity;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteDeity extends Json2QuteCommon {
 
@@ -20,7 +20,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
     }
 
     @Override
-    protected QuteBase buildQuteResource() {
+    protected Tools5eQuteBase buildQuteResource() {
         Set<String> tags = new TreeSet<>(sources.getSourceTags());
 
         String pantheon = getTextOrDefault(node, "pantheon", null);
@@ -67,7 +67,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
             JsonNode symbolImg = node.get("symbolImg");
             try {
                 JsonMediaHref mediaHref = mapper().treeToValue(symbolImg, JsonMediaHref.class);
-                return sources.buildImageRef(index, mediaHref, getImagePath(), true);
+                return buildImageRef(index, mediaHref, getImagePath());
             } catch (JsonProcessingException | IllegalArgumentException e) {
                 tui().errorf("Unable to read media reference from %s", symbolImg.toPrettyString());
             }

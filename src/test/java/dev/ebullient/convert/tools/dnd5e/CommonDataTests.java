@@ -21,7 +21,7 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Templates;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.arc.Arc;
 
 public class CommonDataTests {
@@ -110,7 +110,7 @@ public class CommonDataTests {
     public void testFeatList(Path outputPath) {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path featDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.FEATS_PATH);
+            Path featDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.FEATS_PATH);
             TestUtils.deleteDir(featDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -125,7 +125,7 @@ public class CommonDataTests {
     public void testBackgroundList(Path outputPath) {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path backgroundDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.BACKGROUND_PATH);
+            Path backgroundDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.BACKGROUND_PATH);
             TestUtils.deleteDir(backgroundDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -142,7 +142,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path spellDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.SPELLS_PATH);
+            Path spellDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.SPELLS_PATH);
             TestUtils.deleteDir(spellDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -158,7 +158,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path raceDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.RACES_PATH);
+            Path raceDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.RACES_PATH);
             TestUtils.deleteDir(raceDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -174,7 +174,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path classDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.CLASSES_PATH);
+            Path classDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.CLASSES_PATH);
             TestUtils.deleteDir(classDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -208,7 +208,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path deitiesDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.DEITIES_PATH);
+            Path deitiesDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.DEITIES_PATH);
             TestUtils.deleteDir(deitiesDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -229,7 +229,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path itemDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.ITEMS_PATH);
+            Path itemDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.ITEMS_PATH);
             TestUtils.deleteDir(itemDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -246,7 +246,7 @@ public class CommonDataTests {
         configurator.setAlwaysUseDiceRoller(true);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path bestiaryDir = outputPath.resolve(index.compendiumFilePath()).resolve(QuteSource.MONSTERS_BASE_PATH);
+            Path bestiaryDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.MONSTERS_BASE_PATH);
             TestUtils.deleteDir(bestiaryDir);
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -318,7 +318,7 @@ public class CommonDataTests {
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.monster);
 
-            Path undead = out.resolve(index.compendiumFilePath()).resolve(QuteSource.monsterPath(false, "undead"));
+            Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
             assertThat(undead.toFile()).exists();
 
             TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {

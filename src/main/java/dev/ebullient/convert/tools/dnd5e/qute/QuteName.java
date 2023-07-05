@@ -7,7 +7,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteName extends QuteSource {
+public class QuteName extends Tools5eQuteBase {
 
     final String name;
     final String source;
@@ -30,10 +30,6 @@ public class QuteName extends QuteSource {
 
     public String targetFile() {
         return name;
-    }
-
-    public String targetPath() {
-        return ".";
     }
 
     public String title() {

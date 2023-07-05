@@ -10,7 +10,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteRace extends QuteSource {
+public class QuteRace extends Tools5eQuteBase {
 
     public final String ability;
     public final String type;
@@ -38,7 +38,7 @@ public class QuteRace extends QuteSource {
 
     @Override
     public String targetPath() {
-        return QuteSource.RACES_PATH;
+        return Tools5eQuteBase.RACES_PATH;
     }
 
     @Override

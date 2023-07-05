@@ -7,20 +7,26 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
-import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteCommon implements JsonSource {
     protected final Tools5eIndex index;
     protected final Tools5eSources sources;
     protected final Tools5eIndexType type;
     protected final JsonNode node;
+    protected String imagePath = null;
 
     Json2QuteCommon(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         this.index = index;
         this.node = jsonNode;
         this.type = type;
-        this.sources = type == Tools5eIndexType.syntheticGroup ? null : Tools5eSources.findOrTemporary(jsonNode);
+        this.sources = type.multiNode() ? null : Tools5eSources.findOrTemporary(jsonNode);
+    }
+
+    public Json2QuteCommon withImagePath(String imagePath) {
+        this.imagePath = imagePath;
+        return this;
     }
 
     String getName() {
@@ -35,6 +41,14 @@ public class Json2QuteCommon implements JsonSource {
     @Override
     public Tools5eIndex index() {
         return index;
+    }
+
+    @Override
+    public String getImagePath() {
+        if (imagePath != null) {
+            return imagePath;
+        }
+        return JsonSource.super.getImagePath();
     }
 
     public String getText(String heading) {
@@ -99,30 +113,36 @@ public class Json2QuteCommon implements JsonSource {
         return imageRef;
     }
 
-    public final QuteBase build() {
+    public final Tools5eQuteBase build() {
         boolean pushed = parseState.push(getSources(), node);
         try {
             return buildQuteResource();
+        } catch (Exception e) {
+            tui().errorf(e, "build(): Error processing '%s': %s", getName(), e.toString());
+            throw e;
         } finally {
             parseState.pop(pushed);
         }
     }
 
-    public final QuteNote buildNote() {
+    public final Tools5eQuteNote buildNote() {
         boolean pushed = parseState.push(getSources(), node);
         try {
             return buildQuteNote();
+        } catch (Exception e) {
+            tui().errorf(e, "buildNote(): Error processing '%s': %s", getName(), e.toString());
+            throw e;
         } finally {
             parseState.pop(pushed);
         }
     }
 
-    protected QuteBase buildQuteResource() {
+    protected Tools5eQuteBase buildQuteResource() {
         tui().warnf("The default buildQuteResource method was called for %s. Was this intended?", sources.toString());
         return null;
     }
 
-    protected QuteNote buildQuteNote() {
+    protected Tools5eQuteNote buildQuteNote() {
         tui().warnf("The default buildQuteNote method was called for %s. Was this intended?", sources.toString());
         return null;
     }

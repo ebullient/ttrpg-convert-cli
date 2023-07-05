@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteFeat extends Json2QuteCommon {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
@@ -21,7 +21,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
     }
 
     @Override
-    protected QuteBase buildQuteResource() {
+    protected Tools5eQuteBase buildQuteResource() {
         String prerequisite = listPrerequisites();
         Set<String> tags = new TreeSet<>(sources.getSourceTags());
 

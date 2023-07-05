@@ -8,7 +8,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteSubclass extends QuteSource {
+public class QuteSubclass extends Tools5eQuteBase {
 
     public final String parentClass;
     public final String parentClassLink;
@@ -36,12 +36,12 @@ public class QuteSubclass extends QuteSource {
 
     @Override
     public String targetPath() {
-        return QuteSource.CLASSES_PATH;
+        return Tools5eQuteBase.CLASSES_PATH;
     }
 
     @Override
     public String targetFile() {
-        return QuteSource.getSubclassResource(name, parentClass, sources.primarySource());
+        return Tools5eQuteBase.getSubclassResource(name, parentClass, sources.primarySource());
     }
 
     @Override

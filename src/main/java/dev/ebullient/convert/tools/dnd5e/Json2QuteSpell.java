@@ -9,9 +9,8 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.qute.QuteBase;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteSpell extends Json2QuteCommon {
 
@@ -23,7 +22,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     @Override
-    protected QuteBase buildQuteResource() {
+    protected Tools5eQuteBase buildQuteResource() {
         boolean ritual = spellIsRitual();
         SchoolEnum school = getSchool();
         String level = node.get("level").asText();
@@ -287,8 +286,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
         return linkOrText(
                 className,
                 classKey,
-                QuteSource.CLASSES_PATH,
-                className + QuteSource.sourceIfNotCore(classSource));
+                Tools5eQuteBase.CLASSES_PATH,
+                className + Tools5eQuteBase.sourceIfNotCore(classSource));
     }
 
     private String getSubclass(Collection<String> tags, String className, String classSource, String subclassName,
@@ -297,7 +296,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         return linkOrText(
                 String.format("%s (%s)", className, subclassName),
                 subclassKey,
-                QuteSource.CLASSES_PATH,
-                QuteSource.getSubclassResource(subclassName, className, subclassSource));
+                Tools5eQuteBase.CLASSES_PATH,
+                Tools5eQuteBase.getSubclassResource(subclassName, className, subclassSource));
     }
 }

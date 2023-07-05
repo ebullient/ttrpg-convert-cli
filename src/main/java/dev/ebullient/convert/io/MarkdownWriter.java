@@ -101,7 +101,10 @@ public class MarkdownWriter {
         Files.write(target, content.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void writeNotes(Path dir, Collection<QuteNote> notes) {
+    public void writeNotes(Path dir, Collection<QuteNote> notes, boolean compendium) {
+        if (notes.isEmpty()) {
+            return;
+        }
         Path targetDir = output.resolve(dir);
 
         for (QuteNote n : notes) {
@@ -112,25 +115,12 @@ public class MarkdownWriter {
             writeNote(fd, fileName, n);
         }
 
-        tui.outPrintf("✅ Wrote %s notes (rules and tables).%n", notes.size());
+        tui.outPrintf("✅ Wrote %s notes to %s.%n",
+                notes.size(),
+                compendium ? "compendium" : "rules");
     }
 
-    public void writeNotes(Path dir, Map<String, QuteNote> notes) {
-        Path rootDir = output.resolve(dir);
-        rootDir.toFile().mkdirs();
-
-        notes.forEach((k, v) -> {
-            Path fullPath = rootDir.resolve(k);
-            Path targetDir = fullPath.getParent();
-            String fileName = fullPath.getFileName().toString();
-            targetDir.toFile().mkdirs();
-            writeNote(targetDir, fileName, v);
-        });
-
-        tui.outPrintf("✅ Wrote %s notes (rules and tables).%n", notes.size());
-    }
-
-    public void writeNote(Path targetDir, String fileName, QuteNote n) {
+    private void writeNote(Path targetDir, String fileName, QuteNote n) {
         Path target = targetDir.resolve(fileName);
         String content = templates.render(n);
         try {
@@ -141,6 +131,9 @@ public class MarkdownWriter {
     }
 
     public void writeNames(Path dir, Collection<QuteName> names) {
+        if (names.isEmpty()) {
+            return;
+        }
         Path rootDir = output.resolve(dir);
         rootDir.toFile().mkdirs();
 

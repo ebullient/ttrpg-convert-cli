@@ -157,9 +157,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
         // Custom indices
         append(Pf2eIndexType.trait, Json2QuteTrait.buildIndex(index), compendium, rules);
 
-        writer.writeNotes(index.compendiumFilePath(), compendium);
-        writer.writeNotes(index.rulesFilePath(), rules);
+        writer.writeNotes(index.compendiumFilePath(), compendium, true);
+        writer.writeNotes(index.rulesFilePath(), rules, false);
 
+        // TODO: DOES THIS WORK RIGHT? shouldn't these be in the other image map?
         List<ImageRef> images = rules.stream()
                 .flatMap(s -> s.images().stream()).collect(Collectors.toList());
         index.tui().copyImages(images, fallbackPaths);

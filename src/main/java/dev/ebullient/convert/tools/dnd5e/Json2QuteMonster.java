@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
@@ -29,7 +28,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteSource;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Trait;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -67,7 +66,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     @Override
-    protected QuteBase buildQuteResource() {
+    protected Tools5eQuteBase buildQuteResource() {
         String size = getSize(node);
         String environment = joinAndReplace(node, "environment");
         String cr = monsterCr(node);
@@ -504,14 +503,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     "token",
                     slugify(filename) + ".png");
 
-            return sources.buildImageRef(index, sourcePath, target, true);
+            return buildImageRef(index, sourcePath, target);
         }
         return null;
     }
 
     @Override
     public String getImagePath() {
-        return QuteSource.monsterPath(isNpc, type);
+        return Tools5eQuteBase.monsterPath(isNpc, type);
     }
 
     public static List<Tuple> findConjuredMonsterVariants(Tools5eIndex index, Tools5eIndexType type,

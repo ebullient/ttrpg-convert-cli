@@ -10,7 +10,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteBackground extends QuteSource {
+public class QuteBackground extends Tools5eQuteBase {
 
     final List<ImageRef> images;
 
@@ -24,7 +24,7 @@ public class QuteBackground extends QuteSource {
 
     @Override
     public String targetPath() {
-        return QuteSource.BACKGROUND_PATH;
+        return Tools5eQuteBase.BACKGROUND_PATH;
     }
 
     @Override

@@ -15,7 +15,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteMonster extends QuteSource {
+public class QuteMonster extends Tools5eQuteBase {
 
     public final boolean isNpc;
     public final String size;
@@ -128,7 +128,7 @@ public class QuteMonster extends QuteSource {
 
     @Override
     public String targetPath() {
-        return QuteSource.monsterPath(isNpc, type);
+        return Tools5eQuteBase.monsterPath(isNpc, type);
     }
 
     public String getHp() {

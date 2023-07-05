@@ -11,12 +11,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.dnd5e.ItemProperty.CustomItemProperty;
 import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
 import dev.ebullient.convert.tools.dnd5e.ItemType.CustomItemType;
 import dev.ebullient.convert.tools.dnd5e.ItemType.ItemEnum;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteItem;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteItem extends Json2QuteCommon {
 
@@ -28,7 +28,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     }
 
     @Override
-    protected QuteBase buildQuteResource() {
+    protected Tools5eQuteBase buildQuteResource() {
         Set<ItemProperty> itemProperties = new TreeSet<>(ItemProperty.comparator); // stable order
 
         findProperties(itemProperties);

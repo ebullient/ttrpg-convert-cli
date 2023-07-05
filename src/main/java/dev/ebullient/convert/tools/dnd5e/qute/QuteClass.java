@@ -8,7 +8,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @TemplateData
 @RegisterForReflection
-public class QuteClass extends QuteSource {
+public class QuteClass extends Tools5eQuteBase {
+
     public final int hitDice;
     public final String classProgression;
     public final String startingEquipment;
@@ -32,6 +33,6 @@ public class QuteClass extends QuteSource {
 
     @Override
     public String targetPath() {
-        return QuteSource.CLASSES_PATH;
+        return Tools5eQuteBase.CLASSES_PATH;
     }
 }
