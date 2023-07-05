@@ -40,8 +40,11 @@
               "type": "entries",
               "name": "Ammunition",
               "itemType": "A",
+              "abbreviation": "A",
               "srd": true,
               "basicRules": true,
+              "source": "PHB",
+              "page": 146,        
               "entries": [
                 "You can use a weapon that has the ammunition property to make a ranged attack only if you have ammunition to fire from the weapon. Each time you attack with the weapon, you expend one piece of ammunition. Drawing the ammunition from a quiver, case, or other container is part of the attack. Loading a one-handed weapon requires a free hand. At the end of the battle, you can recover half your expended ammunition by taking a minute to search the battlefield.",
                 "If you use a weapon that has the ammunition property to make a melee attack, you treat the weapon as an improvised weapon. A sling must be loaded to deal any damage when used in this way."
@@ -51,6 +54,7 @@
               "type": "entries",
               "name": "Ammunition (Firearm)",
               "itemType": "AF",
+              "abbreviation": "AF",
               "page": 267,
               "source": "DMG",
               "entries": [
@@ -60,6 +64,7 @@
             {
               "type": "entries",
               "name": "Burst Fire",
+              "abbreviation": "BF",
               "page": 267,
               "source": "DMG",
               "entries": [
@@ -69,6 +74,9 @@
             {
               "type": "entries",
               "name": "Finesse",
+              "abbreviation": "F",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -78,6 +86,9 @@
             {
               "type": "entries",
               "name": "Heavy",
+              "abbreviation": "H",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -87,6 +98,9 @@
             {
               "type": "entries",
               "name": "Light",
+              "abbreviation": "L",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -96,6 +110,9 @@
             {
               "type": "entries",
               "name": "Loading",
+              "abbreviation": "LD",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -160,6 +177,9 @@
             {
               "type": "entries",
               "name": "Range",
+              "abbreviation": "R",
+              "source": "PHB",
+              "page": 146,
               "itemType": "R",
               "srd": true,
               "basicRules": true,
@@ -170,6 +190,9 @@
             {
               "type": "entries",
               "name": "Reach",
+              "abbreviation": "R",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -179,6 +202,7 @@
             {
               "type": "entries",
               "name": "Reload",
+              "abbreviation": "RLD",
               "source": "DMG",
               "page": 267,
               "entries": [
@@ -188,6 +212,9 @@
             {
               "type": "entries",
               "name": "Special",
+              "abbreviation": "S",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -197,6 +224,9 @@
             {
               "type": "entries",
               "name": "Thrown",
+              "abbreviation": "T",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -206,6 +236,9 @@
             {
               "type": "entries",
               "name": "Two-Handed",
+              "abbreviation": "2H",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -215,6 +248,9 @@
             {
               "type": "entries",
               "name": "Versatile",
+              "abbreviation": "V",
+              "source": "PHB",
+              "page": 147,
               "srd": true,
               "basicRules": true,
               "entries": [
@@ -313,7 +349,8 @@
       "feats.json", "optionalfeatures.json",
       "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
       "races.json", "fluff-races.json",
-      "spells"
+      "spells",
+      "tables.json"
     ],
     "indexes": {
       "spell-source": "generated/gendata-spell-source-lookup.json"
