@@ -464,8 +464,8 @@ public class Tui {
     public static JsonNode readTreeFromResource(String resource) {
         try {
             return Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream(resource));
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to read or parse required resource " + resource, e);
+        } catch (IOException | IllegalArgumentException e) {
+            throw new IllegalStateException("Unable to read or parse required resource (" + resource + "): " + e, e);
         }
     }
 }
