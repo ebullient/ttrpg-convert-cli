@@ -86,11 +86,11 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     void addToIndex(Pf2eIndexType type, JsonNode node) {
-        TtrpgValue.indexInputType.addToNode(node, type.name());
         if (type == Pf2eIndexType.baseitem) {
             // always use item (baseitem is a detail that we have remembered if we need it)
             type = Pf2eIndexType.item;
         }
+        TtrpgValue.indexInputType.addToNode(node, type.name());
         // TODO: Variants? Reprints?
         String key = type.createKey(node);
         String hash = Field.add_hash.getTextOrNull(node);
@@ -131,7 +131,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         }
 
         // Quick lookup for traits
-        String source = Field.source.getTextOrNull(node);
+        String source = Field.source.getTextOrDefault(node, Pf2eIndexType.trait.defaultSourceString());
         String oldSource = traitToSource.put(name.toLowerCase(), source);
         if (oldSource != null && !oldSource.equals(source)) {
             tui().warnf("Duplicate trait name %s, from source %s and %s",
@@ -206,7 +206,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     private void createTraitReference(String key, JsonNode node, Pf2eSources sources) {
         // Precreate category mapping for traits
         String name = Field.name.getTextOrEmpty(node);
-        String traitLink = linkify(Pf2eIndexType.trait, name);
+        String traitLink = linkifyTrait(name);
 
         Field.categories.getListOfStrings(node, tui()).stream()
                 .filter(c -> !c.equalsIgnoreCase("_alignAbv"))

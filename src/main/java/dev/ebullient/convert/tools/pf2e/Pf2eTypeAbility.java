@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.NodeReader;
-import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
+import dev.ebullient.convert.tools.pf2e.JsonTextReplacement.Field;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 
 public enum Pf2eTypeAbility implements NodeReader {
@@ -54,7 +54,7 @@ public enum Pf2eTypeAbility implements NodeReader {
                 }
             };
         } finally {
-            JsonTextReplacement.parseState.pop(pushed);
+            Converter.parseState.pop(pushed);
         }
     }
 }

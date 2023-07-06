@@ -59,7 +59,7 @@ public class RpgDataConvertTest {
     }
 
     @Test
-    void testCommandLiveData_5e(QuarkusMainLauncher launcher) {
+    void testLiveData_5e(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             final Path target = outputPath_5e.resolve("srd-index");
             TestUtils.deleteDir(target);
@@ -81,7 +81,7 @@ public class RpgDataConvertTest {
     }
 
     @Test
-    void testCommandLiveData_5eAllSources(QuarkusMainLauncher launcher) {
+    void testLiveData_5eAllSources(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             // All, I mean it. Really for real.. ALL.
             final Path allIndex = outputPath_5e.resolve("all-index");
@@ -127,7 +127,7 @@ public class RpgDataConvertTest {
     }
 
     @Test
-    void testCommandLiveData_5eOneSource(QuarkusMainLauncher launcher) {
+    void testLiveData_5eOneSource(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path target = outputPath_5e.resolve("erlw");
             TestUtils.deleteDir(target);
@@ -142,7 +142,7 @@ public class RpgDataConvertTest {
     }
 
     @Test
-    void testCommandLiveData_5eHomebrew(QuarkusMainLauncher launcher) {
+    void testLiveData_5eHomebrew(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists() && TestUtils.HOMEBREW_PATH_5E.toFile().exists()) {
             Path target = outputPath_5e.resolve("homebrew");
             TestUtils.deleteDir(target);
@@ -293,7 +293,7 @@ public class RpgDataConvertTest {
     }
 
     @Test
-    void testCommandLiveData_Pf2eAllSources(QuarkusMainLauncher launcher) {
+    void testLiveData_Pf2eAllSources(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             // All, I mean it. Really for real.. ALL.
             final Path allIndex = outputPath_pf2.resolve("all-index");

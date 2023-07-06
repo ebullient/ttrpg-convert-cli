@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.NodeReader;
-import dev.ebullient.convert.tools.pf2e.JsonSource.Field;
+import dev.ebullient.convert.tools.pf2e.JsonTextReplacement.Field;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources.DefaultSource;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 

@@ -931,42 +931,6 @@ public interface JsonSource extends JsonTextReplacement {
         spans,
     }
 
-    enum Field implements NodeReader {
-        alias,
-        auto,
-        by,
-        categories, // trait categories for indexing
-        customUnit,
-        data, // embedded data
-        entry,
-        entries,
-        footnotes,
-        frequency,
-        group,
-        head,
-        id,
-        interval,
-        items,
-        name,
-        number,
-        overcharge,
-        page,
-        range, // level effect
-        recurs,
-        reference,
-        requirements,
-        signature,
-        source,
-        special,
-        style,
-        tag, // embedded data
-        title,
-        traits,
-        type,
-        unit,
-        add_hash
-    }
-
     enum AppendTypeValue implements NodeReader.FieldValue {
         ability,
         affliction,

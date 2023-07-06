@@ -13,6 +13,42 @@ import dev.ebullient.convert.tools.NodeReader;
 
 public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType> {
 
+    enum Field implements NodeReader {
+        alias,
+        auto,
+        by,
+        categories, // trait categories for indexing
+        customUnit,
+        data, // embedded data
+        entry,
+        entries,
+        footnotes,
+        frequency,
+        group,
+        head,
+        id,
+        interval,
+        items,
+        name,
+        number,
+        overcharge,
+        page,
+        range, // level effect
+        recurs,
+        reference,
+        requirements,
+        signature,
+        source,
+        special,
+        style,
+        tag, // embedded data
+        title,
+        traits,
+        type,
+        unit,
+        add_hash
+    }
+
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
     Pattern runeItemPattern = Pattern.compile("\\{@runeItem ([^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
@@ -116,9 +152,9 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
             // {@color color|e40707} tags, {@handwriting handwritten text},
             // {@sup some superscript,} {@sub some subscript,}
             // {@center some centered text} {@c with alternative shorthand,}
-            // {@i nostyle {@nostyle to escape font formatting, which can be used with other entry types} {@n (see below).}}
-            // {@indentFirst You can use @indentFirst to indent the first line of text, all subsequent lines will not be indented. This is most often useful in tables, but it can be used anywhere.}
-            // {@indentSubsequent @indentSubsequent is the counterpart to @indentFirst. You can use it to indent all lines after the first. This is most often useful in sidebars, but it can be used anywhere.}",
+            // {@nostyle to escape font formatting} {@n (see below).}}
+            // {@indentFirst You can use @indentFirst to indent the first line of text}
+            // {@indentSubsequent is the counterpart to @indentFirst. }",
 
             try {
                 result = result
@@ -217,9 +253,11 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         String[] parts = match.group(1).split("\\|");
         String linkText = parts[0];
         // TODO {@runeItem longsword||+1 weapon potency||flaming|},
-        //      {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}.
+        // {@runeItem buugeng|LOAG|+3 weapon potency||optional display text}.
         // In general, the syntax is this:
-        // (open curly brace)@runeItem base item|base item source|rune 1|rune 1 source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly brace).
+        // (open curly brace)@runeItem base item|base item source|rune 1|rune 1
+        // source|rune 2|rune 2 source|...|rune n|rune n source|display text(close curly
+        // brace).
         // For each source, we assume CRB by default.",
 
         tui().debugf("TODO RuneItem found: %s", match);
@@ -251,20 +289,25 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                 return linkifyClassFeature(match);
             case subclassFeature:
                 return linkifySubClassFeature(match);
+            case trait:
+                return linkifyTrait(match);
             default:
                 break;
         }
 
-        // "{@b Actions:} {@action strike} assumes CRB by default, {@action act together|som} can have sources added with a pipe, {@action devise a stratagem|apg|and optional link text added with another pipe}.",
-        // "{@b Conditions:} {@condition stunned} assumes CRB by default, {@condition stunned|crb} can have sources added with a pipe (not that it's ever useful), {@condition stunned|crb|and optional link text added with another pipe}.",
-        // "{@b Tables:} {@table ability modifiers} assumes CRB by default, {@table automatic bonus progression|gmg} can have sources added with a pipe, {@table domains|logm|and optional link text added with another pipe}.",
+        // {@action strike}
+        // {@action act together|som} can have sources added with a pipe,
+        // {@action devise a stratagem|apg|and optional link text added with another pipe}.",
+        // {@condition stunned} assumes CRB by default,
+        // {@condition stunned|crb} can have sources added with a pipe (not that it's ever useful),
+        // {@condition stunned|crb|and optional link text added with another pipe}
+        // {@table ability modifiers} assumes CRB by default,
+        // {@table automatic bonus progression|gmg} can have sources added with a pipe,
+        // {@table domains|logm|and optional link text added with another pipe}.",
         String[] parts = match.split("\\|");
-        String linkText = parts[0];
+        String linkText = parts.length > 2 ? parts[2] : parts[0];
         String source = targetType.defaultSourceString();
 
-        if (parts.length > 2) {
-            linkText = parts[2];
-        }
         if (linkText.matches("\\[.+]\\(.+\\)")) {
             // skip if already a link
             return linkText;
@@ -283,19 +326,6 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
 
         if (targetType == Pf2eIndexType.spell) {
             parts[0] = parts[0].replaceAll("\\s+\\((.*)\\)$", "-$1");
-        } else if (targetType == Pf2eIndexType.trait) {
-            if (parts.length < 2 && linkText.contains("<")) {
-                String[] pieces = parts[0].split(" ");
-                parts[0] = pieces[0];
-            } else if (parts[0].startsWith("[")) {
-                // Do the same replacement we did when doing the initial import
-                // [...] becomes "Any ..."
-                parts[0] = parts[0].replaceAll("\\[(.*)]", "Any $1");
-            } else if (parts[0].length() <= 2) {
-                Pf2eTypeReader.Pf2eAlignmentValue alignment = Pf2eTypeReader.Pf2eAlignmentValue.fromString(parts[0]);
-                parts[0] = alignment == null ? parts[0] : alignment.longName;
-            }
-            source = index().traitToSource(parts[0]);
         }
 
         // TODO: aliases?
@@ -309,12 +339,65 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
                 targetType.isDefaultSource(source) ? "" : "-" + slugify(source));
 
         // if (targetType != Pf2eIndexType.action
-        //         && targetType != Pf2eIndexType.spell
-        //         && targetType != Pf2eIndexType.feat
-        //         && targetType != Pf2eIndexType.trait) {
-        //     tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
+        // && targetType != Pf2eIndexType.spell
+        // && targetType != Pf2eIndexType.feat
+        // && targetType != Pf2eIndexType.trait) {
+        // tui().debugf("LINK for %s (%s): %s", match, index().isIncluded(key), link);
         // }
         return index().isIncluded(key) ? link : linkText;
+    }
+
+    default String linkifyTrait(String match) {
+        // {@trait fire} does not require sources for official sources,
+        // {@trait brutal|b2} can have sources added with a pipe in case of homebrew or duplicate trait names,
+        // {@trait agile||and optional link text added with another pipe}.",
+
+        Pf2eIndexType trait = Pf2eIndexType.trait;
+        String[] parts = match.split("\\|");
+        String linkText = parts.length > 2 ? parts[2] : parts[0];
+
+        if (parts.length < 2 && linkText.contains("<")) {
+            String[] pieces = parts[0].split(" ");
+            parts[0] = pieces[0];
+        } else if (parts[0].startsWith("[")) {
+            // Do the same replacement we did when doing the initial import
+            // [...] becomes "Any ..."
+            parts[0] = parts[0].replaceAll("\\[(.*)]", "Any $1");
+        } else if (parts[0].length() <= 2) {
+            Pf2eTypeReader.Pf2eAlignmentValue alignment = Pf2eTypeReader.Pf2eAlignmentValue.fromString(parts[0]);
+            parts[0] = alignment == null ? parts[0] : alignment.longName;
+        }
+
+        String source = parts.length > 1 ? parts[1] : index().traitToSource(parts[0]);
+        String key = trait.createKey(parts[0], source);
+        JsonNode traitNode = index().getIncludedNode(key);
+
+        if (traitNode != null) {
+            List<String> categories = Field.categories.getListOfStrings(traitNode, tui())
+                    .stream()
+                    .filter(x -> !"_alignAbv".equals(x))
+                    .toList();
+
+            String title;
+            if (categories.contains("Alignment")) {
+                title = "Alignment";
+            } else if (categories.contains("Rarity")) {
+                title = "Rarity";
+            } else if (categories.contains("Size")) {
+                title = "Size";
+            } else {
+                title = categories.stream().sorted().findFirst().orElse("");
+            }
+            title = (Field.name.getTextOrEmpty(traitNode) + " " + title + " Trait").trim();
+
+            return String.format("[%s](%s/%s%s.md \"%s\")",
+                    linkText,
+                    trait.relativeRepositoryRoot(index()),
+                    slugify(parts[0]),
+                    trait.isDefaultSource(source) ? "" : "-" + slugify(source),
+                    title.trim());
+        }
+        return linkText;
     }
 
     default String linkifyRules(Pf2eIndexType type, String text, String rules, String anchor) {
@@ -335,8 +418,11 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         // {@class investigator|apg} can have sources added with a pipe,
         // {@class summoner|som|optional link text added with another pipe},
         // {@class barbarian|crb|subclasses added|giant} with another pipe,
-        // {@class barbarian|crb|and class feature added|giant|crb|2-2} with another pipe
-        // (first number is level index (0-19), second number is feature index (0-n)), although this is prone to changes in the index, it's best to use the above method instead.",
+        // {@class barbarian|crb|and class feature added|giant|crb|2-2} with another
+        // pipe
+        // (first number is level index (0-19), second number is feature index (0-n)),
+        // although this is prone to changes in the index, it's best to use the above
+        // method instead.",
         String[] parts = match.split("\\|");
         String className = parts[0];
         String classSource = String.valueOf(Pf2eIndexType.classtype.defaultSource());
@@ -362,7 +448,8 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         // {@classFeature precise strike|swashbuckler|apg|1},
         // {@classFeature arcane spellcasting|magus|som|1|som},
         // {@classFeature rage|barbarian||1||optional display text}.
-        // Class source is assumed to be CRB. Class feature source is assumed to be the same as class source.",
+        // Class source is assumed to be CRB. Class feature source is assumed to be the
+        // same as class source.",
         tui().debugf("TODO CLASS FEATURE found: %s", match);
         return match;
     }
@@ -371,7 +458,8 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
         // "{@b Subclass Features:}
         // {@subclassFeature research field|alchemist||bomber||1},
         // {@subclassFeature methodology|investigator|apg|empiricism|apg|1},
-        // {@subclassFeature methodology|investigator|apg|empiricism|apg|1||and optional display text} Class and Class feature source is assumed to be CRB.",
+        // {@subclassFeature methodology|investigator|apg|empiricism|apg|1||and optional
+        // display text} Class and Class feature source is assumed to be CRB.",
         tui().debugf("TODO CLASS FEATURE found: %s", match);
         return match;
     }
