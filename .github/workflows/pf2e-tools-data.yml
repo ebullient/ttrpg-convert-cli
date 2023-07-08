@@ -54,6 +54,8 @@ jobs:
 
           curl -LsS -o Pf2eTools.tar.gz $ARTIFACT_URL
           tar xzf Pf2eTools.tar.gz ${ROOT}/data ${ROOT}/img
+          # Remove image contents. We just need the files to exist (linking)
+          find ${ROOT}/img -type f | while read FILE; do echo > "$FILE"; done
 
           mkdir -p sources
           rm -rf sources/Pf2eTools

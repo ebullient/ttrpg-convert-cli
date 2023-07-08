@@ -56,6 +56,8 @@ jobs:
 
           curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
           tar xzf 5etools.tar.gz ${ROOT}/data ${ROOT}/img
+          # Remove image contents. We just need the files to exist (linking)
+          find ${ROOT}/img -type f | while read FILE; do echo > "$FILE"; done
 
           mkdir -p sources
           rm -rvf sources/5etools-mirror-1.github.io
