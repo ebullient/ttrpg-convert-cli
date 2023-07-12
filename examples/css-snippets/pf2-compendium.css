@@ -89,8 +89,8 @@ a.internal-link[href$="#Actions"][title="Single Action"] {
 }
 h1 h1 a[href$="#Actions"][title="Single Action"],
 h1 a.internal-link[href$="#Actions"][title="Single Action"] {
-  height: 22px;
-  width: 22px;
+  height: 1em;
+  width: 1.5em;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title="Single Action"],
@@ -110,8 +110,8 @@ a.internal-link[href$="#Actions"][title=Two-Action] {
 }
 h1 h1 a[href$="#Actions"][title=Two-Action],
 h1 a.internal-link[href$="#Actions"][title=Two-Action] {
-  height: 22px;
-  width: 22px;
+  height: 1em;
+  width: 1.5em;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Two-Action],
@@ -131,8 +131,8 @@ a.internal-link[href$="#Actions"][title=Three-Action] {
 }
 h1 h1 a[href$="#Actions"][title=Three-Action],
 h1 a.internal-link[href$="#Actions"][title=Three-Action] {
-  height: 22px;
-  width: 22px;
+  height: 1em;
+  width: 1.5em;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Three-Action],
@@ -152,8 +152,8 @@ a.internal-link[href$="#Actions"][title=Reaction] {
 }
 h1 h1 a[href$="#Actions"][title=Reaction],
 h1 a.internal-link[href$="#Actions"][title=Reaction] {
-  height: 22px;
-  width: 22px;
+  height: 1em;
+  width: 1.5em;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Reaction],
@@ -177,8 +177,8 @@ h1 h1 a[href$="#Actions"][title="Free Action"],
 h1 a.internal-link[href$="#Actions"][title="Free Action"],
 h1 .markdown-source-view.mod-cm6 .cm-line a[href$="#Actions"][title="Free Action"],
 h1 .cm-s-obsidian span.cm-link a[href$="#Actions"][title="Free Action"] {
-  height: 22px;
-  width: 22px;
+  height: 1em;
+  width: 1.5em;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title="Free Action"],
@@ -200,8 +200,8 @@ a.internal-link[href$="#Actions"][title=Varies] {
 }
 h1 h1 a[href$="#Actions"][title=Varies],
 h1 a.internal-link[href$="#Actions"][title=Varies] {
-  height: 22px;
-  width: 22px;
+  height: 1em;
+  width: 1.5em;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title=Varies],
@@ -221,8 +221,8 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
 }
 h1 h1 a[href$="#Actions"][title="Duration or Frequency"],
 h1 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
-  height: 22px;
-  width: 22px;
+  height: 1em;
+  width: 1.5em;
   vertical-align: sub;
 }
 .theme-dark h1 a[href$="#Actions"][title="Duration or Frequency"],
@@ -230,50 +230,66 @@ h1 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   content: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z' fill='red'%3E%3C/path%3E%3C/svg%3E%0A");
 }
 
-.markdown-rendered .internal-link:is([href^="/rules/traits/"]) {
-  border: 1px solid #611405;
+.markdown-rendered .internal-link:is([href*="rules/traits/"]) {
+  border: 2px solid #d8c483;
+  border-style: double;
   background: #611405;
   background-clip: padding-box;
-  border-radius: 5px;
   color: rgb(232, 232, 232) !important;
   cursor: help;
   font-weight: 700;
+  font-size: 1.3em;
   margin-bottom: 0.75rem;
-  padding: 2px;
+  padding-right: 5px;
+  padding-left: 5px;
+  font-variant: small-caps;
   text-align: left;
   text-indent: 0;
+  text-transform: capitalize;
   word-break: keep-all;
 }
-.markdown-rendered .internal-link:is([href*="/rules/conditions.md"]) {
-  border: 1px solid #138a06;
+.markdown-rendered .internal-link:is([href*="rules/traits/uncommon"]){
+background: var(--box-uncommon);
+}
+.markdown-rendered .internal-link:is([href*="rules/traits/rare"]){
+  background: var(--box-rare);
+  }
+.markdown-rendered .internal-link:is([href*="rules/conditions.md"]) {
+  border: 2px solid #d8c483;
+  border-style: double;
   background: #138a06;
   background-clip: padding-box;
-  border-radius: 5px;
+  border-radius: 1px;
   color: rgb(232, 232, 232) !important;
   cursor: help;
   font-weight: 700;
+  font-variant: small-caps;
   margin-bottom: 0.75rem;
   padding: 2px;
   text-align: left;
   text-indent: 0;
+  text-transform: capitalize;
   word-break: keep-all;
 }
-.markdown-rendered .internal-link:is([href*="/compendium/skills.md"]) {
-  border: 1px solid #a96c74;
+.markdown-rendered .internal-link:is([href*="compendium/skills.md"]) {
+  border: 2px solid #d8c483;
+  border-style: double;
   background: #a96c74;
   background-clip: padding-box;
-  border-radius: 5px;
+  border-radius: 1px;
   color: rgb(232, 232, 232) !important;
   cursor: help;
   font-weight: 700;
+  font-variant: small-caps;
   margin-bottom: 0.75rem;
   padding: 2px;
   text-align: left;
   text-indent: 0;
+  text-transform: capitalize;
   word-break: keep-all;
 }
 
-div.markdown-reading-view p:is([href="/rules/traits/Uncommon.md"]) {
+div.markdown-reading-view p:is([href="rules/traits/Uncommon.md"]) {
   border: 2px solid var(--box-uncommon);
   background: var(--box-uncommon);
   background-clip: padding-box;
