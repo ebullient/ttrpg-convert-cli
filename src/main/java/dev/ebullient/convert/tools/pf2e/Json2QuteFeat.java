@@ -2,12 +2,11 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
 public class Json2QuteFeat extends Json2QuteBase {
@@ -18,10 +17,10 @@ public class Json2QuteFeat extends Json2QuteBase {
 
     @Override
     protected QuteFeat buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
         List<String> leadsTo = Pf2eFeat.leadsTo.getListOfStrings(rootNode, tui())
@@ -47,7 +46,7 @@ public class Json2QuteFeat extends Json2QuteBase {
     public QuteFeat buildArchetype(String archetypeName, String dedicationLevel) {
         String featLevel = Pf2eFeat.level.getTextOrDefault(rootNode, "1");
         List<String> text = new ArrayList<>();
-        List<String> tags = new ArrayList<>();
+        Tags tags = new Tags();
 
         String note = null;
         if (dedicationLevel != featLevel) {
@@ -57,7 +56,7 @@ public class Json2QuteFeat extends Json2QuteBase {
                     archetypeName);
         }
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
         return new QuteFeat(sources, text, tags,

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -23,11 +23,11 @@ public class Json2QuteFeat extends Json2QuteCommon {
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         String prerequisite = listPrerequisites();
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(getSources());
 
         return new QuteFeat(sources,
                 decoratedTypeName(sources),
-                sources.getSourceText(index.srdOnly()),
+                getSourceText(sources),
                 prerequisite,
                 null, // Level coming someday..
                 getText("##"),
@@ -37,16 +37,24 @@ public class Json2QuteFeat extends Json2QuteCommon {
     String listPrerequisites() {
         List<String> prereqs = new ArrayList<>();
         Tools5eIndex index = index();
-        node.withArray("prerequisite").forEach(entry -> {
+        for (JsonNode entry : iterableElements(rootNode.get("prequisite"))) {
             if (entry.has("level")) {
                 prereqs.add(levelToText(entry.get("level")));
             }
-            entry.withArray("race").forEach(r -> prereqs.add(index.lookupName(Tools5eIndexType.race, raceToText(r))));
+
+            for (JsonNode r : iterableElements(entry.get("race"))) {
+                prereqs.add(index.lookupName(Tools5eIndexType.race, raceToText(r)));
+            }
 
             Map<String, List<String>> abilityScores = new HashMap<>();
-            entry.withArray("ability").forEach(a -> a.fields().forEachRemaining(score -> abilityScores.computeIfAbsent(
-                    score.getValue().asText(),
-                    k -> new ArrayList<>()).add(SkillOrAbility.format(score.getKey()))));
+
+            for (JsonNode a : iterableElements(entry.get("ability"))) {
+                for (Entry<String, JsonNode> score : iterableFields(a)) {
+                    abilityScores.computeIfAbsent(score.getValue().asText(), k -> new ArrayList<>())
+                            .add(SkillOrAbility.format(score.getKey()));
+                }
+            }
+
             abilityScores.forEach(
                     (k, v) -> prereqs.add(String.format("%s %s or higher", String.join(" or ", v), k)));
 
@@ -92,7 +100,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
             if (entry.has("other")) {
                 prereqs.add(entry.get("other").asText());
             }
-        });
+        }
         return prereqs.isEmpty() ? null : String.join(", ", prereqs);
     }
 }

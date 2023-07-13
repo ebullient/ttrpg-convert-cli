@@ -1,27 +1,15 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.util.Collection;
-
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
+import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
+import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 
 public class Tools5eQuteBase extends QuteBase {
 
-    public static final String ADVENTURE_PATH = "adventures";
-    public static final String BOOK_PATH = "books";
-    public static final String BACKGROUND_PATH = "backgrounds";
-    public static final String CLASSES_PATH = "classes";
-    public static final String DEITIES_PATH = "deities";
-    public static final String FEATS_PATH = "feats";
-    public static final String ITEMS_PATH = "items";
-    public static final String MONSTERS_BASE_PATH = "bestiary";
-    public static final String RACES_PATH = "races";
-    public static final String SPELLS_PATH = "spells";
-    public static final String TABLES_PATH = "tables";
-    public static final String VR_PATH = "variant-rules";
-
-    public Tools5eQuteBase(CompendiumSources sources, String name, String source, String text, Collection<String> tags) {
-        super(sources, name, source, text, tags);
+    public Tools5eQuteBase(CompendiumSources sources, String name, String source, String text, Tags tags) {
+        super(sources, name, source, text, tags.build());
     }
 
     public static String sourceIfNotCore(String source) {
@@ -42,8 +30,30 @@ public class Tools5eQuteBase extends QuteBase {
         return "";
     }
 
+    public static String getRelativePath(Tools5eIndexType type) {
+        return switch (type) {
+            case adventureData -> "adventures";
+            case bookData -> "books";
+            case card, deck -> "items";
+            case deity -> "deities";
+            case monster -> "bestiary";
+            case optionalfeature, optionalFeatureTypes -> "optional-features";
+            case race, subrace -> "races";
+            case subclass, classtype -> "classes";
+            case table, tableGroup -> "tables";
+            case trap, hazard -> "traps-hazards";
+            case variantrule -> "variant-rules";
+            default -> {
+                if (!type.writeFile() && !type.useQuteNote()) {
+                    throw new IllegalArgumentException("Verify the relative path usage for " + type);
+                }
+                yield type.name() + 's';
+            }
+        };
+    }
+
     public static String monsterPath(boolean isNpc, String type) {
-        return Tools5eQuteBase.MONSTERS_BASE_PATH + "/" + (isNpc ? "npc" : type);
+        return Tools5eQuteBase.getRelativePath(Tools5eIndexType.monster) + "/" + (isNpc ? "npc" : type);
     }
 
     public static String getSubclassResource(String subclass, String parentClass, String subclassSource) {
@@ -57,5 +67,13 @@ public class Tools5eQuteBase extends QuteBase {
     @Override
     public String targetFile() {
         return getName() + sourceIfNotCore(sources().primarySource());
+    }
+
+    public String targetPath() {
+        Tools5eSources sources = (Tools5eSources) sources();
+        if (sources != null) {
+            return Tools5eQuteBase.getRelativePath(sources.getType());
+        }
+        return ".";
     }
 }

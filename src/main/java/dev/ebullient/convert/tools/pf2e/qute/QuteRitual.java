@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.qute.TemplateData;
@@ -21,12 +22,12 @@ public class QuteRitual extends Pf2eQuteBase {
     public final QuteRitualChecks checks;
     public final QuteSpellTarget targeting;
 
-    public String requirements;
-    public String duration;
+    public final String requirements;
+    public final String duration;
 
     public final Map<String, String> heightened;
 
-    public QuteRitual(Pf2eSources sources, List<String> text, Collection<String> tags,
+    public QuteRitual(Pf2eSources sources, List<String> text, Tags tags,
             String level, String ritualType, Collection<String> traits, List<String> aliases,
             QuteRitualCasting casting, QuteRitualChecks checks, QuteSpellTarget targeting,
             String requirements, String duration, Map<String, String> heightened) {

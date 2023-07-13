@@ -88,7 +88,22 @@ public class JsonDataTest {
     }
 
     @Test
+    public void testOptionalFeatureList() {
+        commonTests.testOptionalFeatureList(outputPath);
+    }
+
+    @Test
+    public void testRewardList() {
+        commonTests.testRewardList(outputPath);
+    }
+
+    @Test
     public void testRules() {
         commonTests.testRules(outputPath);
+    }
+
+    @Test
+    public void testTrapsHazardsList() {
+        commonTests.testTrapsHazardsList(outputPath);
     }
 }

@@ -112,6 +112,7 @@ public class ConfiguratorTest {
         tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources-book-adventure.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
+
             Collection<String> books = config.getBooks();
             Collection<String> adventures = config.getAdventures();
 

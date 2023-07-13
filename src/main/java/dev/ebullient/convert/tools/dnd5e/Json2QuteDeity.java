@@ -2,14 +2,13 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteDeity;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -21,40 +20,40 @@ public class Json2QuteDeity extends Json2QuteCommon {
 
     @Override
     protected Tools5eQuteBase buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(getSources());
 
-        String pantheon = getTextOrDefault(node, "pantheon", null);
+        String pantheon = getTextOrDefault(rootNode, "pantheon", null);
         if (pantheon != null) {
-            tags.add("deity/" + slugify(pantheon));
+            tags.add("deity", slugify(pantheon));
         }
 
         List<String> domains = new ArrayList<>();
-        if (node.has("domains")) {
-            node.withArray("domains").forEach(d -> {
+        if (rootNode.has("domains")) {
+            rootNode.withArray("domains").forEach(d -> {
                 String domain = d.asText();
-                tags.add("domain/" + slugify(domain));
+                tags.add("domain", slugify(domain));
                 domains.add(domain);
             });
         }
 
         return new QuteDeity(sources,
                 getName(),
-                getSources().getSourceText(index.srdOnly()),
-                findAndReplace(node, "altNames"),
+                getSourceText(getSources()),
+                findAndReplace(rootNode, "altNames"),
                 pantheon,
                 dietyAlignment(),
-                replaceText(getTextOrEmpty(node, "title")),
-                replaceText(getTextOrEmpty(node, "category")),
+                replaceText(getTextOrEmpty(rootNode, "title")),
+                replaceText(getTextOrEmpty(rootNode, "category")),
                 String.join(", ", domains),
-                replaceText(getTextOrEmpty(node, "province")),
-                replaceText(getTextOrEmpty(node, "symbol")),
+                replaceText(getTextOrEmpty(rootNode, "province")),
+                replaceText(getTextOrEmpty(rootNode, "symbol")),
                 getSymbolImage(),
                 getText("##"),
                 tags);
     }
 
     String dietyAlignment() {
-        ArrayNode a1 = node.withArray("alignment");
+        ArrayNode a1 = rootNode.withArray("alignment");
         if (a1.size() == 0) {
             return "Unaligned";
         }
@@ -63,8 +62,8 @@ public class Json2QuteDeity extends Json2QuteCommon {
     }
 
     ImageRef getSymbolImage() {
-        if (node.has("symbolImg")) {
-            JsonNode symbolImg = node.get("symbolImg");
+        if (rootNode.has("symbolImg")) {
+            JsonNode symbolImg = rootNode.get("symbolImg");
             try {
                 JsonMediaHref mediaHref = mapper().treeToValue(symbolImg, JsonMediaHref.class);
                 return buildImageRef(index, mediaHref, getImagePath());

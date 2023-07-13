@@ -5,12 +5,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp;
@@ -33,10 +32,10 @@ public class Json2QuteSpell extends Json2QuteBase {
 
     @Override
     protected Pf2eQuteBase buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
         Collection<String> traits = collectTraitsFrom(rootNode, tags);
@@ -46,15 +45,15 @@ public class Json2QuteSpell extends Json2QuteBase {
         String type = "spell";
         if (join("", traits).contains("cantrip")) {
             type = "cantrip";
-            tags.add(cfg().tagOf(SPELL_TAG, type));
+            tags.add(SPELL_TAG, type);
         } else if (focus) {
             type = "focus";
-            tags.add(cfg().tagOf(SPELL_TAG, type, level));
+            tags.add(SPELL_TAG, type, level);
         } else {
-            tags.add(cfg().tagOf(SPELL_TAG, "level", level));
+            tags.add(SPELL_TAG, "level", level);
         }
 
-        Pf2eIndexType.domain.getListOfStrings(rootNode, tui()).forEach(d -> tags.add(cfg().tagOf("domain", d, "spell")));
+        Pf2eIndexType.domain.getListOfStrings(rootNode, tui()).forEach(d -> tags.add("domain", d, "spell"));
 
         // subclass --> link to subclass definition
         List<QuteSpellSubclass> subclass = new ArrayList<>();
@@ -138,7 +137,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         return saveDuration;
     }
 
-    QuteSpellTarget getQuteSpellTarget(Collection<String> tags) {
+    QuteSpellTarget getQuteSpellTarget(Tags tags) {
         String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
         NumberUnitEntry range = Pf2eSpell.range.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
@@ -154,7 +153,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         }
         if (area != null) {
             spellTarget.area = area.entry;
-            area.types.forEach(t -> tags.add(cfg().tagOf(SPELL_TAG, "area", t)));
+            area.types.forEach(t -> tags.add(SPELL_TAG, "area", t));
         }
         return spellTarget;
     }
@@ -188,7 +187,7 @@ public class Json2QuteSpell extends Json2QuteBase {
 
     String getHeightenedValue(JsonNode value) {
         List<String> inner = new ArrayList<>();
-        appendEntryToText(inner, value, null);
+        appendToText(inner, value, null);
         return String.join("\n", inner);
     }
 
@@ -201,8 +200,8 @@ public class Json2QuteSpell extends Json2QuteBase {
         QuteSpellAmp amp = new QuteSpellAmp();
 
         List<String> inner = new ArrayList<>();
-        appendEntryToText(inner, Field.entries.getFrom(ampNode), null);
-        appendEntryToText(inner, Field.entry.getFrom(ampNode), null);
+        appendToText(inner, SourceField.entries.getFrom(ampNode), null);
+        appendToText(inner, SourceField.entry.getFrom(ampNode), null);
         if (!inner.isEmpty()) {
             amp.text = String.join("\n", inner);
         }

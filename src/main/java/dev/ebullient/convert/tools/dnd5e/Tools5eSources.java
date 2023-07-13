@@ -16,6 +16,7 @@ import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.JsonMediaHref;
+import dev.ebullient.convert.tools.dnd5e.JsonSource.TableFields;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -104,7 +105,8 @@ public class Tools5eSources extends CompendiumSources {
         }
         return Fields.name.getTextOrDefault(jsonElement,
                 Fields.abbreviation.getTextOrDefault(jsonElement,
-                        "unknown"));
+                        TableFields.caption.getTextOrDefault(jsonElement,
+                                "unknown")));
     }
 
     @Override
@@ -160,7 +162,6 @@ public class Tools5eSources extends CompendiumSources {
                 .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
                 .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
                 .build(imageSourceToRef.get(sourcePath));
-
         imageSourceToRef.putIfAbsent(sourcePath, imageRef);
         return imageRef;
     }
@@ -180,7 +181,7 @@ public class Tools5eSources extends CompendiumSources {
             Path sourcePath = Path.of("img", mediaHref.href.path);
 
             String fileName = sourcePath.getFileName().toString();
-            if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note) {
+            if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
                 fileName = primarySource() + "-" + fileName;
             }
 

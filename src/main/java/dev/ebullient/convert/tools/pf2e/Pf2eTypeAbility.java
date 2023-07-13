@@ -5,11 +5,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
-import dev.ebullient.convert.tools.pf2e.JsonTextReplacement.Field;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonTextConverter;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 
-public enum Pf2eTypeAbility implements NodeReader {
+public enum Pf2eTypeAbility implements JsonNodeReader {
     activity,
     components,
     cost,
@@ -22,19 +24,19 @@ public enum Pf2eTypeAbility implements NodeReader {
     special;
 
     public static QuteAbility createAbility(JsonNode node, JsonSource convert, boolean embedded) {
-        boolean pushed = Converter.parseState.push(node);
+        boolean pushed = JsonTextConverter.parseState.push(node);
         try {
-            String name = Field.name.getTextOrDefault(node, "Activate");
+            String name = SourceField.name.getTextOrDefault(node, "Activate");
 
             List<String> abilityText = new ArrayList<>();
-            convert.appendEntryToText(abilityText, Field.entries.getFrom(node), null);
+            convert.appendToText(abilityText, SourceField.entries.getFrom(node), null);
 
             note.debugIfExists(node, convert.tui());
             range.debugIfExists(node, convert.tui());
 
-            final String abilitySrc = Converter.parseState.getSource(Pf2eIndexType.ability);
+            final String abilitySrc = JsonTextConverter.parseState.getSource(Pf2eIndexType.ability);
 
-            List<String> tags = new ArrayList<>();
+            Tags tags = new Tags();
             return new QuteAbility(
                     name, abilityText, tags, convert.collectTraitsFrom(node, tags),
                     Pf2eTypeReader.getQuteActivity(node, Pf2eTypeReader.Pf2eFeat.activity, convert),
@@ -54,7 +56,7 @@ public enum Pf2eTypeAbility implements NodeReader {
                 }
             };
         } finally {
-            Converter.parseState.pop(pushed);
+            JsonTextConverter.parseState.pop(pushed);
         }
     }
 }

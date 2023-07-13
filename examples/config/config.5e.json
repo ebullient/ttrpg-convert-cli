@@ -24,6 +24,7 @@
     "background" : "examples/templates/tools5e/images-background2md.txt"
   },
   "useDiceRoller" : false,
+  "tagPrefix" : "",
   "full-source" : {
     "book" : [
       "PHB"

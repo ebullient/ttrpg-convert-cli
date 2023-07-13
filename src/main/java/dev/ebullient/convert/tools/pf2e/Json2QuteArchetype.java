@@ -2,14 +2,15 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteArchetype;
 import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
@@ -21,14 +22,14 @@ public class Json2QuteArchetype extends Json2QuteBase {
 
     @Override
     protected QuteArchetype buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
         List<String> benefits = ArchetypeField.benefits.getListOfStrings(rootNode, tui());
-        benefits.forEach(b -> tags.add(cfg().tagOf("archetype", "benefit", b)));
+        benefits.forEach(b -> tags.add("archetype", "benefit", b));
 
         int dedicationLevel = ArchetypeField.dedicationLevel.intOrDefault(rootNode, 2);
 
@@ -74,9 +75,9 @@ public class Json2QuteArchetype extends Json2QuteBase {
         }
 
         featsRemaining.stream()
-                .map(f -> findFeat(f))
-                .filter(f -> f != null)
-                .forEach(f -> quteFeats.add(f));
+                .map(this::findFeat)
+                .filter(Objects::nonNull)
+                .forEach(quteFeats::add);
 
         quteFeats.sort((a, b) -> {
             int compare = Integer.compare(Integer.parseInt(a.level), Integer.parseInt(b.level));
@@ -129,7 +130,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
         return String.join("\n", inner);
     }
 
-    enum ArchetypeField implements NodeReader {
+    enum ArchetypeField implements JsonNodeReader {
         benefits,
         dedicationLevel,
         extraFeats,

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
@@ -31,7 +32,7 @@ public class QuteItem extends Pf2eQuteBase {
     public final QuteItemArmorData armor;
     public final List<QuteItemWeaponData> weapons;
 
-    public QuteItem(Pf2eSources sources, List<String> text, Collection<String> tags,
+    public QuteItem(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases, QuteItemActivate activate,
             String price, String ammunition, String level, String onset, String access,
             String duration, String category, String group,

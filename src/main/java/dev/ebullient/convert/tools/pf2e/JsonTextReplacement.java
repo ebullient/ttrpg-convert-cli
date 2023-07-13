@@ -9,42 +9,35 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonTextConverter;
 
-public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType> {
+public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
-    enum Field implements NodeReader {
+    enum Field implements JsonNodeReader {
         alias,
         auto,
         by,
         categories, // trait categories for indexing
         customUnit,
         data, // embedded data
-        entry,
-        entries,
         footnotes,
         frequency,
         group,
         head,
-        id,
         interval,
-        items,
-        name,
         number,
         overcharge,
-        page,
         range, // level effect
         recurs,
         reference,
         requirements,
         signature,
-        source,
         special,
         style,
         tag, // embedded data
         title,
         traits,
-        type,
         unit,
         add_hash
     }
@@ -74,7 +67,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
             return null;
         }
         if (input.isObject() || input.isArray()) {
-            throw new IllegalArgumentException("Can only replace text for textual nodes: " + input.toString());
+            throw new IllegalArgumentException("Can only replace text for textual nodes: " + input);
         }
         return replaceText(input.asText());
     }
@@ -388,7 +381,7 @@ public interface JsonTextReplacement extends NodeReader.Converter<Pf2eIndexType>
             } else {
                 title = categories.stream().sorted().findFirst().orElse("");
             }
-            title = (Field.name.getTextOrEmpty(traitNode) + " " + title + " Trait").trim();
+            title = (SourceField.name.getTextOrEmpty(traitNode) + " " + title + " Trait").trim();
 
             return String.format("[%s](%s/%s%s.md \"%s\")",
                     linkText,

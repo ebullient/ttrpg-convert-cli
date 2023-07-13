@@ -1,9 +1,9 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -26,7 +26,7 @@ public class QuteDeity extends Tools5eQuteBase {
             List<String> altNames, String pantheon, String alignment,
             String title, String cateogry, String domains,
             String province, String symbol, ImageRef symbolImg,
-            String text, Collection<String> tags) {
+            String text, Tags tags) {
         super(sources, name, source, text, tags);
         this.altNames = altNames;
         this.pantheon = pantheon;
@@ -54,10 +54,5 @@ public class QuteDeity extends Tools5eQuteBase {
     @Override
     public String targetFile() {
         return Tools5eQuteBase.getDeityResourceName(name, pantheon);
-    }
-
-    @Override
-    public String targetPath() {
-        return Tools5eQuteBase.DEITIES_PATH;
     }
 }

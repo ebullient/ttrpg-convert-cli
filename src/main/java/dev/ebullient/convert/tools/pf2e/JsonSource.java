@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,15 +9,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.QuteBase;
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
@@ -33,9 +31,9 @@ public interface JsonSource extends JsonTextReplacement {
      *
      * @return an empty or sorted/linkified list of traits (never null)
      */
-    default Set<String> collectTraitsFrom(JsonNode sourceNode, Collection<String> tags) {
+    default Set<String> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
         return Field.traits.getListOfStrings(sourceNode, tui()).stream()
-                .peek(t -> tags.add(cfg().tagOf("trait", t)))
+                .peek(t -> tags.add("trait", t))
                 .sorted()
                 .map(s -> linkify(Pf2eIndexType.trait, s))
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -51,7 +49,8 @@ public interface JsonSource extends JsonTextReplacement {
      * @param node Textual, Array, or Object node containing content to parse/render
      * @param heading The current header depth and/or if headings are allowed for this text element
      */
-    default void appendEntryToText(List<String> text, JsonNode node, String heading) {
+    @Override
+    default void appendToText(List<String> text, JsonNode node, String heading) {
         boolean pushed = parseState.push(node); // store state
         try {
             if (node == null || node.isNull()) {
@@ -61,10 +60,10 @@ public interface JsonSource extends JsonTextReplacement {
             } else if (node.isArray()) {
                 node.elements().forEachRemaining(f -> {
                     maybeAddBlankLine(text);
-                    appendEntryToText(text, f, heading);
+                    appendToText(text, f, heading);
                 });
             } else if (node.isObject()) {
-                appendEntryObjectToText(text, node, heading);
+                appendObjectToText(text, node, heading);
             } else {
                 tui().errorf("Unknown entry type in %s: %s", getSources(), node.toPrettyString());
             }
@@ -73,60 +72,10 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    /**
-     * Embed rendered contents of the specified resource
-     *
-     * @param text List of text content should be added to
-     * @param resource QuteBase containing required template resource data
-     * @param admonition Type of embedded/encapsulating admonition
-     * @param prepend Text to prepend at beginning of admonition (e.g. title)
-     */
-    default void renderEmbeddedTemplate(List<String> text, QuteBase resource, String admonition, List<String> prepend) {
-        prepend = prepend == null ? List.of() : prepend; // ensure non-null
-        boolean pushed = parseState.push((Pf2eSources) resource.sources());
-        try {
-            String rendered = tui().renderEmbedded(resource);
-            List<String> inner = removePreamble(new ArrayList<>(
-                    List.of(rendered.split("\n"))));
-
-            String backticks = nestedEmbed(inner);
-            maybeAddBlankLine(text);
-            text.add(backticks + "ad-embed-" + admonition);
-            text.addAll(prepend);
-            text.addAll(inner);
-            text.add(backticks);
-        } finally {
-            parseState.pop(pushed);
-        }
-    }
-
-    /**
-     * Add rendered contents of an (always) inline template
-     * to collected text
-     *
-     * @param text List of text content should be added to
-     * @param resource QuteBase containing required template resource data
-     * @param admonition Type of inline admonition
-     */
-    default void renderInlineTemplate(List<String> text, QuteBase resource, String admonition) {
-        String rendered = tui().renderEmbedded(resource);
-        List<String> inner = List.of(rendered.split("\n"));
-
-        maybeAddBlankLine(text);
-        if (admonition == null) {
-            text.addAll(inner);
-        } else {
-            String backticks = nestedEmbed(inner);
-            text.add(backticks + "ad-inline-" + admonition);
-            text.addAll(inner);
-            text.add(backticks);
-        }
-    }
-
     /** Internal */
-    default void appendEntryObjectToText(List<String> text, JsonNode node, String heading) {
-        AppendTypeValue type = AppendTypeValue.valueFrom(node, Field.type);
-        String source = Field.source.getTextOrEmpty(node);
+    default void appendObjectToText(List<String> text, JsonNode node, String heading) {
+        AppendTypeValue type = AppendTypeValue.valueFrom(node, SourceField.type);
+        String source = SourceField.source.getTextOrEmpty(node);
 
         // entriesOtherSource handled here.
         if (!source.isEmpty() && !cfg().sourceIncluded(source)) {
@@ -139,106 +88,51 @@ public interface JsonSource extends JsonTextReplacement {
         try {
             if (type != null) {
                 switch (type) {
-                    case section:
-                    case pf2h1:
-                    case pf2h2:
-                    case pf2h3:
-                    case pf2h4:
-                    case pf2h5:
-                        appendTextHeaderBlock(text, node, heading);
-                        break;
-                    case pf2h1flavor:
-                        appendTextHeaderFlavorBlock(text, node);
-                        break;
+                    case section, pf2h1, pf2h2, pf2h3, pf2h4, pf2h5 -> appendTextHeaderBlock(text, node, heading);
+                    case pf2h1flavor -> appendTextHeaderFlavorBlock(text, node);
 
                     // callout boxes
-                    case pf2sidebar:
-                        appendCallout(text, node, "pf2-sidebar");
-                        break;
-                    case pf2inset:
-                        appendCallout(text, node, "pf2-inset");
-                        break;
-                    case pf2tipsBox:
-                        appendCallout(text, node, "pf2-tip");
-                        break;
-                    case pf2sampleBox:
-                        appendCallout(text, node, "pf2-example");
-                        break;
-                    case pf2beigeBox:
-                        appendCallout(text, node, "pf2-beige");
-                        break;
-                    case pf2redBox:
-                        appendCallout(text, node, "pf2-red");
-                        break;
-                    case pf2brownBox:
-                        appendCallout(text, node, "pf2-brown");
-                        break;
-                    case pf2keyAbility:
-                        appendCallout(text, node, "pf2-key-ability");
-                        break;
-                    case pf2keyBox:
-                        appendCallout(text, node, "pf2-key-box");
-                        break;
-
-                    case pf2title:
-                        appendTextHeaderBlock(text, node,
-                                heading == null ? null : heading + "#");
-                        break;
+                    case pf2sidebar -> appendCallout(text, node, "pf2-sidebar");
+                    case pf2inset -> appendCallout(text, node, "pf2-inset");
+                    case pf2tipsBox -> appendCallout(text, node, "pf2-tip");
+                    case pf2sampleBox -> appendCallout(text, node, "pf2-example");
+                    case pf2beigeBox -> appendCallout(text, node, "pf2-beige");
+                    case pf2redBox -> appendCallout(text, node, "pf2-red");
+                    case pf2brownBox -> appendCallout(text, node, "pf2-brown");
+                    case pf2keyAbility -> appendCallout(text, node, "pf2-key-ability");
+                    case pf2keyBox -> appendCallout(text, node, "pf2-key-box");
+                    case pf2title -> appendTextHeaderBlock(text, node,
+                            heading == null ? null : heading + "#");
 
                     // lists & items
 
-                    case pf2options:
-                    case list:
-                        appendList(text, Field.items.withArrayFrom(node));
-                        break;
-                    case item:
-                        appendListItem(text, node);
-                        break;
-                    case entries:
-                        appendEntryToText(text, Field.entries.getFrom(node), heading);
-                        break;
-                    case table:
-                        appendTable(text, node);
-                        break;
-                    case paper:
-                        appendPaper(text, node, "pf2-paper");
-                        break;
-                    case quote:
-                        appendQuote(text, node);
-                        break;
+                    case pf2options, list -> appendList(text, SourceField.items.withArrayFrom(node));
+                    case item -> appendListItem(text, node);
+                    case entries -> appendToText(text, SourceField.entries.getFrom(node), heading);
+                    case table -> appendTable(text, node);
+                    case paper -> appendPaper(text, node, "pf2-paper");
+                    case quote -> appendQuote(text, node);
 
                     // special inline types
-                    case ability:
-                        appendAbility(text, node);
-                        break;
-                    case affliction:
-                        appendAffliction(text, node);
-                        break;
-                    case attack:
-                        appendAttack(text, node);
-                        break;
-                    case data:
-                        embedData(text, node);
-                        break;
-                    case lvlEffect:
-                        appendLevelEffect(text, node);
-                        break;
-                    case successDegree:
-                        appendSuccessDegree(text, node);
-                        break;
-
-                    default:
+                    case ability -> appendAbility(text, node);
+                    case affliction -> appendAffliction(text, node);
+                    case attack -> appendAttack(text, node);
+                    case data -> embedData(text, node);
+                    case lvlEffect -> appendLevelEffect(text, node);
+                    case successDegree -> appendSuccessDegree(text, node);
+                    default -> {
                         if (type != AppendTypeValue.entriesOtherSource) {
                             tui().errorf("TODO / How did I get here?: %s %s", type, node.toString());
                         }
-                        appendEntryToText(text, Field.entry.getFrom(node), heading);
-                        appendEntryToText(text, Field.entries.getFrom(node), heading);
+                        appendToText(text, SourceField.entry.getFrom(node), heading);
+                        appendToText(text, SourceField.entries.getFrom(node), heading);
+                    }
                 }
                 // we had a type field! do nothing else
                 return;
             }
-            appendEntryToText(text, Field.entry.getFrom(node), heading);
-            appendEntryToText(text, Field.entries.getFrom(node), heading);
+            appendToText(text, SourceField.entry.getFrom(node), heading);
+            appendToText(text, SourceField.entries.getFrom(node), heading);
         } catch (RuntimeException ex) {
             tui().errorf(ex, "Error [%s] occurred while parsing %s", ex.getMessage(), node.toString());
             throw ex;
@@ -253,29 +147,29 @@ public interface JsonSource extends JsonTextReplacement {
 
         if (heading == null) {
             List<String> inner = new ArrayList<>();
-            appendEntryToText(inner, Field.entry.getFrom(node), null);
-            appendEntryToText(inner, Field.entries.getFrom(node), null);
-            if (prependField(node, Field.name, inner)) {
+            appendToText(inner, SourceField.entry.getFrom(node), null);
+            appendToText(inner, SourceField.entries.getFrom(node), null);
+            if (prependField(node, SourceField.name, inner)) {
                 maybeAddBlankLine(text);
             }
             text.addAll(inner);
-        } else if (Field.name.existsIn(node)) {
+        } else if (SourceField.name.existsIn(node)) {
             maybeAddBlankLine(text);
-            text.add(heading + " " + replaceText(Field.name.getTextOrEmpty(node)));
+            text.add(heading + " " + replaceText(SourceField.name.getTextOrEmpty(node)));
             text.add(pageRef);
-            appendEntryToText(text, Field.entry.getFrom(node), "#" + heading);
-            appendEntryToText(text, Field.entries.getFrom(node), "#" + heading);
+            appendToText(text, SourceField.entry.getFrom(node), "#" + heading);
+            appendToText(text, SourceField.entries.getFrom(node), "#" + heading);
         } else {
             // headers always have names, but just in case..
-            appendEntryToText(text, Field.entries.getFrom(node), heading);
+            appendToText(text, SourceField.entries.getFrom(node), heading);
         }
     }
 
     /** Internal */
     default void appendTextHeaderFlavorBlock(List<String> text, JsonNode node) {
         List<String> inner = new ArrayList<>();
-        inner.add("[!pf2-tip] " + Field.name.getTextOrEmpty(node));
-        appendEntryToText(inner, Field.entries.getFrom(node), null);
+        inner.add("[!pf2-tip] " + SourceField.name.getTextOrEmpty(node));
+        appendToText(inner, SourceField.entries.getFrom(node), null);
         inner.forEach(x -> text.add("> " + x));
         maybeAddBlankLine(text);
     }
@@ -288,7 +182,7 @@ public interface JsonSource extends JsonTextReplacement {
             maybeAddBlankLine(text);
             itemArray.forEach(e -> {
                 List<String> item = new ArrayList<>();
-                appendEntryToText(item, e, null);
+                appendToText(item, e, null);
                 if (item.size() > 0) {
                     prependText(indent + "- ", item);
                     text.add(String.join("  \n" + indent, item));
@@ -300,28 +194,17 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     /** Internal */
-    default void appendListItem(List<String> text, JsonNode itemNode) {
-        List<String> inner = new ArrayList<>();
-        appendEntryToText(inner, Field.entry.getFrom(itemNode), null);
-        appendEntryToText(inner, Field.entries.getFrom(itemNode), null);
-        if (prependField(itemNode, Field.name, inner)) {
-            maybeAddBlankLine(text);
-        }
-        text.addAll(inner);
-    }
-
-    /** Internal */
     default void appendPaper(List<String> text, JsonNode paper, String callout) {
         List<String> paperText = new ArrayList<>();
         String title = Field.title.getTextOrDefault(paper, "A letter");
 
         paperText.add("[!" + callout + "] " + replaceText(title));
 
-        appendEntryToText(paperText, Field.head.getFrom(paper), null);
+        appendToText(paperText, Field.head.getFrom(paper), null);
         maybeAddBlankLine(paperText);
-        appendEntryToText(paperText, Field.entry.getFrom(paper), null);
+        appendToText(paperText, SourceField.entry.getFrom(paper), null);
         maybeAddBlankLine(paperText);
-        appendEntryToText(paperText, Field.signature.getFrom(paper), null);
+        appendToText(paperText, Field.signature.getFrom(paper), null);
 
         maybeAddBlankLine(text);
         paperText.forEach(x -> text.add("> " + x));
@@ -336,8 +219,8 @@ public interface JsonSource extends JsonTextReplacement {
         } else {
             quoteText.add("[!pf2-quote]- A quote from " + replaceText(by) + "  ");
         }
-        appendEntryToText(quoteText, Field.entry.getFrom(entry), null);
-        appendEntryToText(quoteText, Field.entries.getFrom(entry), null);
+        appendToText(quoteText, SourceField.entry.getFrom(entry), null);
+        appendToText(quoteText, SourceField.entries.getFrom(entry), null);
 
         String from = Field.by.getTextOrEmpty(entry);
         if (!from.isEmpty()) {
@@ -353,20 +236,20 @@ public interface JsonSource extends JsonTextReplacement {
     /** Internal */
     default void appendCallout(List<String> text, JsonNode entry, String callout) {
         List<String> insetText = new ArrayList<>();
-        String name = Field.name.getTextOrEmpty(entry);
+        String name = SourceField.name.getTextOrEmpty(entry);
 
         insetText.add("[!" + callout + "] " + replaceText(name));
 
         // TODO
         JsonNode autoReference = Field.recurs.getFieldFrom(entry, Field.auto);
         if (Field.auto.booleanOrDefault(Field.reference.getFrom(entry), false)) {
-            String page = Field.page.getTextOrNull(entry);
+            String page = SourceField.page.getTextOrNull(entry);
             insetText.add(String.format("See %s%s",
                     page == null ? "" : "page " + page + " of ",
-                    TtrpgConfig.sourceToLongName(Field.source.getTextOrEmpty(entry))));
+                    TtrpgConfig.sourceToLongName(SourceField.source.getTextOrEmpty(entry))));
         } else {
-            appendEntryToText(insetText, Field.entry.getFrom(entry), "##");
-            appendEntryToText(insetText, Field.entries.getFrom(entry), "##");
+            appendToText(insetText, SourceField.entry.getFrom(entry), "##");
+            appendToText(insetText, SourceField.entries.getFrom(entry), "##");
         }
 
         maybeAddBlankLine(text);
@@ -377,7 +260,7 @@ public interface JsonSource extends JsonTextReplacement {
     default void appendLevelEffect(List<String> text, JsonNode node) {
         maybeAddBlankLine(text);
 
-        Field.entries.streamOf(node).forEach(e -> {
+        SourceField.entries.streamOf(node).forEach(e -> {
             String range = Field.range.getTextOrEmpty(e);
             prependTextMakeListItem(text, e, "**" + range + "** ", "    ");
         });
@@ -385,7 +268,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendSuccessDegree(List<String> text, JsonNode node) {
-        JsonNode entries = Field.entries.getFrom(node);
+        JsonNode entries = SourceField.entries.getFrom(node);
         String continuation = "   "; // properly 4, but we add space with >
         List<String> inner = new ArrayList<>();
         inner.add("[!success-degree] ");
@@ -422,27 +305,27 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendAffliction(List<String> text, JsonNode node) {
-        String name = Field.name.getTextOrNull(node);
+        String name = SourceField.name.getTextOrNull(node);
         String level = null;
 
         String savingThrow = toTitleCase(AfflictionField.savingThrow.getTextOrEmpty(node));
         String dc = AfflictionField.DC.getTextOrNull(node);
         String savingThrowString = replaceText((dc == null ? "" : "DC " + dc + " ") + savingThrow);
 
-        List<String> tags = new ArrayList<>();
+        Tags tags = new Tags();
         Collection<String> traits = collectTraitsFrom(node, tags);
 
         JsonNode field = AfflictionField.level.getFrom(node);
         if (field != null) {
             level = "Level " + replaceText(field.asText());
-            tags.add(cfg().tagOf("affliction", "level", level));
+            tags.add("affliction", "level", level);
         }
 
         List<String> note = new ArrayList<>();
-        appendEntryToText(note, AfflictionField.note.getFrom(node), null);
+        appendToText(note, AfflictionField.note.getFrom(node), null);
 
         List<String> effect = new ArrayList<>();
-        appendEntryToText(effect, Field.entries.getFrom(node), null);
+        appendToText(effect, SourceField.entries.getFrom(node), null);
 
         Map<String, QuteAfflictionStage> stages = new LinkedHashMap<>();
         AfflictionField.stages.withArrayFrom(node).forEach(stageNode -> {
@@ -450,7 +333,7 @@ public interface JsonSource extends JsonTextReplacement {
                     AfflictionField.stage.getTextOrDefault(stageNode, "1"));
 
             List<String> stageInner = new ArrayList<>();
-            appendEntryToText(stageInner, Field.entry.getFrom(stageNode), title);
+            appendToText(stageInner, SourceField.entry.getFrom(stageNode), title);
 
             QuteAfflictionStage stage = new QuteAfflictionStage();
             stage.duration = replaceText(AfflictionField.duration.getTextOrNull(stageNode));
@@ -481,8 +364,8 @@ public interface JsonSource extends JsonTextReplacement {
 
         List<String> table = new ArrayList<>();
 
-        String name = Field.name.getTextOrEmpty(tableNode);
-        String id = Field.id.getTextOrEmpty(tableNode);
+        String name = SourceField.name.getTextOrEmpty(tableNode);
+        String id = SourceField.id.getTextOrEmpty(tableNode);
 
         String blockid;
         if (TableField.spans.getFrom(tableNode) != null) {
@@ -494,7 +377,7 @@ public interface JsonSource extends JsonTextReplacement {
         JsonNode intro = TableField.intro.getFrom(tableNode);
         if (intro != null) {
             maybeAddBlankLine(text);
-            appendEntryToText(text, intro, null);
+            appendToText(text, intro, null);
         }
         maybeAddBlankLine(text);
 
@@ -507,13 +390,13 @@ public interface JsonSource extends JsonTextReplacement {
         if (footnotes != null) {
             maybeAddBlankLine(text);
             boolean pushed = parseState.push(true);
-            appendEntryToText(text, footnotes, null);
+            appendToText(text, footnotes, null);
             parseState.pop(pushed);
         }
         JsonNode outro = TableField.outro.getFrom(tableNode);
         if (outro != null) {
             maybeAddBlankLine(text);
-            appendEntryToText(text, outro, null);
+            appendToText(text, outro, null);
         }
     }
 
@@ -545,7 +428,7 @@ public interface JsonSource extends JsonTextReplacement {
             JsonNode rowNode = rows.get(r);
             int cols = rowNode.size(); // varies by row
 
-            if (FieldValue.multiRow.isValueOfField(rowNode, Field.type)) {
+            if (FieldValue.multiRow.isValueOfField(rowNode, SourceField.type)) {
                 ArrayNode rows2 = TableField.rows.withArrayFrom(rowNode);
                 List<List<String>> multicol = new ArrayList<>();
                 for (int r2 = 0; r2 < rows2.size(); r2++) {
@@ -593,16 +476,14 @@ public interface JsonSource extends JsonTextReplacement {
             } else {
                 table.add("<tr>");
                 if (labelIdx.contains(r)) {
-                    table.add("  <th>"
-                            + StreamSupport.stream(rowNode.spliterator(), false)
-                                    .map(this::replaceHtmlText)
-                                    .collect(Collectors.joining("</th>\n  <th>"))
+                    table.add("  <th>" + streamOf(rowNode)
+                            .map(this::replaceHtmlText)
+                            .collect(Collectors.joining("</th>\n  <th>"))
                             + "</th>");
                 } else {
-                    table.add("  <td>"
-                            + StreamSupport.stream(rowNode.spliterator(), false)
-                                    .map(this::replaceHtmlText)
-                                    .collect(Collectors.joining("</td>\n  <td>"))
+                    table.add("  <td>" + streamOf(rowNode)
+                            .map(this::replaceHtmlText)
+                            .collect(Collectors.joining("</td>\n  <td>"))
                             + "</td>");
                 }
                 table.add("</tr>");
@@ -637,7 +518,7 @@ public interface JsonSource extends JsonTextReplacement {
             JsonNode rowNode = rows.get(r);
 
             if (labelIdx.contains(r)) {
-                String header = StreamSupport.stream(rowNode.spliterator(), false)
+                String header = streamOf(rowNode)
                         .map(x -> replaceText(x.asText()))
                         .collect(Collectors.joining(" | "));
 
@@ -657,23 +538,19 @@ public interface JsonSource extends JsonTextReplacement {
                 }
                 table.add(header);
                 table.add(header.replaceAll("[^|]", "-"));
-            } else if (FieldValue.multiRow.isValueOfField(rowNode, Field.type)) {
+            } else if (FieldValue.multiRow.isValueOfField(rowNode, SourceField.type)) {
                 TableField.rows.withArrayFrom(rowNode).forEach(mr -> {
-                    String row = "| " +
-                            StreamSupport.stream(mr.spliterator(), false)
-                                    .map(x -> replaceText(x.asText()))
-                                    .collect(Collectors.joining(" | "))
-                            +
-                            " |";
+                    String row = "| " + streamOf(rowNode)
+                            .map(x -> replaceText(x.asText()))
+                            .collect(Collectors.joining(" | "))
+                            + " |";
                     table.add(row);
                 });
             } else {
-                String row = "| " +
-                        StreamSupport.stream(rowNode.spliterator(), false)
-                                .map(x -> replaceText(x.asText()))
-                                .collect(Collectors.joining(" | "))
-                        +
-                        " |";
+                String row = "| " + streamOf(rowNode)
+                        .map(x -> replaceText(x.asText()))
+                        .collect(Collectors.joining(" | "))
+                        + " |";
                 table.add(row);
             }
         }
@@ -700,8 +577,8 @@ public interface JsonSource extends JsonTextReplacement {
         }
 
         if (data == null) {
-            String name = Field.name.getTextOrNull(dataNode);
-            String source = Field.source.getTextOrNull(dataNode);
+            String name = SourceField.name.getTextOrNull(dataNode);
+            String source = SourceField.source.getTextOrNull(dataNode);
             String link = linkify(dataType, name + "|" + source);
             if (dataType == Pf2eIndexType.creature) {
                 link = link.replace(".md)", ".md#^statblock)");
@@ -727,9 +604,9 @@ public interface JsonSource extends JsonTextReplacement {
         try {
             QuteDataActivity activity = Pf2eTypeReader.getQuteActivity(data, Pf2eItem.activity, this);
 
-            String title = Field.name.getTextOrEmpty(data);
+            String title = SourceField.name.getTextOrEmpty(data);
             if (activity != null) {
-                title += " " + activity.toString();
+                title += " " + activity;
             }
 
             String category = Pf2eItem.category.getTextOrNull(data);
@@ -744,25 +621,25 @@ public interface JsonSource extends JsonTextReplacement {
             text.add("title: " + title);
 
             // Add traits
-            List<String> tags = new ArrayList<>();
+            Tags tags = new Tags();
             Collection<String> traits = collectTraitsFrom(data, tags);
             text.add(join("  ", traits) + "  ");
             maybeAddBlankLine(text);
 
             // Add rendered sections
             data.get("sections").forEach(section -> {
-                boolean undefinedTypeText = streamOfElements(section)
-                        .anyMatch(x -> !x.isTextual() && !Field.type.existsIn(x));
+                boolean undefinedTypeText = streamOf(section)
+                        .anyMatch(x -> !x.isTextual() && !SourceField.type.existsIn(x));
                 if (undefinedTypeText) {
                     section.forEach(x -> {
-                        if (x.isObject() && !Field.type.existsIn(x)) {
-                            appendEntryToText(text, x, null);
+                        if (x.isObject() && !SourceField.type.existsIn(x)) {
+                            appendToText(text, x, null);
                         } else {
-                            appendEntryToText(text, x, "##");
+                            appendToText(text, x, "##");
                         }
                     });
                 } else {
-                    appendEntryToText(text, section, "##");
+                    appendToText(text, section, "##");
                 }
             });
 
@@ -772,91 +649,8 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    /** Internal */
-    default String nestedEmbed(List<String> content) {
-        int embedDepth = content.stream()
-                .filter(s -> s.matches("^`+$"))
-                .map(String::length)
-                .max(Integer::compare).orElse(2);
-        char[] ticks = new char[embedDepth + 1];
-        Arrays.fill(ticks, '`');
-        return new String(ticks);
-    }
-
-    /** Internal */
-    default List<String> removePreamble(List<String> content) {
-        if (content == null || content.isEmpty()) {
-            return List.of();
-        }
-        boolean hasYaml = content.get(0).equals("---");
-        int endYaml = -1;
-        int start = -1;
-        for (int i = 0; i < content.size(); i++) {
-            String line = content.get(i);
-            if (line.equals("---") && hasYaml && i > 0 && endYaml < 0) {
-                endYaml = i;
-            } else if (line.startsWith("%%--")) {
-                start = i;
-                break;
-            }
-        }
-        if (start < 0 && endYaml > 0) {
-            start = endYaml; // if no other marker present, lop off the yaml header
-        }
-        if (start >= 0) {
-            // remove until start
-            content.subList(0, start + 1).clear();
-        }
-        return content;
-    }
-
-    /** Internal */
-    default void prependText(String prefix, List<String> inner) {
-        if (inner.isEmpty()) {
-            inner.add(prefix);
-        } else {
-            if (inner.get(0).isEmpty() && inner.size() > 1) {
-                inner.set(1, prependText(prefix, inner.get(1)));
-            } else {
-                inner.set(0, prependText(prefix, inner.get(0)));
-            }
-        }
-    }
-
-    /** Internal */
-    default String prependText(String prefix, String text) {
-        return text.startsWith(prefix) ? text : prefix + text;
-    }
-
-    /** Internal */
-    default boolean prependField(JsonNode entry, Field field, List<String> inner) {
-        String n = field.getTextOrNull(entry);
-        if (n != null) {
-            n = replaceText(n.trim());
-            if (inner.isEmpty()) {
-                inner.add(n);
-            } else {
-                n = n.replace(":", "");
-                n = "**" + n + "** ";
-                inner.set(0, n + inner.get(0));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** Internal */
-    default void prependTextMakeListItem(List<String> text, JsonNode e, String prepend, String continuation) {
-        List<String> inner = new ArrayList<>();
-        appendEntryToText(inner, e, null);
-        if (inner.size() > 0) {
-            prependText("- " + prepend, inner);
-            inner.forEach(i -> text.add(i.startsWith("-") || i.isBlank() ? i : continuation + i));
-        }
-    }
-
     // Other context-constrained type values (not the big append loop)
-    enum FieldValue implements NodeReader.FieldValue {
+    enum FieldValue implements JsonNodeReader.FieldValue {
         multiRow;
 
         @Override
@@ -865,7 +659,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    enum SuccessDegree implements NodeReader {
+    enum SuccessDegree implements JsonNodeReader {
         criticalSuccess("Critical Success"),
         success("Success"),
         failure("Failure"),
@@ -882,7 +676,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    enum AttackField implements NodeReader {
+    enum AttackField implements JsonNodeReader {
         attack,
         damage,
         effects,
@@ -890,13 +684,13 @@ public interface JsonSource extends JsonTextReplacement {
         types;
 
         public static QuteInlineAttack createInlineAttack(JsonNode node, JsonSource convert) {
-            String name = convert.toTitleCase(Field.name.replaceTextFrom(node, convert));
+            String name = convert.toTitleCase(SourceField.name.replaceTextFrom(node, convert));
 
-            List<String> tags = new ArrayList<>();
+            Tags tags = new Tags();
             Collection<String> traits = convert.collectTraitsFrom(node, tags);
 
             List<String> effects = new ArrayList<>();
-            convert.appendEntryToText(effects, AttackField.effects.getFrom(node), null);
+            convert.appendToText(effects, AttackField.effects.getFrom(node), null);
 
             String meleeOrRanged = AttackField.range.getTextOrDefault(node, "Melee");
             String attack = AttackField.attack.getTextOrNull(node);
@@ -908,7 +702,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    enum AfflictionField implements NodeReader {
+    enum AfflictionField implements JsonNodeReader {
         DC,
         duration,
         level,
@@ -922,7 +716,7 @@ public interface JsonSource extends JsonTextReplacement {
         type,
     }
 
-    enum TableField implements NodeReader {
+    enum TableField implements JsonNodeReader {
         colStyles,
         intro,
         labelRowIdx,
@@ -931,7 +725,7 @@ public interface JsonSource extends JsonTextReplacement {
         spans,
     }
 
-    enum AppendTypeValue implements NodeReader.FieldValue {
+    enum AppendTypeValue implements JsonNodeReader.FieldValue {
         ability,
         affliction,
         attack,
@@ -983,7 +777,7 @@ public interface JsonSource extends JsonTextReplacement {
             return this.value().equals(value) || this.name().equalsIgnoreCase(value);
         }
 
-        static AppendTypeValue valueFrom(JsonNode source, Field field) {
+        static AppendTypeValue valueFrom(JsonNode source, JsonNodeReader field) {
             String textOrNull = field.getTextOrNull(source);
             if (textOrNull == null) {
                 return null;

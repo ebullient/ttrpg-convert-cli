@@ -1,17 +1,16 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardness;
@@ -30,16 +29,16 @@ public class Json2QuteItem extends Json2QuteBase {
 
     @Override
     protected Pf2eQuteBase buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
         List<String> aliases = new ArrayList<>(Field.alias.replaceTextFromList(rootNode, this));
         Set<String> traits = collectTraitsFrom(rootNode, tags);
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
         String duration = Pf2eItem.duration.existsIn(rootNode)
-                ? Field.entry.getTextOrNull(Pf2eItem.duration.getFrom(rootNode))
+                ? SourceField.entry.getTextOrNull(Pf2eItem.duration.getFrom(rootNode))
                 : null;
 
         return new QuteItem(sources, text, tags, traits, aliases,
@@ -139,7 +138,7 @@ public class Json2QuteItem extends Json2QuteBase {
         return armorData;
     }
 
-    private List<QuteItemWeaponData> getWeaponData(Collection<String> tags) {
+    private List<QuteItemWeaponData> getWeaponData(Tags tags) {
         JsonNode weaponDataNode = Pf2eItem.weaponData.getFrom(rootNode);
         if (weaponDataNode == null) {
             return null;
@@ -155,7 +154,7 @@ public class Json2QuteItem extends Json2QuteBase {
         return weaponDataList;
     }
 
-    private Map<String, String> getContract(Collection<String> tags) {
+    private Map<String, String> getContract(Tags tags) {
         JsonNode contractNode = Pf2eItem.contract.getFrom(rootNode);
         if (contractNode == null) {
             return null;
@@ -219,21 +218,21 @@ public class Json2QuteItem extends Json2QuteBase {
         return Pf2eWeaponData.group.getTextOrNull(rootNode);
     }
 
-    String getCategory(Collection<String> tags) {
+    String getCategory(Tags tags) {
         String category = Pf2eItem.category.getTextOrNull(rootNode);
         String subcategory = Pf2eItem.subCategory.getTextOrNull(rootNode);
         if (category == null) {
             return null;
         }
         if (subcategory == null) {
-            tags.add(cfg().tagOf(ITEM_TAG, "category", category));
+            tags.add(ITEM_TAG, "category", category);
             return category;
         }
-        tags.add(cfg().tagOf(ITEM_TAG, "category", category, subcategory));
+        tags.add(ITEM_TAG, "category", category, subcategory);
         return subcategory;
     }
 
-    enum Pf2eItem implements NodeReader {
+    enum Pf2eItem implements JsonNodeReader {
         ac, // shieldData
         ac2, // shieldData
         access,

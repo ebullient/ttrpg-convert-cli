@@ -38,9 +38,8 @@ public class TestUtils {
     public final static Path HOMEBREW_PATH_5E = PROJECT_PATH.resolve("sources/5e-homebrew");
     public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
 
-    final static Pattern markdownLinkPattern = Pattern.compile("\\[.*?]\\((.*?)\\)");
+    final static Pattern markdownLinkPattern = Pattern.compile("\\[((?!\\]\\().)+\\]\\(([^ \\[]]+)\\)");
     final static Pattern blockRefPattern = Pattern.compile("[^#\\[]+(\\^[^ ]+)");
-    final static String replaceHeaderParens = "\\((Level(%20| )\\d+|\\d+[thrds]+(%20| )level|\\d*d\\d+|(\\d+|one|two|three)(%20| )?(/Day|dice|die|extra|uses?)?|CR(%20| )[\\d/]+|Firearm)\\)";
 
     final static Map<Path, List<String>> pathHeadings = new HashMap<>();
     final static Map<Path, List<String>> pathBlockReferences = new HashMap<>();
@@ -74,13 +73,16 @@ public class TestUtils {
         }
         List<String> e = new ArrayList<>();
         // replace (Level x) or (1st level) or (Firearms) with :whatever: to simplify matching
-        line = line.replaceAll(replaceHeaderParens, ":$1:");
         Matcher links = markdownLinkPattern.matcher(line);
         links.results().forEach(m -> {
-            String path = m.group(1).replaceAll(" \\\".*\\\"$", "");
+            String path = m.group(2);
             String anchor = null;
             Path resource = p;
             int hash = path.indexOf('#');
+
+            if (path.startsWith("http")) {
+                return;
+            }
 
             if (hash == 0) {
                 anchor = path.substring(1);
@@ -93,7 +95,7 @@ public class TestUtils {
 
                 Path indexResource = p.getParent().resolve(path);
                 if (!resource.toFile().exists() && !indexResource.toFile().exists()) {
-                    e.add(String.format("Unresolvable reference (%s) in %s", m.group(0), p));
+                    e.add(String.format("Unresolvable reference in %s: %s ", p, m.group(0)));
                     return;
                 }
             }
@@ -105,13 +107,13 @@ public class TestUtils {
                 if (anchor.startsWith("^")) {
                     List<String> blockRefs = findBlockRefsIn(resource);
                     if (!blockRefs.contains(anchor)) {
-                        e.add(String.format("Unresolvable block reference (%s) %s in %s", anchor, m.group(0), p));
+                        e.add(String.format("Unresolvable block reference (%s) in %s:  %s", anchor, p, m.group(0)));
                     }
                 } else {
-                    String heading = anchor.toLowerCase().replaceAll("%20", " ");
+                    String heading = simplifyAnchor(anchor).replaceAll("%20", " ");
                     List<String> headings = findHeadingsIn(resource);
                     if (!headings.contains(heading)) {
-                        e.add(String.format("Unresolvable anchor (%s) %s in %s", heading, m.group(0), p));
+                        e.add(String.format("Unresolvable anchor (%s) in %s: %s", heading, p, m.group(0)));
                     }
                 }
             }
@@ -131,14 +133,7 @@ public class TestUtils {
                         if (l.contains(".")) {
                             System.out.println("🔮 Found dot in heading in " + p + ": " + l);
                         }
-                        headings.add(l
-                                .replaceAll("#", "")
-                                .replaceAll("\\.", "")
-                                .replaceAll(":", "")
-                                // replace (Level x) with :Level x: to simplify matching
-                                .replaceAll(replaceHeaderParens, ":$1:")
-                                .toLowerCase()
-                                .trim());
+                        headings.add(simplifyAnchor(l));
                     }
                 });
             } catch (UncheckedIOException | IOException e) {
@@ -146,6 +141,16 @@ public class TestUtils {
             }
             return headings;
         });
+    }
+
+    private static String simplifyAnchor(String s) {
+        return s.replace("#", "")
+                .replace(".", "")
+                .replace(":", "")
+                .replace("(", "")
+                .replace(")", "")
+                .toLowerCase()
+                .trim();
     }
 
     public static List<String> findBlockRefsIn(Path p) {
@@ -172,6 +177,14 @@ public class TestUtils {
         });
     }
 
+    /**
+     * Common content tests. Will append an error if the text contains an unresolved reference,
+     * either &#123;@ or &#123;#.
+     *
+     * @param p Path of content
+     * @param l Line of content
+     * @param errors List of errors to append
+     */
     public static void commonTests(Path p, String l, List<String> errors) {
         if (l.contains("{@")) {
             errors.add(String.format("Found {@ in %s: %s", p, l));
@@ -181,23 +194,42 @@ public class TestUtils {
         }
     }
 
+    /**
+     * Consumes a path, and content as a list of strings.
+     * For each line in the content, it will apply {@link #commonTests(Path, String, List)}
+     *
+     * @return array of discovered errors
+     */
     static final BiFunction<Path, List<String>, List<String>> checkContents = (p, content) -> {
         List<String> e = new ArrayList<>();
         content.forEach(l -> commonTests(p, l, e));
         return e;
     };
 
+    /**
+     * Look at all files in the directory and perform common content checks
+     *
+     * @param directory Directory to inspect
+     * @param tui Text UI for errors
+     * @see #assertDirectoryContents(Path, Tui, BiFunction)
+     * @see #checkContents
+     */
     public static void assertDirectoryContents(Path directory, Tui tui) {
         assertDirectoryContents(directory, tui, checkContents);
     }
 
+    /**
+     * Look at all files in the directory and apply the provided content checker to each file
+     *
+     * @param directory Directory to inspect
+     * @param tui Text UI for errors
+     * @param checker additional tests to apply to each file in the directory (passed to
+     *        {@link #checkDirectoryContents(Path, Tui, BiFunction)})
+     * @see #checkDirectoryContents
+     */
     public static void assertDirectoryContents(Path directory, Tui tui, BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = checkDirectoryContents(directory, tui, checker);
         assertThat(errors).isEmpty();
-    }
-
-    static List<String> checkDirectoryContents(Path directory, Tui tui) {
-        return checkDirectoryContents(directory, tui, checkContents);
     }
 
     static List<String> checkDirectoryContents(Path directory, Tui tui,

@@ -21,6 +21,7 @@
     "ability" : "../path/to/ability2md.txt"
   },
   "useDiceRoller" : false,
+  "tagPrefix" : "",
   "full-source" : {
     "book" : [
       "crb",

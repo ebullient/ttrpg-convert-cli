@@ -1,9 +1,9 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -28,7 +28,7 @@ public class QuteItem extends Tools5eQuteBase {
             String armorClass, String damage, String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
             String costGp, Double weightLbs, String text,
-            List<ImageRef> images, Collection<String> tags) {
+            List<ImageRef> images, Tags tags) {
         super(sources, name, source, text, tags);
 
         this.detail = detail;
@@ -42,11 +42,6 @@ public class QuteItem extends Tools5eQuteBase {
         this.cost = costGp;
         this.weight = weightLbs;
         this.images = images;
-    }
-
-    @Override
-    public String targetPath() {
-        return Tools5eQuteBase.ITEMS_PATH;
     }
 
     @Override

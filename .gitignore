@@ -5,6 +5,7 @@ excludes.json
 publish
 compendium
 artifacts
+default
 
 #Maven
 target/

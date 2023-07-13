@@ -9,12 +9,12 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.IndexType;
-import dev.ebullient.convert.tools.NodeReader;
-import dev.ebullient.convert.tools.pf2e.JsonTextReplacement.Field;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources.DefaultSource;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 
-public enum Pf2eIndexType implements IndexType, NodeReader {
+public enum Pf2eIndexType implements IndexType, JsonNodeReader {
     ability, // B1
     action,
     adventure,
@@ -108,12 +108,12 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
 
     public String createKey(JsonNode node) {
         if (this == book || this == adventure) {
-            String id = Field.id.getTextOrEmpty(node);
+            String id = SourceField.id.getTextOrEmpty(node);
             return String.format("%s|%s-%s", this.name(), this.name(), id).toLowerCase();
         }
 
-        String name = Field.name.getTextOrEmpty(node);
-        String source = Field.source.getTextOrDefault(node, this.defaultSourceString());
+        String name = SourceField.name.getTextOrEmpty(node);
+        String source = SourceField.source.getTextOrDefault(node, this.defaultSourceString());
         return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
     }
 
@@ -136,7 +136,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         String root = getVaultRoot(index);
         String relativePath = relativePath();
 
-        if (relativePath == null || relativePath.isEmpty() || ".".equals(relativePath)) {
+        if (relativePath.isEmpty() || ".".equals(relativePath)) {
             return root.replaceAll("/$", "");
         }
         return root + relativePath;
@@ -147,7 +147,7 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
         switch (this) {
             // Group: Affliction/Curse/Disease
             case affliction:
-                type = Pf2eIndexType.fromText(Field.type.getTextOrDefault(node, "Disease"));
+                type = Pf2eIndexType.fromText(SourceField.type.getTextOrDefault(node, "Disease"));
             case curse:
             case disease:
                 return new Json2QuteAffliction(index, type, node).build();
@@ -178,107 +178,55 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public boolean alwaysInclude() {
-        switch (this) {
-            case bookReference:
-            case data:
-            case syntheticGroup:
-                return true;
-            default:
-                return false;
-        }
+        return switch (this) {
+            case bookReference, data, syntheticGroup -> true;
+            default -> false;
+        };
     }
 
     public boolean checkCopiesAndReprints() {
-        switch (this) {
-            case adventure:
-            case book:
-            case data:
-            case syntheticGroup:
-                return false; // don't check copy/reprint fields
-            default:
-                return true;
-        }
+        return switch (this) {
+            case adventure, book, data, syntheticGroup -> false; // don't check copy/reprint fields
+            default -> true;
+        };
     }
 
     public boolean useQuteNote() {
-        switch (this) {
-            case ability:
-            case condition:
-            case domain:
-            case skill:
-            case table:
-                return true; // QuteNote-based
-            default:
-                return false;
-        }
+        return switch (this) {
+            case ability, condition, domain, skill, table -> true; // QuteNote-based
+            default -> false;
+        };
     }
 
     public boolean useCompendiumBase() {
-        switch (this) {
-            case ability:
-            case action:
-            case book:
-            case condition:
-            case trait:
-            case table:
-            case variantrule:
-                return false; // use rules
-            default:
-                return true; // use compendium
-        }
+        return switch (this) {
+            case ability, action, book, condition, trait, table, variantrule -> false; // use rules
+            default -> true; // use compendium
+        };
     }
 
     public String relativePath() {
-        switch (this) {
+        return switch (this) {
             // Simple suffix subdir (rules or compendium)
-            case action:
-            case feat:
-            case spell:
-            case table:
-            case trait:
-            case variantrule:
-                return this.name() + 's';
-            case ritual:
-                return "spells/rituals";
+            case action, feat, spell, table, trait, variantrule -> this.name() + 's';
+            case ritual -> "spells/rituals";
             // Character
-            case ancestry:
-                return "character/ancestries";
-            case classtype:
-                return "character/classes";
-            case archetype:
-            case background:
-            case companion:
-                return "character/" + this.name() + 's';
+            case ancestry -> "character/ancestries";
+            case classtype -> "character/classes";
+            case archetype, background, companion -> "character/" + this.name() + 's';
             // Equipment
-            case item:
-            case vehicle:
-                return "equipment/" + this.name() + 's';
+            case item, vehicle -> "equipment/" + this.name() + 's';
             // GM
-            case curse:
-            case disease:
-                return "gm/afflictions";
-            case creature:
-            case hazard:
-                return "gm/" + this.name() + 's';
-            case relicGift:
-                return "gm/relics-gifts";
+            case curse, disease -> "gm/afflictions";
+            case creature, hazard -> "gm/" + this.name() + 's';
+            case relicGift -> "gm/relics-gifts";
             // Setting
-            case domain:
-                return "setting";
-            case adventure:
-            case language:
-            case organization:
-            case place:
-            case plane:
-            case event:
-                return "setting/" + this.name() + 's';
-            case deity:
-                return "setting/deities";
-            case ability:
-                return "abilities";
-            default:
-                return ".";
-        }
+            case domain -> "setting";
+            case adventure, language, organization, place, plane, event -> "setting/" + this.name() + 's';
+            case deity -> "setting/deities";
+            case ability -> "abilities";
+            default -> ".";
+        };
     }
 
     public String defaultSourceString() {
@@ -286,62 +234,19 @@ public enum Pf2eIndexType implements IndexType, NodeReader {
     }
 
     public DefaultSource defaultSource() {
-        switch (this) {
-            case familiar:
-            case optfeature:
-            case versatileHeritage:
-                return DefaultSource.apg;
-            case ability:
-            case creature:
-            case creatureTemplate:
-                return DefaultSource.b1;
-            case action:
-            case adventure:
-            case ancestry:
-            case archetype:
-            case background:
-            case book:
-            case classFeature:
-            case classtype:
-            case companion:
-            case companionAbility:
-            case condition:
-            case deity:
-            case domain:
-            case familiarAbility:
-            case feat:
-            case group:
-            case hazard:
-            case item:
-            case language:
-            case ritual:
-            case skill:
-            case spell:
-            case subclassFeature:
-            case table:
-            case trait:
-            case trap:
-            case bookReference:
-                return DefaultSource.crb;
-            case affliction:
-            case curse:
-            case disease:
-            case nation:
-            case place:
-            case plane:
-            case relicGift:
-            case settlement:
-            case variantrule:
-            case vehicle:
-                return DefaultSource.gmg;
-            case organization:
-                return DefaultSource.locg;
-            case event:
-                return DefaultSource.lotg;
-            case eidolon:
-                return DefaultSource.som;
-            default:
-                throw new IllegalStateException("How did we get here? Switch is missing " + this);
-        }
+        return switch (this) {
+            case familiar, optfeature, versatileHeritage -> DefaultSource.apg;
+            case ability, creature, creatureTemplate -> DefaultSource.b1;
+            case action, adventure, ancestry, archetype, background, book, classFeature, classtype, companion, companionAbility,
+                    condition, deity, domain, familiarAbility, feat, group, hazard, item, language, ritual, skill, spell,
+                    subclassFeature, table, trait, trap, bookReference ->
+                DefaultSource.crb;
+            case affliction, curse, disease, nation, place, plane, relicGift, settlement, variantrule, vehicle ->
+                DefaultSource.gmg;
+            case organization -> DefaultSource.locg;
+            case event -> DefaultSource.lotg;
+            case eidolon -> DefaultSource.som;
+            default -> throw new IllegalStateException("How did we get here? Switch is missing " + this);
+        };
     }
 }

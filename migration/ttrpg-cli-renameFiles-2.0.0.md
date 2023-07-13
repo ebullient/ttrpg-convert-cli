@@ -1,6 +1,9 @@
 <%*
+// Templater script to rename files in the vault before updating to 2.0.0 CLI output
+// This will move files from 1.x to 2.0.x
+
 // NOTE: There are a lot of files: this process can take awhile
-// It goes faster if you drop into safe mode and disable sync.
+// It goes faster if you disable sync and plugins that monitor files for changes
 
 // 1. Copy this file into your templates directory
 
@@ -16,9 +19,9 @@ const rules = "/rules";
 const limit = 100;
 
 // 4. Create a new/temporary note, and use the "Templater: Open Insert Template Modal"
-// to insert this template into the document. It will update the document 
-// with the files that have been renamed. 
-// It will emit an empty table when there are no files left to rename.
+// to insert this template into a note. It will update the note content with the files 
+// that have been renamed. 
+
 
 var f;
 let count = 0;
@@ -37,18 +40,24 @@ async function moveFile(base, path, oldname, newname) {
     if (count > limit) {
         return;
     }
-    
-    const oldpath = `${base}/${path}/${oldname}`
+
+    if (path) {
+        path = path + "/";
+    } else {
+        path = "";
+    }
+
+    const oldpath = `${base}/${path}${oldname}`
     const file = await window.app.metadataCache.getFirstLinkpathDest(oldpath, "");
-    
+
     if (file) {
-        const newpath = `${base}/${path}/${newname}.md`
+        const newpath = `${base}/${path}${newname}.md`
         await this.app.fileManager.renameFile(
             file,
             newpath
         );
         tR += `| ${oldname} | ${newname} |\n`;
-        
+
         count++; // increment counter after moving something
     }
 }
@@ -128,5 +137,8 @@ await moveFile("classes", "wizard-war-magic", "wizard-war-magic-xge");
 
 await moveRulesFile("core-rulebook", "conditions-appendix", "appendix-a-conditions-appendix");
 
+if (count == 0) {
+    tR += "|  |  |\n\nNothing to rename\n";
+}
 tR += "\n"
 %>

@@ -3,12 +3,15 @@ package dev.ebullient.convert.tools.dnd5e;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -18,38 +21,38 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
     Json2QuteSpell(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        decoratedName = decoratedTypeName(getName(), getSources());
+        decoratedName = decoratedTypeName(getSources());
     }
 
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         boolean ritual = spellIsRitual();
-        SchoolEnum school = getSchool();
-        String level = node.get("level").asText();
+        SpellSchool school = getSchool();
+        String level = rootNode.get("level").asText();
 
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(getSources());
 
-        tags.add("spell/school/" + slugify(school.name()));
-        tags.add("spell/level/" + (level.equals("0") ? "cantrip" : level));
+        tags.add("spell", "school", slugify(school.name()));
+        tags.add("spell", "level", (level.equals("0") ? "cantrip" : level));
         if (ritual) {
-            tags.add("spell/ritual");
+            tags.add("spell", "ritual");
         }
 
         Set<String> classes = indexedSpellClasses(tags);
         classes.addAll(spellClasses(school, tags)); // legacy
 
         List<String> text = new ArrayList<>();
-        appendEntryToText(text, node, "##");
-        if (node.has("entriesHigherLevel")) {
+        appendToText(text, rootNode, "##");
+        if (rootNode.has("entriesHigherLevel")) {
             maybeAddBlankLine(text);
-            appendEntryToText(text, node.get("entriesHigherLevel"),
+            appendToText(text, rootNode.get("entriesHigherLevel"),
                     textContains(text, "## ") ? "##" : null);
         }
         appendFootnotes(text, 0);
 
         return new QuteSpell(sources,
                 decoratedName,
-                sources.getSourceText(index.srdOnly()),
+                getSourceText(sources),
                 levelToText(level),
                 school.name(),
                 ritual,
@@ -63,14 +66,14 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 tags);
     }
 
-    SchoolEnum getSchool() {
-        String code = node.get("school").asText();
-        return SchoolEnum.fromShortcode(code);
+    SpellSchool getSchool() {
+        String code = rootNode.get("school").asText();
+        return index().findSpellSchool(code, getSources());
     }
 
     boolean spellIsRitual() {
         boolean ritual = false;
-        JsonNode meta = node.get("meta");
+        JsonNode meta = rootNode.get("meta");
         if (meta != null) {
             ritual = booleanOrDefault(meta, "ritual", false);
         }
@@ -78,32 +81,32 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellComponents() {
-        JsonNode components = node.get("components");
+        JsonNode components = SpellFields.components.getFrom(rootNode);
+        if (components == null) {
+            return "";
+        }
 
         List<String> list = new ArrayList<>();
-        components.fields().forEachRemaining(f -> {
+        for (Entry<String, JsonNode> f : iterableFields(components)) {
             switch (f.getKey().toLowerCase()) {
-                case "v":
-                    list.add("V");
-                    break;
-                case "s":
-                    list.add("S");
-                    break;
-                case "m":
+                case "v" -> list.add("V");
+                case "s" -> list.add("S");
+                case "m" -> {
                     if (f.getValue().isObject()) {
                         list.add(f.getValue().get("text").asText());
                     } else {
                         list.add(f.getValue().asText());
                     }
-                    break;
+                }
             }
-        });
+        }
+        ;
         return String.join(", ", list);
     }
 
     String spellDuration() {
         StringBuilder result = new StringBuilder();
-        JsonNode durations = node.withArray("duration");
+        JsonNode durations = rootNode.withArray("duration");
         if (durations.size() > 0) {
             addDuration(durations.get(0), result);
         }
@@ -121,19 +124,15 @@ public class Json2QuteSpell extends Json2QuteCommon {
     void addDuration(JsonNode element, StringBuilder result) {
         String type = getTextOrEmpty(element, "type");
         switch (type) {
-            case "instant":
-                result.append("Instantaneous");
-                break;
-            case "permanent":
+            case "instant" -> result.append("Instantaneous");
+            case "permanent" -> {
                 result.append("Until dispelled");
                 if (element.withArray("ends").size() > 1) {
                     result.append(" or triggered");
                 }
-                break;
-            case "special":
-                result.append("Special");
-                break;
-            case "timed": {
+            }
+            case "special" -> result.append("Special");
+            case "timed" -> {
                 if (booleanOrDefault(element, "concentration", false)) {
                     result.append("Concentration, up to ");
                 }
@@ -141,27 +140,19 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 result.append(duration.get("amount").asText())
                         .append(" ")
                         .append(duration.get("type").asText());
-                break;
             }
-            default:
-                tui().errorf("What is this? %s", element.toPrettyString());
+            default -> tui().errorf("What is this? %s", element.toPrettyString());
         }
     }
 
     String spellRange() {
         StringBuilder result = new StringBuilder();
-        JsonNode range = node.get("range");
+        JsonNode range = rootNode.get("range");
         if (range != null) {
             String type = getTextOrEmpty(range, "type");
             JsonNode distance = range.get("distance");
             switch (type) {
-                case "cube":
-                case "cone":
-                case "hemisphere":
-                case "line":
-                case "radius":
-                case "sphere": {
-                    // Self (xx-foot yy)
+                case "cube", "cone", "hemisphere", "line", "radius", "sphere" -> // Self (xx-foot yy)
                     result.append("Self (")
                             .append(distance.get("amount").asText())
                             .append("-")
@@ -169,43 +160,31 @@ public class Json2QuteSpell extends Json2QuteCommon {
                             .append(" ")
                             .append(type)
                             .append(")");
-                    break;
-                }
-                case "point": {
+                case "point" -> {
                     String distanceType = distance.get("type").asText();
                     switch (distanceType) {
-                        case "self":
-                        case "sight":
-                        case "touch":
-                        case "unlimited":
+                        case "self", "sight", "touch", "unlimited" ->
                             result.append(distanceType.substring(0, 1).toUpperCase())
                                     .append(distanceType.substring(1));
-                            break;
-                        default:
-                            result.append(distance.get("amount").asText())
-                                    .append(" ")
-                                    .append(distanceType);
-                            break;
+                        default -> result.append(distance.get("amount").asText())
+                                .append(" ")
+                                .append(distanceType);
                     }
-                    break;
                 }
-                case "special": {
-                    result.append("Special");
-                    break;
-                }
+                case "special" -> result.append("Special");
             }
         }
         return result.toString();
     }
 
     String spellCastingTime() {
-        JsonNode time = node.withArray("time").get(0);
+        JsonNode time = rootNode.withArray("time").get(0);
         return String.format("%s %s",
                 time.get("number").asText(),
                 time.get("unit").asText());
     }
 
-    Set<String> indexedSpellClasses(Collection<String> tags) {
+    Set<String> indexedSpellClasses(Tags tags) {
         Collection<String> list = index().classesForSpell(this.sources.getKey());
         if (list == null) {
             tui().warnf("No classes found for %s", this.sources.getKey());
@@ -230,8 +209,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    Set<String> spellClasses(SchoolEnum school, Collection<String> tags) {
-        JsonNode classesNode = node.get("classes");
+    Set<String> spellClasses(SpellSchool school, Tags tags) {
+        JsonNode classesNode = rootNode.get("classes");
         if (classesNode == null || classesNode.isNull()) {
             return Set.of();
         }
@@ -265,13 +244,13 @@ public class Json2QuteSpell extends Json2QuteCommon {
             }
         });
         if (classes.contains("Wizard")) {
-            if (school == SchoolEnum.Abjuration || school == SchoolEnum.Evocation) {
+            if (school == SpellSchool.SchoolEnum.Abjuration || school == SpellSchool.SchoolEnum.Evocation) {
                 String finalKey = Tools5eIndexType.getSubclassKey("Fighter", "PHB", "Eldritch Knight", "PHB");
                 if (index().isIncluded(finalKey)) {
                     classes.add(getSubclass(tags, "Fighter", "PHB", "Eldritch Knight", "PHB", finalKey));
                 }
             }
-            if (school == SchoolEnum.Enchantment || school == SchoolEnum.Illusion) {
+            if (school == SpellSchool.SchoolEnum.Enchantment || school == SpellSchool.SchoolEnum.Illusion) {
                 String finalKey = Tools5eIndexType.getSubclassKey("Rogue", "PHB", "Arcane Trickster", "PHB");
                 if (index().isIncluded(finalKey)) {
                     classes.add(getSubclass(tags, "Rogue", "PHB", "Arcane Trickster", "PHB", finalKey));
@@ -281,22 +260,26 @@ public class Json2QuteSpell extends Json2QuteCommon {
         return classes;
     }
 
-    private String getClass(Collection<String> tags, String className, String classSource, String classKey) {
-        tags.add("spell/class/" + slugify(className));
+    private String getClass(Tags tags, String className, String classSource, String classKey) {
+        tags.add("spell", "class", slugify(className));
         return linkOrText(
                 className,
                 classKey,
-                Tools5eQuteBase.CLASSES_PATH,
+                Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype),
                 className + Tools5eQuteBase.sourceIfNotCore(classSource));
     }
 
-    private String getSubclass(Collection<String> tags, String className, String classSource, String subclassName,
+    private String getSubclass(Tags tags, String className, String classSource, String subclassName,
             String subclassSource, String subclassKey) {
-        tags.add("spell/class/" + slugify(className) + "/" + slugify(subclassName));
+        tags.add("spell", "class", slugify(className), slugify(subclassName));
         return linkOrText(
                 String.format("%s (%s)", className, subclassName),
                 subclassKey,
-                Tools5eQuteBase.CLASSES_PATH,
+                Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype),
                 Tools5eQuteBase.getSubclassResource(subclassName, className, subclassSource));
+    }
+
+    enum SpellFields implements JsonNodeReader {
+        components
     }
 }

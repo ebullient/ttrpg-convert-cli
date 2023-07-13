@@ -337,20 +337,28 @@
           "match": "(\\],)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"Onomancy)",
           "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Onomancy Resonant\", \"featureType\": [ \"OR\" ] } ],$2$3"
         }
+      ],
+      "class/D&D Wiki; Swashbuckler.json": [
+        {
+          "match": "\t\t\t\t\"MB\"",
+          "replace": "\t\t\t\t\"TB\""
+        }
       ]
     },
     "sources": [
-      "adventures.json", "books.json", "names.json", "variantrules.json",
-      "actions.json", "conditionsdiseases.json", "skills.json", "senses.json", "loot.json",
-      "bestiary", "bestiary/traits.json", "bestiary/legendarygroups.json",
+      "actions.json", "adventures.json", "books.json",
       "backgrounds.json", "fluff-backgrounds.json",
-      "class",
+      "bestiary", "bestiary/traits.json", "bestiary/legendarygroups.json",
+      "class", "conditionsdiseases.json",
       "deities.json",
       "feats.json", "optionalfeatures.json",
-      "items.json", "items-base.json", "fluff-items.json", "magicvariants.json",
-      "races.json", "fluff-races.json",
-      "spells",
-      "tables.json"
+      "generated/gendata-tables.json",
+      "items.json", "items-base.json", "fluff-items.json", 
+      "magicvariants.json", "objects.json", "psionics.json",
+      "races.json", "fluff-races.json", "rewards.json",
+      "skills.json", "senses.json", "spells", 
+      "tables.json", "trapshazards.json", 
+      "variantrules.json", "vehicles.json"
     ],
     "indexes": {
       "spell-source": "generated/gendata-spell-source-lookup.json"

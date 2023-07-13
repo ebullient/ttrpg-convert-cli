@@ -2,13 +2,12 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
@@ -22,10 +21,10 @@ public class Json2QuteHazard extends Json2QuteBase {
 
     @Override
     protected QuteHazard buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
 
-        appendEntryToText(text, Pf2eHazard.description.getFrom(rootNode), "##");
+        appendToText(text, Pf2eHazard.description.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
         return new QuteHazard(sources, text, tags,
@@ -72,7 +71,7 @@ public class Json2QuteHazard extends Json2QuteBase {
         List<Pf2eQuteNote> inlineThings = new ArrayList<>();
         Pf2eHazard.actions.withArrayFrom(rootNode)
                 .forEach(a -> {
-                    if (AppendTypeValue.attack.isValueOfField(a, Field.type)) {
+                    if (AppendTypeValue.attack.isValueOfField(a, SourceField.type)) {
                         inlineThings.add(AttackField.createInlineAttack(a, this));
                     } else {
                         inlineThings.add(Pf2eTypeAbility.createAbility(a, this, true));
@@ -95,7 +94,7 @@ public class Json2QuteHazard extends Json2QuteBase {
         return String.join("\n", inner);
     }
 
-    enum Pf2eHazard implements NodeReader {
+    enum Pf2eHazard implements JsonNodeReader {
         abilities,
         actions,
         defenses,

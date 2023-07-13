@@ -1,0 +1,31 @@
+{
+  "from": [
+    "B:P",
+    "BookofLairs",
+    "DMG", 
+    "ExploringEberron",
+    "GH",
+    "MM",
+    "NerzugalsExtendedBestiary",
+    "PHB", 
+    "SC",
+    "SCoC",
+    "TalentPsionicsOpenPlaytestRound2",
+    "TBHA",
+    "TDCSR",
+    "TheLostLands",
+    "arkadia",
+    "dndwiki_bestbackgrounds"
+  ],
+  "include": [
+    "race|changeling|mpmm"
+  ],
+  "exclude": [
+    "monster|expert|dc",
+    "monster|expert|sdw",
+    "monster|expert|slw"
+  ],
+  "excludePattern": [
+    "race|.*|dmg"
+  ]
+}

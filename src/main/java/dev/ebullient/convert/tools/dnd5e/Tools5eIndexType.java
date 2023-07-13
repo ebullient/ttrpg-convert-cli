@@ -1,22 +1,20 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.function.BiConsumer;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.IndexType;
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
-import dev.ebullient.convert.tools.dnd5e.JsonSource.Fields;
+import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 
-public enum Tools5eIndexType implements IndexType, NodeReader {
+public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     action,
     adventure,
     adventureData,
-    artObjects,
     background,
     backgroundFluff,
     book,
@@ -35,7 +33,6 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     deck,
     feat,
     featFluff,
-    gems,
     hazard,
     item,
     itemEntry,
@@ -44,16 +41,16 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     itemTypeAdditionalEntries,
     itemProperty,
     legendaryGroup,
-    magicItems,
     magicvariant,
     monster,
     monsterFluff,
     monsterfeatures,
-    nametable,
     object,
     objectFluff,
     optionalfeature,
+    optionalFeatureTypes, // homebrew
     psionic,
+    psionicTypes, // homebrew
     race,
     raceFeature,
     raceFluff,
@@ -62,11 +59,13 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     skill,
     spell,
     spellFluff,
+    spellSchool, // homebrew
     status,
     subclass,
     subclassFeature,
     subrace("race"),
     table,
+    tableGroup,
     trait,
     trap,
     variantrule,
@@ -78,7 +77,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     syntheticGroup, // qute data type
     ;
 
-    String templateName;
+    final String templateName;
 
     Tools5eIndexType() {
         this.templateName = this.name();
@@ -88,20 +87,19 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
         this.templateName = templateName;
     }
 
-    public static final Pattern matchPattern = Pattern.compile("\\{@("
-            + Stream.of(values())
-                    .flatMap(x -> Stream.of(x.templateName, x.name()))
-                    .distinct()
-                    .collect(Collectors.joining("|"))
-            + ") ([^{}]+?)}");
-
     public String templateName() {
         return templateName;
     }
 
     public static Tools5eIndexType fromText(String name) {
+        if ("creature".equalsIgnoreCase(name)) {
+            return monster;
+        }
+        if ("optfeature".equalsIgnoreCase(name)) {
+            return optionalfeature;
+        }
         return Stream.of(values())
-                .filter(x -> x.templateName.equals(name) || x.name().equalsIgnoreCase(name))
+                .filter(x -> x.templateName.equalsIgnoreCase(name) || x.name().equalsIgnoreCase(name))
                 .findFirst().orElse(null);
     }
 
@@ -117,22 +115,22 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
 
     public String createKey(JsonNode x) {
         if (this == book || this == adventure || this == bookData || this == adventureData) {
-            String id = Fields.id.getTextOrEmpty(x);
+            String id = SourceField.id.getTextOrEmpty(x);
             return String.format("%s|%s-%s",
                     this.name(),
                     this.name().replace("Data", ""),
                     id).toLowerCase();
         } else if (this == itemTypeAdditionalEntries) {
             return createKey(
-                    Fields.appliesTo.getTextOrEmpty(x),
-                    Fields.source.getTextOrEmpty(x));
+                    Tools5eFields.appliesTo.getTextOrEmpty(x),
+                    SourceField.source.getTextOrEmpty(x));
         }
 
         String name = IndexElement.name.getTextOrEmpty(x);
         String source = IndexElement.source.getTextOrEmpty(x);
 
         switch (this) {
-            case classfeature: {
+            case classfeature -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
                 return String.format("%s|%s|%s|%s|%s%s",
                         this.name(),
@@ -143,7 +141,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         source.equalsIgnoreCase(classSource) ? "" : "|" + source)
                         .toLowerCase();
             }
-            case deity: {
+            case deity -> {
                 return String.format("%s|%s|%s|%s",
                         this.name(),
                         name,
@@ -151,8 +149,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         source)
                         .toLowerCase();
             }
-            case itemType:
-            case itemProperty: {
+            case itemType, itemProperty -> {
                 String abbreviation = IndexFields.abbreviation.getTextOrDefault(x, name);
                 return String.format("%s|%s|%s",
                         this.name(),
@@ -160,21 +157,21 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         source)
                         .toLowerCase();
             }
-            case itemEntry: {
+            case itemEntry -> {
                 return String.format("%s|%s%s",
                         this.name(),
                         name,
                         "dmg".equalsIgnoreCase(source) ? "" : "|" + source)
                         .toLowerCase();
             }
-            case optionalfeature: {
+            case optionalfeature -> {
                 return String.format("%s|%s%s",
                         this.name(),
                         name,
                         "phb".equalsIgnoreCase(source) ? "" : "|" + source)
                         .toLowerCase();
             }
-            case subclass: {
+            case subclass -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "PHB");
                 String scSource = IndexElement.source.getTextOrDefault(x, classSource);
                 // subclass|subclassName|className|classSource|subclassSource
@@ -186,7 +183,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         scSource.equalsIgnoreCase(classSource) ? "" : scSource)
                         .toLowerCase();
             }
-            case subclassFeature: {
+            case subclassFeature -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "PHB");
                 String scSource = IndexFields.subclassSource.getTextOrDefault(x, "PHB");
                 return String.format("%s|%s|%s|%s|%s|%s|%s%s",
@@ -200,7 +197,7 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         source.equalsIgnoreCase(scSource) ? "" : "|" + source)
                         .toLowerCase();
             }
-            case subrace: {
+            case subrace -> {
                 return String.format("%s|%s|%s|%s",
                         this.name(),
                         name,
@@ -208,8 +205,9 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
                         IndexFields.raceSource.getTextOrEmpty(x))
                         .toLowerCase();
             }
-            default:
+            default -> {
                 return createKey(name, source);
+            }
         }
     }
 
@@ -262,9 +260,32 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     }
 
     public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
+        if (classSource == null || classSource.isEmpty()) {
+            // phb stays in the subclass text reference (match allowed sources)
+            classSource = "phb";
+        }
         return String.format("%s|%s|%s|%s|%s",
-                Tools5eIndexType.subclass, subclassName, className, classSource,
-                classSource.equals(subclassSource) ? "" : subclassSource).toLowerCase();
+                Tools5eIndexType.subclass,
+                subclassName,
+                className,
+                classSource,
+                classSource.equalsIgnoreCase(subclassSource) ? "" : subclassSource)
+                .toLowerCase();
+    }
+
+    public static String getSubclassTextReference(String className, String classSource, String subclassName,
+            String subclassSource, String text) {
+        if (classSource == null || classSource.isEmpty()) {
+            // phb stays in the subclass text reference (match allowed sources)
+            classSource = "phb";
+        }
+        // {@class Fighter|phb|Samurai|Samurai|xge}
+        return String.format("%s|%s|%s|%s|%s",
+                className,
+                classSource,
+                text == null ? subclassName : text,
+                subclassName,
+                classSource.equalsIgnoreCase(subclassSource) ? "" : subclassSource);
     }
 
     public static String getClassFeatureKey(String name, String featureSource, String className, String classSource,
@@ -294,119 +315,107 @@ public enum Tools5eIndexType implements IndexType, NodeReader {
     }
 
     public boolean multiNode() {
-        switch (this) {
-            case action:
-            case artObjects:
-            case condition:
-            case disease:
-            case gems:
-            case itemType:
-            case itemProperty:
-            case magicItems:
-            case sense:
-            case skill:
-            case status:
-            case syntheticGroup:
-                return true;
-            default:
-                return false;
-        }
+        return switch (this) {
+            case action,
+                    condition,
+                    disease,
+                    itemType,
+                    itemProperty,
+                    sense,
+                    skill,
+                    status,
+                    syntheticGroup ->
+                true;
+            default -> false;
+        };
     }
 
     public boolean writeFile() {
-        switch (this) {
-            case background:
-            case classtype:
-            case deity:
-            case feat:
-            case item:
-            case monster:
-            case race:
-            case spell:
-                return true;
-            default:
-                return false;
-        }
+        return switch (this) {
+            case background,
+                    classtype,
+                    deity,
+                    feat,
+                    hazard,
+                    item,
+                    monster,
+                    optionalfeature,
+                    optionalFeatureTypes,
+                    race,
+                    reward,
+                    spell,
+                    trap ->
+                true;
+            default -> false;
+        };
     }
 
     public boolean useQuteNote() {
-        switch (this) {
-            case action:
-            case adventureData:
-            case artObjects:
-            case bookData:
-            case condition:
-            case disease:
-            case gems:
-            case itemType:
-            case itemProperty:
-            case magicItems:
-            case nametable:
-            case sense:
-            case skill:
-            case status:
-            case table:
-            case variantrule:
-                return true; // QuteNote-based
-            default:
-                return false;
-        }
+        return switch (this) {
+            case action,
+                    adventureData,
+                    bookData,
+                    condition,
+                    disease,
+                    itemType,
+                    itemProperty,
+                    optionalFeatureTypes,
+                    sense,
+                    skill,
+                    status,
+                    table,
+                    tableGroup,
+                    variantrule ->
+                true; // QuteNote-based
+            default -> false; // QuteBase
+        };
     }
 
     public boolean useCompendiumBase() {
-        switch (this) {
-            case action:
-            case condition:
-            case disease:
-            case itemProperty:
-            case itemType:
-            case sense:
-            case skill:
-            case status:
-            case variantrule:
-                return false; // use rules
-            default:
-                return true; // use compendium
-        }
+        return switch (this) {
+            case action,
+                    condition,
+                    disease,
+                    itemProperty,
+                    itemType,
+                    sense,
+                    skill,
+                    status,
+                    variantrule ->
+                false; // use rules
+            default -> true; // use compendium
+        };
     }
 
     public String defaultSourceString() {
-        switch (this) {
-            case card:
-            case deck:
-            case disease:
-            case hazard:
-            case item:
-            case magicvariant:
-            case reward:
-            case table:
-            case trap:
-            case variantrule:
-                return "DMG";
-            case legendaryGroup:
-            case monster:
-            case monsterfeatures:
-                return "MM";
-            case vehicle:
-            case vehicleUpgrade:
-                return "GoS";
-            case boon:
-            case cult:
-                return "MTF";
-            case psionic:
-                return "UATheMysticClass";
-            case charoption:
-                return "MOT";
-            case syntheticGroup:
-                return null;
-            case itemTypeAdditionalEntries:
-                return "XGE";
-            default:
-                return "PHB";
-        }
+        return switch (this) {
+            case card,
+                    deck,
+                    disease,
+                    hazard,
+                    item,
+                    magicvariant,
+                    reward,
+                    table,
+                    tableGroup,
+                    trap,
+                    variantrule ->
+                "DMG";
+            case legendaryGroup,
+                    monster,
+                    monsterfeatures ->
+                "MM";
+            case vehicle, vehicleUpgrade -> "GoS";
+            case boon, cult -> "MTF";
+            case psionic -> "UATheMysticClass";
+            case charoption -> "MOT";
+            case syntheticGroup -> null;
+            case itemTypeAdditionalEntries -> "XGE";
+            default -> "PHB";
+        };
     }
 
-    enum IndexFields implements NodeReader {
+    enum IndexFields implements JsonNodeReader {
         abbreviation,
         className,
         classSource,

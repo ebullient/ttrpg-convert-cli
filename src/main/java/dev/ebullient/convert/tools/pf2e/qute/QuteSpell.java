@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
@@ -28,7 +29,7 @@ public class QuteSpell extends Pf2eQuteBase {
     public final List<QuteSpellSubclass> subclass;
     public final Map<String, String> heightened;
 
-    public QuteSpell(Pf2eSources sources, List<String> text, Collection<String> tags,
+    public QuteSpell(Pf2eSources sources, List<String> text, Tags tags,
             String level, String spellType, Collection<String> traits, List<String> aliases,
             QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSaveDuration saveDuration,
             List<String> domains, List<String> traditions, List<String> spellLists,

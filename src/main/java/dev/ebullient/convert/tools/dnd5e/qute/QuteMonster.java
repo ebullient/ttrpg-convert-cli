@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +8,7 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -67,7 +67,7 @@ public class QuteMonster extends Tools5eQuteBase {
             List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
             Map<String, Trait> legendaryGroup,
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
-            ImageRef tokenImage, List<ImageRef> fluffImages, Collection<String> tags, boolean useDiceRoller) {
+            ImageRef tokenImage, List<ImageRef> fluffImages, Tags tags, boolean useDiceRoller) {
 
         super(sources, name, source, null, tags);
 

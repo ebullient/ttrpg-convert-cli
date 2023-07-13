@@ -57,10 +57,12 @@ public class JsonDataSubsetTest {
 
         // Changeling from mpmm is a reprint..
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            final String raceRelative = Tools5eQuteBase.getRelativePath(Tools5eIndexType.race);
+
             // Single included race: changeling from mpmm
             Path changeling = outputPath
                     .resolve(commonTests.compendiumFilePath())
-                    .resolve(Tools5eQuteBase.RACES_PATH)
+                    .resolve(raceRelative)
                     .resolve("changeling-mpmm.md");
             assertThat(changeling).exists();
         }
@@ -98,7 +100,22 @@ public class JsonDataSubsetTest {
     }
 
     @Test
+    public void testOptionalFeatureList() {
+        commonTests.testOptionalFeatureList(outputPath);
+    }
+
+    @Test
+    public void testRewardList() {
+        commonTests.testRewardList(outputPath);
+    }
+
+    @Test
     public void testRules() {
         commonTests.testRules(outputPath);
+    }
+
+    @Test
+    public void testTrapsHazardsList() {
+        commonTests.testTrapsHazardsList(outputPath);
     }
 }

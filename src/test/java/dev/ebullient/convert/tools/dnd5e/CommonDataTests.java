@@ -110,8 +110,7 @@ public class CommonDataTests {
     public void testFeatList(Path outputPath) {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path featDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.FEATS_PATH);
-            TestUtils.deleteDir(featDir);
+            Path featDir = deleteDir(Tools5eIndexType.feat, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -125,8 +124,7 @@ public class CommonDataTests {
     public void testBackgroundList(Path outputPath) {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path backgroundDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.BACKGROUND_PATH);
-            TestUtils.deleteDir(backgroundDir);
+            Path backgroundDir = deleteDir(Tools5eIndexType.background, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -142,8 +140,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path spellDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.SPELLS_PATH);
-            TestUtils.deleteDir(spellDir);
+            Path spellDir = deleteDir(Tools5eIndexType.spell, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -158,8 +155,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path raceDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.RACES_PATH);
-            TestUtils.deleteDir(raceDir);
+            Path raceDir = deleteDir(Tools5eIndexType.race, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -174,8 +170,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path classDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.CLASSES_PATH);
-            TestUtils.deleteDir(classDir);
+            Path classDir = deleteDir(Tools5eIndexType.classtype, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -208,8 +203,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path deitiesDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.DEITIES_PATH);
-            TestUtils.deleteDir(deitiesDir);
+            Path deitiesDir = deleteDir(Tools5eIndexType.deity, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -229,8 +223,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path itemDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.ITEMS_PATH);
-            TestUtils.deleteDir(itemDir);
+            Path itemDir = deleteDir(Tools5eIndexType.item, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -246,8 +239,7 @@ public class CommonDataTests {
         configurator.setAlwaysUseDiceRoller(true);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path bestiaryDir = outputPath.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.MONSTERS_BASE_PATH);
-            TestUtils.deleteDir(bestiaryDir);
+            Path bestiaryDir = deleteDir(Tools5eIndexType.monster, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -273,7 +265,6 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path out = outputPath.resolve("alt-scores");
             TestUtils.deleteDir(out);
-
             tui.setOutputPath(out);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
@@ -290,7 +281,6 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path out = outputPath.resolve("yaml-header");
             TestUtils.deleteDir(out);
-
             tui.setOutputPath(out);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
@@ -348,9 +338,51 @@ public class CommonDataTests {
         }
     }
 
+    public void testOptionalFeatureList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path ofDir = deleteDir(Tools5eIndexType.optionalFeatureTypes, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(List.of(
+                            Tools5eIndexType.optionalFeatureTypes,
+                            Tools5eIndexType.optionalfeature))
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(ofDir, tui);
+        }
+    }
+
+    public void testRewardList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path rewardDir = deleteDir(Tools5eIndexType.reward, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(Tools5eIndexType.reward)
+                    .writeImages();
+
+            if (variant == TestInput.none) {
+                assertThat(rewardDir.toFile()).doesNotExist();
+            } else {
+                TestUtils.assertDirectoryContents(rewardDir, tui);
+            }
+        }
+    }
+
     public void testRules(Path outputPath) {
         tui.setOutputPath(outputPath);
+
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            deleteDir(Tools5eIndexType.adventureData, outputPath, index.compendiumFilePath());
+            deleteDir(Tools5eIndexType.bookData, outputPath, index.compendiumFilePath());
+            deleteDir(Tools5eIndexType.table, outputPath, index.compendiumFilePath());
+            TestUtils.deleteDir(index.rulesFilePath());
+
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeNotesAndTables()
@@ -360,7 +392,29 @@ public class CommonDataTests {
         }
     }
 
+    public void testTrapsHazardsList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path trapsDir = deleteDir(Tools5eIndexType.trap, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(List.of(Tools5eIndexType.trap, Tools5eIndexType.hazard))
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(trapsDir, tui);
+        }
+    }
+
     public Path compendiumFilePath() {
         return index.compendiumFilePath();
+    }
+
+    Path deleteDir(Tools5eIndexType type, Path outputPath, Path vaultPath) {
+        final String relative = Tools5eQuteBase.getRelativePath(type);
+        final Path typeDir = outputPath.resolve(vaultPath).resolve(relative);
+        TestUtils.deleteDir(typeDir);
+        return typeDir;
     }
 }

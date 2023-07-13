@@ -3,14 +3,13 @@ package dev.ebullient.convert.tools.pf2e;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteBook;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -38,7 +37,7 @@ public class Json2QuteBook extends Json2QuteBase {
             bookInfo.group = Pf2eBook.group.getTextOrNull(rootNode);
             bookInfo.published = Pf2eBook.published.getTextOrNull(rootNode);
 
-            Set<String> coverTags = new HashSet<>(sources.getSourceTags());
+            Tags coverTags = new Tags(sources);
             coverTags.add(cfg().tagOf("book",
                     Field.group.getTextOrDefault(rootNode, "ungrouped"),
                     bookRelativePath));
@@ -52,7 +51,7 @@ public class Json2QuteBook extends Json2QuteBase {
             // Find coverNode and book sections
             Map<String, JsonNode> bookSections = new HashMap<>();
             for (JsonNode node : Pf2eBook.data.iterateArrayFrom(dataNode)) {
-                String name = Field.name.getTextOrNull(node);
+                String name = SourceField.name.getTextOrNull(node);
                 if (name == null) {
                     continue;
                 }
@@ -63,7 +62,7 @@ public class Json2QuteBook extends Json2QuteBase {
             List<String> coverText = new ArrayList<>();
 
             for (JsonNode n : Pf2eBook.contents.iterateArrayFrom(rootNode)) {
-                String name = Field.name.getTextOrEmpty(n);
+                String name = SourceField.name.getTextOrEmpty(n);
                 if ("Cover".equals(name)) {
                     continue;
                 }
@@ -108,10 +107,10 @@ public class Json2QuteBook extends Json2QuteBase {
     Pf2eQuteNote chapterPage(String name, JsonNode pageNode) {
         boolean pushed = parseState.push(pageNode);
         try {
-            Set<String> tags = new HashSet<>(sources.getSourceTags());
+            Tags tags = new Tags(sources);
             List<String> text = new ArrayList<>();
 
-            appendEntryToText(text, pageNode, "#");
+            appendToText(text, pageNode, "#");
 
             return new QuteBook(name, text, tags, bookRelativePath, null, List.of());
         } finally {
@@ -125,7 +124,7 @@ public class Json2QuteBook extends Json2QuteBase {
         public Object identifier;
     }
 
-    enum Pf2eBook implements NodeReader {
+    enum Pf2eBook implements JsonNodeReader {
         author,
         contents,
         coverUrl,

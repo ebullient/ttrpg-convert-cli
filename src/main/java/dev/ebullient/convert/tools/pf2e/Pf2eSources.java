@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
-import dev.ebullient.convert.tools.pf2e.JsonTextReplacement.Field;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -101,7 +101,7 @@ public class Pf2eSources extends CompendiumSources {
         return imageSourceToRef.values();
     }
 
-    Pf2eIndexType type;
+    final Pf2eIndexType type;
 
     private Pf2eSources(Pf2eIndexType type, String key, JsonNode node) {
         super(type, key, node);
@@ -116,7 +116,7 @@ public class Pf2eSources extends CompendiumSources {
         if (type == Pf2eIndexType.syntheticGroup || type == Pf2eIndexType.bookReference) {
             return this.key.replaceAll(".*\\|(.*)\\|", "$1");
         }
-        String name = Field.name.getTextOrNull(node);
+        String name = SourceField.name.getTextOrNull(node);
         if (name == null) {
             throw new IllegalArgumentException("Unknown element, has no name: " + node.toString());
         }

@@ -40,7 +40,8 @@ public abstract class CompendiumSources {
         return bookSources;
     }
 
-    public List<String> getSourceTags() {
+    /** Protected: used by Tags.addSourceTags(sources) */
+    List<String> getSourceTags() {
         return List.of(
                 String.format("compendium/src/%s/%s",
                         TtrpgConfig.getConfig().datasource().shortName(),
@@ -92,6 +93,7 @@ public abstract class CompendiumSources {
                     .filter(sp -> !sp.source.equals(copySrc))
                     .filter(sp -> datasourceFilter(sp.source))
                     .peek(sp -> this.bookSources.add(sp.source))
+                    .filter(sp -> TtrpgConfig.getConfig().sourceIncluded(sp.source))
                     .map(sp -> sp.toString())
                     .collect(Collectors.toList()));
         }
@@ -153,23 +155,28 @@ public abstract class CompendiumSources {
         return type == Pf2eIndexType.syntheticGroup || type == Tools5eIndexType.syntheticGroup;
     }
 
-    protected enum Fields implements NodeReader {
+    protected enum Fields implements JsonNodeReader {
         abbreviation,
         additionalSources,
         _copy,
         name,
         otherSources,
         page,
-        source;
+        source
     }
 
     public static class SourceAndPage {
-        String source;
-        String page;
+        final String source;
+        final String page;
 
         public SourceAndPage(JsonNode jsonElement) {
             source = Fields.source.getTextOrNull(jsonElement);
             page = Fields.page.getTextOrNull(jsonElement);
+        }
+
+        public SourceAndPage(ParseState parsestate) {
+            source = parsestate.getSource();
+            page = parsestate.getPage();
         }
 
         public String toString() {
@@ -181,6 +188,37 @@ public abstract class CompendiumSources {
                 return book;
             }
             return null;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((source == null) ? 0 : source.hashCode());
+            result = prime * result + ((page == null) ? 0 : page.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            SourceAndPage other = (SourceAndPage) obj;
+            if (source == null) {
+                if (other.source != null)
+                    return false;
+            } else if (!source.equals(other.source))
+                return false;
+            if (page == null) {
+                if (other.page != null)
+                    return false;
+            } else if (!page.equals(other.page))
+                return false;
+            return true;
         }
     }
 }

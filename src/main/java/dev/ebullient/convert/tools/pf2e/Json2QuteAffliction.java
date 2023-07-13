@@ -2,11 +2,10 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAffliction;
 
 public class Json2QuteAffliction extends Json2QuteBase {
@@ -17,25 +16,25 @@ public class Json2QuteAffliction extends Json2QuteBase {
 
     @Override
     protected QuteAffliction buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
         List<String> temptedCurse = new ArrayList<>();
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         int count = appendFootnotes(text, 0);
 
-        appendEntryToText(temptedCurse, AfflictionField.temptedCurse.getFrom(rootNode), null);
+        appendToText(temptedCurse, AfflictionField.temptedCurse.getFrom(rootNode), null);
         appendFootnotes(temptedCurse, count);
 
         String type = AfflictionField.type.getTextOrEmpty(rootNode);
         String level = AfflictionField.level.getTextOrDefault(rootNode, "1");
 
         if (temptedCurse.isEmpty()) {
-            tags.add(cfg().tagOf("affliction", type));
+            tags.add("affliction", type);
         } else {
-            tags.add(cfg().tagOf("affliction", type, "tempted"));
+            tags.add("affliction", type, "tempted");
         }
-        tags.add(cfg().tagOf("affliction", "level", level));
+        tags.add("affliction", "level", level);
 
         return new QuteAffliction(getSources(), text, tags,
                 collectTraitsFrom(rootNode, tags),

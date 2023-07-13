@@ -39,11 +39,11 @@ public class QuteBase {
 
     public List<ImageRef> images() {
         return List.of();
-    };
+    }
 
     public CompendiumSources sources() {
         return sources;
-    };
+    }
 
     public String title() {
         return name;

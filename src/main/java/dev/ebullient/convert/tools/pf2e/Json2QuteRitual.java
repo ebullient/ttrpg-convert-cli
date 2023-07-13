@@ -1,14 +1,12 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual.QuteRitualCasting;
@@ -25,14 +23,14 @@ public class Json2QuteRitual extends Json2QuteSpell {
 
     @Override
     protected Pf2eQuteBase buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         appendFootnotes(text, 0);
 
         String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");
-        tags.add(cfg().tagOf(RITUAL_TAG, level));
+        tags.add(RITUAL_TAG, level);
 
         return new QuteRitual(sources, text, tags,
                 level, "Ritual",
@@ -46,9 +44,9 @@ public class Json2QuteRitual extends Json2QuteSpell {
                 getHeightenedCast());
     }
 
-    QuteSpellTarget getQuteRitualSpellTarget(Collection<String> tags) {
+    QuteSpellTarget getQuteRitualSpellTarget(Tags tags) {
         String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
-        JsonNode rangeEntry = Pf2eSpell.range.getFieldFrom(rootNode, Field.entry);
+        JsonNode rangeEntry = Pf2eSpell.range.getFieldFrom(rootNode, SourceField.entry);
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
         if (targets == null && rangeEntry == null && area == null) {
             return null;
@@ -63,7 +61,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
         }
         if (area != null) {
             spellTarget.area = area.entry;
-            area.types.forEach(t -> tags.add(cfg().tagOf(RITUAL_TAG, "area", t)));
+            area.types.forEach(t -> tags.add(RITUAL_TAG, "area", t));
         }
         return spellTarget;
     }

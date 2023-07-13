@@ -2,13 +2,12 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
 
@@ -20,25 +19,25 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     @Override
     protected QuteRace buildQuteResource() {
-        String name = decoratedRaceName(node, sources);
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        String name = decoratedRaceName(rootNode, sources);
+        Tags tags = new Tags(getSources());
 
         String[] split = name.split("\\(");
         for (int i = 0; i < split.length; i++) {
             split[i] = slugify(split[i].trim());
         }
-        tags.add("race/" + String.join("/", split));
+        tags.add("race", String.join("/", split));
 
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.raceFluff, "###", fluffImages);
 
         return new QuteRace(sources,
                 name,
-                sources.getSourceText(index.srdOnly()),
+                getSourceText(sources),
                 getRaceAbility(),
                 creatureTypes(),
-                getSize(node),
-                getSpeed(node),
+                getSize(rootNode),
+                getSpeed(rootNode),
                 spellcastingAbility(),
                 getText("###"),
                 fluff,
@@ -48,7 +47,7 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     String creatureTypes() {
         List<String> types = new ArrayList<>();
-        for (JsonNode x : iterableElements(node.get("creatureTypes"))) {
+        for (JsonNode x : iterableElements(rootNode.get("creatureTypes"))) {
             types.add(x.asText());
         }
         return types.isEmpty()
@@ -57,8 +56,8 @@ public class Json2QuteRace extends Json2QuteCommon {
     }
 
     String spellcastingAbility() {
-        if (node.has("additionalSpells") && node.get("additionalSpells").isArray()) {
-            JsonNode spells = node.get("additionalSpells").get(0);
+        if (rootNode.has("additionalSpells") && rootNode.get("additionalSpells").isArray()) {
+            JsonNode spells = rootNode.get("additionalSpells").get(0);
             if (spells.has("ability")) {
                 JsonNode ability = spells.get("ability");
                 if (ability.has("choose")) {
@@ -75,13 +74,13 @@ public class Json2QuteRace extends Json2QuteCommon {
     }
 
     String getRaceAbility() {
-        if (getTextOrEmpty(node, "lineage").equals("VRGR")) {
-            if (getTextOrEmpty(node, "lineage").equals("VRGR")) {
+        if (getTextOrEmpty(rootNode, "lineage").equals("VRGR")) {
+            if (getTextOrEmpty(rootNode, "lineage").equals("VRGR")) {
                 // Custom Lineage:
                 return "Choose one of: (a) Choose any +2, choose any other +1; (b) Choose any +1, choose any other +1, choose any other +1";
             }
         }
-        JsonNode ability = node.withArray("ability");
+        JsonNode ability = rootNode.withArray("ability");
         if (ability.isEmpty()) {
             return "None";
         }

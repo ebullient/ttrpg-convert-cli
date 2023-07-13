@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,14 +19,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
+import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.CompendiumSources.SourceAndPage;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
+import dev.ebullient.convert.tools.dnd5e.ItemProperty.CustomItemProperty;
+import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
+import dev.ebullient.convert.tools.dnd5e.ItemType.CustomItemType;
+import dev.ebullient.convert.tools.dnd5e.ItemType.ItemEnum;
+import dev.ebullient.convert.tools.dnd5e.SpellSchool.CustomSpellSchool;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Tools5eIndex implements JsonSource, ToolsIndex {
     private static Tools5eIndex instance;
@@ -47,14 +54,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     final CompendiumConfig config;
 
     private final Map<String, JsonNode> nodeIndex = new HashMap<>();
-    private final Map<String, List<JsonNode>> optFeatureIndex = new HashMap<>();
-    private final Map<String, String> aliases = new HashMap<>();
-    private final Map<String, String> classRoot = new HashMap<>();
-    private final Map<String, String> itemProperties = new HashMap<>();
-    private final Map<String, String> itemTypes = new HashMap<>();
     private Map<String, JsonNode> variantIndex = null;
     private Map<String, JsonNode> filteredIndex = null;
-    private Map<String, Set<String>> spellClassIndex = new HashMap<>();
+
+    private final Map<String, OptionalFeatureType> optFeatureIndex = new HashMap<>();
+    private final Map<String, HomebrewMetaTypes> homebrewMetaTypes = new HashMap<>();
+    private final Map<SourceAndPage, List<JsonNode>> tableIndex = new HashMap<>();
+    private final Map<String, String> aliases = new HashMap<>();
+    private final Map<String, String> classRoot = new HashMap<>();
+    private final Map<String, Set<String>> spellClassIndex = new HashMap<>();
 
     private final Set<String> srdKeys = new HashSet<>();
     private final Set<String> familiarKeys = new HashSet<>();
@@ -63,6 +71,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;
+
+    // index state
+    HomebrewMetaTypes homebrew = null;
 
     public Tools5eIndex(CompendiumConfig config) {
         this.config = config;
@@ -74,110 +85,143 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return this;
         }
 
-        // user configuration
-        config.readConfigurationIfPresent(node);
+        try {
+            // user configuration
+            config.readConfigurationIfPresent(node);
 
-        addHomebrewSourcesIfPresent(node);
+            homebrew = addHomebrewSourcesIfPresent(filename, node);
 
-        // Reference/Internal Types
+            // Reference/Internal Types
 
-        Tools5eIndexType.backgroundFluff.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.conditionFluff.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.backgroundFluff.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.conditionFluff.withArrayFrom(node, this::addToIndex);
 
-        Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.itemFluff.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.itemFluff.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
 
-        Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.trait.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
-        Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.subclassFeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
+            Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.trait.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
+            Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.subclassFeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
 
-        // Output Types
+            // TODO
+            Tools5eIndexType.object.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.psionic.withArrayFrom(node, this::addToIndex);
 
-        // notes
+            // Output Types
 
-        Tools5eIndexType.action.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.condition.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.disease.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.itemProperty.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.itemType.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.sense.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.skill.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.status.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.variantrule.withArrayFrom(node, this::addToIndex);
+            // notes
 
-        // tables
+            Tools5eIndexType.action.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.condition.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.disease.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.itemProperty.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.itemType.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.sense.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.skill.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.status.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.variantrule.withArrayFrom(node, this::addToIndex);
 
-        Tools5eIndexType.artObjects.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.gems.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.table.withArrayFrom(node, this::addToIndex);
+            // tables
 
-        // templated types
+            Tools5eIndexType.table.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.tableGroup.withArrayFrom(node, this::addToIndex);
 
-        Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
-        Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.feat.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.item.withArrayFrom(node, "baseitem", this::addToIndex);
-        Tools5eIndexType.item.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.monster.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.race.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.spell.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.vehicle.withArrayFrom(node, this::addToIndex);
+            // templated types
 
-        if (node.has("name") && node.get("name").isArray()) {
-            ArrayNode names = node.withArray("name");
-            if (names.get(0).isObject() && names.get(0).has("tables")) {
-                names.forEach(nt -> addToIndex(Tools5eIndexType.nametable, nt));
+            Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
+            Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.feat.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.hazard.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.item.withArrayFrom(node, "baseitem", this::addToIndex);
+            Tools5eIndexType.item.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.monster.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.race.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.reward.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.spell.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.trap.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.vehicle.withArrayFrom(node, this::addToIndex);
+
+            Tools5eIndexType.adventure.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.adventureData.withArrayFrom(node, this::addToIndex); // homebrew
+            Tools5eIndexType.book.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.bookData.withArrayFrom(node, this::addToIndex); // homebrew
+
+            // 5e tools book/adventure data
+            if (node.has("data") && !filename.isEmpty()) {
+                int slash = filename.indexOf('/');
+                int dot = filename.indexOf('.');
+                String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
+
+                ((ObjectNode) node).put("id", basename.replace("book-", "").replace("adventure-", ""));
+                addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData, node);
             }
-        }
-
-        Tools5eIndexType.adventure.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.adventureData.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.book.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.bookData.withArrayFrom(node, this::addToIndex);
-
-        // 5e tools book/adventure data
-        if (node.has("data") && !filename.isEmpty()) {
-            int slash = filename.indexOf('/');
-            int dot = filename.indexOf('.');
-            String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
-
-            ((ObjectNode) node).put("id", basename.replace("book-", "").replace("adventure-", ""));
-            addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData, node);
+        } finally {
+            homebrew = null;
         }
 
         return this;
     }
 
-    private void addHomebrewSourcesIfPresent(JsonNode node) {
-        if (!node.has("_meta")) {
-            return;
+    private HomebrewMetaTypes addHomebrewSourcesIfPresent(String filename, JsonNode node) {
+        JsonNode sources = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.sources);
+        if (sources == null || sources.size() == 0) {
+            return null;
         }
-        JsonNode sources = node.get("_meta").get("sources");
-        if (sources != null) {
-            for (JsonNode source : iterableElements(sources)) {
-                String fullName = getTextOrEmpty(source, "full");
-                String abbreviation = getTextOrEmpty(source, "abbreviation");
-                String json = getTextOrEmpty(source, "json");
-                if (fullName == null) {
-                    tui().warnf("Homebrew source %s missing full name: %s", json, fullName);
-                }
-                if (abbreviation == null) {
-                    TtrpgConfig.addHomebrewSource(fullName, json);
-                } else {
-                    TtrpgConfig.addHomebrewSource(fullName, json, abbreviation);
-                }
+        String json = HomebrewFields.json.getTextOrNull(sources.get(0));
+        if (json == null) {
+            tui().errorf("Source does not define json id: %s", sources.get(0));
+            return null;
+        }
+
+        HomebrewMetaTypes metaTypes = new HomebrewMetaTypes(json, filename);
+
+        JsonNode featureTypes = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.optionalFeatureTypes);
+        JsonNode spellSchools = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.spellSchools);
+        JsonNode psionicTypes = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.psionicTypes);
+        if (featureTypes != null || spellSchools != null || psionicTypes != null) {
+            for (Entry<String, JsonNode> entry : iterableFields(featureTypes)) {
+                metaTypes.setOptionalFeatureType(entry.getKey(), entry.getValue().asText());
+            }
+            // ignoring short names for spell schools and psionic types
+            for (Entry<String, JsonNode> entry : iterableFields(spellSchools)) {
+                metaTypes.setSpellSchool(entry.getKey(),
+                        new CustomSpellSchool(HomebrewFields.full.getTextOrEmpty(entry.getValue())));
+            }
+            for (Entry<String, JsonNode> entry : iterableFields(psionicTypes)) {
+                metaTypes.setPsionicType(entry.getKey(), HomebrewFields.full.getTextOrEmpty(entry.getValue()));
             }
         }
+
+        for (JsonNode source : iterableElements(sources)) {
+            String fullName = HomebrewFields.full.getTextOrEmpty(source);
+            String abbreviation = HomebrewFields.abbreviation.getTextOrEmpty(source);
+            json = HomebrewFields.json.getTextOrEmpty(source);
+            if (fullName == null) {
+                tui().warnf("Homebrew source %s missing full name: %s", json, fullName);
+            }
+            // add homebrew to known sources
+            if (abbreviation == null) {
+                TtrpgConfig.addHomebrewSource(fullName, json);
+            } else {
+                TtrpgConfig.addHomebrewSource(fullName, json, abbreviation);
+            }
+            // one homebrew file may include multiple sources, the same mapping applies to all
+            HomebrewMetaTypes old = homebrewMetaTypes.put(json, metaTypes);
+            if (old != null) {
+                tui().errorf("Shared homebrew id: %s and %s", old.filename, metaTypes.filename);
+            }
+        }
+        return metaTypes;
     }
 
     void addToIndex(Tools5eIndexType type, JsonNode node) {
@@ -189,6 +233,46 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         TtrpgValue.indexInputType.addToNode(node, type.name());
         TtrpgValue.indexKey.addToNode(node, key);
 
+        if (type == Tools5eIndexType.classtype
+                && !booleanOrDefault(node, "isReprinted", false)) {
+            String[] parts = key.split("\\|");
+            if (!parts[2].contains("ua")) {
+                String lookupKey = String.format("%s|%s|", parts[0], parts[1]);
+                classRoot.put(lookupKey, key);
+            }
+        }
+        if (type == Tools5eIndexType.itemProperty && homebrew != null) {
+            // lookup by abbreviation
+            String[] parts = key.split("\\|");
+            homebrew.itemProperties.put(parts[1].toLowerCase(), new CustomItemProperty(node));
+        }
+        if (type == Tools5eIndexType.itemType && homebrew != null) {
+            // lookup by abbreviation
+            String[] parts = key.split("\\|");
+            homebrew.itemTypes.put(parts[1].toLowerCase(), new CustomItemType(node));
+        }
+        if (type == Tools5eIndexType.optionalfeature) {
+            String lookup = null;
+            for (String ft : toListOfStrings(node.get("featureType"))) {
+                try {
+                    boolean homebrewType = homebrew == null
+                            ? false
+                            : homebrew.getOptionalFeatureType(ft) != null;
+                    // scope the optional feature key (homebrew may conflict)
+                    String featKey = (homebrewType
+                            ? ft + "-" + homebrew.jsonKey
+                            : ft).toLowerCase();
+
+                    optFeatureIndex.computeIfAbsent(featKey, k -> new OptionalFeatureType(ft, k, homebrew, index())).add(node);
+                    lookup = lookup == null ? featKey : lookup;
+                } catch (IllegalArgumentException e) {
+                    tui().error(e, "Unable to define optional feature");
+                }
+            }
+            if (lookup != null) {
+                ((ObjectNode) node).put("typeLookup", lookup);
+            }
+        }
         if (type == Tools5eIndexType.subclass) {
             String lookupKey = Tools5eIndexType.getSubclassKey(
                     getTextOrEmpty(node, "className"), getTextOrEmpty(node, "classSource"),
@@ -203,27 +287,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     parts[2], parts[1], parts[3]).toLowerCase();
             addAlias(lookupKey, key);
         }
-        if (type == Tools5eIndexType.classtype
-                && !booleanOrDefault(node, "isReprinted", false)) {
-            String[] parts = key.split("\\|");
-            if (!parts[2].contains("ua")) {
-                String lookupKey = String.format("%s|%s|", parts[0], parts[1]);
-                classRoot.put(lookupKey, key);
-            }
-        }
-        if (type == Tools5eIndexType.optionalfeature) {
-            for (String ft : toListOfStrings(node.get("featureType"))) {
-                optFeatureIndex.computeIfAbsent(ft, k -> new ArrayList<>()).add(node);
-            }
-        }
-
-        if (type == Tools5eIndexType.itemProperty) {
-            String[] parts = key.split("\\|");
-            itemProperties.put(parts[1], key);
-        }
-        if (type == Tools5eIndexType.itemType) {
-            String[] parts = key.split("\\|");
-            itemTypes.put(parts[1], key);
+        if (type == Tools5eIndexType.table || type == Tools5eIndexType.tableGroup) {
+            SourceAndPage sp = new SourceAndPage(node);
+            tableIndex.computeIfAbsent(sp, k -> new ArrayList<>()).add(node);
         }
 
         if (node.has("srd")) {
@@ -327,10 +393,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         });
 
         // Exclude items after we've created variants and handled copies
-        filteredIndex = variantIndex.entrySet().stream()
+        filteredIndex = new TreeMap<>();
+        variantIndex.entrySet().stream()
                 .filter(e -> !isReprinted(e.getKey(), e.getValue()))
                 .filter(e -> keyIsIncluded(e.getKey(), e.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .forEach(e -> filteredIndex.put(e.getKey(), e.getValue()));
 
         // And finally, create an index of classes/subclasses/feats for spells
         // based on included sources & avaiable spells.
@@ -374,7 +441,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                         : t.getName();
 
                 if (reprintIndex.containsKey(lookup)) {
-                    // skip it. It has been reprinted as a new thing
+                    // skip it. It has already been reprinted as a new thing
                 } else {
                     reprintIndex.put(lookup, t);
                 }
@@ -456,6 +523,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 }
             }
         }
+        // TODO: Even funner: homebrew classes and spells
     }
 
     boolean isReprinted(String finalKey, JsonNode jsonSource) {
@@ -562,14 +630,77 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return filteredIndex.get(finalKey);
     }
 
-    public JsonNode findItemPropertyNode(String abbreviation) {
-        String key = itemProperties.get(abbreviation.toLowerCase());
-        return getNode(key);
+    public ItemProperty findItemProperty(String abbreviation, Tools5eSources sources) {
+        if (abbreviation == null || abbreviation.isEmpty()) {
+            return null;
+        }
+        HomebrewMetaTypes meta = homebrewMetaTypes.get(sources.primarySource());
+        ItemProperty prop = PropertyEnum.fromEncodedType(abbreviation);
+        if (prop == null && meta != null) {
+            prop = meta.getItemProperty(abbreviation);
+        }
+        if (prop == null) {
+            tui().errorf("Unknown property %s for %s", abbreviation, sources);
+            throw new IllegalStateException("Unknown item property: " + abbreviation);
+        }
+        return prop;
     }
 
-    public JsonNode findItemTypeNode(String abbreviation) {
-        String key = itemTypes.get(abbreviation.toLowerCase());
-        return getNode(key);
+    public ItemType findItemType(String abbreviation, Tools5eSources sources) {
+        if (abbreviation == null || abbreviation.isEmpty()) {
+            return null;
+        }
+        HomebrewMetaTypes meta = homebrewMetaTypes.get(sources.primarySource());
+        ItemType itemType = ItemEnum.fromEncodedValue(abbreviation);
+        if (itemType == null && meta != null) {
+            itemType = meta.getItemType(abbreviation);
+        }
+        if (itemType == null) {
+            tui().errorf("Unknown item type %s for %s", abbreviation, getSources());
+            throw new IllegalStateException("Unknown item type: " + abbreviation);
+        }
+        return itemType;
+    }
+
+    public SpellSchool findSpellSchool(String abbreviation, Tools5eSources sources) {
+        if (abbreviation == null || abbreviation.isEmpty()) {
+            return null;
+        }
+        HomebrewMetaTypes meta = homebrewMetaTypes.get(sources.primarySource());
+        SpellSchool school = SpellSchool.fromEncodedValue(abbreviation);
+        if (school == null && meta != null) {
+            school = meta.getSpellSchool(abbreviation);
+        }
+        if (school == null) {
+            tui().errorf("Unknown property %s for %s", abbreviation, sources);
+            throw new IllegalStateException("Unknown spell school: " + abbreviation);
+        }
+        return school;
+    }
+
+    public JsonNode findTable(SourceAndPage sourceAndPage, String rowData) {
+        List<JsonNode> tables = tableIndex.get(sourceAndPage);
+        if (tables != null) {
+            if (tables.size() == 1) {
+                Optional<JsonNode> table = matchTable(rowData, tables.get(0));
+                return table.orElse(null);
+            }
+            for (JsonNode table : tables) {
+                Optional<JsonNode> match = matchTable(rowData, table);
+                if (match.isPresent()) {
+                    return match.get();
+                }
+            }
+        }
+        return null;
+    }
+
+    private Optional<JsonNode> matchTable(String rowData, JsonNode table) {
+        String matchData = TableFields.getFirstRow(table);
+        if (rowData.equals(matchData)) {
+            return Optional.of(table);
+        }
+        return Optional.empty();
     }
 
     public JsonNode getOrigin(String finalKey) {
@@ -601,17 +732,32 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public String lookupName(Tools5eIndexType type, String name) {
         String prefix = String.format("%s|%s|", type, name).toLowerCase();
+
         List<String> target = filteredIndex.keySet().stream()
                 .filter(k -> k.startsWith(prefix))
+                .filter(k -> isIncluded(k))
                 .collect(Collectors.toList());
+        if (target.isEmpty()) {
+            target = aliases.keySet().stream()
+                    .filter(k -> k.startsWith(prefix))
+                    .filter(k -> isIncluded(k))
+                    .collect(Collectors.toList());
+        }
 
         if (target.isEmpty()) {
-            tui().debugf("Did not find element for %s", name);
+            tui().debugf("Did not find element for %s using [%s]", name, prefix);
             return name;
         } else if (target.size() > 1) {
-            tui().debugf("Found several elements for %s: %s", name, target);
+            List<String> reduce = target.stream().filter(x -> !x.matches(".*\\|ua[^|]*$")).collect(Collectors.toList());
+            if (reduce.size() > 1) {
+                tui().debugf("Found several elements for %s using [%s]: %s", name, prefix, target);
+                return name;
+            } else if (reduce.size() == 1) {
+                target = reduce;
+            }
         }
-        return filteredIndex.get(target.get(0)).get("name").asText();
+        String key = getAliasOrDefault(target.get(0));
+        return filteredIndex.get(key).get("name").asText();
     }
 
     public boolean srdOnly() {
@@ -628,8 +774,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     private boolean keyIsIncluded(String key, JsonNode node) {
 
-        // Check against include/exclude rules (srdKeys allowed when there are no sources)
-        Optional<Boolean> rulesAllow = config.keyIsIncluded(key, node);
+        // Check against include/exclude rules (config: included/excluded/all)
+        Optional<Boolean> rulesAllow = config.keyIsIncluded(key);
         if (rulesAllow.isPresent()) {
             return rulesAllow.get();
         }
@@ -650,7 +796,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         Tools5eSources sources = Tools5eSources.findSources(key);
-        return sources.getBookSources().stream().anyMatch((s) -> config.sourceIncluded(s));
+        return sources.getBookSources().stream().anyMatch(config::sourceIncluded);
     }
 
     boolean isIncluded(String key) {
@@ -687,12 +833,30 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return featureNode;
     }
 
-    public Collection<? extends JsonNode> findOptionalFeatures(String ft) {
-        return optFeatureIndex.get(ft);
-    }
-
     public Collection<String> classesForSpell(String spellKey) {
         return spellClassIndex.get(spellKey);
+    }
+
+    public OptionalFeatureType getOptionalFeatureTypes(JsonNode node) {
+        String lookup = Tools5eFields.typeLookup.getTextOrDefault(node, SourceField.name.getTextOrEmpty(node));
+        return optFeatureIndex.get(lookup);
+    }
+
+    public OptionalFeatureType getOptionalFeatureTypes(String ft, String source) {
+        HomebrewMetaTypes metaTypes = homebrewMetaTypes.get(source);
+        boolean homebrewType = metaTypes == null
+                ? false
+                : metaTypes.getOptionalFeatureType(ft) != null;
+
+        OptionalFeatureType oft = optFeatureIndex.get(ft.toLowerCase());
+        if (homebrewType) {
+            String homebrewScoped = ft + "-" + metaTypes.jsonKey;
+            OptionalFeatureType homebrewOft = optFeatureIndex.get(homebrewScoped.toLowerCase());
+            return homebrewOft == null
+                    ? oft
+                    : homebrewOft;
+        }
+        return oft;
     }
 
     @Override
@@ -712,9 +876,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing files");
         }
-        List<String> keys = new ArrayList<>(filteredIndex.keySet());
-        Collections.sort(keys);
-        tui().writeJsonFile(outputFile, Map.of("keys", keys));
+        tui().writeJsonFile(outputFile, Map.of("keys", filteredIndex.keySet()));
+    }
+
+    @Override
+    public JsonNode getAdventure(String id) {
+        String finalKey = Tools5eIndexType.adventure.createKey("adventure", id);
+        return getOrigin(finalKey);
+    }
+
+    @Override
+    public JsonNode getBook(String id) {
+        String finalKey = Tools5eIndexType.book.createKey("book", id);
+        return getOrigin(finalKey);
     }
 
     @Override
@@ -767,6 +941,182 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 source = node.get("source").asText();
             }
             return source;
+        }
+    }
+
+    static class OptionalFeatureType {
+        final String lookupKey;
+        final String abbreviation;
+        final HomebrewMetaTypes homebrewMeta;
+        final String title;
+        final String source;
+        final ObjectNode featureTypeNode;
+        final List<JsonNode> nodes = new ArrayList<>();
+
+        OptionalFeatureType(String abbreviation, String scopedAbv, HomebrewMetaTypes homebrewMeta, Tools5eIndex index) {
+            this.abbreviation = abbreviation;
+            this.lookupKey = scopedAbv;
+            this.homebrewMeta = homebrewMeta;
+            String tmpTitle = null;
+            if (homebrewMeta != null) {
+                tmpTitle = homebrewMeta.getOptionalFeatureType(abbreviation);
+            }
+            if (tmpTitle == null) {
+                tmpTitle = switch (abbreviation) {
+                    case "AI" -> "Artificer Infusion";
+                    case "ED" -> "Elemental Discipline";
+                    case "EI" -> "Eldritch Invocation";
+                    case "MM" -> "Metamagic";
+                    case "MV" -> "Maneuver";
+                    case "MV:B" -> "Maneuver, Battle Master";
+                    case "MV:C2-UA" -> "Maneuver, Cavalier V2 (UA)";
+                    case "AS:V1-UA" -> "Arcane Shot, V1 (UA)";
+                    case "AS:V2-UA" -> "Arcane Shot, V2 (UA)";
+                    case "AS" -> "Arcane Shot";
+                    case "OTH" -> "Other";
+                    case "FS:F" -> "Fighting Style, Fighter";
+                    case "FS:B" -> "Fighting Style, Bard";
+                    case "FS:P" -> "Fighting Style, Paladin";
+                    case "FS:R" -> "Fighting Style, Ranger";
+                    case "PB" -> "Pact Boon";
+                    case "OR" -> "Onomancy Resonant";
+                    case "RN" -> "Rune Knight Rune";
+                    case "AF" -> "Alchemical Formula";
+                    default -> null;
+                };
+            }
+            if (tmpTitle == null) {
+                index.tui().errorf("Could not find title for OptionalFeatureType: %s from %s",
+                        abbreviation, homebrewMeta == null ? "unknown/core" : homebrewMeta.filename);
+                tmpTitle = "Unknown";
+            }
+            title = tmpTitle;
+            source = getSource(homebrewMeta);
+
+            featureTypeNode = Tui.MAPPER.createObjectNode();
+            featureTypeNode.put("name", scopedAbv);
+            featureTypeNode.put("source", source);
+            if (inSRD(abbreviation)) {
+                featureTypeNode.put("srd", true);
+            }
+            index.addToIndex(Tools5eIndexType.optionalFeatureTypes, featureTypeNode);
+        }
+
+        public void add(JsonNode node) {
+            nodes.add(node);
+        }
+
+        public String getFilename() {
+            return "list-" + Tui.slugify(title) + Tools5eQuteBase.sourceIfNotCore(source);
+        }
+
+        private String getSource(HomebrewMetaTypes homebrewMeta) {
+            if (homebrewMeta != null) {
+                return homebrewMeta.jsonKey;
+            }
+            return switch (abbreviation) {
+                case "AF" -> "UAA";
+                case "AI", "RN" -> "TCE";
+                case "AS", "FS:B" -> "XGE";
+                case "AS:V1-UA" -> "UAF";
+                case "AS:V2-UA" -> "UARSC";
+                case "MV:C2-UA" -> "UARCO";
+                case "OR" -> "UACDW";
+                default -> "PHB";
+            };
+        }
+
+        private boolean inSRD(String abbreviation) {
+            return switch (abbreviation) {
+                case "EI", "FS:F", "FS:R", "FS:P", "MM", "PB" -> true;
+                default -> false;
+            };
+        }
+
+        String getKey() {
+            return TtrpgValue.indexKey.getFromNode(featureTypeNode);
+        }
+    }
+
+    static class HomebrewMetaTypes {
+        final String jsonKey;
+        final String filename;
+        // name, long name
+        final Map<String, String> optionalFeatureTypes = new HashMap<>();
+        final Map<String, String> psionicTypes = new HashMap<>();
+        final Map<String, CustomSpellSchool> spellSchoolTypes = new HashMap<>();
+        final Map<String, CustomItemType> itemTypes = new HashMap<>();
+        final Map<String, CustomItemProperty> itemProperties = new HashMap<>();
+
+        HomebrewMetaTypes(String jsonKey, String filename) {
+            this.jsonKey = jsonKey;
+            this.filename = filename;
+        }
+
+        public String getOptionalFeatureType(String key) {
+            return optionalFeatureTypes.get(key.toLowerCase());
+        }
+
+        public void setOptionalFeatureType(String key, String value) {
+            optionalFeatureTypes.put(key.toLowerCase(), value);
+        }
+
+        public String getPsionicType(String key) {
+            return psionicTypes.get(key.toLowerCase());
+        }
+
+        public void setPsionicType(String key, String value) {
+            psionicTypes.put(key.toLowerCase(), value);
+        }
+
+        public SpellSchool getSpellSchool(String key) {
+            return spellSchoolTypes.get(key.toLowerCase());
+        }
+
+        public void setSpellSchool(String key, CustomSpellSchool value) {
+            spellSchoolTypes.put(key.toLowerCase(), value);
+        }
+
+        public ItemType getItemType(String key) {
+            return itemTypes.get(key.toLowerCase());
+        }
+
+        public void setItemType(String key, CustomItemType value) {
+            itemTypes.put(key.toLowerCase(), value);
+        }
+
+        public ItemProperty getItemProperty(String key) {
+            return itemProperties.get(key.toLowerCase());
+        }
+
+        public void setItemProperty(String key, CustomItemProperty value) {
+            itemProperties.put(key.toLowerCase(), value);
+        }
+    }
+
+    enum HomebrewFields implements JsonNodeReader {
+        abbreviation,
+        full,
+        json,
+        meta("_meta"),
+        optionalFeatureTypes,
+        psionicTypes,
+        sources,
+        spellSchools,
+        spellDistanceUnits;
+
+        final String nodeName;
+
+        HomebrewFields() {
+            this.nodeName = this.name();
+        }
+
+        HomebrewFields(String nodeName) {
+            this.nodeName = nodeName;
+        }
+
+        public String nodeName() {
+            return nodeName;
         }
     }
 }

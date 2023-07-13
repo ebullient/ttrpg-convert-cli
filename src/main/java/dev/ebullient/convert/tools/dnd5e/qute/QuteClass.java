@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
-import java.util.Collection;
-
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -18,7 +17,7 @@ public class QuteClass extends Tools5eQuteBase {
     public QuteClass(Tools5eSources sources, String name, String source,
             int hitDice, String classProgression,
             String startingEquipment, String multiclassing,
-            String text, Collection<String> tags) {
+            String text, Tags tags) {
         super(sources, name, source, text, tags);
 
         this.hitDice = hitDice;
@@ -29,10 +28,5 @@ public class QuteClass extends Tools5eQuteBase {
 
     public int getHitRollAverage() {
         return hitDice / 2 + 1;
-    }
-
-    @Override
-    public String targetPath() {
-        return Tools5eQuteBase.CLASSES_PATH;
     }
 }

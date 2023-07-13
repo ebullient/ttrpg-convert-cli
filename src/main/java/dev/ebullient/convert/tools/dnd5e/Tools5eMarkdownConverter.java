@@ -15,7 +15,7 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
@@ -32,14 +32,14 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
 
     public Tools5eMarkdownConverter writeAll() {
         return writeFiles(Stream.of(Tools5eIndexType.values())
-                .filter(x -> x.writeFile())
+                .filter(Tools5eIndexType::writeFile)
                 .collect(Collectors.toList()));
     }
 
     public Tools5eMarkdownConverter writeNotesAndTables() {
         return writeFiles(Stream.of(Tools5eIndexType.values())
                 .filter(x -> !x.writeFile())
-                .filter(x -> x.useQuteNote())
+                .filter(Tools5eIndexType::useQuteNote)
                 .collect(Collectors.toList()));
     }
 
@@ -56,21 +56,20 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
         if (index.notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing files");
         }
-        if (types == null) {
-        } else {
+        if (types != null) {
             writeQuteBaseFiles(types.stream()
                     .filter(x -> !((Tools5eIndexType) x).useQuteNote())
-                    .collect(Collectors.toList()));
+                    .toList());
             writeQuteNoteFiles(types.stream()
                     .filter(x -> ((Tools5eIndexType) x).useQuteNote())
-                    .collect(Collectors.toList()));
+                    .toList());
         }
         return this;
     }
 
-    private Tools5eMarkdownConverter writeQuteBaseFiles(List<? extends IndexType> types) {
+    private void writeQuteBaseFiles(List<? extends IndexType> types) {
         if (types.isEmpty()) {
-            return this;
+            return;
         }
 
         List<QuteBase> compendium = new ArrayList<>();
@@ -82,7 +81,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
 
             Tools5eIndexType nodeType = Tools5eIndexType.getTypeFromKey(key);
             if (types.contains(Tools5eIndexType.race) && nodeType == Tools5eIndexType.subrace) {
-                // include these, too
+                // include subrace with race
             } else if (!types.contains(nodeType)) {
                 continue;
             }
@@ -104,37 +103,29 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
 
         writer.writeFiles(index.compendiumFilePath(), compendium);
         writer.writeFiles(index.rulesFilePath(), rules);
-        return this;
     }
 
     private QuteBase json2qute(Tools5eIndexType type, JsonNode jsonSource) {
-        switch (type) {
-            case background:
-                return new Json2QuteBackground(index, type, jsonSource).build();
-            case deity:
-                return new Json2QuteDeity(index, type, jsonSource).build();
-            case feat:
-                return new Json2QuteFeat(index, type, jsonSource).build();
-            case item:
-                return new Json2QuteItem(index, type, jsonSource).build();
-            case monster:
-                return new Json2QuteMonster(index, type, jsonSource).build();
-            case race:
-                return new Json2QuteRace(index, type, jsonSource).build();
-            case spell:
-                return new Json2QuteSpell(index, type, jsonSource).build();
-            case subrace:
-                return new Json2QuteRace(index, type, jsonSource).build();
-            default:
-                throw new IllegalArgumentException("Unsupported type " + type);
-        }
+        return switch (type) {
+            case background -> new Json2QuteBackground(index, type, jsonSource).build();
+            case deity -> new Json2QuteDeity(index, type, jsonSource).build();
+            case feat -> new Json2QuteFeat(index, type, jsonSource).build();
+            case hazard, trap -> new Json2QuteHazard(index, type, jsonSource).build();
+            case item -> new Json2QuteItem(index, type, jsonSource).build();
+            case monster -> new Json2QuteMonster(index, type, jsonSource).build();
+            case optionalfeature -> new Json2QuteOptionalFeature(index, type, jsonSource).build();
+            case race, subrace -> new Json2QuteRace(index, type, jsonSource).build();
+            case reward -> new Json2QuteReward(index, type, jsonSource).build();
+            case spell -> new Json2QuteSpell(index, type, jsonSource).build();
+            default -> throw new IllegalArgumentException("Unsupported type " + type);
+        };
     }
 
-    private Tools5eMarkdownConverter writeQuteNoteFiles(List<? extends IndexType> types) {
+    private void writeQuteNoteFiles(List<? extends IndexType> types) {
+        final String vrDir = Tools5eQuteBase.getRelativePath(Tools5eIndexType.variantrule);
 
         List<QuteNote> compendium = new ArrayList<>();
         List<QuteNote> rules = new ArrayList<>();
-        List<QuteName> names = new ArrayList<>();
 
         Map<Tools5eIndexType, Json2QuteCommon> combinedDocs = new HashMap<>();
 
@@ -148,13 +139,12 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             }
 
             switch (nodeType) {
-                case action:
+                case action -> {
                     Json2QuteCompose action = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
                             t -> new Json2QuteCompose(nodeType, index, "Actions"));
                     action.add(node);
-                    break;
-                case adventureData:
-                case bookData: {
+                }
+                case adventureData, bookData -> {
                     String metadataKey = key.replace("data|", "|");
                     JsonNode metadata = index.getOrigin(metadataKey);
                     if (!node.has("data")) {
@@ -166,83 +156,63 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                     } else {
                         index.tui().debugf("%s is excluded", metadataKey);
                     }
-                    break;
                 }
-                case artObjects:
-                    Json2QuteCompose artObjects = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
-                            t -> new Json2QuteCompose(nodeType, index, "Art Objects", Tools5eQuteBase.TABLES_PATH));
-                    artObjects.add(node);
-                    break;
-                case condition:
-                    Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
+                case status, condition -> {
+                    Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(
+                            Tools5eIndexType.condition,
                             t -> new Json2QuteCompose(nodeType, index, "Conditions"));
                     conditions.add(node);
-                    break;
-                case disease:
+                }
+                case disease -> {
                     Json2QuteCompose disease = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
                             t -> new Json2QuteCompose(nodeType, index, "Diseases"));
                     disease.add(node);
-                    break;
-                case gems:
-                    Json2QuteCompose gems = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
-                            t -> new Json2QuteCompose(nodeType, index, "Gems", Tools5eQuteBase.TABLES_PATH));
-                    gems.add(node);
-                    break;
-                case itemProperty:
+                }
+                case itemProperty -> {
                     Json2QuteCompose itemProperty = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
                             t -> new Json2QuteCompose(nodeType, index, "Item Properties"));
                     itemProperty.add(node);
-                    break;
-                case itemType:
+                }
+                case itemType -> {
                     Json2QuteCompose itemTypes = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
                             t -> new Json2QuteCompose(nodeType, index, "Item Types"));
                     itemTypes.add(node);
-                    break;
-                case magicItems:
-                    Json2QuteCompose magicItems = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
-                            t -> new Json2QuteCompose(nodeType, index, "Magic Item Tables", Tools5eQuteBase.TABLES_PATH));
-                    magicItems.add(node);
-                    break;
-                case nametable:
-                    QuteName nameTable = new Json2QuteName(index, node).buildNames();
-                    if (nameTable != null) {
-                        names.add(nameTable);
+                }
+                case optionalFeatureTypes -> {
+                    OptionalFeatureType oft = index.getOptionalFeatureTypes(node);
+                    QuteNote converted = new Json2QuteOptionalFeatureType(index, node, oft).buildNote();
+                    if (converted != null) {
+                        compendium.add(converted);
                     }
-                    break;
-                case sense:
+                }
+                case sense -> {
                     Json2QuteCompose sense = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
                             t -> new Json2QuteCompose(nodeType, index, "Senses"));
                     sense.add(node);
-                    break;
-                case skill:
+                }
+                case skill -> {
                     Json2QuteCompose skill = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
                             t -> new Json2QuteCompose(nodeType, index, "Skills"));
                     skill.add(node);
-                    break;
-                case status:
-                    Json2QuteCompose status = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
-                            t -> new Json2QuteCompose(nodeType, index, "Status"));
-                    status.add(node);
-                    break;
-                case table:
-                    Tools5eQuteNote tableNote = new Json2QuteTable(index, node).buildNote();
+                }
+                case table, tableGroup -> {
+                    Tools5eQuteNote tableNote = new Json2QuteTable(index, nodeType, node).buildNote();
                     if (tableNote.getName().equals("Damage Types")) {
                         rules.add(tableNote);
                     } else {
                         compendium.add(tableNote);
                     }
-                    break;
-                case variantrule:
-                    append(nodeType,
-                            new Json2QuteNote(index, nodeType, node)
-                                    .useSuffix(true)
-                                    .withImagePath(Tools5eQuteBase.VR_PATH)
-                                    .buildNote()
-                                    .withTargetPath(Tools5eQuteBase.VR_PATH),
-                            compendium, rules);
-                    break;
-                default:
-                    break; // skip it
+                }
+                case variantrule -> append(nodeType,
+                        new Json2QuteNote(index, nodeType, node)
+                                .useSuffix(true)
+                                .withImagePath(vrDir)
+                                .buildNote()
+                                .withTargetPath(vrDir),
+                        compendium, rules);
+                default -> {
+                    // skip it
+                }
             }
         }
 
@@ -254,11 +224,8 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             compendium.addAll(new BackgroundTraits2Note(index).buildNotes());
         }
 
-        writer.writeNames(index.compendiumFilePath().resolve(Tools5eQuteBase.TABLES_PATH), names);
         writer.writeNotes(index.compendiumFilePath(), compendium, true);
         writer.writeNotes(index.rulesFilePath(), rules, false);
-
-        return this;
     }
 
     <T extends QuteBase> void append(Tools5eIndexType type, T note, List<T> compendium, List<T> rules) {

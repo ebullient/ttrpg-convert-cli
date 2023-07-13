@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +19,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
@@ -36,7 +35,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|\\d+)");
     private static final List<String> LEGENDARY_IGNORE_LIST = List.of("name", "source", "page",
-            TtrpgValue.indexInputType.name(), TtrpgValue.indexKey.name());
+            TtrpgValue.indexInputType.name(), TtrpgValue.indexKey.name(), "_copy", "_meta");
 
     public static boolean isNpc(JsonNode source) {
         if (source.has("isNpc")) {
@@ -62,30 +61,30 @@ public class Json2QuteMonster extends Json2QuteCommon {
         findType();
         findAc();
         findHp();
-        isNpc = isNpc(node);
+        isNpc = isNpc(rootNode);
     }
 
     @Override
     protected Tools5eQuteBase buildQuteResource() {
-        String size = getSize(node);
-        String environment = joinAndReplace(node, "environment");
-        String cr = monsterCr(node);
+        String size = getSize(rootNode);
+        String environment = joinAndReplace(rootNode, "environment");
+        String cr = monsterCr(rootNode);
         String pb = monsterPb(cr);
 
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(getSources());
 
-        tags.add("monster/size/" + slugify(size));
+        tags.add("monster", "size", slugify(size));
         if (subtype == null || subtype.isEmpty()) {
-            tags.add("monster/type/" + slugify(type));
+            tags.add("monster", "type", slugify(type));
         } else {
-            String root = "monster/type/" + slugify(type) + "/";
+            String sType = slugify(type);
             for (String detail : subtype.split("\\s*,\\s*")) {
-                tags.add(root + slugify(detail));
+                tags.add("monster", "type", sType, slugify(detail));
             }
         }
         if (!environment.isBlank()) {
             for (String env : environment.split("\\s*,\\s*")) {
-                tags.add("monster/environment/" + slugify(env));
+                tags.add("monster", "environment", slugify(env));
             }
         }
 
@@ -97,19 +96,19 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         return new QuteMonster(sources,
                 decoratedMonsterName(sources),
-                sources.getSourceText(index.srdOnly()),
+                getSourceText(sources),
                 isNpc,
                 size, type, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
                 monsterSpeed(), monsterScores(),
                 monsterSavesAndSkills(),
-                joinAndReplace(node, "senses"),
-                intOrDefault(node, "passive", 10),
+                joinAndReplace(rootNode, "senses"),
+                intOrDefault(rootNode, "passive", 10),
                 monsterImmunities("vulnerable"),
                 monsterImmunities("resist"),
                 monsterImmunities("immune"),
                 monsterImmunities("conditionImmune"),
-                joinAndReplace(node, "languages"),
+                joinAndReplace(rootNode, "languages"),
                 cr, pb,
                 monsterTraits("trait"), monsterTraits("action"),
                 monsterTraits("bonus"), monsterTraits("reaction"),
@@ -126,7 +125,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     void findType() {
-        JsonNode typeNode = node.get("type");
+        JsonNode typeNode = rootNode.get("type");
         if (typeNode == null) {
             tui().warn("Empty type for " + getSources());
             return;
@@ -154,7 +153,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     void findAc() {
-        JsonNode acNode = node.get("ac");
+        JsonNode acNode = rootNode.get("ac");
         if (acNode.isIntegralNumber()) {
             ac = acNode.asInt();
         } else if (acNode.isArray()) {
@@ -194,7 +193,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     void findHp() {
-        JsonNode health = node.get("hp");
+        JsonNode health = rootNode.get("hp");
         if (health.has("special")) {
             String special = health.get("special").asText();
             if (special.matches("^[\\d\"]+$")) {
@@ -222,7 +221,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     String monsterSpeed() {
         List<String> speed = new ArrayList<>();
-        node.get("speed").fields().forEachRemaining(f -> {
+        rootNode.get("speed").fields().forEachRemaining(f -> {
             if (f.getValue().isNumber()) {
                 speed.add(String.format("%s %s ft.", f.getKey(), f.getValue().asText()));
             } else if (f.getValue().has("number")) {
@@ -239,12 +238,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     AbilityScores monsterScores() {
         return new AbilityScores(
-                intOrDefault(node, "str", 10),
-                intOrDefault(node, "dex", 10),
-                intOrDefault(node, "con", 10),
-                intOrDefault(node, "int", 10),
-                intOrDefault(node, "wis", 10),
-                intOrDefault(node, "cha", 10));
+                intOrDefault(rootNode, "str", 10),
+                intOrDefault(rootNode, "dex", 10),
+                intOrDefault(rootNode, "con", 10),
+                intOrDefault(rootNode, "int", 10),
+                intOrDefault(rootNode, "wis", 10),
+                intOrDefault(rootNode, "cha", 10));
     }
 
     String monsterPb(String cr) {
@@ -264,12 +263,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     String getModifiers(String field, Map<String, Integer> values) {
-        if (!node.has(field)) {
+        if (!rootNode.has(field)) {
             return null;
         }
         List<String> text = new ArrayList<>();
         StringBuilder separator = new StringBuilder();
-        node.get(field).fields().forEachRemaining(f -> {
+        rootNode.get(field).fields().forEachRemaining(f -> {
             if (f.getKey().equals("other")) {
                 f.getValue().forEach(e -> {
                     if (e.has("oneOf")) {
@@ -303,10 +302,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     String monsterImmunities(String field) {
-        if (node.has(field) && node.get(field).isArray()) {
+        if (rootNode.has(field) && rootNode.get(field).isArray()) {
             List<String> immunities = new ArrayList<>();
             StringBuilder separator = new StringBuilder();
-            node.withArray(field).forEach(immunity -> {
+            rootNode.withArray(field).forEach(immunity -> {
                 if (immunity.isTextual()) {
                     immunities.add(immunity.asText());
                 } else {
@@ -332,7 +331,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     String monsterAlignment() {
-        ArrayNode a1 = node.withArray("alignment");
+        ArrayNode a1 = rootNode.withArray("alignment");
         if (a1.size() == 0) {
             return "Unaligned";
         }
@@ -362,7 +361,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     List<Spellcasting> monsterSpellcasting() {
-        JsonNode array = node.get("spellcasting");
+        JsonNode array = rootNode.get("spellcasting");
         if (array == null || array.isNull()) {
             return null;
         } else if (array.isObject()) {
@@ -376,10 +375,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
             spellcasting.name = getTextOrEmpty(scNode, "name");
 
             spellcasting.headerEntries = new ArrayList<>();
-            appendEntryToText(spellcasting.headerEntries, scNode.get("headerEntries"), null);
+            appendToText(spellcasting.headerEntries, scNode.get("headerEntries"), null);
 
             spellcasting.footerEntries = new ArrayList<>();
-            appendEntryToText(spellcasting.footerEntries, scNode.get("footerEntries"), null);
+            appendToText(spellcasting.footerEntries, scNode.get("footerEntries"), null);
 
             if (scNode.has("will")) {
                 spellcasting.will = getSpells(scNode.get("will"));
@@ -420,7 +419,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     Map<String, Trait> legendaryGroup() {
-        JsonNode group = node.get("legendaryGroup");
+        JsonNode group = rootNode.get("legendaryGroup");
         if (group == null) {
             return null;
         }
@@ -445,7 +444,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                             .replaceAll(matchResult -> " " + (matchResult.group(1).toLowerCase()));
 
             List<String> text = new ArrayList<>();
-            appendEntryToText(text, field.getValue(), null);
+            appendToText(text, field.getValue(), null);
             map.put(fieldName, new Trait(null, String.join("\n", text)));
         });
 
@@ -453,7 +452,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     List<Trait> monsterTraits(String field) {
-        JsonNode array = node.get(field);
+        JsonNode array = rootNode.get(field);
         if (array == null || array.isNull()) {
             return null;
         } else if (array.isObject()) {
@@ -462,15 +461,15 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         List<Trait> traits = new ArrayList<>();
-        node.withArray(field).forEach(e -> {
+        rootNode.withArray(field).forEach(e -> {
             String name = null;
             if (e.has("name")) {
                 name = replaceText(e.get("name").asText()).replaceAll(":$", "");
             }
 
             List<String> text = new ArrayList<>();
-            appendEntryToText(text, e.get("entry"), null);
-            appendEntryToText(text, e.get("entries"), null);
+            appendToText(text, e.get("entry"), null);
+            appendToText(text, e.get("entries"), null);
 
             String body = String.join("\n", text);
             if (body.startsWith(">")) {
@@ -482,13 +481,13 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     ImageRef getToken() {
-        if (booleanOrDefault(node, "hasToken", false)) {
+        if (booleanOrDefault(rootNode, "hasToken", false)) {
             // const imgLink = Renderer.monster.getTokenUrl(mon);
             // return mon.tokenUrl || UrlUtil.link(`${Renderer.get().baseMediaUrls["img"] || Renderer.get().baseUrl}img/${Parser.sourceJsonToAbv(mon.source)}/${Parser.nameToTokenName(mon.name)}.png`);
             // nameToTokenName = function (name) { return name.toAscii().replace(/"/g, ""); }
 
             // origin is set by conjured monster variant (below)
-            String name = getTextOrDefault(node, "original", getName());
+            String name = getTextOrDefault(rootNode, "original", getName());
             String filename = Normalizer.normalize(name, Form.NFD)
                     .replaceAll("\\p{M}", "")
                     .replace("Æ", "AE")

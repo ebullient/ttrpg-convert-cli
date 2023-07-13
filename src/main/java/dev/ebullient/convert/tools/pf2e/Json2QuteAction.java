@@ -1,15 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAction;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -21,17 +19,17 @@ public class Json2QuteAction extends Json2QuteBase {
 
     @Override
     protected QuteAction buildQuteResource() {
-        Set<String> tags = new TreeSet<>(sources.getSourceTags());
+        Tags tags = new Tags(sources);
         List<String> text = new ArrayList<>();
 
-        appendEntryToText(text, Field.entries.getFrom(rootNode), "##");
-        appendEntryToText(text, Pf2eAction.info.getFrom(rootNode), null);
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
+        appendToText(text, Pf2eAction.info.getFrom(rootNode), null);
         appendFootnotes(text, 0);
 
         ActionType actionType = Pf2eAction.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
         if (actionType == null) {
-            tags.add(cfg().tagOf("action"));
+            tags.add("action");
         } else {
             actionType.addTags(this, tags);
         }
@@ -63,21 +61,21 @@ public class Json2QuteAction extends Json2QuteBase {
         public List<String> subclass;
         public List<String> variantrule;
 
-        public void addTags(JsonSource convert, Collection<String> tags) {
+        public void addTags(JsonSource convert, Tags tags) {
             if (isBasic()) {
-                tags.add(convert.cfg().tagOf("action", "basic"));
+                tags.add("action", "basic");
             }
             if (isItem()) {
-                tags.add(convert.cfg().tagOf("action", "item"));
+                tags.add("action", "item");
             }
             if (ancestry != null) {
-                ancestry.forEach(c -> tags.add(convert.cfg().tagOf("action", "ancestry", c)));
+                ancestry.forEach(c -> tags.add("action", "ancestry", c));
             }
             if (archetype != null) {
-                archetype.forEach(c -> tags.add(convert.cfg().tagOf("action", "archetype", c)));
+                archetype.forEach(c -> tags.add("action", "archetype", c));
             }
             if (classType != null) {
-                classType.forEach(c -> tags.add(convert.cfg().tagOf("action", "class", c)));
+                classType.forEach(c -> tags.add("action", "class", c));
             }
         }
 

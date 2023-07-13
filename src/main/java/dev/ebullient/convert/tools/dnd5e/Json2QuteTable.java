@@ -1,20 +1,19 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteTable extends Json2QuteCommon {
 
-    Json2QuteTable(Tools5eIndex index, JsonNode jsonNode) {
-        super(index, Tools5eIndexType.table, jsonNode);
+    Json2QuteTable(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+        super(index, type, jsonNode);
     }
 
     @Override
@@ -24,23 +23,24 @@ public class Json2QuteTable extends Json2QuteCommon {
             return null;
         }
 
-        Set<String> tags = new HashSet<>(sources.getSourceTags());
+        Tags tags = new Tags(getSources());
         List<String> text = new ArrayList<>();
-        String targetDir = Tools5eQuteBase.TABLES_PATH;
+        String targetDir = Tools5eQuteBase.getRelativePath(type);
         String targetFile = null;
 
         if (getName().equals("Damage Types")) {
-            for (JsonNode row : iterableElements(node.get("rows"))) {
+            for (JsonNode row : iterableElements(rootNode.get("rows"))) {
                 ArrayNode cols = (ArrayNode) row;
                 maybeAddBlankLine(text);
                 text.add("## " + replaceText(cols.get(0).asText()));
                 maybeAddBlankLine(text);
-                appendEntryToText(text, cols.get(1), null);
+                appendToText(text, cols.get(1), null);
             }
-
             targetDir = null;
+        } else if (type == Tools5eIndexType.tableGroup) {
+            appendToText(text, Tools5eFields.tables.getFrom(rootNode), "##");
         } else {
-            appendTable(text, node);
+            appendTable(text, rootNode);
 
             String blockid = "^table";
             String lastLine = text.get(text.size() - 1);
@@ -56,7 +56,9 @@ public class Json2QuteTable extends Json2QuteCommon {
             text.add(1, "");
         }
 
-        return new Tools5eQuteNote(getName(), sources.getSourceText(index.srdOnly()), text, tags)
+        return new Tools5eQuteNote(getName(),
+                getSourceText(sources),
+                text, tags)
                 .withTargetPath(targetDir)
                 .withTargeFile(targetFile);
     }

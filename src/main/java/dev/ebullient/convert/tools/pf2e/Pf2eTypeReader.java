@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -14,7 +13,8 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
@@ -25,7 +25,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
 
-    enum Pf2eAction implements NodeReader {
+    enum Pf2eAction implements JsonNodeReader {
         activity,
         actionType,
         cost,
@@ -34,7 +34,7 @@ public interface Pf2eTypeReader extends JsonSource {
         trigger
     }
 
-    enum Pf2eAlignmentValue implements NodeReader.FieldValue {
+    enum Pf2eAlignmentValue implements JsonNodeReader.FieldValue {
         ce("Chaotic Evil"),
         cg("Chaotic Good"),
         cn("Chaotic Neutral"),
@@ -71,7 +71,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eWeaponData implements NodeReader {
+    enum Pf2eWeaponData implements JsonNodeReader {
         ammunition,
         damage,
         damageType,
@@ -82,11 +82,11 @@ public interface Pf2eTypeReader extends JsonSource {
         reload;
 
         public static QuteItemWeaponData buildWeaponData(JsonNode source,
-                Pf2eTypeReader convert, Collection<String> tags) {
+                Pf2eTypeReader convert, Tags tags) {
 
             QuteItemWeaponData weaponData = new QuteItemWeaponData();
             weaponData.traits = convert.collectTraitsFrom(source, tags);
-            weaponData.type = Field.type.getTextOrNull(source);
+            weaponData.type = SourceField.type.getTextOrNull(source);
             weaponData.damage = getDamageString(source, convert);
 
             weaponData.ranged = new LinkedHashMap<>();
@@ -130,51 +130,33 @@ public interface Pf2eTypeReader extends JsonSource {
             return result;
         }
 
-        static String getDamageType(NodeReader damageType, JsonNode source) {
+        static String getDamageType(JsonNodeReader damageType, JsonNode source) {
             String value = damageType.getTextOrEmpty(source);
-            switch (value) {
-                case "A":
-                    return "acid";
-                case "B":
-                    return "bludgeoning";
-                case "C":
-                    return "cold";
-                case "D":
-                    return "bleed";
-                case "E":
-                    return "electricity";
-                case "F":
-                    return "fire";
-                case "H":
-                    return "chaotic";
-                case "I":
-                    return "poison";
-                case "L":
-                    return "lawful";
-                case "M":
-                    return "mental";
-                case "Mod":
-                    return "modular";
-                case "N":
-                    return "sonic";
-                case "O":
-                    return "force";
-                case "P":
-                    return "piercing";
-                case "R":
-                    return "precision";
-                case "S":
-                    return "slashing";
-                case "+":
-                    return "positive";
-                case "-":
-                    return "negative";
-            }
-            return value;
+            return switch (value) {
+                case "A" -> "acid";
+                case "B" -> "bludgeoning";
+                case "C" -> "cold";
+                case "D" -> "bleed";
+                case "E" -> "electricity";
+                case "F" -> "fire";
+                case "H" -> "chaotic";
+                case "I" -> "poison";
+                case "L" -> "lawful";
+                case "M" -> "mental";
+                case "Mod" -> "modular";
+                case "N" -> "sonic";
+                case "O" -> "force";
+                case "P" -> "piercing";
+                case "R" -> "precision";
+                case "S" -> "slashing";
+                case "+" -> "positive";
+                case "-" -> "negative";
+                default -> value;
+            };
         }
     }
 
-    enum Pf2eDefenses implements NodeReader {
+    enum Pf2eDefenses implements JsonNodeReader {
         abilities,
         ac,
         hardness,
@@ -300,7 +282,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eFeat implements NodeReader {
+    enum Pf2eFeat implements JsonNodeReader {
         access,
         activity,
         archetype, // child of featType
@@ -313,7 +295,7 @@ public interface Pf2eTypeReader extends JsonSource {
         trigger
     }
 
-    enum Pf2eSavingThrowType implements NodeReader.FieldValue {
+    enum Pf2eSavingThrowType implements JsonNodeReader.FieldValue {
         fortitude,
         reflex,
         will;
@@ -338,7 +320,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpell implements NodeReader {
+    enum Pf2eSpell implements JsonNodeReader {
         amp,
         area,
         basic,
@@ -378,7 +360,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpellComponent implements NodeReader.FieldValue {
+    enum Pf2eSpellComponent implements JsonNodeReader.FieldValue {
         focus("F"),
         material("M"),
         somatic("S"),
@@ -446,7 +428,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    public static QuteDataActivity getQuteActivity(JsonNode source, NodeReader field, JsonSource convert) {
+    static QuteDataActivity getQuteActivity(JsonNode source, JsonNodeReader field, JsonSource convert) {
         NumberUnitEntry jsonActivity = field.fieldFromTo(source, NumberUnitEntry.class, convert.tui());
         return jsonActivity == null ? null : jsonActivity.toQuteActivity(convert);
     }
@@ -486,34 +468,30 @@ public interface Pf2eTypeReader extends JsonSource {
                     : " (" + convert.replaceText(entry) + ")";
 
             switch (unit) {
-                case "single":
-                case "action":
-                case "free":
-                case "reaction":
+                case "single", "action", "free", "reaction" -> {
                     Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
                     if (activity == null) {
                         throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
                     }
                     return activity.toQuteActivity(convert,
                             String.format("%s%s", activity.getLongName(), extra));
-                case "varies":
+                }
+                case "varies" -> {
                     return Pf2eActivity.varies.toQuteActivity(convert,
                             String.format("%s%s", Pf2eActivity.varies.getLongName(), extra));
-                case "day":
-                case "minute":
-                case "hour":
-                case "round":
+                }
+                case "day", "minute", "hour", "round" -> {
                     return Pf2eActivity.timed.toQuteActivity(convert,
                             String.format("%s %s%s", number, unit, extra));
-
-                default:
+                }
+                default ->
                     throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
             }
         }
     }
 
     @RegisterForReflection
-    static class NameAmountNote {
+    class NameAmountNote {
         public String name;
         public Integer amount;
         public String note;
@@ -533,16 +511,12 @@ public interface Pf2eTypeReader extends JsonSource {
     }
 
     default String getOrdinalForm(String level) {
-        switch (level) {
-            case "1":
-                return "1st";
-            case "2":
-                return "2nd";
-            case "3":
-                return "3rd";
-            default:
-                return level + "th";
-        }
+        return switch (level) {
+            case "1" -> "1st";
+            case "2" -> "2nd";
+            case "3" -> "3rd";
+            default -> level + "th";
+        };
     }
 
     default String getFrequency(JsonNode node) {
@@ -589,65 +563,94 @@ public interface Pf2eTypeReader extends JsonSource {
             return abs + "";
         }
         switch (abs) {
-            case 0:
+            case 0 -> {
                 return "zero";
-            case 1:
+            }
+            case 1 -> {
                 return freq ? "once" : "one";
-            case 2:
+            }
+            case 2 -> {
                 return freq ? "twice" : "two";
-            case 3:
+            }
+            case 3 -> {
                 return "three";
-            case 4:
+            }
+            case 4 -> {
                 return "four";
-            case 5:
+            }
+            case 5 -> {
                 return "five";
-            case 6:
+            }
+            case 6 -> {
                 return "six";
-            case 7:
+            }
+            case 7 -> {
                 return "seven";
-            case 8:
+            }
+            case 8 -> {
                 return "eight";
-            case 9:
+            }
+            case 9 -> {
                 return "nine";
-            case 10:
+            }
+            case 10 -> {
                 return "ten";
-            case 11:
+            }
+            case 11 -> {
                 return "eleven";
-            case 12:
+            }
+            case 12 -> {
                 return "twelve";
-            case 13:
+            }
+            case 13 -> {
                 return "thirteen";
-            case 14:
+            }
+            case 14 -> {
                 return "fourteen";
-            case 15:
+            }
+            case 15 -> {
                 return "fifteen";
-            case 16:
+            }
+            case 16 -> {
                 return "sixteen";
-            case 17:
+            }
+            case 17 -> {
                 return "seventeen";
-            case 18:
+            }
+            case 18 -> {
                 return "eighteen";
-            case 19:
+            }
+            case 19 -> {
                 return "nineteen";
-            case 20:
+            }
+            case 20 -> {
                 return "twenty";
-            case 30:
+            }
+            case 30 -> {
                 return "thirty";
-            case 40:
+            }
+            case 40 -> {
                 return "forty";
-            case 50:
+            }
+            case 50 -> {
                 return "fifty";
-            case 60:
+            }
+            case 60 -> {
                 return "sixty";
-            case 70:
+            }
+            case 70 -> {
                 return "seventy";
-            case 80:
+            }
+            case 80 -> {
                 return "eighty";
-            case 90:
+            }
+            case 90 -> {
                 return "ninety";
-            default:
+            }
+            default -> {
                 int r = abs % 10;
                 return intToString(abs - r, freq) + "-" + intToString(r, freq);
+            }
         }
     }
 

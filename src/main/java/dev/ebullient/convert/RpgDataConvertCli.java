@@ -206,6 +206,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                 allOk &= tui.readFile(input, TtrpgConfig.getFixes(inputPath.toString()), index::importTree);
             }
         }
+
         if (allOk && toolsPath != null) {
             for (String adventure : config.getAdventures()) {
                 allOk &= tui.readFile(toolsPath.resolve(adventure), TtrpgConfig.getFixes(adventure), index::importTree);

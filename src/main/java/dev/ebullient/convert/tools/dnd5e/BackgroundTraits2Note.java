@@ -7,10 +7,13 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class BackgroundTraits2Note extends Json2QuteCommon {
+
+    final String targetDir = Tools5eQuteBase.getRelativePath(Tools5eIndexType.table);
 
     public BackgroundTraits2Note(Tools5eIndex index) {
         super(index, Tools5eIndexType.syntheticGroup, null);
@@ -31,7 +34,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         if (table.isEmpty()) {
             return;
         }
-        boolean pushed = parseState.push(getSources(), node);
+        boolean pushed = parseState.push(getSources(), rootNode);
         try {
             List<String> text = table.stream()
                     .map(x -> x.replaceAll("^\\|\\s*\\d+\\s*", ""))
@@ -41,8 +44,8 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
             text.add(0, String.format("`dice: [](%s.md#%s)`", slugify(title), blockid));
             text.add(1, "");
 
-            notes.add(new Tools5eQuteNote(title, null, listToTable(title, text), List.of())
-                    .withTargetPath(Tools5eQuteBase.TABLES_PATH));
+            notes.add(new Tools5eQuteNote(title, null, listToTable(title, text), new Tags())
+                    .withTargetPath(targetDir));
         } finally {
             parseState.pop(pushed);
         }
@@ -52,7 +55,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         if (Json2QuteBackground.ideals.isEmpty()) {
             return;
         }
-        boolean pushed = parseState.push(getSources(), node);
+        boolean pushed = parseState.push(getSources(), rootNode);
         try {
             List<String> ideals = Json2QuteBackground.ideals.stream()
                     .map(x -> x.replace("**", ""))
@@ -159,8 +162,8 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
             maybeAddBlankLine(text);
             text.addAll(tableSection("Universal Ideals (Any)", any));
 
-            notes.add(new Tools5eQuteNote("Ideals", null, text, List.of())
-                    .withTargetPath(Tools5eQuteBase.TABLES_PATH));
+            notes.add(new Tools5eQuteNote("Ideals", null, text, new Tags())
+                    .withTargetPath(targetDir));
         } finally {
             parseState.pop(pushed);
         }

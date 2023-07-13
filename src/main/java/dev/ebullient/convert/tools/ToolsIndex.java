@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,7 +17,7 @@ import dev.ebullient.convert.tools.pf2e.Pf2eIndex;
 
 public interface ToolsIndex {
     // Special one-offs for accounting/tracking
-    enum TtrpgValue implements NodeReader {
+    enum TtrpgValue implements JsonNodeReader {
         indexKey,
         indexInputType;
 
@@ -35,12 +36,10 @@ public interface ToolsIndex {
     }
 
     static ToolsIndex createIndex(Datasource game, CompendiumConfig config) {
-        switch (game) {
-            case toolsPf2e:
-                return new Pf2eIndex(config);
-            default:
-                return new Tools5eIndex(config);
+        if (Objects.requireNonNull(game) == Datasource.toolsPf2e) {
+            return new Pf2eIndex(config);
         }
+        return new Tools5eIndex(config);
     }
 
     CompendiumConfig cfg();
@@ -72,4 +71,8 @@ public interface ToolsIndex {
     void writeFullIndex(Path resolve) throws IOException;
 
     void writeFilteredIndex(Path resolve) throws IOException;
+
+    JsonNode getBook(String b);
+
+    JsonNode getAdventure(String a);
 }

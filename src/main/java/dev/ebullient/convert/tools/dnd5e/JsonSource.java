@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,7 +18,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.tools.NodeReader;
+import dev.ebullient.convert.tools.CompendiumSources.SourceAndPage;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -78,6 +80,10 @@ public interface JsonSource extends JsonTextReplacement {
         return getSourceText(Tools5eSources.findOrTemporary(node));
     }
 
+    default String getSourceText(ParseState parseState) {
+        return parseState.sourceAndPage("_Source: %s_");
+    }
+
     default String getSourceText(Tools5eSources currentSource) {
         return String.format("_Source: %s_", currentSource.getSourceText(index().srdOnly()));
     }
@@ -90,13 +96,17 @@ public interface JsonSource extends JsonTextReplacement {
         return getSources().buildImageRef(index, mediaHref, imageBasePath, useCompendium());
     }
 
-    default String flattenEntryToText(JsonNode node) {
-        List<String> text = new ArrayList<>();
-        appendEntryToText(text, node, null);
-        return text.stream().collect(Collectors.joining("\n"));
-    }
-
-    default void appendEntryToText(List<String> text, JsonNode node, String heading) {
+    /**
+     * External (and recursive) entry point for content parsing.
+     * Parse attributes of the given node and add resulting lines
+     * to the provided list.
+     *
+     * @param text Parsed content is appended to this list
+     * @param node Textual, Array, or Object node containing content to parse/render
+     * @param heading The current header depth and/or if headings are allowed for this text element
+     */
+    @Override
+    default void appendToText(List<String> text, JsonNode node, String heading) {
         boolean pushed = parseState.push(node); // store state
         try {
             if (node == null) {
@@ -108,10 +118,10 @@ public interface JsonSource extends JsonTextReplacement {
             } else if (node.isArray()) {
                 for (JsonNode f : iterableElements(node)) {
                     maybeAddBlankLine(text);
-                    appendEntryToText(text, f, heading);
+                    appendToText(text, f, heading);
                 }
             } else if (node.isObject()) {
-                appendEntryObjectToText(text, node, heading);
+                appendObjectToText(text, node, heading);
             } else {
                 tui().errorf("Unknown entry type in %s: %s", getSources(), node.toPrettyString());
             }
@@ -120,204 +130,82 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    default void appendEntryObjectToText(List<String> text, JsonNode node, String heading) {
-        if (node.has("source") && !index().sourceIncluded(node.get("source").asText())) {
-            if (getSources() != null && !index().sourceIncluded(getSources().alternateSource())) {
+    default void appendObjectToText(List<String> text, JsonNode node, String heading) {
+        AppendTypeValue type = AppendTypeValue.valueFrom(node, SourceField.type);
+        String source = SourceField.source.getTextOrEmpty(node);
+
+        // entriesOtherSource handled here.
+        if (!source.isEmpty() && !cfg().sourceIncluded(source)) {
+            if (!cfg().sourceIncluded(getSources().alternateSource())) {
                 return;
             }
         }
 
         boolean pushed = parseState.push(node);
         try {
-            if (node.has("type")) {
-                String objectType = node.get("type").asText();
-                switch (objectType) {
-                    case "section":
-                    case "entries": {
-                        if (heading == null) {
-                            List<String> inner = new ArrayList<>();
-                            appendEntryToText(inner, node.get("entries"), null);
-                            if (prependField(node, "name", inner)) {
-                                maybeAddBlankLine(text);
-                            }
-                            text.addAll(inner);
-                        } else if (node.has("name")) {
-                            maybeAddBlankLine(text);
-                            text.add(heading + " " + replaceText(node.get("name")));
-                            if (index().differentSource(getSources(), parseState.getSource())) {
-                                text.add(index().getSourceText(node));
-                            }
-                            text.add("");
-                            appendEntryToText(text, node.get("entries"), "#" + heading);
-                        } else {
-                            appendEntryToText(text, node.get("entries"), heading);
-                        }
-                        break;
-                    }
-                    case "entry":
-                    case "itemSpell":
-                    case "item": {
-                        List<String> inner = new ArrayList<>();
-                        appendEntryToText(inner, node.get("entry"), null);
-                        appendEntryToText(inner, node.get("entries"), null);
-                        if (prependField(node, "name", inner)) {
-                            maybeAddBlankLine(text);
-                        }
-                        text.addAll(inner);
-                        break;
-                    }
-                    case "link": {
-                        text.add(node.get("text").asText());
-                        break;
-                    }
-                    case "list": {
-                        appendList(text, node.withArray("items"));
-                        break;
-                    }
-                    case "abilityGeneric": {
-                        List<String> abilities = new ArrayList<>();
-                        node.withArray("attributes").forEach(x -> abilities.add(asAbilityEnum(x)));
-
-                        List<String> inner = new ArrayList<>();
-                        appendUnlessEmpty(inner, node, "name");
-                        appendUnlessEmpty(inner, node, "text");
-                        inner.add(String.join(", ", abilities));
-                        inner.add("modifier");
-
-                        maybeAddBlankLine(text);
-                        text.add(String.join(" ", inner));
-                        maybeAddBlankLine(text);
-                        break;
-                    }
-                    case "table": {
-                        appendTable(text, node);
-                        break;
-                    }
-                    case "tableGroup": {
-                        List<String> inner = new ArrayList<>();
-                        maybeAddBlankLine(text);
-                        inner.add("[!example] " + replaceText(node.get("name").asText()));
-                        appendEntryToText(inner, node.get("tables"), "###");
-                        inner.forEach(x -> text.add("> " + x));
-                        maybeAddBlankLine(text);
-                        break;
-                    }
-                    case "options":
-                        appendOptions(text, node);
-                        break;
-                    case "inset":
-                    case "insetReadaloud": {
-                        appendInset(text, node);
-                        break;
-                    }
-                    case "quote": {
-                        appendQuote(text, node);
-                        break;
-                    }
-                    case "abilityDc":
-                        text.add(String.format("**Spell save DC**: 8 + your proficiency bonus + your %s modifier",
-                                asAbilityEnum(node.withArray("attributes").get(0))));
-                        break;
-                    case "abilityAttackMod":
-                        text.add(String.format("**Spell attack modifier**: your proficiency bonus + your %s modifier",
-                                asAbilityEnum(node.withArray("attributes").get(0))));
-                        break;
-                    case "hr":
+            if (type != null) {
+                switch (type) {
+                    case entries, section -> appendEntriesToText(text, node, heading);
+                    case entry, item, itemSpell, itemSub -> appendEntryItem(text, node);
+                    case abilityDc, abilityAttackMod, abilityGeneric -> appendAbility(type, text, node);
+                    case flowchart -> appendFlowchart(text, node, heading);
+                    case gallery -> appendGallery(text, node);
+                    case homebrew -> appendCallout("note", "Homebrew", text, node);
+                    case hr -> {
                         maybeAddBlankLine(text);
                         text.add("---");
                         text.add("");
-                        break;
-                    case "inline":
-                    case "inlineBlock": {
+                    }
+                    case image -> appendImage(text, node);
+                    case inline, inlineBlock -> {
                         List<String> inner = new ArrayList<>();
-                        appendEntryToText(inner, node.get("entries"), null);
+                        appendToText(inner, SourceField.entries.getFrom(node), null);
                         text.add(String.join("", inner));
-                        break;
                     }
-                    case "optfeature":
-                        maybeAddBlankLine(text);
-                        text.add(heading + " " + node.get("name").asText());
-                        String prereq = getTextOrDefault(node, "prerequisite", null);
-                        if (prereq != null) {
-                            text.add("*Prerequisites* " + prereq);
-                        }
-                        text.add("");
-                        appendEntryToText(text, node.get("entries"), "#" + heading);
-                        break;
-                    case "flowchart":
-                        appendFlowchart(text, node, heading);
-                        break;
-                    case "refClassFeature": {
-                        ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.classfeature, node,
-                                "classFeature");
-                        if (cf == null) {
-                            break; // skipped or not found
-                        }
-                        if (parseState.inList()) {
-                            // emit as list item (minus list decoration, see optionlist)
-                            cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.classfeature));
+                    case inset, insetReadaloud -> appendInset(text, node);
+                    case link -> appendLink(text, node);
+                    case list -> {
+                        String style = Tools5eFields.style.getTextOrEmpty(node);
+                        if ("list-no-bullets".equals(style)) {
+                            appendToText(text, SourceField.items.getFrom(node), null);
                         } else {
-                            // emit inline as proper section
-                            cf.appendText(this, text, parseState.getSource(Tools5eIndexType.classfeature));
+                            appendList(text, (ArrayNode) SourceField.items.getFrom(node));
                         }
-                        break;
                     }
-                    case "refOptionalfeature": {
-                        String lookup = node.get("optionalfeature").asText();
-                        if (parseState.inList()) {
-                            text.add(linkifyOptionalFeature(lookup));
-                        } else {
-                            tui().errorf("TODO refOptionalfeature %s -> %s",
-                                    lookup, Tools5eIndexType.optionalfeature.fromRawKey(lookup));
-                        }
-                        break;
-                    }
-                    case "refSubclassFeature": {
-                        ClassFeature cf = Json2QuteClass.findClassFeature(this, Tools5eIndexType.subclassFeature, node,
-                                "subclassFeature");
-                        if (cf == null) {
-                            break; // skipped or not found
-                        }
-                        if (parseState.inList()) {
-                            // emit as list item (minus list decoration, see optionlist)
-                            cf.appendListItemText(this, text, parseState.getSource(Tools5eIndexType.subclassFeature));
-                        } else {
-                            // emit inline as proper section
-                            cf.appendText(this, text, parseState.getSource(Tools5eIndexType.subclassFeature));
-                        }
-                        break;
-                    }
-                    case "gallery":
-                        appendGallery(text, node);
-                        break;
-                    case "image":
-                        appendImage(text, node);
-                        break;
-                    default:
-                        tui().errorf("Unknown entry object type %s from %s: %s", objectType, getSources(),
-                                node.toPrettyString());
+                    case optfeature -> appendOptionalFeature(text, node, heading);
+                    case options -> appendOptions(text, node);
+                    case quote -> appendQuote(text, node);
+                    case refClassFeature -> appendClassFeatureRef(text, node, Tools5eIndexType.classfeature, "classFeature");
+                    case refOptionalfeature -> appendOptionalFeatureRef(text, node);
+                    case refSubclassFeature -> appendClassFeatureRef(text, node, Tools5eIndexType.subclassFeature,
+                            "subclassFeature");
+                    case statblock -> appendStatblock(text, node);
+                    case table -> appendTable(text, node);
+                    case tableGroup -> appendTableGroup(text, node, heading);
+                    case variant -> appendCallout("danger", "Variant", text, node);
+                    case variantInner, variantSub -> appendCallout("example", "Variant", text, node);
+                    default -> tui().errorf("Unknown entry object type %s from %s: %s", type, getSources(),
+                            node.toPrettyString());
                 }
-                // any entry/entries handled by type..
+                // any entry/entries handled by type...
                 return;
             }
 
-            if (node.has("entry")) {
-                appendEntryToText(text, node.get("entry"), heading);
-            }
-            if (node.has("entries")) {
-                appendEntryToText(text, node.get("entries"), heading);
-            }
+            appendToText(text, SourceField.entry.getFrom(node), heading);
+            appendToText(text, SourceField.entries.getFrom(node), heading);
 
-            if (node.has("additionalEntries")) {
+            JsonNode additionalEntries = Tools5eFields.additionalEntries.getFrom(node);
+            if (additionalEntries != null) {
                 String altSource = getSources().alternateSource();
-                node.withArray("additionalEntries").forEach(entry -> {
-                    if (entry.has("source") && !index().sourceIncluded(entry.get("source").asText())) {
+                for (JsonNode entry : iterableElements(additionalEntries)) {
+                    String entrySource = SourceField.source.getTextOrNull(entry);
+                    if (entrySource != null && !index().sourceIncluded(entrySource)) {
                         return;
                     } else if (!index().sourceIncluded(altSource)) {
                         return;
                     }
-                    appendEntryToText(text, entry, heading);
-                });
+                    appendToText(text, entry, heading);
+                }
             }
         } catch (RuntimeException ex) {
             tui().errorf(ex, "Error [%s] occurred while parsing %s", ex.getMessage(), node.toString());
@@ -325,6 +213,88 @@ public interface JsonSource extends JsonTextReplacement {
         } finally {
             parseState.pop(pushed);
         }
+    }
+
+    default void appendAbility(AppendTypeValue type, List<String> text, JsonNode entry) {
+        if (type == AppendTypeValue.abilityDc) {
+            text.add(String.format(
+                    "**Spell save DC**: 8 + your proficiency bonus + your %s modifier",
+                    asAbilityEnum(entry.withArray("attributes").get(0))));
+        } else if (type == AppendTypeValue.abilityAttackMod) {
+            text.add(String.format(
+                    "**Spell attack modifier**: your proficiency bonus + your %s modifier",
+                    asAbilityEnum(entry.withArray("attributes").get(0))));
+        } else { // abilityGeneric
+            List<String> abilities = new ArrayList<>();
+            iterableElements(Tools5eFields.attributes.getFrom(entry))
+                    .forEach(x -> abilities.add(asAbilityEnum(x)));
+
+            List<String> inner = new ArrayList<>();
+            SourceField.name.appendUnlessEmptyFrom(entry, inner);
+            Tools5eFields.text.appendUnlessEmptyFrom(entry, inner);
+            inner.add(String.join(", ", abilities));
+            inner.add("modifier");
+
+            maybeAddBlankLine(text);
+            text.add(String.join(" ", inner));
+            maybeAddBlankLine(text);
+        }
+    }
+
+    default void appendCallout(String callout, String title, List<String> text, JsonNode entry) {
+        List<String> inner = new ArrayList<>();
+        appendToText(inner, entry.get("entries"), null);
+
+        maybeAddBlankLine(text);
+        text.add("> [!" + callout + "] " + replaceText(SourceField.name.getTextOrDefault(entry, title)));
+        inner.forEach(x -> text.add("> " + x));
+    }
+
+    default void appendClassFeatureRef(List<String> text, JsonNode entry, Tools5eIndexType featureType, String fieldName) {
+        ClassFeature cf = Json2QuteClass.findClassFeature(this, featureType, entry, fieldName);
+        if (cf == null) {
+            return; // skipped or not found
+        }
+        if (parseState.inList()) {
+            // emit within an existing list item
+            cf.appendListItemText(this, text, parseState.getSource(featureType));
+        } else {
+            // emit inline as proper section
+            cf.appendText(this, text, parseState.getSource(featureType));
+        }
+    }
+
+    default void appendEntriesToText(List<String> text, JsonNode entryNode, String heading) {
+        String name = SourceField.name.getTextOrNull(entryNode);
+        if (heading == null) {
+            List<String> inner = new ArrayList<>();
+            appendToText(inner, SourceField.entries.getFrom(entryNode), null);
+            if (prependField(entryNode, SourceField.name, inner)) {
+                maybeAddBlankLine(text);
+            }
+            text.addAll(inner);
+        } else if (name != null) {
+            maybeAddBlankLine(text);
+            text.add(heading + " " + replaceText(name));
+            if (index().differentSource(getSources(), parseState.getSource())) {
+                text.add(getSourceText(entryNode));
+            }
+            text.add("");
+            appendToText(text, SourceField.entries.getFrom(entryNode), "#" + heading);
+        } else {
+            appendToText(text, SourceField.entries.getFrom(entryNode), heading);
+        }
+    }
+
+    /** Internal */
+    default void appendEntryItem(List<String> text, JsonNode itemNode) {
+        List<String> inner = new ArrayList<>();
+        appendToText(inner, SourceField.entry.getFrom(itemNode), null);
+        appendToText(inner, SourceField.entries.getFrom(itemNode), null);
+        if (prependField(itemNode, SourceField.name, inner)) {
+            maybeAddBlankLine(text);
+        }
+        text.addAll(inner);
     }
 
     default void appendGallery(List<String> text, JsonNode imageNode) {
@@ -339,89 +309,24 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendImage(List<String> text, JsonNode imageNode) {
         ImageRef imageRef = readImageRef(imageNode);
-        if (imageRef != null) {
-            maybeAddBlankLine(text);
-            text.add(imageRef.getEmbeddedLink());
+        if (imageRef == null) {
+            tui().warnf("Image information not found in %s", imageNode);
+            return;
         }
+        maybeAddBlankLine(text);
+        text.add(imageRef.getEmbeddedLink());
     }
 
-    default ImageRef readImageRef(JsonNode imageNode) {
-        try {
-            JsonMediaHref mediaHref = mapper().treeToValue(imageNode, JsonMediaHref.class);
-            return buildImageRef(index(), mediaHref, getImagePath());
-        } catch (JsonProcessingException | IllegalArgumentException e) {
-            tui().errorf(e, "Unable to read media reference from %s: %s", imageNode.toPrettyString(), e.toString());
+    default void appendLink(List<String> text, JsonNode link) {
+        JsonMediaHref mediaRef = readLink(link);
+        if (mediaRef == null) {
+            tui().warnf("link information not found in %s", link);
+            return;
         }
-        return null;
-    }
-
-    default boolean useCompendium() {
-        return getSources().getType().useCompendiumBase();
-    }
-
-    default String getImagePath() {
-        Tools5eIndexType type = getSources().getType();
-        switch (type) {
-            // Note: Monster overrides this method
-            case background:
-                return Tools5eQuteBase.BACKGROUND_PATH;
-            case deity:
-                return Tools5eQuteBase.DEITIES_PATH;
-            case feat:
-                return Tools5eQuteBase.FEATS_PATH;
-            case item:
-                return Tools5eQuteBase.ITEMS_PATH;
-            case race:
-                return Tools5eQuteBase.RACES_PATH;
-            case spell:
-                return Tools5eQuteBase.SPELLS_PATH;
-            default:
-                break;
+        if ("external".equals(mediaRef.href.type)) {
+            text.add("[" + mediaRef.text + "](" + mediaRef.href.url + ")");
         }
-        throw new IllegalArgumentException("We need the fluff image path for: " + type);
-    }
-
-    default boolean prependField(JsonNode entry, String fieldName, List<String> inner) {
-        if (entry.has(fieldName)) {
-            String n = replaceText(entry.get(fieldName).asText().trim());
-            if (inner.isEmpty()) {
-                inner.add(n);
-            } else if (inner.get(0).startsWith("|") || inner.get(0).startsWith(">")) {
-                // we have a table or a blockquote
-                n = "**" + n + "** ";
-                inner.add(0, "");
-                inner.add(0, n);
-                return true;
-            } else {
-                n = "**" + n.replace(":", "") + ".** ";
-                inner.set(0, n + inner.get(0));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    default void prependText(String prefix, List<String> inner) {
-        if (inner.isEmpty()) {
-            inner.add(prefix);
-        } else {
-            if (inner.get(0).isEmpty() && inner.size() > 1) {
-                inner.set(1, prependText(prefix, inner.get(1)));
-            } else {
-                inner.set(0, prependText(prefix, inner.get(0)));
-            }
-        }
-    }
-
-    default String prependText(String prefix, String text) {
-        return text.startsWith(prefix) ? text : prefix + text;
-    }
-
-    default void appendUnlessEmpty(List<String> text, JsonNode node, String field) {
-        String value = getTextOrEmpty(node, field);
-        if (!value.isEmpty()) {
-            text.add(value);
-        }
+        text.add(mediaRef.text);
     }
 
     default void appendList(List<String> text, ArrayNode itemArray) {
@@ -431,7 +336,7 @@ public interface JsonSource extends JsonTextReplacement {
             maybeAddBlankLine(text);
             itemArray.forEach(e -> {
                 List<String> item = new ArrayList<>();
-                appendEntryToText(item, e, null);
+                appendToText(item, e, null);
                 if (item.size() > 0) {
                     text.add(indent + "- " + item.get(0) + "  ");
                     item.remove(0);
@@ -443,92 +348,35 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    default void appendTable(List<String> text, JsonNode entry) {
-        List<String> table = new ArrayList<>();
-
-        String header;
-        String blockid = "";
-        String caption = getTextOrEmpty(entry, "caption");
-
-        if (entry.has("colLabels")) {
-            header = StreamSupport.stream(entry.withArray("colLabels").spliterator(), false)
-                    .map(x -> replaceText(x.asText()))
-                    .collect(Collectors.joining(" | "));
-
-            if (blockid.isEmpty()) {
-                blockid = slugify(header.replaceAll("d\\d+", "")
-                        .replace("|", "")
-                        .replaceAll("\\s+", " ")
-                        .trim());
-            }
-        } else if (entry.has("colStyles")) {
-            header = StreamSupport.stream(entry.withArray("colStyles").spliterator(), false)
-                    .map(x -> "  ")
-                    .collect(Collectors.joining(" | "));
-        } else {
-            int length = entry.withArray("rows").size();
-            String[] array = new String[length];
-            Arrays.fill(array, " ");
-            header = "|" + String.join(" | ", array) + " |";
-        }
-
-        entry.withArray("rows").forEach(r -> {
-            JsonNode cells;
-            if ("row".equals(getTextOrDefault(r, "type", null))) {
-                cells = r.get("row");
-            } else {
-                cells = r;
-            }
-
-            String row = "| " +
-                    StreamSupport.stream(cells.spliterator(), false)
-                            .map(x -> {
-                                JsonNode roll = x.get("roll");
-                                if (roll != null) {
-                                    if (roll.has("exact")) {
-                                        return roll.get("exact");
-                                    }
-                                    return new TextNode(roll.get("min").asText() + "-" + roll.get("max").asText());
-                                }
-                                return x;
-                            })
-                            .map(x -> flattenEntryToText(x).replace("\n", "<br />"))
-                            .collect(Collectors.joining(" | "))
-                    +
-                    " |";
-            table.add(row);
-        });
-
-        switch (blockid) {
-            case "personality-trait":
-                Json2QuteBackground.traits.addAll(table);
-                break;
-            case "ideal":
-                Json2QuteBackground.ideals.addAll(table);
-                break;
-            case "bond":
-                Json2QuteBackground.bonds.addAll(table);
-                break;
-            case "flaw":
-                Json2QuteBackground.flaws.addAll(table);
-                break;
-        }
-
-        header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
-        table.add(0, header.replaceAll("[^|]", "-"));
-        table.add(0, header);
-
-        if (!caption.isBlank()) {
-            table.add(0, "");
-            table.add(0, "**" + caption + "**");
-            blockid = slugify(caption);
-        }
-        if (!blockid.isBlank()) {
-            table.add("^" + blockid);
-        }
-
+    default void appendOptionalFeature(List<String> text, JsonNode entry, String heading) {
         maybeAddBlankLine(text);
-        text.addAll(table);
+        text.add(heading + " " + SourceField.name.getTextOrEmpty(entry));
+        String prereq = getTextOrDefault(entry, "prerequisite", null);
+        if (prereq != null) {
+            text.add("*Prerequisites* " + prereq);
+        }
+        text.add("");
+        appendToText(text, SourceField.entries.getFrom(entry), "#" + heading);
+    }
+
+    default void appendOptionalFeatureRef(List<String> text, JsonNode entry) {
+        String lookup = Tools5eFields.optionalfeature.getTextOrNull(entry);
+        if (lookup == null) {
+            tui().warnf("Optional Feature not found in %s", entry);
+            return; // skipped or not found
+        }
+        String[] parts = lookup.split("\\|");
+        String nodeSource = parts.length > 1 && !parts[1].isBlank() ? parts[1]
+                : Tools5eIndexType.optionalfeature.defaultSourceString();
+        String key = Tools5eIndexType.optionalfeature.createKey(lookup, nodeSource);
+        if (index().isIncluded(key)) {
+            if (parseState.inList()) {
+                text.add(linkifyOptionalFeature(lookup));
+            } else {
+                tui().errorf("TODO refOptionalfeature %s -> %s",
+                        lookup, Tools5eIndexType.optionalfeature.fromRawKey(lookup));
+            }
+        }
     }
 
     default void appendOptions(List<String> text, JsonNode entry) {
@@ -538,14 +386,13 @@ public interface JsonSource extends JsonTextReplacement {
             List<String> list = new ArrayList<>();
             for (JsonNode e : iterableEntries(entry)) {
                 List<String> item = new ArrayList<>();
-                appendEntryToText(item, e, null);
+                appendToText(item, e, null);
                 if (item.size() > 0) {
                     text.add(indent + "- " + item.get(0) + "  ");
                     item.remove(0);
                     item.forEach(x -> text.add(x.isEmpty() ? "" : indent + "    " + x + "  "));
                 }
             }
-            ;
 
             if (list.size() > 0) {
                 maybeAddBlankLine(text);
@@ -562,7 +409,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendInset(List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
-        appendEntryToText(insetText, entry.get("entries"), null);
+        appendToText(insetText, entry.get("entries"), null);
         if (insetText.isEmpty()) {
             return; // nothing to do (empty content)
         }
@@ -596,21 +443,6 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    default void appendQuote(List<String> text, JsonNode entry) {
-        List<String> quoteText = new ArrayList<>();
-        if (entry.has("by")) {
-            String by = replaceText(entry.get("by").asText());
-            quoteText.add("[!quote]- A quote from " + by + "  ");
-        } else {
-            quoteText.add("[!quote]-  ");
-        }
-        appendEntryToText(quoteText, entry.get("entries"), null);
-
-        maybeAddBlankLine(text);
-        quoteText.forEach(x -> text.add("> " + x));
-        maybeAddBlankLine(text);
-    }
-
     default void appendFlowchart(List<String> text, JsonNode entry, String heading) {
         if (entry.has("name")) {
             maybeAddBlankLine(text);
@@ -627,64 +459,265 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
+    default void appendQuote(List<String> text, JsonNode entry) {
+        List<String> quoteText = new ArrayList<>();
+        if (entry.has("by")) {
+            String by = replaceText(entry.get("by").asText());
+            quoteText.add("[!quote]- A quote from " + by + "  ");
+        } else {
+            quoteText.add("[!quote]-  ");
+        }
+        appendToText(quoteText, entry.get("entries"), null);
+
+        maybeAddBlankLine(text);
+        quoteText.forEach(x -> text.add("> " + x));
+        maybeAddBlankLine(text);
+    }
+
+    default void appendStatblock(List<String> text, JsonNode entry) {
+        // Most use "tag", except for subclass, which uses "prop"
+        Tools5eIndexType type = Tools5eIndexType.fromText(getTextOrDefault(entry, "tag", getTextOrEmpty(entry, "prop")));
+        if (type == null) {
+            tui().errorf("Unrecognized statblock type in %s", entry);
+            return;
+        }
+
+        String name = SourceField.name.getTextOrEmpty(entry);
+        String source = SourceField.source.getTextOrEmpty(entry);
+        String link = type == Tools5eIndexType.subclass
+                ? linkify(type, Tools5eIndexType.getSubclassTextReference(
+                        Tools5eFields.className.getTextOrEmpty(entry),
+                        Tools5eFields.classSource.getTextOrEmpty(entry),
+                        name, source, name))
+                : linkify(type, name + "|" + source);
+
+        if (link.matches("\\[.*]\\(.*\\)")) {
+            maybeAddBlankLine(text);
+            if (type == Tools5eIndexType.monster) {
+                text.add("!" + link.replace(")", "#^statblock)"));
+            } else {
+                text.add("> [!summary] " + name);
+                text.add("> !" + link);
+            }
+        } else {
+            text.add(link);
+            tui().warnf("statblock entry did not resolve into an embedded link: %s", entry);
+        }
+    }
+
+    default void appendTable(List<String> text, JsonNode tableNode) {
+        boolean pushed = parseState.push(tableNode);
+        try {
+            List<String> table = new ArrayList<>();
+
+            String header;
+            String blockid = "";
+            String caption = TableFields.caption.getTextOrEmpty(tableNode);
+
+            String known = findTable(Tools5eIndexType.table, tableNode);
+            if (known != null) {
+                maybeAddBlankLine(text);
+                text.add(known);
+                return;
+            }
+
+            if (TableFields.colLabels.existsIn(tableNode)) {
+                header = String.join(" | ", TableFields.colLabels.replaceTextFromList(tableNode, this));
+
+                blockid = slugify(header.replaceAll("d\\d+", "")
+                        .replace("|", "")
+                        .replaceAll("\\s+", " ")
+                        .trim());
+            } else if (TableFields.colStyles.existsIn(tableNode)) {
+                header = TableFields.colStyles.getListOfStrings(tableNode, tui()).stream()
+                        .map(x -> "  ")
+                        .collect(Collectors.joining(" | "));
+            } else {
+                int length = TableFields.rows.size(tableNode);
+                String[] array = new String[length];
+                Arrays.fill(array, " ");
+                header = "|" + String.join(" | ", array) + " |";
+            }
+
+            for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
+                JsonNode cells;
+                if ("row".equals(TableFields.type.getTextOrNull(r))) {
+                    cells = TableFields.row.getFrom(r);
+                } else {
+                    cells = r;
+                }
+
+                String row = "| " + streamOf(cells)
+                        .map(x -> {
+                            JsonNode roll = RollFields.roll.getFrom(x);
+                            if (roll != null) {
+                                if (RollFields.exact.existsIn(roll)) {
+                                    return RollFields.exact.getFrom(roll);
+                                }
+                                return new TextNode(
+                                        RollFields.min.getTextOrEmpty(roll) + "-" + RollFields.max.getTextOrEmpty(roll));
+                            }
+                            return x;
+                        })
+                        .map(x -> flattenToString(x).replace("\n", "<br />"))
+                        .collect(Collectors.joining(" | ")) + " |";
+                table.add(row);
+            }
+
+            header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
+            table.add(0, header.replaceAll("[^|]", "-"));
+            table.add(0, header);
+
+            if (!caption.isBlank()) {
+                table.add(0, "");
+                table.add(0, "**" + caption + "**");
+                blockid = slugify(caption);
+            }
+            if (!blockid.isBlank()) {
+                table.add("^" + blockid);
+            }
+
+            switch (blockid) {
+                case "personality-trait" -> Json2QuteBackground.traits.addAll(table);
+                case "ideal" -> Json2QuteBackground.ideals.addAll(table);
+                case "bond" -> Json2QuteBackground.bonds.addAll(table);
+                case "flaw" -> Json2QuteBackground.flaws.addAll(table);
+            }
+
+            JsonNode intro = TableFields.intro.getFrom(tableNode);
+            if (intro != null) {
+                maybeAddBlankLine(text);
+                appendToText(text, intro, null);
+            }
+            maybeAddBlankLine(text);
+            text.addAll(table);
+
+            JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
+            if (footnotes != null) {
+                maybeAddBlankLine(text);
+                boolean pushF = parseState.push(true);
+                appendToText(text, footnotes, null);
+                parseState.pop(pushF);
+            }
+            JsonNode outro = TableFields.outro.getFrom(tableNode);
+            if (outro != null) {
+                maybeAddBlankLine(text);
+                appendToText(text, outro, null);
+            }
+        } finally {
+            parseState.pop(pushed);
+        }
+    }
+
+    default void appendTableGroup(List<String> text, JsonNode tableGroup, String heading) {
+        boolean pushed = parseState.push(tableGroup);
+        try {
+            String name = findTableName(tableGroup);
+            String known = findTable(Tools5eIndexType.tableGroup, tableGroup);
+            if (known != null) {
+                maybeAddBlankLine(text);
+                text.add(known);
+                return;
+            }
+
+            maybeAddBlankLine(text);
+            text.add(heading + " " + name);
+            if (index().differentSource(getSources(), parseState.getSource())) {
+                text.add(getSourceText(parseState));
+            }
+            maybeAddBlankLine(text);
+            appendToText(text, Tools5eFields.tables.getFrom(tableGroup), "#" + heading);
+        } finally {
+            parseState.pop(pushed);
+        }
+    }
+
+    default String findTableName(JsonNode tableNode) {
+        return TableFields.caption.getTextOrDefault(tableNode,
+                SourceField.name.getTextOrEmpty(tableNode));
+    }
+
+    default String findTable(Tools5eIndexType keyType, JsonNode matchTable) {
+        if (getSources().getType() == Tools5eIndexType.table || getSources().getType() == Tools5eIndexType.tableGroup) {
+            return null;
+        }
+        String name = findTableName(matchTable);
+        String tableKey = keyType.createKey(name, parseState.getSource());
+        JsonNode knownEntry = index().getNode(tableKey);
+        if (knownEntry == null && keyType == Tools5eIndexType.table) {
+            SourceAndPage sp = new SourceAndPage(parseState);
+            knownEntry = index().findTable(sp, TableFields.getFirstRow(matchTable));
+        }
+        if (knownEntry != null) {
+            // replace with embed
+            String link = linkifyType(keyType, tableKey, name);
+            return "!" + link;
+        }
+        return null;
+    }
+
+    default ImageRef readImageRef(JsonNode imageNode) {
+        try {
+            JsonMediaHref mediaHref = mapper().treeToValue(imageNode, JsonMediaHref.class);
+            return buildImageRef(index(), mediaHref, getImagePath());
+        } catch (JsonProcessingException | IllegalArgumentException e) {
+            tui().errorf(e, "Unable to read media reference from %s: %s", imageNode, e.toString());
+        }
+        return null;
+    }
+
+    default JsonMediaHref readLink(JsonNode linkNode) {
+        try {
+            return mapper().treeToValue(linkNode, JsonMediaHref.class);
+        } catch (JsonProcessingException | IllegalArgumentException e) {
+            tui().errorf(e, "Unable to read link from %s: %s", linkNode, e.toString());
+        }
+        return null;
+    }
+
+    default boolean useCompendium() {
+        return getSources().getType().useCompendiumBase();
+    }
+
+    default String getImagePath() {
+        Tools5eIndexType type = getSources().getType();
+        return Tools5eQuteBase.getRelativePath(type);
+    }
+
     default String asAbilityEnum(JsonNode textNode) {
         return SkillOrAbility.format(textNode.asText());
     }
 
     default String mapAlignmentToString(String a) {
-        switch (a) {
-            case "A":
-                return "Any alignment";
-            case "C":
-                return "Chaotic";
-            case "CE":
-                return "Chaotic Evil";
-            case "CELENE":
-            case "LNXCE":
-                return "Any Evil Alignment";
-            case "CG":
-                return "Chaotic Good";
-            case "CGNE":
-                return "Chaotic Good or Neutral Evil";
-            case "CGNYE":
-                return "Any Chaotic alignment";
-            case "CN":
-                return "Chaotic Neutral";
-            case "N":
-            case "NX":
-            case "NY":
-                return "Neutral";
-            case "NE":
-                return "Neutral Evil";
-            case "NG":
-                return "Neutral Good";
-            case "NGNE":
-            case "NENG":
-                return "Neutral Good or Neutral Evil";
-            case "NNXNYN":
-            case "NXCGNYE":
-                return "Any Non-Lawful alignment";
-            case "L":
-                return "Lawful";
-            case "LE":
-                return "Lawful Evil";
-            case "LG":
-                return "Lawful Good";
-            case "LN":
-                return "Lawful Neutral";
-            case "LELG":
-                return "Any Lawful alignment";
-            case "LNXCNYE":
-                return "Any Non-Good alignment";
-            case "E":
-                return "Any Evil alignment";
-            case "G":
-                return "Any Good alignment";
-            case "U":
-                return "Unaligned";
-        }
-        tui().errorf("What alignment is this? %s (from %s)", a, getSources());
-        return "Unknown";
+        return switch (a) {
+            case "A" -> "Any alignment";
+            case "C" -> "Chaotic";
+            case "CE" -> "Chaotic Evil";
+            case "CELENE", "LNXCE" -> "Any Evil Alignment";
+            case "CG" -> "Chaotic Good";
+            case "CGNE" -> "Chaotic Good or Neutral Evil";
+            case "CGNYE" -> "Any Chaotic alignment";
+            case "CN" -> "Chaotic Neutral";
+            case "N", "NX", "NY" -> "Neutral";
+            case "NE" -> "Neutral Evil";
+            case "NG" -> "Neutral Good";
+            case "NGNE", "NENG" -> "Neutral Good or Neutral Evil";
+            case "NNXNYN", "NXCGNYE" -> "Any Non-Lawful alignment";
+            case "L" -> "Lawful";
+            case "LE" -> "Lawful Evil";
+            case "LG" -> "Lawful Good";
+            case "LN" -> "Lawful Neutral";
+            case "LELG" -> "Lawful Evil or Lawful Good";
+            case "LELN" -> "Lawful Evil or Lawful Neutral";
+            case "LNXCNYE" -> "Any Non-Good alignment";
+            case "E" -> "Any Evil alignment";
+            case "G" -> "Any Good alignment";
+            case "U" -> "Unaligned";
+            default -> {
+                tui().errorf("What alignment is this? %s (from %s)", a, getSources());
+                yield "Unknown";
+            }
+        };
     }
 
     default int levelToPb(int level) {
@@ -707,7 +740,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default int crToXp(JsonNode cr) {
-        if (cr != null && cr.has("xp")) {
+        if (cr.has("xp")) {
             return cr.get("xp").asInt();
         }
         if (cr.has("cr")) {
@@ -757,7 +790,7 @@ public interface JsonSource extends JsonTextReplacement {
             if (size.isTextual()) {
                 return sizeToString(size.asText());
             } else if (size.isArray()) {
-                String merged = streamOf((ArrayNode) size).map(JsonNode::asText).collect(Collectors.joining());
+                String merged = streamOf(size).map(JsonNode::asText).collect(Collectors.joining());
                 return sizeToString(merged);
             }
         } catch (IllegalArgumentException ignored) {
@@ -767,31 +800,20 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String sizeToString(String size) {
-        switch (size) {
-            case "F":
-                return "Fine";
-            case "D":
-                return "Diminutive";
-            case "T":
-                return "Tiny";
-            case "S":
-                return "Small";
-            case "M":
-                return "Medium";
-            case "L":
-                return "Large";
-            case "H":
-                return "Huge";
-            case "G":
-                return "Gargantuan";
-            case "C":
-                return "Colossal";
-            case "V":
-                return "Varies";
-            case "SM":
-                return "Small or Medium";
-        }
-        return "Unknown";
+        return switch (size) {
+            case "F" -> "Fine";
+            case "D" -> "Diminutive";
+            case "T" -> "Tiny";
+            case "S" -> "Small";
+            case "M" -> "Medium";
+            case "L" -> "Large";
+            case "H" -> "Huge";
+            case "G" -> "Gargantuan";
+            case "C" -> "Colossal";
+            case "V" -> "Varies";
+            case "SM" -> "Small or Medium";
+            default -> "Unknown";
+        };
     }
 
     default String getSpeed(JsonNode value) {
@@ -853,31 +875,22 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String levelToText(String level) {
-        switch (level) {
-            case "0":
-                return "cantrip";
-            case "1":
-                return "1st-level";
-            case "2":
-                return "2nd-level";
-            case "3":
-                return "3rd-level";
-            default:
-                return level + "th-level";
-        }
+        return switch (level) {
+            case "0" -> "cantrip";
+            case "1" -> "1st-level";
+            case "2" -> "2nd-level";
+            case "3" -> "3rd-level";
+            default -> level + "th-level";
+        };
     }
 
     static String levelToString(int level) {
-        switch (level) {
-            case 1:
-                return "1st";
-            case 2:
-                return "2nd";
-            case 3:
-                return "3rd";
-            default:
-                return level + "th";
-        }
+        return switch (level) {
+            case 1 -> "1st";
+            case 2 -> "2nd";
+            case 3 -> "3rd";
+            default -> level + "th";
+        };
     }
 
     @RegisterForReflection
@@ -890,11 +903,12 @@ public interface JsonSource extends JsonTextReplacement {
         public Integer height;
         public String altText;
         public String credit;
+        public String text;
     }
 
     @RegisterForReflection
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class JsonHref {
+    class JsonHref {
         public String type;
         public String path;
         public String url;
@@ -936,13 +950,120 @@ public interface JsonSource extends JsonTextReplacement {
             entry("29", 135000),
             entry("30", 155000));
 
-    enum Fields implements NodeReader {
+    enum Tools5eFields implements JsonNodeReader {
         abbreviation,
+        additionalEntries,
         appliesTo,
+        attributes,
+        className,
+        classSource,
+        featureType,
         group,
-        id,
-        name,
-        page,
-        source,
+        optionalfeature,
+        style,
+        tables, // for optfeature types
+        text,
+        typeLookup,
+    }
+
+    enum TableFields implements JsonNodeReader {
+        tables,
+        caption,
+        colLabels,
+        colLabelGroups,
+        colStyles,
+        rowLabels,
+        rows,
+        row,
+        footnotes,
+        intro,
+        outro,
+        type;
+
+        static String getFirstRow(JsonNode tableNode) {
+            JsonNode rowData = rows.getFrom(tableNode);
+            if (rowData == null) {
+                return "";
+            }
+            return rowData.get(0).toString();
+        }
+    }
+
+    enum RollFields implements JsonNodeReader {
+        roll,
+        exact,
+        min,
+        max
+    }
+
+    enum AppendTypeValue implements JsonNodeReader.FieldValue {
+        // recursive
+        entries,
+        entry,
+        inset,
+        insetReadaloud,
+        list,
+        optfeature,
+        options,
+        quote,
+        section,
+        table,
+        tableGroup,
+        variant,
+        variantInner,
+        variantSub,
+
+        // block
+        abilityAttackMod,
+        abilityDc,
+        abilityGeneric,
+
+        // inline
+        inline,
+        inlineBlock,
+        link,
+
+        // list items
+        item,
+        itemSpell,
+        itemSub,
+
+        // images
+        image,
+        gallery,
+
+        // flowchart
+        flowchart,
+        // TODO: flowBlock,
+
+        // embedded entities
+        statblock,
+        // TODO: statblockInline,
+
+        refClassFeature,
+        refOptionalfeature,
+        refSubclassFeature,
+
+        // homebrew changes
+        homebrew,
+
+        // misc
+        hr,
+        ;
+
+        @Override
+        public String value() {
+            return this.name();
+        }
+
+        static AppendTypeValue valueFrom(JsonNode source, JsonNodeReader field) {
+            String textOrNull = field.getTextOrNull(source);
+            if (textOrNull == null) {
+                return null;
+            }
+            return Stream.of(AppendTypeValue.values())
+                    .filter((t) -> t.matches(textOrNull))
+                    .findFirst().orElse(null);
+        }
     }
 }

@@ -71,6 +71,7 @@ public class Tui {
             slugify = s = Slugify.builder()
                     .customReplacement("\"", "")
                     .customReplacement("'", "")
+                    .customReplacement(",", "")
                     .lowerCase(true)
                     .build();
         }

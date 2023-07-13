@@ -30,7 +30,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     private static final Map<String, JsonNode> imported = new HashMap<>();
 
     private final Map<String, String> alias = new HashMap<>();
-    private final Map<String, JsonNode> filteredIndex = new HashMap<>();
+    private final Map<String, JsonNode> filteredIndex = new TreeMap<>();
 
     private final Map<String, String> traitToSource = new HashMap<>();
     private final Map<String, Collection<String>> categoryToTraits = new TreeMap<>();
@@ -97,7 +97,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         if (type == Pf2eIndexType.trait) {
             key = prepareTrait(key, node);
         } else if (hash != null) {
-            String name = Field.name.getTextOrEmpty(node);
+            String name = SourceField.name.getTextOrEmpty(node);
             name += " (" + hash + ")";
             key = replaceName(type, name, key, node, false);
         }
@@ -107,8 +107,8 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         if (previous != null) {
             // We include the CRB by default, otherwise, say something about skipping duplicates
             if (!"book|book-crb".equals(key) &&
-                    (!Field.name.valueEquals(previous, node) || !Field.source.valueEquals(previous, node)
-                            || !Field.page.valueEquals(previous, node))) {
+                    (!SourceField.name.valueEquals(previous, node) || !SourceField.source.valueEquals(previous, node)
+                            || !SourceField.page.valueEquals(previous, node))) {
                 tui().debugf("Skipping %s, already indexed", key);
             }
             return;
@@ -118,7 +118,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     String prepareTrait(String key, JsonNode node) {
-        String name = Field.name.getTextOrEmpty(node);
+        String name = SourceField.name.getTextOrEmpty(node);
         Pf2eAlignmentValue alignment = Pf2eAlignmentValue.fromString(name);
 
         // Change the indexed name for [...] traits
@@ -131,7 +131,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         }
 
         // Quick lookup for traits
-        String source = Field.source.getTextOrDefault(node, Pf2eIndexType.trait.defaultSourceString());
+        String source = SourceField.source.getTextOrDefault(node, Pf2eIndexType.trait.defaultSourceString());
         String oldSource = traitToSource.put(name.toLowerCase(), source);
         if (oldSource != null && !oldSource.equals(source)) {
             tui().warnf("Duplicate trait name %s, from source %s and %s",
@@ -205,7 +205,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
 
     private void createTraitReference(String key, JsonNode node, Pf2eSources sources) {
         // Precreate category mapping for traits
-        String name = Field.name.getTextOrEmpty(node);
+        String name = SourceField.name.getTextOrEmpty(node);
         String traitLink = linkifyTrait(name);
 
         Field.categories.getListOfStrings(node, tui()).stream()
@@ -237,8 +237,8 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         if (type.alwaysInclude()) {
             return true;
         }
-        // Check against include/exclude rules (srdKeys allowed when there are no sources)
-        Optional<Boolean> rulesAllow = config.keyIsIncluded(key, node);
+        // Check against include/exclude rules (config: included/excluded/all)
+        Optional<Boolean> rulesAllow = config.keyIsIncluded(key);
         if (rulesAllow.isPresent()) {
             return rulesAllow.get();
         }
@@ -286,6 +286,18 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
 
     public String traitToSource(String trait) {
         return traitToSource.get(trait.toLowerCase());
+    }
+
+    @Override
+    public JsonNode getAdventure(String a) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JsonNode getBook(String b) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     // --------- Write indexes ---------

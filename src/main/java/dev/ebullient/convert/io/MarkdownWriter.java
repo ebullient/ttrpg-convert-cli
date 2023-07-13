@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
-import dev.ebullient.convert.tools.dnd5e.qute.QuteName;
 import io.quarkus.qute.TemplateData;
 
 public class MarkdownWriter {
@@ -128,25 +127,6 @@ public class MarkdownWriter {
         } catch (IOException e) {
             throw new WrappedIOException(e);
         }
-    }
-
-    public void writeNames(Path dir, Collection<QuteName> names) {
-        if (names.isEmpty()) {
-            return;
-        }
-        Path rootDir = output.resolve(dir);
-        rootDir.toFile().mkdirs();
-
-        names.forEach(n -> {
-            Path target = rootDir.resolve("names-" + Tui.slugify(n.getName()) + ".md");
-            String content = templates.render(n);
-            try {
-                Files.write(target, content.getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                throw new WrappedIOException(e);
-            }
-        });
-        tui.outPrintf("✅ Wrote %s name tables.%n", names.size());
     }
 
     @TemplateData

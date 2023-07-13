@@ -8,7 +8,7 @@ public interface IndexType {
 
     String defaultSourceString();
 
-    enum IndexElement implements NodeReader {
+    enum IndexElement implements JsonNodeReader {
         name,
         source,
     }

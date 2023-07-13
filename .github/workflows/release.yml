@@ -112,7 +112,8 @@ jobs:
           git tag $FLAG$NEXT
           git push --tags
 
-          zip -r target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip examples
+          cp -R src/main/resources/templates default
+          zip -r target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip examples default
 
       - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
         uses: actions/upload-artifact@v3

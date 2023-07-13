@@ -10,7 +10,7 @@ import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
 public class ParseState {
 
-    enum ParseStateField implements NodeReader {
+    enum ParseStateField implements JsonNodeReader {
         footnotes,
         page,
         source
@@ -194,6 +194,15 @@ public class ParseState {
                 current.src, current.page);
     }
 
+    public String sourceAndPage(String formatString) {
+        ParseState.ParseStateInfo current = stack.peek();
+        if (current == null || current.page == 0) {
+            return "";
+        }
+        return String.format(formatString,
+                current.src, current.page);
+    }
+
     public String getSource() {
         ParseState.ParseStateInfo current = stack.peek();
         return current == null ? null : current.src;
@@ -213,5 +222,10 @@ public class ParseState {
             return type == null ? null : type.defaultSourceString();
         }
         return current.src;
+    }
+
+    public String getPage() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current == null ? null : current.page + "";
     }
 }

@@ -28,7 +28,7 @@ aliases: ["{resource.name}"]
 - **Hit Points at Higher Levels:** add 1d*x* + CON (minimum of 1)
 {/if}
 
-## Starting a {resource.name}
+## Starting {#if resource.name.matches("^[AEIOUH].*") }an{#else}a{/if} {resource.name}
 
 {resource.startingEquipment}
 

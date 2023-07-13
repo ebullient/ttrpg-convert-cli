@@ -87,7 +87,7 @@ public class RpgDataConvertTest {
             final Path allIndex = outputPath_5e.resolve("all-index");
             TestUtils.deleteDir(allIndex);
 
-            List<String> args = new ArrayList<>(List.of("--index", "-s", "ALL",
+            List<String> args = new ArrayList<>(List.of("--index", "--debug", "-s", "ALL",
                     "--background", "examples/templates/tools5e/images-background2md.txt",
                     "--item", "examples/templates/tools5e/images-item2md.txt",
                     "--monster", "examples/templates/tools5e/images-monster2md.txt",
@@ -149,26 +149,38 @@ public class RpgDataConvertTest {
 
             // No basics
             LaunchResult result = launcher.launch("--debug", "--index",
-                    "-s", "PHB", "-s", "MM", "-s", "DMG",
-                    "-s", "dndwiki_bestbackgrounds",
-                    "-s", "TDCSR",
-                    "-s", "SC",
-                    "-s", "arkadia",
-                    "-s", "NerzugalsExtendedBestiary",
-                    "-s", "TheLostLands",
+                    "-c", TestUtils.TEST_RESOURCES.resolve("sources-homebrew.json").toString(),
                     "-o", target.toString(),
                     TestUtils.TOOLS_PATH_5E.toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Kobold Press; Book of Lairs.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/Darrington Press; Tal'Dorei Campaign Setting Reborn.json")
                             .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Grim Hollow Campaign Guide.json")
+                            .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("class/badooga; Badooga's Psion.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/D&D Wiki; Swashbuckler.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("class/Foxfire94; Vampire.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("collection/Arcana Games; Arkadia.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("collection/Keith Baker; Exploring Eberron.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E
+                            .resolve("collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json")
+                            .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("deity/Frog God Games; The Lost Lands.json").toString());
+
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+
+            TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> TestUtils.checkMarkdownLinks(target.toString(), p, l, errors));
+                return errors;
+            });
         }
     }
 
@@ -180,16 +192,16 @@ public class RpgDataConvertTest {
 
             // SRD only, just templates
             LaunchResult result = launcher.launch(
-                    "--background", "src/test/resources/other/background.txt",
-                    "--class", "src/test/resources/other/class.txt",
-                    "--deity", "src/test/resources/other/deity.txt",
-                    "--feat", "src/test/resources/other/feat.txt",
-                    "--item", "src/test/resources/other/item.txt",
-                    "--name", "src/test/resources/other/name.txt",
-                    "--note", "src/test/resources/other/note.txt",
-                    "--race", "src/test/resources/other/race.txt",
-                    "--spell", "src/test/resources/other/spell.txt",
-                    "--subclass", "src/test/resources/other/subclass.txt",
+                    "--background", TestUtils.TEST_RESOURCES.resolve("other/background.txt").toString(),
+                    "--class", TestUtils.TEST_RESOURCES.resolve("other/class.txt").toString(),
+                    "--deity", TestUtils.TEST_RESOURCES.resolve("other/deity.txt").toString(),
+                    "--feat", TestUtils.TEST_RESOURCES.resolve("other/feat.txt").toString(),
+                    "--item", TestUtils.TEST_RESOURCES.resolve("other/item.txt").toString(),
+                    "--name", TestUtils.TEST_RESOURCES.resolve("other/name.txt").toString(),
+                    "--note", TestUtils.TEST_RESOURCES.resolve("other/note.txt").toString(),
+                    "--race", TestUtils.TEST_RESOURCES.resolve("other/race.txt").toString(),
+                    "--spell", TestUtils.TEST_RESOURCES.resolve("other/spell.txt").toString(),
+                    "--subclass", TestUtils.TEST_RESOURCES.resolve("other/subclass.txt").toString(),
                     "-o", target.toString(), TestUtils.TOOLS_PATH_5E.toString());
 
             assertThat(result.exitCode())

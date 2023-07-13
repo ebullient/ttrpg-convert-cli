@@ -11,14 +11,16 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteCompose extends Json2QuteCommon {
-    List<JsonNode> nodes = new ArrayList<>();
+    final List<JsonNode> nodes = new ArrayList<>();
     Tools5eSources currentSources;
-    String title;
-    String targetPath;
+    final String title;
+    final String targetPath;
 
     public Json2QuteCompose(Tools5eIndexType type, Tools5eIndex index, String title) {
         this(type, index, title, ".");
@@ -55,14 +57,14 @@ public class Json2QuteCompose extends Json2QuteCommon {
             return null;
         }
 
-        Set<String> tags = new HashSet<>();
+        Tags tags = new Tags();
         List<String> text = new ArrayList<>();
 
         if (type == Tools5eIndexType.itemType || type == Tools5eIndexType.itemProperty) {
             nodes.forEach(x -> flatten(x));
         }
 
-        nodes.sort(Comparator.comparing(Fields.name::getTextOrEmpty));
+        nodes.sort(Comparator.comparing(SourceField.name::getTextOrEmpty));
 
         if (type == Tools5eIndexType.itemProperty) {
             appendItemProperties(text, tags);
@@ -77,32 +79,32 @@ public class Json2QuteCompose extends Json2QuteCommon {
                 .withTargetPath(targetPath);
     }
 
-    private int appendElement(JsonNode entry, List<String> text, Set<String> tags, int count) {
-        Tools5eSources tempSources = Tools5eSources.findOrTemporary(entry);
+    private int appendElement(JsonNode entry, List<String> text, Tags tags, int count) {
+        currentSources = Tools5eSources.findOrTemporary(entry);
 
         boolean pushed = parseState.push(entry);
         try {
-            String abbreviation = getTextOrEmpty(entry, "abbreviation");
-            String name = replaceText(getTextOrEmpty(entry, "name"));
+            String abbreviation = Tools5eFields.abbreviation.getTextOrNull(entry);
+            String name = SourceField.name.replaceTextFrom(entry, index);
 
-            tags.addAll(tempSources.getSourceTags());
+            tags.addSourceTags(currentSources);
 
             maybeAddBlankLine(text);
-            text.add("## " + replaceText(name));
-            text.add(getSourceText(tempSources));
+            text.add("## " + name);
+            text.add(getSourceText(entry));
 
             if (type == Tools5eIndexType.action) {
                 appendAction(entry, text);
             } else if (entry.has("table")) {
                 appendTable(name, entry, text);
             } else {
-                appendEntryToText(text, entry, "###");
+                appendToText(text, entry, "###");
             }
 
             if (type == Tools5eIndexType.itemType && abbreviation != null) {
                 List<JsonNode> more = index.elementsMatching(Tools5eIndexType.itemTypeAdditionalEntries, abbreviation);
                 for (JsonNode m : more) {
-                    appendEntryToText(text, m, "###");
+                    appendToText(text, m, "###");
                 }
             }
 
@@ -177,20 +179,28 @@ public class Json2QuteCompose extends Json2QuteCommon {
     }
 
     private void appendAction(JsonNode entry, List<String> text) {
-        String duration = flattenActionTime(entry.get("time"));
 
+        String duration = flattenActionTime(ComposedTypeFields.time.getFrom(entry));
         if (!duration.isEmpty()) {
             maybeAddBlankLine(text);
             text.add("- **Duration:** " + duration);
         }
 
         maybeAddBlankLine(text);
-        appendEntryToText(text, entry, "###");
+        appendToText(text, entry, "###");
 
-        if (entry.has("fromVariant")) {
+        List<String> seeAlso = ComposedTypeFields.seeAlsoAction.linkifyListFrom(entry, Tools5eIndexType.action, index);
+        if (!seeAlso.isEmpty()) {
+            maybeAddBlankLine(text);
+            text.add("See also: " + String.join(", ", seeAlso));
+        }
+
+        String fromVariant = ComposedTypeFields.fromVariant.getTextOrNull(entry);
+        if (fromVariant != null) {
             maybeAddBlankLine(text);
             text.add("This action is an optional addition to the game, from the optional/variant rule "
-                    + linkifyVariant(entry.get("fromVariant").asText()) + ".");
+                    + linkifyVariant(fromVariant) + ".");
+
         }
     }
 
@@ -200,7 +210,8 @@ public class Json2QuteCompose extends Json2QuteCommon {
         } else if (entry.isTextual()) {
             return entry.asText();
         } else if (entry.isObject()) {
-            return String.format("%s %s", entry.get("number").asText(), entry.get("unit").asText());
+            return String.format("%s %s", ComposedTypeFields.number.replaceTextFrom(entry, index),
+                    ComposedTypeFields.unit.replaceTextFrom(entry, index));
         } else {
             List<String> elements = new ArrayList<>();
             entry.forEach(x -> elements.add(flattenActionTime(x)));
@@ -208,7 +219,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
         }
     }
 
-    private void appendItemProperties(List<String> text, Set<String> tags) {
+    private void appendItemProperties(List<String> text, Tags tags) {
         final JsonNode srdEntries = TtrpgConfig.activeGlobalConfig("srdEntries").get("properties");
 
         for (JsonNode srdEntry : iterableElements(srdEntries)) {
@@ -219,7 +230,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
                 maybeAddBlankLine(text);
                 text.add("## " + name);
                 if (!srdEntry.has("srd")) {
-                    text.add(index().getSourceText(srdEntry));
+                    text.add(getSourceText(srdEntry));
                 }
                 text.add("");
 
@@ -228,27 +239,26 @@ public class Json2QuteCompose extends Json2QuteCommon {
                     Set<String> abbreviations = new HashSet<>();
                     List<JsonNode> properties = new ArrayList<>();
                     for (JsonNode x : iterableElements(propertyEntries)) {
-                        String abbr = getTextOrDefault(x, "abbreviation",
-                                getTextOrEmpty(x, "name")).toLowerCase();
-
+                        String abbr = Tools5eFields.abbreviation.getTextOrDefault(x, SourceField.name.getTextOrEmpty(x))
+                                .toLowerCase();
                         if (propertyIncluded(x, abbr)) {
                             properties.add(x);
                             abbreviations.add(abbr);
                         }
                     }
                     for (JsonNode x : nodes) {
-                        String abbr = getTextOrDefault(x, "abbreviation",
-                                getTextOrEmpty(x, "name")).toLowerCase();
+                        String abbr = Tools5eFields.abbreviation.getTextOrDefault(x, SourceField.name.getTextOrEmpty(x))
+                                .toLowerCase();
                         if (propertyIncluded(x, abbr) && !abbreviations.contains(abbr)) {
                             properties.add(x);
                         }
                     }
-                    properties.sort(Comparator.comparing(Fields.name::getTextOrEmpty));
+                    properties.sort(Comparator.comparing(SourceField.name::getTextOrEmpty));
                     propertyEntries.removeAll();
                     propertyEntries.addAll(properties);
-                    appendEntryToText(text, propertyEntries, "###");
+                    appendToText(text, propertyEntries, "###");
                 } else {
-                    appendEntryToText(text, srdEntry.get("entries"), "###");
+                    appendToText(text, srdEntry.get("entries"), "###");
                 }
             } finally {
                 parseState.pop(p2);
@@ -257,8 +267,19 @@ public class Json2QuteCompose extends Json2QuteCommon {
     }
 
     private boolean propertyIncluded(JsonNode x, String abbr) {
-        String source = getTextOrEmpty(x, "source");
+        String source = SourceField.source.getTextOrEmpty(x);
         return booleanOrDefault(x, "srd", false)
                 || (!source.isEmpty() && index.sourceIncluded(source));
+    }
+
+    enum ComposedTypeFields implements JsonNodeReader {
+        fromGeneric,
+        fromGroup,
+        fromItems,
+        fromVariant,
+        number,
+        seeAlsoAction,
+        time,
+        unit
     }
 }

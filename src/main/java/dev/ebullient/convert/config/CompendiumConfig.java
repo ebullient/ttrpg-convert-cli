@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public class CompendiumConfig {
     final Tui tui;
     final Datasource datasource;
 
-    String tagPrefix = ""; // TODO: empty or ends with '/'
+    String tagPrefix = "";
     PathAttributes paths;
     boolean allSources = false;
     boolean useDiceRoller = false;
@@ -92,7 +93,7 @@ public class CompendiumConfig {
         return !allowedSources.contains(sourceNode.asText().toLowerCase());
     }
 
-    public Optional<Boolean> keyIsIncluded(String key, JsonNode node) {
+    public Optional<Boolean> keyIsIncluded(String key) {
         if (includedKeys.contains(key)) {
             return Optional.of(true);
         }
@@ -128,7 +129,7 @@ public class CompendiumConfig {
 
     public String tagOf(String... tag) {
         return tagPrefix + Arrays.stream(tag)
-                .map(s -> Tui.slugify(s))
+                .map(Tui::slugify)
                 .collect(Collectors.joining("/"));
     }
 
@@ -141,7 +142,7 @@ public class CompendiumConfig {
                     }
                     return "book/book-" + b.toLowerCase() + ".json";
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<String> getAdventures() {
@@ -153,7 +154,7 @@ public class CompendiumConfig {
                     }
                     return "adventure/adventure-" + a.toLowerCase() + ".json";
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Path getCustomTemplate(String id) {
@@ -174,7 +175,7 @@ public class CompendiumConfig {
         allowedSources.addAll(sources.stream()
                 .map(String::toLowerCase)
                 .map(s -> "all".equals(s) ? "*" : s)
-                .collect(Collectors.toList()));
+                .toList());
         allSources = allowedSources.contains("*");
     }
 
@@ -202,14 +203,14 @@ public class CompendiumConfig {
      */
     public static class Configurator {
 
-        protected Tui tui;
+        protected final Tui tui;
 
         public Configurator(Tui tui) {
             this.tui = tui;
         }
 
         public Configurator(CompendiumConfig compendiumConfig) {
-            this.tui = compendiumConfig.tui;
+            this(compendiumConfig.tui);
         }
 
         /** 1.x sources from command line */
@@ -232,12 +233,11 @@ public class CompendiumConfig {
         /** Parse the config file at the given path */
         public boolean readConfiguration(Path configPath) {
             try {
-                if (configPath != null) {
+                if (configPath != null && configPath.toFile().exists()) {
                     JsonNode node = Tui.mapper(configPath).readTree(configPath.toFile());
                     readConfigIfPresent(node);
                 } else {
-                    tui.errorf("Unknown configuration file: %s",
-                            configPath);
+                    tui.errorf("Unknown configuration file: %s", configPath);
                     return false;
                 }
             } catch (IOException e) {
@@ -288,9 +288,16 @@ public class CompendiumConfig {
 
             config.paths = new PathAttributes(config.paths, input.paths);
 
+            if (input.tagPrefix != null && !input.tagPrefix.isEmpty()) {
+                config.tagPrefix = input.tagPrefix;
+                if (!config.tagPrefix.endsWith("/")) {
+                    config.tagPrefix += "/";
+                }
+            }
+
             if (!input.template.isEmpty()) {
                 TemplatePaths tplPaths = new TemplatePaths();
-                input.template.entrySet().forEach(e -> tplPaths.setCustomTemplate(e.getKey(), Path.of(e.getValue())));
+                input.template.forEach((key, value) -> tplPaths.setCustomTemplate(key, Path.of(value)));
                 tplPaths.verify(tui);
                 config.customTemplates.putAll(tplPaths.customTemplates);
             }
@@ -336,10 +343,9 @@ public class CompendiumConfig {
             if (value == null || value.isEmpty()) {
                 return "";
             }
-            String path = (value + '/')
+            return (value + '/')
                     .replace('\\', '/')
                     .replaceAll("/+", "/");
-            return path;
         }
 
         private static Path toFilesystemRoot(String root) {
@@ -363,6 +369,7 @@ public class CompendiumConfig {
         include,
         includeGroups,
         paths,
+        tagPrefix,
         template,
         ttrpg;
 
@@ -380,8 +387,8 @@ public class CompendiumConfig {
             JsonNode child = node.get(this.name());
             if (child == null) {
                 Optional<JsonNode> y = aliases.stream()
-                        .map(x -> node.get(x))
-                        .filter(x -> x != null)
+                        .map(node::get)
+                        .filter(Objects::nonNull)
                         .findFirst();
                 return y.orElse(null);
             }
@@ -391,50 +398,53 @@ public class CompendiumConfig {
 
     @RegisterForReflection
     public static class InputConfig {
-        @JsonProperty(required = false)
+        @JsonProperty()
         List<String> from = new ArrayList<>();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         InputPaths paths = new InputPaths();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         List<String> include = new ArrayList<>();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         List<String> includeGroup = new ArrayList<>();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         List<String> exclude = new ArrayList<>();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         List<String> excludePattern = new ArrayList<>();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         Map<String, String> template = new HashMap<>();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         boolean useDiceRoller = false;
 
+        @JsonProperty()
+        String tagPrefix = "";
+
         @JsonAlias({ "convert" })
-        @JsonProperty(value = "full-source", required = false)
+        @JsonProperty(value = "full-source")
         FullSource fullSource = new FullSource();
     }
 
     @RegisterForReflection
     static class FullSource {
-        @JsonProperty(required = false)
+        @JsonProperty()
         List<String> book = new ArrayList<>();
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         List<String> adventure = new ArrayList<>();
     }
 
     @RegisterForReflection
     static class InputPaths {
-        @JsonProperty(required = false)
+        @JsonProperty()
         String compendium;
 
-        @JsonProperty(required = false)
+        @JsonProperty()
         String rules;
     }
 }

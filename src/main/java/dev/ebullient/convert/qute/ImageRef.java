@@ -89,10 +89,8 @@ public class ImageRef {
 
     public static class Builder {
         private Path sourcePath;
-        private Path targetFilePath;
         private Path relativeTarget;
         private String title = "";
-        private String vaultPath;
         private Integer width;
 
         private String vaultRoot;
@@ -148,8 +146,8 @@ public class ImageRef {
             if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
                 throw new IllegalStateException("Set paths first (source, relative, vaultRoot, fileRoot) first");
             }
-            this.targetFilePath = rootFilePath.resolve(relativeTarget);
-            this.vaultPath = String.format("%s%s", vaultRoot,
+            Path targetFilePath = rootFilePath.resolve(relativeTarget);
+            String vaultPath = String.format("%s%s", vaultRoot,
                     relativeTarget.toString().replace('\\', '/'));
 
             return new ImageRef(sourcePath, targetFilePath, title, vaultPath, width);

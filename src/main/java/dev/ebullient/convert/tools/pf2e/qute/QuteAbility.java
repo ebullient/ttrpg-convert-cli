@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e.qute;
 import java.util.Collection;
 import java.util.List;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.qute.TemplateData;
 
@@ -21,7 +22,7 @@ public class QuteAbility extends Pf2eQuteNote {
 
     public final QuteDataActivity activity;
 
-    public QuteAbility(String name, List<String> text, Collection<String> tags,
+    public QuteAbility(String name, List<String> text, Tags tags,
             Collection<String> traits, QuteDataActivity activity,
             String components, String requirements,
             String cost, String trigger, String frequency, String special, boolean embedded) {
