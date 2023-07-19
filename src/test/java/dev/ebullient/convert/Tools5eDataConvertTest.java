@@ -2,13 +2,9 @@ package dev.ebullient.convert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,23 +17,20 @@ import io.quarkus.test.junit.main.QuarkusMainTest;
 import picocli.CommandLine;
 
 @QuarkusMainTest
-public class RpgDataConvertTest {
+public class Tools5eDataConvertTest {
     static Path outputPath_5e;
-    static Path outputPath_pf2;
     static Tui tui;
 
     @BeforeAll
     public static void setupDir() {
-        setupDir("RpgDataConvertTest");
+        setupDir("Tools5eDataConvertTest");
     }
 
     public static void setupDir(String root) {
         tui = new Tui();
         tui.init(null, false, false);
         outputPath_5e = TestUtils.OUTPUT_ROOT_5E.resolve(root).resolve("test-cli");
-        outputPath_pf2 = TestUtils.OUTPUT_ROOT_PF2.resolve(root).resolve("test-cli");
         outputPath_5e.toFile().mkdirs();
-        outputPath_pf2.toFile().mkdirs();
     }
 
     @Test
@@ -96,8 +89,8 @@ public class RpgDataConvertTest {
                     "-o", allIndex.toString(),
                     TestUtils.TOOLS_PATH_5E.toString()));
 
-            args.addAll(getFilesFrom(TestUtils.TOOLS_PATH_5E.resolve("adventure")));
-            args.addAll(getFilesFrom(TestUtils.TOOLS_PATH_5E.resolve("book")));
+            args.addAll(TestUtils.getFilesFrom(TestUtils.TOOLS_PATH_5E.resolve("adventure")));
+            args.addAll(TestUtils.getFilesFrom(TestUtils.TOOLS_PATH_5E.resolve("book")));
 
             LaunchResult result = launcher.launch(args.toArray(new String[0]));
             assertThat(result.exitCode())
@@ -111,18 +104,6 @@ public class RpgDataConvertTest {
                 content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
                 return errors;
             });
-        }
-    }
-
-    List<String> getFilesFrom(Path directory) {
-        try (Stream<Path> paths = Files.walk(directory)) {
-            return paths
-                    .filter(p -> p.toFile().isFile())
-                    .map(Path::toString)
-                    .filter(s -> s.endsWith(".json"))
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -301,34 +282,6 @@ public class RpgDataConvertTest {
                         }
                         return errors;
                     }));
-        }
-    }
-
-    @Test
-    void testLiveData_Pf2eAllSources(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
-            // All, I mean it. Really for real.. ALL.
-            final Path allIndex = outputPath_pf2.resolve("all-index");
-            TestUtils.deleteDir(allIndex);
-
-            List<String> args = new ArrayList<>(List.of("--index",
-                    "-s", "ALL",
-                    "-o", allIndex.toString(),
-                    "-g", "pf2e",
-                    TestUtils.TOOLS_PATH_PF2E.toString()));
-
-            LaunchResult result = launcher.launch(args.toArray(new String[0]));
-            assertThat(result.exitCode())
-                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
-                    .isEqualTo(0);
-
-            Tui tui = new Tui();
-            tui.init(null, false, false);
-            TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
-                List<String> errors = new ArrayList<>();
-                content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
-                return errors;
-            });
         }
     }
 }

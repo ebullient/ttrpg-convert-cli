@@ -409,12 +409,6 @@
           "replace": "\"name\": \"Crafting Goods for the Market\""
         }
       ],
-      "book/book-gmg.json": [
-        {
-          "match": "\"name\": \"\\{@action Strike||Strikes}\"",
-          "replace": "\"name\": \"Strikes\""
-        }
-      ],
       "book/book-som.json": [
         {
           "match": "somebody use the \\{@skill Craft}",

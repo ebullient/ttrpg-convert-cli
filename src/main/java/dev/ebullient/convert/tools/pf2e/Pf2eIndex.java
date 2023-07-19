@@ -159,6 +159,9 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         int dot = filename.indexOf('.');
         String name = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
         String key = Pf2eIndexType.data.createKey(name, null); // e.g. data|book-crb
+        if (imported.containsKey(key)) {
+            return;
+        }
 
         // synthetic node
         ObjectNode newNode = Tui.MAPPER.createObjectNode();
@@ -206,7 +209,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     private void createTraitReference(String key, JsonNode node, Pf2eSources sources) {
         // Precreate category mapping for traits
         String name = SourceField.name.getTextOrEmpty(node);
-        String traitLink = linkifyTrait(name);
+        String traitLink = linkifyTrait(node, name);
 
         Field.categories.getListOfStrings(node, tui()).stream()
                 .filter(c -> !c.equalsIgnoreCase("_alignAbv"))

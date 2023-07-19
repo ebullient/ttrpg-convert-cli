@@ -345,7 +345,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         // {@trait brutal|b2} can have sources added with a pipe in case of homebrew or duplicate trait names,
         // {@trait agile||and optional link text added with another pipe}.",
 
-        Pf2eIndexType trait = Pf2eIndexType.trait;
         String[] parts = match.split("\\|");
         String linkText = parts.length > 2 ? parts[2] : parts[0];
 
@@ -362,10 +361,14 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         }
 
         String source = parts.length > 1 ? parts[1] : index().traitToSource(parts[0]);
-        String key = trait.createKey(parts[0], source);
+        String key = Pf2eIndexType.trait.createKey(parts[0], source);
         JsonNode traitNode = index().getIncludedNode(key);
+        return linkifyTrait(traitNode, linkText);
+    }
 
+    default String linkifyTrait(JsonNode traitNode, String linkText) {
         if (traitNode != null) {
+            String source = SourceField.source.getTextOrEmpty(traitNode);
             List<String> categories = Field.categories.getListOfStrings(traitNode, tui())
                     .stream()
                     .filter(x -> !"_alignAbv".equals(x))
@@ -385,9 +388,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
             return String.format("[%s](%s/%s%s.md \"%s\")",
                     linkText,
-                    trait.relativeRepositoryRoot(index()),
-                    slugify(parts[0]),
-                    trait.isDefaultSource(source) ? "" : "-" + slugify(source),
+                    Pf2eIndexType.trait.relativeRepositoryRoot(index()),
+                    slugify(linkText),
+                    Pf2eIndexType.trait.isDefaultSource(source) ? "" : "-" + slugify(source),
                     title.trim());
         }
         return linkText;

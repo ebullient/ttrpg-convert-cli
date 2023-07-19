@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
@@ -284,5 +285,17 @@ public class TestUtils {
             throw new UncheckedIOException(e);
         }
         Assertions.assertFalse(path.toFile().exists());
+    }
+
+    public static List<String> getFilesFrom(Path directory) {
+        try (Stream<Path> paths = Files.walk(directory)) {
+            return paths
+                    .filter(p -> p.toFile().isFile())
+                    .map(Path::toString)
+                    .filter(s -> s.endsWith(".json"))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
