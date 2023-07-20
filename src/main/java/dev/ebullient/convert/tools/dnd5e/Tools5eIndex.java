@@ -255,9 +255,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             String lookup = null;
             for (String ft : toListOfStrings(node.get("featureType"))) {
                 try {
-                    boolean homebrewType = homebrew == null
-                            ? false
-                            : homebrew.getOptionalFeatureType(ft) != null;
+                    boolean homebrewType = homebrew != null && homebrew.getOptionalFeatureType(ft) != null;
                     // scope the optional feature key (homebrew may conflict)
                     String featKey = (homebrewType
                             ? ft + "-" + homebrew.jsonKey
@@ -844,9 +842,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public OptionalFeatureType getOptionalFeatureTypes(String ft, String source) {
         HomebrewMetaTypes metaTypes = homebrewMetaTypes.get(source);
-        boolean homebrewType = metaTypes == null
-                ? false
-                : metaTypes.getOptionalFeatureType(ft) != null;
+        boolean homebrewType = metaTypes != null && metaTypes.getOptionalFeatureType(ft) != null;
 
         OptionalFeatureType oft = optFeatureIndex.get(ft.toLowerCase());
         if (homebrewType) {

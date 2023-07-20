@@ -100,7 +100,6 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 }
             }
         }
-        ;
         return String.join(", ", list);
     }
 

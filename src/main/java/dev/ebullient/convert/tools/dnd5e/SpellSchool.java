@@ -16,7 +16,7 @@ public interface SpellSchool {
         Illusion,
         Necromancy,
         Transmutation,
-        None;
+        None
     }
 
     static SpellSchool fromEncodedValue(String v) {

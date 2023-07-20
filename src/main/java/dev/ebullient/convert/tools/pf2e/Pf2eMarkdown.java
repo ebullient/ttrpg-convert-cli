@@ -60,9 +60,9 @@ public class Pf2eMarkdown implements MarkdownConverter {
         return this;
     }
 
-    private Pf2eMarkdown writePf2eQuteBase(List<? extends IndexType> types) {
+    private void writePf2eQuteBase(List<? extends IndexType> types) {
         if (types != null && types.isEmpty()) {
-            return this;
+            return;
         }
 
         List<Pf2eQuteBase> compendium = new ArrayList<>();
@@ -86,7 +86,6 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
         writer.writeFiles(index.compendiumFilePath(), compendium);
         writer.writeFiles(index.rulesFilePath(), rules);
-        return this;
     }
 
     @Override
@@ -113,10 +112,8 @@ public class Pf2eMarkdown implements MarkdownConverter {
             }
 
             switch (type) {
-                case ability:
-                    rules.add(Pf2eTypeAbility.createAbility(node, index, false));
-                    break;
-                case book:
+                case ability -> rules.add(Pf2eTypeAbility.createAbility(node, index, false));
+                case book -> {
                     index.tui().warnf("Looking at book: %s", e.getKey());
                     JsonNode data = index.getIncludedNode(key.replace("book|", "data|"));
                     if (data == null) {
@@ -125,28 +122,28 @@ public class Pf2eMarkdown implements MarkdownConverter {
                         List<Pf2eQuteNote> pages = new Json2QuteBook(index, type, node, data).buildBook();
                         rules.addAll(pages);
                     }
-                    break;
-                case condition:
+                }
+                case condition -> {
                     Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
                             t -> new Json2QuteCompose(type, index, "Conditions"));
                     conditions.add(node);
-                    break;
-                case domain:
+                }
+                case domain -> {
                     Json2QuteCompose domains = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
                             t -> new Json2QuteCompose(type, index, "Domains"));
                     domains.add(node);
-                    break;
-                case skill:
+                }
+                case skill -> {
                     Json2QuteCompose skills = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
                             t -> new Json2QuteCompose(type, index, "Skills"));
                     skills.add(node);
-                    break;
-                case table:
+                }
+                case table -> {
                     Pf2eQuteNote table = new Json2QuteTable(index, node).buildNote();
                     rules.add(table);
-                    break;
-                default:
-                    break;
+                }
+                default -> {
+                }
             }
         }
 

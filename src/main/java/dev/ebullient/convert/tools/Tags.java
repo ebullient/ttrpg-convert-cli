@@ -8,7 +8,7 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.TtrpgConfig;
 
 public class Tags {
-    private Set<String> tags = new TreeSet<>();
+    private final Set<String> tags = new TreeSet<>();
     private final CompendiumConfig config;
 
     public Tags() {
@@ -26,9 +26,8 @@ public class Tags {
         }
     }
 
-    public Tags add(String... tag) {
+    public void add(String... tag) {
         tags.add(config.tagOf(tag));
-        return this;
     }
 
     public Tags addAll(List<String> newTags) {

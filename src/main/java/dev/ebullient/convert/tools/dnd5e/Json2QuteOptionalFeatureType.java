@@ -13,7 +13,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
 
-    OptionalFeatureType optionalFeatures;
+    final OptionalFeatureType optionalFeatures;
     final String title;
 
     Json2QuteOptionalFeatureType(Tools5eIndex index, JsonNode node, OptionalFeatureType optionalFeatures) {

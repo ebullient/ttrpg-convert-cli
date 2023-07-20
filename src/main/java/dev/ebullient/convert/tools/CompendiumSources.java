@@ -214,11 +214,9 @@ public abstract class CompendiumSources {
             } else if (!source.equals(other.source))
                 return false;
             if (page == null) {
-                if (other.page != null)
-                    return false;
-            } else if (!page.equals(other.page))
-                return false;
-            return true;
+                return other.page == null;
+            } else
+                return page.equals(other.page);
         }
     }
 }
