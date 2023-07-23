@@ -293,6 +293,30 @@ h1 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   color: transparent;
 }
 
+a.internal-link[title="Common Rarity Trait"] {
+  background: rgb(232, 232, 232);
+  border-color: rgb(232, 232, 232);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(0, 0, 0) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li a.internal-link[title="Common Rarity Trait"] {
+  margin-bottom: 0;
+}
+.callout[data-callout=statblock-pf2e] a.internal-link[title="Common Rarity Trait"] {
+  margin-bottom: 0.75rem;
+}
 a.internal-link[title="Uncommon Rarity Trait"] {
   background: rgb(152, 81, 61);
   border-color: rgb(152, 81, 61);
@@ -413,7 +437,7 @@ li a.internal-link[title*="Size Trait"] {
 .callout[data-callout=statblock-pf2e] a.internal-link[title*="Size Trait"] {
   margin-bottom: 0.75rem;
 }
-a.internal-link[title*="Class Trait"], a.internal-link[title*="Combat Trait"], a.internal-link[title*="Creature Trait"], a.internal-link[title*="Creature Type Trait"], a.internal-link[title*="Effect Trait"], a.internal-link[title*="Element Trait"], a.internal-link[title*="Feat Trait"], a.internal-link[title*="General Trait"], a.internal-link[title*="Hazard Trait"], a.internal-link[title*="Item Trait"], a.internal-link[title*="School Trait"], a.internal-link[title*="Spell Trait"], a.internal-link[title*="Tradition Trait"], a.internal-link[title*="Weapon Trait"] {
+a.internal-link[title*="Action & Ability Trait"], a.internal-link[title*="Ancestry & Heritage Trait"], a.internal-link[title*="Armor Trait"], a.internal-link[title*="Class Trait"], a.internal-link[title*="Combat Trait"], a.internal-link[title*="Creature Trait"], a.internal-link[title*="Creature Type Trait"], a.internal-link[title*="Effect Trait"], a.internal-link[title*="Element Trait"], a.internal-link[title*="Equipment Trait"], a.internal-link[title*="Feat Trait"], a.internal-link[title*="General Trait"], a.internal-link[title*="Gravity Trait"], a.internal-link[title*="Hazard Trait"], a.internal-link[title*="Item Trait"], a.internal-link[title*="Morphic Trait"], a.internal-link[title*="Planar Trait"], a.internal-link[title*="Settlement Trait"], a.internal-link[title*="School Trait"], a.internal-link[title*="Spell Trait"], a.internal-link[title*="Tradition Trait"], a.internal-link[title*="Weapon Trait"] {
   background: rgb(97, 20, 5);
   border-color: rgb(97, 20, 5);
   background-clip: border-box;
@@ -431,10 +455,10 @@ a.internal-link[title*="Class Trait"], a.internal-link[title*="Combat Trait"], a
   display: inline-block;
   border-width: 0.0625rem;
 }
-li a.internal-link[title*="Class Trait"], li a.internal-link[title*="Combat Trait"], li a.internal-link[title*="Creature Trait"], li a.internal-link[title*="Creature Type Trait"], li a.internal-link[title*="Effect Trait"], li a.internal-link[title*="Element Trait"], li a.internal-link[title*="Feat Trait"], li a.internal-link[title*="General Trait"], li a.internal-link[title*="Hazard Trait"], li a.internal-link[title*="Item Trait"], li a.internal-link[title*="School Trait"], li a.internal-link[title*="Spell Trait"], li a.internal-link[title*="Tradition Trait"], li a.internal-link[title*="Weapon Trait"] {
+li a.internal-link[title*="Action & Ability Trait"], li a.internal-link[title*="Ancestry & Heritage Trait"], li a.internal-link[title*="Armor Trait"], li a.internal-link[title*="Class Trait"], li a.internal-link[title*="Combat Trait"], li a.internal-link[title*="Creature Trait"], li a.internal-link[title*="Creature Type Trait"], li a.internal-link[title*="Effect Trait"], li a.internal-link[title*="Element Trait"], li a.internal-link[title*="Equipment Trait"], li a.internal-link[title*="Feat Trait"], li a.internal-link[title*="General Trait"], li a.internal-link[title*="Gravity Trait"], li a.internal-link[title*="Hazard Trait"], li a.internal-link[title*="Item Trait"], li a.internal-link[title*="Morphic Trait"], li a.internal-link[title*="Planar Trait"], li a.internal-link[title*="Settlement Trait"], li a.internal-link[title*="School Trait"], li a.internal-link[title*="Spell Trait"], li a.internal-link[title*="Tradition Trait"], li a.internal-link[title*="Weapon Trait"] {
   margin-bottom: 0;
 }
-.callout[data-callout=statblock-pf2e] a.internal-link[title*="Class Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Combat Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Creature Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Creature Type Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Effect Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Element Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Feat Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="General Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Hazard Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Item Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="School Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Spell Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Tradition Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Weapon Trait"] {
+.callout[data-callout=statblock-pf2e] a.internal-link[title*="Action & Ability Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Ancestry & Heritage Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Armor Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Class Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Combat Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Creature Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Creature Type Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Effect Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Element Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Equipment Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Feat Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="General Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Gravity Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Hazard Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Item Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Morphic Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Planar Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Settlement Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="School Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Spell Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Tradition Trait"], .callout[data-callout=statblock-pf2e] a.internal-link[title*="Weapon Trait"] {
   margin-bottom: 0.75rem;
 }
 
