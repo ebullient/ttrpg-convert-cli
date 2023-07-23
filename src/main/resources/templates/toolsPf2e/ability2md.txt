@@ -22,7 +22,9 @@ aliases: ["{resource.name}"]
 - **Trigger**: {resource.trigger}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
-{/if}{#if resource.hasBullets }
+{/if}{#if resource.activity}{#if resource.activity.text }
+- **Activity**: {resource.activity.text}
+{/if}{/if}{#if resource.hasBullets }
 
 {/if}{#if resource.hasEffect }**Effect** {/if}{resource.text}  {#if resource.special }
 
