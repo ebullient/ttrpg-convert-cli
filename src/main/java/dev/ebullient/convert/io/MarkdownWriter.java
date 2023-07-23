@@ -84,6 +84,7 @@ public class MarkdownWriter {
 
     <T extends QuteBase> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
         try {
+            qs.vaultPath(fileMap.dir + "/" + fileMap.fileName);
             writeFile(fileMap, templates.render(qs));
             counts.compute(qs.type().name(), (k, v) -> (v == null) ? 1 : v + 1);
         } catch (IOException e) {
@@ -111,6 +112,8 @@ public class MarkdownWriter {
             Path fd = targetDir.resolve(n.targetPath()).normalize();
             fd.toFile().mkdirs();
             String fileName = Tui.slugify(fn) + (fn.endsWith(".md") ? "" : ".md");
+            String relative = dir.resolve(n.targetPath()).normalize().toString().replace("\\", "/");
+            n.vaultPath(relative + "/" + fileName);
             writeNote(fd, fileName, n);
         }
 

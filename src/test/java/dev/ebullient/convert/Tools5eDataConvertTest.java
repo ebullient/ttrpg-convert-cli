@@ -133,14 +133,17 @@ public class Tools5eDataConvertTest {
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-homebrew.json").toString(),
                     "-o", target.toString(),
                     TestUtils.TOOLS_PATH_5E.toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json")
+                            .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Kobold Press; Book of Lairs.json").toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json")
+                            .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/Darrington Press; Tal'Dorei Campaign Setting Reborn.json")
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Grim Hollow Campaign Guide.json")
                             .toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json")
+                            .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/badooga; Badooga's Psion.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/D&D Wiki; Swashbuckler.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/Foxfire94; Vampire.json").toString(),
@@ -149,7 +152,8 @@ public class Tools5eDataConvertTest {
                     TestUtils.HOMEBREW_PATH_5E
                             .resolve("collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json")
                             .toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
+                    TestUtils.HOMEBREW_PATH_5E
+                            .resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("deity/Frog God Games; The Lost Lands.json").toString());
 
@@ -178,7 +182,6 @@ public class Tools5eDataConvertTest {
                     "--deity", TestUtils.TEST_RESOURCES.resolve("other/deity.txt").toString(),
                     "--feat", TestUtils.TEST_RESOURCES.resolve("other/feat.txt").toString(),
                     "--item", TestUtils.TEST_RESOURCES.resolve("other/item.txt").toString(),
-                    "--name", TestUtils.TEST_RESOURCES.resolve("other/name.txt").toString(),
                     "--note", TestUtils.TEST_RESOURCES.resolve("other/note.txt").toString(),
                     "--race", TestUtils.TEST_RESOURCES.resolve("other/race.txt").toString(),
                     "--spell", TestUtils.TEST_RESOURCES.resolve("other/spell.txt").toString(),
@@ -190,20 +193,42 @@ public class Tools5eDataConvertTest {
                     .isEqualTo(0);
 
             List.of(
-                    // target.resolve("compendium/backgrounds")
+                    target.resolve("compendium/backgrounds"),
                     target.resolve("compendium/classes"),
                     target.resolve("compendium/deities"),
                     target.resolve("compendium/feats"),
                     target.resolve("compendium/items"),
                     target.resolve("compendium/races"),
-                    target.resolve("compendium/spells"))
+                    target.resolve("compendium/spells"),
+                    target.resolve("rules"))
                     .forEach(directory -> TestUtils.assertDirectoryContents(directory, tui, (p, content) -> {
-                        if (content.stream().noneMatch(l -> l.equals("- test")) &&
-                                content.stream().noneMatch(l -> l.startsWith("# Index"))) {
-                            return List.of("Unable to find the - test tag in file " + p);
+                        List<String> errors = new ArrayList<>();
+                        boolean index = false;
+                        boolean frontmatter = false;
+                        boolean foundTestTag = false;
+                        for (String l : content) {
+                            if ("---".equals(l)) {
+                                frontmatter = !frontmatter;
+                            } else if (frontmatter && l.equals("- test")) {
+                                foundTestTag = true;
+                            } else if (l.startsWith("# Index ")) {
+                                index = true;
+                            } else if (l.startsWith("# ") && !l.matches("^# \\[.*]\\(.*\\)")) {
+                                errors.add(
+                                        String.format("H1 does not contain markdown link in %s: %s", p.toString(), l));
+                            }
+
+                            if (l.startsWith("# ")) {
+                                break;
+                            }
                         }
-                        return List.of();
+
+                        if (!index && !foundTestTag) {
+                            errors.add("Unable to find the - test tag in file " + p);
+                        }
+                        return errors;
                     }));
+
         }
     }
 

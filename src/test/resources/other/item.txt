@@ -8,7 +8,7 @@ tags:
 {/for}{/if}
 aliases: ["{resource.name}"]
 ---
-# {resource.name}
+# [{resource.name}]({resource.vaultPath})
 {#if resource.detail }*{resource.detail}*  {/if}
 
 {#if resource.armorClass }

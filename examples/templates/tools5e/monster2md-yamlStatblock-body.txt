@@ -8,7 +8,7 @@ tags:
 {/if}
 aliases: ["{resource.name}"]
 ---
-# {resource.name}
+# [{resource.name}]({resource.vaultPath})
 *Source: {resource.source}*  
 
 {#if resource.description }

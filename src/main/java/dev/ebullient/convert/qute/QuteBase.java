@@ -17,6 +17,8 @@ public class QuteBase {
     public final String text;
     public final Collection<String> tags;
 
+    private String vaultPath;
+
     public QuteBase(CompendiumSources sources, String name, String source, String text, Collection<String> tags) {
         this.sources = sources;
         this.name = name;
@@ -35,6 +37,17 @@ public class QuteBase {
 
     public boolean getHasSections() {
         return text.contains("\n## ");
+    }
+
+    public void vaultPath(String vaultPath) {
+        this.vaultPath = vaultPath;
+    }
+
+    public String getVaultPath() {
+        if (vaultPath != null) {
+            return vaultPath;
+        }
+        return targetPath() + '/' + targetFile();
     }
 
     public List<ImageRef> images() {

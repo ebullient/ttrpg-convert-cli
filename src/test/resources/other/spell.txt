@@ -8,7 +8,7 @@ tags:
 {/for}{/if}
 aliases: ["{resource.name}"]
 ---
-# {resource.name}
+# [{resource.name}]({resource.vaultPath})
 *{resource.level}, {resource.school}{#if resource.ritual} (ritual){/if}*  
 
 - **Casting time:** {resource.time}{#if resource.ritual} unless cast as a ritual{/if}

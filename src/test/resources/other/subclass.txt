@@ -8,7 +8,7 @@ tags:
 {/for}{/if}
 aliases: ["{resource.name}"]
 ---
-# {resource.name}
+# [{resource.name}]({resource.vaultPath})
 *{resource.parentClass}: {resource.subclassTitle}*  
 *Source: {resource.source}*  
 
