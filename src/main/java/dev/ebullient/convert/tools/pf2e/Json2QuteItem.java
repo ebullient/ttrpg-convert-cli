@@ -56,7 +56,9 @@ public class Json2QuteItem extends Json2QuteBase {
                 getContract(tags),
                 getShieldData(),
                 getArmorData(),
-                getWeaponData(tags));
+                getWeaponData(tags),
+                getVariants(tags),
+                Pf2eItem.craftReq.transformTextFrom(rootNode, "; ", this));
     }
 
     private String getPrice(JsonNode rootNode) {
@@ -154,6 +156,30 @@ public class Json2QuteItem extends Json2QuteBase {
         return weaponDataList;
     }
 
+    private List<QuteItem.QuteItemVariant> getVariants(Tags tags) {
+
+        JsonNode variantsNode = Pf2eItem.variants.getFrom(rootNode);
+        if (variantsNode == null)
+            return null;
+
+        List<QuteItem.QuteItemVariant> variantList = new ArrayList<>();
+
+        variantsNode.forEach(e -> {
+            QuteItem.QuteItemVariant variant = new QuteItem.QuteItemVariant();
+            variant.level = Pf2eItemVariant.level.intOrDefault(e, 0);
+            variant.variantType = Pf2eItemVariant.variantType.getTextOrEmpty(e);
+            variant.price = getPrice(e);
+            variant.entries = new ArrayList<>();
+            appendToText(variant.entries, SourceField.entries.getFrom(e), null);
+            variant.craftReq = new ArrayList<>();
+            appendToText(variant.craftReq, Pf2eItemVariant.craftReq.getFrom(e), null);
+
+            variantList.add(variant);
+        });
+
+        return variantList;
+    }
+
     private Map<String, String> getContract(Tags tags) {
         JsonNode contractNode = Pf2eItem.contract.getFrom(rootNode);
         if (contractNode == null) {
@@ -249,6 +275,7 @@ public class Json2QuteItem extends Json2QuteBase {
         comboWeaponData,
         components,
         contract,
+        craftReq,
         dexCap, // shieldData
         duration,
         frequency,
@@ -265,10 +292,19 @@ public class Json2QuteItem extends Json2QuteBase {
         subCategory,
         trigger,
         usage,
+        variants,
         weaponData;
 
         String properName(Pf2eTypeReader convert) {
             return convert.toTitleCase(this.nodeName());
         }
+    }
+
+    enum Pf2eItemVariant implements JsonNodeReader {
+        level,
+        price,
+        entries,
+        variantType,
+        craftReq
     }
 }

@@ -18,6 +18,7 @@ public class QuteItem extends Pf2eQuteBase {
 
     public final QuteItemActivate activate;
     public final String price;
+    public final String craftReq;
     public final String ammunition;
     public final String onset;
     public final String level;
@@ -31,13 +32,15 @@ public class QuteItem extends Pf2eQuteBase {
     public final QuteItemShieldData shield;
     public final QuteItemArmorData armor;
     public final List<QuteItemWeaponData> weapons;
+    public final List<QuteItemVariant> variants;
 
     public QuteItem(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases, QuteItemActivate activate,
             String price, String ammunition, String level, String onset, String access,
             String duration, String category, String group,
             String hands, Map<String, String> usage, Map<String, String> contract,
-            QuteItemShieldData shield, QuteItemArmorData armor, List<QuteItemWeaponData> weapons) {
+            QuteItemShieldData shield, QuteItemArmorData armor, List<QuteItemWeaponData> weapons,
+            List<QuteItemVariant> variants, String craftReq) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -57,6 +60,8 @@ public class QuteItem extends Pf2eQuteBase {
         this.shield = shield;
         this.armor = armor;
         this.weapons = weapons;
+        this.variants = variants;
+        this.craftReq = craftReq;
     }
 
     @TemplateData
@@ -160,6 +165,33 @@ public class QuteItem extends Pf2eQuteBase {
                         .collect(Collectors.joining("; "));
             }
             return result;
+        }
+    }
+
+    @TemplateData
+    public static class QuteItemVariant {
+        public String variantType;
+        public int level;
+        public String price;
+        public List<String> entries;
+        public List<String> craftReq;
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(String.format("#### %s *Item %d*\n\n", variantType, level));
+            sb.append(String.format("- **Price** %s\n", price));
+
+            if (!craftReq.isEmpty()) {
+                sb.append("- **Craft Requirements** ");
+                sb.append(String.join("; ", craftReq));
+            }
+            if (!entries.isEmpty()) {
+                sb.append("\n");
+                sb.append(String.join("\n", entries));
+            }
+
+            return sb.toString();
         }
     }
 }
