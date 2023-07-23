@@ -36,6 +36,12 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
 
             final String abilitySrc = JsonTextConverter.parseState.getSource(Pf2eIndexType.ability);
 
+            // handle abilities in entries
+            String freq = convert.index().getFrequency(frequency.getFrom(node));
+            if (freq == null) {
+                freq = convert.index().getFrequency(node);
+            }
+
             Tags tags = new Tags();
             return new QuteAbility(
                     name, abilityText, tags, convert.collectTraitsFrom(node, tags),
@@ -44,7 +50,7 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
                     requirements.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert),
                     trigger.replaceTextFrom(node, convert),
-                    convert.index().getFrequency(frequency.getFrom(node)),
+                    freq,
                     special.replaceTextFrom(node, convert),
                     embedded) {
                 @Override
