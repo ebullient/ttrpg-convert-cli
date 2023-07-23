@@ -159,6 +159,27 @@ body .is-live-preview .callout[data-callout=statblock-pf2e]:has(.creature-statbl
   min-width: 40%;
 }
 
+body .callout[data-callout=statblock-pf2e][title="Common Rarity Trait"] {
+  background: rgb(232, 232, 232);
+  border-color: rgb(232, 232, 232);
+  background-clip: border-box;
+  border-radius: 0.3125rem;
+  border-style: solid;
+  color: rgb(0, 0, 0) !important;
+  cursor: help;
+  font-weight: 700;
+  padding: 0.0625rem;
+  margin: 0.125rem;
+  text-align: center;
+  text-indent: 0;
+  word-break: keep-all;
+  font-style: normal;
+  display: inline-block;
+  border-width: 0.0625rem;
+}
+li body .callout[data-callout=statblock-pf2e][title="Common Rarity Trait"] {
+  margin-bottom: 0;
+}
 body .callout[data-callout=statblock-pf2e][title="Uncommon Rarity Trait"] {
   background: rgb(152, 81, 61);
   border-color: rgb(152, 81, 61);
@@ -259,7 +280,7 @@ body .callout[data-callout=statblock-pf2e][title*="Size Trait"] {
 li body .callout[data-callout=statblock-pf2e][title*="Size Trait"] {
   margin-bottom: 0;
 }
-body .callout[data-callout=statblock-pf2e][title*="Class Trait"], body .callout[data-callout=statblock-pf2e][title*="Combat Trait"], body .callout[data-callout=statblock-pf2e][title*="Creature Trait"], body .callout[data-callout=statblock-pf2e][title*="Creature Type Trait"], body .callout[data-callout=statblock-pf2e][title*="Effect Trait"], body .callout[data-callout=statblock-pf2e][title*="Element Trait"], body .callout[data-callout=statblock-pf2e][title*="Feat Trait"], body .callout[data-callout=statblock-pf2e][title*="General Trait"], body .callout[data-callout=statblock-pf2e][title*="Hazard Trait"], body .callout[data-callout=statblock-pf2e][title*="Item Trait"], body .callout[data-callout=statblock-pf2e][title*="School Trait"], body .callout[data-callout=statblock-pf2e][title*="Spell Trait"], body .callout[data-callout=statblock-pf2e][title*="Tradition Trait"], body .callout[data-callout=statblock-pf2e][title*="Weapon Trait"] {
+body .callout[data-callout=statblock-pf2e][title*="Action & Ability Trait"], body .callout[data-callout=statblock-pf2e][title*="Ancestry & Heritage Trait"], body .callout[data-callout=statblock-pf2e][title*="Armor Trait"], body .callout[data-callout=statblock-pf2e][title*="Class Trait"], body .callout[data-callout=statblock-pf2e][title*="Combat Trait"], body .callout[data-callout=statblock-pf2e][title*="Creature Trait"], body .callout[data-callout=statblock-pf2e][title*="Creature Type Trait"], body .callout[data-callout=statblock-pf2e][title*="Effect Trait"], body .callout[data-callout=statblock-pf2e][title*="Element Trait"], body .callout[data-callout=statblock-pf2e][title*="Equipment Trait"], body .callout[data-callout=statblock-pf2e][title*="Feat Trait"], body .callout[data-callout=statblock-pf2e][title*="General Trait"], body .callout[data-callout=statblock-pf2e][title*="Gravity Trait"], body .callout[data-callout=statblock-pf2e][title*="Hazard Trait"], body .callout[data-callout=statblock-pf2e][title*="Item Trait"], body .callout[data-callout=statblock-pf2e][title*="Morphic Trait"], body .callout[data-callout=statblock-pf2e][title*="Planar Trait"], body .callout[data-callout=statblock-pf2e][title*="Settlement Trait"], body .callout[data-callout=statblock-pf2e][title*="School Trait"], body .callout[data-callout=statblock-pf2e][title*="Spell Trait"], body .callout[data-callout=statblock-pf2e][title*="Tradition Trait"], body .callout[data-callout=statblock-pf2e][title*="Weapon Trait"] {
   background: rgb(97, 20, 5);
   border-color: rgb(97, 20, 5);
   background-clip: border-box;
@@ -276,7 +297,7 @@ body .callout[data-callout=statblock-pf2e][title*="Class Trait"], body .callout[
   font-style: normal;
   display: inline-block;
 }
-li body .callout[data-callout=statblock-pf2e][title*="Class Trait"], li body .callout[data-callout=statblock-pf2e][title*="Combat Trait"], li body .callout[data-callout=statblock-pf2e][title*="Creature Trait"], li body .callout[data-callout=statblock-pf2e][title*="Creature Type Trait"], li body .callout[data-callout=statblock-pf2e][title*="Effect Trait"], li body .callout[data-callout=statblock-pf2e][title*="Element Trait"], li body .callout[data-callout=statblock-pf2e][title*="Feat Trait"], li body .callout[data-callout=statblock-pf2e][title*="General Trait"], li body .callout[data-callout=statblock-pf2e][title*="Hazard Trait"], li body .callout[data-callout=statblock-pf2e][title*="Item Trait"], li body .callout[data-callout=statblock-pf2e][title*="School Trait"], li body .callout[data-callout=statblock-pf2e][title*="Spell Trait"], li body .callout[data-callout=statblock-pf2e][title*="Tradition Trait"], li body .callout[data-callout=statblock-pf2e][title*="Weapon Trait"] {
+li body .callout[data-callout=statblock-pf2e][title*="Action & Ability Trait"], li body .callout[data-callout=statblock-pf2e][title*="Ancestry & Heritage Trait"], li body .callout[data-callout=statblock-pf2e][title*="Armor Trait"], li body .callout[data-callout=statblock-pf2e][title*="Class Trait"], li body .callout[data-callout=statblock-pf2e][title*="Combat Trait"], li body .callout[data-callout=statblock-pf2e][title*="Creature Trait"], li body .callout[data-callout=statblock-pf2e][title*="Creature Type Trait"], li body .callout[data-callout=statblock-pf2e][title*="Effect Trait"], li body .callout[data-callout=statblock-pf2e][title*="Element Trait"], li body .callout[data-callout=statblock-pf2e][title*="Equipment Trait"], li body .callout[data-callout=statblock-pf2e][title*="Feat Trait"], li body .callout[data-callout=statblock-pf2e][title*="General Trait"], li body .callout[data-callout=statblock-pf2e][title*="Gravity Trait"], li body .callout[data-callout=statblock-pf2e][title*="Hazard Trait"], li body .callout[data-callout=statblock-pf2e][title*="Item Trait"], li body .callout[data-callout=statblock-pf2e][title*="Morphic Trait"], li body .callout[data-callout=statblock-pf2e][title*="Planar Trait"], li body .callout[data-callout=statblock-pf2e][title*="Settlement Trait"], li body .callout[data-callout=statblock-pf2e][title*="School Trait"], li body .callout[data-callout=statblock-pf2e][title*="Spell Trait"], li body .callout[data-callout=statblock-pf2e][title*="Tradition Trait"], li body .callout[data-callout=statblock-pf2e][title*="Weapon Trait"] {
   margin-bottom: 0;
 }
 body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Single Action"] {
@@ -351,3 +372,5 @@ body .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][tit
   height: 1em;
   color: transparent;
 }
+
+/*# sourceMappingURL=pf2-only-statblocks.css.map */

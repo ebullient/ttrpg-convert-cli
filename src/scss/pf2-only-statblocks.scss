@@ -29,6 +29,31 @@
 
 body .callout[data-callout="statblock-pf2e"] {
 
+  &[title="Common Rarity Trait"] {
+    background: rgb(232, 232, 232);
+    border-color: rgb(232, 232, 232);
+
+    background-clip: border-box;
+    border-radius: 0.3125rem;
+    border-style: solid;
+    color: rgb(0, 0, 0) !important;
+    cursor: help;
+    font-weight: 700;
+    padding: 0.0625rem;
+    margin: 0.125rem;
+    text-align: center;
+    text-indent: 0;
+    word-break: keep-all;
+    font-style: normal;
+    display: inline-block;
+
+    border-width: 0.0625rem;
+
+    li & {
+      margin-bottom: 0;
+    }
+  }
+
   &[title="Uncommon Rarity Trait"] {
     background: rgb(152, 81, 61);
     border-color: rgb(152, 81, 61);
@@ -69,17 +94,24 @@ body .callout[data-callout="statblock-pf2e"] {
   }
 
   // Other Traits
-
+  &[title*="Action & Ability Trait"],
+  &[title*="Ancestry & Heritage Trait"],
+  &[title*="Armor Trait"],
   &[title*="Class Trait"],
   &[title*="Combat Trait"],
   &[title*="Creature Trait"],
   &[title*="Creature Type Trait"],
   &[title*="Effect Trait"],
   &[title*="Element Trait"],
+  &[title*="Equipment Trait"],
   &[title*="Feat Trait"],
   &[title*="General Trait"],
+  &[title*="Gravity Trait"],
   &[title*="Hazard Trait"],
   &[title*="Item Trait"],
+  &[title*="Morphic Trait"],
+  &[title*="Planar Trait"],
+  &[title*="Settlement Trait"],
   &[title*="School Trait"],
   &[title*="Spell Trait"],
   &[title*="Tradition Trait"],
