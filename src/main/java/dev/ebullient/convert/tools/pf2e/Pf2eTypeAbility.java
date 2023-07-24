@@ -46,7 +46,7 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
             return new QuteAbility(
                     name, abilityText, tags, convert.collectTraitsFrom(node, tags),
                     Pf2eTypeReader.getQuteActivity(node, Pf2eTypeReader.Pf2eFeat.activity, convert),
-                    components.replaceTextFrom(node, convert),
+                    components.transformTextFrom(node, "; ", convert),
                     requirements.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert),
                     trigger.replaceTextFrom(node, convert),
