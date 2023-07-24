@@ -10,11 +10,13 @@ tags:
 aliases: ["{resource.name}"]
 ---
 %%-- Embedded/inline ability starts on the next line. --%%
-{#if resource.embedded }title: {#else}# {/if}{resource.name}{#if resource.activity} {resource.activity}{/if}{#if resource.components} {resource.components}{/if}
+{#if resource.embedded }title: {#else}# {/if}{resource.name}{#if resource.activity} {resource.activity}{/if}
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if}
 
-{#if resource.cost }
+{#if resource.activity}{#if resource.activity.text }
+- **Activation**: {resource.activity.text} {#if resource.components}({resource.components}){/if}
+{/if}{/if}{#if resource.cost }
 - **Cost**: {resource.cost}
 {/if}{#if resource.frequency }
 - **Frequency**: {resource.frequency}
@@ -22,9 +24,7 @@ aliases: ["{resource.name}"]
 - **Trigger**: {resource.trigger}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
-{/if}{#if resource.activity}{#if resource.activity.text }
-- **Activity**: {resource.activity.text}
-{/if}{/if}{#if resource.hasBullets }
+{/if}{#if resource.hasBullets }
 
 {/if}{#if resource.hasEffect }**Effect** {/if}{resource.text}  {#if resource.special }
 
