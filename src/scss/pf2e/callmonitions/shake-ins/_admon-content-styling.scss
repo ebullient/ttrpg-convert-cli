@@ -13,11 +13,13 @@
     &.is-unresolved {
       color: var.$very-dark-teal;
 
-
       &:hover {
         color: lighten(var.$very-dark-teal, 20%);
-
       }
+    }
+
+    &:is([href*='#Actions']) {
+      color: transparent;
     }
   }
 
@@ -137,7 +139,6 @@
 
   a.internal-link {
     color: var.$light-yellow;
-
 
     &:hover {
       color: darken(var.$light-yellow, 20);
