@@ -15,7 +15,7 @@ aliases: ["{resource.name}"]
 {/if}
 
 {#if resource.activity}{#if resource.activity.text }
-- **Activation**: {resource.activity.text} {#if resource.components}({resource.components}){/if}
+- **Activate**: {resource.activity.text} {#if resource.components}({resource.components}){/if}
 {/if}{/if}{#if resource.cost }
 - **Cost**: {resource.cost}
 {/if}{#if resource.frequency }
