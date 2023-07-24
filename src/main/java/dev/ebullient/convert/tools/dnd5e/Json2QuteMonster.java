@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
@@ -339,6 +340,9 @@ public class Json2QuteMonster extends Json2QuteCommon {
             return a1.get(0).get("special").asText();
         }
 
+        String prefix = MonsterFields.alignmentPrefix.getTextOrDefault(rootNode, "");
+        prefix = (prefix.isEmpty() ? "" : prefix + " ");
+
         String choices = a1.toString();
         if (choices.contains("note")) {
             List<String> notes = new ArrayList<>(List.of(choices.split("},\\{")));
@@ -348,10 +352,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 String note = notes.get(i).substring(pos + 4).replaceAll("[^A-Za-z ]+", "");
                 notes.set(i, String.format("%s (%s)", alignment, note));
             }
-            return String.join(", ", notes);
+            return prefix + String.join(", ", notes);
         } else {
             choices = toAlignmentCharacters(choices);
-            return mapAlignmentToString(choices);
+            return prefix + mapAlignmentToString(choices);
         }
     }
 
@@ -372,7 +376,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         List<Spellcasting> casting = new ArrayList<>();
         array.forEach(scNode -> {
             Spellcasting spellcasting = new Spellcasting();
-            spellcasting.name = getTextOrEmpty(scNode, "name");
+            spellcasting.name = SourceField.name.replaceTextFrom(scNode, this);
 
             spellcasting.headerEntries = new ArrayList<>();
             appendToText(spellcasting.headerEntries, scNode.get("headerEntries"), null);
@@ -696,5 +700,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
             this.special = value == null ? "" : value + "";
         }
+    }
+
+    enum MonsterFields implements JsonNodeReader {
+        alignment,
+        alignmentPrefix
     }
 }

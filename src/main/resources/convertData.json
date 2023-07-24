@@ -348,7 +348,7 @@
     "sources": [
       "actions.json", "adventures.json", "books.json",
       "backgrounds.json", "fluff-backgrounds.json",
-      "bestiary", "bestiary/traits.json", "bestiary/legendarygroups.json",
+      "bestiary", "bestiary/legendarygroups.json",
       "class", "conditionsdiseases.json",
       "deities.json",
       "feats.json", "optionalfeatures.json",
