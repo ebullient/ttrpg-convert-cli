@@ -494,14 +494,14 @@ public interface JsonSource extends JsonTextReplacement {
         if (link.matches("\\[.*]\\(.*\\)")) {
             maybeAddBlankLine(text);
             if (type == Tools5eIndexType.monster) {
-                text.add("!" + link.replace(")", "#^statblock)"));
+                text.add("!" + link.replaceAll("\\)$", "#^statblock)"));
             } else {
                 text.add("> [!summary] " + name);
                 text.add("> !" + link);
             }
         } else {
             text.add(link);
-            tui().warnf("statblock entry did not resolve into an embedded link: %s", entry);
+            tui().warnf("statblock entry did not resolve to a markdown link: %s", entry);
         }
     }
 
@@ -1048,8 +1048,7 @@ public interface JsonSource extends JsonTextReplacement {
         homebrew,
 
         // misc
-        hr,
-        ;
+        hr;
 
         @Override
         public String value() {
