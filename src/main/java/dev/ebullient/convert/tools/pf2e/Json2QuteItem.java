@@ -167,7 +167,7 @@ public class Json2QuteItem extends Json2QuteBase {
         variantsNode.forEach(e -> {
             QuteItem.QuteItemVariant variant = new QuteItem.QuteItemVariant();
             variant.level = Pf2eItemVariant.level.intOrDefault(e, 0);
-            variant.variantType = Pf2eItemVariant.variantType.getTextOrEmpty(e);
+            variant.variantType = Pf2eItemVariant.variantType.replaceTextFrom(e, this);
             variant.price = getPrice(e);
             variant.entries = new ArrayList<>();
             appendToText(variant.entries, SourceField.entries.getFrom(e), null);
