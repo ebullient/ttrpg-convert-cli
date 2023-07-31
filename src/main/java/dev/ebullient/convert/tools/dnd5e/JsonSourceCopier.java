@@ -215,7 +215,8 @@ public class JsonSourceCopier implements JsonSource {
         }
 
         if (_trait != null) {
-            String key = Tools5eIndexType.trait.createKey(_trait);
+            // template = templateData.monsterTemplate.find(t => t.name.toLowerCase() === copyMeta._trait.name.toLowerCase() && t.source.toLowerCase() === copyMeta._trait.source.toLowerCase());
+            String key = Tools5eIndexType.monsterTemplate.createKey(_trait);
             JsonNode trait = index.getOrigin(key);
             if (trait == null) {
                 tui().warn("Unable to find trait for " + key);

@@ -105,7 +105,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
             Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
             Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.trait.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.monsterTemplate.withArrayFrom(node, this::addToIndex);
             Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
             Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
             Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
@@ -349,7 +349,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             Tools5eSources.constructSources(node);
 
             if (type == Tools5eIndexType.subrace ||
-                    type == Tools5eIndexType.trait ||
+                    type == Tools5eIndexType.monsterTemplate ||
                     type == Tools5eIndexType.legendaryGroup ||
                     type == Tools5eIndexType.deity) {
                 // subraces are pulled in by races
