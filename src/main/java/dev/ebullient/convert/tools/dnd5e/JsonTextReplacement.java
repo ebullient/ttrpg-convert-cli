@@ -155,8 +155,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 return formatDice(parts[0]);
             });
 
-            result = chancePattern.matcher(result)
-                    .replaceAll((match) -> match.group(1) + "% chance");
+            result = chancePattern.matcher(result).replaceAll((match) -> {
+                String[] parts = match.group(1).split("\\|");
+                return parts[0] + "% chance";
+            });
 
             result = skillCheckPattern.matcher(result).replaceAll((match) -> {
                 SkillOrAbility skill = SkillOrAbility.fromTextValue(match.group(1));
