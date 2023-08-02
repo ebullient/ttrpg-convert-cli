@@ -304,40 +304,55 @@ await moveCompendiumFile("adventures",
 await moveCompendiumFile("adventures", 
         "tales-from-the-yawning-portal-dead-in-thay/img/durnan.jpg",
         "tales-from-the-yawning-portal-against-the-giants/img/durnan.jpg");
-await moveCompendiumFile("bestiary", 
+await moveCompendiumFile("bestiary",
         "fiend/img/archfiend-of-ifnir.webp",
         "beast/img/archfiend-of-ifnir.webp");
-await moveCompendiumFile("bestiary", 
+await moveCompendiumFile("bestiary",
         "humanoid/img/bhaal.webp",
         "beast/img/bhaal.webp");
-await moveCompendiumFile("bestiary", 
+await moveCompendiumFile("bestiary",
         "npc/img/four-armed-troll.jpg",
         "giant/img/four-armed-troll.jpg");
-await moveCompendiumFile("bestiary", 
+await moveCompendiumFile("bestiary",
         "beast/img/river-serpent.webp",
         "monstrosity/img/river-serpent.webp");
-await moveCompendiumFile("bestiary", 
+await moveCompendiumFile("bestiary",
         "humanoid/img/045-05-005-divas-attack.webp",
         "npc/img/045-05-005-divas-attack.webp");
-await moveCompendiumFile("bestiary", 
+await moveCompendiumFile("bestiary",
         "construct/img/sacred-statue.webp",
         "undead/img/sacred-statue.webp");
-await moveCompendiumFile("books", 
+await moveCompendiumFile("bestiary",
+        "dragon/adult-red-dracolich-tce.md",
+        "undead/adult-red-dracolich-tce.md");
+await moveCompendiumFile("bestiary",
+        "dragon/token/adult-red-dracolich.png",
+        "undead/token/adult-red-dracolich.png");
+await moveCompendiumFile("bestiary",
+        "giant/ogre-skeleton-tftyp.md",
+        "undead/ogre-skeleton-tftyp.md");
+await moveCompendiumFile("bestiary",
+        "giant/token/ogre-skeleton.png",
+        "undead/token/ogre-skeleton.png");
+await moveCompendiumFile("books",
         "dungeon-masters-screen-spelljammer/1-.md",
         "dungeon-masters-screen-spelljammer/1.md");
-await moveCompendiumFile("items", 
+await moveCompendiumFile("items",
         "ball-bearings-bag-of-1-000.md",
         "ball-bearings-bag-of-1000.md");
-await moveRulesFile("variant-rules", 
+await moveCompendiumFile("tables",
+        "names-lizardfolk.md",
+        "lizardfolk-names-general-gos.md");
+await moveRulesFile("variant-rules",
         "action-points.md",
         "action-points-uaeberron.md");
-await moveRulesFile("variant-rules", 
+await moveRulesFile("variant-rules",
         "adamantine-weapons.md",
         "adamantine-weapons-xge.md");
-await moveRulesFile("variant-rules", 
+await moveRulesFile("variant-rules"
         "common-languages.md",
         "common-languages-uawge.md");
-await moveRulesFile("variant-rules", 
+await moveRulesFile("variant-rules",
         "crashing-a-ship.md",
         "crashing-a-ship-uaofshipsandsea.md");
 await moveRulesFile("variant-rules", 
