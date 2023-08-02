@@ -36,15 +36,18 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         }
         boolean pushed = parseState.push(getSources(), rootNode);
         try {
-            List<String> text = table.stream()
-                    .map(x -> x.replaceAll("^\\|\\s*\\d+\\s*", ""))
+            List<String> rows = table.stream()
+                    .filter(x -> x.startsWith("|") && !x.contains("---"))
+                    .map(x -> x.replaceAll("^\\|\\s*[\\d-]+\\s*", ""))
                     .collect(Collectors.toList());
 
             String blockid = "^" + Tui.slugify(title);
-            text.add(0, String.format("`dice: [](%s.md#%s)`", slugify(title), blockid));
-            text.add(1, "");
+            List<String> text = new ArrayList<>();
+            text.add(String.format("`dice: [](%s.md#%s)`", slugify(title), blockid));
+            text.add("");
+            text.addAll(listToTable(title, rows));
 
-            notes.add(new Tools5eQuteNote(title, null, listToTable(title, text), new Tags())
+            notes.add(new Tools5eQuteNote(title, null, text, new Tags())
                     .withTargetPath(targetDir));
         } finally {
             parseState.pop(pushed);
