@@ -24,6 +24,8 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -90,6 +92,7 @@ public class Tui {
             options.setDefaultScalarStyle(ScalarStyle.PLAIN);
             options.setDefaultFlowStyle(FlowStyle.AUTO);
             options.setPrettyFlow(true);
+
             yamlMapper = initMapper(new ObjectMapper(new YAMLFactoryBuilder(new YAMLFactory())
                     .dumperOptions(options).build()))
                     .setSerializationInclusion(Include.NON_DEFAULT);
@@ -110,8 +113,13 @@ public class Tui {
         if (y == null) {
             DumperOptions options = new DumperOptions();
             options.setDefaultScalarStyle(ScalarStyle.PLAIN);
+            options.setDefaultFlowStyle(FlowStyle.BLOCK);
             options.setPrettyFlow(true);
-            y = plainYaml = new Yaml(options);
+
+            Representer representer = new Representer(options);
+            representer.addClassTag(dev.ebullient.convert.tools.dnd5e.qute.Trait.class, Tag.MAP); //
+
+            y = plainYaml = new Yaml(representer, options);
         }
         return y;
     }
@@ -124,7 +132,11 @@ public class Tui {
             DumperOptions options = new DumperOptions();
             options.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED);
             options.setPrettyFlow(true);
-            y = quotedYaml = new Yaml(options);
+
+            Representer representer = new Representer(options);
+            representer.addClassTag(dev.ebullient.convert.tools.dnd5e.qute.Trait.class, Tag.MAP); //
+
+            y = quotedYaml = new Yaml(representer, options);
         }
         return y;
     }
