@@ -1003,7 +1003,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         public String getFilename() {
-            return "list-" + Tui.slugify(title) + Tools5eQuteBase.sourceIfNotCore(source);
+            return "list-" + Tui.slugify(title)
+                    + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.optionalFeatureTypes);
         }
 
         private String getSource(HomebrewMetaTypes homebrewMeta) {

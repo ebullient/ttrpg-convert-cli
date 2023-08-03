@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
@@ -9,25 +10,25 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 public class Tools5eQuteBase extends QuteBase {
 
     public Tools5eQuteBase(CompendiumSources sources, String name, String source, String text, Tags tags) {
-        super(sources, name, source, text, tags.build());
+        super(sources, name, source, text, tags);
     }
 
-    public static String sourceIfNotCore(String source) {
+    public static String sourceIfNotDefault(Tools5eSources sources) {
+        return sourceIfNotDefault(sources.primarySource(), sources.getType());
+    }
+
+    public static String sourceIfNotDefault(String source, Tools5eIndexType type) {
         switch (source.toLowerCase()) {
             case "phb":
             case "mm":
             case "dmg":
                 return "";
             default:
+                if (type != null && source.equalsIgnoreCase(type.defaultSourceString())) {
+                    return "";
+                }
                 return "-" + source.toLowerCase();
         }
-    }
-
-    public static String sourceIfNotDefault(String source, String defaultSource) {
-        if (!source.equalsIgnoreCase(defaultSource)) {
-            return "-" + source.toLowerCase();
-        }
-        return "";
     }
 
     public static String getRelativePath(Tools5eIndexType type) {
@@ -56,8 +57,13 @@ public class Tools5eQuteBase extends QuteBase {
         return Tools5eQuteBase.getRelativePath(Tools5eIndexType.monster) + "/" + (isNpc ? "npc" : type);
     }
 
+    public static String getClassResource(String className, String classSource) {
+        return Tui.slugify(className) + Tools5eQuteBase.sourceIfNotDefault(classSource, Tools5eIndexType.classtype);
+    }
+
     public static String getSubclassResource(String subclass, String parentClass, String subclassSource) {
-        return parentClass + "-" + subclass + Tools5eQuteBase.sourceIfNotCore(subclassSource);
+        return Tui.slugify(parentClass) + "-" + Tui.slugify(subclass) +
+                Tools5eQuteBase.sourceIfNotDefault(subclassSource, Tools5eIndexType.subclass);
     }
 
     public static String getDeityResourceName(String name, String pantheon) {
@@ -66,7 +72,11 @@ public class Tools5eQuteBase extends QuteBase {
 
     @Override
     public String targetFile() {
-        return getName() + sourceIfNotCore(sources().primarySource());
+        Tools5eSources sources = (Tools5eSources) sources();
+        if (sources != null) {
+            return getName() + sourceIfNotDefault(sources);
+        }
+        return getName();
     }
 
     public String targetPath() {

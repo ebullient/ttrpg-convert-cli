@@ -1,9 +1,9 @@
 package dev.ebullient.convert.qute;
 
-import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.tools.CompendiumSources;
+import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -11,15 +11,15 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class QuteNote extends QuteBase {
 
-    public QuteNote(String name, String sourceText, List<String> text, Collection<String> tags) {
+    public QuteNote(String name, String sourceText, List<String> text, Tags tags) {
         super(null, name, sourceText, String.join("\n", text), tags);
     }
 
-    public QuteNote(String name, String sourceText, String text, Collection<String> tags) {
+    public QuteNote(String name, String sourceText, String text, Tags tags) {
         super(null, name, sourceText, text, tags);
     }
 
-    public QuteNote(CompendiumSources sources, String name, String sourceText, String text, Collection<String> tags) {
+    public QuteNote(CompendiumSources sources, String name, String sourceText, String text, Tags tags) {
         super(sources, name, sourceText, text, tags);
     }
 

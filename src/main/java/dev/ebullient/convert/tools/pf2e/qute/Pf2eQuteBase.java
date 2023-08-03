@@ -22,7 +22,7 @@ public class Pf2eQuteBase extends QuteBase {
     }
 
     public Pf2eQuteBase(Pf2eSources sources, String name, String source, String text, Tags tags) {
-        super(sources, name, source, text, tags.build());
+        super(sources, name, source, text, tags);
         this.type = sources.getType();
     }
 

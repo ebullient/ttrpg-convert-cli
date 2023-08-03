@@ -361,14 +361,14 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         if (type == Tools5eIndexType.background) {
             return linkOrText(linkText, key, dirName,
                     Json2QuteBackground.decoratedBackgroundName(name)
-                            + Tools5eQuteBase.sourceIfNotCore(linkSource.primarySource()));
+                            + Tools5eQuteBase.sourceIfNotDefault(linkSource));
         } else if (type == Tools5eIndexType.race) {
             return linkOrText(linkText, key, dirName,
                     decoratedRaceName(jsonSource, linkSource)
-                            + Tools5eQuteBase.sourceIfNotDefault(linkSource.primarySource(), type.defaultSourceString()));
+                            + Tools5eQuteBase.sourceIfNotDefault(linkSource));
         }
         return linkOrText(linkText, key, dirName,
-                decoratedTypeName(linkSource) + Tools5eQuteBase.sourceIfNotCore(linkSource.primarySource()));
+                decoratedTypeName(linkSource) + Tools5eQuteBase.sourceIfNotDefault(linkSource));
     }
 
     default String linkifyCardType(String match) {
@@ -384,7 +384,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         if (index().isExcluded(key)) {
             return cardName;
         }
-        String resource = slugify(deckName + Tools5eQuteBase.sourceIfNotCore(source));
+        String resource = slugify(deckName + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.card));
         return String.format("[%s](%s%s/%s.md#%s)", cardName,
                 index().compendiumVaultRoot(), dirName,
                 resource, cardName.replace(" ", "%20"));
@@ -444,7 +444,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         } else {
             String key = index().getAliasOrDefault(Tools5eIndexType.classtype.createKey(className, classSource));
             return linkOrText(linkText, key, relativePath,
-                    className + Tools5eQuteBase.sourceIfNotCore(classSource));
+                    Tools5eQuteBase.getClassResource(className, classSource));
         }
     }
 
@@ -473,7 +473,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         Tools5eSources featureSources = Tools5eSources.findSources(classFeatureKey);
 
         String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
-        String resource = slugify(className + Tools5eQuteBase.sourceIfNotCore(classSource));
+        String resource = Tools5eQuteBase.getClassResource(className, classSource);
 
         String relativePath = Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype);
         return String.format("[%s](%s%s/%s.md#%s)", linkText,
@@ -495,7 +495,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         Tools5eSources linkSources = Tools5eSources.findSources(featureJson);
         return linkOrText(linkText, featureKey,
                 Tools5eQuteBase.getRelativePath(Tools5eIndexType.optionalfeature),
-                decoratedTypeName(linkSources) + Tools5eQuteBase.sourceIfNotCore(linkSources.primarySource()));
+                decoratedTypeName(linkSources) + Tools5eQuteBase.sourceIfNotDefault(linkSources));
     }
 
     default String linkifyOptionalFeatureType(MatchResult match) {
@@ -595,7 +595,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
         boolean isNpc = Json2QuteMonster.isNpc(jsonSource);
         return linkOrText(linkText, key, Tools5eQuteBase.monsterPath(isNpc, type),
-                resourceName + Tools5eQuteBase.sourceIfNotCore(sources.primarySource()));
+                resourceName + Tools5eQuteBase.sourceIfNotDefault(sources));
     }
 
     default String linkifyVariant(String variant) {
@@ -607,7 +607,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return variant + " from " + TtrpgConfig.sourceToLongName(source);
         } else {
             return String.format("[%s](%svariant-rules/%s.md)",
-                    variant, index().rulesVaultRoot(), slugify(variant) + Tools5eQuteBase.sourceIfNotCore(source));
+                    variant, index().rulesVaultRoot(),
+                    slugify(variant) + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.variantrule));
         }
     }
 

@@ -265,7 +265,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 className,
                 classKey,
                 Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype),
-                className + Tools5eQuteBase.sourceIfNotCore(classSource));
+                Tools5eQuteBase.getClassResource(className, classSource));
     }
 
     private String getSubclass(Tags tags, String className, String classSource, String subclassName,

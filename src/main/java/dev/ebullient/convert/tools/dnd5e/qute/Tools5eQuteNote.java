@@ -13,15 +13,15 @@ public class Tools5eQuteNote extends QuteNote {
     String template;
 
     public Tools5eQuteNote(CompendiumSources sources, String name, String sourceText, String text, Tags tags) {
-        super(sources, name, sourceText, text, tags.build());
+        super(sources, name, sourceText, text, tags);
     }
 
     public Tools5eQuteNote(String name, String sourceText, String text, Tags tags) {
-        super(name, sourceText, text, tags.build());
+        super(name, sourceText, text, tags);
     }
 
     public Tools5eQuteNote(String name, String sourceText, List<String> text, Tags tags) {
-        super(name, sourceText, text, tags.build());
+        super(name, sourceText, text, tags);
     }
 
     public Tools5eQuteNote withTargeFile(String filename) {

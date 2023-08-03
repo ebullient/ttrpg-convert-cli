@@ -5,6 +5,7 @@ import java.util.List;
 
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -19,12 +20,12 @@ public class QuteBase {
 
     private String vaultPath;
 
-    public QuteBase(CompendiumSources sources, String name, String source, String text, Collection<String> tags) {
+    public QuteBase(CompendiumSources sources, String name, String source, String text, Tags tags) {
         this.sources = sources;
         this.name = name;
         this.sourceText = source;
         this.text = text;
-        this.tags = tags;
+        this.tags = tags == null ? List.of() : tags.build();
     }
 
     public String getName() {
