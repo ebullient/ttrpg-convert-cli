@@ -14,6 +14,7 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.JsonMediaHref;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.TableFields;
@@ -103,8 +104,8 @@ public class Tools5eSources extends CompendiumSources {
         if (type == Tools5eIndexType.syntheticGroup) {
             return this.key.replaceAll(".+?\\|([^|]+).*", "$1");
         }
-        return Fields.name.getTextOrDefault(jsonElement,
-                Fields.abbreviation.getTextOrDefault(jsonElement,
+        return SourceField.name.getTextOrDefault(jsonElement,
+                SourceField.abbreviation.getTextOrDefault(jsonElement,
                         TableFields.caption.getTextOrDefault(jsonElement,
                                 "unknown")));
     }
@@ -141,16 +142,16 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     public Optional<String> uaSource() {
-        Optional<String> source = bookSources.stream().filter(x -> x.contains("UA") && !x.equals("UAWGE")).findFirst();
+        Optional<String> source = sources.stream().filter(x -> x.contains("UA") && !x.equals("UAWGE")).findFirst();
         return source.map(TtrpgConfig::sourceToAbbreviation);
     }
 
     public String alternateSource() {
-        if (bookSources.size() < 2) {
+        if (sources.size() < 2) {
             return null;
         }
 
-        Iterator<String> i = bookSources.iterator();
+        Iterator<String> i = sources.iterator();
         i.next(); // primary
         return i.next();
     }

@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.tools.CompendiumSources.SourceAndPage;
+import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
@@ -81,7 +81,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String getSourceText(ParseState parseState) {
-        return parseState.sourceAndPage("_Source: %s_");
+        return parseState.sourcePageString("_Source: %s_");
     }
 
     default String getSourceText(Tools5eSources currentSource) {
@@ -645,7 +645,7 @@ public interface JsonSource extends JsonTextReplacement {
         String tableKey = keyType.createKey(name, parseState.getSource());
         JsonNode knownEntry = index().getNode(tableKey);
         if (knownEntry == null && keyType == Tools5eIndexType.table) {
-            SourceAndPage sp = new SourceAndPage(parseState);
+            SourceAndPage sp = parseState.toSourceAndPage();
             knownEntry = index().findTable(sp, TableFields.getFirstRow(matchTable));
         }
         if (knownEntry != null) {

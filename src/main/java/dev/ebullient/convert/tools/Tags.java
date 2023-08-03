@@ -22,7 +22,7 @@ public class Tags {
 
     public void addSourceTags(CompendiumSources sources) {
         if (sources != null) {
-            tags.addAll(sources.getSourceTags());
+            tags.addAll(sources.primarySourceTag());
         }
     }
 

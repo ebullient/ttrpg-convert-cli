@@ -5,6 +5,7 @@ import java.util.Deque;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
@@ -185,7 +186,7 @@ public class ParseState {
         return current != null && current.inList;
     }
 
-    public String sourceAndPage() {
+    public String sourcePageString() {
         ParseState.ParseStateInfo current = stack.peek();
         if (current == null || current.page == 0) {
             return "";
@@ -194,7 +195,7 @@ public class ParseState {
                 current.src, current.page);
     }
 
-    public String sourceAndPage(String formatString) {
+    public String sourcePageString(String formatString) {
         ParseState.ParseStateInfo current = stack.peek();
         if (current == null || current.page == 0) {
             return "";
@@ -227,5 +228,9 @@ public class ParseState {
     public String getPage() {
         ParseState.ParseStateInfo current = stack.peek();
         return current == null ? null : current.page + "";
+    }
+
+    public SourceAndPage toSourceAndPage() {
+        return new SourceAndPage(getSource(), getPage());
     }
 }

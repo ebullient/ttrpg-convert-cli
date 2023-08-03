@@ -252,7 +252,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         if (config.noSources()) {
             return sources.fromDefaultSource();
         }
-        return sources != null && sources.getBookSources().stream().anyMatch((s) -> config.sourceIncluded(s));
+        return sources != null && sources.getSources().stream().anyMatch((s) -> config.sourceIncluded(s));
     }
 
     public boolean isIncluded(String key) {

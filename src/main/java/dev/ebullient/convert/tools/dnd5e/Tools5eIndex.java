@@ -25,7 +25,7 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.CompendiumSources.SourceAndPage;
+import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
@@ -720,7 +720,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public Stream<JsonNode> originSubraces(Tools5eSources sources) {
         String raceName = sources.getName();
-        String raceSource = String.join("|", sources.getBookSources());
+        String raceSource = String.join("|", sources.getSources());
         String pattern = String.format("%s\\|[^|]+\\|%s\\|(%s)", Tools5eIndexType.subrace, raceName, raceSource)
                 .toLowerCase();
         return nodeIndex.entrySet().stream()
@@ -794,7 +794,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         Tools5eSources sources = Tools5eSources.findSources(key);
-        return sources.getBookSources().stream().anyMatch(config::sourceIncluded);
+        return sources.getSources().stream().anyMatch(config::sourceIncluded);
     }
 
     boolean isIncluded(String key) {

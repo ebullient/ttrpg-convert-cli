@@ -118,7 +118,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterSpellcasting(),
                 fluff,
                 environment,
-                new ArrayList<>(sources.getBookSources()),
+                new ArrayList<>(sources.getSources()),
                 getToken(),
                 fluffImages,
                 tags,

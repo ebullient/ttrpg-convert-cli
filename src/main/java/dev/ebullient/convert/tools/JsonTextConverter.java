@@ -353,6 +353,7 @@ public interface JsonTextConverter<T extends IndexType> {
     Tui tui();
 
     enum SourceField implements JsonNodeReader {
+        abbreviation,
         entry,
         entries,
         id,
