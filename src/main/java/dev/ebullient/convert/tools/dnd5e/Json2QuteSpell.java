@@ -186,7 +186,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     Set<String> indexedSpellClasses(Tags tags) {
         Collection<String> list = index().classesForSpell(this.sources.getKey());
         if (list == null) {
-            tui().warnf("No classes found for %s", this.sources.getKey());
+            tui().debugf("No classes found for %s", this.sources.getKey());
             return new TreeSet<>();
         }
 

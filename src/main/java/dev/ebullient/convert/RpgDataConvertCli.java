@@ -184,14 +184,14 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
 
         CompendiumConfig config = TtrpgConfig.getConfig();
 
-        tui.outPrintln("✅ finished reading config.");
+        tui.done("Finished reading config.");
         tui.verbosef("Writing markdown to %s.\n", output);
 
         ToolsIndex index = ToolsIndex.createIndex();
         Path toolsPath = null;
 
         for (Path inputPath : input) {
-            tui.outPrintf("⏱️ Reading %s%n", inputPath);
+            tui.printlnf("⏱️ Reading %s", inputPath);
             Path input = inputPath.toAbsolutePath();
 
             if (input.toFile().isDirectory()) {
@@ -217,14 +217,14 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         }
 
         if (!allOk) {
-            tui.outPrintln("❌ errors reading data. Check the following: ");
-            tui.outPrintln("- Are you specifying the right game? (-g 5e OR -g pf2e),");
-            tui.outPrintln("    Using " + TtrpgConfig.getConfig().datasource().shortName());
-            tui.outPrintln("- Check error messages to see what files couldn't be read");
-            tui.outPrintln("   For bulk conversion, specify the the <tools>/data directory");
+            tui.println("❌ errors reading data. Check the following: ",
+                    "- Are you specifying the right game? (-g 5e OR -g pf2e),",
+                    "    Using " + TtrpgConfig.getConfig().datasource().shortName(),
+                    "- Check error messages to see what files couldn't be read",
+                    "   For bulk conversion, specify the the <tools>/data directory");
             return ExitCode.USAGE;
         }
-        tui.outPrintln("✅ finished reading data.");
+        tui.done("Finished reading data.");
         try {
             index.prepare();
 
@@ -238,7 +238,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                 }
             }
 
-            tui.outPrintln("💡 Writing files to " + output);
+            tui.println("💡 Writing files to " + output);
             tpl.setCustomTemplates(config);
 
             MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
@@ -260,19 +260,11 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
 
     private int executionStrategy(ParseResult parseResult) {
         try {
-            init(parseResult);
+            tui.init(spec, debug, verbose);
             return new CommandLine.RunLast().execute(parseResult);
         } finally {
-            shutdown();
+            tui.close();
         }
-    }
-
-    private void init(ParseResult parseResult) {
-        tui.init(spec, debug, verbose);
-    }
-
-    private void shutdown() {
-        tui.close();
     }
 
     @Override

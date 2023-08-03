@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -232,18 +233,25 @@ public class Tui {
         out.println(ansi.new Text("🔸 " + output));
     }
 
+    public void donef(String format, Object... params) {
+        done(String.format(format, params));
+    }
+
     public void done(String output) {
         out.println(ansi.new Text("✅ " + output));
     }
 
-    public void outPrintf(String format, Object... args) {
-        String output = String.format(format, args);
-        out.print(ansi.new Text(output, colors));
+    public void printlnf(String format, Object... args) {
+        println(String.format(format, args));
+    }
+
+    public void println(String output) {
+        out.println(ansi.new Text(output, colors));
         out.flush();
     }
 
-    public void outPrintln(String output) {
-        out.println(ansi.new Text(output));
+    public void println(String... output) {
+        Arrays.stream(output).forEach(l -> out.println(ansi.new Text(l, colors)));
         out.flush();
     }
 
