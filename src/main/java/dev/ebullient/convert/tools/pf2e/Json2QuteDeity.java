@@ -57,7 +57,7 @@ public class Json2QuteDeity extends Json2QuteBase {
             return null;
         }
         QuteDeity.QuteDivineIntercession intercession = new QuteDeity.QuteDivineIntercession();
-        intercession.sourceText = Pf2eSources.createEmbeddedSource(node).getSourceText();
+        intercession.source = Pf2eSources.createEmbeddedSource(node).getSourceText();
         intercession.flavor = Pf2eDeity.flavor.transformTextFrom(node, "\n", this);
 
         intercession.majorBoon = Pf2eDeity.majorBoon.transformTextFrom(node, "\n", this);

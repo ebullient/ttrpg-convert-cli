@@ -159,7 +159,7 @@ public class QuteDeity extends Pf2eQuteBase {
 
     @TemplateData
     public static class QuteDivineIntercession {
-        public String sourceText;
+        public String source;
         public String flavor;
         public String majorBoon;
         public String moderateBoon;
@@ -167,5 +167,10 @@ public class QuteDeity extends Pf2eQuteBase {
         public String majorCurse;
         public String moderateCurse;
         public String minorCurse;
+
+        @Deprecated
+        public String getSourceText() {
+            return source;
+        }
     }
 }

@@ -40,7 +40,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {/if}{#if resource.intercession }
 
 ## Divine intercession
-*Source: {resource.intercession.sourceText}*
+*Source: {resource.intercession.source}*
 
 {resource.intercession.flavor}
 
