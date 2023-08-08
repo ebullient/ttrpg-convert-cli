@@ -2,6 +2,18 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 
 import io.quarkus.qute.TemplateData;
 
+/**
+ * 5eTools Ability Score attributes.
+ * <p>
+ * Used by {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster QuteMonster} to
+ * describe a monster's statistics.
+ * </p>
+ * <p>
+ * If referenced as a unit (ignoring inner attributes), it will render ability scores as
+ * a `|` separated list of values, in `STR,DEX,CON,INT,WIS,CHA` order, for example:<br />
+ * `10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)`.
+ * </p>
+ */
 @TemplateData
 public class AbilityScores {
     final int strength;
@@ -44,74 +56,92 @@ public class AbilityScores {
         };
     }
 
+    /** Strength as an ability string: `10 (+0)` */
     public String getStr() {
         return toAbilityString(strength);
     }
 
+    /** Strength score as a number: 10 */
     public int getStrStat() {
         return strength;
     }
 
+    /** Strength modifier: +1 or -2 */
     public String getStrMod() {
         return padded(getModifier(strength));
     }
 
+    /** Dexterity as an ability string: `10 (+0)` */
     public String getDex() {
         return toAbilityString(dexterity);
     }
 
+    /** Dexterity score as a number: 10 */
     public int getDexStat() {
         return dexterity;
     }
 
+    /** Dexterity modifier: +1 or -2 */
     public String getDexMod() {
         return padded(getModifier(dexterity));
     }
 
+    /** Constitution as an ability string: `10 (+0)` */
     public String getCon() {
         return toAbilityString(constitution);
     }
 
+    /** Constitution score as a number: 10 */
     public int getConStat() {
         return constitution;
     }
 
+    /** Constitution modifier: +1 or -2 */
     public String getConMod() {
         return padded(getModifier(constitution));
     }
 
+    /** Intelligence as an ability string: `10 (+0)` */
     public String getInt() {
         return toAbilityString(intelligence);
     }
 
+    /** Intelligence score as a number: 10 */
     public int getIntStat() {
         return intelligence;
     }
 
+    /** Intelligence modifier: +1 or -2 */
     public String getIntMod() {
         return padded(getModifier(intelligence));
     }
 
+    /** Wisdom as an ability string: `10 (+0)` */
     public String getWis() {
         return toAbilityString(wisdom);
     }
 
+    /** Wisdom score as a number: 10 */
     public int getWisStat() {
         return wisdom;
     }
 
+    /** Wisdom modifier: +1 or -2 */
     public String getWisMod() {
         return padded(getModifier(wisdom));
     }
 
+    /** Charisma as an ability string: `10 (+0)` */
     public String getCha() {
         return toAbilityString(charisma);
     }
 
+    /** Charisma stat as a number: 10 */
     public int getChaStat() {
         return charisma;
     }
 
+    /** Charisma modifier: +1 or -2 */
     public String getChaMod() {
         return padded(getModifier(charisma));
     }

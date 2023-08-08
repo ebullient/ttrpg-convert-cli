@@ -275,7 +275,8 @@ public interface JsonSource extends JsonTextReplacement {
             text.addAll(inner);
         } else if (name != null) {
             maybeAddBlankLine(text);
-            text.add(heading + " " + replaceText(name));
+            // strip links from heading titles. Cross-referencing headers with links is hard
+            text.add(heading + " " + replaceText(name).replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1"));
             if (index().differentSource(getSources(), parseState().getSource())) {
                 text.add(getSourceText(entryNode));
             }

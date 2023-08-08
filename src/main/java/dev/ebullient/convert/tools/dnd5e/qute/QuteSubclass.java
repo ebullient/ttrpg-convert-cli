@@ -5,16 +5,25 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * 5eTools subclass attributes ({@code subclass2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * </p>
+ */
 @TemplateData
 @RegisterForReflection
 public class QuteSubclass extends Tools5eQuteBase {
 
+    /** Name of the parent class */
     public final String parentClass;
+    /** Markdown link to the parent class */
     public final String parentClassLink;
-
+    /** Source of the parent class (abbreviation) */
     public final String parentClassSource;
-
+    /** Title of subclass: "Bard College", or "Primal Path" */
     public final String subclassTitle;
+    /** A pre-foramatted markdown callout describing subclass spell or feature progression */
     public final String classProgression;
 
     public QuteSubclass(Tools5eSources sources, String name, String source,

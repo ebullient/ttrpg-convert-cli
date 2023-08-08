@@ -5,7 +5,18 @@ import java.util.List;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * Attributes for notes that are generated from the 5eTools data.
+ * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteNote QuteNote}.
+ * <p>
+ * Notes created from {@code Tools5eQuteNote} will use the {@code note2md.txt} template.
+ * </p>
+ */
+@TemplateData
+@RegisterForReflection
 public class Tools5eQuteNote extends QuteNote {
 
     String targetPath;

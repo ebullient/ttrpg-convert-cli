@@ -22,12 +22,12 @@ title: {resource.name}{#if resource.token}
 *{resource.size} {resource.fullType}, {resource.alignment}*
 
 - **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }({resource.acText}){/if}
-- **Hit Points** {resource.hp} {#if resource.hitDice }(`{resource.hitDice}`){/if} {#if resource.hpText }({resource.hpText}){/if}
+- **Hit Points** {resource.hp or ' '} {#if resource.hitDice }(`{resource.hitDice}`){/if} {#if resource.hpText }({resource.hpText}){/if}
 - **Speed** {resource.speed}
 
 |STR|DEX|CON|INT|WIS|CHA|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-|{resource.scoreString}|
+|{resource.scores}|
 
 - **Proficiency Bonus** {resource.pb}
 - **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
@@ -79,9 +79,9 @@ title: {resource.name}{#if resource.token}
 {#if legendary.name }***{legendary.name}.*** {/if}{legendary.desc}
 {/for}{/if}{#if resource.legendaryGroup}{#for group in resource.legendaryGroup}
 
-## {group.key}
+## {group.name}
 
-{#if group.value.name }***{group.value.name}.*** {/if}{group.value.desc}
+{group.desc}
 {/for}{/if}
 ```
 ^statblock

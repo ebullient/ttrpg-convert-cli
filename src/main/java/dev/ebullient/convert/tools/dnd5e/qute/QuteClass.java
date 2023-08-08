@@ -5,13 +5,26 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * 5eTools class attributes ({@code class2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * </p>
+ */
 @TemplateData
 @RegisterForReflection
 public class QuteClass extends Tools5eQuteBase {
 
+    /** Hit dice for this class as a single digit: 8 */
     public final int hitDice;
+
+    /** Formatted callout containing class and feature progressions. */
     public final String classProgression;
+
+    /** Formatted text describing starting equipment */
     public final String startingEquipment;
+
+    /** Formatted text section describing how to multiclass with this class */
     public final String multiclassing;
 
     public QuteClass(Tools5eSources sources, String name, String source,
@@ -26,7 +39,10 @@ public class QuteClass extends Tools5eQuteBase {
         this.multiclassing = multiclassing;
     }
 
+    /**
+     * The average roll for a hit die of this class, for example: `add {resource.hitRollAverage}...`
+     */
     public int getHitRollAverage() {
-        return hitDice / 2 + 1;
+        return (hitDice + 1) / 2;
     }
 }

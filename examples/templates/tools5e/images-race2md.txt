@@ -12,12 +12,12 @@ aliases: ["{resource.name}"]
 # {resource.name}
 *Source: {resource.source}*  
 {#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-![{first.title}]({first.vaultPath}#right)  
+{first.getEmbeddedLink("right")}  
 {/let}{/if}
 
 - **Ability Scores**: {resource.ability}
 {#if resource.type}
-- **Creature Type**: {resource.type}
+- **Type**: {resource.type}
 {/if}
 - **Size**: {resource.size}
 - **Speed**: {resource.speed}

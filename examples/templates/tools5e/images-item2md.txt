@@ -12,7 +12,7 @@ aliases: ["{resource.name}"]
 # {resource.name}
 {#if resource.detail }*{resource.detail}*  
 {/if}{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-![{first.title}]({first.vaultPath}#right)  
+{first.getEmbeddedLink("right")}  
 {/let}{/if}
 
 {#if resource.armorClass }
@@ -40,7 +40,7 @@ aliases: ["{resource.name}"]
 {/if}
 {#if resource.fluffImages.size > 1 }
 
-{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLinkWithTitle("center")}
+{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
  
 {/if}{/each}
 {/if}

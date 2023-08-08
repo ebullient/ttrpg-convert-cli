@@ -14,7 +14,7 @@ aliases: ["{resource.name}"]
 
 - **Ability Scores**: {resource.ability}
 {#if resource.type}
-- **Creature Type**: {resource.type}
+- **Type**: {resource.type}
 {/if}
 - **Size**: {resource.size}
 - **Speed**: {resource.speed}

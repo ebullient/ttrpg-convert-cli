@@ -8,21 +8,38 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * 5eTools item attributes ({@code item2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * </p>
+ */
 @TemplateData
 @RegisterForReflection
 public class QuteItem extends Tools5eQuteBase {
 
+    /** Item details: tier, rarity, category, attunement */
     public final String detail;
+    /** Changes to armor class provided by the item, if applicable */
     public final String armorClass;
+    /** One-handed Damage string, if applicable. Contains dice formula and damage type */
     public final String damage;
+    /** Two-handed Damage string, if applicable. Contains dice formula and damage type */
     public final String damage2h;
+    /** Item's range, if applicable */
     public final String range;
+    /** List of item's properties (with links to rules if the source is present) */
     public final String properties;
+    /** Strength requirement as a numerical value, if applicable */
     public final Integer strengthRequirement;
+    /** True if the item imposes a stealth penalty, if applicable */
     public final boolean stealthPenalty;
+    /** Cost of the item (gp, sp, cp). Usually missing for magic items. */
     public final String cost;
+    /** Weight of the item (pounds) as a decimal value */
     public final Double weight;
-    public final List<ImageRef> images;
+    /** List of images for this item (as {@link dev.ebullient.convert.qute.ImageRef ImageRef}) */
+    public final List<ImageRef> fluffImages;
 
     public QuteItem(Tools5eSources sources, String name, String source, String detail,
             String armorClass, String damage, String damage2h,
@@ -41,15 +58,6 @@ public class QuteItem extends Tools5eQuteBase {
         this.stealthPenalty = stealthPenalty;
         this.cost = costGp;
         this.weight = weightLbs;
-        this.images = images;
-    }
-
-    @Override
-    public List<ImageRef> images() { // not usable by qute templates
-        return images;
-    }
-
-    public List<ImageRef> getFluffImages() {
-        return images;
+        this.fluffImages = images;
     }
 }

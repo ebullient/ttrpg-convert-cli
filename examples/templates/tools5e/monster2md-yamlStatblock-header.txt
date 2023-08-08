@@ -82,9 +82,9 @@ title: {resource.name}{#if resource.token}
 {#if legendary.name }***{legendary.name}.*** {/if}{legendary.desc}
 {/for}{/if}{#if resource.legendaryGroup}{#for group in resource.legendaryGroup}
 
-## {group.key}
+## {group.name}
 
-{#if group.value.name }***{group.value.name}.*** {/if}{group.value.desc}
+{group.desc}
 {/for}{/if}
 ```
 ^statblock

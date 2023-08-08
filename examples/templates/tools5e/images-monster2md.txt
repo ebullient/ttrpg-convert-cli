@@ -38,7 +38,7 @@ title: {resource.name}{#if resource.token}
 
 |STR|DEX|CON|INT|WIS|CHA|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-|{resource.scoreString}|
+|{resource.scores}|
 
 - **Proficiency Bonus** {resource.pb}
 - **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
@@ -90,9 +90,9 @@ title: {resource.name}{#if resource.token}
 {#if legendary.name }***{legendary.name}.*** {/if}{legendary.desc}
 {/for}{/if}{#if resource.legendaryGroup}{#for group in resource.legendaryGroup}
 
-## {group.key}
+## {group.name}
 
-{#if group.value.name }***{group.value.name}.*** {/if}{group.value.desc}
+{group.desc}
 {/for}{/if}
 ```
 ^statblock

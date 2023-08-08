@@ -8,19 +8,34 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * 5eTools spell attributes ({@code spell2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * </p>
+ */
 @TemplateData
 @RegisterForReflection
 public class QuteSpell extends Tools5eQuteBase {
 
+    /** Spell level */
     public final String level;
+    /** Spell school */
     public final String school;
+    /** true for ritual spells */
     public final boolean ritual;
+    /** Formatted: casting time */
     public final String time;
+    /** Formatted: spell range */
     public final String range;
+    /** Formatted: spell components */
     public final String components;
+    /** Formatted: spell range */
     public final String duration;
+    /** List of links to classes that can use this spell. May be incomplete or empty. */
     public final String classes;
-    final List<ImageRef> fluffImages;
+    /** List of images for this spell (as {@link dev.ebullient.convert.qute.ImageRef ImageRef}) */
+    public final List<ImageRef> fluffImages;
 
     public QuteSpell(Tools5eSources sources, String name, String source, String level,
             String school, boolean ritual, String time, String range,
@@ -37,14 +52,5 @@ public class QuteSpell extends Tools5eQuteBase {
         this.duration = duration;
         this.classes = classes;
         this.fluffImages = fluffImages;
-    }
-
-    @Override
-    public List<ImageRef> images() { // not usable by Qute templates
-        return fluffImages;
-    }
-
-    public List<ImageRef> getFluffImages() {
-        return fluffImages;
     }
 }

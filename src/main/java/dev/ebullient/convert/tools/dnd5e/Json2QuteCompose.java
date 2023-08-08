@@ -183,7 +183,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
         String duration = flattenActionTime(ComposedTypeFields.time.getFrom(entry));
         if (!duration.isEmpty()) {
             maybeAddBlankLine(text);
-            text.add("- **Duration:** " + duration);
+            text.add("- **Duration**: " + duration);
         }
 
         maybeAddBlankLine(text);

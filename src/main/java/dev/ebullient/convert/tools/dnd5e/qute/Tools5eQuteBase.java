@@ -6,7 +6,19 @@ import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
+import io.quarkus.qute.TemplateData;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * Attributes for notes that are generated from the 5eTools data.
+ * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteBase QuteBase}.
+ * <p>
+ * Notes created from {@code Tools5eQuteBase} will use a specific template
+ * for the type. For example, {@code QuteBackground} will use {@code background2md.txt}.
+ * </p>
+ */
+@TemplateData
+@RegisterForReflection
 public class Tools5eQuteBase extends QuteBase {
 
     public Tools5eQuteBase(CompendiumSources sources, String name, String source, String text, Tags tags) {

@@ -247,12 +247,12 @@ public class Json2QuteClass extends Json2QuteCommon {
         maybeAddBlankLine(startingEquipment);
 
         if (startingText.containsKey("saves")) {
-            startingEquipment.add(String.format("- **Saving Throws:** %s", startingTextJoinOrDefault("saves", "none")));
+            startingEquipment.add(String.format("- **Saving Throws**: %s", startingTextJoinOrDefault("saves", "none")));
         }
-        startingEquipment.add(String.format("- **Armor:** %s", startingTextJoinOrDefault("armor", "none")));
-        startingEquipment.add(String.format("- **Weapons:** %s", startingTextJoinOrDefault("weapons", "none")));
-        startingEquipment.add(String.format("- **Tools:** %s", startingTextJoinOrDefault("tools", "none")));
-        startingEquipment.add(String.format("- **Skills:** %s", startingTextJoinOrDefault("skills", "none")));
+        startingEquipment.add(String.format("- **Armor**: %s", startingTextJoinOrDefault("armor", "none")));
+        startingEquipment.add(String.format("- **Weapons**: %s", startingTextJoinOrDefault("weapons", "none")));
+        startingEquipment.add(String.format("- **Tools**: %s", startingTextJoinOrDefault("tools", "none")));
+        startingEquipment.add(String.format("- **Skills**: %s", startingTextJoinOrDefault("skills", "none")));
 
         if (!isSidekick()) {
             maybeAddBlankLine(startingEquipment);
@@ -303,17 +303,17 @@ public class Json2QuteClass extends Json2QuteCommon {
             startMulticlass.add("You gain the following proficiencies:");
             maybeAddBlankLine(startMulticlass);
 
-            startMulticlass.add(String.format("- **Armor:** %s",
+            startMulticlass.add(String.format("- **Armor**: %s",
                     startingTextJoinOrDefault(gained, "armor")));
-            startMulticlass.add(String.format("- **Weapons:** %s",
+            startMulticlass.add(String.format("- **Weapons**: %s",
                     startingTextJoinOrDefault(gained, "weapons")));
-            startMulticlass.add(String.format("- **Tools:** %s",
+            startMulticlass.add(String.format("- **Tools**: %s",
                     startingTextJoinOrDefault(gained, "tools")));
 
             if (gained.has("skills")) {
                 List<String> list = new ArrayList<>();
                 int count = classSkills(gained, list, sources);
-                startMulticlass.add(String.format("- **Skills:** %s",
+                startMulticlass.add(String.format("- **Skills**: %s",
                         skillChoices(list, count)));
             }
         }

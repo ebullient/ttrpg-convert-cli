@@ -4,9 +4,11 @@ import java.nio.file.Path;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
@@ -29,7 +32,6 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
-import dev.ebullient.convert.tools.dnd5e.qute.Trait;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteMonster extends Json2QuteCommon {
@@ -422,7 +424,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return spells;
     }
 
-    Map<String, Trait> legendaryGroup() {
+    Collection<NamedText> legendaryGroup() {
         JsonNode group = rootNode.get("legendaryGroup");
         if (group == null) {
             return null;
@@ -437,11 +439,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
             return null;
         }
 
-        Map<String, Trait> map = new HashMap<>();
-        content.fields().forEachRemaining(field -> {
+        List<NamedText> traits = new ArrayList<>();
+        for (Entry<String, JsonNode> field : iterableFields(content)) {
             String fieldName = field.getKey();
             if (LEGENDARY_IGNORE_LIST.contains(fieldName)) {
-                return;
+                continue;
             }
             fieldName = fieldName.substring(0, 1).toUpperCase()
                     + UPPERCASE_LETTER.matcher(fieldName.substring(1))
@@ -449,13 +451,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
             List<String> text = new ArrayList<>();
             appendToText(text, field.getValue(), null);
-            map.put(fieldName, new Trait(null, String.join("\n", text)));
-        });
-
-        return map;
+            traits.add(new NamedText(fieldName, String.join("\n", text)));
+        }
+        return traits;
     }
 
-    List<Trait> monsterTraits(String field) {
+    Collection<NamedText> monsterTraits(String field) {
         JsonNode array = rootNode.get(field);
         if (array == null || array.isNull()) {
             return null;
@@ -464,8 +465,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
             throw new IllegalArgumentException("Unknown field: " + getSources());
         }
 
-        List<Trait> traits = new ArrayList<>();
-        rootNode.withArray(field).forEach(e -> {
+        List<NamedText> traits = new ArrayList<>();
+        for (JsonNode e : iterableElements(rootNode)) {
             String name = null;
             if (e.has("name")) {
                 name = replaceText(e.get("name").asText()).replaceAll(":$", "");
@@ -479,8 +480,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
             if (body.startsWith(">")) {
                 body = "\n" + body;
             }
-            traits.add(new Trait(name, body));
-        });
+            traits.add(new NamedText(name, body));
+        }
         return traits;
     }
 

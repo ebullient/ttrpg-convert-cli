@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,68 +9,115 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * 5eTools creature attributes ({@code monster2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * </p>
+ */
 @TemplateData
 @RegisterForReflection
 public class QuteMonster extends Tools5eQuteBase {
 
+    /** True if this is an NPC */
     public final boolean isNpc;
+    /** Creature size (capitalized) */
     public final String size;
+    /** Creature type (lowercase) */
     public final String type;
+    /** Creature subtype (lowercase) */
     public final String subtype;
+    /** Creature alignment */
     public final String alignment;
-
+    /** Creature armor class (number) */
     public final Integer ac;
+    /** Additional armor class text: natural armor. May link to related items. */
     public final String acText;
-    public final Integer hp;
+    /** @see #getHp() */
+    final Integer hp;
+    /**
+     * Additional hit point text.
+     * In the case of summoned creatures, this will contain notes for how hit points
+     * should be calculated relative to the player's modifiers.
+     */
     public final String hpText;
+    /** Hit dice formula as formatted string: `7d10 + 14` */
     public final String hitDice;
+    /** Creature speed as a comma-separated list */
     public final String speed;
-    private final boolean useDiceRoller;
-
-    protected final AbilityScores scores;
-    protected final SavesAndSkills savesSkills;
-
+    /** Creature ability scores ({@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores AbilityScores}) */
+    public final AbilityScores scores;
+    /**
+     * Creature saving throws and skill modifiers ({@link dev.ebullient.convert.tools.dnd5e.qute.SavesAndSkills SavesAndSkills})
+     */
+    public final SavesAndSkills savesSkills;
+    /** Comma-separated string of creature senses (if present). */
     public final String senses;
+    /** Passive perception as a numerical value */
     public final int passive;
+    /** Comma-separated string of creature damage vulnerabilities (if present). */
     public final String vulnerable;
+    /** Comma-separated string of creature damage resistances (if present). */
     public final String resist;
+    /** Comma-separated string of creature damage immunities (if present). */
     public final String immune;
+    /** Comma-separated string of creature condition immunities (if present). */
     public final String conditionImmune;
+    /** Comma-separated string of languages the creature understands. */
     public final String languages;
+    /** Challenge rating */
     public final String cr;
+    /** Proficiency bonus (modifier) */
     public final String pb;
-
-    public final List<Trait> trait;
-    public final List<Trait> action;
-    public final List<Trait> bonusAction;
-    public final List<Trait> reaction;
-    public final List<Trait> legendary;
-    public final Map<String, Trait> legendaryGroup;
+    /** List of creature ({@link dev.ebullient.convert.qute.NamedText traits}) */
+    public final Collection<NamedText> trait;
+    /** List of creature ({@link dev.ebullient.convert.qute.NamedText actions}) */
+    public final Collection<NamedText> action;
+    /** List of creature ({@link dev.ebullient.convert.qute.NamedText bonus actions}) */
+    public final Collection<NamedText> bonusAction;
+    /** List of creature ({@link dev.ebullient.convert.qute.NamedText reactions}) */
+    public final Collection<NamedText> reaction;
+    /** List of creature ({@link dev.ebullient.convert.qute.NamedText legendary traits}) */
+    public final Collection<NamedText> legendary;
+    /**
+     * Map of grouped legendary traits. The key the group name, and the value is the list of associated
+     * ({@link dev.ebullient.convert.qute.NamedText traits}). Used for lair actions, as an example.
+     */
+    public final Collection<NamedText> legendaryGroup;
+    /** List of creature ({@link dev.ebullient.convert.tools.dnd5e.qute.Spellcasting spellcasting abilities}) */
     public final List<Spellcasting> spellcasting;
+    /** List of source books (abbreviated name). Fantasy statblock uses this list. */
     public final List<String> books;
-
+    /** Formatted text containing the creature description. Same as {resource.text} */
     public final String description;
+    /** Formatted text describing the creature's environment. Usually a single word. */
     public final String environment;
-    final ImageRef tokenImage;
-    final List<ImageRef> fluffImages;
-    final List<ImageRef> allImages;
+    /** Token image as {@link dev.ebullient.convert.qute.ImageRef ImageRef} */
+    public final ImageRef token;
+    /** List of {@link dev.ebullient.convert.qute.ImageRef ImageRef} related to the creature */
+    public final List<ImageRef> fluffImages;
+
+    private final boolean useDiceRoller;
 
     public QuteMonster(Tools5eSources sources, String name, String source, boolean isNpc, String size, String type,
             String subtype, String alignment,
             Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed,
             AbilityScores scores, SavesAndSkills savesSkills, String senses, int passive, String vulnerable,
-            String resist, String immune, String conditionImmune, String languages, String cr, String pb, List<Trait> trait,
-            List<Trait> action, List<Trait> bonusAction, List<Trait> reaction, List<Trait> legendary,
-            Map<String, Trait> legendaryGroup,
+            String resist, String immune, String conditionImmune, String languages, String cr, String pb,
+            Collection<NamedText> trait,
+            Collection<NamedText> action, Collection<NamedText> bonusAction, Collection<NamedText> reaction,
+            Collection<NamedText> legendary,
+            Collection<NamedText> legendaryGroup,
             List<Spellcasting> spellcasting, String description, String environment, List<String> books,
             ImageRef tokenImage, List<ImageRef> fluffImages, Tags tags, boolean useDiceRoller) {
 
-        super(sources, name, source, null, tags);
+        super(sources, name, source, description, tags);
 
         this.isNpc = isNpc;
         this.size = size;
@@ -103,27 +151,10 @@ public class QuteMonster extends Tools5eQuteBase {
         this.description = description;
         this.environment = environment;
         this.books = books; // for YAML
-        this.tokenImage = tokenImage;
+        this.token = tokenImage;
         this.fluffImages = fluffImages;
 
         this.useDiceRoller = useDiceRoller;
-
-        if (tokenImage != null || !fluffImages.isEmpty()) {
-            allImages = new ArrayList<>();
-            if (tokenImage != null) {
-                allImages.add(tokenImage);
-            }
-            if (!fluffImages.isEmpty()) {
-                allImages.addAll(fluffImages);
-            }
-        } else {
-            allImages = List.of();
-        }
-    }
-
-    @Override
-    public List<ImageRef> images() {
-        return allImages;
     }
 
     @Override
@@ -131,6 +162,10 @@ public class QuteMonster extends Tools5eQuteBase {
         return Tools5eQuteBase.monsterPath(isNpc, type);
     }
 
+    /**
+     * Creature hit points. If using the dice roller plugin is enabled,
+     * this will be a dice roll formula.
+     */
     public String getHp() {
         if (useDiceRoller && hitDice != null) {
             return "`dice: " + hitDice + "|text(" + hp + ")`";
@@ -138,26 +173,20 @@ public class QuteMonster extends Tools5eQuteBase {
         return "" + hp;
     }
 
-    public ImageRef getToken() {
-        return tokenImage;
-    }
-
-    public List<ImageRef> getFluffImages() {
-        return fluffImages;
-    }
-
+    /** Creature type (lowercase) and subtype if present: `{resource.type} ({resource.subtype})` */
     public String getFullType() {
-        return type + ((subtype == null || subtype.isEmpty()) ? "" : "(" + subtype + ")");
+        return type + ((subtype == null || subtype.isEmpty()) ? "" : " (" + subtype + ")");
     }
 
-    public AbilityScores getScores() {
-        return scores;
-    }
-
+    @Deprecated
     public String getScoreString() {
         return scores.toString();
     }
 
+    /**
+     * String representation of saving throws.
+     * Equivalent to `{resource.savesSkills.saves}`
+     */
     public String getSavingThrows() {
         if (savesSkills == null) {
             return null;
@@ -165,10 +194,15 @@ public class QuteMonster extends Tools5eQuteBase {
         return savesSkills.saves;
     }
 
+    @Deprecated
     public Map<String, Integer> getSaveMap() {
         return savesSkills.saveMap;
     }
 
+    /**
+     * String representation of saving throws.
+     * Equivalent to `{resource.savesSkills.skills}`
+     */
     public String getSkills() {
         if (savesSkills == null) {
             return null;
@@ -176,10 +210,15 @@ public class QuteMonster extends Tools5eQuteBase {
         return savesSkills.skills;
     }
 
+    @Deprecated
     public Map<String, Integer> getSkillMap() {
         return savesSkills.skillMap;
     }
 
+    /**
+     * A minimal YAML snippet containing monster attributes required by the
+     * Initiative Tracker plugin. Use this in frontmatter.
+     */
     public String get5eInitiativeYaml() {
         Map<String, Object> map = new LinkedHashMap<>();
         addUnlessEmpty(map, "name", name);
@@ -193,6 +232,11 @@ public class QuteMonster extends Tools5eQuteBase {
         return Tui.plainYaml().dump(map).trim();
     }
 
+    /**
+     * Complete monster attributes in the format required by the Fantasy statblock plugin.
+     * Uses double-quoted syntax to deal with a variety of characters occuring in
+     * trait descriptions. Usable in frontmatter or Fantasy Statblock code blocks.
+     */
     public String get5eStatblockYaml() {
         Map<String, Object> map = new LinkedHashMap<>();
         addUnlessEmpty(map, "name", name);
@@ -223,7 +267,7 @@ public class QuteMonster extends Tools5eQuteBase {
         map.put("languages", languages);
         addUnlessEmpty(map, "cr", cr);
 
-        List<Trait> yamlTraits = new ArrayList<>(spellcastingToTraits());
+        Collection<NamedText> yamlTraits = new ArrayList<>(spellcastingToTraits());
         if (trait != null) {
             yamlTraits.addAll(trait);
         }
@@ -233,8 +277,8 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "reactions", reaction);
         addUnlessEmpty(map, "legendary_actions", legendary);
         addUnlessEmpty(map, "source", books);
-        if (tokenImage != null) {
-            map.put("image", tokenImage.vaultPath);
+        if (token != null) {
+            map.put("image", token.vaultPath);
         }
 
         // De-markdown-ify
@@ -257,18 +301,24 @@ public class QuteMonster extends Tools5eQuteBase {
         }
     }
 
+    protected void addUnlessEmpty(Map<String, Object> map, String key, Collection<NamedText> value) {
+        if (value != null && !value.isEmpty()) {
+            map.put(key, value);
+        }
+    }
+
     protected void addUnlessEmpty(Map<String, Object> map, String key, List<?> value) {
         if (value != null && !value.isEmpty()) {
             map.put(key, value);
         }
     }
 
-    List<Trait> spellcastingToTraits() {
+    Collection<NamedText> spellcastingToTraits() {
         if (spellcasting == null) {
             return List.of();
         }
         return spellcasting.stream()
-                .map(s -> new Trait(spellcastingToTraitName(s.name), s.getDesc()))
+                .map(s -> new NamedText(spellcastingToTraitName(s.name), s.getDesc()))
                 .collect(Collectors.toList());
     }
 
@@ -279,17 +329,51 @@ public class QuteMonster extends Tools5eQuteBase {
         return "spells";
     }
 
+    /**
+     * 5eTools creature spellcasting attributes.
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly:<br />
+     * ```<br />
+     * {#for spellcasting in resource.spellcasting}<br />
+     * {spellcasting}<br />
+     * {/for}<br />
+     * ```<br />
+     * or, using `{#each}` instead:<br />
+     * ```<br />
+     * {#each resource.spellcasting}<br />
+     * {it}<br />
+     * {/each}<br />
+     * ```
+     * </p>
+     */
     @TemplateData
     @RegisterForReflection
     public static class Spellcasting {
+        /** Name: "Spellcasting" or "Innate Spellcasting" */
         public String name;
+        /** Formatted text that should be printed before the list of spells */
         public List<String> headerEntries;
+        /** Spells (links) that can be cast at will */
         public List<String> will;
+        /** Map: key = nuber of times per day, value: list of spells (links) */
         public Map<String, List<String>> daily;
+        /**
+         * Map: key = spell level, value: spell level information as
+         * {@link dev.ebullient.convert.tools.dnd5e.qute.QuteSpell.Spells}
+         */
         public Map<String, Spells> spells;
+        /** Formatted text that should be printed after the list of spells */
         public List<String> footerEntries;
         public String ability;
 
+        @Override
+        public String toString() {
+            return "***" + name + ".*** " + getDesc();
+        }
+
+        /** Formatted description: renders all attributes (other than name) */
         public String getDesc() {
             List<String> text = new ArrayList<>(headerEntries);
 
@@ -371,20 +455,44 @@ public class QuteMonster extends Tools5eQuteBase {
         }
     }
 
+    /**
+     * 5eTools creature spell attributes (associated with a spell level)
+     */
     @TemplateData
     @RegisterForReflection
     public static class Spells {
+        /** Available spell slots */
         public int slots;
+        /** Set if this represents a spell range (the associated key is the upper bound) */
         public int lowerBound;
+        /** List of spells (links) */
         public List<String> spells;
     }
 
+    /**
+     * 5eTools creature saving throws and skill attributes.
+     */
     @TemplateData
     @RegisterForReflection
     public static class SavesAndSkills {
+        /**
+         * Creature saving throws as a map of key-value pairs.
+         * Iterate over all map entries to display the values:<br />
+         * `{#each resource.savesSkills.saveMap}**{it.key}** {it.value}{/each}`
+         */
         public Map<String, Integer> saveMap;
+
+        /**
+         * Creature skills as a map of key-value pairs.
+         * Iterate over all map entries to display the values:<br />
+         * `{#each resource.savesSkills.skillMap}**{it.key}** {it.value}{/each}`
+         */
         public Map<String, Integer> skillMap;
+
+        /** Creature saving throws as a list: Constitution +6, Intelligence +8 */
         public String saves;
+
+        /** Creature skills as a list: History +12, Perception +12 */
         public String skills;
     }
 }

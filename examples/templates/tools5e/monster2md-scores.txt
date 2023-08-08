@@ -84,7 +84,7 @@ title: {resource.name}{#if resource.token}
 
 ## {group.key}
 
-{#if group.value.name }***{group.value.name}.*** {/if}{group.value.desc}
+{group.desc}
 {/for}{/if}
 ```
 ^statblock

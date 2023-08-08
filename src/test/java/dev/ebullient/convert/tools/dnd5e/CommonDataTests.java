@@ -316,6 +316,7 @@ public class CommonDataTests {
                 boolean found = false;
                 boolean yaml = false;
                 boolean index = false;
+                List<String> statblock = new ArrayList<>();
 
                 for (String l : content) {
                     if (l.startsWith("# Index ")) {
@@ -324,12 +325,20 @@ public class CommonDataTests {
                         found = yaml = true; // start yaml block
                     } else if (l.equals("```")) {
                         yaml = false; // end yaml block
-                    } else if (yaml && l.contains("*")) {
-                        errors.add(String.format("Found '*' in %s: %s", p.toString(), l));
+                    } else if (yaml) {
+                        statblock.add(l);
+                        if (l.contains("*")) {
+                            errors.add(String.format("Found '*' in %s: %s", p, l));
+                        }
                     }
                     TestUtils.commonTests(p, l, errors);
                 }
 
+                try {
+                    Tui.quotedYaml().load(String.join("\n", statblock));
+                } catch (Exception e) {
+                    errors.add(String.format("File %s contains invalid yaml: %s", p, e));
+                }
                 if (!found && !index) {
                     errors.add(String.format("File %s did not contain a yaml statblock", p));
                 }
