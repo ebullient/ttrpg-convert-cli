@@ -27,6 +27,7 @@ _Support content creators. Only use or include sources that you own._
 | AitFR-THP | Adventures in the Forgotten Realms: The Hidden Page |
 | BAM | Boo's Astral Menagerie |
 | BGDIA | Baldur's Gate: Descent Into Avernus |
+| BGG | Bigby Presents: Glory of the Giants |
 | CM | Candlekeep Mysteries |
 | CRCotN | Critical Role: Call of the Netherdeep |
 | CoS | Curse of Strahd |
@@ -51,6 +52,7 @@ _Support content creators. Only use or include sources that you own._
 | FTD | Fizban's Treasury of Dragons |
 | GGR | Guildmasters' Guide to Ravnica |
 | GoS | Ghosts of Saltmarsh |
+| GotSF | Giants of the Star Forge |
 | HAT-LMI | Honor Among Thieves: Legendary Magic Items |
 | HAT-TG | Honor Among Thieves: Thieves' Gallery |
 | HEROES_FEAST | Heroes' Feast |
