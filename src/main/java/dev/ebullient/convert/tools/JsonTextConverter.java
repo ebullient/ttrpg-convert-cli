@@ -20,7 +20,7 @@ public interface JsonTextConverter<T extends IndexType> {
     String DICE_FORMULA = "[ +d\\d-‒]+";
     Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
 
-    void appendToText(List<String> inner, JsonNode target, String join);
+    void appendToText(List<String> inner, JsonNode target, String heading);
 
     /**
      * Find and format footnotes referenced in the provided content
@@ -175,9 +175,13 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String flattenToString(JsonNode node) {
+        return flattenToString(node, "\n");
+    }
+
+    default String flattenToString(JsonNode node, String join) {
         List<String> text = new ArrayList<>();
         appendToText(text, node, null);
-        return String.join("\n", text);
+        return String.join(join, text);
     }
 
     /**
@@ -312,7 +316,7 @@ public interface JsonTextConverter<T extends IndexType> {
      */
     default void renderInlineTemplate(List<String> text, QuteBase resource, String admonition) {
         String rendered = tui().renderEmbedded(resource);
-        List<String> inner = List.of(rendered.split("\n"));
+        List<String> inner = removePreamble(new ArrayList<>(List.of(rendered.split("\n"))));
 
         maybeAddBlankLine(text);
         if (admonition == null) {
@@ -339,10 +343,7 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String toAnchorTag(String x) {
-        return x.replace(" ", "%20")
-                .replace(":", "")
-                .replace(".", "")
-                .replace('‑', '-');
+        return Tui.toAnchorTag(x);
     }
 
     default List<String> toListOfStrings(JsonNode source) {

@@ -142,6 +142,17 @@ public class Tui {
         return y;
     }
 
+    public static String slugify(String s) {
+        return slugifier().slugify(s);
+    }
+
+    public static String toAnchorTag(String x) {
+        return x.replace(" ", "%20")
+                .replace(":", "")
+                .replace(".", "")
+                .replace('‑', '-');
+    }
+
     static final boolean picocliDebugEnabled = "DEBUG".equalsIgnoreCase(System.getProperty("picocli.trace"));
 
     Ansi ansi;
@@ -281,10 +292,6 @@ public class Tui {
         } else {
             throw new IllegalArgumentException(message);
         }
-    }
-
-    public static String slugify(String s) {
-        return slugifier().slugify(s);
     }
 
     public Optional<Path> resolvePath(Path path) {
@@ -453,11 +460,11 @@ public class Tui {
     }
 
     public String renderEmbedded(QuteBase resource) {
-        return templates.render(resource);
+        return templates.renderInlineEmbedded(resource);
     }
 
     public String renderEmbedded(QuteNote note) {
-        return templates.render(note);
+        return templates.renderInlineEmbedded(note);
     }
 
     public <T> T readJsonValue(JsonNode node, TypeReference<T> targetRef) {

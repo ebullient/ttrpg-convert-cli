@@ -19,10 +19,7 @@ public interface JsonNodeReader {
         String value();
 
         default String toAnchorTag(String x) {
-            return x.replace(" ", "%20")
-                    .replace(":", "")
-                    .replace(".", "")
-                    .replace('‑', '-');
+            return Tui.toAnchorTag(x);
         }
 
         default boolean isValueOfField(JsonNode source, JsonNodeReader field) {
@@ -190,8 +187,8 @@ public interface JsonNodeReader {
             return null;
         }
         List<String> inner = new ArrayList<>();
-        replacer.appendToText(inner, target, join);
-        return replacer.join(join, inner);
+        replacer.appendToText(inner, target, null);
+        return replacer.join(join, inner.stream().filter(x -> !x.isBlank()).toList());
     }
 
     default boolean valueEquals(JsonNode previous, JsonNode next) {
