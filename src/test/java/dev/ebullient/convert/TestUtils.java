@@ -39,7 +39,20 @@ public class TestUtils {
     public final static Path HOMEBREW_PATH_5E = PROJECT_PATH.resolve("sources/5e-homebrew");
     public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
 
-    final static Pattern markdownLinkPattern = Pattern.compile("\\[((?!\\]\\().)+\\]\\(([^ \\[]]+)\\)");
+    // Obnoxious regular expression because markdown links are complicated:
+    // Matches: [link text](vaultPath "title")
+    // - link text is optional, and may contain parentheses. Use a negative lookahead for ](
+    // - vaultPath is required.
+    //   - Slugified file names will not contain spaces
+    //   - Anchors can include parenthesis. Spaces will be escaped with %20.
+    //   - Stop matching the vaultPath if you encounter a space (precedes an optional title) or a following markdown link
+    // - title is optional
+    final static String nextLink = "(?!\\]\\()"; // negative lookahead for ](
+    final static String linkTitle = "( \".+?\")?"; // optional link title
+    final static String linkText = "(" + nextLink + ".)+"; // any sequence of characters except ](
+    final static String vaultPath = "(" + nextLink + "[^ ])+"; // any sequence of characters except ]( or space
+    final static Pattern markdownLinkPattern = Pattern
+            .compile("\\[" + linkText + "\\]\\((" + vaultPath + ")" + linkTitle + "\\)");
     final static Pattern blockRefPattern = Pattern.compile("[^#\\[]+(\\^[^ ]+)");
 
     final static Map<Path, List<String>> pathHeadings = new HashMap<>();
@@ -81,7 +94,8 @@ public class TestUtils {
             Path resource = p;
             int hash = path.indexOf('#');
 
-            if (path.startsWith("http")) {
+            // vaultPath is used for template examples
+            if (path.startsWith("http") || path.contains("vaultPath")) {
                 return;
             }
 

@@ -409,6 +409,12 @@
           "replace": "\"name\": \"Crafting Goods for the Market\""
         }
       ],
+      "book/book-gmg.json": [
+        {
+          "match": "\\{@skill cleric}",
+          "replace": "\\{@class Cleric}"
+        }
+      ],
       "book/book-som.json": [
         {
           "match": "somebody use the \\{@skill Craft}",
