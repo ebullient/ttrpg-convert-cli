@@ -34,7 +34,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         if (table.isEmpty()) {
             return;
         }
-        boolean pushed = parseState.push(getSources(), rootNode);
+        boolean pushed = parseState().push(getSources(), rootNode);
         try {
             List<String> rows = table.stream()
                     .filter(x -> x.startsWith("|") && !x.contains("---"))
@@ -50,7 +50,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
             notes.add(new Tools5eQuteNote(title, null, text, new Tags())
                     .withTargetPath(targetDir));
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
@@ -58,7 +58,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
         if (Json2QuteBackground.ideals.isEmpty()) {
             return;
         }
-        boolean pushed = parseState.push(getSources(), rootNode);
+        boolean pushed = parseState().push(getSources(), rootNode);
         try {
             List<String> ideals = Json2QuteBackground.ideals.stream()
                     .map(x -> x.replace("**", ""))
@@ -168,7 +168,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
             notes.add(new Tools5eQuteNote("Ideals", null, text, new Tags())
                     .withTargetPath(targetDir));
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 

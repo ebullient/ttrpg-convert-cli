@@ -54,10 +54,10 @@ public class Json2QuteBook extends Json2QuteCommon {
             pFormat = "%01d";
         }
 
-        boolean p1 = parseState.push(getSources()); // set source
+        boolean p1 = parseState().push(getSources()); // set source
         try {
             for (JsonNode x : iterableElements(data)) {
-                boolean p2 = parseState.push(x); // inner node
+                boolean p2 = parseState().push(x); // inner node
                 try {
                     List<String> text = new ArrayList<>();
                     appendToText(text, x.get("entries"), "##");
@@ -80,11 +80,11 @@ public class Json2QuteBook extends Json2QuteCommon {
                         prefix.incrementAndGet();
                     }
                 } finally {
-                    parseState.pop(p2);
+                    parseState().pop(p2);
                 }
             }
         } finally {
-            parseState.pop(p1);
+            parseState().pop(p1);
         }
         return pages;
     }

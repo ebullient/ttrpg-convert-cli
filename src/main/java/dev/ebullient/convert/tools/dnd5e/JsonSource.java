@@ -81,7 +81,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String getSourceText(ParseState parseState) {
-        return parseState.sourcePageString("_Source: %s_");
+        return parseState().sourcePageString("_Source: %s_");
     }
 
     default String getSourceText(Tools5eSources currentSource) {
@@ -107,7 +107,7 @@ public interface JsonSource extends JsonTextReplacement {
      */
     @Override
     default void appendToText(List<String> text, JsonNode node, String heading) {
-        boolean pushed = parseState.push(node); // store state
+        boolean pushed = parseState().push(node); // store state
         try {
             if (node == null) {
                 // do nothing
@@ -126,7 +126,7 @@ public interface JsonSource extends JsonTextReplacement {
                 tui().errorf("Unknown entry type in %s: %s", getSources(), node.toPrettyString());
             }
         } finally {
-            parseState.pop(pushed); // restore state
+            parseState().pop(pushed); // restore state
         }
     }
 
@@ -141,7 +141,7 @@ public interface JsonSource extends JsonTextReplacement {
             }
         }
 
-        boolean pushed = parseState.push(node);
+        boolean pushed = parseState().push(node);
         try {
             if (type != null) {
                 switch (type) {
@@ -211,7 +211,7 @@ public interface JsonSource extends JsonTextReplacement {
             tui().errorf(ex, "Error [%s] occurred while parsing %s", ex.getMessage(), node.toString());
             throw ex;
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
@@ -255,12 +255,12 @@ public interface JsonSource extends JsonTextReplacement {
         if (cf == null) {
             return; // skipped or not found
         }
-        if (parseState.inList()) {
+        if (parseState().inList()) {
             // emit within an existing list item
-            cf.appendListItemText(this, text, parseState.getSource(featureType));
+            cf.appendListItemText(this, text, parseState().getSource(featureType));
         } else {
             // emit inline as proper section
-            cf.appendText(this, text, parseState.getSource(featureType));
+            cf.appendText(this, text, parseState().getSource(featureType));
         }
     }
 
@@ -276,7 +276,7 @@ public interface JsonSource extends JsonTextReplacement {
         } else if (name != null) {
             maybeAddBlankLine(text);
             text.add(heading + " " + replaceText(name));
-            if (index().differentSource(getSources(), parseState.getSource())) {
+            if (index().differentSource(getSources(), parseState().getSource())) {
                 text.add(getSourceText(entryNode));
             }
             text.add("");
@@ -330,8 +330,8 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendList(List<String> text, ArrayNode itemArray) {
-        String indent = parseState.getListIndent();
-        boolean pushed = parseState.indentList();
+        String indent = parseState().getListIndent();
+        boolean pushed = parseState().indentList();
         try {
             maybeAddBlankLine(text);
             itemArray.forEach(e -> {
@@ -344,7 +344,7 @@ public interface JsonSource extends JsonTextReplacement {
                 }
             });
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
@@ -370,7 +370,7 @@ public interface JsonSource extends JsonTextReplacement {
                 : Tools5eIndexType.optionalfeature.defaultSourceString();
         String key = Tools5eIndexType.optionalfeature.createKey(lookup, nodeSource);
         if (index().isIncluded(key)) {
-            if (parseState.inList()) {
+            if (parseState().inList()) {
                 text.add(linkifyOptionalFeature(lookup));
             } else {
                 tui().errorf("TODO refOptionalfeature %s -> %s",
@@ -380,8 +380,8 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendOptions(List<String> text, JsonNode entry) {
-        String indent = parseState.getListIndent();
-        boolean pushed = parseState.indentList();
+        String indent = parseState().getListIndent();
+        boolean pushed = parseState().indentList();
         try {
             List<String> list = new ArrayList<>();
             for (JsonNode e : iterableEntries(entry)) {
@@ -403,7 +403,7 @@ public interface JsonSource extends JsonTextReplacement {
                 text.addAll(list);
             }
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
@@ -506,7 +506,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendTable(List<String> text, JsonNode tableNode) {
-        boolean pushed = parseState.push(tableNode);
+        boolean pushed = parseState().push(tableNode);
         try {
             List<String> table = new ArrayList<>();
 
@@ -595,9 +595,9 @@ public interface JsonSource extends JsonTextReplacement {
             JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
             if (footnotes != null) {
                 maybeAddBlankLine(text);
-                boolean pushF = parseState.push(true);
+                boolean pushF = parseState().push(true);
                 appendToText(text, footnotes, null);
-                parseState.pop(pushF);
+                parseState().pop(pushF);
             }
             JsonNode outro = TableFields.outro.getFrom(tableNode);
             if (outro != null) {
@@ -605,12 +605,12 @@ public interface JsonSource extends JsonTextReplacement {
                 appendToText(text, outro, null);
             }
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
     default void appendTableGroup(List<String> text, JsonNode tableGroup, String heading) {
-        boolean pushed = parseState.push(tableGroup);
+        boolean pushed = parseState().push(tableGroup);
         try {
             String name = findTableName(tableGroup);
             String known = findTable(Tools5eIndexType.tableGroup, tableGroup);
@@ -622,13 +622,13 @@ public interface JsonSource extends JsonTextReplacement {
 
             maybeAddBlankLine(text);
             text.add(heading + " " + name);
-            if (index().differentSource(getSources(), parseState.getSource())) {
-                text.add(getSourceText(parseState));
+            if (index().differentSource(getSources(), parseState().getSource())) {
+                text.add(getSourceText(parseState()));
             }
             maybeAddBlankLine(text);
             appendToText(text, Tools5eFields.tables.getFrom(tableGroup), "#" + heading);
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
@@ -642,10 +642,10 @@ public interface JsonSource extends JsonTextReplacement {
             return null;
         }
         String name = findTableName(matchTable);
-        String tableKey = keyType.createKey(name, parseState.getSource());
+        String tableKey = keyType.createKey(name, parseState().getSource());
         JsonNode knownEntry = index().getNode(tableKey);
         if (knownEntry == null && keyType == Tools5eIndexType.table) {
-            SourceAndPage sp = parseState.toSourceAndPage();
+            SourceAndPage sp = parseState().toSourceAndPage();
             knownEntry = index().findTable(sp, TableFields.getFirstRow(matchTable));
         }
         if (knownEntry != null) {

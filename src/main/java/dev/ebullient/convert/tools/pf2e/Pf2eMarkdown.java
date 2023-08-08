@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.MarkdownWriter;
-import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
@@ -158,9 +157,9 @@ public class Pf2eMarkdown implements MarkdownConverter {
         writer.writeNotes(index.rulesFilePath(), rules, false);
 
         // TODO: DOES THIS WORK RIGHT? shouldn't these be in the other image map?
-        List<ImageRef> images = rules.stream()
-                .flatMap(s -> s.images().stream()).collect(Collectors.toList());
-        index.tui().copyImages(images, fallbackPaths);
+        // List<ImageRef> images = rules.stream()
+        //         .flatMap(s -> s.images().stream()).collect(Collectors.toList());
+        // index.tui().copyImages(images, fallbackPaths);
         return this;
     }
 

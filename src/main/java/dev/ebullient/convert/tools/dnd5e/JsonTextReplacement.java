@@ -127,23 +127,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // - {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
             // - {@dice 1d20+2|display text} and {@dice 1d20+2|display text|rolled by name}
             if (cfg().alwaysUseDiceRoller()) {
-                result = result
-                        .replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
-                                "Hit: `dice: $2|avg` (`$2`)")
-                        .replaceAll("plus ([\\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
-                                "plus `dice: $2|avg` (`$2`)")
-                        .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
-                                "$1 `dice: $2|avg` (`$2`)")
-                        .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + DICE_FORMULA + ")}\\)",
-                                "$1 `dice: $2|avg` (`$2`)")
-                        .replaceAll("\\{@hit (\\d+)} to hit", "`dice: d20+$1` (+$1 to hit)")
-                        .replaceAll("\\{@hit (-\\d+)} to hit", "`dice: d20-$1` (-$1 to hit)")
-                        .replaceAll("\\{@hit (\\d+)}", "`dice: d20+$1` (+$1)")
-                        .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
-                        .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
-                        .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)")
-                        .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6: `dice: d6`)")
-                        .replaceAll("\\{@recharge}", "(Recharge 6: `dice: d6`)");
+                result = replaceWithDiceRoller(result);
             }
 
             // @dice or @damage
@@ -243,7 +227,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
     default String replaceFootnoteReference(MatchResult match) {
         return String.format("[^%s]%s", match.group(1),
-                parseState.inFootnotes() ? ": " : "");
+                parseState().inFootnotes() ? ": " : "");
     }
 
     default String linkifyRules(Tools5eIndexType type, String text, String rules) {
@@ -508,7 +492,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         m = featureSourcePattern.matcher(conditions);
         String featureSource = m.find() ? m.group(1) : null;
         if (featureSource == null) {
-            featureSource = parseState.getSource();
+            featureSource = parseState().getSource();
         }
 
         OptionalFeatureType oft = index().getOptionalFeatureTypes(featureType, featureSource);

@@ -60,7 +60,7 @@ public class Json2QuteCompose extends Json2QuteBase {
         String name = SourceField.name.getTextOrNull(entry);
 
         if (index.keyIsIncluded(key, entry)) {
-            boolean pushed = parseState.push(entry);
+            boolean pushed = parseState().push(entry);
             try {
                 tags.addSourceTags(currentSources);
                 maybeAddBlankLine(text);
@@ -75,7 +75,7 @@ public class Json2QuteCompose extends Json2QuteBase {
 
                 maybeAddBlankLine(text);
             } finally {
-                parseState.pop(pushed);
+                parseState().pop(pushed);
             }
         }
     }

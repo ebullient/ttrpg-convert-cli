@@ -34,7 +34,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     Json2QuteClass(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        boolean pushed = parseState.push(getSources(), rootNode); // store state
+        boolean pushed = parseState().push(getSources(), rootNode); // store state
         try {
             if (!isSidekick()) {
                 findClassHitDice();
@@ -50,7 +50,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             findClassFeatures(Tools5eIndexType.classfeature, jsonNode.get("classFeatures"), classFeatures, "classFeature");
             findSubclasses();
         } finally {
-            parseState.pop(pushed); // restore state
+            parseState().pop(pushed); // restore state
         }
     }
 
@@ -91,7 +91,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         List<QuteSubclass> quteSc = new ArrayList<>();
 
         for (Subclass sc : subclasses) {
-            boolean pushed = parseState.push(sc.sources);
+            boolean pushed = parseState().push(sc.sources);
             try {
                 Tags tags = new Tags(sc.sources);
                 String tag = slugify(getName()) + "/" + slugify(sc.shortName);
@@ -124,7 +124,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         String.join("\n", text),
                         tags));
             } finally {
-                parseState.pop(pushed);
+                parseState().pop(pushed);
             }
         }
 

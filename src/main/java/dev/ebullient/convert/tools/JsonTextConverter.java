@@ -20,8 +20,6 @@ public interface JsonTextConverter<T extends IndexType> {
     String DICE_FORMULA = "[ +d\\d-‒]+";
     Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
 
-    ParseState parseState = new ParseState();
-
     void appendToText(List<String> inner, JsonNode target, String join);
 
     /**
@@ -32,7 +30,7 @@ public interface JsonTextConverter<T extends IndexType> {
      * @return The number of footnotes found.
      */
     default int appendFootnotes(List<String> text, int count) {
-        boolean pushed = parseState.push(true);
+        boolean pushed = parseState().push(true);
         try {
             List<String> footnotes = new ArrayList<>();
             text.replaceAll(input -> {
@@ -58,11 +56,15 @@ public interface JsonTextConverter<T extends IndexType> {
             }
             return count + footnotes.size();
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
     CompendiumConfig cfg();
+
+    default ParseState parseState() {
+        return cfg().parseState();
+    }
 
     default String formatDice(String diceRoll) {
         int pos = diceRoll.indexOf(";");
@@ -72,6 +74,23 @@ public interface JsonTextConverter<T extends IndexType> {
         return cfg().alwaysUseDiceRoller() && diceRoll.matches(DICE_FORMULA)
                 ? "`dice: " + diceRoll + "|avg` (`" + diceRoll + "`)"
                 : '`' + diceRoll + '`';
+    }
+
+    default String replaceWithDiceRoller(String text) {
+        return text.replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                "Hit: `dice: $2|avg` (`$2`)")
+                .replaceAll("plus ([\\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                        "plus `dice: $2|avg` (`$2`)")
+                .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                        "$1 `dice: $2|avg` (`$2`)")
+                .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + DICE_FORMULA + ")}\\)",
+                        "$1 `dice: $2|avg` (`$2`)")
+                .replaceAll("\\{@hit (\\d+)} to hit", "`dice: d20+$1` (+$1 to hit)")
+                .replaceAll("\\{@hit (-\\d+)} to hit", "`dice: d20-$1` (-$1 to hit)")
+                .replaceAll("\\{@hit (\\d+)}", "`dice: d20+$1` (+$1)")
+                .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
+                .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
+                .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)");
     }
 
     default Iterable<JsonNode> iterableElements(JsonNode source) {
@@ -267,7 +286,7 @@ public interface JsonTextConverter<T extends IndexType> {
      */
     default void renderEmbeddedTemplate(List<String> text, QuteBase resource, String admonition, List<String> prepend) {
         prepend = prepend == null ? List.of() : prepend; // ensure non-null
-        boolean pushed = parseState.push(resource.sources());
+        boolean pushed = parseState().push(resource.sources());
         try {
             String rendered = tui().renderEmbedded(resource);
             List<String> inner = removePreamble(new ArrayList<>(List.of(rendered.split("\n"))));
@@ -279,7 +298,7 @@ public interface JsonTextConverter<T extends IndexType> {
             text.addAll(inner);
             text.add(backticks);
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 

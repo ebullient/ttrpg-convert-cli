@@ -114,26 +114,26 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     public final Tools5eQuteBase build() {
-        boolean pushed = parseState.push(getSources(), rootNode);
+        boolean pushed = parseState().push(getSources(), rootNode);
         try {
             return buildQuteResource();
         } catch (Exception e) {
             tui().errorf(e, "build(): Error processing '%s': %s", getName(), e.toString());
             throw e;
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
     public final Tools5eQuteNote buildNote() {
-        boolean pushed = parseState.push(getSources(), rootNode);
+        boolean pushed = parseState().push(getSources(), rootNode);
         try {
             return buildQuteNote();
         } catch (Exception e) {
             tui().errorf(e, "buildNote(): Error processing '%s': %s", getName(), e.toString());
             throw e;
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 

@@ -88,21 +88,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
             // TODO: review against Pf2e formatting patterns
             if (cfg().alwaysUseDiceRoller()) {
-                result = result
-                        .replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
-                                "Hit: `dice: $2|avg` (`$2`)")
-                        .replaceAll("plus ([\\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
-                                "plus `dice: $2|avg` (`$2`)")
-                        .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
-                                "$1 `dice: $2|avg` (`$2`)")
-                        .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + DICE_FORMULA + ")}\\)",
-                                "$1 `dice: $2|avg` (`$2`)")
-                        .replaceAll("\\{@hit (\\d+)} to hit", "`dice: d20+$1` (+$1 to hit)")
-                        .replaceAll("\\{@hit (-\\d+)} to hit", "`dice: d20-$1` (-$1 to hit)")
-                        .replaceAll("\\{@hit (\\d+)}", "`dice: d20+$1` (+$1)")
-                        .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
-                        .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
-                        .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)");
+                result = replaceWithDiceRoller(result);
             }
 
             result = dicePattern.matcher(result)
@@ -192,7 +178,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             // note pattern often wraps others. Do this one last.
             result = notePattern.matcher(result)
                     .replaceAll((match) -> {
-                        if (parseState.inFootnotes()) {
+                        if (parseState().inFootnotes()) {
                             return match.group(2);
                         }
                         List<String> text = new ArrayList<>();
@@ -211,7 +197,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
     default String replaceFootnoteReference(MatchResult match) {
         return String.format("[^%s]%s", match.group(1),
-                parseState.inFootnotes() ? ": " : "");
+                parseState().inFootnotes() ? ": " : "");
     }
 
     default String replaceActionAs(MatchResult match) {

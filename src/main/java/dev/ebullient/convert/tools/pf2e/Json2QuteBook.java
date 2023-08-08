@@ -30,7 +30,7 @@ public class Json2QuteBook extends Json2QuteBase {
      * Page state has to be maintained.
      */
     public List<Pf2eQuteNote> buildBook() {
-        boolean pushed = parseState.push(getSources()); // set source
+        boolean pushed = parseState().push(getSources()); // set source
         try {
             QuteBook.BookInfo bookInfo = new QuteBook.BookInfo();
             bookInfo.author = Pf2eBook.author.getTextOrNull(rootNode);
@@ -100,12 +100,12 @@ public class Json2QuteBook extends Json2QuteBase {
 
             return pages;
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
     Pf2eQuteNote chapterPage(String name, JsonNode pageNode) {
-        boolean pushed = parseState.push(pageNode);
+        boolean pushed = parseState().push(pageNode);
         try {
             Tags tags = new Tags(sources);
             List<String> text = new ArrayList<>();
@@ -114,7 +114,7 @@ public class Json2QuteBook extends Json2QuteBase {
 
             return new QuteBook(name, text, tags, bookRelativePath, null, List.of());
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 

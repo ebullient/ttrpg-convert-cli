@@ -6,7 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
@@ -24,7 +23,7 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
     special;
 
     public static QuteAbility createAbility(JsonNode node, JsonSource convert, boolean embedded) {
-        boolean pushed = JsonTextConverter.parseState.push(node);
+        boolean pushed = convert.parseState().push(node);
         try {
             String name = SourceField.name.getTextOrDefault(node, "Activate");
 
@@ -34,7 +33,7 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
             note.debugIfExists(node, convert.tui());
             range.debugIfExists(node, convert.tui());
 
-            final String abilitySrc = JsonTextConverter.parseState.getSource(Pf2eIndexType.ability);
+            final String abilitySrc = convert.parseState().getSource(Pf2eIndexType.ability);
 
             // handle abilities in entries
             String freq = convert.index().getFrequency(frequency.getFrom(node));
@@ -62,7 +61,7 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
                 }
             };
         } finally {
-            JsonTextConverter.parseState.pop(pushed);
+            convert.parseState().pop(pushed);
         }
     }
 }

@@ -33,20 +33,20 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
     }
 
     public Pf2eQuteBase build() {
-        boolean pushed = parseState.push(getSources(), rootNode);
+        boolean pushed = parseState().push(getSources(), rootNode);
         try {
             return buildQuteResource();
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
     public Pf2eQuteNote buildNote() {
-        boolean pushed = parseState.push(getSources(), rootNode);
+        boolean pushed = parseState().push(getSources(), rootNode);
         try {
             return buildQuteNote();
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 

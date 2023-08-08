@@ -82,7 +82,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
     private int appendElement(JsonNode entry, List<String> text, Tags tags, int count) {
         currentSources = Tools5eSources.findOrTemporary(entry);
 
-        boolean pushed = parseState.push(entry);
+        boolean pushed = parseState().push(entry);
         try {
             String abbreviation = Tools5eFields.abbreviation.getTextOrNull(entry);
             String name = SourceField.name.replaceTextFrom(entry, index);
@@ -110,7 +110,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
 
             return appendFootnotes(text, count);
         } finally {
-            parseState.pop(pushed);
+            parseState().pop(pushed);
         }
     }
 
@@ -223,7 +223,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
         final JsonNode srdEntries = TtrpgConfig.activeGlobalConfig("srdEntries").get("properties");
 
         for (JsonNode srdEntry : iterableElements(srdEntries)) {
-            boolean p2 = parseState.push(srdEntry);
+            boolean p2 = parseState().push(srdEntry);
             try {
                 String name = srdEntry.get("name").asText();
 
@@ -261,7 +261,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
                     appendToText(text, srdEntry.get("entries"), "###");
                 }
             } finally {
-                parseState.pop(p2);
+                parseState().pop(p2);
             }
         }
     }

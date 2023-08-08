@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.ParseState;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class CompendiumConfig {
@@ -29,6 +30,7 @@ public class CompendiumConfig {
 
     final Tui tui;
     final Datasource datasource;
+    final ParseState parseState = new ParseState();
 
     String tagPrefix = "";
     PathAttributes paths;
@@ -46,6 +48,10 @@ public class CompendiumConfig {
     CompendiumConfig(Datasource src, Tui tui) {
         this.tui = tui;
         this.datasource = src;
+    }
+
+    public ParseState parseState() {
+        return parseState;
     }
 
     public Tui tui() {
