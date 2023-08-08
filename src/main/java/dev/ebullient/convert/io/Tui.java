@@ -118,7 +118,7 @@ public class Tui {
             options.setPrettyFlow(true);
 
             Representer representer = new Representer(options);
-            representer.addClassTag(dev.ebullient.convert.tools.dnd5e.qute.Trait.class, Tag.MAP); //
+            representer.addClassTag(dev.ebullient.convert.qute.NamedText.class, Tag.MAP); //
 
             y = plainYaml = new Yaml(representer, options);
         }
@@ -135,7 +135,7 @@ public class Tui {
             options.setPrettyFlow(true);
 
             Representer representer = new Representer(options);
-            representer.addClassTag(dev.ebullient.convert.tools.dnd5e.qute.Trait.class, Tag.MAP); //
+            representer.addClassTag(dev.ebullient.convert.qute.NamedText.class, Tag.MAP); //
 
             y = quotedYaml = new Yaml(representer, options);
         }

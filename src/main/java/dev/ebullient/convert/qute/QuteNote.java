@@ -7,6 +7,14 @@ import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * Common attributes for simple notes. THese attributes are more
+ * often used by books, adventures, rules, etc.
+ * <p>
+ * Notes created from {@code QuteNote} (or a derivative) will look for a template
+ * named {@code note2md.txt} by default.
+ * </p>
+ */
 @TemplateData
 @RegisterForReflection
 public class QuteNote extends QuteBase {
@@ -21,14 +29,6 @@ public class QuteNote extends QuteBase {
 
     public QuteNote(CompendiumSources sources, String name, String sourceText, String text, Tags tags) {
         super(sources, name, sourceText, text, tags);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSource() {
-        return sourceText;
     }
 
     public String title() {

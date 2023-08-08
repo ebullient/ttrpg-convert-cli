@@ -7,10 +7,16 @@ import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * A representation of a source and page number. This attribute will print
+ * itself nicely if you don't reference sub-attributes.
+ */
 @RegisterForReflection
 @TemplateData
 public class SourceAndPage {
+    /** Abbreviated source name */
     public final String source;
+    /** Associated page number (may not be present) */
     public final String page;
 
     public SourceAndPage(JsonNode jsonElement) {
@@ -21,6 +27,11 @@ public class SourceAndPage {
     public SourceAndPage(String source, String page) {
         this.source = source;
         this.page = page;
+    }
+
+    /** Long source name */
+    public String getLongName() {
+        return TtrpgConfig.sourceToLongName(source);
     }
 
     public String toString() {

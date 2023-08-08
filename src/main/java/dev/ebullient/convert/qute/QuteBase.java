@@ -9,13 +9,24 @@ import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * Defines attributes inherited by other Qute templates.
+ * <p>
+ * Notes created from {@code QuteBase} (or a derivative) will use a specific template
+ * for the type. For example, {@code QuteBackground} will use {@code background2md.txt}.
+ * </p>
+ */
 @TemplateData
 @RegisterForReflection
-public class QuteBase {
+public class QuteBase implements QuteUtil {
     protected final String name;
     protected final CompendiumSources sources;
-    public final String sourceText;
+    protected final String sourceText;
+
+    /** Formatted text. For most templates, this is the bulk of the content. */
     public final String text;
+
+    /** Collected tags for inclusion in frontmatter */
     public final Collection<String> tags;
 
     private String vaultPath;
@@ -28,14 +39,17 @@ public class QuteBase {
         this.tags = tags == null ? List.of() : tags.build();
     }
 
+    /** Note name */
     public String getName() {
         return name;
     }
 
+    /** Formatted string describing the content's source(es) */
     public String getSource() {
         return sourceText;
     }
 
+    /** True if the content (text) contains sections */
     public boolean getHasSections() {
         return text.contains("\n## ");
     }
@@ -44,15 +58,12 @@ public class QuteBase {
         this.vaultPath = vaultPath;
     }
 
+    /** Path to this note in the vault */
     public String getVaultPath() {
         if (vaultPath != null) {
             return vaultPath;
         }
         return targetPath() + '/' + targetFile();
-    }
-
-    public List<ImageRef> images() {
-        return List.of();
     }
 
     public CompendiumSources sources() {

@@ -144,7 +144,7 @@ public interface JsonNodeReader {
 
     default String getTextOrNull(JsonNode x) {
         JsonNode text = getFrom(x);
-        return text == null ? null : text.asText();
+        return text == null || text.isNull() ? null : text.asText();
     }
 
     default int intOrDefault(JsonNode source, int value) {
