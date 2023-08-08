@@ -11,6 +11,7 @@
     &[src$="#center"] {
       text-align: center;
     }
+    &[src$="#symbol"],
     &[src$="#portrait"],
     &[src$="#token"],
     &[src$="#right"] {
@@ -29,6 +30,7 @@
     &[src$="#token"] {
       width: 150px;
     }
+    &[src$="#symbol"],
     &[src$="#portrait"] {
       width: 200px;
     }

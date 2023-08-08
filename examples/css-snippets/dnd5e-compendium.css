@@ -222,28 +222,36 @@ body {
 .json5e-spell div[src$="#center"] {
   text-align: center;
 }
-.json5e-background div[src$="#portrait"], .json5e-background div[src$="#token"], .json5e-background div[src$="#right"],
+.json5e-background div[src$="#symbol"], .json5e-background div[src$="#portrait"], .json5e-background div[src$="#token"], .json5e-background div[src$="#right"],
+.json5e-class div[src$="#symbol"],
 .json5e-class div[src$="#portrait"],
 .json5e-class div[src$="#token"],
 .json5e-class div[src$="#right"],
+.json5e-deity div[src$="#symbol"],
 .json5e-deity div[src$="#portrait"],
 .json5e-deity div[src$="#token"],
 .json5e-deity div[src$="#right"],
+.json5e-feat div[src$="#symbol"],
 .json5e-feat div[src$="#portrait"],
 .json5e-feat div[src$="#token"],
 .json5e-feat div[src$="#right"],
+.json5e-item div[src$="#symbol"],
 .json5e-item div[src$="#portrait"],
 .json5e-item div[src$="#token"],
 .json5e-item div[src$="#right"],
+.json5e-monster div[src$="#symbol"],
 .json5e-monster div[src$="#portrait"],
 .json5e-monster div[src$="#token"],
 .json5e-monster div[src$="#right"],
+.json5e-note div[src$="#symbol"],
 .json5e-note div[src$="#portrait"],
 .json5e-note div[src$="#token"],
 .json5e-note div[src$="#right"],
+.json5e-race div[src$="#symbol"],
 .json5e-race div[src$="#portrait"],
 .json5e-race div[src$="#token"],
 .json5e-race div[src$="#right"],
+.json5e-spell div[src$="#symbol"],
 .json5e-spell div[src$="#portrait"],
 .json5e-spell div[src$="#token"],
 .json5e-spell div[src$="#right"] {
@@ -291,14 +299,22 @@ body {
 .json5e-spell div[src$="#token"] {
   width: 150px;
 }
-.json5e-background div[src$="#portrait"],
+.json5e-background div[src$="#symbol"], .json5e-background div[src$="#portrait"],
+.json5e-class div[src$="#symbol"],
 .json5e-class div[src$="#portrait"],
+.json5e-deity div[src$="#symbol"],
 .json5e-deity div[src$="#portrait"],
+.json5e-feat div[src$="#symbol"],
 .json5e-feat div[src$="#portrait"],
+.json5e-item div[src$="#symbol"],
 .json5e-item div[src$="#portrait"],
+.json5e-monster div[src$="#symbol"],
 .json5e-monster div[src$="#portrait"],
+.json5e-note div[src$="#symbol"],
 .json5e-note div[src$="#portrait"],
+.json5e-race div[src$="#symbol"],
 .json5e-race div[src$="#portrait"],
+.json5e-spell div[src$="#symbol"],
 .json5e-spell div[src$="#portrait"] {
   width: 200px;
 }
