@@ -3,9 +3,9 @@ package dev.ebullient.convert.tools.pf2e;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
@@ -86,21 +87,21 @@ public interface Pf2eTypeReader extends JsonSource {
 
             QuteItemWeaponData weaponData = new QuteItemWeaponData();
             weaponData.traits = convert.collectTraitsFrom(source, tags);
-            weaponData.type = SourceField.type.getTextOrNull(source);
+            weaponData.type = SourceField.type.getTextOrEmpty(source);
             weaponData.damage = getDamageString(source, convert);
 
-            weaponData.ranged = new LinkedHashMap<>();
+            weaponData.ranged = new ArrayList<>();
             String ammunition = Pf2eWeaponData.ammunition.getTextOrNull(source);
             if (ammunition != null) {
-                weaponData.ranged.put("Ammunution", convert.linkify(Pf2eIndexType.item, ammunition));
+                weaponData.ranged.add(new NamedText("Ammunution", convert.linkify(Pf2eIndexType.item, ammunition)));
             }
             String range = Pf2eWeaponData.range.getTextOrNull(source);
             if (range != null) {
-                weaponData.ranged.put("Range", range + " ft.");
+                weaponData.ranged.add(new NamedText("Range", range + " ft."));
             }
             String reload = Pf2eWeaponData.reload.getTextOrNull(source);
             if (reload != null) {
-                weaponData.ranged.put("Reload", convert.replaceText(reload));
+                weaponData.ranged.add(new NamedText("Reload", convert.replaceText(reload)));
             }
 
             String group = Pf2eWeaponData.group.getTextOrNull(source);
@@ -171,12 +172,11 @@ public interface Pf2eTypeReader extends JsonSource {
         weaknesses;
 
         public static QuteDataDefenses createInlineDefenses(JsonNode source, Pf2eTypeReader convert) {
-            List<String> text = new ArrayList<>();
             JsonNode notesNode = notes.getFrom(source);
             if (notesNode != null) {
                 convert.tui().warnf("Defenses has notes: %s", source.toString());
             }
-            return new QuteDataDefenses(text,
+            return new QuteDataDefenses(List.of(),
                     getAcString(source, convert),
                     getSavingThrowString(source, convert),
                     getHpHardness(source, convert), // hp hardness
@@ -230,10 +230,11 @@ public interface Pf2eTypeReader extends JsonSource {
 
         public static List<String> getWeakResist(Pf2eDefenses field, JsonNode source, Pf2eTypeReader convert) {
             List<String> items = new ArrayList<>();
-            field.withArrayFrom(source).forEach(wr -> {
+            for (JsonNode wr : field.iterateArrayFrom(source)) {
                 NameAmountNote nmn = convert.tui().readJsonValue(wr, NameAmountNote.class);
                 items.add(nmn.flatten(convert));
-            });
+            }
+            ;
             return items;
         }
 
@@ -243,40 +244,62 @@ public interface Pf2eTypeReader extends JsonSource {
                 return null;
             }
             QuteDataArmorClass ac = new QuteDataArmorClass();
-            ac.armorClass = new LinkedHashMap<>();
-            acNode.fields().forEachRemaining(e -> {
+            NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
+            for (Entry<String, JsonNode> e : convert.iterableFields(acNode)) {
                 if (e.getKey().equals(note.name()) || e.getKey().equals(abilities.name())) {
-                    return; // skip these two
+                    continue; // skip these two
                 }
-                ac.armorClass.put(
+                namedText.add(
                         (e.getKey().equals("std") ? "AC" : e.getKey() + " AC"),
                         "" + e.getValue());
-            });
+            }
+            ac.armorClass = namedText.build();
             ac.note = convert.replaceText(note.getTextOrEmpty(acNode));
-            ac.abilities = convert.replaceText(abilities.getTextOrNull(acNode));
+            ac.abilities = convert.replaceText(abilities.getTextOrEmpty(acNode));
             return ac;
         }
 
+        /**
+         * "savingThrows": {
+         * "fort": {
+         * "std": 12
+         * },
+         * "ref": {
+         * "std": 8
+         * }
+         * },
+         */
         public static QuteSavingThrows getSavingThrowString(JsonNode source, Pf2eTypeReader convert) {
             JsonNode stNode = savingThrows.getFrom(source);
             if (stNode == null) {
                 return null;
             }
             QuteSavingThrows svt = new QuteSavingThrows();
-
-            svt.savingThrows = new LinkedHashMap<>();
-            stNode.fields().forEachRemaining(e -> {
-                if (e.getKey().equals(abilities.name())) {
-                    convert.tui().warnf("Found a saving throw block with abilities in it: %s", source.toPrettyString());
-                    return; // skip this one
-                }
-                if (e.getValue().size() > 1) {
-                    convert.tui().warnf("Found a saving throw block with other things in it: %s", source.toPrettyString());
-                }
+            for (Entry<String, JsonNode> e : convert.iterableFields(stNode)) {
                 int sv = std.intOrDefault(e.getValue(), 0);
+                List<String> svValue = new ArrayList<>();
+                svValue.add((sv >= 0 ? "+" : "") + sv);
+
+                if (e.getValue().size() > 1) {
+                    for (Entry<String, JsonNode> extra : convert.iterableFields(e.getValue())) {
+                        if ("std".equals(extra.getKey())) {
+                            continue;
+                        }
+                        if ("abilities".equals(extra.getKey())) {
+                            svt.hasThrowAbilities = true;
+                            svValue.addAll(convert.streamOf(extra.getValue())
+                                    .map(x -> convert.replaceText(x))
+                                    .toList());
+                            continue;
+                        }
+                        int value = extra.getValue().asInt();
+                        svt.savingThrows.put(convert.toTitleCase(extra.getKey()),
+                                (value >= 0 ? "+" : "") + value);
+                    }
+                }
                 svt.savingThrows.put(convert.toTitleCase(e.getKey()),
-                        (sv >= 0 ? "+" : "") + sv);
-            });
+                        String.join(", ", svValue));
+            }
             svt.abilities = convert.replaceText(abilities.getTextOrNull(stNode));
             return svt;
         }
@@ -333,7 +356,7 @@ public interface Pf2eTypeReader extends JsonSource {
         heightened,
         hidden,
         level,
-        plusX,
+        plusX, // heightened
         primaryCheck, // ritual
         range,
         savingThrow,
@@ -345,7 +368,7 @@ public interface Pf2eTypeReader extends JsonSource {
         traditions,
         trigger,
         type,
-        X;
+        X; // heightened
 
         List<String> getNestedListOfStrings(JsonNode source, Tui tui) {
             JsonNode result = source.get(this.nodeName());
@@ -474,18 +497,18 @@ public interface Pf2eTypeReader extends JsonSource {
                         throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
                     }
                     return activity.toQuteActivity(convert,
-                            String.format("%s%s", activity.getLongName(), extra));
+                            extra.isBlank() ? null : String.format("%s%s", activity.getLongName(), extra));
                 }
                 case "varies" -> {
                     return Pf2eActivity.varies.toQuteActivity(convert,
-                            String.format("%s%s", Pf2eActivity.varies.getLongName(), extra));
+                            extra.isBlank() ? null : String.format("%s%s", Pf2eActivity.varies.getLongName(), extra));
                 }
                 case "day", "minute", "hour", "round" -> {
                     return Pf2eActivity.timed.toQuteActivity(convert,
                             String.format("%s %s%s", number, unit, extra));
                 }
-                default ->
-                    throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
+                default -> throw new IllegalArgumentException(
+                        "What is this? " + String.format("%s, %s, %s", number, unit, entry));
             }
         }
     }

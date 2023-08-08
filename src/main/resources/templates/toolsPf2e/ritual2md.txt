@@ -25,7 +25,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {resource.text}
 
 {#if resource.heightened }
-{#each resource.heightened}**{it.key}** {it.value}
+{#each resource.heightened}{it}
 
 {/each}{/if}{#if resource.hasSections }
 

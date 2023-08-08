@@ -7,10 +7,19 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.qute.TemplateData;
 
+/**
+ * Pf2eTools Attack attributes (inline/embedded, {@code inline-attack2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote Pf2eQuteNote}
+ * </p>
+ */
 @TemplateData
 public class QuteInlineAttack extends Pf2eQuteNote {
+
+    /** Collection of traits (decorated links) */
     public final Collection<String> traits;
     public final String meleeOrRanged;
+    /** Activity/Activation cost (as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity QuteDataActivity}) */
     public final QuteDataActivity activity;
     public final String attack;
     public final String damage;

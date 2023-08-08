@@ -69,17 +69,16 @@ public class Json2QuteHazard extends Json2QuteBase {
 
     List<String> buildActions() {
         List<Pf2eQuteNote> inlineThings = new ArrayList<>();
-        Pf2eHazard.actions.withArrayFrom(rootNode)
-                .forEach(a -> {
-                    if (AppendTypeValue.attack.isValueOfField(a, SourceField.type)) {
-                        inlineThings.add(AttackField.createInlineAttack(a, this));
-                    } else {
-                        inlineThings.add(Pf2eTypeAbility.createAbility(a, this, true));
-                    }
-                });
+        for (JsonNode a : Pf2eHazard.actions.iterateArrayFrom(rootNode)) {
+            if (AppendTypeValue.attack.isValueOfField(a, SourceField.type)) {
+                inlineThings.add(AttackField.createInlineAttack(a, this));
+            } else {
+                inlineThings.add(Pf2eTypeAbility.createAbility(a, this, true));
+            }
+        }
 
         return inlineThings.stream()
-                .map(x -> render(x, x.type))
+                .map(x -> render(x, x.type()))
                 .collect(Collectors.toList());
     }
 

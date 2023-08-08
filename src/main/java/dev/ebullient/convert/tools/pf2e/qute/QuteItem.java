@@ -3,42 +3,74 @@ package dev.ebullient.convert.tools.pf2e.qute;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import dev.ebullient.convert.qute.NamedText;
+import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
+/**
+ * Pf2eTools Item attributes
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
+ * </p>
+ */
 @TemplateData
 public class QuteItem extends Pf2eQuteBase {
 
+    /** Collection of traits (decorated links) */
     public final Collection<String> traits;
+    /** Aliases for this note */
     public final List<String> aliases;
-
+    /**
+     * Item activation attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemActivate QuteItemActivate}
+     */
     public final QuteItemActivate activate;
+    /** Formatted string. Item price (pp, gp, sp, cp) */
     public final String price;
+    /** Formatted string. Crafting requirements */
     public final String craftReq;
+    /** Formatted string. Ammunition required */
     public final String ammunition;
+    /** Formatted string. Onset attributes */
     public final String onset;
+    /** Formatted string. Item power level */
     public final String level;
+    /** Formatted string. Item access attributes */
     public final String access;
+    /** Formatted string. How long will the item remain active */
     public final String duration;
+    /** Formatted string. Item category */
     public final String category;
+    /** Formatted string. Item group */
     public final String group;
+    /** Formatted string. How many hands does this item require to use */
     public final String hands;
-    public final Map<String, String> usage;
-    public final Map<String, String> contract;
+    /** Item use attributes as a list of {@link dev.ebullient.convert.qute.NamedText NamedText} */
+    public final Collection<NamedText> usage;
+    /** Item contract attributes as a list of {@link dev.ebullient.convert.qute.NamedText NamedText} */
+    public final Collection<NamedText> contract;
+    /**
+     * Item shield attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemShieldData QuteItemShieldData}
+     */
     public final QuteItemShieldData shield;
+    /** Item armor attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemArmorData QuteItemArmorData} */
     public final QuteItemArmorData armor;
+    /**
+     * Item weapon attributes as list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData
+     * QuteItemWeaponData}
+     */
     public final List<QuteItemWeaponData> weapons;
+    /** Item variants as list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemVariant QuteItemVariant} */
     public final List<QuteItemVariant> variants;
 
     public QuteItem(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases, QuteItemActivate activate,
             String price, String ammunition, String level, String onset, String access,
             String duration, String category, String group,
-            String hands, Map<String, String> usage, Map<String, String> contract,
+            String hands, Collection<NamedText> usage, Collection<NamedText> contract,
             QuteItemShieldData shield, QuteItemArmorData armor, List<QuteItemWeaponData> weapons,
             List<QuteItemVariant> variants, String craftReq) {
         super(sources, text, tags);
@@ -64,28 +96,42 @@ public class QuteItem extends Pf2eQuteBase {
         this.craftReq = craftReq;
     }
 
+    /**
+     * Pf2eTools item activation attributes.
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.activate}`.
+     * </p>
+     */
     @TemplateData
-    public static class QuteItemActivate {
+    public static class QuteItemActivate implements QuteUtil {
+        /** Item {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity activity/activation details} */
         public QuteDataActivity activity;
+        /** Formatted string. Components required to activate this item */
         public String components;
+        /** Formatted string. Trigger to activate this item */
         public String trigger;
+        /** Formatted string. How often this item can be used/activated */
         public String frequency;
+        /** Formatted string. Requirements for activating this item */
         public String requirements;
 
         public String toString() {
             List<String> lines = new ArrayList<>();
-            if (activity != null || components != null) {
+            if (activity != null || isPresent(components)) {
                 lines.add(String.join(" ", List.of(
                         activity == null ? "" : activity.toString(),
                         components == null ? "" : components)).trim());
             }
-            if (frequency != null) {
+            if (isPresent(frequency)) {
                 lines.add("**Frequency** " + frequency);
             }
-            if (trigger != null) {
+            if (isPresent(trigger)) {
                 lines.add("**Trigger** " + trigger);
             }
-            if (requirements != null) {
+            if (isPresent(requirements)) {
                 lines.add("**Requirements** " + requirements);
             }
 
@@ -93,10 +139,22 @@ public class QuteItem extends Pf2eQuteBase {
         }
     }
 
+    /**
+     * Pf2eTools item shield attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.shield}`.
+     * </p>
+     */
     @TemplateData
-    public static class QuteItemShieldData {
+    public static class QuteItemShieldData implements QuteUtil {
+        /** {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass Shield armor class details} */
         public QuteDataArmorClass ac;
+        /** {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardness Shield hardness details} */
         public QuteDataHpHardness hpHardness;
+        /** Formatted string. Speed penalty */
         public String speedPenalty;
 
         public String toString() {
@@ -107,29 +165,42 @@ public class QuteItem extends Pf2eQuteBase {
             if (hpHardness != null) {
                 parts.add(hpHardness.toString());
             }
-            if (speedPenalty != null) {
+            if (isPresent(speedPenalty)) {
                 parts.add("**Speed Penalty** " + speedPenalty);
             }
             return "- " + String.join("; ", parts);
         }
     }
 
+    /**
+     * Pf2eTools item armor attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.armor}`.
+     * </p>
+     */
     @TemplateData
-    public static class QuteItemArmorData {
+    public static class QuteItemArmorData implements QuteUtil {
+        /** {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass Item armor class details} */
         public QuteDataArmorClass ac;
+        /** Formatted string. Armor strength */
         public String strength;
+        /** Formatted string. Check penalty */
         public String checkPenalty;
+        /** Formatted string. Speed penalty */
         public String speedPenalty;
 
         public String toString() {
             List<String> parts = new ArrayList<>();
-            if (strength != null) {
+            if (isPresent(strength)) {
                 parts.add("**Strength** " + strength);
             }
-            if (checkPenalty != null) {
+            if (isPresent(checkPenalty)) {
                 parts.add("**Check Penalty** " + checkPenalty);
             }
-            if (speedPenalty != null) {
+            if (isPresent(speedPenalty)) {
                 parts.add("**Speed Penalty** " + speedPenalty);
             }
             return "- " + ac.toString()
@@ -137,39 +208,81 @@ public class QuteItem extends Pf2eQuteBase {
         }
     }
 
+    /**
+     * Pf2eTools item weapon attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly:<br />
+     * ```<br />
+     * {#for weapons in resource.weapons}<br />
+     * {weapons}<br />
+     * {/for}<br />
+     * ```<br />
+     * or, using `{#each}` instead:<br />
+     * ```<br />
+     * {#each resource.weapons}<br />
+     * {it}<br />
+     * {/each}<br />
+     * ```
+     * </p>
+     */
+
     @TemplateData
-    public static class QuteItemWeaponData {
+    public static class QuteItemWeaponData implements QuteUtil {
+        /** Formatted string. Weapon type */
         public String type;
+        /** Formatted string. List of traits (links) */
         public Collection<String> traits;
-        public Map<String, String> ranged;
+        public Collection<NamedText> ranged;
         public String damage;
         public String group;
 
         public String toString() {
             String result = "";
-
             String prefix = type == null ? "" : "  ";
 
-            if (type != null) {
-                result += "- **" + type + "**  \n";
+            if (isPresent(type)) {
+                result += "- **" + type + "**:  \n";
             }
-            if (damage != null) {
-                result += prefix + "- **Damage** " + damage;
+            if (isPresent(damage)) {
+                result += prefix + "- **Damage**: " + damage;
             }
-            if (ranged != null && !ranged.isEmpty()) {
-                if (damage != null) {
+            if (isPresent(ranged)) {
+                if (isPresent(damage)) {
                     result += "\n";
                 }
-                result += prefix + "- " + ranged.entrySet().stream()
-                        .map(e -> "**" + e.getKey() + "** " + e.getValue())
+                result += prefix + "- " + ranged.stream()
+                        .map(e -> e.toString())
                         .collect(Collectors.joining("; "));
             }
             return result;
         }
     }
 
+    /**
+     * Pf2eTools item variant attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly:<br />
+     * ```<br />
+     * {#for variants in resource.variants}<br />
+     * {variants}<br />
+     * {/for}<br />
+     * ```<br />
+     * or, using `{#each}` instead:<br />
+     * ```<br />
+     * {#each resource.variants}<br />
+     * {it}<br />
+     * {/each}<br />
+     * ```
+     * </p>
+     */
     @TemplateData
-    public static class QuteItemVariant {
+    public static class QuteItemVariant implements QuteUtil {
         public String variantType;
         public int level;
         public String price;
@@ -177,21 +290,23 @@ public class QuteItem extends Pf2eQuteBase {
         public List<String> craftReq;
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-
-            sb.append(String.format("#### %s *Item %d*\n\n", variantType, level));
-            sb.append(String.format("- **Price** %s\n", price));
-
-            if (!craftReq.isEmpty()) {
-                sb.append("- **Craft Requirements** ");
-                sb.append(String.join("; ", craftReq));
+            List<String> text = new ArrayList<>();
+            text.add(String.format("#### %s *Item %d*", variantType, level));
+            text.add("");
+            if (isPresent(price)) {
+                text.add(String.format("- **Price**: %s", price));
             }
-            if (!entries.isEmpty()) {
-                sb.append("\n");
-                sb.append(String.join("\n", entries));
+            if (isPresent(craftReq)) {
+                text.add("- **Craft Requirements**: " +
+                        String.join("; ", craftReq));
+            }
+            String bodyText = String.join("\n", this.entries);
+            if (!bodyText.isBlank()) {
+                text.add("");
+                text.add(bodyText);
             }
 
-            return sb.toString();
+            return String.join("\n", text);
         }
     }
 }

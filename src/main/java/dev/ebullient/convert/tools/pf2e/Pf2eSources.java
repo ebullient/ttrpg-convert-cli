@@ -116,8 +116,8 @@ public class Pf2eSources extends CompendiumSources {
         if (type == Pf2eIndexType.syntheticGroup || type == Pf2eIndexType.bookReference) {
             return this.key.replaceAll(".*\\|(.*)\\|", "$1");
         }
-        String name = SourceField.name.getTextOrNull(node);
-        if (name == null) {
+        String name = SourceField.name.getTextOrEmpty(node);
+        if (name.isEmpty()) {
             throw new IllegalArgumentException("Unknown element, has no name: " + node.toString());
         }
         return name;

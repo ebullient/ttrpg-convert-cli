@@ -1,9 +1,16 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
 
+/**
+ * Pf2eTools Hit Points and Hardiness attributes
+ */
 @TemplateData
-public class QuteDataHpHardness {
+public class QuteDataHpHardness implements QuteUtil {
     public String name;
     public String hpNotes;
     public String hpValue;
@@ -12,26 +19,29 @@ public class QuteDataHpHardness {
     public String brokenThreshold;
 
     public String toString() {
-        String n = name == "" ? "" : (name + " ");
-        String hardPart = "";
+        String n = isPresent(name) ? (name.trim() + " ") : "";
         String btPart = "";
-        String hpPart = "";
         String hpNotePart = "";
+        boolean hasHardnessNotes = isPresent(hardnessNotes);
 
-        if (hardnessValue != null) {
-            hardPart = String.format("**%sHardness** %s%s",
-                    n, hardnessValue,
-                    hardnessNotes == null ? ", " : (" " + hardnessNotes + "; "));
+        List<String> hardParts = new ArrayList<>();
+
+        if (isPresent(hardnessValue)) {
+            hardParts.add(String.format("**%sHardness** %s%s",
+                    n,
+                    hardnessValue,
+                    isPresent(hardnessNotes) ? (" " + hardnessNotes) : ""));
         }
-        if (brokenThreshold != null) {
+        if (isPresent(hpValue)) {
+            hardParts.add(String.format("**%sHP** %s", n, hpValue));
+        }
+        if (isPresent(brokenThreshold)) {
             btPart = " (BT " + brokenThreshold + ")";
         }
-        if (hpValue != null) {
-            hpPart = String.format("**%sHP** %s", n, hpValue);
-        }
-        if (hpNotes != null) {
+        if (isPresent(hpNotes)) {
             hpNotePart = " " + hpNotes;
         }
-        return hardPart + hpPart + btPart + hpNotePart;
+        return String.join(hasHardnessNotes ? "; " : ", ", hardParts)
+                + btPart + hpNotePart;
     }
 }

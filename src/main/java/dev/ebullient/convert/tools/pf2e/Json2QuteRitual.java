@@ -45,7 +45,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
     }
 
     QuteSpellTarget getQuteRitualSpellTarget(Tags tags) {
-        String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
+        String targets = replaceText(Pf2eSpell.targets.getTextOrEmpty(rootNode));
         JsonNode rangeEntry = Pf2eSpell.range.getFieldFrom(rootNode, SourceField.entry);
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
         if (targets == null && rangeEntry == null && area == null) {

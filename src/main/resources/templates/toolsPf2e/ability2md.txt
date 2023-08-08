@@ -9,13 +9,12 @@ tags:
 {/if}
 aliases: ["{resource.name}"]
 ---
-%%-- Embedded/inline ability starts on the next line. --%%
-{#if resource.embedded }title: {#else}# {/if}{resource.name}{#if resource.activity} {resource.activity}{/if}
+# {resource.name}{#if resource.activity} {resource.activity}{/if}
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if}
 
 {#if resource.activity}{#if resource.activity.text }
-- **Activate**: {resource.activity.text} {#if resource.components}({resource.components}){/if}
+- **Activate**: {resource.activity.text}
 {/if}{/if}{#if resource.cost }
 - **Cost**: {resource.cost}
 {/if}{#if resource.frequency }
@@ -24,11 +23,8 @@ aliases: ["{resource.name}"]
 - **Trigger**: {resource.trigger}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
-{/if}{#if resource.hasBullets }
+{/if}{#if resource.hasAttributes }
 
-{/if}{#if resource.hasEffect }**Effect** {/if}{resource.text}  {#if resource.special }
+{/if}{#if resource.hasEffect }**Effect** {/if}{resource.text}  {#if resource.source }
 
-**Special**: {resource.special}  {/if}{#if resource.source }
-
-*Source: {resource.source}*  {/if}{#if resource.embedded && resource.tags }
-%% {#each resource.tags}#{it} {/each}%%{/if}
+*Source: {resource.source}*  {/if}

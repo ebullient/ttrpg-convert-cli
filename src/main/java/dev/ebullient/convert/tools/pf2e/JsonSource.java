@@ -45,7 +45,7 @@ public interface JsonSource extends JsonTextReplacement {
      * Parse attributes of the given node and add resulting lines
      * to the provided list.
      *
-     * @param text Parsed content is appended to this list
+     * @param desc Parsed content is appended to this list
      * @param node Textual, Array, or Object node containing content to parse/render
      * @param heading The current header depth and/or if headings are allowed for this text element
      */
@@ -155,7 +155,9 @@ public interface JsonSource extends JsonTextReplacement {
             text.addAll(inner);
         } else if (SourceField.name.existsIn(node)) {
             maybeAddBlankLine(text);
-            text.add(heading + " " + replaceText(SourceField.name.getTextOrEmpty(node)));
+            // strip rendered links from the heading: linking to headings containing links is hard
+            text.add(heading + " " + replaceText(SourceField.name.getTextOrEmpty(node))
+                    .replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1"));
             text.add(pageRef);
             appendToText(text, SourceField.entry.getFrom(node), "#" + heading);
             appendToText(text, SourceField.entries.getFrom(node), "#" + heading);
@@ -243,7 +245,7 @@ public interface JsonSource extends JsonTextReplacement {
         // TODO
         JsonNode autoReference = Field.recurs.getFieldFrom(entry, Field.auto);
         if (Field.auto.booleanOrDefault(Field.reference.getFrom(entry), false)) {
-            String page = SourceField.page.getTextOrNull(entry);
+            String page = SourceField.page.getTextOrEmpty(entry);
             insetText.add(String.format("See %s%s",
                     page == null ? "" : "page " + page + " of ",
                     TtrpgConfig.sourceToLongName(SourceField.source.getTextOrEmpty(entry))));
@@ -305,7 +307,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendAffliction(List<String> text, JsonNode node) {
-        String name = SourceField.name.getTextOrNull(node);
+        String name = SourceField.name.getTextOrEmpty(node);
         String level = null;
 
         String savingThrow = toTitleCase(AfflictionField.savingThrow.getTextOrEmpty(node));
@@ -336,7 +338,7 @@ public interface JsonSource extends JsonTextReplacement {
             appendToText(stageInner, SourceField.entry.getFrom(stageNode), title);
 
             QuteAfflictionStage stage = new QuteAfflictionStage();
-            stage.duration = replaceText(AfflictionField.duration.getTextOrNull(stageNode));
+            stage.duration = replaceText(AfflictionField.duration.getTextOrEmpty(stageNode));
             stage.text = join("\n", stageInner);
 
             stages.put(title, stage);
@@ -344,8 +346,8 @@ public interface JsonSource extends JsonTextReplacement {
 
         QuteInlineAffliction inlineAffliction = new QuteInlineAffliction(
                 name, note, tags, traits, level,
-                replaceText(AfflictionField.maxDuration.getTextOrNull(node)),
-                replaceText(AfflictionField.onset.getTextOrNull(node)),
+                replaceText(AfflictionField.maxDuration.getTextOrEmpty(node)),
+                replaceText(AfflictionField.onset.getTextOrEmpty(node)),
                 savingThrowString,
                 join("\n", effect),
                 stages);
@@ -559,7 +561,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void embedData(List<String> text, JsonNode dataNode) {
-        String tag = Field.tag.getTextOrNull(dataNode);
+        String tag = Field.tag.getTextOrEmpty(dataNode);
         JsonNode data = Field.data.getFrom(dataNode);
         Pf2eIndexType dataType = Pf2eIndexType.fromText(tag);
 
@@ -577,8 +579,8 @@ public interface JsonSource extends JsonTextReplacement {
         }
 
         if (data == null) {
-            String name = SourceField.name.getTextOrNull(dataNode);
-            String source = SourceField.source.getTextOrNull(dataNode);
+            String name = SourceField.name.getTextOrEmpty(dataNode);
+            String source = SourceField.source.getTextOrEmpty(dataNode);
             String link = linkify(dataType, name + "|" + source);
             if (dataType == Pf2eIndexType.creature) {
                 link = link.replace(".md)", ".md#^statblock)");
@@ -778,8 +780,8 @@ public interface JsonSource extends JsonTextReplacement {
         }
 
         static AppendTypeValue valueFrom(JsonNode source, JsonNodeReader field) {
-            String textOrNull = field.getTextOrNull(source);
-            if (textOrNull == null) {
+            String textOrNull = field.getTextOrEmpty(source);
+            if (textOrNull.isEmpty()) {
                 return null;
             }
             return Stream.of(AppendTypeValue.values())

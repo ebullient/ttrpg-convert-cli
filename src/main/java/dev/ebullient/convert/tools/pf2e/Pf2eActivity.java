@@ -81,7 +81,7 @@ public enum Pf2eActivity {
     public QuteDataActivity toQuteActivity(JsonSource convert, String text) {
         Path relativeTarget = Path.of("img", targetFileName);
         return new QuteDataActivity(
-                text == null ? longName : text,
+                text,
                 Pf2eSources.buildStreamImageRef(convert.index(), glyph, relativeTarget, longName),
                 textGlyph,
                 this.getRulesPath(convert.index().rulesVaultRoot()));

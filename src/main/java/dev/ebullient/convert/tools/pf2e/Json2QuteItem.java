@@ -1,14 +1,15 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
@@ -38,7 +39,7 @@ public class Json2QuteItem extends Json2QuteBase {
         appendFootnotes(text, 0);
 
         String duration = Pf2eItem.duration.existsIn(rootNode)
-                ? SourceField.entry.getTextOrNull(Pf2eItem.duration.getFrom(rootNode))
+                ? SourceField.entry.getTextOrEmpty(Pf2eItem.duration.getFrom(rootNode))
                 : null;
 
         return new QuteItem(sources, text, tags, traits, aliases,
@@ -47,12 +48,12 @@ public class Json2QuteItem extends Json2QuteBase {
                 join(", ", Pf2eItem.ammunition.linkifyListFrom(rootNode, Pf2eIndexType.item, this)),
                 Pf2eItem.level.getTextOrDefault(rootNode, "0"),
                 Pf2eItem.onset.transformTextFrom(rootNode, ", ", this),
-                replaceText(Pf2eItem.access.getTextOrNull(rootNode)),
+                replaceText(Pf2eItem.access.getTextOrEmpty(rootNode)),
                 duration,
                 getCategory(tags),
                 linkify(Pf2eIndexType.group, getGroup()),
-                Pf2eItem.hands.getTextOrNull(rootNode),
-                keysToMap(List.of(Pf2eItem.usage, Pf2eItem.bulk)),
+                Pf2eItem.hands.getTextOrEmpty(rootNode),
+                keysToList(List.of(Pf2eItem.usage, Pf2eItem.bulk)),
                 getContract(tags),
                 getShieldData(),
                 getArmorData(),
@@ -62,12 +63,20 @@ public class Json2QuteItem extends Json2QuteBase {
     }
 
     private String getPrice(JsonNode rootNode) {
-        if (Pf2eItem.price.existsIn(rootNode)) {
-            return String.format("%s %s",
-                    replaceText(Pf2eItem.price.getFieldFrom(rootNode, Pf2eItem.amount)),
-                    replaceText(Pf2eItem.price.getFieldFrom(rootNode, Pf2eItem.coin)));
+        JsonNode price = Pf2eItem.price.getFrom(rootNode);
+        if (price != null) {
+            StringBuilder sb = new StringBuilder();
+            String amount = Pf2eItem.amount.replaceTextFrom(price, this);
+            if (amount != null) {
+                sb.append(amount);
+            }
+            String coin = Pf2eItem.coin.replaceTextFrom(price, this);
+            if (coin != null) {
+                sb.append(" ").append(coin);
+            }
+            return sb.toString().trim();
         }
-        return null;
+        return "";
     }
 
     private QuteItemShieldData getShieldData() {
@@ -82,27 +91,24 @@ public class Json2QuteItem extends Json2QuteBase {
         String dexCap = Pf2eItem.dexCap.bonusOrNull(shieldDataNode);
         if (ac != null || dexCap != null) {
             shieldData.ac = new QuteDataArmorClass();
-            shieldData.ac.armorClass = new LinkedHashMap<>();
-            shieldData.ac.armorClass.put("AC Bonus", ac + (ac2 == null ? "" : ("/" + ac2)));
+            NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
+            namedText.add("AC Bonus", ac + (ac2 == null ? "" : ("/" + ac2)));
             if (dexCap != null) {
-                shieldData.ac.armorClass.put("Dex Cap", dexCap);
+                namedText.add("Dex Cap", dexCap);
             }
+            shieldData.ac.armorClass = namedText.build();
         }
 
         QuteDataHpHardness hpHardness = new QuteDataHpHardness();
-        hpHardness.hpValue = Pf2eItem.hp.getTextOrNull(shieldDataNode);
-        hpHardness.brokenThreshold = Pf2eItem.bt.getTextOrNull(shieldDataNode);
-        hpHardness.hardnessValue = Pf2eItem.hardness.getTextOrNull(shieldDataNode);
+        hpHardness.hpValue = Pf2eItem.hp.getTextOrEmpty(shieldDataNode);
+        hpHardness.brokenThreshold = Pf2eItem.bt.getTextOrEmpty(shieldDataNode);
+        hpHardness.hardnessValue = Pf2eItem.hardness.getTextOrEmpty(shieldDataNode);
         if (hpHardness.hpValue != null || hpHardness.hardnessValue != null || hpHardness.brokenThreshold != null) {
             shieldData.hpHardness = hpHardness;
         }
 
-        String speedPen = Pf2eItem.speedPen.getTextOrNull(shieldDataNode);
-        if (speedPen != null) {
-            shieldData.speedPenalty = "0".equals(speedPen)
-                    ? "\u2014"
-                    : String.format("-%s ft.", speedPen);
-        }
+        String speedPen = Pf2eItem.speedPen.getTextOrEmpty(shieldDataNode);
+        shieldData.speedPenalty = penalty(speedPen, " ft.");
 
         return shieldData;
     }
@@ -118,24 +124,21 @@ public class Json2QuteItem extends Json2QuteBase {
         String dexCap = Pf2eItem.dexCap.bonusOrNull(armorDataNode);
         if (ac != null || dexCap != null) {
             armorData.ac = new QuteDataArmorClass();
-            armorData.ac.armorClass = new LinkedHashMap<>();
-            armorData.ac.armorClass.put("AC Bonus", ac);
+            NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
+            namedText.add("AC Bonus", ac);
             if (dexCap != null) {
-                armorData.ac.armorClass.put("Dex Cap", dexCap);
+                namedText.add("Dex Cap", dexCap);
             }
+            armorData.ac.armorClass = namedText.build();
         }
 
         armorData.strength = Pf2eItem.str.getTextOrDefault(armorDataNode, "\u2014");
 
         String checkPen = Pf2eItem.checkPen.getTextOrDefault(armorDataNode, null);
-        armorData.checkPenalty = checkPen == null
-                ? "\u2014"
-                : "-" + checkPen;
+        armorData.checkPenalty = penalty(checkPen, "");
 
         String speedPen = Pf2eItem.speedPen.getTextOrDefault(armorDataNode, null);
-        armorData.speedPenalty = "0".equals(speedPen)
-                ? "\u2014"
-                : "-" + speedPen + " ft.";
+        armorData.speedPenalty = penalty(speedPen, " ft.");
 
         return armorData;
     }
@@ -180,35 +183,36 @@ public class Json2QuteItem extends Json2QuteBase {
         return variantList;
     }
 
-    private Map<String, String> getContract(Tags tags) {
+    private Collection<NamedText> getContract(Tags tags) {
         JsonNode contractNode = Pf2eItem.contract.getFrom(rootNode);
         if (contractNode == null) {
             return null;
         }
-        Map<String, String> contract = new LinkedHashMap<>();
-        contractNode.fields().forEachRemaining(e -> {
+
+        NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
+        for (Entry<String, JsonNode> e : iterableFields(contractNode)) {
             if (e.getKey().equals("decipher")) {
                 List<String> writing = toListOfStrings(e.getValue()).stream()
                         .map(s -> linkify(Pf2eIndexType.skill, s))
                         .collect(Collectors.toList());
-                contract.put("Decipher Writing", join(", ", writing));
+                namedText.add("Decipher Writing", join(", ", writing));
             } else {
-                contract.put(toTitleCase(e.getKey()), replaceText(e.getValue()));
-            }
-        });
-
-        return contract;
-    }
-
-    Map<String, String> keysToMap(List<Pf2eItem> keys) {
-        Map<String, String> map = new LinkedHashMap<>();
-        for (Pf2eItem k : keys) {
-            String value = k.getTextOrNull(rootNode);
-            if (value != null) {
-                map.put(k.properName(this), replaceText(value));
+                namedText.add(toTitleCase(e.getKey()), replaceText(e.getValue()));
             }
         }
-        return map.isEmpty() ? null : map;
+        ;
+        return namedText.build();
+    }
+
+    Collection<NamedText> keysToList(List<Pf2eItem> keys) {
+        NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
+        for (Pf2eItem k : keys) {
+            String value = k.getTextOrEmpty(rootNode);
+            if (!value.isEmpty()) {
+                namedText.add(k.properName(this), replaceText(value));
+            }
+        }
+        return namedText.isEmpty() ? List.of() : namedText.build();
     }
 
     QuteItemActivate buildActivate() {
@@ -232,21 +236,21 @@ public class Json2QuteItem extends Json2QuteBase {
         // If not, use armorData group.
         // If not, check if it's a Shield, then make it a Shield. If not, use the item.group.
         if (Pf2eItem.weaponData.existsIn(rootNode) && !Pf2eItem.comboWeaponData.existsIn(rootNode)) {
-            return Pf2eWeaponData.group.getTextOrNull(Pf2eItem.weaponData.getFrom(rootNode));
+            return Pf2eWeaponData.group.getTextOrEmpty(Pf2eItem.weaponData.getFrom(rootNode));
         }
         if (Pf2eItem.armorData.existsIn(rootNode)) {
-            return Pf2eWeaponData.group.getTextOrNull(Pf2eItem.armorData.getFrom(rootNode));
+            return Pf2eWeaponData.group.getTextOrEmpty(Pf2eItem.armorData.getFrom(rootNode));
         }
-        String category = Pf2eItem.category.getTextOrNull(rootNode);
+        String category = Pf2eItem.category.getTextOrEmpty(rootNode);
         if ("Shield".equals(category)) {
             return "Shield";
         }
-        return Pf2eWeaponData.group.getTextOrNull(rootNode);
+        return Pf2eWeaponData.group.getTextOrEmpty(rootNode);
     }
 
     String getCategory(Tags tags) {
-        String category = Pf2eItem.category.getTextOrNull(rootNode);
-        String subcategory = Pf2eItem.subCategory.getTextOrNull(rootNode);
+        String category = Pf2eItem.category.getTextOrEmpty(rootNode);
+        String subcategory = Pf2eItem.subCategory.getTextOrEmpty(rootNode);
         if (category == null) {
             return null;
         }
@@ -256,6 +260,13 @@ public class Json2QuteItem extends Json2QuteBase {
         }
         tags.add(ITEM_TAG, "category", category, subcategory);
         return subcategory;
+    }
+
+    String penalty(String input, String suffix) {
+        if (input == null || input.isBlank() || "0".equals(input)) {
+            return "\u2014";
+        }
+        return (input.startsWith("-") ? input : ("-" + input)) + suffix;
     }
 
     enum Pf2eItem implements JsonNodeReader {

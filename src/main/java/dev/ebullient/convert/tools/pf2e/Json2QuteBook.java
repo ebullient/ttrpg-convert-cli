@@ -33,16 +33,16 @@ public class Json2QuteBook extends Json2QuteBase {
         boolean pushed = parseState().push(getSources()); // set source
         try {
             QuteBook.BookInfo bookInfo = new QuteBook.BookInfo();
-            bookInfo.author = Pf2eBook.author.getTextOrNull(rootNode);
-            bookInfo.group = Pf2eBook.group.getTextOrNull(rootNode);
-            bookInfo.published = Pf2eBook.published.getTextOrNull(rootNode);
+            bookInfo.author = Pf2eBook.author.getTextOrEmpty(rootNode);
+            bookInfo.group = Pf2eBook.group.getTextOrEmpty(rootNode);
+            bookInfo.published = Pf2eBook.published.getTextOrEmpty(rootNode);
 
             Tags coverTags = new Tags(sources);
             coverTags.add(cfg().tagOf("book",
                     Field.group.getTextOrDefault(rootNode, "ungrouped"),
                     bookRelativePath));
 
-            String coverUrl = Pf2eBook.coverUrl.getTextOrNull(rootNode);
+            String coverUrl = Pf2eBook.coverUrl.getTextOrEmpty(rootNode);
             if (coverUrl != null) {
                 Path coverPath = Path.of(coverUrl);
                 bookInfo.cover = Pf2eSources.buildImageRef(Pf2eIndexType.book, index, coverPath, sources.getName());
@@ -51,8 +51,8 @@ public class Json2QuteBook extends Json2QuteBase {
             // Find coverNode and book sections
             Map<String, JsonNode> bookSections = new HashMap<>();
             for (JsonNode node : Pf2eBook.data.iterateArrayFrom(dataNode)) {
-                String name = SourceField.name.getTextOrNull(node);
-                if (name == null) {
+                String name = SourceField.name.getTextOrEmpty(node);
+                if (name.isEmpty()) {
                     continue;
                 }
                 bookSections.put(name, node);

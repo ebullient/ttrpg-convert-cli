@@ -57,7 +57,7 @@ public class Json2QuteCompose extends Json2QuteBase {
     private void appendElement(JsonNode entry, List<String> text, Tags tags) {
         String key = ToolsIndex.TtrpgValue.indexKey.getFromNode(entry);
         currentSources = Pf2eSources.findSources(key);
-        String name = SourceField.name.getTextOrNull(entry);
+        String name = SourceField.name.getTextOrEmpty(entry);
 
         if (index.keyIsIncluded(key, entry)) {
             boolean pushed = parseState().push(entry);

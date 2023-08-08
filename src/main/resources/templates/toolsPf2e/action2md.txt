@@ -21,7 +21,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {/if}{#if resource.frequency }
 - **Frequency**: {resource.frequency}
 {/if}{#if resource.trigger }
-- **Trigger** {resource.trigger}
+- **Trigger**: {resource.trigger}
 {/if}{#if resource.requirements }
 - **Requirements**: {resource.requirements}
 {/if}{#if resource.activity }

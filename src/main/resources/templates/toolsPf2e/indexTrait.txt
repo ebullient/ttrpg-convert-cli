@@ -3,6 +3,9 @@ obsidianUIMode: preview
 cssclass: pf2e,pf2e-index
 ---
 # Index of Traits
+
+{#each resource.categoryLinks}{it}{#if it_hasNext}, {/if}{/each}
+
 {#for entry in resource.categoryToTraits}
 
 ## {entry.key}

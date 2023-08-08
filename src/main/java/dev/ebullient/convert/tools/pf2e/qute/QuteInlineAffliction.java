@@ -8,15 +8,31 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.qute.TemplateData;
 
+/**
+ * Pf2eTools Affliction attributes (inline/embedded, {@code inline-affliction2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote Pf2eQuteNote}
+ * </p>
+ */
 @TemplateData
 public class QuteInlineAffliction extends Pf2eQuteNote {
 
+    /** Collection of traits (decorated links) */
     public final Collection<String> traits;
+    /** Overall power, from 1 to 10. */
     public final String level;
+    /** Formatted text. Maximum duration of the infliction. */
     public final String maxDuration;
+    /** Formatted text. Maximum duration of the infliction. */
     public final String onset;
+    /** Formatted text. Savint throws. */
     public final String savingThrow;
+    /** Formatted text. Affliction effect */
     public final String effect;
+    /**
+     * Affliction stages: map of name to stage data as
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage QuteAfflictionStage}
+     */
     public final Map<String, QuteAfflictionStage> stages;
 
     public QuteInlineAffliction(String name, List<String> text, Tags tags,
@@ -39,9 +55,14 @@ public class QuteInlineAffliction extends Pf2eQuteNote {
         return "inline-affliction2md.txt";
     }
 
+    /**
+     * Pf2eTools affliction stage attributes.
+     */
     @TemplateData
     public static class QuteAfflictionStage {
+        /** Formatted text. Affliction stage */
         public String text;
+        /** Formatted text. Affliction duration */
         public String duration;
     }
 }

@@ -30,7 +30,6 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
             List<String> abilityText = new ArrayList<>();
             convert.appendToText(abilityText, SourceField.entries.getFrom(node), null);
 
-            note.debugIfExists(node, convert.tui());
             range.debugIfExists(node, convert.tui());
 
             final String abilitySrc = convert.parseState().getSource(Pf2eIndexType.ability);
@@ -45,16 +44,17 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
             return new QuteAbility(
                     name, abilityText, tags, convert.collectTraitsFrom(node, tags),
                     Pf2eTypeReader.getQuteActivity(node, Pf2eTypeReader.Pf2eFeat.activity, convert),
-                    components.transformTextFrom(node, "; ", convert),
+                    components.transformTextFrom(node, ", ", convert),
                     requirements.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert),
                     trigger.replaceTextFrom(node, convert),
                     freq,
                     special.replaceTextFrom(node, convert),
+                    note.replaceTextFrom(node, convert),
                     embedded) {
                 @Override
                 public String targetFile() {
-                    if (!type.defaultSource().sameSource(abilitySrc)) {
+                    if (!type().defaultSource().sameSource(abilitySrc)) {
                         return getName() + "-" + abilitySrc;
                     }
                     return getName();

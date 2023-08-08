@@ -2,20 +2,19 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellCasting;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSaveDuration;
-import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSubclass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -56,27 +55,27 @@ public class Json2QuteSpell extends Json2QuteBase {
         Pf2eIndexType.domain.getListOfStrings(rootNode, tui()).forEach(d -> tags.add("domain", d, "spell"));
 
         // subclass --> link to subclass definition
-        List<QuteSpellSubclass> subclass = new ArrayList<>();
+        NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
         JsonNode scNode = Pf2eSpell.subclass.getFrom(rootNode);
         if (scNode != null) {
-            scNode.fields().forEachRemaining(e -> {
-                QuteSpellSubclass sc = new QuteSpellSubclass();
+            for (Entry<String, JsonNode> e : iterableFields(scNode)) {
                 String[] parts = e.getKey().split("\\|");
-                sc.category = parts[0];
+                String name = parts[0];
 
                 String value = e.getValue().asText();
                 String[] vParts = value.split("\\|");
 
                 // Construct a proper subclass link. ugh.
-                sc.text = linkify(Pf2eIndexType.classtype,
+                String desc = linkify(Pf2eIndexType.classtype,
                         String.format("%s|%s|%s|%s",
                                 parts[1],
                                 parts.length > 2 ? parts[2] : Pf2eIndexType.classtype.defaultSource(),
                                 vParts[0].toLowerCase(),
                                 value));
 
-                subclass.add(sc);
-            });
+                namedText.add(name, desc);
+            }
+            ;
         }
 
         return new QuteSpell(sources, text, tags,
@@ -89,7 +88,7 @@ public class Json2QuteSpell extends Json2QuteBase {
                 Pf2eSpell.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, this),
                 Pf2eSpell.traditions.linkifyListFrom(rootNode, Pf2eIndexType.trait, this),
                 Pf2eSpell.spellLists.getListOfStrings(rootNode, tui()),
-                subclass,
+                namedText.build(),
                 getHeightenedCast(),
                 getAmpEffects());
     }
@@ -138,7 +137,7 @@ public class Json2QuteSpell extends Json2QuteBase {
     }
 
     QuteSpellTarget getQuteSpellTarget(Tags tags) {
-        String targets = replaceText(Pf2eSpell.targets.getTextOrNull(rootNode));
+        String targets = replaceText(Pf2eSpell.targets.getTextOrEmpty(rootNode));
         NumberUnitEntry range = Pf2eSpell.range.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
         if (targets == null && area == null && range == null) {
@@ -158,31 +157,32 @@ public class Json2QuteSpell extends Json2QuteBase {
         return spellTarget;
     }
 
-    Map<String, String> getHeightenedCast() {
+    Collection<NamedText> getHeightenedCast() {
         JsonNode heightened = Pf2eSpell.heightened.getFrom(rootNode);
         if (heightened == null) {
             return null;
         }
-        Map<String, String> heightenedCast = new LinkedHashMap<>();
-        heightened.fields().forEachRemaining(e -> {
+        NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
+        for (Entry<String, JsonNode> e : iterableFields(heightened)) {
             JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
             JsonNode X = Pf2eSpell.X.getFrom(heightened);
             if (plusX != null) {
                 plusX.fields().forEachRemaining(x -> {
-                    heightenedCast.put(
+                    namedText.add(
                             String.format("Heightened (+ %s)", x.getKey()),
                             getHeightenedValue(x.getValue()));
                 });
             }
             if (X != null) {
                 X.fields().forEachRemaining(x -> {
-                    heightenedCast.put(
+                    namedText.add(
                             String.format("Heightened (%s)", getOrdinalForm(x.getKey())),
                             getHeightenedValue(x.getValue()));
                 });
             }
-        });
-        return heightenedCast;
+        }
+        ;
+        return namedText.build();
     }
 
     String getHeightenedValue(JsonNode value) {
@@ -208,25 +208,24 @@ public class Json2QuteSpell extends Json2QuteBase {
 
         JsonNode heightened = Pf2eSpell.heightened.getFrom(ampNode);
         if (heightened != null) {
-            amp.ampEffects = new LinkedHashMap<>();
-            heightened.fields().forEachRemaining(e -> {
-                JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
-                JsonNode X = Pf2eSpell.X.getFrom(heightened);
-                if (plusX != null) {
-                    plusX.fields().forEachRemaining(x -> {
-                        amp.ampEffects.put(
-                                String.format("Amp Heightened (+ %s)", x.getKey()),
-                                getHeightenedValue(x.getValue()));
-                    });
-                }
-                if (X != null) {
-                    X.fields().forEachRemaining(x -> {
-                        amp.ampEffects.put(
-                                String.format("Amp Heightened (%s)", getOrdinalForm(x.getKey())),
-                                getHeightenedValue(x.getValue()));
-                    });
-                }
-            });
+            NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
+            JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
+            JsonNode X = Pf2eSpell.X.getFrom(heightened);
+            if (plusX != null) {
+                plusX.fields().forEachRemaining(x -> {
+                    namedText.add(
+                            String.format("Amp Heightened (+ %s)", x.getKey()),
+                            getHeightenedValue(x.getValue()));
+                });
+            }
+            if (X != null) {
+                X.fields().forEachRemaining(x -> {
+                    namedText.add(
+                            String.format("Amp Heightened (%s)", getOrdinalForm(x.getKey())),
+                            getHeightenedValue(x.getValue()));
+                });
+            }
+            amp.ampEffects = namedText.build();
         }
 
         return amp;

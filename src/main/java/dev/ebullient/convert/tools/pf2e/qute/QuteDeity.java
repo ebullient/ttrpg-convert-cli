@@ -6,13 +6,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import dev.ebullient.convert.qute.NamedText;
+import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
+/**
+ * Pf2eTools Deity attributes ({@code deity2md.txt})
+ * <p>
+ * Deities are rendered both standalone and inline (as an admonition block).
+ * The default template can render both. It contains
+ * some special syntax to handle the inline case.
+ * </p>
+ * <p>
+ * Use `%%--` to mark the end of the preamble (frontmatter and
+ * other leading content only appropriate to the standalone case).
+ * </p>
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
+ * </p>
+ */
 @TemplateData
 public class QuteDeity extends Pf2eQuteBase {
 
+    /** Aliases for this note */
     public final List<String> aliases;
     public final String category;
     public final String pantheon;
@@ -49,8 +67,17 @@ public class QuteDeity extends Pf2eQuteBase {
         this.intercession = intercession;
     }
 
+    /**
+     * Pf2eTools cleric divine attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.actionType}`.
+     * </p>
+     */
     @TemplateData
-    public static class QuteDeityCleric {
+    public static class QuteDeityCleric implements QuteUtil {
         public String divineFont;
         public String divineAbility;
         public String divineSkill;
@@ -61,16 +88,16 @@ public class QuteDeity extends Pf2eQuteBase {
 
         public String toString() {
             List<String> lines = new ArrayList<>();
-            if (divineAbility != null) {
+            if (isPresent(divineAbility)) {
                 lines.add("- **Divine Ability**: " + divineAbility);
             }
-            if (divineFont != null) {
+            if (isPresent(divineFont)) {
                 lines.add("- **Divine Font**: " + divineFont);
             }
-            if (divineSkill != null) {
+            if (isPresent(divineSkill)) {
                 lines.add("- **Divine Skill**: " + divineSkill);
             }
-            if (favoredWeapon != null) {
+            if (isPresent(favoredWeapon)) {
                 lines.add("- **Favored Weapon**: " + favoredWeapon);
             }
             if (domains != null && !domains.isEmpty()) {
@@ -79,7 +106,7 @@ public class QuteDeity extends Pf2eQuteBase {
             if (alternateDomains != null && !alternateDomains.isEmpty()) {
                 lines.add("- **Alternate Domains**: " + alternateDomains);
             }
-            if (spells != null) {
+            if (isPresent(spells)) {
                 lines.add("- **Cleric Spells**: " + spells.entrySet().stream()
                         .map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("; ")));
@@ -88,26 +115,35 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
+    /**
+     * Pf2eTools avatar attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.actionType}`.
+     * </p>
+     */
     @TemplateData
-    public static class QuteDivineAvatar {
+    public static class QuteDivineAvatar implements QuteUtil {
         public String preface;
         public String name;
         public String speed;
         public String shield;
         public List<QuteDivineAvatarAction> melee;
         public List<QuteDivineAvatarAction> ranged;
-        public List<QuteDivineAvatarAbility> ability;
+        public Collection<NamedText> ability;
 
         public String toString() {
             List<String> lines = new ArrayList<>();
-            if (preface != null) {
+            if (isPresent(preface)) {
                 lines.add(preface);
                 lines.add("");
             }
             lines.add("```ad-embed-avatar");
             lines.add("title: " + name);
             lines.add("");
-            if (speed != null) {
+            if (isPresent(speed)) {
                 lines.add("- **Speed**: " + speed);
             }
             if (shield != null) {
@@ -122,6 +158,15 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
+    /**
+     * Pf2eTools Divine avatar action attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.actionType}`.
+     * </p>
+     */
     @TemplateData
     public static class QuteDivineAvatarAction {
         public String actionType;
@@ -147,6 +192,15 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
+    /**
+     * Pf2eTools divine avatar ability attributes
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.actionType}`.
+     * </p>
+     */
     @TemplateData
     public static class QuteDivineAvatarAbility {
         public String name;
@@ -157,6 +211,15 @@ public class QuteDeity extends Pf2eQuteBase {
         }
     }
 
+    /**
+     * Pf2eTools divine intercession attributes.
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference it directly: `{resource.actionType}`.
+     * </p>
+     */
     @TemplateData
     public static class QuteDivineIntercession {
         public String source;

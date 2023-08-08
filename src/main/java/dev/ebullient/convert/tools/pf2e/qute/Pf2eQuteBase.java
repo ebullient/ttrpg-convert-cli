@@ -8,6 +8,14 @@ import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
+/**
+ * Attributes for notes that are generated from the Pf2eTools data.
+ * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteBase QuteBase}.
+ * <p>
+ * Notes created from {@code Pf2eQuteBase} will use a specific template
+ * for the type. For example, {@code QuteBackground} will use {@code background2md.txt}.
+ * </p>
+ */
 @TemplateData
 public class Pf2eQuteBase extends QuteBase {
 

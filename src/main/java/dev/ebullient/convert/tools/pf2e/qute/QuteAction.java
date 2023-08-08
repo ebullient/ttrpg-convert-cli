@@ -8,19 +8,32 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
+/**
+ * Pf2eTools Action attributes ({@code action2md.txt})
+ * <p>
+ * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
+ * </p>
+ */
 @TemplateData
 public class QuteAction extends Pf2eQuteBase {
 
+    /** Trigger for this action */
     public final String trigger;
+    /** Aliases for this note */
     public final List<String> aliases;
+    /** Collection of traits (decorated links) */
     public final Collection<String> traits;
-
+    /** Situational requirements for performing this action */
     public final String requirements;
+    /** Prerequisite trait or characteristic for performing this action */
     public final String prerequisites;
+    /** How often this action can be used */
     public final String frequency;
+    /** The cost of using this action */
     public final String cost;
-
+    /** Type of action (as {@link dev.ebullient.convert.tools.pf2e.qute.QuteAction.ActionType ActionType}) */
     public final ActionType actionType;
+    /** Activity/Activation cost (as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity QuteDataActivity}) */
     public final QuteDataActivity activity;
 
     public QuteAction(Pf2eSources sources, List<String> text, Tags tags,
@@ -41,25 +54,46 @@ public class QuteAction extends Pf2eQuteBase {
         this.actionType = actionType;
     }
 
+    /** True if this is a basic action. Same as `{resource.actionType.basic}`. */
     public boolean isBasic() {
         return actionType != null && actionType.basic;
     }
 
+    /** True if this action is an item action. Same as `{resource.actionType.item}`. */
     public boolean isItem() {
         return actionType != null && actionType.item;
     }
 
+    /**
+     * Pf2eTools Action type attributes.
+     *
+     * <p>
+     * This data object provides a default mechanism for creating
+     * a marked up string based on the attributes that are present.
+     * To use it, reference this attribute directly: `{resource.actionType}`.
+     * </p>
+     */
     @TemplateData
     public static class ActionType {
+        /** True if this is a basic action */
         public final boolean basic;
+        /** True if this an item action */
         public final boolean item;
+        /** Skills used or required by this action */
         public final String skills;
+        /** List of ancestries associated with this action */
         public final List<String> ancestry;
+        /** List of archetypes associated with this action */
         public final List<String> archetype;
+        /** List of heritages associated with this action */
         public final List<String> heritage;
+        /** List of versatile heritages associated with this action */
         public final List<String> versatileHeritage;
+        /** List of classes associated with this action */
         public final List<String> classType;
+        /** List of subclasses associated with this action */
         public final List<String> subclass;
+        /** List of variant rules associated with this action */
         public final List<String> variantrule;
 
         public ActionType(

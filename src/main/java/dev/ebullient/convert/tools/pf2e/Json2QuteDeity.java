@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
@@ -111,7 +112,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         }
 
         QuteDeity.QuteDivineAvatar avatar = new QuteDeity.QuteDivineAvatar();
-        avatar.preface = replaceText(Pf2eDeity.preface.getTextOrNull(avatarNode));
+        avatar.preface = replaceText(Pf2eDeity.preface.getTextOrEmpty(avatarNode));
         avatar.name = linkify(Pf2eIndexType.spell, "avatar||Avatar") + " of " + sources.getName();
 
         Speed speed = Pf2eDeity.speed.fieldFromTo(avatarNode, Speed.class, tui());
@@ -137,7 +138,7 @@ public class Json2QuteDeity extends Json2QuteBase {
             avatar.speed += ", " + join(", ", notes);
         }
 
-        String shield = Pf2eDeity.shield.getTextOrNull(avatarNode);
+        String shield = Pf2eDeity.shield.getTextOrEmpty(avatarNode);
         if (shield != null) {
             avatar.shield = "shield (" + shield + " Hardness, can't be damaged)";
         }
@@ -155,11 +156,10 @@ public class Json2QuteDeity extends Json2QuteBase {
         return avatar;
     }
 
-    private QuteDeity.QuteDivineAvatarAbility buildAvatarAbility(JsonNode abilityNode) {
-        QuteDeity.QuteDivineAvatarAbility ability = new QuteDeity.QuteDivineAvatarAbility();
-        ability.name = SourceField.name.getTextOrNull(abilityNode);
-        ability.text = SourceField.entries.transformTextFrom(abilityNode, "; ", this);
-        return ability;
+    private NamedText buildAvatarAbility(JsonNode abilityNode) {
+        return new NamedText(
+                SourceField.name.getTextOrEmpty(abilityNode),
+                SourceField.entries.transformTextFrom(abilityNode, "; ", this));
     }
 
     private QuteDeity.QuteDivineAvatarAction buildAvatarAction(JsonNode actionNode, Tags tags) {
@@ -169,7 +169,7 @@ public class Json2QuteDeity extends Json2QuteBase {
 
         action.traits = collectTraitsFrom(actionNode, tags);
         action.traits.addAll(Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()));
-        String traitNote = Pf2eDeity.traitNote.getTextOrNull(actionNode);
+        String traitNote = Pf2eDeity.traitNote.getTextOrEmpty(actionNode);
         if (traitNote != null) {
             action.traits.add(traitNote);
         }
@@ -178,7 +178,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         action.actionType = ranged == null ? "Melee" : "Ranged";
         action.activityType = Pf2eActivity.single.toQuteActivity(this, null);
         action.damage = Pf2eWeaponData.getDamageString(actionNode, this);
-        action.note = replaceText(Pf2eDeity.note.getTextOrNull(actionNode));
+        action.note = replaceText(Pf2eDeity.note.getTextOrEmpty(actionNode));
         return action;
     }
 
