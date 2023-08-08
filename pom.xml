@@ -33,10 +33,12 @@
     <properties>
         <revision>299-SNAPSHOT</revision>
         <!-- Build -->
+        <clean-plugin.version>3.3.1</clean-plugin.version>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <maven.compiler.release>17</maven.compiler.release>
         <formatter-plugin.version>2.23.0</formatter-plugin.version>
         <impsort-plugin.version>1.9.0</impsort-plugin.version>
+        <javadoc-plugin.version>3.5.0</javadoc-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <surefire-plugin.version>3.1.2</surefire-plugin.version>
@@ -147,6 +149,28 @@
                 </executions>
             </plugin>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${clean-plugin.version}</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>docs</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
+                            <directory>examples</directory>
+                            <followSymlinks>false</followSymlinks>
+                            <includes>
+                                <include>config/config*</include>
+                                <include>config/sourceMap*</include>
+                                <include>css-snippets/dnd5e-*.css</include>
+                                <include>css-snippets/pf2-*.css</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${compiler-plugin.version}</version>
                 <configuration>
@@ -179,7 +203,8 @@
                             <skipTests>${skipITs}</skipTests>
                             <skipITs>${skipITs}</skipITs>
                             <systemPropertyVariables>
-                                <native.image.path>${project.build.directory}/${native.executable.name}</native.image.path>
+                                <native.image.path>
+                                    ${project.build.directory}/${native.executable.name}</native.image.path>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <maven.home>${maven.home}</maven.home>
                             </systemPropertyVariables>
@@ -221,6 +246,37 @@
                     <skip>${skipFormat}</skip>
                     <removeUnused>true</removeUnused>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${javadoc-plugin.version}</version>
+                <configuration>
+                    <!--
+                  Exclude packages:
+                    dev.ebullient.convert.*
+                  BUT include the packages:
+                    dev.ebullient.convert.tools.dnd5e.qute
+                    dev.ebullient.convert.tools.pf2e.qute
+                  -->
+                    <excludePackageNames>
+                        dev.ebullient.convert,dev.ebullient.convert.config,dev.ebullient.convert.io,dev.ebullient.convert.tools,dev.ebullient.convert.tools.dnd5e,dev.ebullient.convert.tools.pf2e</excludePackageNames>
+                    <doclet>dev.ebullient.convert.io.MarkdownDoclet</doclet>
+                    <docletPath>./target/classes</docletPath>
+                    <reportOutputDirectory>./</reportOutputDirectory>
+                    <destDir>./</destDir>
+                    <additionalparam>-d javadoc/</additionalparam>
+                    <useStandardDocletOptions>false</useStandardDocletOptions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-javadoc</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

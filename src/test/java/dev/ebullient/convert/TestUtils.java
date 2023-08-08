@@ -68,7 +68,7 @@ public class TestUtils {
         }
     }
 
-    static void checkMarkdownLinks(String baseDir, Path p, String line, List<String> errors) {
+    public static void checkMarkdownLinks(String baseDir, Path p, String line, List<String> errors) {
         if (!p.toString().endsWith(".md")) {
             return;
         }

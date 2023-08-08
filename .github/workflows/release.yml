@@ -104,7 +104,7 @@ jobs:
           if git diff --quiet; then
             echo "-- No changes -- "
           else
-            git add README.md pom.xml .github/project.yml
+            git add README.md pom.xml .github/project.yml docs examples
             git commit -m "🔖 $NEXT"
             git push origin main
           fi
@@ -113,7 +113,7 @@ jobs:
           git push --tags
 
           cp -R src/main/resources/templates default
-          zip -r target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip examples default
+          zip -r target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip docs examples default
 
       - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-runner.jar
         uses: actions/upload-artifact@v3
