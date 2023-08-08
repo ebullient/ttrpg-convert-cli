@@ -291,6 +291,46 @@ public class CommonDataTests {
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.monster);
 
+            Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
+            assertThat(undead.toFile()).exists();
+
+            TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                boolean found = false;
+                boolean index = false;
+                List<String> frontmatter = new ArrayList<>();
+
+                if (!content.get(0).equals("---")) {
+                    errors.add(String.format("File %s did not contain frontmatter", p));
+                    return errors;
+                }
+
+                for (String l : content.subList(1, content.size())) {
+                    if (l.equals("cssclass: json5e-note")) {
+                        index = true;
+                    } else if (l.equals("statblock: true")) {
+                        found = true;
+                    } else if (l.equals("---")) {
+                        break;
+                    } else {
+                        frontmatter.add(l);
+                        if (l.contains("*")) {
+                            errors.add(String.format("Found '*' in %s: %s", p, l));
+                        }
+                        TestUtils.commonTests(p, l, errors);
+                    }
+                }
+
+                try {
+                    Tui.plainYaml().load(String.join("\n", frontmatter));
+                } catch (Exception e) {
+                    errors.add(String.format("File %s contains invalid yaml: %s", p, e));
+                }
+                if (!found && !index) {
+                    errors.add(String.format("File %s did not contain a statblock in the frontmatter", p));
+                }
+                return errors;
+            });
         }
     }
 
@@ -329,6 +369,9 @@ public class CommonDataTests {
                         statblock.add(l);
                         if (l.contains("*")) {
                             errors.add(String.format("Found '*' in %s: %s", p, l));
+                        }
+                        if (l.contains("\"desc\": \"\"")) {
+                            errors.add(String.format("Found empty description in %s: %s", p, l));
                         }
                     }
                     TestUtils.commonTests(p, l, errors);

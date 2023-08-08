@@ -26,9 +26,9 @@ public class NamedText {
     /** Pre-formatted text description */
     public final String desc;
 
-    public NamedText(String name, String text) {
+    public NamedText(String name, String desc) {
         this.name = name;
-        this.desc = text;
+        this.desc = desc;
     }
 
     /** Alternate accessor for the name */

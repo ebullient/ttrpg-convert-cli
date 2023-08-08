@@ -466,15 +466,13 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         List<NamedText> traits = new ArrayList<>();
-        for (JsonNode e : iterableElements(rootNode)) {
-            String name = null;
-            if (e.has("name")) {
-                name = replaceText(e.get("name").asText()).replaceAll(":$", "");
-            }
+        for (JsonNode e : iterableElements(array)) {
+            String name = SourceField.name.replaceTextFrom(e, this)
+                    .replaceAll(":$", "");
 
             List<String> text = new ArrayList<>();
-            appendToText(text, e.get("entry"), null);
-            appendToText(text, e.get("entries"), null);
+            appendToText(text, SourceField.entry.getFrom(e), null);
+            appendToText(text, SourceField.entries.getFrom(e), null);
 
             String body = String.join("\n", text);
             if (body.startsWith(">")) {
