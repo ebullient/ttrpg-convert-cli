@@ -20,6 +20,10 @@
 
     &:is([href*='#Actions']) {
       color: transparent;
+
+      &:has(.admonition) {
+        vertical-align: sub;
+      }
     }
   }
 
@@ -156,11 +160,11 @@
   }
 
   a.external-link {
-    color: var.$very-light-violet;
-
+    color: rgb(var(--callout-color));
+    filter: invert(100%);
 
     &:hover {
-      color: darken(var.$very-light-violet, 10%);
+      filter: invert(100%) brightness(1.2);
     }
   }
 

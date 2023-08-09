@@ -11,6 +11,10 @@
     &:hover {
       color: darken(var.$tyrian-purple, 10%);
     }
+
+    &:is([href*='#Actions']) {
+      color: transparent;
+    }
   }
 
   & .admonition-title {

@@ -13,7 +13,13 @@
 :is(.pf2e) {
   a.internal-link {
     @include no-underline;
-    color: var(--pf2e-purple-link);
+    color: var(--pf2e-blue-link);
+    filter: brightness(1.0);
+
+    .theme-dark & {
+      filter: brightness(1.2);
+    }
+
 
     &:hover {
       @include hover-link;
