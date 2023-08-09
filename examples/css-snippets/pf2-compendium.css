@@ -70,44 +70,54 @@ body {
 a.internal-link[href$="#Actions"][title="Single Action"] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z'/%3E%3C/svg%3E%0A");
   color: transparent;
-  width: 1em;
-  height: 1em;
   background-size: cover;
   background-repeat: no-repeat;
   display: inline-block;
-  vertical-align: baseline;
+  vertical-align: sub;
+  width: 1em;
+  height: 1em;
 }
 h1 a.internal-link[href$="#Actions"][title="Single Action"] {
   color: transparent;
-  height: 1em;
-  width: 1em;
+  height: 1.375em;
+  width: 1.375em;
 }
 a.internal-link[href$="#Actions"][title="Single Action"]:hover {
   color: transparent;
 }
+li a.internal-link[href$="#Actions"][title="Single Action"] {
+  vertical-align: middle;
+}
 .theme-dark a.internal-link[href$="#Actions"][title="Single Action"] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z' fill='red'/%3E%3C/svg%3E%0A");
+}
+h1 a.internal-link[href$="#Actions"][title="Single Action"] {
+  vertical-align: middle;
 }
 
 a.internal-link[href$="#Actions"][title=Two-Action] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1018 512L507 1 261 248l264 264-264 264 246 247 511-511zM183 329L0 512l183 183 183-183-183-183zm1417 175L1152 56 935 272l232 232-232 232 217 217 448-449z'/%3E%3C/svg%3E");
   color: transparent;
-  width: 1em;
-  height: 1em;
   background-size: cover;
   background-repeat: no-repeat;
   display: inline-block;
   vertical-align: baseline;
+  width: 1.6em;
+  height: 1em;
 }
 h1 a.internal-link[href$="#Actions"][title=Two-Action] {
   color: transparent;
-  height: 1em;
-  width: 1em;
+  height: 1.375em;
+  width: 1.375em;
 }
 a.internal-link[href$="#Actions"][title=Two-Action]:hover {
   color: transparent;
 }
-h1 a.internal-link[href$="#Actions"][title=Two-Action], .callout-title-inner a.internal-link[href$="#Actions"][title=Two-Action] {
+li a.internal-link[href$="#Actions"][title=Two-Action] {
+  vertical-align: middle;
+}
+h1 a.internal-link[href$="#Actions"][title=Two-Action],
+a.internal-link[href$="#Actions"][title=Two-Action] .callout-title-inner {
   width: 1.6em;
 }
 .theme-dark a.internal-link[href$="#Actions"][title=Two-Action] {
@@ -116,24 +126,29 @@ h1 a.internal-link[href$="#Actions"][title=Two-Action], .callout-title-inner a.i
 
 a.internal-link[href$="#Actions"][title=Three-Action] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z'/%3E%3C/svg%3E");
-  color: transparent;
-  width: 1em;
+  vertical-align: baseline;
+  width: 2.1em;
   height: 1em;
+  color: transparent;
   background-size: cover;
   background-repeat: no-repeat;
   display: inline-block;
-  vertical-align: baseline;
 }
 h1 a.internal-link[href$="#Actions"][title=Three-Action] {
   color: transparent;
-  height: 1em;
-  width: 1em;
+  height: 1.375em;
+  width: 1.375em;
 }
 a.internal-link[href$="#Actions"][title=Three-Action]:hover {
   color: transparent;
 }
-h1 a.internal-link[href$="#Actions"][title=Three-Action], .callout-title-inner a.internal-link[href$="#Actions"][title=Three-Action] {
-  width: 2.1em;
+li a.internal-link[href$="#Actions"][title=Three-Action] {
+  vertical-align: middle;
+}
+h1 a.internal-link[href$="#Actions"][title=Three-Action],
+a.internal-link[href$="#Actions"][title=Three-Action] .callout-title-inner {
+  width: 2.9em;
+  vertical-align: text-top;
 }
 .theme-dark a.internal-link[href$="#Actions"][title=Three-Action] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m1025 512-512-512-247 247 265 265-265 265 247 247zm1098-10-360-360-175 174 187 186-187 187 175 174zm-1935-173-183 183 183 183 183-183zm1427 175-449-449-218 217 233 232-233 233 218 217z' fill='red' /%3E%3C/svg%3E");
@@ -142,45 +157,52 @@ h1 a.internal-link[href$="#Actions"][title=Three-Action], .callout-title-inner a
 a.internal-link[href$="#Actions"][title=Reaction] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z'/%3E%3C/svg%3E");
   color: transparent;
-  width: 1em;
-  height: 1em;
   background-size: cover;
   background-repeat: no-repeat;
   display: inline-block;
-  vertical-align: baseline;
+  vertical-align: middle;
+  width: 1em;
+  height: 1em;
 }
 h1 a.internal-link[href$="#Actions"][title=Reaction] {
   color: transparent;
-  height: 1em;
-  width: 1em;
+  height: 1.375em;
+  width: 1.375em;
 }
 a.internal-link[href$="#Actions"][title=Reaction]:hover {
   color: transparent;
 }
-h1 a.internal-link[href$="#Actions"][title=Reaction], .callout-title-inner a.internal-link[href$="#Actions"][title=Reaction] {
+li a.internal-link[href$="#Actions"][title=Reaction] {
+  vertical-align: middle;
+}
+h1 a.internal-link[href$="#Actions"][title=Reaction],
+a.internal-link[href$="#Actions"][title=Reaction] .callout-title-inner {
   vertical-align: text-top;
 }
 .theme-dark a.internal-link[href$="#Actions"][title=Reaction] {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z' fill='red' /%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1013 377q-23-71-82-128-60-57-143.5-94T603 105q-101-14-207 1-75 11-140 35t-116 58q-51 34-87 77-36 42-53 89 21-26 50-48 29-23 64.5-41t76.5-31q42-13 88-20 85-12 166-1t148.5 40.5Q661 294 709 340t66 103q18 58 2 113-17 55-60.5 100.5T605 735q-67 32-152 44-28 4-55.5 5.5t-54.5.5q63 14 131.5 17t137.5-7q106-15 190-56 84-40 138-96.5t75-125.5q20-68-2-140zM152 823l489 103-109-149 56-215-436 261z' fill='red'/%3E%3C/svg%3E");
 }
 
 a.internal-link[href$="#Actions"][title="Free Action"] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z'/%3E%3C/svg%3E");
   color: transparent;
-  width: 1em;
-  height: 1em;
   background-size: cover;
   background-repeat: no-repeat;
   display: inline-block;
   vertical-align: baseline;
+  width: 1em;
+  height: 1em;
 }
 h1 a.internal-link[href$="#Actions"][title="Free Action"] {
   color: transparent;
-  height: 1em;
-  width: 1em;
+  height: 1.375em;
+  width: 1.375em;
 }
 a.internal-link[href$="#Actions"][title="Free Action"]:hover {
   color: transparent;
+}
+li a.internal-link[href$="#Actions"][title="Free Action"] {
+  vertical-align: middle;
 }
 .theme-dark a.internal-link[href$="#Actions"][title="Free Action"] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M516 0L267 250 0 518l509 506 515-515L516 0zM188 496l109-109 109 109-109 109-109-109zm311 380L386 763l251-251-245-246 124-124 359 359-376 375z' fill='red'/%3E%3C/svg%3E");
@@ -189,47 +211,49 @@ a.internal-link[href$="#Actions"][title="Free Action"]:hover {
 a.internal-link[href$="#Actions"][title=Varies] {
   background-image: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctitle%3Eload%3C/title%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z'%3E%3C/path%3E%3C/svg%3E");
   color: transparent;
-  width: 1em;
-  height: 1em;
   background-size: cover;
   background-repeat: no-repeat;
   display: inline-block;
   vertical-align: baseline;
+  width: 1em;
+  height: 1em;
 }
 h1 a.internal-link[href$="#Actions"][title=Varies] {
   color: transparent;
-  height: 1em;
-  width: 1em;
+  height: 1.375em;
+  width: 1.375em;
 }
 a.internal-link[href$="#Actions"][title=Varies]:hover {
   color: transparent;
+}
+li a.internal-link[href$="#Actions"][title=Varies] {
+  vertical-align: middle;
 }
 .theme-dark a.internal-link[href$="#Actions"][title=Varies] {
   background-image: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctitle%3Eload%3C/title%3E%3Cpath d='M16 2c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM28.998 15.952c-3.808 1.889-8.19 1.875-11.971 0 3.625-2.404 5.958-6.273 6.398-10.608 3.352 2.343 5.557 6.22 5.573 10.608zM22.46 4.735c-0.273 4.234-2.484 8.022-5.989 10.353-0.268-4.347-2.447-8.296-5.983-10.845 1.677-0.789 3.54-1.243 5.512-1.243 2.352 0 4.555 0.638 6.46 1.735zM9.471 4.776c3.532 2.354 5.708 6.151 5.974 10.359-3.9-1.941-8.413-2.028-12.389-0.238 0.365-4.322 2.853-8.040 6.415-10.121zM3.002 16.047c3.808-1.887 8.192-1.873 11.972 0.001-3.628 2.405-5.96 6.27-6.4 10.607-3.352-2.343-5.556-6.22-5.572-10.608zM9.542 27.266c0.273-4.236 2.478-8.021 5.987-10.354 0.268 4.352 2.447 8.295 5.984 10.844-1.676 0.79-3.54 1.244-5.513 1.244-2.352 0-4.553-0.637-6.458-1.734zM22.531 27.222c-3.534-2.354-5.711-6.145-5.976-10.359 2.035 1.013 4.237 1.523 6.442 1.523 2.025 0 4.045-0.455 5.949-1.314-0.357 4.334-2.845 8.064-6.415 10.15z' fill='red'%3E%3C/path%3E%3C/svg%3E%0A");
 }
 
-h1 a[href$="#Actions"][title="Duration or Frequency"],
 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   background-image: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z'%3E%3C/path%3E%3C/svg%3E%0A");
   color: transparent;
-  width: 1em;
-  height: 1em;
   background-size: cover;
   background-repeat: no-repeat;
   display: inline-block;
   vertical-align: baseline;
+  width: 1em;
+  height: 1em;
 }
-h1 h1 a[href$="#Actions"][title="Duration or Frequency"],
 h1 a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   color: transparent;
-  height: 1em;
-  width: 1em;
+  height: 1.375em;
+  width: 1.375em;
 }
-h1 a[href$="#Actions"][title="Duration or Frequency"]:hover,
 a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   color: transparent;
 }
-.theme-dark h1 a[href$="#Actions"][title="Duration or Frequency"],
+li a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
+  vertical-align: middle;
+}
 .theme-dark a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   background-image: url("data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ctitle%3Ehour-glass%3C/title%3E%3Cpath d='M15.6 4.576c0-2.139 0-2.348 0-2.348 0-0.789-2.508-2.228-5.6-2.228-3.093 0-5.6 1.439-5.6 2.228 0 0 0 0.209 0 2.348 0 2.141 3.877 3.908 3.877 5.424 0 1.514-3.877 3.281-3.877 5.422s0 2.35 0 2.35c0 0.788 2.507 2.228 5.6 2.228 3.092 0 5.6-1.44 5.6-2.229 0 0 0-0.209 0-2.35s-3.877-3.908-3.877-5.422c0-1.515 3.877-3.282 3.877-5.423zM5.941 2.328c0.696-0.439 2-1.082 4.114-1.082s4.006 1.082 4.006 1.082c0.142 0.086 0.698 0.383 0.317 0.609-0.838 0.497-2.478 1.020-4.378 1.020s-3.484-0.576-4.324-1.074c-0.381-0.225 0.265-0.555 0.265-0.555zM10.501 10c0 1.193 0.996 1.961 2.051 2.986 0.771 0.748 1.826 1.773 1.826 2.435v1.328c-0.97-0.483-3.872-0.955-3.872-2.504 0-0.783-1.013-0.783-1.013 0 0 1.549-2.902 2.021-3.872 2.504v-1.328c0-0.662 1.056-1.688 1.826-2.435 1.055-1.025 2.051-1.793 2.051-2.986s-0.996-1.961-2.051-2.986c-0.771-0.75-1.826-1.775-1.826-2.438l-0.046-0.998c1.026 0.553 2.652 1.078 4.425 1.078 1.772 0 3.406-0.525 4.433-1.078l-0.055 0.998c0 0.662-1.056 1.688-1.826 2.438-1.054 1.025-2.051 1.793-2.051 2.986z' fill='red'%3E%3C/path%3E%3C/svg%3E%0A");
 }
@@ -240,9 +264,9 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   background-repeat: no-repeat;
   display: inline-block;
   vertical-align: top;
-  content: "";
   width: 1em;
   height: 1em;
+  content: "";
   color: transparent;
 }
 .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Two-Action] {
@@ -251,9 +275,9 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   background-size: 1.5625rem;
   line-height: 1.5625rem;
   vertical-align: top;
-  content: "";
   width: 1em;
   height: 1em;
+  content: "";
   color: transparent;
 }
 .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Three-Action] {
@@ -261,9 +285,9 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   background-repeat: no-repeat;
   line-height: 1.5625rem;
   vertical-align: top;
-  content: "";
   width: 1em;
   height: 1em;
+  content: "";
   color: transparent;
 }
 .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Reaction] {
@@ -271,9 +295,9 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   background-size: cover;
   display: inline-block;
   vertical-align: middle;
-  content: "";
   width: 1em;
   height: 1em;
+  content: "";
   color: transparent;
 }
 .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Free Action"] {
@@ -281,9 +305,9 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   background-size: cover;
   display: inline-block;
   vertical-align: top;
-  content: "";
   width: 1em;
   height: 1em;
+  content: "";
   color: transparent;
 }
 .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title=Varies] {
@@ -291,9 +315,9 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   background-size: cover;
   display: inline-block;
   vertical-align: top;
-  content: "";
   width: 1em;
   height: 1em;
+  content: "";
   color: transparent;
 }
 .callout[data-callout=statblock-pf2e] a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
@@ -301,9 +325,9 @@ a.internal-link[href$="#Actions"][title="Duration or Frequency"]:hover {
   background-size: cover;
   display: inline-block;
   vertical-align: top;
-  content: "";
   width: 1em;
   height: 1em;
+  content: "";
   color: transparent;
 }
 
@@ -523,7 +547,11 @@ li a.internal-link[title*="Action & Ability Trait"], li a.internal-link[title*="
 
 :is(.pf2e) a.internal-link {
   text-decoration: none;
-  color: var(--pf2e-purple-link);
+  color: var(--pf2e-blue-link);
+  filter: brightness(1);
+}
+.theme-dark :is(.pf2e) a.internal-link {
+  filter: brightness(1.2);
 }
 :is(.pf2e) a.internal-link:hover {
   text-decoration: underline;
@@ -5547,6 +5575,9 @@ sup {
 .callout[data-callout=pf2-beige] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.callout[data-callout=pf2-beige] .callout-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .callout[data-callout=pf2-beige] .callout-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -5609,6 +5640,9 @@ sup {
 .callout[data-callout=pf2-brown] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.callout[data-callout=pf2-brown] .callout-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .callout[data-callout=pf2-brown] .callout-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -5661,6 +5695,9 @@ sup {
 }
 .callout.callout[data-callout=pf2-example] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
+}
+.callout.callout[data-callout=pf2-example] .callout-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
 }
 .callout.callout[data-callout=pf2-example] .callout-content a.external-link {
   color: rgb(107, 0, 153);
@@ -5729,10 +5766,11 @@ sup {
   color: #728720;
 }
 .callout[data-callout=pf2-key-box] .callout-content a.external-link {
-  color: rgb(222, 145, 255);
+  color: rgb(var(--callout-color));
+  filter: invert(100%);
 }
 .callout[data-callout=pf2-key-box] .callout-content a.external-link:hover {
-  color: #cf5eff;
+  filter: invert(100%) brightness(1.2);
 }
 .callout[data-callout=pf2-key-box] .callout-content em {
   color: rgb(154, 205, 50);
@@ -5789,6 +5827,9 @@ sup {
 }
 .callout[data-callout=pf2-note] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
+}
+.callout[data-callout=pf2-note] .callout-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
 }
 .callout[data-callout=pf2-note] .callout-content a.external-link {
   color: rgb(107, 0, 153);
@@ -5853,10 +5894,11 @@ sup {
   color: #728720;
 }
 .callout[data-callout=pf2-red] .callout-content a.external-link {
-  color: rgb(222, 145, 255);
+  color: rgb(var(--callout-color));
+  filter: invert(100%);
 }
 .callout[data-callout=pf2-red] .callout-content a.external-link:hover {
-  color: #cf5eff;
+  filter: invert(100%) brightness(1.2);
 }
 .callout[data-callout=pf2-red] .callout-content em {
   color: rgb(154, 205, 50);
@@ -5909,6 +5951,9 @@ sup {
 }
 .callout[data-callout=pf2-sidebar] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
+}
+.callout[data-callout=pf2-sidebar] .callout-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
 }
 .callout[data-callout=pf2-sidebar] .callout-content a.external-link {
   color: rgb(107, 0, 153);
@@ -6054,6 +6099,9 @@ sup {
 .callout[data-callout=success-degree] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.callout[data-callout=success-degree] .callout-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .callout[data-callout=success-degree] .callout-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -6116,6 +6164,9 @@ sup {
 .admonition.admonition[data-callout=pf2-note] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.admonition.admonition[data-callout=pf2-note] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .admonition.admonition[data-callout=pf2-note] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -6175,6 +6226,9 @@ sup {
 .admonition[data-callout=embed-ability] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.admonition[data-callout=embed-ability] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .admonition[data-callout=embed-ability] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -6231,6 +6285,9 @@ sup {
 .admonition[data-callout=embed-action] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.admonition[data-callout=embed-action] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .admonition[data-callout=embed-action] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -6277,6 +6334,9 @@ sup {
 }
 .admonition[data-callout=embed-avatar] a.internal-link:hover {
   color: #32011e;
+}
+.admonition[data-callout=embed-avatar] a.internal-link:is([href*="#Actions"]) {
+  color: transparent;
 }
 .admonition[data-callout=embed-avatar] .admonition-title .admonition-title-content {
   font-family: Garamond, "Baskerville Old Face", "Hoefler Text", "Times New Roman", serif;
@@ -6344,10 +6404,11 @@ sup {
   color: #728720;
 }
 .admonition[data-callout=embed-disease] .admonition-content a.external-link {
-  color: rgb(222, 145, 255);
+  color: rgb(var(--callout-color));
+  filter: invert(100%);
 }
 .admonition[data-callout=embed-disease] .admonition-content a.external-link:hover {
-  color: #cf5eff;
+  filter: invert(100%) brightness(1.2);
 }
 .admonition[data-callout=embed-disease] .admonition-content em {
   color: rgb(154, 205, 50);
@@ -6391,6 +6452,9 @@ sup {
 }
 .admonition[data-callout=embed-feat] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
+}
+.admonition[data-callout=embed-feat] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
 }
 .admonition[data-callout=embed-feat] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
@@ -6448,6 +6512,9 @@ sup {
 .admonition[data-callout=embed-item] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.admonition[data-callout=embed-item] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .admonition[data-callout=embed-item] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -6503,6 +6570,9 @@ sup {
 }
 .admonition[data-callout=embed-ritual] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
+}
+.admonition[data-callout=embed-ritual] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
 }
 .admonition[data-callout=embed-ritual] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
@@ -6563,6 +6633,9 @@ sup {
 .admonition[data-callout=inline-affliction] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.admonition[data-callout=inline-affliction] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .admonition[data-callout=inline-affliction] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -6619,6 +6692,9 @@ sup {
 .admonition[data-callout=inline-attack] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
 }
+.admonition[data-callout=inline-attack] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
+}
 .admonition[data-callout=inline-attack] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
 }
@@ -6660,12 +6736,6 @@ sup {
 .admonition[data-callout=pf2-summary] {
   --callout-icon: '<svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1024"><path fill="currentColor" d="M854.173 764.089H712.398l-1.355-2.419c.501-86.681 34.198-175.368 98.214-245.312 47.831-52.261 83.95-121.041 102.458-189.368l-82.338-49.795 76.414-13.791-86.599-51.529 104.084-17.674c-10.445-78.138-57.588-136.002-154.489-136.002-94.565 18.374-363.959 23.983-503.322 5.922-17.664-5.751-35.459-9.136-52.817-9.731-.129-.035-.267-.068-.394-.102l.219.097c-45.31-1.502-87.613 16.03-116.708 60.236-40.414 61.408 2.616 166.812 97.48 166.812 5.359 0 10.253-.289 14.727-.832v.733h118.467c-17.921 72.21-62.36 152.533-113.828 233.474a564.359 564.359 0 0 0-12.575 20.767l69.657 71.359-112.351 18.818c-65.349 171.651-54.745 363.552 96.403 363.552v-.002l15.634.11v.234h171.175v-.311h451.103c135.99.002 154.656-225.247-37.485-225.247zM452.277 872.408c-.003-.935-.03-1.888-.055-2.836.025.95.052 1.903.055 2.836zm-4.386-35.788c.027.119.047.232.074.351-.027-.117-.047-.231-.074-.347-5.374-23.696-20.779-43.454-40.897-56.175h.007c20.114 12.721 35.516 32.477 40.89 56.171zm4.214 29.647zm-.459-6.386zm-.765-6.682c-.125-.924-.242-1.844-.384-2.781.144.937.261 1.858.384 2.781zm-1.113-7.143c-.144-.814-.269-1.615-.426-2.437.157.822.282 1.624.426 2.437zM236.579 269.87c28.031-23.871-1.146-80.303-34.722-127.243h115.747c19.346 37.343 21.335 80.462 11.471 127.243h-92.496zm89.202 522.253c51.786-17.213 110.468 15.682 122.11 67.013 1.991 8.782 3.269 17.061 3.911 24.882.075-.817.112-1.662.17-2.491-1.291 18.519-6.792 33.936-15.602 46.701h-1.034a76.702 76.702 0 0 1-3.062 4.103l1.614-.707c-14.802 19.359-37.539 32.29-64.57 40.636h-28.104l1.368-.6c-29.614-.008-63.612-2.798-63.612-2.798 43.925-.703 62.862-19.294 70.065-40.598-31.298 11.376-64.654-9.072-75.146-39.264-14.161-40.748 12.502-83.784 51.893-96.877zm126.458 83.452c-.018.919-.027 1.846-.065 2.75.038-.905.045-1.831.065-2.75zm-18.22 55.872z"></path></svg>';
 }
-.admonition[data-callout=pf2-summary] .admonition-title {
-  display: flex;
-}
-.admonition[data-callout=pf2-summary] .admonition-title .admonition-title-content {
-  flex: 1;
-}
 .admonition[data-callout=pf2-summary] .admonition-content a.internal-link {
   color: rgb(102, 51, 51);
 }
@@ -6680,6 +6750,9 @@ sup {
 }
 .admonition[data-callout=pf2-summary] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
+}
+.admonition[data-callout=pf2-summary] .admonition-content a.internal-link:is([href*="#Actions"]):has(.admonition) {
+  vertical-align: sub;
 }
 .admonition[data-callout=pf2-summary] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
