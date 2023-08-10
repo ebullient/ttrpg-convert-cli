@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[classProgression](#classprogression), [hasSections](#hassections), [hitDice](#hitdice), [hitRollAverage](#hitrollaverage), [multiclassing](#multiclassing), [name](#name), [source](#source), [startingEquipment](#startingequipment), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[classProgression](#classprogression), [hasSections](#hassections), [hitDice](#hitdice), [hitRollAverage](#hitrollaverage), [labeledSource](#labeledsource), [multiclassing](#multiclassing), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [startingEquipment](#startingequipment), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### classProgression
@@ -25,6 +25,10 @@ Hit dice for this class as a single digit: 8
 
 The average roll for a hit die of this class, for example: `add {resource.hitRollAverage}...`
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### multiclassing
 
 Formatted text section describing how to multiclass with this class
@@ -35,7 +39,11 @@ Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### startingEquipment
 

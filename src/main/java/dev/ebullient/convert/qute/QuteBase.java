@@ -44,9 +44,22 @@ public class QuteBase implements QuteUtil {
         return name;
     }
 
-    /** Formatted string describing the content's source(es) */
+    /** String describing the content's source(s) */
     public String getSource() {
         return sourceText;
+    }
+
+    /** Formatted string describing the content's source(s): `_Source: &lt;sources&gt;_` */
+    public String getLabeledSource() {
+        return "_Source: " + sourceText + "_";
+    }
+
+    /** Book sources as list of {@link dev.ebullient.convert.qute.SourceAndPage SourceAndPage} */
+    public Collection<SourceAndPage> getSourceAndPage() {
+        if (sources == null) {
+            return List.of();
+        }
+        return sources.getSourceAndPage();
     }
 
     /** True if the content (text) contains sections */

@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[alignment](#alignment), [altNames](#altnames), [category](#category), [domains](#domains), [hasSections](#hassections), [image](#image), [name](#name), [pantheon](#pantheon), [province](#province), [source](#source), [symbol](#symbol), [tags](#tags), [text](#text), [title](#title), [vaultPath](#vaultpath)
+[alignment](#alignment), [altNames](#altnames), [category](#category), [domains](#domains), [hasSections](#hassections), [image](#image), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [province](#province), [source](#source), [sourceAndPage](#sourceandpage), [symbol](#symbol), [tags](#tags), [text](#text), [title](#title), [vaultPath](#vaultpath)
 
 
 ### alignment
@@ -33,6 +33,10 @@ True if the content (text) contains sections
 
 Image or symbol representing this deity (as [ImageRef](../ImageRef.md))
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### name
 
 Note name
@@ -47,7 +51,11 @@ Province of this deity: Discovery, Luck, Storms, Travel, ...
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### symbol
 

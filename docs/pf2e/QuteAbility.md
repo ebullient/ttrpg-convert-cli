@@ -10,7 +10,7 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 ## Attributes
 
-[activity](#activity), [bareTraitList](#baretraitlist), [components](#components), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasActivity](#hasactivity), [hasAttributes](#hasattributes), [hasDetails](#hasdetails), [hasEffect](#haseffect), [hasSections](#hassections), [name](#name), [note](#note), [requirements](#requirements), [source](#source), [special](#special), [tags](#tags), [text](#text), [traitList](#traitlist), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[activity](#activity), [bareTraitList](#baretraitlist), [components](#components), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasActivity](#hasactivity), [hasAttributes](#hasattributes), [hasDetails](#hasdetails), [hasEffect](#haseffect), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [note](#note), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traitList](#traitlist), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### activity
@@ -57,6 +57,10 @@ True if frequency, trigger, and requirements are present. In other words, this i
 
 True if the content (text) contains sections
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### name
 
 Note name
@@ -71,7 +75,11 @@ Formatted string. Requirements for activating this ability
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### special
 

@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [categories](#categories), [hasSections](#hassections), [name](#name), [source](#source), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[aliases](#aliases), [categories](#categories), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -21,13 +21,21 @@ List of categories to which this trait belongs
 
 True if the content (text) contains sections
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### name
 
 Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

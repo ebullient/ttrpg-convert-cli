@@ -10,7 +10,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [alignment](#alignment), [anathema](#anathema), [areasOfConcern](#areasofconcern), [avatar](#avatar), [category](#category), [cleric](#cleric), [edicts](#edicts), [followerAlignment](#followeralignment), [hasSections](#hassections), [intercession](#intercession), [name](#name), [pantheon](#pantheon), [source](#source), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[aliases](#aliases), [alignment](#alignment), [anathema](#anathema), [areasOfConcern](#areasofconcern), [avatar](#avatar), [category](#category), [cleric](#cleric), [edicts](#edicts), [followerAlignment](#followeralignment), [hasSections](#hassections), [intercession](#intercession), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -48,6 +48,10 @@ True if the content (text) contains sections
 ### intercession
 
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### name
 
 Note name
@@ -57,7 +61,11 @@ Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

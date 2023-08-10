@@ -10,7 +10,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[access](#access), [activity](#activity), [aliases](#aliases), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasSections](#hassections), [leadsTo](#leadsto), [level](#level), [name](#name), [note](#note), [prerequisites](#prerequisites), [requirements](#requirements), [source](#source), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[access](#access), [activity](#activity), [aliases](#aliases), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasSections](#hassections), [labeledSource](#labeledsource), [leadsTo](#leadsto), [level](#level), [name](#name), [note](#note), [prerequisites](#prerequisites), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### access
@@ -39,6 +39,10 @@ True if this ability is embedded in another note (admonition block). The default
 
 True if the content (text) contains sections
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### leadsTo
 
 
@@ -60,7 +64,11 @@ Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### special
 

@@ -79,6 +79,13 @@ public interface JsonNodeReader {
         return tui.readJsonValue(source.get(this.nodeName()), targetRef);
     }
 
+    default ArrayNode arrayFrom(JsonNode source) {
+        if (source == null) {
+            return null;
+        }
+        return source.withArray(this.nodeName());
+    }
+
     default JsonNode getFrom(JsonNode source) {
         if (source == null) {
             return null;

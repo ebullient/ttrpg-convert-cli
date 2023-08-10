@@ -85,7 +85,15 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String getSourceText(Tools5eSources currentSource) {
-        return String.format("_Source: %s_", currentSource.getSourceText(index().srdOnly()));
+        return currentSource.getSourceText(index().srdOnly());
+    }
+
+    default String getLabeledSource(JsonNode node) {
+        return getLabeledSource(Tools5eSources.findOrTemporary(node));
+    }
+
+    default String getLabeledSource(Tools5eSources currentSource) {
+        return "_Source: " + getSourceText(currentSource) + "_";
     }
 
     default ImageRef buildImageRef(Tools5eIndex index, Path sourcePath, Path target) {
@@ -167,9 +175,9 @@ public interface JsonSource extends JsonTextReplacement {
                     case list -> {
                         String style = Tools5eFields.style.getTextOrEmpty(node);
                         if ("list-no-bullets".equals(style)) {
-                            appendToText(text, SourceField.items.getFrom(node), null);
+                            appendList(text, SourceField.items.arrayFrom(node), ListType.unstyled);
                         } else {
-                            appendList(text, (ArrayNode) SourceField.items.getFrom(node));
+                            appendList(text, SourceField.items.arrayFrom(node), ListType.unordered);
                         }
                     }
                     case optfeature -> appendOptionalFeature(text, node, heading);
@@ -330,7 +338,18 @@ public interface JsonSource extends JsonTextReplacement {
         text.add(mediaRef.text);
     }
 
-    default void appendList(List<String> text, ArrayNode itemArray) {
+    enum ListType {
+        unordered("- "),
+        unstyled("");
+
+        final String marker;
+
+        ListType(String marker) {
+            this.marker = marker;
+        }
+    }
+
+    default void appendList(List<String> text, ArrayNode itemArray, ListType listType) {
         String indent = parseState().getListIndent();
         boolean pushed = parseState().indentList();
         try {
@@ -339,7 +358,7 @@ public interface JsonSource extends JsonTextReplacement {
                 List<String> item = new ArrayList<>();
                 appendToText(item, e, null);
                 if (item.size() > 0) {
-                    text.add(indent + "- " + item.get(0) + "  ");
+                    text.add(indent + listType.marker + item.get(0) + "  ");
                     item.remove(0);
                     item.forEach(x -> text.add(x.isEmpty() ? "" : indent + "    " + x + "  "));
                 }
@@ -650,9 +669,10 @@ public interface JsonSource extends JsonTextReplacement {
             knownEntry = index().findTable(sp, TableFields.getFirstRow(matchTable));
         }
         if (knownEntry != null) {
+            name = SourceField.name.getTextOrDefault(knownEntry, name);
             // replace with embed
             String link = linkifyType(keyType, tableKey, name);
-            return "!" + link;
+            return link.matches("\\[.+]\\(.+\\)") ? "!" + link : null;
         }
         return null;
     }

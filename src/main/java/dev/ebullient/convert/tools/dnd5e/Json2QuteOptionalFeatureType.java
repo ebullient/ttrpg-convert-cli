@@ -52,7 +52,8 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
             return null;
         }
 
-        return new Tools5eQuteNote(title, super.sources.getSourceText(index().srdOnly()), text, tags)
+        String sourceText = super.sources.getSourceText(index().srdOnly());
+        return new Tools5eQuteNote(title, sourceText, text, tags)
                 .withTargeFile(optionalFeatures.getFilename())
                 .withTargetPath(Tools5eQuteBase.getRelativePath(Tools5eIndexType.optionalFeatureTypes));
     }

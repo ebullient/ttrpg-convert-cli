@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[classProgression](#classprogression), [hasSections](#hassections), [name](#name), [parentClass](#parentclass), [parentClassLink](#parentclasslink), [parentClassSource](#parentclasssource), [source](#source), [subclassTitle](#subclasstitle), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[classProgression](#classprogression), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [parentClass](#parentclass), [parentClassLink](#parentclasslink), [parentClassSource](#parentclasssource), [source](#source), [sourceAndPage](#sourceandpage), [subclassTitle](#subclasstitle), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### classProgression
@@ -16,6 +16,10 @@ A pre-foramatted markdown callout describing subclass spell or feature progressi
 ### hasSections
 
 True if the content (text) contains sections
+
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
 
 ### name
 
@@ -35,7 +39,11 @@ Source of the parent class (abbreviation)
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### subclassTitle
 

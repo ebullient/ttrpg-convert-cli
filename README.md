@@ -27,10 +27,11 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 
 There are several options for running `ttrpg-convert`. Choose whichever you are the most comfortable with: 
 
-- [Use pre-built platform binary](#use-pre-built-platform-binary)
-- [Use Java Jar](#use-java-jar)
+- [Use pre-built platform binary](#use-pre-built-platform-binary) (no Java required)
+- [Use JBang](#use-jbang)
+- [Use Java to run the jar](#use-java-to-run-the-jar)
 - [Build from source](#build-and-run)
-- Using Windows? See the [Windows README](README-WINDOWS.md)
+- **Using Windows?** See the [Windows README](README-WINDOWS.md)
 
 ### Use pre-built platform binary
 
@@ -49,7 +50,7 @@ Notes:
 - To show emoji in Windows Commmand Prompt: `chcp 65001` and choose a font with emoji support (Consolas is one). You can also try the new Windows Terminal (`wt.exe`).
 - MacOS permission checking (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
-### Use Java Jar
+### Use JBang
 
 1. Install JBang: https://www.jbang.dev/documentation/guide/latest/installation.html
 
@@ -74,6 +75,22 @@ Notes:
     ```shell
     ttrpg-convert --help
     ```
+
+Continue to notes about [Conventions](#conventions).
+
+### Use Java to run the jar
+
+1. Install Java 17: https://adoptium.net/, or with your favorite package manager.
+
+2. Download the latest [ttrpg-convert-cli jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.0.5/ttrpg-convert-cli-2.0.5-runner.jar):  
+
+3. Verify the install by running the command: 
+
+    ```shell
+    java -jar ttrpg-convert-cli-2.0.5-runner.jar --help
+    ```
+
+To run commands listed below, replace `ttrpg-convert` with `java -jar ttrpg-convert-cli-2.0.5-runner.jar`
 
 Continue to notes about [Conventions](#conventions).
 
@@ -150,11 +167,11 @@ Within the `examples/css-snippets` folder, you will find some CSS snippets that 
 
 #### Statblocks
 
-If using the entire `compendium` snippet, then you will not need to download and use the `dnd5e-only-statblocks.css` or `pf2-only-statblocks.css` snippets.
+Compendium (`*-compendium`) snippets include styles for statblocks.
 
-However, if interested in only using the statblock snippets, you will need to download one or both of the `only-statblock.css` snippets, dependent on the system you are using.
+If you aren't using a `*-compendium` snippet, you may want to download either `dnd5e-only-statblocks.css` or `pf2-only-statblocks.css` to style your statblocks.
 
-> :warning: Do not use an `only-statblock.css` snippet beside a compendium.css snippet.
+> :warning: Do not use an `*-only-statblock.css` snippet and a `*-compendium.css` snippet together.
 
 
 ## Use with 5eTools JSON data
@@ -165,7 +182,7 @@ However, if interested in only using the statblock snippets, you will need to do
     git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
     ```
 
-2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content:
+2. Invoke the CLI. In this first example, let's generate indexes and markdown for SRD content:
 
     ```shell
     ttrpg-convert \
@@ -177,9 +194,11 @@ However, if interested in only using the statblock snippets, you will need to do
     - `--index` Create `all-index.json` containing all of the touched artifact ids, and `src-index.json` that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
     - `-o dm` The target output directory. Files will be created in this directory.
 
-    The rest of the command-line specifies input files: 
+    The rest of the command-line specifies input files:
 
-    - `5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone or release of the mirror repo)
+    - `5etools-mirror-1.github.io/data` Path to the 5etools `data` directory (from a clone or release of the repo)
+
+    This should produce a set of markdown files in the `dm` directory.
 
 3. Invoke the command again, this time including sources and custom items:
 
@@ -195,11 +214,11 @@ However, if interested in only using the statblock snippets, you will need to do
         my-items.json 
     ```
 
-    - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide, all of which I own. 
-        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md)
+    - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide (all sources I own).  
+        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md). Only use sources you own.  
 
-    - `-c dm-sources.json` contains configuration parameters (shown in detail below)
-    - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) should be listed explicitly
+    - `-c dm-sources.json` contains configuration parameters (shown in detail [below](#additional-parameters))
+    - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) to include as well.
     - `my-items.json` defines custom items for my campaign that follow 5etools JSON format.
 
 > 💭 I recommend running the CLI against a separate directory, and then using a comparison tool of your choice to preview changes before you copy or merge them in.
@@ -229,13 +248,13 @@ However, if interested in only using the statblock snippets, you will need to do
       Pf2eTools/data
     ```
 
-    - `-g p2fe` The target output directory. Files will be created in this directory.
+    - `-g p2fe` The game system! Pathfinder 2e!
     - `--index` Create `all-index.json` containing all of the touched artifact ids, and `src-index.json` that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
     - `-o dm` The target output directory. Files will be created in this directory.
 
     The rest of the command-line specifies input files: 
 
-    - `5etools-mirror-1.github.io/data` Path to the data directory containing 5etools files (a clone or release of the mirror repo)
+    - `Pf2eTools/data` Path to the Pf2eTools `data` directory (from a clone or release of the repo)
 
 
 ## Additional parameters
@@ -276,7 +295,7 @@ I use something like this:
 
 - `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.  
 
-    > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md)
+    > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md). Only use sources you own.
 
 - `paths` allows you to redefine vault paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
 
@@ -313,8 +332,7 @@ This allows you to include a specific resource without including the whole sourc
     }
     ```
 
-Note that some adventures, like _Tales from the Yawning Portal_, are treated as a collection of standalone modules. The generated index contains these as `reference` items, but it can help you find the sources you own. The three sources shown in the example above are listed in the index as `reference|adventure-wbtw`, `reference|adventure-tftyp-wpm`, and `reference|book-phb` respectively.
-
+Note that some adventures, like _Tales from the Yawning Portal_, are treated as a collection of standalone modules. The generated index contains these as either `adventure` or `book` items. If you're unsure, check the generated index file (`allIndex.json`): _Tales from the Yawning Portal: The Forge of Fury_ is an adventure (`adventure|adventure-tftyp-tfof`). _Acquisitions Incorporated_ is a book (`book|book-ai`). 
 
 ### Additional example
 
@@ -418,12 +436,14 @@ Additional templates can also be specified in your configuration file:
 
 The flag used to specify a template (either on the command line or in a config file) corresponds to the type of template being used. In general, take the file name of a [default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates) and remove the `2md.txt` suffix.
 
-- Valid keys for 5etools: `background`, `class`, `deity`, `feat`, `item`, `monster`, `name`, `note`, `race`, `spell`, `subclass`
-- Valid keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-affliction`, `inline-attack`, `item`, `monster`, `note`, `ritual`, `spell`, `trait`.
+- Valid keys for 5etools: `background`, `class`, `deity`, `feat`, `hazard`, `item`, `monster`, `note`, `race`, `reward`, `spell`, `subclass`.
+- Valid keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-ability`, `inline-affliction`, `inline-attack`, `item`, `note`, `ritual`, `spell`, `trait`.
 
 ### Built-in / example templates
 
-Not everything is customizable. In some cases, indenting, organizing, formatting, and linking text accurately is easier to do inline as a big blob. The default and example templates show what is available to tweak.
+Not everything is customizable. In some cases, indenting, organizing, formatting, and linking text accurately is easier to do inline as a big blob. 
+
+[Documentation](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs) is generated for template-accessible attributes.
 
 - [Default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates)
 - [Example templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates)
@@ -437,12 +457,24 @@ Of particular note are the varied monster templates:
 
 ## Changes that impact generated templates and files
 
+### 🔥 2.1.0: File name and path changes, template docs and attribute changes
+
+1. 🔥 **Variant rules include the source in the file name**: this avoids duplicates (and there were some).
+2. 🔥 **5eTools changed the classification for some creatures**, which moves them in the bestiary. Specifically: the Four-armed troll is a giant (and not an npc), a river serpent is a monstrosity rather than a beast, and ogre skeletons and red dracoliches are both undead.
+3. 🔥 Better support for table rendering has superceded dedicated/hand-tended random name tables. All of the tables are still present, just in different units more directly related to source material.
+4. 🔥 **Change to monster template attributes:** Legendary group attributes have been simplified to `name` and `desc`, just like other traits. See the [default monster template](https://github.com/ebullient/ttrpg-convert-cli/blob/0736c3929a6d90fe01860692f487b8523b57e60d/src/main/resources/templates/tools5e/monster2md.txt#L80) for an example.
+
+> ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+
+✨ **New template documentation** is available in [docs](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
+
+
 ### 🔥 2.0.0: File name and path changes, and styles!
 
 1. 🔥 **A leading slash (`/`) is no longer used at the beginning of compendium and root paths**. This should allow you to move these two directories around more easily. 
     - I recommend that you keep the compendium and rules sections together as big balls of mud.
     - If you do want to further move files around, do so from within obsidian, so obsidian can update its links.
-    
+
 2. 🔥 **D&D 5e subclasses now use the source of the subclass in the file name**.
 
    > ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-1.3.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.

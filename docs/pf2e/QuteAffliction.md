@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[affliction](#affliction), [aliases](#aliases), [hasSections](#hassections), [level](#level), [name](#name), [source](#source), [tags](#tags), [temptedCurse](#temptedcurse), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[affliction](#affliction), [aliases](#aliases), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [temptedCurse](#temptedcurse), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### affliction
@@ -21,6 +21,10 @@ Aliases for this note
 
 True if the content (text) contains sections
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### level
 
 Affliction level
@@ -31,7 +35,11 @@ Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

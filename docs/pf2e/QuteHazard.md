@@ -10,7 +10,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[abilities](#abilities), [actions](#actions), [complexity](#complexity), [defenses](#defenses), [disable](#disable), [hasSections](#hassections), [level](#level), [name](#name), [perception](#perception), [reset](#reset), [routine](#routine), [routineAdmonition](#routineadmonition), [source](#source), [stealth](#stealth), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[abilities](#abilities), [actions](#actions), [complexity](#complexity), [defenses](#defenses), [disable](#disable), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [perception](#perception), [reset](#reset), [routine](#routine), [routineAdmonition](#routineadmonition), [source](#source), [sourceAndPage](#sourceandpage), [stealth](#stealth), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### abilities
@@ -31,6 +31,10 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 ### hasSections
 
 True if the content (text) contains sections
+
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
 
 ### level
 
@@ -53,7 +57,11 @@ Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### stealth
 

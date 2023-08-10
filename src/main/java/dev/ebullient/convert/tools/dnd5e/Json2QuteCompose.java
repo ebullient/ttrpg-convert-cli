@@ -91,7 +91,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
 
             maybeAddBlankLine(text);
             text.add("## " + name);
-            text.add(getSourceText(entry));
+            text.add(getLabeledSource(entry));
 
             if (type == Tools5eIndexType.action) {
                 appendAction(entry, text);

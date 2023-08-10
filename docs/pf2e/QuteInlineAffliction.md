@@ -6,7 +6,7 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 ## Attributes
 
-[effect](#effect), [hasSections](#hassections), [level](#level), [maxDuration](#maxduration), [name](#name), [onset](#onset), [savingThrow](#savingthrow), [source](#source), [stages](#stages), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[effect](#effect), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [maxDuration](#maxduration), [name](#name), [onset](#onset), [savingThrow](#savingthrow), [source](#source), [sourceAndPage](#sourceandpage), [stages](#stages), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### effect
@@ -16,6 +16,10 @@ Formatted text. Affliction effect
 ### hasSections
 
 True if the content (text) contains sections
+
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
 
 ### level
 
@@ -39,7 +43,11 @@ Formatted text. Savint throws.
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### stages
 

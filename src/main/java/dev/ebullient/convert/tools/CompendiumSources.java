@@ -163,4 +163,8 @@ public abstract class CompendiumSources {
         _copy,
         otherSources,
     }
+
+    public Collection<SourceAndPage> getSourceAndPage() {
+        return bookRef;
+    }
 }

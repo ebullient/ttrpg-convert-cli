@@ -363,7 +363,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             feature.cfNode = featureJson;
             feature.cfType = type;
             feature.level = lookup.replaceAll(".*\\|(\\d+)\\|?.*", "$1");
-            feature.sources = Tools5eSources.findSources(finalKey);
+            feature.cfSources = Tools5eSources.findSources(finalKey);
 
             keyToClassFeature.put(finalKey, feature);
         }
@@ -573,7 +573,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     List<String> defaultEquipment(JsonNode equipment) {
         List<String> text = new ArrayList<>();
-        appendList(text, equipment.withArray("default"));
+        appendList(text, equipment.withArray("default"), ListType.unordered);
         return text;
     }
 
@@ -632,27 +632,27 @@ public class Json2QuteClass extends Json2QuteCommon {
         JsonNode cfNode;
         String level;
 
-        Tools5eSources sources;
+        Tools5eSources cfSources;
         Tools5eIndexType cfType;
 
         public String getName() {
-            return sources.getName();
+            return cfSources.getName();
         }
 
         void appendText(JsonSource converter, List<String> text, String pageSource) {
             converter.maybeAddBlankLine(text);
-            text.add("### " + converter.decoratedFeatureTypeName(sources, cfNode) + " (Level " + level + ")");
-            if (!sources.primarySource().equalsIgnoreCase(pageSource)) {
-                text.add(converter.getSourceText(sources));
+            text.add("### " + converter.decoratedFeatureTypeName(cfSources, cfNode) + " (Level " + level + ")");
+            if (!cfSources.primarySource().equalsIgnoreCase(pageSource)) {
+                text.add(converter.getLabeledSource(cfSources));
             }
             text.add("");
             converter.appendToText(text, cfNode.get("entries"), "####");
         }
 
         public void appendListItemText(JsonSource converter, List<String> text, String pageSource) {
-            text.add("**" + converter.decoratedFeatureTypeName(sources, cfNode) + "**");
-            if (!sources.primarySource().equalsIgnoreCase(pageSource)) {
-                text.add(converter.getSourceText(sources));
+            text.add("**" + converter.decoratedFeatureTypeName(cfSources, cfNode) + "**");
+            if (!cfSources.primarySource().equalsIgnoreCase(pageSource)) {
+                text.add(converter.getLabeledSource(cfSources));
             }
             text.add("");
             converter.appendToText(text, cfNode.get("entries"), null);

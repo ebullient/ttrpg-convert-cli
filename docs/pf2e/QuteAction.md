@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[actionType](#actiontype), [activity](#activity), [aliases](#aliases), [basic](#basic), [cost](#cost), [frequency](#frequency), [hasSections](#hassections), [item](#item), [name](#name), [prerequisites](#prerequisites), [requirements](#requirements), [source](#source), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[actionType](#actiontype), [activity](#activity), [aliases](#aliases), [basic](#basic), [cost](#cost), [frequency](#frequency), [hasSections](#hassections), [item](#item), [labeledSource](#labeledsource), [name](#name), [prerequisites](#prerequisites), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### actionType
@@ -41,6 +41,10 @@ True if the content (text) contains sections
 
 True if this action is an item action. Same as `{resource.actionType.item}`.
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### name
 
 Note name
@@ -55,7 +59,11 @@ Situational requirements for performing this action
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

@@ -358,6 +358,9 @@ public class MarkdownDoclet implements Doclet {
                     }
                     add(String.format("[%s](%s)", label, reference));
                     break;
+                case ENTITY:
+                    add(replacementFor(docTree.toString()));
+                    break;
                 default:
                     System.out.println("tree kind: " + docTree.getKind() + ", content: " + docTree);
                     break;
@@ -466,5 +469,22 @@ public class MarkdownDoclet implements Doclet {
         };
         DocumentationTool docTool = ToolProvider.getSystemDocumentationTool();
         docTool.run(System.in, System.out, System.err, docletArgs);
+    }
+
+    private String replacementFor(String str) {
+        switch (str) {
+            case "&quot;":
+                return "\"";
+            case "&amp;":
+                return "&";
+            case "&#39;":
+                return "'";
+            case "&lt;":
+                return "<";
+            case "&gt;":
+                return ">";
+            default:
+                return str;
+        }
     }
 }

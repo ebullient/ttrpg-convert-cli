@@ -591,8 +591,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return variant + " from " + TtrpgConfig.sourceToLongName(source);
         } else {
             return String.format("[%s](%svariant-rules/%s.md)",
-                    variant, index().rulesVaultRoot(),
-                    slugify(variant) + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.variantrule));
+                    parts[0], index().rulesVaultRoot(),
+                    slugify(parts[0]) + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.variantrule));
         }
     }
 

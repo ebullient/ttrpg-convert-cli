@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [amp](#amp), [casting](#casting), [domains](#domains), [hasSections](#hassections), [heightened](#heightened), [level](#level), [name](#name), [saveDuration](#saveduration), [source](#source), [spellLists](#spelllists), [spellType](#spelltype), [subclass](#subclass), [tags](#tags), [targeting](#targeting), [text](#text), [traditions](#traditions), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [amp](#amp), [casting](#casting), [domains](#domains), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [saveDuration](#saveduration), [source](#source), [sourceAndPage](#sourceandpage), [spellLists](#spelllists), [spellType](#spelltype), [subclass](#subclass), [tags](#tags), [targeting](#targeting), [text](#text), [traditions](#traditions), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -33,6 +33,10 @@ True if the content (text) contains sections
 
 Heightened spell effects as a list of [NamedText](../NamedText.md)
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### level
 
 A spell’s overall power, from 1 to 10.
@@ -47,7 +51,11 @@ Spell save and duration attributes as [QuteSpellSaveDuration](QuteSpell/QuteSpel
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### spellLists
 

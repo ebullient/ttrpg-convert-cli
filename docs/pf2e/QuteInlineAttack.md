@@ -6,7 +6,7 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 ## Attributes
 
-[activity](#activity), [attack](#attack), [damage](#damage), [hasSections](#hassections), [meleeOrRanged](#meleeorranged), [name](#name), [source](#source), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[activity](#activity), [attack](#attack), [damage](#damage), [hasSections](#hassections), [labeledSource](#labeledsource), [meleeOrRanged](#meleeorranged), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### activity
@@ -23,6 +23,10 @@ Activity/Activation cost (as [QuteDataActivity](QuteDataActivity.md))
 
 True if the content (text) contains sections
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### meleeOrRanged
 
 
@@ -32,7 +36,11 @@ Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

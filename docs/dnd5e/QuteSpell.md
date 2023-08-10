@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[classes](#classes), [components](#components), [duration](#duration), [fluffImages](#fluffimages), [hasSections](#hassections), [level](#level), [name](#name), [range](#range), [ritual](#ritual), [school](#school), [source](#source), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
+[classes](#classes), [components](#components), [duration](#duration), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [range](#range), [ritual](#ritual), [school](#school), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
 
 
 ### classes
@@ -28,6 +28,10 @@ List of images for this spell (as [ImageRef](../ImageRef.md))
 ### hasSections
 
 True if the content (text) contains sections
+
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
 
 ### level
 
@@ -51,7 +55,11 @@ Spell school
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

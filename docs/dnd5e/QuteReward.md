@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[ability](#ability), [detail](#detail), [hasSections](#hassections), [name](#name), [signatureSpells](#signaturespells), [source](#source), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[ability](#ability), [detail](#detail), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [signatureSpells](#signaturespells), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### ability
@@ -21,6 +21,10 @@ Reward detail string (similar to item detail). May include the reward type and r
 
 True if the content (text) contains sections
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### name
 
 Note name
@@ -31,7 +35,11 @@ Formatted text describing sigature spells. Not commonly used.
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

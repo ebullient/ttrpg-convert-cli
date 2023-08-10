@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[hasSections](#hassections), [hazardType](#hazardtype), [name](#name), [source](#source), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[hasSections](#hassections), [hazardType](#hazardtype), [labeledSource](#labeledsource), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### hasSections
@@ -17,13 +17,21 @@ True if the content (text) contains sections
 
 Type of hazard: "Magical Trap", "Wilderness Hazard"
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### name
 
 Note name
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 

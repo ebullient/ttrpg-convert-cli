@@ -215,9 +215,15 @@ public interface JsonTextConverter<T extends IndexType> {
             n = replaceText(n.trim());
             if (inner.isEmpty()) {
                 inner.add(n);
+            } else if (inner.get(0).startsWith("|") || inner.get(0).startsWith(">")) {
+                // we have a table or a blockquote
+                n = "**" + n + "** ";
+                inner.add(0, "");
+                inner.add(0, n);
+                return true;
             } else {
                 n = n.replace(":", "");
-                n = "**" + n + "** ";
+                n = "**" + n + ".** ";
                 inner.set(0, n + inner.get(0));
                 return true;
             }

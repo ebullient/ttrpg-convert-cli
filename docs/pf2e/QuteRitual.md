@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [casting](#casting), [checks](#checks), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [level](#level), [name](#name), [requirements](#requirements), [ritualType](#ritualtype), [source](#source), [tags](#tags), [targeting](#targeting), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [casting](#casting), [checks](#checks), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [requirements](#requirements), [ritualType](#ritualtype), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [targeting](#targeting), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -33,6 +33,10 @@ True if the content (text) contains sections
 
 Heightened spell effects as a list of [Traits](../NamedText.md)
 
+### labeledSource
+
+Formatted string describing the content's source(s): `_Source: <sources>_`
+
 ### level
 
 A spell’s overall power, from 1 to 10.
@@ -51,7 +55,11 @@ Type: Ritual (usually)
 
 ### source
 
-Formatted string describing the content's source(es)
+String describing the content's source(s)
+
+### sourceAndPage
+
+Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### tags
 
