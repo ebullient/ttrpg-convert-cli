@@ -124,7 +124,7 @@ jobs:
 
       - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip
         uses: actions/upload-artifact@v3
-        id: upload-jar
+        id: upload-zip
         with:
           name: artifacts
           path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.next }}-examples.zip
