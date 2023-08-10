@@ -319,6 +319,7 @@ _Support content creators. Only use or include sources that you own._
 | QFF1 | Quest for the Frozen Flame #1: Broken Tusk Moon |
 | QFF2 | Quest for the Frozen Flame #2: Lost Mammoth Valley |
 | QFF3 | Quest for the Frozen Flame #3: Burning Tundra |
+| RoE | Rage of Elements |
 | SaS | Shadows at Sundown |
 | Sli | The Slithering |
 | SoM | Secrets of Magic |
