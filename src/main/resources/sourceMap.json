@@ -375,7 +375,7 @@
       "FRP1": "Fists of the Ruby Phoenix #1: Despair on Danger Island",
       "FRP2": "Fists of the Ruby Phoenix #2: Ready? Fight!",
       "FRP3": "Fists of the Ruby Phoenix #3: King of the Mountain",
-      "GnG": "Guns & Gears",
+      "G&G": "Guns & Gears",
       "GMG": "Gamemastery Guide",
       "GW0": "Gatewalkers Player's Guide",
       "GW1": "Gatewalkers #1: The Seventh Arch",
@@ -424,7 +424,7 @@
       "TV": "Treasure Vault"
     },
     "longToAbv": {
-      "G&G": "GnG"
+      "GnG": "G&G"
     }
   }
 }
