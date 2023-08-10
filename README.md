@@ -57,7 +57,7 @@ Notes:
 2. Install the pre-built release: 
 
     ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.0.5/ttrpg-convert-cli-2.0.5-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.1.0/ttrpg-convert-cli-2.1.0-runner.jar
     ```
 
     If you want the latest _unreleased snapshot_ (may not match this doc!): 
@@ -82,15 +82,15 @@ Continue to notes about [Conventions](#conventions).
 
 1. Install Java 17: https://adoptium.net/, or with your favorite package manager.
 
-2. Download the latest [ttrpg-convert-cli jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.0.5/ttrpg-convert-cli-2.0.5-runner.jar):  
+2. Download the latest [ttrpg-convert-cli jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.1.0/ttrpg-convert-cli-2.1.0-runner.jar):  
 
 3. Verify the install by running the command: 
 
     ```shell
-    java -jar ttrpg-convert-cli-2.0.5-runner.jar --help
+    java -jar ttrpg-convert-cli-2.1.0-runner.jar --help
     ```
 
-To run commands listed below, replace `ttrpg-convert` with `java -jar ttrpg-convert-cli-2.0.5-runner.jar`
+To run commands listed below, replace `ttrpg-convert` with `java -jar ttrpg-convert-cli-2.1.0-runner.jar`
 
 Continue to notes about [Conventions](#conventions).
 
