@@ -58,59 +58,59 @@ public class Json2QuteCommon implements JsonSource {
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
-    public String getFluffDescription(Tools5eIndexType fluffType, String heading, List<ImageRef> imageRef) {
-        List<String> text = getFluff(fluffType, heading, imageRef);
+    public String getFluffDescription(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
+        List<String> text = getFluff(fluffType, heading, images);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
-    public List<String> getFluff(Tools5eIndexType fluffType, String heading, List<ImageRef> imageRef) {
+    public List<String> getFluff(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
         List<String> text = new ArrayList<>();
-        if (booleanOrDefault(rootNode, "hasFluff", false) || booleanOrDefault(rootNode, "hasFluffImages", false)) {
-            String fluffKey = fluffType.createKey(rootNode);
-            JsonNode fluffNode = index.getNode(fluffKey);
-            if (fluffNode != null) {
-                JsonSourceCopier copier = new JsonSourceCopier(index);
-                fluffNode = copier.handleCopy(fluffType, fluffNode);
-
-                if (fluffNode.has("entries")) {
-                    appendToText(text, fluffNode.get("entries"), heading);
-                }
-
-                JsonNode images = fluffNode.get("images");
-                if (images != null && images.isArray()) {
-                    for (Iterator<JsonNode> i = images.elements(); i.hasNext();) {
-                        ImageRef ir = readImageRef(i.next());
-                        if (ir != null) {
-                            imageRef.add(ir);
-                        }
-                    }
-                }
+        JsonNode fluffNode = null;
+        if (rootNode.has("fluff")) {
+            fluffNode = rootNode.get("fluff");
+            if (fluffNode.has("_monsterFluff")) {
+                String fluffKey = fluffType.createKey(fluffNode.get(""));
+                fluffNode = index.getNode(fluffKey);
             }
+        } else if (booleanOrDefault(rootNode, "hasFluff", false) || booleanOrDefault(rootNode, "hasFluffImages", false)) {
+            String fluffKey = fluffType.createKey(rootNode);
+            fluffNode = index.getNode(fluffKey);
+        }
+
+        if (fluffNode != null) {
+            JsonSourceCopier copier = new JsonSourceCopier(index);
+            fluffNode = copier.handleCopy(fluffType, fluffNode);
+            if (fluffNode.has("entries")) {
+                appendToText(text, fluffNode.get("entries"), heading);
+            }
+            getImages(fluffNode.get("images"), images);
         }
         return text;
     }
 
     public List<ImageRef> getFluffImages(Tools5eIndexType fluffType) {
-        List<ImageRef> imageRef = new ArrayList<>();
+        List<ImageRef> images = new ArrayList<>();
         if (booleanOrDefault(rootNode, "hasFluffImages", false)) {
             String fluffKey = fluffType.createKey(rootNode);
             JsonNode fluffNode = index.getNode(fluffKey);
             if (fluffNode != null) {
                 JsonSourceCopier copier = new JsonSourceCopier(index);
                 fluffNode = copier.handleCopy(fluffType, fluffNode);
+                getImages(fluffNode.get("images"), images);
+            }
+        }
+        return images;
+    }
 
-                JsonNode images = fluffNode.get("images");
-                if (images != null && images.isArray()) {
-                    for (Iterator<JsonNode> i = images.elements(); i.hasNext();) {
-                        ImageRef ir = readImageRef(i.next());
-                        if (ir != null) {
-                            imageRef.add(ir);
-                        }
-                    }
+    public void getImages(JsonNode imageNode, List<ImageRef> images) {
+        if (imageNode != null && imageNode.isArray()) {
+            for (Iterator<JsonNode> i = imageNode.elements(); i.hasNext();) {
+                ImageRef ir = readImageRef(i.next());
+                if (ir != null) {
+                    images.add(ir);
                 }
             }
         }
-        return imageRef;
     }
 
     public final Tools5eQuteBase build() {

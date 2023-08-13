@@ -37,4 +37,4 @@ Descriptive title (or caption) for the image. This can be long.
 
 ### vaultPath
 
-Path of the image in the vault.
+Path of the image in the vault or url for external images.

@@ -286,12 +286,12 @@ _Support content creators. Only use or include sources that you own._
 | FRP2 | Fists of the Ruby Phoenix #2: Ready? Fight! |
 | FRP3 | Fists of the Ruby Phoenix #3: King of the Mountain |
 | FoP | The Fall of Plaguestone |
+| G&G | Guns & Gears |
 | GMG | Gamemastery Guide |
 | GW0 | Gatewalkers Player's Guide |
 | GW1 | Gatewalkers #1: The Seventh Arch |
 | GW2 | Gatewalkers #2: They Watched the Stars |
 | GW3 | Gatewalkers #3: Dreamers of the Nameless Spires |
-| GnG | Guns & Gears |
 | HPD | Hero Point Deck |
 | LOACLO | Lost Omens: Absalom, City of Lost Omens |
 | LOAG | Lost Omens: Ancestry Guide |

@@ -50,7 +50,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return false;
     }
 
-    String type;
+    String creatureType;
     String subtype;
     Integer ac;
     String acText;
@@ -61,7 +61,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     Json2QuteMonster(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        findType();
+        findCreatureType();
         findAc();
         findHp();
         isNpc = isNpc(rootNode);
@@ -75,12 +75,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String pb = monsterPb(cr);
 
         Tags tags = new Tags(getSources());
-
         tags.add("monster", "size", slugify(size));
         if (subtype == null || subtype.isEmpty()) {
-            tags.add("monster", "type", slugify(type));
+            tags.add("monster", "type", slugify(creatureType));
         } else {
-            String sType = slugify(type);
+            String sType = slugify(creatureType);
             for (String detail : subtype.split("\\s*,\\s*")) {
                 tags.add("monster", "type", sType, slugify(detail));
             }
@@ -101,7 +100,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 decoratedMonsterName(sources),
                 getSourceText(sources),
                 isNpc,
-                size, type, subtype, monsterAlignment(),
+                size, creatureType, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
                 monsterSpeed(), monsterScores(),
                 monsterSavesAndSkills(),
@@ -127,19 +126,19 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 cfg().alwaysUseDiceRoller());
     }
 
-    void findType() {
+    void findCreatureType() {
         JsonNode typeNode = rootNode.get("type");
         if (typeNode == null) {
             tui().warn("Empty type for " + getSources());
             return;
         }
         if (typeNode.isTextual()) {
-            type = typeNode.asText();
+            creatureType = typeNode.asText();
             return;
         }
 
         // We have an object: type + tags
-        type = typeNode.get("type").asText();
+        creatureType = typeNode.get("type").asText();
         List<String> tags = new ArrayList<>();
         typeNode.withArray("tags").forEach(tag -> {
             if (tag.isTextual()) {
@@ -484,6 +483,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     ImageRef getToken() {
+        String tokenString = MonsterFields.tokenUrl.getTextOrNull(rootNode);
         if (booleanOrDefault(rootNode, "hasToken", false)) {
             // const imgLink = Renderer.monster.getTokenUrl(mon);
             // return mon.tokenUrl || UrlUtil.link(`${Renderer.get().baseMediaUrls["img"] || Renderer.get().baseUrl}img/${Parser.sourceJsonToAbv(mon.source)}/${Parser.nameToTokenName(mon.name)}.png`);
@@ -505,14 +505,16 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     "token",
                     slugify(filename) + ".png");
 
-            return buildImageRef(index, sourcePath, target);
+            return buildImageRef(sourcePath, target);
+        } else if (tokenString != null) {
+            return getSources().buildImageRef(null, tokenString);
         }
         return null;
     }
 
     @Override
     public String getImagePath() {
-        return Tools5eQuteBase.monsterPath(isNpc, type);
+        return Tools5eQuteBase.monsterPath(isNpc, creatureType);
     }
 
     public static List<Tuple> findConjuredMonsterVariants(Tools5eIndex index, Tools5eIndexType type,
@@ -703,6 +705,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     enum MonsterFields implements JsonNodeReader {
         alignment,
-        alignmentPrefix
+        alignmentPrefix,
+        tokenUrl,
     }
 }

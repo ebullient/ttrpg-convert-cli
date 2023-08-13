@@ -613,6 +613,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return value;
     }
 
+    public boolean isHomebrew() {
+        return homebrew != null;
+    }
+
     /**
      * For subclasses, class features, and subclass features,
      * cross references come directly from the class definition

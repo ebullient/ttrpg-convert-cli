@@ -94,8 +94,11 @@ public class TestUtils {
             Path resource = p;
             int hash = path.indexOf('#');
 
-            // vaultPath is used for template examples
-            if (path.startsWith("http") || path.contains("vaultPath")) {
+            if (path.startsWith("http") && path.contains(" ")) {
+                e.add(String.format("HTTP path with space in %s: %s ", p, m.group(0)));
+                return;
+            } else if (path.startsWith("http") || path.contains("vaultPath")) {
+                // vaultPath is used for template examples
                 return;
             }
 

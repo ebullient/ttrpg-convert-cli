@@ -35,19 +35,19 @@ public class ImageRef {
     final Path targetFilePath;
     final String url;
     final Integer width;
+    final String vaultPath;
 
     /** Descriptive title (or caption) for the image. This can be long. */
     public final String title;
-    /** Path of the image in the vault. */
-    public final String vaultPath;
 
     private ImageRef(String title, String url, Integer width) {
+        this.url = url.replace(" ", "%20");
         this.sourcePath = null;
         this.targetFilePath = null;
-        this.title = title == null ? "" : title;
+        this.title = title == null ? ""
+                : title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
         this.vaultPath = null;
         this.width = width;
-        this.url = url;
     }
 
     private ImageRef(Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
@@ -68,6 +68,11 @@ public class ImageRef {
 
     private String titleAttribute() {
         return title.length() > 50 ? " \"" + title + "\"" : "";
+    }
+
+    /** Path of the image in the vault or url for external images. */
+    public String getVaultPath() {
+        return url == null ? vaultPath : url;
     }
 
     public String getEmbeddedLink(String anchor) {
@@ -153,7 +158,7 @@ public class ImageRef {
         }
 
         public Builder setTitle(String title) {
-            this.title = title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
+            this.title = title;
             return this;
         }
 
@@ -186,7 +191,6 @@ public class ImageRef {
             if (url != null) {
                 return new ImageRef(title, url, width);
             }
-
             if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
                 throw new IllegalStateException("Set paths first (source, relative, vaultRoot, fileRoot) first");
             }

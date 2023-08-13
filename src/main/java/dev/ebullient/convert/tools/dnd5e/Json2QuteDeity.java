@@ -66,7 +66,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
             JsonNode symbolImg = rootNode.get("symbolImg");
             try {
                 JsonMediaHref mediaHref = mapper().treeToValue(symbolImg, JsonMediaHref.class);
-                return buildImageRef(index, mediaHref, getImagePath());
+                return buildImageRef(mediaHref, getImagePath());
             } catch (JsonProcessingException | IllegalArgumentException e) {
                 tui().errorf("Unable to read media reference from %s", symbolImg.toPrettyString());
             }

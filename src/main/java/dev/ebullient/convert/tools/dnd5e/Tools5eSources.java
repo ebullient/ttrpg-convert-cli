@@ -156,6 +156,13 @@ public class Tools5eSources extends CompendiumSources {
         return i.next();
     }
 
+    public ImageRef buildImageRef(String title, String hrefString) {
+        return new ImageRef.Builder()
+                .setTitle(title)
+                .setUrl(hrefString)
+                .build();
+    }
+
     public ImageRef buildImageRef(Tools5eIndex index, Path sourcePath, Path target, boolean useCompendium) {
         ImageRef imageRef = new ImageRef.Builder()
                 .setRelativePath(target)

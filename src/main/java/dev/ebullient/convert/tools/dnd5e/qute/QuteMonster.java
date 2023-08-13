@@ -278,7 +278,7 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "legendary_actions", legendary);
         addUnlessEmpty(map, "source", books);
         if (token != null) {
-            map.put("image", token.vaultPath);
+            map.put("image", token.getVaultPath());
         }
 
         // De-markdown-ify

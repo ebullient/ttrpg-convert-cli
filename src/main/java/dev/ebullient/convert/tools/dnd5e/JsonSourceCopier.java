@@ -205,7 +205,7 @@ public class JsonSourceCopier implements JsonSource {
                 default:
                     if (overlayField == null) {
                         target.remove(f);
-                    } else if (_preserve == null || !_preserve.has(f)) {
+                    } else if (_preserve == null || _preserve.has(f)) {
                         target.replace(f, copyNode(overlayField));
                     } else {
                         tui().debugf("Copy/Merge: Skip field %s (from %s)", f, originKey);

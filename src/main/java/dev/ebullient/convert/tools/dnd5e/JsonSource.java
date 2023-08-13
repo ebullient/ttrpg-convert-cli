@@ -96,12 +96,12 @@ public interface JsonSource extends JsonTextReplacement {
         return "_Source: " + getSourceText(currentSource) + "_";
     }
 
-    default ImageRef buildImageRef(Tools5eIndex index, Path sourcePath, Path target) {
-        return getSources().buildImageRef(index, sourcePath, target, useCompendium());
+    default ImageRef buildImageRef(Path sourcePath, Path target) {
+        return getSources().buildImageRef(index(), sourcePath, target, useCompendium());
     }
 
-    default ImageRef buildImageRef(Tools5eIndex index, JsonMediaHref mediaHref, String imageBasePath) {
-        return getSources().buildImageRef(index, mediaHref, imageBasePath, useCompendium());
+    default ImageRef buildImageRef(JsonMediaHref mediaHref, String imageBasePath) {
+        return getSources().buildImageRef(index(), mediaHref, imageBasePath, useCompendium());
     }
 
     /**
@@ -680,7 +680,7 @@ public interface JsonSource extends JsonTextReplacement {
     default ImageRef readImageRef(JsonNode imageNode) {
         try {
             JsonMediaHref mediaHref = mapper().treeToValue(imageNode, JsonMediaHref.class);
-            return buildImageRef(index(), mediaHref, getImagePath());
+            return buildImageRef(mediaHref, getImagePath());
         } catch (JsonProcessingException | IllegalArgumentException e) {
             tui().errorf(e, "Unable to read media reference from %s: %s", imageNode, e.toString());
         }
