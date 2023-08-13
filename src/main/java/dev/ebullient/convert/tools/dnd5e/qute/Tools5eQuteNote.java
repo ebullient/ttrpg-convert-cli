@@ -35,7 +35,7 @@ public class Tools5eQuteNote extends QuteNote {
         super(name, sourceText, text, tags);
     }
 
-    public Tools5eQuteNote withTargeFile(String filename) {
+    public Tools5eQuteNote withTargetFile(String filename) {
         this.filename = filename;
         return this;
     }

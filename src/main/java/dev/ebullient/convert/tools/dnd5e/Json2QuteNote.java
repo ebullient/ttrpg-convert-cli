@@ -37,6 +37,6 @@ public class Json2QuteNote extends Json2QuteCommon {
                 getSourceText(sources),
                 getText("##"),
                 tags)
-                .withTargeFile(targetFile);
+                .withTargetFile(targetFile);
     }
 }

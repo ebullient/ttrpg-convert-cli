@@ -58,6 +58,6 @@ public class Json2QuteTable extends Json2QuteCommon {
 
         return new Tools5eQuteNote(getName(), getSourceText(sources), text, tags)
                 .withTargetPath(targetDir)
-                .withTargeFile(targetFile);
+                .withTargetFile(targetFile);
     }
 }

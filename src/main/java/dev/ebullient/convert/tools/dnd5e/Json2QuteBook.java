@@ -73,7 +73,7 @@ public class Json2QuteBook extends Json2QuteCommon {
                         String name = getTextOrDefault(x, "name", "");
                         Tools5eQuteNote note = new Tools5eQuteNote(name, titlePage, content, tags)
                                 .withTargetPath(imagePath)
-                                .withTargeFile(String.format("%s-%s",
+                                .withTargetFile(String.format("%s-%s",
                                         String.format(pFormat, prefix.get()),
                                         slugify(name)));
                         pages.add(note);

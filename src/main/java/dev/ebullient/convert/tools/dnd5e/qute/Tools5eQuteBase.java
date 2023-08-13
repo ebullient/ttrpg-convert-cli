@@ -21,6 +21,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class Tools5eQuteBase extends QuteBase {
 
+    String targetPath;
+    String filename;
+    String template;
+
     public Tools5eQuteBase(CompendiumSources sources, String name, String source, String text, Tags tags) {
         super(sources, name, source, text, tags);
     }
@@ -82,8 +86,15 @@ public class Tools5eQuteBase extends QuteBase {
         return pantheon + "-" + name;
     }
 
-    @Override
+    public Tools5eQuteBase withTargetFile(String filename) {
+        this.filename = filename;
+        return this;
+    }
+
     public String targetFile() {
+        if (filename != null) {
+            return filename;
+        }
         Tools5eSources sources = (Tools5eSources) sources();
         if (sources != null) {
             return getName() + sourceIfNotDefault(sources);
@@ -91,11 +102,28 @@ public class Tools5eQuteBase extends QuteBase {
         return getName();
     }
 
+    public Tools5eQuteBase withTargetPath(String path) {
+        this.targetPath = path;
+        return this;
+    }
+
     public String targetPath() {
+        if (targetPath != null) {
+            return targetPath;
+        }
         Tools5eSources sources = (Tools5eSources) sources();
         if (sources != null) {
             return Tools5eQuteBase.getRelativePath(sources.getType());
         }
         return ".";
+    }
+
+    public Tools5eQuteBase withTemplate(String template) {
+        this.template = template;
+        return this;
+    }
+
+    public String template() {
+        return template == null ? super.template() : template;
     }
 }
