@@ -264,7 +264,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         return linkOrText(
                 className,
                 classKey,
-                Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype),
+                Tools5eIndexType.classtype.getRelativePath(),
                 Tools5eQuteBase.getClassResource(className, classSource));
     }
 
@@ -274,7 +274,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         return linkOrText(
                 String.format("%s (%s)", className, subclassName),
                 subclassKey,
-                Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype),
+                Tools5eIndexType.classtype.getRelativePath(),
                 Tools5eQuteBase.getSubclassResource(subclassName, className, subclassSource));
     }
 

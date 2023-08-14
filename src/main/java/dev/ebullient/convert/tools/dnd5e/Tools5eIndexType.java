@@ -98,6 +98,9 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         if ("optfeature".equalsIgnoreCase(name)) {
             return optionalfeature;
         }
+        if ("legroup".equalsIgnoreCase(name)) {
+            return legendaryGroup;
+        }
         return Stream.of(values())
                 .filter(x -> x.templateName.equalsIgnoreCase(name) || x.name().equalsIgnoreCase(name))
                 .findFirst().orElse(null);
@@ -126,8 +129,8 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     SourceField.source.getTextOrEmpty(x));
         }
 
-        String name = IndexElement.name.getTextOrEmpty(x);
-        String source = IndexElement.source.getTextOrEmpty(x);
+        String name = SourceField.name.getTextOrEmpty(x);
+        String source = SourceField.source.getTextOrEmpty(x);
 
         switch (this) {
             case classfeature -> {
@@ -173,7 +176,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             }
             case subclass -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "PHB");
-                String scSource = IndexElement.source.getTextOrDefault(x, classSource);
+                String scSource = SourceField.source.getTextOrDefault(x, classSource);
                 // subclass|subclassName|className|classSource|subclassSource
                 return String.format("%s|%s|%s|%s|%s",
                         this.name(),
@@ -257,6 +260,17 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         }
 
         return String.format("%s|%s", this.name(), crossRef).toLowerCase();
+    }
+
+    public String linkify(JsonSource convert, JsonNode entry) {
+        String name = SourceField.name.getTextOrEmpty(entry);
+        String source = SourceField.source.getTextOrEmpty(entry);
+        return this == Tools5eIndexType.subclass
+                ? convert.linkify(this, Tools5eIndexType.getSubclassTextReference(
+                        Tools5eFields.className.getTextOrEmpty(entry),
+                        Tools5eFields.classSource.getTextOrEmpty(entry),
+                        name, source, name))
+                : convert.linkify(this, name + "|" + source);
     }
 
     public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
@@ -385,6 +399,29 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 false; // use rules
             default -> true; // use compendium
         };
+    }
+
+    public String getRelativePath() {
+        return switch (this) {
+            case adventureData -> "adventures";
+            case bookData -> "books";
+            case card, deck -> "items";
+            case deity -> "deities";
+            case monster -> "bestiary";
+            case optionalfeature, optionalFeatureTypes -> "optional-features";
+            case race, subrace -> "races";
+            case subclass, classtype -> "classes";
+            case table, tableGroup -> "tables";
+            case trap, hazard -> "traps-hazards";
+            case variantrule -> "variant-rules";
+            default -> this.name() + 's';
+        };
+    }
+
+    public String vaultRoot(Tools5eIndex index) {
+        return useCompendiumBase()
+                ? index.compendiumVaultRoot()
+                : index.rulesVaultRoot();
     }
 
     public String defaultSourceString() {

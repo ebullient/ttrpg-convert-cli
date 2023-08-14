@@ -195,7 +195,7 @@ public class QuteMonster extends Tools5eQuteBase {
     }
 
     @Deprecated
-    public Map<String, Integer> getSaveMap() {
+    public Map<String, String> getSaveMap() {
         return savesSkills.saveMap;
     }
 
@@ -211,7 +211,7 @@ public class QuteMonster extends Tools5eQuteBase {
     }
 
     @Deprecated
-    public Map<String, Integer> getSkillMap() {
+    public Map<String, String> getSkillMap() {
         return savesSkills.skillMap;
     }
 
@@ -480,14 +480,14 @@ public class QuteMonster extends Tools5eQuteBase {
          * Iterate over all map entries to display the values:<br />
          * `{#each resource.savesSkills.saveMap}**{it.key}** {it.value}{/each}`
          */
-        public Map<String, Integer> saveMap;
+        public Map<String, String> saveMap;
 
         /**
          * Creature skills as a map of key-value pairs.
          * Iterate over all map entries to display the values:<br />
          * `{#each resource.savesSkills.skillMap}**{it.key}** {it.value}{/each}`
          */
-        public Map<String, Integer> skillMap;
+        public Map<String, String> skillMap;
 
         /** Creature saving throws as a list: Constitution +6, Intelligence +8 */
         public String saves;

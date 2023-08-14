@@ -25,7 +25,7 @@ public class Json2QuteTable extends Json2QuteCommon {
 
         Tags tags = new Tags(getSources());
         List<String> text = new ArrayList<>();
-        String targetDir = Tools5eQuteBase.getRelativePath(type);
+        String targetDir = type.getRelativePath();
         String targetFile = null;
 
         if (getName().equals("Damage Types")) {

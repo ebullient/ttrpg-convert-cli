@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
@@ -55,6 +54,6 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
         String sourceText = super.sources.getSourceText(index().srdOnly());
         return new Tools5eQuteNote(title, sourceText, text, tags)
                 .withTargetFile(optionalFeatures.getFilename())
-                .withTargetPath(Tools5eQuteBase.getRelativePath(Tools5eIndexType.optionalFeatureTypes));
+                .withTargetPath(Tools5eIndexType.optionalFeatureTypes.getRelativePath());
     }
 }

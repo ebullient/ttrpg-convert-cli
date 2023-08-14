@@ -49,12 +49,23 @@ public class MarkdownWriter {
         // Find duplicates
         Map<FileMap, List<T>> pathMap = new HashMap<>();
         for (T qs : elements) {
+            Path path = basePath.resolve(qs.targetPath()).normalize();
             FileMap fileMap = new FileMap(qs.title(),
                     qs.targetFile(),
-                    basePath.resolve(qs.targetPath()).normalize(),
+                    path,
                     qs.createIndex());
 
             pathMap.computeIfAbsent(fileMap, k -> new ArrayList<>()).add(qs);
+
+            Collection<QuteBase> inlineNotes = qs.inlineNotes();
+            for (QuteBase n : inlineNotes) {
+                FileMap fm = new FileMap(n.title(),
+                        n.targetFile(),
+                        path,
+                        false);
+
+                pathMap.computeIfAbsent(fm, k -> new ArrayList<>()).add(qs);
+            }
         }
 
         for (Map.Entry<FileMap, List<T>> pathEntry : pathMap.entrySet()) {

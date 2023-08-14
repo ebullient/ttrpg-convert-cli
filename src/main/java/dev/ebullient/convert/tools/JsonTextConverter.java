@@ -380,13 +380,61 @@ public interface JsonTextConverter<T extends IndexType> {
 
     enum SourceField implements JsonNodeReader {
         abbreviation,
+        copy("_copy"),
         entry,
         entries,
         id,
         items,
+        meta("_meta"),
         name,
         page,
         source,
-        type,
+        type;
+
+        final String nodeName;
+
+        SourceField() {
+            this.nodeName = this.name();
+        }
+
+        SourceField(String nodeName) {
+            this.nodeName = nodeName;
+        }
+
+        public String nodeName() {
+            return nodeName;
+        }
+
+        @Override
+        public String getTextOrDefault(JsonNode x, String value) {
+            String text = JsonNodeReader.super.getTextOrDefault(x, value);
+            return this == name
+                    ? text.trim().replace("\u00A0", "")
+                    : text;
+        }
+
+        @Override
+        public String getTextOrEmpty(JsonNode x) {
+            String text = JsonNodeReader.super.getTextOrEmpty(x);
+            return this == name
+                    ? text.trim().replace("\u00A0", "")
+                    : text;
+        }
+
+        @Override
+        public String getTextOrNull(JsonNode x) {
+            String text = JsonNodeReader.super.getTextOrNull(x);
+            return this == name && text != null
+                    ? text.trim().replace("\u00A0", "")
+                    : text;
+        }
+
+        @Override
+        public String replaceTextFrom(JsonNode node, JsonTextConverter<?> replacer) {
+            String text = JsonNodeReader.super.replaceTextFrom(node, replacer);
+            return this == name && text != null
+                    ? text.trim().replace("\u00A0", "")
+                    : text;
+        }
     }
 }

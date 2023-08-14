@@ -144,10 +144,14 @@ public class Tools5eDataConvertTest {
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json")
                             .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("book/MCDM Productions; Arcadia Issue 3.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/badooga; Badooga's Psion.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/D&D Wiki; Swashbuckler.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/Foxfire94; Vampire.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("collection/Arcana Games; Arkadia.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E
+                            .resolve("collection/Ghostfire Gaming; Grim Hollow - The Monster Grimoire.json")
+                            .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("collection/Keith Baker; Exploring Eberron.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E
                             .resolve("collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json")

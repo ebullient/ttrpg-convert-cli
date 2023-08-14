@@ -19,4 +19,4 @@ aliases: ["{resource.name}"]
 {resource.text}
 {/if}
 
-{#if resource.source }*Source: {resource.source}* {/if}
+*Source: {resource.source}* 

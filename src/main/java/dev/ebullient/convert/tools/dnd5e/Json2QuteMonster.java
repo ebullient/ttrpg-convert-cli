@@ -264,7 +264,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return savesSkills;
     }
 
-    String getModifiers(String field, Map<String, Integer> values) {
+    String getModifiers(String field, Map<String, String> values) {
         if (!rootNode.has(field)) {
             return null;
         }
@@ -295,12 +295,13 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return String.join(separator.toString(), text);
     }
 
-    String getModifier(String key, JsonNode value, Map<String, Integer> values) {
+    String getModifier(String key, JsonNode value, Map<String, String> values) {
         String ability = SkillOrAbility.format(key);
-        int modifier = value.asInt();
+        String modifier = replaceText(value.asText());
         values.put(ability, modifier);
 
-        return String.format("%s %s%s", ability, modifier > 0 ? "+" : "", modifier);
+        return String.format("%s %s%s", ability,
+                value.isInt() && value.asInt() > 0 ? "+" : "", modifier);
     }
 
     String monsterImmunities(String field) {

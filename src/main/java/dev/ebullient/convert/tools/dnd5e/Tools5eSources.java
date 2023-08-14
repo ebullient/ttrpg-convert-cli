@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
@@ -25,6 +27,7 @@ public class Tools5eSources extends CompendiumSources {
 
     private static final Map<String, Tools5eSources> keyToSources = new HashMap<>();
     private static final Map<Path, ImageRef> imageSourceToRef = new HashMap<>();
+    private static final Map<String, List<QuteBase>> keyToInlineNotes = new HashMap<>();
 
     public static Tools5eSources findSources(String key) {
         return keyToSources.get(key);
@@ -71,6 +74,14 @@ public class Tools5eSources extends CompendiumSources {
 
     public static Collection<ImageRef> getImages() {
         return imageSourceToRef.values();
+    }
+
+    public static Collection<QuteBase> getInlineNotes(String key) {
+        return keyToInlineNotes.getOrDefault(key, List.of());
+    }
+
+    public void addInlineNote(QuteBase note) {
+        keyToInlineNotes.computeIfAbsent(this.key, k -> new ArrayList<>()).add(note);
     }
 
     final boolean srd;

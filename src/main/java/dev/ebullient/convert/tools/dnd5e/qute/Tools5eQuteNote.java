@@ -1,10 +1,13 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.Collection;
 import java.util.List;
 
+import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -60,5 +63,11 @@ public class Tools5eQuteNote extends QuteNote {
 
     public String template() {
         return template == null ? super.template() : template;
+    }
+
+    public Collection<QuteBase> inlineNotes() {
+        return sources() == null
+                ? List.of()
+                : Tools5eSources.getInlineNotes(sources().getKey());
     }
 }

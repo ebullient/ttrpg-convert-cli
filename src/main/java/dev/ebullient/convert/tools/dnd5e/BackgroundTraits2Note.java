@@ -8,12 +8,11 @@ import java.util.stream.Collectors;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class BackgroundTraits2Note extends Json2QuteCommon {
 
-    final String targetDir = Tools5eQuteBase.getRelativePath(Tools5eIndexType.table);
+    final String targetDir = Tools5eIndexType.table.getRelativePath();
 
     public BackgroundTraits2Note(Tools5eIndex index) {
         super(index, Tools5eIndexType.syntheticGroup, null);

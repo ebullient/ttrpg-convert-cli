@@ -111,4 +111,8 @@ public class QuteBase implements QuteUtil {
         IndexType type = type();
         return String.format("%s2md.txt", type.templateName());
     }
+
+    public Collection<QuteBase> inlineNotes() {
+        return List.of();
+    }
 }

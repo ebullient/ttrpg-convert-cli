@@ -18,7 +18,6 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteClass extends Json2QuteCommon {
 
@@ -414,7 +413,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         maybeAddBlankLine(text);
         text.add("## Optional Features");
 
-        String relativePath = Tools5eQuteBase.getRelativePath(Tools5eIndexType.optionalFeatureTypes);
+        String relativePath = Tools5eIndexType.optionalFeatureTypes.getRelativePath();
         String source = entry.get("source").asText();
         for (JsonNode ofp : iterableElements(optionalFeatureProgession)) {
             for (String featureType : Tools5eFields.featureType.getListOfStrings(ofp, tui())) {
@@ -534,7 +533,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         return String.format("Choose %s from %s",
                 numSkills,
                 skills.stream().map(SkillOrAbility::fromTextValue)
-                        .sorted(Comparator.comparingInt(Enum::ordinal))
+                        .sorted(Comparator.comparingInt(SkillOrAbility::ordinal))
                         .map(x -> "*" + x.value() + "*")
                         .collect(Collectors.joining(", ")));
     }

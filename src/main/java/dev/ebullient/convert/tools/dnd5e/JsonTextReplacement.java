@@ -335,7 +335,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String linkifyType(Tools5eIndexType type, String key, String linkText) {
-        String dirName = Tools5eQuteBase.getRelativePath(type);
+        String dirName = type.getRelativePath();
         JsonNode jsonSource = index().getNode(key);
         if (index().isExcluded(key) || jsonSource == null) {
             return linkText;
@@ -356,7 +356,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String linkifyCardType(String match) {
-        String dirName = Tools5eQuteBase.getRelativePath(Tools5eIndexType.card);
+        String dirName = Tools5eIndexType.card.getRelativePath();
         // {@card The Fates|Deck of Many Things}
         // {@card Donjon|Deck of Several Things|LLK}
         String[] parts = match.split("\\|");
@@ -396,7 +396,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
         String key = index().getAliasOrDefault(Tools5eIndexType.deity.createKey(parts[0], source));
         return linkOrText(linkText, key,
-                Tools5eQuteBase.getRelativePath(Tools5eIndexType.deity),
+                Tools5eIndexType.deity.getRelativePath(),
                 Tools5eQuteBase.getDeityResourceName(parts[0], pantheon));
     }
 
@@ -415,7 +415,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String subclass = parts.length < 4 || parts[3].isEmpty() ? null : parts[3];
         String subclassSource = parts.length < 5 || parts[4].isEmpty() ? classSource : parts[4];
 
-        String relativePath = Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype);
+        String relativePath = Tools5eIndexType.classtype.getRelativePath();
         if (subclass != null) {
             String key = index()
                     .getAliasOrDefault(Tools5eIndexType.getSubclassKey(className, classSource, subclass, subclassSource));
@@ -459,7 +459,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
         String resource = Tools5eQuteBase.getClassResource(className, classSource);
 
-        String relativePath = Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype);
+        String relativePath = Tools5eIndexType.classtype.getRelativePath();
         return String.format("[%s](%s%s/%s.md#%s)", linkText,
                 index().compendiumVaultRoot(), relativePath,
                 resource, toAnchorTag(headerName));
@@ -478,7 +478,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         JsonNode featureJson = index().getNode(featureKey);
         Tools5eSources linkSources = Tools5eSources.findSources(featureJson);
         return linkOrText(linkText, featureKey,
-                Tools5eQuteBase.getRelativePath(Tools5eIndexType.optionalfeature),
+                Tools5eIndexType.optionalfeature.getRelativePath(),
                 decoratedTypeName(linkSources) + Tools5eQuteBase.sourceIfNotDefault(linkSources));
     }
 
@@ -500,7 +500,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return linkText;
         }
         return linkOrText(linkText, oft.getKey(),
-                Tools5eQuteBase.getRelativePath(Tools5eIndexType.optionalFeatureTypes),
+                Tools5eIndexType.optionalFeatureTypes.getRelativePath(),
                 oft.getFilename());
     }
 
@@ -549,7 +549,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
         String resource = slugify(Tools5eQuteBase.getSubclassResource(subclass, className, subclassSource));
 
-        String relativePath = Tools5eQuteBase.getRelativePath(Tools5eIndexType.classtype);
+        String relativePath = Tools5eIndexType.classtype.getRelativePath();
         return String.format("[%s](%s%s/%s.md#%s)",
                 linkText,
                 index().compendiumVaultRoot(), relativePath,

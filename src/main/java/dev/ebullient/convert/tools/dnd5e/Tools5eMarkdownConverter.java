@@ -16,7 +16,6 @@ import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Tools5eMarkdownConverter implements MarkdownConverter {
@@ -122,7 +121,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
     }
 
     private void writeQuteNoteFiles(List<? extends IndexType> types) {
-        final String vrDir = Tools5eQuteBase.getRelativePath(Tools5eIndexType.variantrule);
+        final String vrDir = Tools5eIndexType.variantrule.getRelativePath();
 
         List<QuteNote> compendium = new ArrayList<>();
         List<QuteNote> rules = new ArrayList<>();

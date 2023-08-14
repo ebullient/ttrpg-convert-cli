@@ -57,7 +57,7 @@ public class JsonDataSubsetTest {
 
         // Changeling from mpmm is a reprint..
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            final String raceRelative = Tools5eQuteBase.getRelativePath(Tools5eIndexType.race);
+            final String raceRelative = Tools5eIndexType.race.getRelativePath();
 
             // Single included race: changeling from mpmm
             Path changeling = outputPath

@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.Collection;
+import java.util.List;
+
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
@@ -47,30 +50,8 @@ public class Tools5eQuteBase extends QuteBase {
         }
     }
 
-    public static String getRelativePath(Tools5eIndexType type) {
-        return switch (type) {
-            case adventureData -> "adventures";
-            case bookData -> "books";
-            case card, deck -> "items";
-            case deity -> "deities";
-            case monster -> "bestiary";
-            case optionalfeature, optionalFeatureTypes -> "optional-features";
-            case race, subrace -> "races";
-            case subclass, classtype -> "classes";
-            case table, tableGroup -> "tables";
-            case trap, hazard -> "traps-hazards";
-            case variantrule -> "variant-rules";
-            default -> {
-                if (!type.writeFile() && !type.useQuteNote()) {
-                    throw new IllegalArgumentException("Verify the relative path usage for " + type);
-                }
-                yield type.name() + 's';
-            }
-        };
-    }
-
     public static String monsterPath(boolean isNpc, String type) {
-        return Tools5eQuteBase.getRelativePath(Tools5eIndexType.monster) + "/" + (isNpc ? "npc" : type);
+        return Tools5eIndexType.monster.getRelativePath() + "/" + (isNpc ? "npc" : type);
     }
 
     public static String getClassResource(String className, String classSource) {
@@ -111,9 +92,9 @@ public class Tools5eQuteBase extends QuteBase {
         if (targetPath != null) {
             return targetPath;
         }
-        Tools5eSources sources = (Tools5eSources) sources();
-        if (sources != null) {
-            return Tools5eQuteBase.getRelativePath(sources.getType());
+        if (sources() != null) {
+            Tools5eSources sources = (Tools5eSources) sources();
+            return sources.getType().getRelativePath();
         }
         return ".";
     }
@@ -125,5 +106,11 @@ public class Tools5eQuteBase extends QuteBase {
 
     public String template() {
         return template == null ? super.template() : template;
+    }
+
+    public Collection<QuteBase> inlineNotes() {
+        return sources() == null
+                ? List.of()
+                : Tools5eSources.getInlineNotes(sources().getKey());
     }
 }

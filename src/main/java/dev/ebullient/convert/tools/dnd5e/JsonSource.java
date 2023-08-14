@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,12 +16,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ParseState;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -175,7 +179,12 @@ public interface JsonSource extends JsonTextReplacement {
                     case list -> {
                         String style = Tools5eFields.style.getTextOrEmpty(node);
                         if ("list-no-bullets".equals(style)) {
-                            appendList(text, SourceField.items.arrayFrom(node), ListType.unstyled);
+                            if (node.has("columns")) {
+                                maybeAddBlankLine(text);
+                                appendToText(text, SourceField.items.arrayFrom(node), heading);
+                            } else {
+                                appendList(text, SourceField.items.arrayFrom(node), ListType.unstyled);
+                            }
                         } else {
                             appendList(text, SourceField.items.arrayFrom(node), ListType.unordered);
                         }
@@ -187,7 +196,8 @@ public interface JsonSource extends JsonTextReplacement {
                     case refOptionalfeature -> appendOptionalFeatureRef(text, node);
                     case refSubclassFeature -> appendClassFeatureRef(text, node, Tools5eIndexType.subclassFeature,
                             "subclassFeature");
-                    case statblock -> appendStatblock(text, node);
+                    case statblock -> appendStatblock(text, node, heading);
+                    case statblockInline -> appendStatblockInline(text, node, heading);
                     case table -> appendTable(text, node);
                     case tableGroup -> appendTableGroup(text, node, heading);
                     case variant -> appendCallout("danger", "Variant", text, node);
@@ -494,29 +504,135 @@ public interface JsonSource extends JsonTextReplacement {
         maybeAddBlankLine(text);
     }
 
-    default void appendStatblock(List<String> text, JsonNode entry) {
+    default void appendStatblock(List<String> text, JsonNode entry, String heading) {
         // Most use "tag", except for subclass, which uses "prop"
-        Tools5eIndexType type = Tools5eIndexType.fromText(getTextOrDefault(entry, "tag", getTextOrEmpty(entry, "prop")));
+        String tagPropText = Tools5eFields.tag.getTextOrDefault(entry, Tools5eFields.prop.getTextOrEmpty(entry));
+        Tools5eIndexType type = Tools5eIndexType.fromText(tagPropText);
         if (type == null) {
             tui().errorf("Unrecognized statblock type in %s", entry);
             return;
         }
+        embedReference(text, entry, type, heading);
+    }
 
+    default void appendStatblockInline(List<String> text, JsonNode entry, String heading) {
+        // For inline statblocks, we start with the dataType
+        Tools5eIndexType type = Tools5eIndexType.fromText(Tools5eFields.dataType.getTextOrEmpty(entry));
+        if (type == null) {
+            tui().errorf("Unrecognized statblock dataType in %s", entry);
+            return;
+        }
+        JsonNode data = Tools5eFields.data.getFrom(entry);
+        if (data == null) {
+            tui().errorf("No data found in %s", entry);
+            return;
+        }
+        // Replace text in embedded data node w/ trimmed name (ensure keys match)
+        String name = SourceField.name.replaceTextFrom(data, this);
+        ((ObjectNode) data).set("name", new TextNode(name));
+
+        String source = SourceField.source.getTextOrEmpty(data);
+        String finalKey = type.createKey(data);
+
+        JsonNode existingNode = index().getNode(finalKey);
+        TtrpgValue.indexKey.addToNode(data, finalKey);
+        TtrpgValue.indexInputType.addToNode(data, type.name());
+
+        JsonNode copy = SourceField.copy.getFrom(data);
+        if (copy != null) {
+            String copyName = SourceField.name.getTextOrEmpty(copy).strip();
+            String copySource = SourceField.source.getTextOrEmpty(copy).strip();
+            if (name.equals(copyName) && source.equals(copySource)) {
+                embedReference(text, data, type, heading); // embed note that will be present in the final output
+                return;
+            }
+            JsonSourceCopier copier = new JsonSourceCopier(index());
+            data = copier.handleCopy(type, data);
+            existingNode = null; // this is a modified node, ignore existing.
+        } else if (equivalentNode(data, existingNode) && index().isIncluded(finalKey)) {
+            embedReference(text, data, type, heading); // embed note that will be present in the final output
+            return;
+        } else if (existingNode == null) {
+            Tools5eSources.constructSources(data);
+        }
+
+        Tools5eQuteBase qs = null;
+        switch (type) {
+            case item ->
+                qs = new Json2QuteItem(index(), type, data).build();
+            case monster ->
+                qs = new Json2QuteMonster(index(), type, data).build();
+            case spell ->
+                qs = new Json2QuteSpell(index(), type, data).build();
+            default ->
+                tui().errorf("Not ready for statblock dataType in %s", entry);
+        }
+        if (qs != null) {
+            if (type == Tools5eIndexType.monster) {
+                // Create a new monster document (header for initiative tracker)
+                String embedFileName = Tui.slugify(String.format("%s-%s-%s", getSources().getName(), type.name(), name));
+                String relativePath = getSources().getType().getRelativePath();
+                String vaultRoot = getSources().getType().vaultRoot(index());
+
+                maybeAddBlankLine(text);
+                text.add("> [!embed-monster]- " + name);
+                text.add(String.format("> ![%s](%s%s/%s#^statblock)", name, vaultRoot, relativePath, embedFileName));
+
+                // remember the file that should be created later.
+                // use the relative path for the containing note (not the bestiary)
+                getSources().addInlineNote(qs
+                        .withTargetFile(embedFileName)
+                        .withTargetPath(relativePath));
+            } else {
+                List<String> prepend = new ArrayList<>(List.of(
+                        "title: " + name,
+                        "collapse: closed",
+                        existingNode == null ? "" : "%% See " + type.linkify(this, data) + " %%"));
+                renderEmbeddedTemplate(text, qs, type.name(), prepend);
+            }
+        }
+    }
+
+    default boolean equivalentNode(JsonNode dataNode, JsonNode existingNode) {
+        if (existingNode == null || dataNode == null || dataNode.has("_copy")) {
+            return false;
+        }
+        for (Entry<String, JsonNode> field : iterableFields(dataNode)) {
+            JsonNode existingField = existingNode.get(field.getKey());
+            if (existingField == null || !field.getValue().equals(existingField)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    default void embedReference(List<String> text, JsonNode entry, Tools5eIndexType type, String heading) {
         String name = SourceField.name.getTextOrEmpty(entry);
-        String source = SourceField.source.getTextOrEmpty(entry);
-        String link = type == Tools5eIndexType.subclass
-                ? linkify(type, Tools5eIndexType.getSubclassTextReference(
-                        Tools5eFields.className.getTextOrEmpty(entry),
-                        Tools5eFields.classSource.getTextOrEmpty(entry),
-                        name, source, name))
-                : linkify(type, name + "|" + source);
+
+        if (type == Tools5eIndexType.legendaryGroup) {
+            // legendaryGroup is a special case, there is no template for it
+            // and it is not a linkable type.
+            if (Tools5eFields.lairActions.existsIn(entry)) {
+                maybeAddBlankLine(text);
+                text.add(heading + " Lair actions");
+                appendToText(text, Tools5eFields.lairActions.getFrom(entry), null);
+            }
+            if (Tools5eFields.regionalEffects.existsIn(entry)) {
+                maybeAddBlankLine(text);
+                text.add(heading + " Regional effects");
+                appendToText(text, Tools5eFields.lairActions.getFrom(entry), null);
+            }
+            return;
+        }
+
+        String link = type.linkify(this, entry);
 
         if (link.matches("\\[.*]\\(.*\\)")) {
             maybeAddBlankLine(text);
+            text.add("> [!embed-" + type.name() + "]- " + name);
             if (type == Tools5eIndexType.monster) {
-                text.add("!" + link.replaceAll("\\)$", "#^statblock)"));
+                text.add("> !" + link.replaceAll("\\)$", "#^statblock)"));
             } else {
-                text.add("> [!summary] " + name);
                 text.add("> !" + link);
             }
         } else {
@@ -702,7 +818,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     default String getImagePath() {
         Tools5eIndexType type = getSources().getType();
-        return Tools5eQuteBase.getRelativePath(type);
+        return type.getRelativePath();
     }
 
     default String asAbilityEnum(JsonNode textNode) {
@@ -978,11 +1094,17 @@ public interface JsonSource extends JsonTextReplacement {
         attributes,
         className,
         classSource,
+        dataType, // statblockInline
+        data, // statblock, statblockInline
         featureType,
         group,
+        lairActions, // legendary group
         optionalfeature,
+        prop, // statblock
+        regionalEffects, // legendary group
         style,
         tables, // for optfeature types
+        tag, // statblock
         text,
         typeLookup,
     }
@@ -1059,7 +1181,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         // embedded entities
         statblock,
-        // TODO: statblockInline,
+        statblockInline,
 
         refClassFeature,
         refOptionalfeature,

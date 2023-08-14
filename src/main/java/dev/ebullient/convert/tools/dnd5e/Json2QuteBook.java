@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteBook extends Json2QuteCommon {
@@ -25,7 +24,7 @@ public class Json2QuteBook extends Json2QuteCommon {
         String key = getSources().getKey();
         final String basePath;
         if (key.contains("adventure-") || key.contains("book-")) {
-            basePath = Tools5eQuteBase.getRelativePath(type);
+            basePath = type.getRelativePath();
         } else {
             basePath = ".";
         }

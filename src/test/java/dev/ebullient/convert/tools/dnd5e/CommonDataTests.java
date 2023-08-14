@@ -464,7 +464,7 @@ public class CommonDataTests {
     }
 
     Path deleteDir(Tools5eIndexType type, Path outputPath, Path vaultPath) {
-        final String relative = Tools5eQuteBase.getRelativePath(type);
+        final String relative = type.getRelativePath();
         final Path typeDir = outputPath.resolve(vaultPath).resolve(relative);
         TestUtils.deleteDir(typeDir);
         return typeDir;

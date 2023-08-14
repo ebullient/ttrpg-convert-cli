@@ -173,7 +173,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     private HomebrewMetaTypes addHomebrewSourcesIfPresent(String filename, JsonNode node) {
-        JsonNode sources = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.sources);
+        JsonNode sources = SourceField.meta.getFieldFrom(node, HomebrewFields.sources);
         if (sources == null || sources.size() == 0) {
             return null;
         }
@@ -185,9 +185,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         HomebrewMetaTypes metaTypes = new HomebrewMetaTypes(json, filename);
 
-        JsonNode featureTypes = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.optionalFeatureTypes);
-        JsonNode spellSchools = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.spellSchools);
-        JsonNode psionicTypes = HomebrewFields.meta.getFieldFrom(node, HomebrewFields.psionicTypes);
+        JsonNode featureTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.optionalFeatureTypes);
+        JsonNode spellSchools = SourceField.meta.getFieldFrom(node, HomebrewFields.spellSchools);
+        JsonNode psionicTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.psionicTypes);
         if (featureTypes != null || spellSchools != null || psionicTypes != null) {
             for (Entry<String, JsonNode> entry : iterableFields(featureTypes)) {
                 metaTypes.setOptionalFeatureType(entry.getKey(), entry.getValue().asText());
@@ -1099,25 +1099,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         abbreviation,
         full,
         json,
-        meta("_meta"),
         optionalFeatureTypes,
         psionicTypes,
         sources,
         spellSchools,
-        spellDistanceUnits;
-
-        final String nodeName;
-
-        HomebrewFields() {
-            this.nodeName = this.name();
-        }
-
-        HomebrewFields(String nodeName) {
-            this.nodeName = nodeName;
-        }
-
-        public String nodeName() {
-            return nodeName;
-        }
+        spellDistanceUnits
     }
 }
