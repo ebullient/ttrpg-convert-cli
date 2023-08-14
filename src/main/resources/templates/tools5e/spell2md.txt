@@ -10,6 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
+%%-- Embedded content starts on the next line. --%%
 *{resource.level}, {resource.school}{#if resource.ritual} (ritual){/if}*  
 
 - **Casting time:** {resource.time}{#if resource.ritual} unless cast as a ritual{/if}
@@ -22,7 +23,8 @@ aliases: ["{resource.name}"]
 {#if resource.hasSections }
 ## Summary
 
-{/if}
+{/if}{#if resource.classes }
 **Classes**: {resource.classes}
 
-Source: {resource.source}
+{/if}
+*Source: {resource.source}*
