@@ -370,7 +370,7 @@ public interface JsonSource extends JsonTextReplacement {
         String id = SourceField.id.getTextOrEmpty(tableNode);
 
         String blockid;
-        if (TableField.spans.getFrom(tableNode) != null) {
+        if (TableField.spans.getFrom(tableNode) != null || tableNode.toString().contains("multiRow")) {
             blockid = appendHtmlTable(tableNode, table, id, name);
         } else {
             blockid = appendMarkdownTable(tableNode, table, id, name);
