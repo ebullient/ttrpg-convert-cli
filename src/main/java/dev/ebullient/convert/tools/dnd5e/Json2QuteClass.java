@@ -2,11 +2,11 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,10 +14,12 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteClass extends Json2QuteCommon {
 
@@ -56,11 +58,12 @@ public class Json2QuteClass extends Json2QuteCommon {
     @Override
     protected QuteClass buildQuteResource() {
         Tags tags = new Tags(getSources());
-
         tags.add("class", slugify(getName()));
 
-        List<String> text = new ArrayList<>();
+        List<ImageRef> images = new ArrayList<>();
+        List<String> text = getFluff(Tools5eIndexType.classFluff, "##", images);
 
+        maybeAddBlankLine(text);
         text.add("## Class Features");
         for (ClassFeature cf : classFeatures) {
             cf.appendText(this, text, getSources().primarySource());
@@ -116,7 +119,8 @@ public class Json2QuteClass extends Json2QuteCommon {
                         sc.getName(),
                         getSourceText(sc.sources),
                         getName(), // parentClassName
-                        String.format("[%s](%s.md)", decoratedClassName, slugify(decoratedClassName)),
+                        String.format("[%s](%s.md)", decoratedClassName,
+                                Tools5eQuteBase.getClassResource(getName(), sc.parentClassSource)),
                         sc.parentClassSource, // parentClassSource
                         subclassTitle,
                         String.join("\n", progression),
@@ -288,12 +292,12 @@ public class Json2QuteClass extends Json2QuteCommon {
         if (requirements.has("or")) {
             List<String> options = new ArrayList<>();
             requirements.get("or").get(0).fields().forEachRemaining(ability -> options.add(String.format("%s %s",
-                    SkillOrAbility.format(ability.getKey()), ability.getValue().asText())));
+                    SkillOrAbility.format(ability.getKey(), index()), ability.getValue().asText())));
             startMulticlass.add("- " + String.join(", or ", options));
         } else {
             requirements.fields().forEachRemaining(
                     ability -> startMulticlass.add(String.format("- %s %s",
-                            SkillOrAbility.format(ability.getKey()), ability.getValue().asText())));
+                            SkillOrAbility.format(ability.getKey(), index()), ability.getValue().asText())));
         }
 
         JsonNode gained = multiclassing.get("proficienciesGained");
@@ -532,8 +536,9 @@ public class Json2QuteClass extends Json2QuteCommon {
     String skillChoices(Collection<String> skills, int numSkills) {
         return String.format("Choose %s from %s",
                 numSkills,
-                skills.stream().map(SkillOrAbility::fromTextValue)
-                        .sorted(Comparator.comparingInt(SkillOrAbility::ordinal))
+                skills.stream().map(x -> SkillOrAbility.fromTextValue(x, index()))
+                        .filter(x -> x != null)
+                        .sorted(SkillOrAbility.comparator)
                         .map(x -> "*" + x.value() + "*")
                         .collect(Collectors.joining(", ")));
     }
@@ -546,17 +551,23 @@ public class Json2QuteClass extends Json2QuteCommon {
         JsonNode skills = skillNode.get(0);
         int count = 2;
 
-        if (skills.has("choose")) {
-            count = chooseSkillListFrom(skills.get("choose"), list);
-        } else if (skills.has("from")) {
-            count = chooseSkillListFrom(skills, list);
-        } else if (skills.has("any")) {
-            count = skills.get("any").asInt();
-            list.addAll(SkillOrAbility.allSkills);
-        } else {
-            tui().errorf("Unexpected skills in starting proficiencies for %s: %s",
-                    sources, source.toPrettyString());
+        for (Entry<String, JsonNode> e : iterableFields(skills)) {
+            String skill = e.getKey();
+            if ("choose".equals(skill)) {
+                count = chooseSkillListFrom(skills.get("choose"), list);
+            } else if ("from".equals(skill)) {
+                count = chooseSkillListFrom(skills, list);
+            } else if ("any".equals(skill)) {
+                count = skills.get("any").asInt();
+                list.addAll(SkillOrAbility.allSkills);
+            } else if (SkillOrAbility.fromTextValue(skill, index()) == null) {
+                tui().errorf("Unexpected skills in starting proficiencies for %s: %s",
+                        sources, source.toPrettyString());
+            } else {
+                list.add(skill);
+            }
         }
+
         return count;
     }
 

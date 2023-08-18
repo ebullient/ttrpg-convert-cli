@@ -26,7 +26,8 @@ public class QuteSubclass extends Tools5eQuteBase {
     /** A pre-foramatted markdown callout describing subclass spell or feature progression */
     public final String classProgression;
 
-    public QuteSubclass(Tools5eSources sources, String name, String source,
+    public QuteSubclass(Tools5eSources sources,
+            String name, String source,
             String parentClass,
             String parentClassLink,
             String parentClassSource,

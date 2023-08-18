@@ -133,6 +133,7 @@ public class Tools5eDataConvertTest {
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-homebrew.json").toString(),
                     "-o", target.toString(),
                     TestUtils.TOOLS_PATH_5E.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("psion.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json")
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Kobold Press; Book of Lairs.json").toString(),

@@ -24,6 +24,7 @@ public class JsonSourceCopier implements JsonSource {
     static final Pattern to_hit_subst = Pattern.compile("\\+?<\\$to_hit__([^$]+)\\$>");
     static final Pattern dmg_mod_subst = Pattern.compile("<\\$damage_mod__([^$]+)\\$>");
     static final Pattern dmg_avg_subst = Pattern.compile("<\\$damage_avg__([\\d.,]+)([+*-])([^$]+)\\$>");
+    static final List<String> alwaysSkip = List.of("name", "indexInputType", "indexKey");
 
     final Tools5eIndex index;
 
@@ -207,7 +208,7 @@ public class JsonSourceCopier implements JsonSource {
                         target.remove(f);
                     } else if (_preserve == null || _preserve.has(f)) {
                         target.replace(f, copyNode(overlayField));
-                    } else {
+                    } else if (!alwaysSkip.contains(f)) {
                         tui().debugf("Copy/Merge: Skip field %s (from %s)", f, originKey);
                     }
                     break;

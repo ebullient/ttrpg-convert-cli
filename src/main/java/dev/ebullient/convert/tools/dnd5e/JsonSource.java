@@ -822,7 +822,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String asAbilityEnum(JsonNode textNode) {
-        return SkillOrAbility.format(textNode.asText());
+        return SkillOrAbility.format(textNode.asText(), index());
     }
 
     default String mapAlignmentToString(String a) {
@@ -1097,8 +1097,12 @@ public interface JsonSource extends JsonTextReplacement {
         dataType, // statblockInline
         data, // statblock, statblockInline
         featureType,
+        fluff,
         group,
+        hasFluff,
+        hasFluffImages,
         lairActions, // legendary group
+        _monsterFluff,
         optionalfeature,
         prop, // statblock
         regionalEffects, // legendary group

@@ -1,0 +1,2203 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TheGiddyLimit/5etools-utils/master/schema/brew-fast/homebrew.json",
+  "_meta": {
+    "sources": [
+      {
+        "json": "Psion",
+        "abbreviation": "Psion",
+        "full": "LL Psion",
+        "authors": [
+          "LichLife"
+        ],
+        "version": "1.0",
+        "targetSchema": "1.0"
+      }
+    ],
+    "optionalFeatureTypes": {
+      "AP": "Aptitude",
+      "minT": "Minor Talent"
+    },
+    "dateAdded": 0,
+    "dateLastModified": 0
+  },
+  "skill": [
+    {
+      "name": "Psionics",
+      "source": "Psion",
+      "entries": [
+        "Psionics is an Intelligence based skill that aids in the identification of Psionic objects, phenomena and creatures."
+      ]
+    }
+  ],
+  "class": [
+    {
+      "name": "Psion",
+      "source": "Psion",
+      "fluff": [
+        {
+          "name": "Psion",
+          "source": "Psion",
+          "type": "section",
+          "entries": [
+            {
+              "type": "image",
+              "href": {
+                "type": "external",
+                "url": "file:///Users/roambot/Documents/!Process/lib/media/psion.png"
+              }
+            },
+            "The cloaked figure stood amidst a bustling marketplace, their eyes closed in deep concentration. With a gentle sweep of their hand, the figure extended their consciousness beyond the physical realm, delving into the thoughts and emotions of those nearby. The hustle and bustle of the market faded into whispers as they effortlessly read the minds of the crowd, discerning secrets and desires. Knowledge was their weapon in navigating this intricate web of minds, their insights guiding their every move in this world of hidden intentions.",
+            "The young woman fled into the forest, consumed with the terror of what she had done. For as long as she could remember, there was something within her mind that she struggled to keep bottled up. That morning, in a moment of weakness, her focus slipped, and a torrent of wild psionic power erupted from within her. She had awoken in the rubble of her home to find her family buried in the ruins. Deep down, she had always known this power would break free.",
+            {
+              "type": "entries",
+              "name": "Creating Your Psion",
+              "entries": [
+                "When creating your Psion, consider how you first discovered and manifested your psychic abilities. Was it in your youth during a moment of intense emotion? Perhaps you first expressed your power through peaceful meditation? Perhaps you were trained from birth to be initiated into a powerful psychic society.",
+                "Consider whether you have studied with a psionic master or merely learned on your own to manipulate the psychic powers you find within.",
+                "How do you feel about your psionic gift? Is it a point of great pride? Something that separates you from the commoners? Or, do you view your gift as a curse to be hidden and used in the direst situations?",
+                {
+                  "type": "entries",
+                  "name": "Quick Build",
+                  "page": 1,
+                  "entries": [
+                    "You can make a Psion quickly by using these suggestions. First, make Constitution your highest ability score, followed by Wisdom or Dexterity. Second, choose the {@background hermit} background. Third, choose the Psi Bolt and ESP minor talents."
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "hd": {
+        "number": 1,
+        "faces": 8
+      },
+      "proficiency": [
+        "con",
+        "wis"
+      ],
+      "startingProficiencies": {
+        "armor": [
+          "light"
+        ],
+        "weapons": [
+          "simple",
+          "{@item shortsword|phb|shortswords}",
+          "{@item dagger|phb|daggers}"
+        ],
+        "skills": [
+          {
+            "psionics": true,
+            "choose": {
+              "from": [
+                "athletics",
+                "deception",
+                "history",
+                "insight",
+                "intimidation",
+                "investigation",
+                "medicine",
+                "perception",
+                "persuasion",
+                "religion"
+              ],
+              "count": 2
+            }
+          }
+        ]
+      },
+      "startingEquipment": {
+        "additionalFromBackground": true,
+        "default": [
+          "(a) a {@item shortsword|phb} or (b) a {@item dagger|phb}",
+          "{@item leather armor|phb} or (b) a {@item scale mail|phb} (if proficient)",
+          "(a) a {@item scholar's pack|phb} or (b) an {@item explorer's pack|phb}"
+        ],
+        "defaultData": [
+          {
+            "a": [
+              "shortsword|phb"
+            ],
+            "b": [
+              "dagger|phb"
+            ]
+          },
+          {
+            "a": [
+              "leather armor|phb"
+            ],
+            "b": [
+              "studded leather|phb"
+            ]
+          },
+          {
+            "a": [
+              "scholar's pack|phb"
+            ],
+            "b": [
+              "explorer's pack|phb"
+            ]
+          }
+        ]
+      },
+      "multiclassing": {
+        "requirements": {
+          "con": 15,
+          "wis": 13
+        },
+        "proficienciesGained": {
+          "armor": [
+            "light"
+          ],
+          "skills": [
+            {
+              "psionics": true,
+              "choose": {
+                "from": [
+                  "athletics",
+                  "deception",
+                  "history",
+                  "insight",
+                  "intimidation",
+                  "investigation",
+                  "medicine",
+                  "perception",
+                  "persuasion",
+                  "religion"
+                ],
+                "count": 2
+              }
+            }
+          ]
+        }
+      },
+      "classTableGroups": [
+        {
+          "colLabels": [
+            "PE die",
+            "Aptitude",
+            "Maj Talent",
+            "Min Talent"
+          ],
+          "rows": [
+            [
+              "1d4",
+              "-",
+              "-",
+              "2"
+            ],
+            [
+              "1d6",
+              "-",
+              "-",
+              "2"
+            ],
+            [
+              "1d6",
+              "1",
+              "2",
+              "2"
+            ],
+            [
+              "1d6",
+              "1",
+              "2",
+              "3"
+            ],
+            [
+              "1d8",
+              "1",
+              "3",
+              "3"
+            ],
+            [
+              "1d8",
+              "1",
+              "3",
+              "3"
+            ],
+            [
+              "1d8",
+              "1",
+              "3",
+              "3"
+            ],
+            [
+              "1d8",
+              "2",
+              "5",
+              "3"
+            ],
+            [
+              "1d8",
+              "2",
+              "5",
+              "3"
+            ],
+            [
+              "1d8",
+              "2",
+              "5",
+              "4"
+            ],
+            [
+              "1d10",
+              "2",
+              "6",
+              "4"
+            ],
+            [
+              "1d10",
+              "2",
+              "6",
+              "4"
+            ],
+            [
+              "1d10",
+              "2",
+              "6",
+              "4"
+            ],
+            [
+              "1d10",
+              "2",
+              "7",
+              "4"
+            ],
+            [
+              "1d10",
+              "2",
+              "7",
+              "4"
+            ],
+            [
+              "1d10",
+              "2",
+              "7",
+              "4"
+            ],
+            [
+              "1d12",
+              "3",
+              "9",
+              "4"
+            ],
+            [
+              "1d12",
+              "3",
+              "9",
+              "4"
+            ],
+            [
+              "1d12",
+              "3",
+              "9",
+              "4"
+            ],
+            [
+              "1d12",
+              "3",
+              "9",
+              "4"
+            ]
+          ]
+        }
+      ],
+      "classFeatures": [
+        "Psionics|Psion|Psion|1|Psion",
+        "Psi-Boosted Ability|Psion|Psion|1|Psion",
+        "Psi-Damaging Strike|Psion|Psion|1|",
+        "Minor Talent|Psion|Psion|1|Psion",
+        "Mental Discipline|Psion|Psion|2|Psion",
+        {
+          "classFeature": "Psionic Archetype|Psion|Psion|3|Psion",
+          "gainSubclassFeature": true
+        },
+        "Ability Score Improvement|Psion|Psion|4",
+        {
+          "classFeature": "Psionic Archetype Feature|Psion|Psion|5|Psion",
+          "gainSubclassFeature": true
+        },
+        "Channel Life Force|Psion|Psion|6|Psion",
+        "Ability Score Improvement|Psion|Psion|7|Psion",
+        {
+          "classFeature": "Psionic Archetype Feature|Psion|Psion|9|Psion",
+          "gainSubclassFeature": true
+        },
+        "Ability Score Improvement|Psion|Psion|10|Psion",
+        "Ability Score Improvement|Psion|Psion|12|Psion",
+        "Empowered Psionics|Psion|Psion|13|Psion|Psion",
+        {
+          "classFeature": "Psionic Archetype Feature|Psion|Psion|15|Psion",
+          "gainSubclassFeature": true
+        },
+        "Ability Score Improvement|Psion|Psion|16",
+        "Enhanced Innate Psionics|Psion|Psion|18|Psion",
+        "Ability Score Improvement|Psion|Psion|19",
+        "Embodied Mind|Psion|Psion|20|Psion"
+      ],
+      "foundryAdvancement": [
+        {
+          "type": "ScaleValue",
+          "configuration": {
+            "identifier": "talent-scale",
+            "type": "dice",
+            "scale": {
+              "1": {
+                "number": 1,
+                "die": 4
+              },
+              "2": {
+                "number": 1,
+                "die": 6
+              },
+              "5": {
+                "number": 2,
+                "die": 8
+              },
+              "11": {
+                "number": 3,
+                "die": 10
+              },
+              "17": {
+                "number": 4,
+                "die": 12
+              }
+            }
+          },
+          "title": "Talent PED Scale",
+          "classRestriction": "primary"
+        },
+        {
+          "type": "ItemChoice",
+          "configuration": {
+            "choices": {
+              "3": 1,
+              "8": 1,
+              "17": 1
+            },
+            "allowDrops": true,
+            "type": null,
+            "pool": [],
+            "restriction": {
+              "type": "class",
+              "subtype": "psionicPower"
+            },
+            "hint": "Choose an aptitude."
+          },
+          "value": {},
+          "title": "Aptitude",
+          "icon": null
+        },
+        {
+          "type": "ItemChoice",
+          "configuration": {
+            "choices": {
+              "3": 2,
+              "5": 1,
+              "8": 2,
+              "11": 1,
+              "14": 1,
+              "17": 2
+            },
+            "allowDrops": true,
+            "type": "feat",
+            "pool": [],
+            "hint": "Choose major talents."
+          },
+          "title": "Major Talents",
+          "icon": null
+        },
+        {
+          "type": "ItemChoice",
+          "configuration": {
+            "choices": {
+              "1": 2,
+              "4": 1,
+              "10": 1
+            },
+            "allowDrops": true,
+            "type": "feat",
+            "pool": [],
+            "hint": "Choose minor talents."
+          },
+          "value": {},
+          "title": "Minor Talents",
+          "icon": null
+        }
+      ]
+    }
+  ],
+  "classFeature": [
+    {
+      "name": "Psionics",
+      "source": "Psion",
+      "page": 1,
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 1,
+      "entries": [
+        "Your have psionic abilities. The psionic energy that you possess is represented by your Psionic Energy Die (PE die). The powers that you have in virtue of this psionic energy are determined by the Aptitudes and Talents you have chosen as you progress in this class. Psionics is distinct from magic, though it shares in some of its effects.",
+        {
+          "type": "entries",
+          "name": "Psionic Energy Die",
+          "entries": [
+            "As a Psion you harbor a wellspring of psionic power within yourself, as represented by your Psionic Energy die, the starting size of which at level 1 is  {@dice 1d4}.",
+            "Whenever you finish a long rest, your Psionic Energy die resets to its starting size. When you reach certain levels in this class, the starting size of your Psionic Energy die increases: at 2nd level ({@dice d6}), 5th level ({@dice d8}), 11th level ({@dice d10}), and 17th level ({@dice d12}).",
+            "{@b Changing the Die's Size.} If you roll the highest number on your Psionic Energy die, it decreases by one die size after the roll. This represents you burning through your psionic energy. For example, if the die is a {@dice d6} and you roll a 6, it becomes a {@dice d4}. If it's a {@dice d4} and you roll a 4, it becomes unusable until you finish a long rest.",
+            "Conversely, if you roll a 1 on your Psionic Energy die, it increases by one die size after the roll, up to its initial size. This represents you conserving psionic energy for later use. For example, if you roll a 1 on a {@dice d4}, the die then becomes a {@dice d6}. Your PE die can never increase in size beyond your level's initial starting size."
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Psionic Aptitudes",
+          "entries": [
+            "Aptitudes are generic forms of the expression of psychic power. Each aptitude allows a character to engage in more specific forms of psychic activity called 'talents'. There are five different aptitudes, each with their own distinctive major talents. These are Scanning, Sending, Porting, Changing, Nullifying, and Energizing. Each aptitude has its own distinctive talents. You gain aptitudes at levels 3, 8, and 17. The Psion progression table shows the total number of aptitudes you have at each level."
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Psionic Talents",
+          "entries": [
+            "While aptitudes are generic forms of the expression of psychic power, each aptitude allows a character to engage in more specific forms of psychic activity called 'talents'. There are two classes of talents. 'Major' talents are those that are specific to (and only accessible to those with) an aptitude. 'Minor' talents are those talents that may be acquired {@i regardless} of aptitude. You begin with two minor talents.",
+            "Major talents are acquired at levels 3, 8, 11, 14, and 18. You cannot choose a major talent unless you have the relevant aptitude. Also, unless otherwise specified, the use of a major talent requires the expenditure of a PE die size. If you have no PE die sizes remaining then you cannot use the major talent."
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Psionic Ability",
+          "entries": [
+            "Constitution is your ability for your psionic powers, since the source of your power comes from the strength of your lifeforce. You use your Constitution whenever an exercise of your psionic power refers to your psionic ability. In addition, you use your Constitution modifier when setting the saving throw DC for a psionic talent or a spell whose effects you recreate with your psionic abilities, and when making an attack roll that uses a psionic ability.",
+            {
+              "type": "abilityDc",
+              "name": "Psion",
+              "attributes": [
+                "con"
+              ]
+            },
+            {
+              "type": "abilityAttackMod",
+              "name": "Psion",
+              "attributes": [
+                "con"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Minor Talent",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 1,
+      "entries": [
+        "'Minor' talents are those talents that may be acquired {@i regardless} of aptitude. You being with two minor talents. You gain an additional minor talent at levels 4 and 10."
+      ]
+    },
+    {
+      "name": "Psi-Boosted Ability",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 1,
+      "entries": [
+        "At 1st level, you can use your psionic powers to boost your abilities. You can roll your Psionic Energy die and add the number rolled to an ability check with the chosen ability. You can do this a number of times equal to your proficiency bonus and regain all uses after a short or long rest."
+      ]
+    },
+    {
+      "name": "Psi-Damaging Strike",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 1,
+      "entries": [
+        "Starting at 1st level, when you hit with an attack roll, you can roll your Psionic Energy die and replace one of the damage dice with the number rolled on the die. You can wait to do this until {@i after} you've rolled the original attack damage. The damage from you PED strike is {@b force} damage."
+      ]
+    },
+    {
+      "name": "Psi Replenishment",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 1,
+      "entries": [
+        "As a bonus action, you can calm your mind for a moment and restore your Psionic Energy die to its maximum size. You can't use Psi Replenishment again until you finish a long rest."
+      ]
+    },
+    {
+      "name": "Mental Discipline",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 2,
+      "entries": [
+        "At 2nd level, you can use your reaction to a psychic attack and become resistant to all psychic damage from that attacker until the end of their next turn. You also have advantage on saving throws against attempts to manipulate your mind or subject you to conditions such as charm, fear, or confusion. As a bonus action, you can expend a Psionic Energy die size to end one effect on yourself that subjects you to a condition."
+      ]
+    },
+    {
+      "name": "Psionic Archetype",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 3,
+      "entries": [
+        "Choose a psionic archetype. At 3rd, 5th, 9th, and 15th levels, you gain abilities specific to your psionic archetype."
+      ]
+    },
+    {
+      "name": "Ability Score Improvement",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 4,
+      "entries": [
+        "When you reach 4th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+        "If your DM allows the use of feats, you may instead take a {@5etools feat|feats.html}."
+      ]
+    },
+    {
+      "name": "Psionic Archetype Feature",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 5,
+      "entries": [
+        "You gain abilities specific to your psionic archetype."
+      ]
+    },
+    {
+      "name": "Channel Life Force",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 6,
+      "entries": [
+        "At 6th level, you can channel your life force into psychic energy in two ways: Psi Stamina Drain and Psi Life Conversion."
+      ]
+    },
+    {
+      "name": "Ability Score Improvement",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 7,
+      "entries": [
+        "When you reach 7th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+        "If your DM allows the use of feats, you may instead take a {@5etools feat|feats.html}."
+      ]
+    },
+    {
+      "name": "Psionic Archetype Feature",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 9,
+      "entries": [
+        "You gain abilities specific to your psionic archetype."
+      ]
+    },
+    {
+      "name": "Ability Score Improvement",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 10,
+      "entries": [
+        "When you reach 10th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+        "If your DM allows the use of feats, you may instead take a {@5etools feat|feats.html}."
+      ]
+    },
+    {
+      "name": "Ability Score Improvement",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 12,
+      "entries": [
+        "When you reach 12th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+        "If your DM allows the use of feats, you may instead take a {@5etools feat|feats.html}."
+      ]
+    },
+    {
+      "name": "Empowered Psionics",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 13,
+      "entries": [
+        "At 13th level, when you deal psychic or force damage with a psychic attack, you can add your Constitution modifier to the damage against the attack’s targets."
+      ]
+    },
+    {
+      "name": "Psionic Archetype Feature",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 15,
+      "entries": [
+        "You gain abilities specific to your psionic archetype."
+      ]
+    },
+    {
+      "name": "Ability Score Improvement",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 16,
+      "entries": [
+        "When you reach 16th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+        "If your DM allows the use of feats, you may instead take a {@5etools feat|feats.html}."
+      ]
+    },
+    {
+      "name": "Enhanced Innate Psionics",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 18,
+      "entries": [
+        "At eighteenth level you gain enhanced innate psionic powers. Once per short or long rest you can cast one of Dominate Person, Scrying, or Telekinesis, and do so without verbal, somatic, or material components."
+      ]
+    },
+    {
+      "name": "Ability Score Improvement",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 19,
+      "entries": [
+        "When you reach 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+        "If your DM allows the use of feats, you may instead take a {@5etools feat|feats.html}."
+      ]
+    },
+    {
+      "name": "Embodied Mind",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "level": 20,
+      "entries": [
+        "At twentieth level your body has fully become a physical manifestation of your psychic prowess. You have resistance to non-magical bludgeoning, piercing, slashing, poison, and force damage. You no longer age, and you are immune to disease. Moreover, you regain psychic energy more efficiently. You may reduce a level of exhaustion in a short rest. When expending hit-dice in a short rest, for each hit-die expended, you may roll your Psionic Energy die and add the result. Note that your PE die is subject to normal rules here concerning expansion or contraction of the die size."
+      ]
+    }
+  ],
+  "subclass": [
+    {
+      "name": "Wilder",
+      "source": "Psion",
+      "shortName": "Wilder",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassFeatures": [
+        "Wilder|Psion|Psion|Wilder|Psion|3|Psion",
+        "Wild Surge|Psion|Psion|Wilder|Psion|3|Psion",
+        "Psychic Feedback|Psion|Psion|Wilder|Psion|5|Psion",
+        "Unpredictable Power|Psion|Psion|Wilder|Psion|9|Psion",
+        "Psychic Eruption|Psion|Psion|Wilder|Psion|15|Psion"
+      ]
+    },
+    {
+      "name": "Tactician",
+      "source": "Psion",
+      "shortName": "Tactician",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassFeatures": [
+        "Tactician|Psion|Psion|Tactician|Psion|3|Psion",
+        "Contingency Plan|Psion|Psion|Tactician|Psion|3|Psion",
+        "Adaptive Tactics|Psion|Psion|Tactician|Psion|5|Psion",
+        "Master Strategist|Psion|Psion|Tactician|Psion|9|Psion",
+        "Flawless Execution|Psion|Psion|Tactician|Psion|15|Psion"
+      ]
+    },
+    {
+      "name": "Inquisitor",
+      "source": "Psion",
+      "shortName": "Inquisitor",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassFeatures": [
+        "Inquisitor|Psion|Psion|Inquisitor|Psion|3|Psion",
+        "Lie Detector|Psion|Psion|Inquisitor|Psion|3|Psion",
+        "Mind Probe|Psion|Psion|Inquisitor|Psion|3|Psion",
+        "Mind Lock|Psion|Psion|Inquisitor|Psion|5|Psion",
+        "Psychic Profiling|Psion|Psion|Inquisitor|Psion|9|Psion",
+        "Telepathic Mastery|Psion|Psion|Inquisitor|Psion|15|Psion"
+      ]
+    }
+  ],
+  "subclassFeature": [
+    {
+      "name": "Wilder",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Wilder",
+      "subclassSource": "Psion",
+      "level": 3,
+      "entries": [
+        "Wilders  are powerful psions that lack any formal training. Their abilities can vary, and their use can sometimes be unpredictable. But they tend to make up for their lack of formal training with unusual abilities and a ferociousness of mind. The Wilder subclass has its choice of the aptitudes."
+      ]
+    },
+    {
+      "name": "Wild Surge",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Wilder",
+      "subclassSource": "Psion",
+      "level": 3,
+      "entries": [
+        "Allows you to gain temporary hit points and trigger a wild surge when using a psionic talent. The wild surge can have various effects based on a d20 roll, including advantage, additional targets, or maximizing damage."
+      ]
+    },
+    {
+      "name": "Psychic Feedback",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Wilder",
+      "subclassSource": "Psion",
+      "level": 5,
+      "entries": [
+        "Lets you send a burst of psychic energy back at attackers when you take damage, potentially causing them to take damage and be stunned."
+      ]
+    },
+    {
+      "name": "Unpredictable Power",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Wilder",
+      "subclassSource": "Psion",
+      "level": 9,
+      "entries": [
+        "Allows you to use your Wild Surge as a reaction to influence the outcome of attack rolls, ability checks, or saving throws made by yourself or a creature within 30 feet."
+      ]
+    },
+    {
+      "name": "Psychic Eruption",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Wilder",
+      "subclassSource": "Psion",
+      "level": 15,
+      "entries": [
+        "Allows you to unleash a psychic eruption, damaging all creatures within a 60-foot radius and imposing penalties on their rolls."
+      ]
+    },
+    {
+      "name": "Tactician",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Tactician",
+      "subclassSource": "Psion",
+      "level": 3,
+      "entries": [
+        "Highly strategic and tactical thinkers, Tacticians are trained to account for every apparent contingency, as well as to adapt to every situation. They do not typically find themselves in battle but largely because their plans to not require them to. The Tactician must choose at least two aptitudes from scanning, sending, porting, and nullifying. The Tactician may not have an aptitude in changing."
+      ]
+    },
+    {
+      "name": "Contingency Plan",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Tactician",
+      "subclassSource": "Psion",
+      "level": 3,
+      "entries": [
+        "As a bonus action, you can create a contingency plan for yourself or an ally within 60 feet. The plan can be activated at any time before the end of your next turn and triggers automatically when a specific condition you specify is met (such as 'when an enemy enters a designated area', 'when an ally takes damage from a specific type of attack', etc.). The contingency plan can have various effects, such as granting temporary hit points, teleporting the target to safety, granting advantage on an attack, or causing a specific spell to be cast. You can create a number of contingency plans equal to your proficiency bonus, and you regain all expended uses of this feature after a long rest."
+      ]
+    },
+    {
+      "name": "Adaptive Tactics",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Tactician",
+      "subclassSource": "Psion",
+      "level": 5,
+      "entries": [
+        "Whenever you or an ally within 60 feet of you successfully hits a creature with an attack, you can use your reaction to grant them an extra benefit based on the type of attack. If the attack was a melee attack, the target's speed is reduced by half until the end of its next turn. If the attack was a ranged attack, the target has disadvantage on attack rolls until the end of its next turn. If the attack was a spell attack, the target has disadvantage on its next saving throw before the end of its next turn. You can use this feature a number of times equal to your Intelligence modifier (minimum of once), and you regain all expended uses after a short or long rest."
+      ]
+    },
+    {
+      "name": "Master Strategist",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Tactician",
+      "subclassSource": "Psion",
+      "level": 9,
+      "entries": [
+        "You gain proficiency in the Wisdom (Perception) and Wisdom (Insight) skills, as well as expertise in one Intelligence-based skill of your choice. In addition, whenever you roll initiative, you can use your reaction to grant yourself and all allies within 60 feet of you advantage on their initiative rolls. You can use this feature once per long rest."
+      ]
+    },
+    {
+      "name": "Flawless Execution",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Tactician",
+      "subclassSource": "Psion",
+      "level": 15,
+      "entries": [
+        "When you or an ally within 60 feet of you makes an attack roll, ability check, or saving throw, you can use your reaction to grant them a bonus to the roll equal to your Intelligence modifier (minimum of +1). If the roll still fails, you can choose whether to expend a PE die to have the creature treat the roll as if it had succeeded instead. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses after a long rest."
+      ]
+    },
+    {
+      "name": "Inquisitor",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Inquisitor",
+      "subclassSource": "Psion",
+      "level": 3,
+      "entries": [
+        "The Inquisitor is a master of scanning and sending. They can capture information from another and send it to whomever needs it. An Inquisitor must choose the scanning and sending aptitudes. It's third aptitude is elective."
+      ]
+    },
+    {
+      "name": "Lie Detector",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Inquisitor",
+      "subclassSource": "Psion",
+      "level": 3,
+      "entries": [
+        "You can tell when any creature with whom you are communicating by telepathy is lying to you."
+      ]
+    },
+    {
+      "name": "Mind Probe",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Inquisitor",
+      "subclassSource": "Psion",
+      "level": 3,
+      "entries": [
+        "While similar to ESP, a probe targets a single individual within 30 feet of the Psion, and permits much deeper access to a target's mind. If the target fails a Wisdom save all of their memories and knowledge become (in principle) accessible via questioning. The Psion may ask one question per round (any additional questions require expending an PE die size) which the target must reply truthfully or reply with \"I don't know.\" However, if the question or answer becomes too complicated, the DM may require more than 1 round to complete the action, allow the target an additional Wisdom save, or simply deny the request. The target need not be conscious for this ability to work. The use of this ability requires the Psion's concentration for the duration of the inquiry. You can use this talent a number of times equal to your proficiency bonus, and you regain all uses after a long rest."
+      ]
+    },
+    {
+      "name": "Mind Lock",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Inquisitor",
+      "subclassSource": "Psion",
+      "level": 5,
+      "entries": [
+        "Mind Lock is a kind of psychic manipulation that renders inaccessible to any but the Psion a portion of the target's mind. The target must make a successful Wisdom saving throw to avoid this effect. If the saving throw fails, the wipe has been successful, making the knowledge in that part of the target's mind inaccessible, and reducing the target's intelligence and Wisdom scores by 1 point each. This can affect everything from languages known, to spells which may be cast. This memory loss is permanent unless restored by the Psion or through a wish or similar spell. This ability may cumulatively affect a target down to a minimum intelligence or Wisdom score of 3. You can use this talent a number of times equal to your proficiency bonus, and you regain all uses after a long rest."
+      ]
+    },
+    {
+      "name": "Psychic Profiling",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Inquisitor",
+      "subclassSource": "Psion",
+      "level": 9,
+      "entries": [
+        "You gain exceptional insight concerning any individual or creature whom you have previously detected via any other scanning or minor talent.\n\nFor purposes of this talent, \"exceptional insight\" includes a name, a mental image of the subject, the subject's alignment, and the subject's location (an image of the subject's current location that is, e.g., good enough to teleport to if studied carefully). Powers, special abilities, and spells do not protect against your profiling ability, not even Mind Blank or spells such as Wish. You can use this talent a number of times equal to your proficiency bonus, and you regain all uses after a long rest."
+      ]
+    },
+    {
+      "name": "Telepathic Mastery",
+      "source": "Psion",
+      "className": "Psion",
+      "classSource": "Psion",
+      "subclassShortName": "Inquisitor",
+      "subclassSource": "Psion",
+      "level": 15,
+      "entries": [
+        "You have gained mastery over your telepathic abilities. You can use your Mind Link talent to communicate telepathically with any creature that you can immediately perceive, regardless of their distance from you. You can also use your Probe Thoughts talent on any creature you have previously probed thoughts from, regardless of how long ago it was. Finally, when you use your Mind Meld talent, you can choose to expend your Psionic Energy die to increase the duration of the effect by a number of hours equal to the die's size. Additionally, the target creature takes psychic damage equal to twice your Psionic Energy die if it fails its Intelligence saving throw at the end of the effect. You may choose to have it automatically succeed its save. You can use this talent a number of times equal to your proficiency bonus, and you regain all uses after a long rest."
+      ]
+    }
+  ],
+  "optionalfeature": [
+    {
+      "name": "ESP",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} Special",
+        "{@bold Range:} 50 feet",
+        "{@bold PE Cost:} Special",
+        "As an action, you can perceive any mind that is not protected or otherwise shielded against divination or psionic targeting within 50 feet. Any creature within this area that fails a Wisdom saving throw against your psion DC will make its surface thoughts available to be understood regardless of the language spoken. If the creature has an Intelligence of 3 or less, it will transmit impressionistic \"pictures\" and/or raw emotions and desires. A creature that is hidden from or otherwise immune to psionics or divination magic is immune to this feature."
+      ],
+      "foundrySystem": {
+        "activation": {
+          "featureType": "action",
+          "cost": "1"
+        }
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Mental Rapport",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Bonus Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Special",
+        "As a bonus action, you may communicate telepathically with one willing creature within 30 feet. The creature must be able to speak a language that you can understand. Otherwise, only basic sensory images or feelings may be communicated. Any barriers of rock, wood, or metal thicker than a few inches will block your ability. A creature that has an Intelligence score lower than 3 or is hidden from psionics or divination magic is immune to this feature."
+      ],
+      "foundrySystem": {
+        "activation": {
+          "featureType": "bonus",
+          "cost": "1"
+        }
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Psionic Wave",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 5 ft. radius centered on self",
+        "{@bold PE Cost:} Special",
+        "As an action, you release a wave of psionic force energy within a 5 ft. radius centered on you. Each creature in the area must make a Wisdom saving throw against your Psion DC or take {@damage 1d6} force damage on a failed save, or half as much on a successful one.",
+        "This attack's damage increases by {@dice 1d6} when you reach 5th level ({@damage 2d6}), 11th level ({@damage 3d6}), and 17th level ({@damage 4d6})."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1",
+        "duration": {
+          "value": "",
+          "units": "inst"
+        },
+        "actionType": "msak",
+        "ability": "con",
+        "target": {
+          "value": 5,
+          "width": null,
+          "units": "ft",
+          "type": "radius"
+        },
+        "range": {
+          "value": null,
+          "long": null,
+          "units": "ft"
+        },
+        "type": {
+          "value": "class",
+          "subtype": "psionicPower"
+        },
+        "save": {
+          "ability": "wis",
+          "dc": "",
+          "scaling": "spell"
+        },
+        "damage": {
+          "parts": [
+            [
+              "(@scale.psion.talent-scale.number)d6",
+              "force"
+            ]
+          ]
+        }
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Psychic Shield",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Reaction",
+        "{@bold Duration:} Until the end of your next turn",
+        "{@bold Range:} Self or creature within sight",
+        "{@bold PE Cost:} Special",
+        "As a reaction, you create a shield of psionic energy that surrounds you or another creature that you can see. Pick one of the following benefits and roll your PE die. The reduction or benefit is equal to the value of the rolled die. The effect lasts until the end of your next turn.",
+        {
+          "type": "list",
+          "items": [
+            "Reduction of psychic damage.",
+            "Bonus to any saves against divination magic or mental scan.",
+            "Bonus to any save against a condition caused by enchantment magics from charm, confusion, fear, etc."
+          ]
+        },
+        "At 5th, 11th, 17th, and 20th level, you may shield an additional creature that you can see, up to a maximum of five."
+      ],
+      "foundrySystem": {
+        "activation.type": "reaction",
+        "activation.cost": "1"
+      },
+      "featureType": [
+        "minT"
+      ]
+    },
+    {
+      "name": "Mind Spike",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} -",
+        "{@bold Range:} 60 ft",
+        "{@bold PE Cost:} Special",
+        "You drive a disorienting spike of psychic energy into the mind of one creature you can see within range. The target must succeed on an Intelligence saving throw or take {@damage 1d6} psychic damage and subtract {@dice 1d4} from the next saving throw it makes before the end of your next turn.",
+        "This spell's damage increases by {@dice 1d6} when you reach certain levels: 5th level ({@dice 2d6}), 11th level ({@dice 3d6}), and 17th level ({@dice 4d6})."
+      ],
+      "foundrySystem": {
+        "activation": {
+          "featureType": "action",
+          "cost": "1"
+        },
+        "range": {
+          "value": 120,
+          "units": "ft"
+        },
+        "duration": {
+          "value": "",
+          "units": "inst"
+        },
+        "actionType": "rsak",
+        "ability": "con",
+        "target": {
+          "value": 1,
+          "type": "creature"
+        },
+        "damage": {
+          "parts": [
+            [
+              "(@scale.psion.talent-scale.number)d6",
+              "psychic"
+            ]
+          ]
+        }
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Psychic Whip",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Bonus Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Special",
+        "As a bonus action, you create a psychic whip that lashes out at a target within 30 feet. The target must make a Wisdom saving throw or take {@damage 1d4} psychic damage and be pulled up to 10 feet towards you.",
+        "This attack's damage increases by {@dice 1d4} when you reach 5th level ({@damage 2d4}), 11th level ({@damage 3d4}), and 17th level ({@damage 4d4})."
+      ],
+      "foundrySystem": {
+        "activation": {
+          "featureType": "bonus",
+          "cost": "1"
+        }
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Toughen",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} Until the end of your next turn",
+        "{@bold Range:} Self",
+        "{@bold PE Cost:} Special",
+        "You use your psionic energy to toughen your body. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks."
+      ],
+      "foundrySystem": {
+        "activation.featureType": "action",
+        "activation.cost": "1"
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Psi Digits",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} 30 ft",
+        "{@bold PE Cost:} Special",
+        "An invisible locus of force can be used as a hand whose digits may manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial. You can move the locus up to 30 feet each time you use it. The locus of force is invisible, but can't attack, activate magic items, or carry more than 10 pounds."
+      ],
+      "foundrySystem": {
+        "activation.featureType": "action",
+        "activation.cost": "1",
+        "range": {
+          "value": 30,
+          "units": "ft"
+        }
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Life Touch",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} -",
+        "{@bold Range:} Touch",
+        "{@bold PE Cost:} Special",
+        "You touch a living creature that has 0 hit points. The creature becomes stable, as similar to the spell {@spell spare the dying}."
+      ],
+      "foundrySystem": {
+        "activation.featureType": "action",
+        "activation.cost": "1"
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Thaumaturgy",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} -",
+        "{@bold Range:} -",
+        "{@bold PE Cost:} Special",
+        "You may generate effects, as with the spell {@spell thaumaturgy}."
+      ],
+      "foundrySystem": {
+        "activation.featureType": "action",
+        "activation.cost": "1"
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Psi Whisper",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} -",
+        "{@bold Range:} -",
+        "{@bold PE Cost:} Special",
+        "You may communicate with another as with the spell {@spell message}."
+      ],
+      "foundrySystem": {
+        "activation.featureType": "action",
+        "activation.cost": "1"
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Mislead",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} -",
+        "{@bold Range:} -",
+        "{@bold PE Cost:} Special",
+        "You generate an illusion in the mind of another, as with the spell {@spell minor illusion}."
+      ],
+      "foundrySystem": {
+        "activation.featureType": "action",
+        "activation.cost": "1"
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Animal Magnetism",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} Up to 1 minute",
+        "{@bold Range:} 5 ft",
+        "{@bold PE Cost:} Special",
+        "For up to 1 minute, you have advantage on all Charisma checks directed at one creature of your choice that isn't hostile toward you, as with the spell {@spell friends}."
+      ],
+      "foundrySystem": {
+        "activation.featureType": "action",
+        "activation.cost": "1"
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ]
+    },
+    {
+      "name": "Psi Bolt",
+      "source": "Psion",
+      "entries": [
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 120 feet",
+        "{@bold PE Cost:} Special",
+        "You hurl a bolt of force at a creature or object within range. Make a ranged psionic attack against the target. On a hit, the target takes 1d6 force damage.",
+        "This attack's damage increases by your psychic energy die at levels 5, 11, and 17."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1",
+        "range": {
+          "value": 120,
+          "units": "ft"
+        },
+        "duration": {
+          "value": "",
+          "units": "inst"
+        },
+        "actionType": "rsak",
+        "ability": "con",
+        "target.value": 1,
+        "target.type": "creature",
+        "type": {
+          "value": "class",
+          "subtype": "psionicPower"
+        },
+        "damage": {
+          "parts": [
+            [
+              "@scale.psion.talent-scale",
+              "force"
+            ]
+          ]
+        }
+      },
+      "featureType": [
+        "minT"
+      ],
+      "prerequisite": [
+        {
+          "feature": [
+            "Minor Talent"
+          ],
+          "psionics": true
+        }
+      ],
+      "foundryImg": "media/icons/psionics/psi-bolt.webp"
+    },
+    {
+      "name": "Scanning",
+      "source": "Psion",
+      "featureType": [
+        "AP"
+      ],
+      "prerequisite": [
+        {
+          "psionics": true
+        }
+      ],
+      "entries": [
+        "The scanning aptitude allows the psion to gain information from the world around them. Such information might include the emotions or thoughts of others, enhanced perception of the environment, or even allow one to experience the world through another's mind."
+      ]
+    },
+    {
+      "name": "Sending",
+      "source": "Psion",
+      "prerequisite": [
+        {
+          "psionics": true
+        }
+      ],
+      "entries": [
+        "The sending aptitude allows the psion to project psychic energy or information they possess into the world around them. Such information might include emotions or thoughts, allowing communication or influence of a creature's mind, similarly the sending might alter a creature's perception of its environment. The sending aptitude also allows a Psion to engage in various kinds of mental attack, as they project their psyche into another's mind."
+      ],
+      "featureType": [
+        "AP"
+      ]
+    },
+    {
+      "name": "Porting",
+      "source": "Psion",
+      "prerequisite": [
+        {
+          "psionics": true
+        }
+      ],
+      "entries": [
+        "The porting aptitude allows the psion to change their location or the location of others by warping space around them."
+      ],
+      "featureType": [
+        "AP"
+      ]
+    },
+    {
+      "name": "Energizing",
+      "source": "Psion",
+      "featureType": [
+        "AP"
+      ],
+      "prerequisite": [
+        {
+          "psionics": true
+        }
+      ],
+      "entries": [
+        "The energizing aptitude concerns the ability to manipulate and harness various forms of energy, including psychic energy, elemental forces, and even life force. This can also be used to create energy shields, enhance physical abilities, or even resurrect the dead."
+      ]
+    },
+    {
+      "name": "Nullifying",
+      "source": "Psion",
+      "featureType": [
+        "AP"
+      ],
+      "prerequisite": [
+        {
+          "psionics": true
+        }
+      ],
+      "entries": [
+        "The nullifying aptitude can be used to negate or disrupt the powers of other psionic or magical beings, blocking their abilities or otherwise rendering them powerless. This can also be used to dispel magical effects or prevent divination."
+      ]
+    },
+    {
+      "name": "Altering",
+      "source": "Psion",
+      "featureType": [
+        "AP"
+      ],
+      "prerequisite": [
+        {
+          "psionics": true
+        }
+      ],
+      "entries": [
+        "The transmuting aptitude encompasses a broad range of talents all related to change. It is also often referred to as {@italic psychokinesis} or {@italic telekinesis}. You can use this aptitude to manipulate matter and energy at a fundamental level, altering the physical properties of objects or creatures. This can also be used to transmute materials, reshape objects, or even transform creatures."
+      ]
+    }
+  ],
+  "psionic": [
+    {
+      "name": "Empathic Insight",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} 60/15 ft radius",
+        "{@bold PE Cost:} Roll",
+        "Roll your PE die. As an action, you can empathically read a creature that is within 60 feet of you. You learn its most powerful surface-level emotion. For example, you might learn that a creature is excited, fearful, angry, sad, or content. Whenever you make a Charisma check to interact with a creature whose aura you have read, you gain a bonus to your roll equal to your Constitution modifier (minimum of +1).",
+        "You can also use this power to detect the presence of sentient creatures you can't see. Roll your PE die. As an action, you can search for creatures within 15 feet of you. Any barriers of rock, wood, or metal thicker than a few inches will block your ability. A creature that is not sentient, explicitly does not experience emotions, is hidden from psionics, divination magic, or having their mind read is immune to this feature."
+      ],
+      "type": "T",
+      "order": "Scanning"
+    },
+    {
+      "name": "Mind Reading",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} 120 ft radius",
+        "{@bold PE Cost:} Roll",
+        "Roll your PE die. You can use your telepathic abilities to read the thoughts of another creature. As an action, choose one creature you can perceive within 120 feet of you. That creature must make a Wisdom saving throw against your Psion spell save DC. On a failed save, you can read the surface thoughts of the creature for a number of minutes equal to the value of a roll of your PE die.",
+        "You can also use this power to detect the presence of intelligent creatures you can't see. As an action, you can search for creatures within 15 feet of you. Any barriers of rock, wood, or metal thicker than a few inches will block your ability. A creature that has an intelligence score lower than 3, does not possess any language, is hidden from psionics, divination magic, or otherwise having their mind read is immune to this feature."
+      ],
+      "type": "T",
+      "order": "Scanning"
+    },
+    {
+      "name": "Psychometry",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} Touch",
+        "{@bold PE Cost:} Roll",
+        "Roll your PE die. You can make relevant inferences from an object of unknown history by making physical contact with that object. When used as an action, you gain a bonus equal to your PE die value on Investigation or History rolls with respect to an object you can touch. If you succeed on your skill check, you can gain specific information about the identity, appearance, or mental state of the creature or creatures that most recently handled the item or were most significantly related to its creation or history."
+      ],
+      "type": "T",
+      "order": "Scanning"
+    },
+    {
+      "name": "Amodal Cognition",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Bonus Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} 10 ft radius",
+        "{@bold PE Cost:} Roll/Size",
+        "Roll your PE die. You gain information about your environment without it coming to you via any sense modality. Instead, you simply \"know\" various facts concerning your location or the creatures occupying it. Whenever you make an Insight or Investigation check, you gain a bonus to your roll equal to your PE die roll value. This applies only to a location, item, or creature within 10 feet of you. To extend the range of your cognition, you must use an action and expend one PE die size per 10 feet of range. The extended range lasts until you lose concentration. Known information can include the name, owner, location, alignment, emotional valence, and even (surface level) thoughts of objects or creatures in range."
+      ],
+      "type": "T",
+      "order": "Scanning",
+      "foundrySystem": {
+        "type": {
+          "value": "class",
+          "subtype": "psionicPower"
+        }
+      }
+    },
+    {
+      "name": "Third Eye",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} 10 ft radius per PE die",
+        "{@bold PE Cost:} Roll/Size",
+        "You see as if through a third eye, which grants you enhanced sight in a 10-foot radius with you at the center. Within this range, you have blindsight and can see into the ethereal plane. While seeing through your third eye, you also gain proficiency in Perception, and whenever you make a Wisdom (Perception) check, you gain a bonus to your roll equal to your Constitution modifier (minimum of +1).",
+        "As a bonus action, you can expend a PE die size and expand the radius of your enhanced sight by 10 feet per PE die size expended."
+      ],
+      "type": "T",
+      "order": "Scanning"
+    },
+    {
+      "name": "Remote Viewing",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 min per PE die; requires {@italic concentration}",
+        "{@bold Range:} PE die value in miles",
+        "{@bold PE Cost:} Roll/Size",
+        "You can see and hear events occurring at a location within range as if you were there, even if you have never been to that location before. As an action, you can choose a location that you know exists and is within a number of miles equal to your PE die size. For the next minute, you can see and hear everything happening at that location, as if you were standing there yourself. You can extend the duration by expending a die size. You can move your point of view around the location as if you were physically present. However, you cannot interact with anything at the location or communicate with any creatures there. You must concentrate to maintain this ability, and you cannot move or take other actions while using it. If you use this more than once per long rest, you must expend a PE die size for every additional use until you take a long rest."
+      ],
+      "type": "T",
+      "order": "Scanning"
+    },
+    {
+      "name": "Precognition",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Bonus Action",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} Self",
+        "{@bold PE Cost:} Roll/Size",
+        "You gain a premonition of future events. As an action, you can roll your PE die and add the result to an attack roll, ability check, or saving throw you make within the next minute. You can use this talent once per long rest without expending any PE die size. If you use this more than once per long rest, you must expend a PE die size for every use until you take a long rest."
+      ],
+      "type": "T",
+      "order": "Scanning"
+    },
+    {
+      "name": "Retrocognition",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Scanning",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} 30 ft radius",
+        "{@bold PE Cost:} Roll",
+        "You can sense information about past events that occurred in your current location or nearby. As an action, you can roll your PE die and learn information about an event that took place within the area you can see or touch, up to a number of years equal to the number rolled. The information you receive is based on the nature of the event and the degree of its significance. For example, you might learn the identity of a person who was recently in the area, the location of a hidden object, or the details of a past battle. You cannot use this talent to gain information about events that occurred beyond the range of your senses or that you have no way of physically accessing. You may use this talent no more than once in a given area before taking a short or long rest."
+      ],
+      "type": "T",
+      "order": "Scanning"
+    },
+    {
+      "name": "Communion",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 hour per PE die size expended; concentration",
+        "{@bold Range:} Perceptual range, no longer required after establishment",
+        "{@bold PE Cost:} Size",
+        "You may communicate your emotions or thoughts to the mind of another intelligent being that you can immediately perceive. The recipient recognizes these emotions or thoughts as not their own, and may make an Intelligence check to determine their source. This talent effectively allows one-way communication between sender and recipient. The communion lasts 1 hour per PE die size expended. After the communion is established, the recipient need no longer be within immediate perceptual range, and communication is in all respects similar to talking with the creature.",
+        "Any barriers of rock, wood, or metal thicker than a few inches will block your ability. A creature that has an intelligence score lower than 3, does not possess any language, is hidden from psionics or divination magic is immune to this feature."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Thought Intrusion",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 60 feet",
+        "{@bold PE Cost:} Roll",
+        "As an action, you can use your psychic energy to send intrusive thoughts to a creature within 60 feet of you that you can see or otherwise know the exact location of. The target must make a Wisdom saving throw against your psion DC or take 1d6 + PE die roll of psychic damage and become frightened for a number of rounds equal to the PE roll (minimum of 1). On a successful save, the creature takes half damage and is not frightened.",
+        "Any barriers of rock, wood, or metal thicker than a few inches will block your ability. A creature that has an intelligence score lower than 3, does not possess any language, or is hidden from psionics or divination magic is immune to this feature."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Mind Link",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending, and either Communion or Mind Reading",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Roll hours",
+        "{@bold Range:} 1 mile",
+        "{@bold PE Cost:} Roll",
+        "You can establish telepathic communication between yourself and others. As an action, choose one or more creatures you can see, up to a number of creatures equal to twice your proficiency bonus, and then roll your Psionic Energy die. For a number of hours equal to the number rolled, the chosen creatures can speak telepathically with you, and you can speak telepathically with them. To send or receive a message (no action required), you and the other creature must be within 1 mile of each other. A creature can't use this telepathy if it can't speak any languages, and a creature can end the telepathic connection at any time (no action required). You and the creature don't need to speak a common language to understand each other."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Mind Hammer",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} {@action Attack}",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 60 feet",
+        "{@bold PE Cost:} Roll",
+        "As an action, choose one creature you can see within 60 feet of you. The target must make an Intelligence saving throw. On a failed save, it takes 1d10 psychic damage per PE die spent and suffers disadvantage on its next Wisdom saving throw before the end of your next turn. On a successful save, it takes half as much damage and suffers no disadvantage."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Mind Blast",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} {@action Attack}",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30-foot cone",
+        "{@bold PE Cost:} 2 Sizes",
+        "As an action, you expend two PE die sizes to project a blast of psychic energy in a 30-foot cone in front of you. Each creature in the cone must make a Wisdom saving throw or take (3d8 + Consitution modifier) of psychic damage and be stunned for 1 round. On a successful save, the creature takes half damage and is not stunned. Add 1d8 of additional psychic damage at levels 5, 12, and 18."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Mind Meld",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} Touch",
+        "{@bold PE Cost:} Roll",
+        "As an action, you link your mind with that of another humanoid you can touch. The target must succeed on a Wisdom saving throw against your Psionics save DC or become charmed by you for one hour or until it takes damage. If the save is successful the target is immune to this talent for 24 hours. After the duration ends the target will know that is has been charmed. While the target is charmed in this way, you can communicate with it telepathically. You may use this talent once per target before requiring a long rest. You can mind-meld with a number of humanoids equal to proficiency bonus at a time."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Psychic Command",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} 60 feet",
+        "{@bold PE Cost:} Roll",
+        "As an action, you attempt to charm a creature you can see within 60 feet of you. The target creature must succeed on a Wisdom saving throw against your Psionics save DC or be charmed by you for 1 minute. While charmed in this way, the creature is under your control, and you can issue it simple commands, such as \"Approach,\" \"Flee,\" \"Halt,\" or \"Drop what you're holding.\" The creature will not obey any commands that might cause it harm. Once the effect ends, the creature becomes aware of your control and can take actions against you if it wishes."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Psionic Disguise",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 hour",
+        "{@bold Range:} Self",
+        "{@bold PE Cost:} Roll",
+        "You can use your psionic power to alter your appearance. As an action, you can alter your physical appearance in any way you choose, as if you had cast the {@spell disguise self|phb} spell. The effect lasts for up to 1 hour or until you dismiss it as a bonus action. Additional uses of this talent prior to taking a long rest require expending a PE die size."
+      ],
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Mental Insinuation",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Concentration",
+        "{@bold Range:} 30 ft",
+        "{@bold PE Cost:} Roll",
+        "You subtly insinuate your preferences to another and thus influence their choices without ever overtly making your influence noticed. While concentrating on this talent, you gain expertise in the Persuasion skill against a creature you can perceive within 30 feet of you, though the talent has no effect against creatures that are immune to psionics, or immune to mental influence or charm (such as a creature under the effect of mind blank)."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Psychic Presence",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Roll",
+        "You project a psionic aura that can either draw or repel attention from others. As an action, choose one creature you can see within 30 feet of you. That creature must make a Wisdom saving throw against your Psionic save DC or be drawn to you for the next minute, as if by a {@spell charm person|phb} spell",
+        "Alternatively, you can choose to repel the creature, causing it to make an immediate Wisdom saving throw against your Psionic save DC or be unable to approach within 30 feet of you for the next minute.",
+        "Additional uses of this talent prior to taking a long rest require expending a PE die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Mental Image",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 10 minutes (Concentration)",
+        "{@bold Range:} 60 feet",
+        "{@bold PE Cost:} Size",
+        "You gain the ability to project images into the minds of creatures with perfect clarity, interposing it over their reality. Creatures affected by this talent must make an Intelligence saving throw or be convinced that the image is real, even if it contradicts other sensory input. The image lasts for up to 10 minutes, until your concentration is interrupted, or until you choose to end it, whichever comes first. You can target up to three creatures with this talent at once and must have a clear line of sight to them.",
+        "A creature that has an intelligence score lower than 3, does not possess any language, or is hidden from psionics or divination magic is immune to this feature."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Mental Shadow",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Sending",
+        "{@bold Type:} Bonus Action",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} Touch",
+        "{@bold PE Cost:} Roll",
+        "You blend your own presence and memories with that of another creature, causing it to perceive you as a part of its own mind. As a bonus action, you merge with the mind of a creature you touch. While merged, you can perceive the creature's surroundings as if you were there and can communicate telepathically with the creature. You have advantage on Charisma (Persuasion) checks made to influence the creature while merged. The creature is unaware that you are influencing its thoughts unless you choose to reveal yourself or your actions would make it obvious. This talent lasts for 1 minute, until your concentration is interrupted, or until you choose to end it as a bonus action. You may extend the duration by expending a PE die. Once you use this talent, you can't use it again on the same creature until you complete a long rest."
+      ],
+      "type": "T",
+      "order": "Sending"
+    },
+    {
+      "name": "Spatial Swap",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Porting",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Size",
+        "You can swap the positions of two creatures or objects within 30 feet of you that you can see. The swap must place each target in a location that it can occupy and cannot move the target into a hazardous location, such as the middle of a wall or a pool of lava."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Porting"
+    },
+    {
+      "name": "Blink",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Porting",
+        "{@bold Type:} Bonus Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} Self",
+        "{@bold PE Cost:} Roll",
+        "As a bonus action, you may teleport up to the PE die value * 5 feet to an unoccupied space you can see. Prior to a short or long rest, for each use of Blink after the first, whatever the PE die value rolled, you must expend a PE die size. You do not expend more than one die size per Blink."
+      ],
+      "foundrySystem": {
+        "activation.type": "bonus",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Porting"
+    },
+    {
+      "name": "Portal",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Porting",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} 60 feet",
+        "{@bold PE Cost:} Size",
+        "You create a portal between two points that you can sense that are within 60 feet of you. The portal is a circular opening that is 5 feet in diameter, and it lasts for up to 1 minute, unless it is dismissed, or your concentration is interrupted. Any creature or object that enters the portal from either side is immediately transported to the other side of the portal, appearing in an unoccupied space that you can see within 5 feet of the portal. The portal can be used up to three times before it disappears. The portal cannot be used offensively."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Porting"
+    },
+    {
+      "name": "Teleport",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Porting",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Size",
+        "You teleport yourself, and any creatures or objects you choose of up to large size within 30 feet of you, to an unoccupied space you can see within 500 feet. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction, such as \"200 feet straight downward\" or \"upward to the northwest at a 45-degree angle, 300 feet.\" You may do this once per long rest. If you teleport a number of creatures (or objects of medium or larger size) greater than your proficiency bonus, you must take a level of exhaustion per extra creature/object transported.",
+        "For each use of Teleport after the first you must expend a PE die size until you take a long rest."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Porting"
+    },
+    {
+      "name": "Shaping",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} {@action Use an object}",
+        "{@bold Duration:} Until long rest or reshaped again",
+        "{@bold Range:} Touch",
+        "{@bold PE Cost:} Roll",
+        "You can use this talent to reshape non-living material objects, manipulating them to take on different forms or shapes. You can reshape an object with a volume of up to 1 cubic foot per psychic energy die expended, using a minimum of one die. You cannot alter the nature of the object (e.g., you cannot make stone turn into clay), but you can reshape the object beyond what it would normally allow (e.g., you can curve a stone or piece of wood that would otherwise break)."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Fusion",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} {@action Use an object}",
+        "{@bold Duration:} Until short rest or unfused",
+        "{@bold Range:} Touch",
+        "{@bold PE Cost:} Size",
+        "You can use this talent to fuse two objects or substances together into a single, unified whole. The objects or substances being fused must be compatible with each other (e.g., you cannot fuse water and iron or plasma and flesh). The total mass of the objects or substances cannot exceed 10 pounds per psychic energy die expended, using a minimum of one die."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Telekinetic Strike",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} {@action Attack}",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 50 feet",
+        "{@bold PE Cost:} Roll/Size",
+        "You focus your psionic energy into a powerful blow to an enemy within 50 feet of you. The attack does 2d6 + PE die. Additional uses of this talent prior to taking a short or long rest require expending a PE die size per use.",
+        "The attack damage increases an additional 1d6 at levels 5, 9, 13, and 17."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Elemental Shift",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} {@action Use an object}",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Size",
+        "You alter the elemental composition of a non-magical, non-living object of up to medium size within 30 feet of you, transmuting it into a different substance of equal or lesser value. The weight of the object cannot exceed 10 pounds per psychic energy die expended, using a minimum of one die."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Density Control",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} {@action Use an object}",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Roll",
+        "You manipulate the density of a non-magical object or creature within 30 feet of you. Roll your Psionic Energy die and add the result to an ability check, attack roll, or saving throw made against the target. Additional uses of this talent prior to taking a short or long rest require expending a PE die size per use."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Pyro/Cryokinesis",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} {@action Use an object} or {@action Attack}",
+        "{@bold Duration:} 1 round",
+        "{@bold Range:} 15 feet",
+        "{@bold PE Cost:} Roll",
+        "You can use psionic energy to heat up or cool down a perceivable creature or object within 15 feet of you. If a creature is targeted, it must make a Wisdom saving throw against your Psionics DC or take {@damage 1d10} plus your PE die roll in heat/cold damage at the beginning of its turn until the Psion ends the effect or their concentration is broken.",
+        "If an object is targeted then it takes similar damage, and each round it is concentrated upon there is a cumulative 25% chance of it cracking (cold) or igniting (heat). If the material is metal that is being worn the effect is similar to that of {@spell heat metal}.",
+        "Additional uses of this talent prior to taking a short or long rest require expending a PE die size per use."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Cryo/Pyrokinetic Blast",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} {@action Attack}",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 60 feet",
+        "{@bold PE Cost:} Roll",
+        "You unleash a blast of intense heat/cold from your mind, dealing fire/cold damage to a target within 30 feet of you. Make a ranged psionic attack against the target. If the attack hits, the creature takes {@damage 3d8} damage plus your PE die value of the type you chose.",
+        "The damage increases by 1d8 for each PE die size spent "
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Telekinetic Barrier",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Altering",
+        "{@bold Type:} Reaction",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} Self",
+        "{@bold PE Cost:} Roll",
+        "You create a barrier of telekinetic energy to protect yourself from harm. Roll your Psionic Energy die. The barrier has 2 hit points for every point rolled on the die. The barrier lasts for one minute or until it has been depleted. Each subsequent use of this talent prior to a long rest requires expending a PE die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "reaction",
+        "activation.cost": "1",
+        "activation.condition": "when you are attacked."
+      },
+      "type": "T",
+      "order": "Altering"
+    },
+    {
+      "name": "Power Nullification",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Nullifying",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} 10 ft radius",
+        "{@bold PE Cost:} Roll",
+        "You can use this talent to completely suppress the use of psionic or magical powers within a 10 ft radius around you. This suppression lasts for 1 minute, and you must concentrate on the suppression throughout.",
+        "Each subsequent use of this talent prior to a long rest requires expending a PE die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Nullifying"
+    },
+    {
+      "name": "Dispel Magic",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Nullifying",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 round",
+        "{@bold Range:} 50 ft",
+        "{@bold PE Cost:} Size",
+        "You can use this talent to dispel magical effects within a 50 ft range. This requires a concentration time of 1 round, after which the magic is dispelled."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Nullifying"
+    },
+    {
+      "name": "Counterpsionics",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Nullifying",
+        "{@bold Type:} Reaction",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 ft",
+        "{@bold PE Cost:} Special",
+        "When a psionic effect is used within 30 ft of you, you can use your reaction to attempt to counteract it. This requires a successful Intelligence (Psionics) check, contested by the original caster's Intelligence (Psionics) check. On a successful contest, the effect is nullified.",
+        "Each subsequent use of this talent prior to a short or long rest requires expending a PE die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "reaction",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Nullifying"
+    },
+    {
+      "name": "Energy Drain",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Nullifying",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 60 ft",
+        "{@bold PE Cost:} Roll",
+        "You can use this talent to drain the psionic or magical energy of a creature within 60 ft of you. This requires a successful Intelligence (Psionics) check, contested by the target's Wisdom saving throw. On a failed save, the creature takes 2d10 psychic damage and loses one spell slot or PE die size.",
+        "Each subsequent use of this talent prior to a long rest requires expending a PE die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Nullifying"
+    },
+    {
+      "name": "Anti-divination",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Nullifying",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} 30 ft radius",
+        "{@bold PE Cost:} Roll",
+        "You can use this talent to disrupt the use of divination magic within a 30 ft radius around you. For 1 minute, any attempt to scry or gain information about the area or creatures within the area must overcome a DC equal to 8 + your Constitution modifier + your proficiency bonus.",
+        "Each subsequent use of this talent prior to a short or long rest requires expending a PE die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Nullifying"
+    },
+    {
+      "name": "Energy Shield",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Energizing",
+        "{@bold Type:} Reaction",
+        "{@bold Duration:} 1 minute",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Size",
+        "You can create a protective shield made of energy around yourself or a creature within 30 feet of you. The shield grants a bonus to AC equal to your proficiency bonus and lasts for 1 minute. The cost to use this talent is expending a psychic energy die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "reaction",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Energizing"
+    },
+    {
+      "name": "Vitality Surge",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Energizing",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} 30 feet",
+        "{@bold PE Cost:} Size",
+        "You can channel energy into a creature, restoring a number of hit points equal to your PE die size plus your proficiency bonus. The target must be within 30 feet of you and must be a living creature. The cost to use this talent is expending a psychic energy die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Energizing"
+    },
+    {
+      "name": "Elemental Resistance",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Energizing",
+        "{@bold Type:} Action",
+        "{@bold Duration:} 1 hour",
+        "{@bold Range:} touch",
+        "{@bold PE Cost:} Size",
+        "You can imbue yourself or a creature you can touch with resistance to a chosen elemental damage type (acid, cold, fire, lightning, poison, or thunder) for 1 hour. The cost to use this talent is expending a psychic energy die size."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Energizing"
+    },
+    {
+      "name": "Life Transference",
+      "source": "Psion",
+      "entries": [
+        "{@bold Prerequisite:} Energizing",
+        "{@bold Type:} Action",
+        "{@bold Duration:} Instantaneous",
+        "{@bold Range:} touch",
+        "{@bold PE Cost:} Roll",
+        "You can sacrifice some of your own life energy to restore the vital energy of another creature you can touch. You take damage equal to your psychic energy die roll minus your Constitution modifier (minimum of 1 damage), while the target regains hit points equal to your PE die {@i size}. The target creature must be a living creature."
+      ],
+      "foundrySystem": {
+        "activation.type": "action",
+        "activation.cost": "1"
+      },
+      "type": "T",
+      "order": "Energizing"
+    }
+  ]
+}

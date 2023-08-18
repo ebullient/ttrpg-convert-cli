@@ -1,17 +1,22 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public interface SkillOrAbility {
-    static final SpecialSkillOrAbility special = new SpecialSkillOrAbility("Special");
+    static final Comparator<SkillOrAbility> comparator = Comparator.comparingInt(SkillOrAbility::ordinal)
+            .thenComparing(Comparator.comparing(SkillOrAbility::value));
+    static final CustomSkillOrAbility special = new CustomSkillOrAbility("Special");
 
     String value();
 
     int ordinal();
 
-    public static SkillOrAbility fromTextValue(String v) {
+    public static SkillOrAbility fromTextValue(String v, Tools5eIndex index) {
         if (v == null || v.isBlank()) {
             return SkillOrAbilityEnum.None;
         }
@@ -24,7 +29,12 @@ public interface SkillOrAbility {
                 return s;
             }
         }
-        throw new IllegalArgumentException("Unknown skill or ability value " + v + " (compared using " + lower + ")");
+        SkillOrAbility skill = index.isHomebrew() ? index.homebrew.getSkillType(lower) : null;
+        if (skill != null) {
+            return skill;
+        }
+        index.tui().warnf("Unknown skill or ability value " + v + " (compared using " + lower + ")");
+        return null;
     }
 
     public static final List<String> allSkills = Stream.of(SkillOrAbilityEnum.values())
@@ -37,17 +47,26 @@ public interface SkillOrAbility {
             .map(x -> x.longValue)
             .collect(Collectors.toList());
 
-    public static String format(String key) {
-        return fromTextValue(key).value();
+    public static String format(String key, Tools5eIndex index) {
+        SkillOrAbility skill = fromTextValue(key, index);
+        return skill == null ? key : fromTextValue(key, index).value();
     }
 
-    public class SpecialSkillOrAbility implements SkillOrAbility {
+    public class CustomSkillOrAbility implements SkillOrAbility {
         final String name;
         final String lower;
+        final Tools5eSources sources;
 
-        public SpecialSkillOrAbility(String name) {
+        public CustomSkillOrAbility(String name) {
             this.name = name;
             this.lower = name.toLowerCase();
+            this.sources = null;
+        }
+
+        public CustomSkillOrAbility(JsonNode skill) {
+            this.sources = Tools5eSources.constructSources(skill);
+            this.name = this.sources.getName();
+            this.lower = this.name.toLowerCase();
         }
 
         @Override

@@ -33,6 +33,7 @@ import dev.ebullient.convert.tools.dnd5e.ItemProperty.CustomItemProperty;
 import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
 import dev.ebullient.convert.tools.dnd5e.ItemType.CustomItemType;
 import dev.ebullient.convert.tools.dnd5e.ItemType.ItemEnum;
+import dev.ebullient.convert.tools.dnd5e.SkillOrAbility.CustomSkillOrAbility;
 import dev.ebullient.convert.tools.dnd5e.SpellSchool.CustomSpellSchool;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -188,7 +189,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         JsonNode featureTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.optionalFeatureTypes);
         JsonNode spellSchools = SourceField.meta.getFieldFrom(node, HomebrewFields.spellSchools);
         JsonNode psionicTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.psionicTypes);
-        if (featureTypes != null || spellSchools != null || psionicTypes != null) {
+        JsonNode skillTypes = HomebrewFields.skill.getFrom(node);
+        if (featureTypes != null || spellSchools != null || psionicTypes != null || skillTypes != null) {
             for (Entry<String, JsonNode> entry : iterableFields(featureTypes)) {
                 metaTypes.setOptionalFeatureType(entry.getKey(), entry.getValue().asText());
             }
@@ -199,6 +201,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
             for (Entry<String, JsonNode> entry : iterableFields(psionicTypes)) {
                 metaTypes.setPsionicType(entry.getKey(), HomebrewFields.full.getTextOrEmpty(entry.getValue()));
+            }
+            for (JsonNode skill : iterableElements(skillTypes)) {
+                String skillName = SourceField.name.getTextOrEmpty(skill);
+                if (skillName == null) {
+                    tui().warnf("Homebrew skill type missing name: %s", skill);
+                    continue;
+                }
+                addToIndex(Tools5eIndexType.skill, skill);
+                metaTypes.setSkillType(skillName, skill);
             }
         }
 
@@ -1045,6 +1056,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // name, long name
         final Map<String, String> optionalFeatureTypes = new HashMap<>();
         final Map<String, String> psionicTypes = new HashMap<>();
+        final Map<String, SkillOrAbility> skillOrAbility = new HashMap<>();
         final Map<String, CustomSpellSchool> spellSchoolTypes = new HashMap<>();
         final Map<String, CustomItemType> itemTypes = new HashMap<>();
         final Map<String, CustomItemProperty> itemProperties = new HashMap<>();
@@ -1068,6 +1080,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         public void setPsionicType(String key, String value) {
             psionicTypes.put(key.toLowerCase(), value);
+        }
+
+        public SkillOrAbility getSkillType(String key) {
+            return skillOrAbility.get(key.toLowerCase());
+        }
+
+        public void setSkillType(String key, JsonNode skill) {
+            skillOrAbility.put(key.toLowerCase(), new CustomSkillOrAbility(skill));
         }
 
         public SpellSchool getSpellSchool(String key) {
@@ -1101,6 +1121,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         json,
         optionalFeatureTypes,
         psionicTypes,
+        skill,
         sources,
         spellSchools,
         spellDistanceUnits

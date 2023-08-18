@@ -10,7 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*{resource.parentClass}: {resource.subclassTitle}*  
+*{resource.parentClassLink}{#if resource.subclassTitle}: {resource.subclassTitle}{/if}*  
 *Source: {resource.source}*  
 
 {#if resource.classProgression }

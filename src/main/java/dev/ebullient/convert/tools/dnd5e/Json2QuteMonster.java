@@ -296,7 +296,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     String getModifier(String key, JsonNode value, Map<String, String> values) {
-        String ability = SkillOrAbility.format(key);
+        String ability = SkillOrAbility.format(key, index());
         String modifier = replaceText(value.asText());
         values.put(ability, modifier);
 

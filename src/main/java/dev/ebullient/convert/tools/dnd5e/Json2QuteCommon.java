@@ -66,26 +66,44 @@ public class Json2QuteCommon implements JsonSource {
     public List<String> getFluff(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
         List<String> text = new ArrayList<>();
         JsonNode fluffNode = null;
-        if (rootNode.has("fluff")) {
+        if (Tools5eFields.fluff.existsIn(rootNode)) {
             fluffNode = rootNode.get("fluff");
-            if (fluffNode.has("_monsterFluff")) {
-                String fluffKey = fluffType.createKey(fluffNode.get(""));
+            JsonNode monsterFluff = Tools5eFields._monsterFluff.getFrom(fluffNode);
+            if (monsterFluff != null) {
+                String fluffKey = fluffType.createKey(monsterFluff);
                 fluffNode = index.getNode(fluffKey);
             }
-        } else if (booleanOrDefault(rootNode, "hasFluff", false) || booleanOrDefault(rootNode, "hasFluffImages", false)) {
+        } else if (Tools5eFields.hasFluff.booleanOrDefault(rootNode, false)
+                || Tools5eFields.hasFluffImages.booleanOrDefault(rootNode, false)) {
             String fluffKey = fluffType.createKey(rootNode);
             fluffNode = index.getNode(fluffKey);
         }
 
         if (fluffNode != null) {
-            JsonSourceCopier copier = new JsonSourceCopier(index);
-            fluffNode = copier.handleCopy(fluffType, fluffNode);
-            if (fluffNode.has("entries")) {
-                appendToText(text, fluffNode.get("entries"), heading);
+            if (fluffNode.isArray()) {
+                for (JsonNode f : iterableElements(fluffNode)) {
+                    unpackFluffNode(fluffType, f, text, heading, images);
+                }
+            } else {
+                unpackFluffNode(fluffType, fluffNode, text, heading, images);
             }
-            getImages(fluffNode.get("images"), images);
         }
         return text;
+    }
+
+    public void unpackFluffNode(Tools5eIndexType fluffType, JsonNode fluffNode, List<String> text, String heading,
+            List<ImageRef> images) {
+        JsonSourceCopier copier = new JsonSourceCopier(index);
+        fluffNode = copier.handleCopy(fluffType, fluffNode);
+        if (fluffNode.has("entries")) {
+            boolean pushed = parseState().push(getSources(), fluffNode);
+            try {
+                appendToText(text, fluffNode, heading);
+            } finally {
+                parseState().pop(pushed);
+            }
+        }
+        getImages(fluffNode.get("images"), images);
     }
 
     public List<ImageRef> getFluffImages(Tools5eIndexType fluffType) {
