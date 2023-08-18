@@ -186,6 +186,26 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         HomebrewMetaTypes metaTypes = new HomebrewMetaTypes(json, filename);
 
+        for (JsonNode source : iterableElements(sources)) {
+            String fullName = HomebrewFields.full.getTextOrEmpty(source);
+            String abbreviation = HomebrewFields.abbreviation.getTextOrEmpty(source);
+            json = HomebrewFields.json.getTextOrEmpty(source);
+            if (fullName == null) {
+                tui().warnf("Homebrew source %s missing full name: %s", json, fullName);
+            }
+            // add homebrew to known sources
+            if (abbreviation == null) {
+                TtrpgConfig.addHomebrewSource(fullName, json);
+            } else {
+                TtrpgConfig.addHomebrewSource(fullName, json, abbreviation);
+            }
+            // one homebrew file may include multiple sources, the same mapping applies to all
+            HomebrewMetaTypes old = homebrewMetaTypes.put(json, metaTypes);
+            if (old != null) {
+                tui().errorf("Shared homebrew id: %s and %s", old.filename, metaTypes.filename);
+            }
+        }
+
         JsonNode featureTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.optionalFeatureTypes);
         JsonNode spellSchools = SourceField.meta.getFieldFrom(node, HomebrewFields.spellSchools);
         JsonNode psionicTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.psionicTypes);
@@ -213,25 +233,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         }
 
-        for (JsonNode source : iterableElements(sources)) {
-            String fullName = HomebrewFields.full.getTextOrEmpty(source);
-            String abbreviation = HomebrewFields.abbreviation.getTextOrEmpty(source);
-            json = HomebrewFields.json.getTextOrEmpty(source);
-            if (fullName == null) {
-                tui().warnf("Homebrew source %s missing full name: %s", json, fullName);
-            }
-            // add homebrew to known sources
-            if (abbreviation == null) {
-                TtrpgConfig.addHomebrewSource(fullName, json);
-            } else {
-                TtrpgConfig.addHomebrewSource(fullName, json, abbreviation);
-            }
-            // one homebrew file may include multiple sources, the same mapping applies to all
-            HomebrewMetaTypes old = homebrewMetaTypes.put(json, metaTypes);
-            if (old != null) {
-                tui().errorf("Shared homebrew id: %s and %s", old.filename, metaTypes.filename);
-            }
-        }
         return metaTypes;
     }
 
@@ -675,6 +676,22 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return itemType;
     }
 
+    public SkillOrAbility findSkillOrAbility(String key, Tools5eSources sources) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
+        HomebrewMetaTypes meta = homebrewMetaTypes.get(sources.primarySource());
+        SkillOrAbility skill = SkillOrAbility.fromTextValue(key);
+        if (skill == null && meta != null) {
+            skill = meta.getSkillType(key);
+        }
+        if (skill == null) {
+            tui().errorf("Unknown skill or ability %s in %s", key, sources);
+            throw new IllegalStateException("Unknown skill: " + key);
+        }
+        return skill;
+    }
+
     public SpellSchool findSpellSchool(String abbreviation, Tools5eSources sources) {
         if (abbreviation == null || abbreviation.isEmpty()) {
             return null;
@@ -685,7 +702,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             school = meta.getSpellSchool(abbreviation);
         }
         if (school == null) {
-            tui().errorf("Unknown property %s for %s", abbreviation, sources);
+            tui().errorf("Unknown spell school %s in %s", abbreviation, sources);
             throw new IllegalStateException("Unknown spell school: " + abbreviation);
         }
         return school;

@@ -145,7 +145,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             });
 
             result = skillCheckPattern.matcher(result).replaceAll((match) -> {
-                SkillOrAbility skill = SkillOrAbility.fromTextValue(match.group(1), index());
+                SkillOrAbility skill = index().findSkillOrAbility(match.group(1), getSources());
                 if (skill == null) {
                     return match.group(1);
                 }

@@ -291,12 +291,12 @@ public class Json2QuteClass extends Json2QuteCommon {
         if (requirements.has("or")) {
             List<String> options = new ArrayList<>();
             requirements.get("or").get(0).fields().forEachRemaining(ability -> options.add(String.format("%s %s",
-                    SkillOrAbility.format(ability.getKey(), index()), ability.getValue().asText())));
+                    SkillOrAbility.format(ability.getKey(), index(), getSources()), ability.getValue().asText())));
             startMulticlass.add("- " + String.join(", or ", options));
         } else {
             requirements.fields().forEachRemaining(
                     ability -> startMulticlass.add(String.format("- %s %s",
-                            SkillOrAbility.format(ability.getKey(), index()), ability.getValue().asText())));
+                            SkillOrAbility.format(ability.getKey(), index(), getSources()), ability.getValue().asText())));
         }
 
         JsonNode gained = multiclassing.get("proficienciesGained");
@@ -535,7 +535,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     String skillChoices(Collection<String> skills, int numSkills) {
         return String.format("Choose %s from %s",
                 numSkills,
-                skills.stream().map(x -> SkillOrAbility.fromTextValue(x, index()))
+                skills.stream().map(x -> index.findSkillOrAbility(x, getSources()))
                         .filter(x -> x != null)
                         .sorted(SkillOrAbility.comparator)
                         .map(x -> "*" + x.value() + "*")
@@ -559,11 +559,13 @@ public class Json2QuteClass extends Json2QuteCommon {
             } else if ("any".equals(skill)) {
                 count = skills.get("any").asInt();
                 list.addAll(SkillOrAbility.allSkills);
-            } else if (SkillOrAbility.fromTextValue(skill, index()) == null) {
-                tui().errorf("Unexpected skills in starting proficiencies for %s: %s",
-                        sources, source.toPrettyString());
             } else {
-                list.add(skill);
+                SkillOrAbility custom = index.findSkillOrAbility(skill, getSources());
+                if (custom == null) {
+                    tui().errorf("Unexpected skills in starting proficiencies for %s: %s",
+                            sources, source.toPrettyString());
+                }
+                list.add(custom.value());
             }
         }
 

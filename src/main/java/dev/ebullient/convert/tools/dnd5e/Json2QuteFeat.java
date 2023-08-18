@@ -51,7 +51,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
             for (JsonNode a : iterableElements(entry.get("ability"))) {
                 for (Entry<String, JsonNode> score : iterableFields(a)) {
                     abilityScores.computeIfAbsent(score.getValue().asText(), k -> new ArrayList<>())
-                            .add(SkillOrAbility.format(score.getKey(), index()));
+                            .add(SkillOrAbility.format(score.getKey(), index(), getSources()));
                 }
             }
 

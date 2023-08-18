@@ -822,7 +822,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String asAbilityEnum(JsonNode textNode) {
-        return SkillOrAbility.format(textNode.asText(), index());
+        return SkillOrAbility.format(textNode.asText(), index(), getSources());
     }
 
     default String mapAlignmentToString(String a) {
@@ -830,24 +830,27 @@ public interface JsonSource extends JsonTextReplacement {
             case "A" -> "Any alignment";
             case "C" -> "Chaotic";
             case "CE" -> "Chaotic Evil";
-            case "CELENE", "LNXCE" -> "Any Evil Alignment";
             case "CG" -> "Chaotic Good";
             case "CGNE" -> "Chaotic Good or Neutral Evil";
             case "CGNYE" -> "Any Chaotic alignment";
             case "CN" -> "Chaotic Neutral";
-            case "N", "NX", "NY" -> "Neutral";
+            case "N", "NNXNYN" -> "Neutral";
+            case "NX" -> "Neutral (law/chaos axis)";
+            case "NY" -> "Neutral (good/evil axis)";
             case "NE" -> "Neutral Evil";
             case "NG" -> "Neutral Good";
             case "NGNE", "NENG" -> "Neutral Good or Neutral Evil";
-            case "NNXNYN", "NXCGNYE" -> "Any Non-Lawful alignment";
             case "L" -> "Lawful";
             case "LE" -> "Lawful Evil";
             case "LG" -> "Lawful Good";
             case "LN" -> "Lawful Neutral";
+            case "LNCE" -> "Lawful Neutral or Chaotic Evil";
             case "LELG" -> "Lawful Evil or Lawful Good";
             case "LELN" -> "Lawful Evil or Lawful Neutral";
             case "LNXCNYE" -> "Any Non-Good alignment";
-            case "E" -> "Any Evil alignment";
+            case "E", "CELENE", "LNXCE" -> "Any Evil alignment";
+            case "LGNYE" -> "Any Non-Chaotic alignment";
+            case "NXCGNYE" -> "Any Non-Lawful alignment";
             case "G" -> "Any Good alignment";
             case "U" -> "Unaligned";
             default -> {

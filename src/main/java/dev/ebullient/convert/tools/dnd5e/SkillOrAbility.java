@@ -16,7 +16,7 @@ public interface SkillOrAbility {
 
     int ordinal();
 
-    public static SkillOrAbility fromTextValue(String v, Tools5eIndex index) {
+    public static SkillOrAbility fromTextValue(String v) {
         if (v == null || v.isBlank()) {
             return SkillOrAbilityEnum.None;
         }
@@ -29,11 +29,6 @@ public interface SkillOrAbility {
                 return s;
             }
         }
-        SkillOrAbility skill = index.isHomebrew() ? index.homebrew.getSkillType(lower) : null;
-        if (skill != null) {
-            return skill;
-        }
-        index.tui().warnf("Unknown skill or ability value " + v + " (compared using " + lower + ")");
         return null;
     }
 
@@ -47,9 +42,9 @@ public interface SkillOrAbility {
             .map(x -> x.longValue)
             .collect(Collectors.toList());
 
-    public static String format(String key, Tools5eIndex index) {
-        SkillOrAbility skill = fromTextValue(key, index);
-        return skill == null ? key : fromTextValue(key, index).value();
+    public static String format(String key, Tools5eIndex index, Tools5eSources sources) {
+        SkillOrAbility skill = index.findSkillOrAbility(key, sources);
+        return skill == null ? key : skill.value();
     }
 
     public class CustomSkillOrAbility implements SkillOrAbility {
