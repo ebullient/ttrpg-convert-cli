@@ -210,6 +210,9 @@ public class TestUtils {
         if (l.contains("{#")) {
             errors.add(String.format("Found {# in %s: %s", p, l));
         }
+        if (l.contains("%% ERROR")) {
+            errors.add(String.format("Found template error in %s: %s", p, l));
+        }
     }
 
     /**

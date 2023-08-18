@@ -13,6 +13,7 @@ import dev.ebullient.convert.io.MarkdownWriter.FileMap;
 import dev.ebullient.convert.qute.QuteBase;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateException;
 
 @ApplicationScoped
 public class Templates {
@@ -60,25 +61,46 @@ public class Templates {
 
     public String render(QuteBase resource) {
         Template tpl = customTemplateOrDefault(resource.template());
-        return tpl
-                .data("resource", resource)
-                .render()
-                .replaceAll("%%-- .*? --%%\\n", "")
-                .trim();
+        try {
+            return tpl
+                    .data("resource", resource)
+                    .render()
+                    .replaceAll("%%-- .*? --%%\\n", "")
+                    .trim();
+        } catch (TemplateException tex) {
+            Throwable cause = tex.getCause();
+            String message = cause != null ? cause.toString() : tex.toString();
+            tui.error(tex, message);
+            return "%% ERROR: " + message + " %%";
+        }
     }
 
     public String renderInlineEmbedded(QuteBase resource) {
         Template tpl = customTemplateOrDefault(resource.template());
-        return tpl
-                .data("resource", resource)
-                .render().trim();
+        try {
+            return tpl
+                    .data("resource", resource)
+                    .render().trim();
+        } catch (TemplateException tex) {
+            Throwable cause = tex.getCause();
+            String message = cause != null ? cause.toString() : tex.toString();
+            tui.error(tex, message);
+            return "%% ERROR: " + message + " %%";
+        }
     }
 
     public String renderIndex(String name, Collection<FileMap> resources) {
         Template tpl = customTemplateOrDefault("index.txt");
-        return tpl
-                .data("name", name)
-                .data("resources", resources)
-                .render();
+        try {
+            return tpl
+                    .data("name", name)
+                    .data("resources", resources)
+                    .render();
+        } catch (TemplateException tex) {
+            Throwable cause = tex.getCause();
+            String message = cause != null ? cause.toString() : tex.toString();
+            tui.error(tex, message);
+            return "%% ERROR: " + message + " %%";
+        }
     }
 }
