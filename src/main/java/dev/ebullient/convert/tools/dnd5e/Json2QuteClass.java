@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
@@ -60,8 +59,8 @@ public class Json2QuteClass extends Json2QuteCommon {
         Tags tags = new Tags(getSources());
         tags.add("class", slugify(getName()));
 
-        List<ImageRef> images = new ArrayList<>();
-        List<String> text = getFluff(Tools5eIndexType.classFluff, "##", images);
+        // May have fluff text. Does not have separate fluff images
+        List<String> text = getFluff(Tools5eIndexType.classFluff, "##", new ArrayList<>());
 
         maybeAddBlankLine(text);
         text.add("## Class Features");

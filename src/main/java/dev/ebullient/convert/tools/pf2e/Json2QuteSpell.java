@@ -163,25 +163,22 @@ public class Json2QuteSpell extends Json2QuteBase {
             return null;
         }
         NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
-        for (Entry<String, JsonNode> e : iterableFields(heightened)) {
-            JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
-            JsonNode X = Pf2eSpell.X.getFrom(heightened);
-            if (plusX != null) {
-                plusX.fields().forEachRemaining(x -> {
-                    namedText.add(
-                            String.format("Heightened (+ %s)", x.getKey()),
-                            getHeightenedValue(x.getValue()));
-                });
-            }
-            if (X != null) {
-                X.fields().forEachRemaining(x -> {
-                    namedText.add(
-                            String.format("Heightened (%s)", getOrdinalForm(x.getKey())),
-                            getHeightenedValue(x.getValue()));
-                });
-            }
+        JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
+        JsonNode X = Pf2eSpell.X.getFrom(heightened);
+        if (plusX != null) {
+            plusX.fields().forEachRemaining(x -> {
+                namedText.add(
+                        String.format("Heightened (+ %s)", x.getKey()),
+                        getHeightenedValue(x.getValue()));
+            });
         }
-        ;
+        if (X != null) {
+            X.fields().forEachRemaining(x -> {
+                namedText.add(
+                        String.format("Heightened (%s)", getOrdinalForm(x.getKey())),
+                        getHeightenedValue(x.getValue()));
+            });
+        }
         return namedText.build();
     }
 

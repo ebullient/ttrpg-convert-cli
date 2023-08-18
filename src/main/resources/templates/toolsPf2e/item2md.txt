@@ -47,6 +47,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 
 {#if resource.variants }
 ---
+
 ### Variants
 {#for variant in resource.variants }
 
