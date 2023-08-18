@@ -64,7 +64,7 @@ public class QuteBase implements QuteUtil {
 
     /** True if the content (text) contains sections */
     public boolean getHasSections() {
-        return text.contains("\n## ");
+        return text != null && !text.isEmpty() && text.contains("\n## ");
     }
 
     public void vaultPath(String vaultPath) {

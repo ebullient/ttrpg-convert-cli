@@ -15,6 +15,9 @@ aliases: ["{resource.name}"]
 {#if resource.description }
 {resource.description}
 
+{/if}{#if resource.hasSections }
+## Statblock
+
 {/if}
 ```ad-statblock
 title: {resource.name}{#if resource.token}

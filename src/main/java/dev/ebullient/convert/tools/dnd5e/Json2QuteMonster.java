@@ -92,9 +92,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.monsterFluff, "##", fluffImages);
-        if (fluff != null && fluff.contains("##")) {
-            fluff += "\n\n## Stat Block";
-        }
 
         return new QuteMonster(sources,
                 decoratedMonsterName(sources),
@@ -102,7 +99,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 isNpc,
                 size, creatureType, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
-                monsterSpeed(), monsterScores(),
+                monsterSpeed(),
+                monsterScores(),
                 monsterSavesAndSkills(),
                 joinAndReplace(rootNode, "senses"),
                 intOrDefault(rootNode, "passive", 10),
@@ -112,8 +110,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterImmunities("conditionImmune"),
                 joinAndReplace(rootNode, "languages"),
                 cr, pb,
-                monsterTraits("trait"), monsterTraits("action"),
-                monsterTraits("bonus"), monsterTraits("reaction"),
+                monsterTraits("trait"),
+                monsterTraits("action"),
+                monsterTraits("bonus"),
+                monsterTraits("reaction"),
                 monsterTraits("legendary"),
                 legendaryGroup(),
                 monsterSpellcasting(),
@@ -127,9 +127,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     void findCreatureType() {
-        JsonNode typeNode = rootNode.get("type");
+        JsonNode typeNode = type == Tools5eIndexType.monster
+                ? MonsterFields.type.getFrom(rootNode)
+                : MonsterFields.creatureType.getFrom(rootNode);
+            rootNode.get("type");
         if (typeNode == null) {
-            tui().warn("Empty type for " + getSources());
+            if (type == Tools5eIndexType.monster) {
+                tui().warn("Empty type for " + getSources());
+            }
             return;
         }
         if (typeNode.isTextual()) {
@@ -138,7 +143,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         // We have an object: type + tags
-        creatureType = typeNode.get("type").asText();
+        creatureType = MonsterFields.type.getTextOrEmpty(typeNode);
         List<String> tags = new ArrayList<>();
         typeNode.withArray("tags").forEach(tag -> {
             if (tag.isTextual()) {
@@ -155,63 +160,65 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     void findAc() {
-        JsonNode acNode = rootNode.get("ac");
+        JsonNode acNode = MonsterFields.ac.getFrom(rootNode);
         if (acNode.isIntegralNumber()) {
             ac = acNode.asInt();
         } else if (acNode.isArray()) {
             List<String> details = new ArrayList<>();
-            acNode.forEach(acValue -> {
+            for( JsonNode acValue : iterableElements(acNode)) {
                 if (ac == null && details.isEmpty()) { // first time
                     if (acValue.isIntegralNumber()) {
                         ac = acValue.asInt();
                     } else if (acValue.isObject()) {
-                        if (acValue.has("ac")) {
-                            ac = acValue.get("ac").asInt();
+                        if (MonsterFields.ac.existsIn(acValue)) {
+                            ac = MonsterFields.ac.getFrom(acValue).asInt();
                         }
-                        if (acValue.has("special")) {
-                            details.add(acValue.get("special").asText());
-                        } else if (acValue.has("from")) {
-                            details.add(joinAndReplace(acValue.withArray("from")));
+                        if (MonsterFields.special.existsIn(acValue)) {
+                            details.add(MonsterFields.special.replaceTextFrom(acValue, this));
+                        } else if (MonsterFields.from.existsIn(acValue)) {
+                            details.add(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
                         }
                     }
                 } else { // nth time: conditional AC. Append to acText
                     StringBuilder value = new StringBuilder();
-                    value.append(acValue.get("ac").asText());
-                    if (acValue.has("from")) {
-                        value.append(" from ").append(joinAndReplace(acValue.withArray("from")));
+                    value.append(MonsterFields.ac.replaceTextFrom(acValue, this));
+                    if (MonsterFields.from.existsIn(acValue)) {
+                        value.append(" from ").append(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
                     }
-                    if (acValue.has("condition")) {
-                        value.append(" ").append(acValue.get("condition").asText());
+                    if (MonsterFields.condition.existsIn(acValue)) {
+                        value.append(" ").append(MonsterFields.condition.replaceTextFrom(acValue, this));
                     }
                     details.add(value.toString());
                 }
-            });
+            }
             if (!details.isEmpty()) {
                 acText = replaceText(String.join("; ", details));
             }
+        } else if (MonsterFields.special.existsIn(acNode)) {
+            acText = MonsterFields.special.replaceTextFrom(acNode, this);
         } else {
             tui().errorf("Unknown armor class in monster %s: %s", sources.getKey(), acNode.toPrettyString());
         }
     }
 
     void findHp() {
-        JsonNode health = rootNode.get("hp");
-        if (health.has("special")) {
-            String special = health.get("special").asText();
+        JsonNode health = MonsterFields.hp.getFrom(rootNode);
+        if (MonsterFields.special.existsIn(health)) {
+            String special = MonsterFields.special.replaceTextFrom(health, this);
             if (special.matches("^[\\d\"]+$")) {
                 hp = Integer.parseInt(special.replace("\"", ""));
-                if (health.has("original")) {
-                    hpText = health.get("original").asText();
+                if (MonsterFields.original.existsIn(health)) {
+                    hpText = MonsterFields.original.replaceTextFrom(health, this);
                 }
             } else {
                 hpText = replaceText(special);
             }
         } else {
-            if (health.has("average")) {
-                hp = health.get("average").asInt();
+            if (MonsterFields.average.existsIn(health)) {
+                hp = MonsterFields.average.getFrom(health).asInt();
             }
-            if (health.has("formula")) {
-                hitDice = health.get("formula").asText();
+            if (MonsterFields.formula.existsIn(health)) {
+                hitDice = MonsterFields.formula.getFrom(health).asText();
             }
         }
 
@@ -223,18 +230,18 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     String monsterSpeed() {
         List<String> speed = new ArrayList<>();
-        rootNode.get("speed").fields().forEachRemaining(f -> {
+        for(Entry<String, JsonNode> f : iterableFields(MonsterFields.speed.getFrom(rootNode))) {
             if (f.getValue().isNumber()) {
                 speed.add(String.format("%s %s ft.", f.getKey(), f.getValue().asText()));
-            } else if (f.getValue().has("number")) {
+            } else if (MonsterFields.number.existsIn(f.getValue())) {
                 speed.add(String.format("%s %s ft.%s",
                         f.getKey(),
-                        f.getValue().get("number").asText(),
-                        f.getValue().has("condition")
-                                ? " " + f.getValue().get("condition").asText()
+                        MonsterFields.number.replaceTextFrom(f.getValue(), this),
+                        MonsterFields.condition.existsIn(f.getValue())
+                                ? " " + MonsterFields.condition.replaceTextFrom(f.getValue(), this)
                                 : ""));
             }
-        });
+        }
         return replaceText(String.join(", ", speed));
     }
 
@@ -296,7 +303,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     String getModifier(String key, JsonNode value, Map<String, String> values) {
-        String ability = SkillOrAbility.format(key, index());
+        String ability = SkillOrAbility.format(key, index(), getSources());
         String modifier = replaceText(value.asText());
         values.put(ability, modifier);
 
@@ -449,38 +456,50 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     + UPPERCASE_LETTER.matcher(fieldName.substring(1))
                             .replaceAll(matchResult -> " " + (matchResult.group(1).toLowerCase()));
 
-            List<String> text = new ArrayList<>();
-            appendToText(text, field.getValue(), null);
-            traits.add(new NamedText(fieldName, String.join("\n", text)));
+            addNamedTrait(traits, fieldName, field.getValue());
         }
         return traits;
     }
 
     Collection<NamedText> monsterTraits(String field) {
+        List<NamedText> traits = new ArrayList<>();
+
+        JsonNode header = rootNode.get(field + "Header");
+        if (header != null) {
+            addNamedTrait(traits, "", header);
+        }
+
         JsonNode array = rootNode.get(field);
         if (array == null || array.isNull()) {
-            return null;
+            return traits;
         } else if (array.isObject()) {
             tui().errorf("Unknown %s for %s: %s", field, sources.getKey(), array.toPrettyString());
             throw new IllegalArgumentException("Unknown field: " + getSources());
         }
 
-        List<NamedText> traits = new ArrayList<>();
         for (JsonNode e : iterableElements(array)) {
             String name = SourceField.name.replaceTextFrom(e, this)
                     .replaceAll(":$", "");
 
-            List<String> text = new ArrayList<>();
-            appendToText(text, SourceField.entry.getFrom(e), null);
-            appendToText(text, SourceField.entries.getFrom(e), null);
-
-            String body = String.join("\n", text);
-            if (body.startsWith(">")) {
-                body = "\n" + body;
-            }
-            traits.add(new NamedText(name, body));
+            addNamedTrait(traits, name, e);
         }
         return traits;
+    }
+
+    void addNamedTrait(List<NamedText> traits, String name, JsonNode node) {
+        List<String> text = new ArrayList<>();
+        appendToText(text, SourceField.entry.getFrom(node), null);
+        appendToText(text, SourceField.entries.getFrom(node), null);
+        NamedText nt = new NamedText(name, text);
+        if (nt.hasContent()) {
+            traits.add(nt);
+        }
+    }
+
+    Path getTokenSourcePath(String filename) {
+        return Path.of("img",
+                    getSources().mapPrimarySource(),
+                    filename + ".png");
     }
 
     ImageRef getToken() {
@@ -498,9 +517,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     .replace("æ", "ae")
                     .replace("\"", "");
 
-            Path sourcePath = Path.of("img",
-                    getSources().mapPrimarySource(),
-                    filename + ".png");
+            Path sourcePath = getTokenSourcePath(filename);
 
             Path target = Path.of(getImagePath(),
                     "token",
@@ -705,8 +722,21 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     enum MonsterFields implements JsonNodeReader {
+        ac,
         alignment,
         alignmentPrefix,
+        average,
+        creatureType, // object -- alternate to monster type
+        condition,
+        formula,
+        from,
+        hp,
+        number,
+        original,
+        senses,
+        special,
+        speed,
         tokenUrl,
+        type,
     }
 }

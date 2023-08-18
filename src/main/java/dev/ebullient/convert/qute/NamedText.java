@@ -31,6 +31,19 @@ public class NamedText {
         this.desc = desc;
     }
 
+    public NamedText(String name, Collection<String> text) {
+        this.name = name;
+        String body = String.join("\n", text);
+        if (body.startsWith(">")) {
+            body = "\n" + body;
+        }
+        this.desc = body;
+    }
+
+    public boolean hasContent() {
+        return !desc.isBlank() && !name.isBlank();
+    }
+
     /** Alternate accessor for the name */
     public String getKey() {
         return name;
