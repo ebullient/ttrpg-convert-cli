@@ -227,8 +227,8 @@ public class CompendiumConfig {
 
         public void setTemplatePaths(TemplatePaths templatePaths) {
             CompendiumConfig cfg = TtrpgConfig.getConfig();
-            cfg.customTemplates.putAll(templatePaths.customTemplates);
             templatePaths.verify(tui);
+            cfg.customTemplates.putAll(templatePaths.customTemplates);
         }
 
         public void setAlwaysUseDiceRoller(boolean useDiceRoller) {

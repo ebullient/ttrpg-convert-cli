@@ -1,5 +1,20 @@
 {
   "config5e": {
+    "templateKeys": [
+      "background",
+      "class",
+      "deity",
+      "feat",
+      "hazard",
+      "item",
+      "monster",
+      "note",
+      "object",
+      "race",
+      "reward",
+      "spell",
+      "subclass"
+    ],
     "srdEntries": {
       "properties": [
         {
@@ -44,7 +59,7 @@
               "srd": true,
               "basicRules": true,
               "source": "PHB",
-              "page": 146,        
+              "page": 146,
               "entries": [
                 "You can use a weapon that has the ammunition property to make a ranged attack only if you have ammunition to fire from the weapon. Each time you attack with the weapon, you expend one piece of ammunition. Drawing the ammunition from a quiver, case, or other container is part of the attack. Loading a one-handed weapon requires a free hand. At the end of the battle, you can recover half your expended ammunition by taking a minute to search the battlefield.",
                 "If you use a weapon that has the ammunition property to make a melee attack, you treat the weapon as an improvised weapon. A sling must be loaded to deal any damage when used in this way."
@@ -123,7 +138,7 @@
               "type": "entries",
               "name": "Martial",
               "srd": true,
-              "basicRules" : true,
+              "basicRules": true,
               "entries": [
                 "Martial weapons, including swords, axes, and polearms, require more specialized training to use effectively. Most warriors use martial weapons because these weapons put their fighting style and training to best use."
               ]
@@ -307,7 +322,8 @@
       "img/items/CRCotN/Medal of the Maze.jpg": "img/items/CRCotN/Medal of the Maze.webp"
     },
     "markerFiles": [
-      "cultsboons.json", "book/book-phb.json"
+      "cultsboons.json",
+      "book/book-phb.json"
     ],
     "fixes": {
       "adventure/adventure-lr.json": [
@@ -346,37 +362,101 @@
       ]
     },
     "sources": [
-      "actions.json", "adventures.json", "books.json",
-      "backgrounds.json", "fluff-backgrounds.json",
-      "bestiary", "bestiary/legendarygroups.json", "bestiary/template.json",
-      "class", "conditionsdiseases.json",
+      "actions.json",
+      "adventures.json",
+      "books.json",
+      "backgrounds.json",
+      "fluff-backgrounds.json",
+      "bestiary",
+      "bestiary/legendarygroups.json",
+      "bestiary/template.json",
+      "class",
+      "conditionsdiseases.json",
       "deities.json",
-      "feats.json", "optionalfeatures.json",
+      "feats.json",
+      "optionalfeatures.json",
       "generated/gendata-tables.json",
-      "items.json", "items-base.json", "fluff-items.json", 
-      "magicvariants.json", "objects.json", "psionics.json",
-      "races.json", "fluff-races.json", "rewards.json",
-      "skills.json", "senses.json", "spells", 
-      "tables.json", "trapshazards.json", 
-      "variantrules.json", "vehicles.json"
+      "items.json",
+      "items-base.json",
+      "fluff-items.json",
+      "magicvariants.json",
+      "objects.json",
+      "psionics.json",
+      "races.json",
+      "fluff-races.json",
+      "rewards.json",
+      "skills.json",
+      "senses.json",
+      "spells",
+      "tables.json",
+      "trapshazards.json",
+      "variantrules.json",
+      "vehicles.json"
     ],
     "indexes": {
       "spell-source": "generated/gendata-spell-source-lookup.json"
     }
   },
   "configPf2e": {
+    "templateKeys": [
+      "ability",
+      "action",
+      "affliction",
+      "archetype",
+      "background",
+      "book",
+      "deity",
+      "feat",
+      "hazard",
+      "inline-ability",
+      "inline-affliction",
+      "inline-attack",
+      "item",
+      "note",
+      "ritual",
+      "spell",
+      "trait"
+    ],
     "markerFiles": [
-      "archetypes.json", "book/book-crb.json"
+      "archetypes.json",
+      "book/book-crb.json"
     ],
     "sources": [
-      "ancestries", "backgrounds", "bestiary", "book", "class", "feats", "items", "spells",
-      "books.json", "book/book-crb.json", "items/baseitems.json",
-      "abilities.json", "actions.json", "afflictions.json", "archetypes.json",
-      "companionsfamiliars.json", "conditions.json", "deities.json", "domains.json", 
-      "events.json", "groups.json", "hazards.json", "languages.json",
-      "optionalfeatures.json", "organizations.json", "places.json", "quickrules.json",
-      "relicgifts.json", "rituals.json","skills.json", "sources.json", 
-      "tables.json", "traits.json", "variantrules.json", "vehicles.json"
+      "ancestries",
+      "backgrounds",
+      "bestiary",
+      "book",
+      "class",
+      "feats",
+      "items",
+      "spells",
+      "books.json",
+      "book/book-crb.json",
+      "items/baseitems.json",
+      "abilities.json",
+      "actions.json",
+      "afflictions.json",
+      "archetypes.json",
+      "companionsfamiliars.json",
+      "conditions.json",
+      "deities.json",
+      "domains.json",
+      "events.json",
+      "groups.json",
+      "hazards.json",
+      "languages.json",
+      "optionalfeatures.json",
+      "organizations.json",
+      "places.json",
+      "quickrules.json",
+      "relicgifts.json",
+      "rituals.json",
+      "skills.json",
+      "sources.json",
+      "tables.json",
+      "traits.json",
+      "variantrules.json",
+      "vehicles.json"
     ],
     "fixes": {
       "backgrounds/backgrounds-apg.json": [

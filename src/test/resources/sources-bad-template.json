@@ -4,6 +4,6 @@
   ],
   "template": {
     "background": "garbage",
-    "glory": "unknown"
+    "glory": "examples/templates/tools5e/images-background2md.txt" 
   }
 }

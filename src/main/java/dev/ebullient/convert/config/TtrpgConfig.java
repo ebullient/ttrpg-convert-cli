@@ -59,6 +59,10 @@ public class TtrpgConfig {
         return activeConfig().longToAbv.getOrDefault(src.toLowerCase(), src);
     }
 
+    public static Collection<String> getTemplateKeys() {
+        return activeConfig().templateKeys;
+    }
+
     public static void addHomebrewSource(String name, String abv) {
         activeConfig().addSource(name, abv);
     }
@@ -142,6 +146,7 @@ public class TtrpgConfig {
                 config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(config5e));
                 config.sources.addAll(ConfigKeys.sources.getAsList(config5e));
                 config.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(config5e));
+                config.templateKeys.addAll(ConfigKeys.templateKeys.getAsList(config5e));
 
                 Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(config5e, FIXES);
                 if (fixes != null) {
@@ -158,6 +163,7 @@ public class TtrpgConfig {
                 config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(configPf2e));
                 config.sources.addAll(ConfigKeys.sources.getAsList(configPf2e));
                 config.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(configPf2e));
+                config.templateKeys.addAll(ConfigKeys.templateKeys.getAsList(configPf2e));
 
                 Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(configPf2e, FIXES);
                 if (fixes != null) {
@@ -176,6 +182,7 @@ public class TtrpgConfig {
         final Map<String, String> indexes = new HashMap<>();
         final List<String> sources = new ArrayList<>();
         final List<String> markerFiles = new ArrayList<>();
+        final List<String> templateKeys = new ArrayList<>();
 
         public List<Fix> findFixesFor(String filepath) {
             for (Map.Entry<String, List<Fix>> entry : fixes.entrySet()) {
@@ -220,17 +227,18 @@ public class TtrpgConfig {
     }
 
     enum ConfigKeys {
-        fallbackImage,
+        abvToName,
         config5e,
         configPf2e,
+        fallbackImage,
         fixes,
         indexes,
+        longToAbv,
         markerFiles,
-        srdEntries,
         properties,
         sources,
-        abvToName,
-        longToAbv;
+        srdEntries,
+        templateKeys;
 
         JsonNode get(JsonNode node) {
             return node.get(this.name());
