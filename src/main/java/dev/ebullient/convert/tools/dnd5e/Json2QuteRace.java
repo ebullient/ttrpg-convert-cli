@@ -134,9 +134,8 @@ public class Json2QuteRace extends Json2QuteCommon {
         Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
         index.originSubraces(sources).forEach(sr -> {
             JsonNode newNode = copier.handleCopy(type, sr);
-            // TODO: create new key first?
-            Tools5eSources srSources = Tools5eSources.constructSources(newNode);
-            variants.add(new Tuple(srSources.getKey(), newNode));
+            String srKey = Tools5eIndexType.subrace.createKey(newNode);
+            variants.add(new Tuple(srKey, newNode));
         });
         return variants;
     }

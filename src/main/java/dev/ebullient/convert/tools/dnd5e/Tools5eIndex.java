@@ -374,9 +374,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             List<Tuple> variants = findVariants(key, jsonSource);
             if (variants.size() > 1) {
                 tui().debugf("%s variants found for %s", variants.size(), key);
-                variants.forEach(x -> tui().debugf("\t%s", x.key));
             }
             variants.forEach(v -> {
+                if (variants.size() > 1) {
+                    tui().debugf("\t%s", v.key);
+                }
                 JsonNode old = variantIndex.put(v.key, v.node);
                 if (old != null) {
                     tui().errorf("Duplicate key: %s", v.key);
