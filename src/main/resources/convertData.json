@@ -473,10 +473,88 @@
           "replace": "\"fortune\""
         }
       ],
+      "book/book-gmg.json": [
+        {
+          "match": "\\{@skill cleric}",
+          "replace": "\\{@class Cleric}"
+        }
+      ],
       "feats/feats-roe.json": [
         {
           "match": "\\{@condition daze}",
           "replace": "\\{@condition dazzled}"
+        }
+      ],
+      "items/items-apg.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-av1.json": [
+        {
+          "match": "\"Interact \\(emotion\",[\\s\\r\\n]+\"visual\\)\"",
+          "replace": "\"{@action Interact} ({@trait emotion}, {@trait visual})\""
+        },
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-av2.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        },
+        {
+          "match": "\"activity\": \\{[\\s\\r\\n]+\"number\": 1,[\\s\\r\\n]+\"unit\": \"varies\",[\\s\\r\\n]+\"entry\": \"\\{@as 1} \\{@action Interact} \\(concentrate\\) Frequency\"[\\s\\r\\n]+},[\\s\\r\\n]+\"components\": [[\\s\\r\\n]+\"once per hour\"[\\s\\r\\n]+],",
+          "replace": "\"activity\": { \"number\": 1, \"unit\": \"action\" }, \"frequency\": { \"unit\": \"hour\", \"number\": 1 }, \"components\": [ \"{@action Interact} ({@trait concentrate})\" ],"
+        }
+      ],
+      "items/items-av3.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-crb.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-ec4.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-ec6.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-g&g.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-logm.json": [
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-lotgb.json": [
+        {
+          "match": "\"Interact \\(concentrate\",[\\s\\r\\n]+\"manipulate\",[\\s\\r\\n]+\"metamagic\\)\"",
+          "replace": "\"{@action Interact} ({@trait concentrate}, {@trait manipulate}, {@trait metamagic})\""
+        },
+        {
+          "match": "\"Interact ",
+          "replace": "\"{@action Interact} "
         }
       ]
     }
