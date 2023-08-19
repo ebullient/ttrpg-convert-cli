@@ -10,6 +10,7 @@ Qute templates for generating content from 5eTools data.
 - [QuteHazard](QuteHazard.md): 5eTools hazard attributes (`hazard2md.txt`)
 - [QuteItem](QuteItem.md): 5eTools item attributes (`item2md.txt`)
 - [QuteMonster](QuteMonster.md): 5eTools creature attributes (`monster2md.txt`)
+- [QuteObject](QuteObject.md): 5eTools object attributes (`object2md.txt`)
 - [QuteRace](QuteRace.md): 5eTools race attributes (`race2md.txt`)
 - [QuteReward](QuteReward.md): 5eTools reward attributes (`reward2md.txt`)
 - [QuteSpell](QuteSpell.md): 5eTools spell attributes (`spell2md.txt`)

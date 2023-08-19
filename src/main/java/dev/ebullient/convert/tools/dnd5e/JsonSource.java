@@ -562,6 +562,8 @@ public interface JsonSource extends JsonTextReplacement {
                 qs = new Json2QuteItem(index(), type, data).build();
             case monster ->
                 qs = new Json2QuteMonster(index(), type, data).build();
+            case object ->
+                qs = new Json2QuteObject(index(), type, data).build();
             case spell ->
                 qs = new Json2QuteSpell(index(), type, data).build();
             default ->

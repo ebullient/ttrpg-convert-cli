@@ -112,6 +112,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             case hazard, trap -> new Json2QuteHazard(index, type, jsonSource).build();
             case item -> new Json2QuteItem(index, type, jsonSource).build();
             case monster -> new Json2QuteMonster(index, type, jsonSource).build();
+            case object -> new Json2QuteObject(index, type, jsonSource).build();
             case optionalfeature -> new Json2QuteOptionalFeature(index, type, jsonSource).build();
             case race, subrace -> new Json2QuteRace(index, type, jsonSource).build();
             case reward -> new Json2QuteReward(index, type, jsonSource).build();

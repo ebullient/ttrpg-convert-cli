@@ -92,8 +92,6 @@ public class QuteMonster extends Tools5eQuteBase {
     public final Collection<NamedText> legendaryGroup;
     /** List of creature ({@link dev.ebullient.convert.tools.dnd5e.qute.Spellcasting spellcasting abilities}) */
     public final List<Spellcasting> spellcasting;
-    /** List of source books (abbreviated name). Fantasy statblock uses this list. */
-    public final List<String> books;
     /** Formatted text containing the creature description. Same as {resource.text} */
     public final String description;
     /** Formatted text describing the creature's environment. Usually a single word. */
@@ -115,7 +113,7 @@ public class QuteMonster extends Tools5eQuteBase {
             Collection<NamedText> action, Collection<NamedText> bonusAction, Collection<NamedText> reaction,
             Collection<NamedText> legendary,
             Collection<NamedText> legendaryGroup,
-            List<Spellcasting> spellcasting, String description, String environment, List<String> books,
+            List<Spellcasting> spellcasting, String description, String environment,
             ImageRef tokenImage, List<ImageRef> fluffImages, Tags tags, boolean useDiceRoller) {
 
         super(sources, name, source, description, tags);
@@ -151,7 +149,6 @@ public class QuteMonster extends Tools5eQuteBase {
         this.spellcasting = spellcasting;
         this.description = description;
         this.environment = environment;
-        this.books = books; // for YAML
         this.token = tokenImage;
         this.fluffImages = fluffImages;
 
@@ -161,6 +158,13 @@ public class QuteMonster extends Tools5eQuteBase {
     @Override
     public String targetPath() {
         return Tools5eQuteBase.monsterPath(isNpc, type);
+    }
+
+    /** List of source books (abbreviated name). Fantasy statblock uses this list. */
+    public final List<String> getBooks() {
+        return getSourceAndPage().stream()
+                .map(x -> x.source)
+                .toList();
     }
 
     /**
@@ -227,9 +231,8 @@ public class QuteMonster extends Tools5eQuteBase {
         addIntegerUnlessEmpty(map, "hp", hp);
         addUnlessEmpty(map, "hit_dice", hitDice);
         addUnlessEmpty(map, "cr", cr);
-        addUnlessEmpty(map, "cr", cr);
         map.put("stats", scores.toArray()); // for initiative
-        addUnlessEmpty(map, "source", books);
+        addUnlessEmpty(map, "source", getBooks());
         return Tui.plainYaml().dump(map).trim();
     }
 
@@ -277,7 +280,7 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "bonus_actions", bonusAction);
         addUnlessEmpty(map, "reactions", reaction);
         addUnlessEmpty(map, "legendary_actions", legendary);
-        addUnlessEmpty(map, "source", books);
+        addUnlessEmpty(map, "source", getBooks());
         if (token != null) {
             map.put("image", token.getVaultPath());
         }
@@ -288,30 +291,6 @@ public class QuteMonster extends Tools5eQuteBase {
                 .replaceAll("\\*([^*]+)\\*", "$1") // em
                 .replaceAll("\\*([^*]+)\\*", "$1") // bold
                 .replaceAll("\\*([^*]+)\\*", "$1"); // bold em
-    }
-
-    void addIntegerUnlessEmpty(Map<String, Object> map, String key, Integer value) {
-        if (value != null) {
-            map.put(key, value);
-        }
-    }
-
-    void addUnlessEmpty(Map<String, Object> map, String key, String value) {
-        if (value != null && !value.isBlank()) {
-            map.put(key, value);
-        }
-    }
-
-    protected void addUnlessEmpty(Map<String, Object> map, String key, Collection<NamedText> value) {
-        if (value != null && !value.isEmpty()) {
-            map.put(key, value);
-        }
-    }
-
-    protected void addUnlessEmpty(Map<String, Object> map, String key, List<?> value) {
-        if (value != null && !value.isEmpty()) {
-            map.put(key, value);
-        }
     }
 
     Collection<NamedText> spellcastingToTraits() {

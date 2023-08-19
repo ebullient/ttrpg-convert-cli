@@ -107,20 +107,6 @@ public class CommonDataTests {
         }
     }
 
-    public void testFeatList(Path outputPath) {
-        tui.setOutputPath(outputPath);
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path featDir = deleteDir(Tools5eIndexType.feat, outputPath, index.compendiumFilePath());
-
-            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.feat)
-                    .writeImages();
-
-            TestUtils.assertDirectoryContents(featDir, tui);
-        }
-    }
-
     public void testBackgroundList(Path outputPath) {
         tui.setOutputPath(outputPath);
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
@@ -133,36 +119,6 @@ public class CommonDataTests {
                     .writeImages();
 
             TestUtils.assertDirectoryContents(backgroundDir, tui);
-        }
-    }
-
-    public void testSpellList(Path outputPath) {
-        tui.setOutputPath(outputPath);
-
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path spellDir = deleteDir(Tools5eIndexType.spell, outputPath, index.compendiumFilePath());
-
-            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.spell)
-                    .writeImages();
-
-            TestUtils.assertDirectoryContents(spellDir, tui);
-        }
-    }
-
-    public void testRaceList(Path outputPath) {
-        tui.setOutputPath(outputPath);
-
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path raceDir = deleteDir(Tools5eIndexType.race, outputPath, index.compendiumFilePath());
-
-            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.race)
-                    .writeImages();
-
-            TestUtils.assertDirectoryContents(raceDir, tui);
         }
     }
 
@@ -216,6 +172,20 @@ public class CommonDataTests {
             }
 
             TestUtils.assertDirectoryContents(deitiesDir, tui);
+        }
+    }
+
+    public void testFeatList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path featDir = deleteDir(Tools5eIndexType.feat, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(Tools5eIndexType.feat)
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(featDir, tui);
         }
     }
 
@@ -390,6 +360,22 @@ public class CommonDataTests {
         }
     }
 
+    public void testObjectList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path ofDir = deleteDir(Tools5eIndexType.object, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(List.of(
+                            Tools5eIndexType.object))
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(ofDir, tui);
+        }
+    }
+
     public void testOptionalFeatureList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
@@ -404,6 +390,21 @@ public class CommonDataTests {
                     .writeImages();
 
             TestUtils.assertDirectoryContents(ofDir, tui);
+        }
+    }
+
+    public void testRaceList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path raceDir = deleteDir(Tools5eIndexType.race, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(Tools5eIndexType.race)
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(raceDir, tui);
         }
     }
 
@@ -441,6 +442,21 @@ public class CommonDataTests {
                     .writeImages();
 
             TestUtils.assertDirectoryContents(outputPath.resolve(index.rulesFilePath()), tui);
+        }
+    }
+
+    public void testSpellList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path spellDir = deleteDir(Tools5eIndexType.spell, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(Tools5eIndexType.spell)
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(spellDir, tui);
         }
     }
 

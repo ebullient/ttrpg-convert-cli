@@ -37,35 +37,8 @@ public class JsonDataSubsetTest {
     }
 
     @Test
-    public void testFeatList() {
-        commonTests.testFeatList(outputPath);
-    }
-
-    @Test
     public void testBackgroundList() {
         commonTests.testBackgroundList(outputPath);
-    }
-
-    @Test
-    public void testSpellList() {
-        commonTests.testSpellList(outputPath);
-    }
-
-    @Test
-    public void testRaceList() {
-        commonTests.testRaceList(outputPath);
-
-        // Changeling from mpmm is a reprint..
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            final String raceRelative = Tools5eIndexType.race.getRelativePath();
-
-            // Single included race: changeling from mpmm
-            Path changeling = outputPath
-                    .resolve(commonTests.compendiumFilePath())
-                    .resolve(raceRelative)
-                    .resolve("changeling-mpmm.md");
-            assertThat(changeling).exists();
-        }
     }
 
     @Test
@@ -76,6 +49,11 @@ public class JsonDataSubsetTest {
     @Test
     public void testDeityList() {
         commonTests.testDeityList(outputPath);
+    }
+
+    @Test
+    public void testFeatList() {
+        commonTests.testFeatList(outputPath);
     }
 
     @Test
@@ -100,8 +78,30 @@ public class JsonDataSubsetTest {
     }
 
     @Test
+    public void testObjectList() {
+        commonTests.testObjectList(outputPath);
+    }
+
+    @Test
     public void testOptionalFeatureList() {
         commonTests.testOptionalFeatureList(outputPath);
+    }
+
+    @Test
+    public void testRaceList() {
+        commonTests.testRaceList(outputPath);
+
+        // Changeling from mpmm is a reprint..
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            final String raceRelative = Tools5eIndexType.race.getRelativePath();
+
+            // Single included race: changeling from mpmm
+            Path changeling = outputPath
+                    .resolve(commonTests.compendiumFilePath())
+                    .resolve(raceRelative)
+                    .resolve("changeling-mpmm.md");
+            assertThat(changeling).exists();
+        }
     }
 
     @Test
@@ -112,6 +112,11 @@ public class JsonDataSubsetTest {
     @Test
     public void testRules() {
         commonTests.testRules(outputPath);
+    }
+
+    @Test
+    public void testSpellList() {
+        commonTests.testSpellList(outputPath);
     }
 
     @Test

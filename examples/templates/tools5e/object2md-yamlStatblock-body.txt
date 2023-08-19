@@ -1,0 +1,34 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-object
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*Source: {resource.source}*  
+
+{#if resource.text }
+{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
+![{first.title}]({first.vaultPath}#right)  
+{/let}{/if}
+{resource.text}
+{#each resource.fluffImages}{#if it_index != 0 }
+![{it.title}]({it.vaultPath}#center)  
+{/if}{/each}
+{#else}
+{#each resource.fluffImages}
+![{it.title}]({it.vaultPath}#center)  
+{/each}
+{/if}{#if resource.hasSections }
+## Statblock
+
+{/if}
+```statblock
+{resource.5eStatblockYaml}
+```
+^statblock
+

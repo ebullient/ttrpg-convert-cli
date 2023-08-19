@@ -119,7 +119,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 monsterSpellcasting(),
                 fluff,
                 environment,
-                new ArrayList<>(sources.getSources()),
                 getToken(),
                 fluffImages,
                 tags,
@@ -130,7 +129,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         JsonNode typeNode = type == Tools5eIndexType.monster
                 ? MonsterFields.type.getFrom(rootNode)
                 : MonsterFields.creatureType.getFrom(rootNode);
-            rootNode.get("type");
+        rootNode.get("type");
         if (typeNode == null) {
             if (type == Tools5eIndexType.monster) {
                 tui().warn("Empty type for " + getSources());
@@ -161,11 +160,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     void findAc() {
         JsonNode acNode = MonsterFields.ac.getFrom(rootNode);
+        if (acNode == null) {
+            return;
+        }
         if (acNode.isIntegralNumber()) {
             ac = acNode.asInt();
         } else if (acNode.isArray()) {
             List<String> details = new ArrayList<>();
-            for( JsonNode acValue : iterableElements(acNode)) {
+            for (JsonNode acValue : iterableElements(acNode)) {
                 if (ac == null && details.isEmpty()) { // first time
                     if (acValue.isIntegralNumber()) {
                         ac = acValue.asInt();
@@ -230,7 +232,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     String monsterSpeed() {
         List<String> speed = new ArrayList<>();
-        for(Entry<String, JsonNode> f : iterableFields(MonsterFields.speed.getFrom(rootNode))) {
+        for (Entry<String, JsonNode> f : iterableFields(MonsterFields.speed.getFrom(rootNode))) {
             if (f.getValue().isNumber()) {
                 speed.add(String.format("%s %s ft.", f.getKey(), f.getValue().asText()));
             } else if (MonsterFields.number.existsIn(f.getValue())) {
@@ -498,8 +500,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     Path getTokenSourcePath(String filename) {
         return Path.of("img",
-                    getSources().mapPrimarySource(),
-                    filename + ".png");
+                getSources().mapPrimarySource(),
+                filename + ".png");
     }
 
     ImageRef getToken() {

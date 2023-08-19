@@ -33,23 +33,8 @@ public class JsonDataTest {
     }
 
     @Test
-    public void testFeatList() {
-        commonTests.testFeatList(outputPath);
-    }
-
-    @Test
     public void testBackgroundList() {
         commonTests.testBackgroundList(outputPath);
-    }
-
-    @Test
-    public void testSpellList() {
-        commonTests.testSpellList(outputPath);
-    }
-
-    @Test
-    public void testRaceList() {
-        commonTests.testRaceList(outputPath);
     }
 
     @Test
@@ -60,6 +45,11 @@ public class JsonDataTest {
     @Test
     public void testDeityList() {
         commonTests.testDeityList(outputPath);
+    }
+
+    @Test
+    public void testFeatList() {
+        commonTests.testFeatList(outputPath);
     }
 
     @Test
@@ -88,8 +78,18 @@ public class JsonDataTest {
     }
 
     @Test
+    public void testObjectList() {
+        commonTests.testObjectList(outputPath);
+    }
+
+    @Test
     public void testOptionalFeatureList() {
         commonTests.testOptionalFeatureList(outputPath);
+    }
+
+    @Test
+    public void testRaceList() {
+        commonTests.testRaceList(outputPath);
     }
 
     @Test
@@ -100,6 +100,11 @@ public class JsonDataTest {
     @Test
     public void testRules() {
         commonTests.testRules(outputPath);
+    }
+
+    @Test
+    public void testSpellList() {
+        commonTests.testSpellList(outputPath);
     }
 
     @Test

@@ -12,8 +12,8 @@ import picocli.CommandLine.Option;
 public class TemplatePaths {
 
     final static List<String> KEYS = List.of("background", "class", "deity",
-            "feat", "item", "monster", "note", "race", "spell",
-            "subclass");
+            "feat", "hazard", "item", "monster", "note", "object", "race", "reward",
+            "spell", "subclass");
 
     public final Map<String, Path> customTemplates = new HashMap<>();
     public final Map<String, Path> badKeys = new HashMap<>();
