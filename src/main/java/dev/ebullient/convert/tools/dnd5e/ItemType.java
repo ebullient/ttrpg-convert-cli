@@ -35,39 +35,39 @@ public interface ItemType {
         @Override
         public String getItemTag(Collection<ItemProperty> itemProperties, Tui tui) {
             if (lower.contains("armor")) {
-                return "item/armor/" + Tui.slugify(lower.replaceAll("\\s*armor\\s*", ""));
+                return "armor/" + Tui.slugify(lower.replaceAll("\\s*armor\\s*", ""));
             }
             if (lower.contains("vehicle")) {
-                return "item/vehicle/" + Tui.slugify(lower.replaceAll("\\s*vehicle\\s*", ""));
+                return "vehicle/" + Tui.slugify(lower.replaceAll("\\s*vehicle\\s*", ""));
             }
             if (lower.contains("wondrous")) {
-                return "item/wondrous/" + Tui.slugify(lower.replaceAll("\\s*wondrous( item)?\\s*", ""));
+                return "wondrous/" + Tui.slugify(lower.replaceAll("\\s*wondrous( item)?\\s*", ""));
             }
 
             if (lower.contains("ammunition")) {
-                return "item/weapon/"
+                return "weapon/"
                         + "ammunition/" + Tui.slugify(lower.replaceAll("\\s*ammunition\\s*", ""));
             }
             if (lower.contains("ammo")) {
-                return "item/weapon/"
+                return "weapon/"
                         + "ammunition/" + Tui.slugify(lower.replaceAll("\\s*ammo\\s*", ""));
             }
             if (lower.contains("explosive")) {
-                return "item/weapon/"
+                return "weapon/"
                         + "explosive/" + Tui.slugify(lower.replaceAll("\\s*explosive\\s*", ""));
             }
             if (lower.contains("firearm")) {
-                return "item/weapon/"
+                return "weapon/"
                         + (itemProperties.contains(ItemProperty.PropertyEnum.MARTIAL) ? "martial/" : "simple/")
                         + "firearm/" + Tui.slugify(lower.replaceAll("\\s*firearm\\s*", ""));
             }
             if (lower.contains("weapon")) {
-                return "item/weapon/"
+                return "weapon/"
                         + (itemProperties.contains(ItemProperty.PropertyEnum.MARTIAL) ? "martial/" : "simple/")
                         + Tui.slugify(lower.replaceAll("\\s*weapon\\s*", ""));
             }
 
-            return "item/gear"
+            return "gear"
                     + (itemProperties.contains(ItemProperty.PropertyEnum.POISON) ? "/poison" : "")
                     + (itemProperties.contains(ItemProperty.PropertyEnum.CURSED) ? "/cursed" : "")
                     + "/" + Tui.slugify(lower.replaceAll("\\s*gear\\s*", ""));
@@ -186,12 +186,11 @@ public interface ItemType {
 
         public String getItemTag(Collection<ItemProperty> properties, Tui tui) {
             StringBuilder tag = new StringBuilder();
-            tag.append("item");
             if (isArmor()) {
-                tag.append("/armor/");
+                tag.append("armor/");
                 tag.append(lower.replace(" armor", ""));
             } else if (isWeapon()) {
-                tag.append("/weapon/");
+                tag.append("weapon/");
                 if (this == MELEE_WEAPON) {
                     tag.append(properties.contains(ItemProperty.PropertyEnum.MARTIAL) ? "martial/" : "simple/");
                     tag.append("melee");
@@ -206,7 +205,7 @@ public interface ItemType {
                     tag.append("ammunition/firearm");
                 }
             } else if (isVehicle()) {
-                tag.append("/vehicle");
+                tag.append("vehicle");
                 if (this == SPELLJAMMER) {
                     tag.append("/spelljammer");
                 } else if (this == AIRSHIP) {
@@ -215,7 +214,7 @@ public interface ItemType {
                     tag.append("/ship");
                 }
             } else if (isGear()) {
-                tag.append("/gear");
+                tag.append("gear");
                 if (!this.specializedType.isEmpty()) {
                     tag.append("/").append(Tui.slugify(this.specializedType));
                 }
@@ -225,12 +224,12 @@ public interface ItemType {
                     tag.append("/cursed");
                 }
             } else if (isWondrousItem()) {
-                tag.append("/wondrous");
+                tag.append("wondrous");
                 if (this != WONDROUS) {
                     tag.append("/").append(Tui.slugify(genericType));
                 }
             } else if (isMoney()) {
-                tag.append("/wealth");
+                tag.append("wealth");
             }
             return tag.toString();
         }

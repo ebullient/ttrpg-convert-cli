@@ -38,4 +38,8 @@ public class Tags {
     public Set<String> build() {
         return tags;
     }
+
+    public void addRaw(String first, String rawValue) {
+        tags.add(first + "/" + rawValue);
+    }
 }

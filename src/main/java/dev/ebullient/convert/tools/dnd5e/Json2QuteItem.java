@@ -43,9 +43,9 @@ public class Json2QuteItem extends Json2QuteCommon {
 
         Tags tags = new Tags(getSources());
 
-        tags.add(itemType.getItemTag(itemProperties, tui()));
+        tags.addRaw("item", itemType.getItemTag(itemProperties, tui()));
         for (ItemProperty p : itemProperties) {
-            tags.add("item", p.tagValue());
+            tags.addRaw("item", p.tagValue());
         }
 
         Integer strength = rootNode.has("strength")
