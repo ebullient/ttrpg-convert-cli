@@ -409,7 +409,7 @@ public interface JsonTextConverter<T extends IndexType> {
         public String getTextOrDefault(JsonNode x, String value) {
             String text = JsonNodeReader.super.getTextOrDefault(x, value);
             return this == name
-                    ? text.trim().replace("\u00A0", "")
+                    ? text.replace("\u00A0", "").trim()
                     : text;
         }
 
@@ -417,7 +417,7 @@ public interface JsonTextConverter<T extends IndexType> {
         public String getTextOrEmpty(JsonNode x) {
             String text = JsonNodeReader.super.getTextOrEmpty(x);
             return this == name
-                    ? text.trim().replace("\u00A0", "")
+                    ? text.replace("\u00A0", "").trim()
                     : text;
         }
 
@@ -425,7 +425,7 @@ public interface JsonTextConverter<T extends IndexType> {
         public String getTextOrNull(JsonNode x) {
             String text = JsonNodeReader.super.getTextOrNull(x);
             return this == name && text != null
-                    ? text.trim().replace("\u00A0", "")
+                    ? text.replace("\u00A0", "").trim()
                     : text;
         }
 
@@ -433,7 +433,7 @@ public interface JsonTextConverter<T extends IndexType> {
         public String replaceTextFrom(JsonNode node, JsonTextConverter<?> replacer) {
             String text = JsonNodeReader.super.replaceTextFrom(node, replacer);
             return this == name && text != null
-                    ? text.trim().replace("\u00A0", "")
+                    ? text.replace("\u00A0", "").trim()
                     : text;
         }
     }

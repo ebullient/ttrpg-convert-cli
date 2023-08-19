@@ -1,8 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import java.nio.file.Path;
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,7 +23,6 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
-import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
@@ -99,22 +95,22 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 isNpc,
                 size, creatureType, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
-                monsterSpeed(),
-                monsterScores(),
+                speed(),
+                abilityScores(),
                 monsterSavesAndSkills(),
                 joinAndReplace(rootNode, "senses"),
                 intOrDefault(rootNode, "passive", 10),
-                monsterImmunities("vulnerable"),
-                monsterImmunities("resist"),
-                monsterImmunities("immune"),
-                monsterImmunities("conditionImmune"),
+                collectImmunities("vulnerable"),
+                collectImmunities("resist"),
+                collectImmunities("immune"),
+                collectImmunities("conditionImmune"),
                 joinAndReplace(rootNode, "languages"),
                 cr, pb,
-                monsterTraits("trait"),
-                monsterTraits("action"),
-                monsterTraits("bonus"),
-                monsterTraits("reaction"),
-                monsterTraits("legendary"),
+                collectTraits("trait"),
+                collectTraits("action"),
+                collectTraits("bonus"),
+                collectTraits("reaction"),
+                collectTraits("legendary"),
                 legendaryGroup(),
                 monsterSpellcasting(),
                 fluff,
@@ -127,7 +123,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     void findCreatureType() {
         JsonNode typeNode = type == Tools5eIndexType.monster
-                ? MonsterFields.type.getFrom(rootNode)
+                ? SourceField.type.getFrom(rootNode)
                 : MonsterFields.creatureType.getFrom(rootNode);
         rootNode.get("type");
         if (typeNode == null) {
@@ -142,7 +138,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         // We have an object: type + tags
-        creatureType = MonsterFields.type.getTextOrEmpty(typeNode);
+        creatureType = SourceField.type.getTextOrEmpty(typeNode);
         List<String> tags = new ArrayList<>();
         typeNode.withArray("tags").forEach(tag -> {
             if (tag.isTextual()) {
@@ -187,8 +183,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     if (MonsterFields.from.existsIn(acValue)) {
                         value.append(" from ").append(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
                     }
-                    if (MonsterFields.condition.existsIn(acValue)) {
-                        value.append(" ").append(MonsterFields.condition.replaceTextFrom(acValue, this));
+                    if (Tools5eFields.condition.existsIn(acValue)) {
+                        value.append(" ").append(Tools5eFields.condition.replaceTextFrom(acValue, this));
                     }
                     details.add(value.toString());
                 }
@@ -228,33 +224,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
             tui().errorf("Unknown hp from %s: %s", getSources(), health.toPrettyString());
             throw new IllegalArgumentException("Unknown hp from " + getSources());
         }
-    }
-
-    String monsterSpeed() {
-        List<String> speed = new ArrayList<>();
-        for (Entry<String, JsonNode> f : iterableFields(MonsterFields.speed.getFrom(rootNode))) {
-            if (f.getValue().isNumber()) {
-                speed.add(String.format("%s %s ft.", f.getKey(), f.getValue().asText()));
-            } else if (MonsterFields.number.existsIn(f.getValue())) {
-                speed.add(String.format("%s %s ft.%s",
-                        f.getKey(),
-                        MonsterFields.number.replaceTextFrom(f.getValue(), this),
-                        MonsterFields.condition.existsIn(f.getValue())
-                                ? " " + MonsterFields.condition.replaceTextFrom(f.getValue(), this)
-                                : ""));
-            }
-        }
-        return replaceText(String.join(", ", speed));
-    }
-
-    AbilityScores monsterScores() {
-        return new AbilityScores(
-                intOrDefault(rootNode, "str", 10),
-                intOrDefault(rootNode, "dex", 10),
-                intOrDefault(rootNode, "con", 10),
-                intOrDefault(rootNode, "int", 10),
-                intOrDefault(rootNode, "wis", 10),
-                intOrDefault(rootNode, "cha", 10));
     }
 
     String monsterPb(String cr) {
@@ -311,35 +280,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         return String.format("%s %s%s", ability,
                 value.isInt() && value.asInt() > 0 ? "+" : "", modifier);
-    }
-
-    String monsterImmunities(String field) {
-        if (rootNode.has(field) && rootNode.get(field).isArray()) {
-            List<String> immunities = new ArrayList<>();
-            StringBuilder separator = new StringBuilder();
-            rootNode.withArray(field).forEach(immunity -> {
-                if (immunity.isTextual()) {
-                    immunities.add(immunity.asText());
-                } else {
-                    StringBuilder str = new StringBuilder();
-                    str.append(joinAndReplace(immunity, field));
-                    if (immunity.has("note")) {
-                        str.append(" ")
-                                .append(immunity.get("note").asText());
-                    }
-
-                    if (separator.length() == 0) {
-                        separator.append("; ");
-                    }
-                    immunities.add(str.toString());
-                }
-            });
-            if (separator.length() == 0) {
-                separator.append(", ");
-            }
-            return String.join(separator.toString(), immunities);
-        }
-        return null;
     }
 
     String monsterAlignment() {
@@ -461,75 +401,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
             addNamedTrait(traits, fieldName, field.getValue());
         }
         return traits;
-    }
-
-    Collection<NamedText> monsterTraits(String field) {
-        List<NamedText> traits = new ArrayList<>();
-
-        JsonNode header = rootNode.get(field + "Header");
-        if (header != null) {
-            addNamedTrait(traits, "", header);
-        }
-
-        JsonNode array = rootNode.get(field);
-        if (array == null || array.isNull()) {
-            return traits;
-        } else if (array.isObject()) {
-            tui().errorf("Unknown %s for %s: %s", field, sources.getKey(), array.toPrettyString());
-            throw new IllegalArgumentException("Unknown field: " + getSources());
-        }
-
-        for (JsonNode e : iterableElements(array)) {
-            String name = SourceField.name.replaceTextFrom(e, this)
-                    .replaceAll(":$", "");
-
-            addNamedTrait(traits, name, e);
-        }
-        return traits;
-    }
-
-    void addNamedTrait(List<NamedText> traits, String name, JsonNode node) {
-        List<String> text = new ArrayList<>();
-        appendToText(text, SourceField.entry.getFrom(node), null);
-        appendToText(text, SourceField.entries.getFrom(node), null);
-        NamedText nt = new NamedText(name, text);
-        if (nt.hasContent()) {
-            traits.add(nt);
-        }
-    }
-
-    Path getTokenSourcePath(String filename) {
-        return Path.of("img",
-                getSources().mapPrimarySource(),
-                filename + ".png");
-    }
-
-    ImageRef getToken() {
-        String tokenString = MonsterFields.tokenUrl.getTextOrNull(rootNode);
-        if (booleanOrDefault(rootNode, "hasToken", false)) {
-            // const imgLink = Renderer.monster.getTokenUrl(mon);
-            // return mon.tokenUrl || UrlUtil.link(`${Renderer.get().baseMediaUrls["img"] || Renderer.get().baseUrl}img/${Parser.sourceJsonToAbv(mon.source)}/${Parser.nameToTokenName(mon.name)}.png`);
-            // nameToTokenName = function (name) { return name.toAscii().replace(/"/g, ""); }
-
-            // origin is set by conjured monster variant (below)
-            String name = getTextOrDefault(rootNode, "original", getName());
-            String filename = Normalizer.normalize(name, Form.NFD)
-                    .replaceAll("\\p{M}", "")
-                    .replace("Æ", "AE")
-                    .replace("æ", "ae")
-                    .replace("\"", "");
-
-            Path sourcePath = getTokenSourcePath(filename);
-
-            Path target = Path.of(getImagePath(),
-                    "token",
-                    slugify(filename) + ".png");
-
-            return buildImageRef(sourcePath, target);
-        } else if (tokenString != null) {
-            return getSources().buildImageRef(null, tokenString);
-        }
-        return null;
     }
 
     @Override
@@ -729,16 +600,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
         alignmentPrefix,
         average,
         creatureType, // object -- alternate to monster type
-        condition,
         formula,
         from,
         hp,
-        number,
         original,
         senses,
         special,
-        speed,
-        tokenUrl,
-        type,
     }
 }

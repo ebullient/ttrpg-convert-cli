@@ -1099,6 +1099,7 @@ public interface JsonSource extends JsonTextReplacement {
         attributes,
         className,
         classSource,
+        condition, // speed, ac
         dataType, // statblockInline
         data, // statblock, statblockInline
         featureType,
@@ -1106,15 +1107,19 @@ public interface JsonSource extends JsonTextReplacement {
         group,
         hasFluff,
         hasFluffImages,
+        hasToken,
         lairActions, // legendary group
         _monsterFluff,
+        number, // speed
         optionalfeature,
         prop, // statblock
         regionalEffects, // legendary group
+        speed,
         style,
         tables, // for optfeature types
         tag, // statblock
         text,
+        tokenUrl,
         typeLookup,
     }
 
