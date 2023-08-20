@@ -257,47 +257,82 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
     - `Pf2eTools/data` Path to the Pf2eTools `data` directory (from a clone or release of the repo)
 
 
-## Additional parameters
+## Using A Configuration File 
 
-Configuration can also be provided as a JSON or YAML file instead of using command line parameters. See [examples/config](examples/config) for the general config file structure.
+So far we've seen use of the tool using command line parameters. But this can get very clunky when trying to do any sort of complex command, plus it is a lot of typing! Fortunately, configuration can also be provided as a JSON or YAML file, either instead of, or along with, using command line parameters. JSON and YAML are both file formats for storing data in useful and human-readable ways. See [examples/config](examples/config) for the general config file structure in versions of both formats. Below we'll use json as the preferred format, but you could also use yaml instead. It is your choice.
 
-I use something like this:
+### Example JSON Configuration File
+
+Here is an example of a `config.json` file. This particular config performs four basic functions, with each part having the structure of a KEY and a VALUE (if you want to know why the `{}` and `[]` are used in the ways that they are you can read about json *objects* and *arrays* [here](https://www.toolsqa.com/rest-assured/what-is-json/)). 
 
 ```json
 {
-  "from": [
-    "AI",
-    "PHB",
-    "DMG",
-    "TCE",
-    "LMoP",
-    "ESK",
-    "DIP",
-    "XGE",
-    "FTD",
-    "MM",
-    "MTF",
-    "VGM"
-  ],
-  "paths": {
-    "rules": "/compendium/rules/"
-  },
-  "excludePattern": [
-    "race|.*|dmg"
-  ],
-  "exclude": [
-    "monster|expert|dc",
-    "monster|expert|sdw",
-    "monster|expert|slw"
-  ]
+    "from": [
+        "AI",
+        "PHB",
+        "DMG",
+        "TCE",
+        "LMoP",
+        "ESK",
+        "DIP",
+        "XGE",
+        "FTD",
+        "MM",
+        "MTF",
+        "VGM",
+        "LoX"
+    ],
+    "paths": {
+        "rules": "/compendium/rules/"
+    },
+    "excludePattern": [
+        "race|.*|dmg"
+    ],
+    "exclude": [
+        "monster|expert|dc",
+        "monster|expert|sdw",
+        "monster|expert|slw"
+    ],
+    "include": [
+        "race|changeling|mpmm"
+    ],
+    "full-source": {
+        "adventure": [
+            "LMoP",
+            "LoX"
+        ],
+        "book": [
+            "5etools-mirror-1.github.io/data/book/book-phb.json"
+        ]
+    }
 }
 ```
 
-- `from` defines the array of sources that should be included. Only include content from sources you own. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.  
+The four functions performed in the example file are: 
 
-    > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md). Only use sources you own.
+1. **Source** using the key `from`: the sources we are pulling data from (as an array) 
+2. **File Path** using the key `path`: a specified path, in this case for specifying where we want the rules data to go
+3. **Filtering** inclusion or exclusion of material. 
+    - `excludePattern`: an exclusion pattern, in this case a pattern to exclude all race data from the Dungeon Master's Guide
+    - `exclude`: a list of specific data files to exclude, in this case three monster files (the 'expert') from three different sources
+    - `include`, which forces the element to be included. 
 
-- `paths` allows you to redefine vault paths for cross-document links, and to link to documents defining conditions, and weapon/item properties. By default, items, spells, monsters, backgrounds, races, and classes are in `/compendium/`, while files defining conditions and weapon properties are in `/rules/`. You can reconfigure either of these path roots in this block: 
+    The values used for these attribute match the strings contained in `allIndex.json`, which is generated using the `--index` option: 
+4. **Full source inclusion** using the key `full-source` (or alternatively, `convert`) to pull in an entire book or adventure, rather than just elements thereof. 
+
+Lets look at each of these a bit more closely. 
+
+### Sources
+
+The `from` key specifies an array of sources from which to pull data. **Please only include content from sources you own**. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.
+
+All sources are specified by an abbreviation. You *cannot* specify a source simply by its title, you must use an abbreviation. **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md). Again, **only use sources you own**.
+
+### Paths
+
+Generated content is split into two groups: `compendium` and `rules`. For the most part, "content" like items, spells, monsters, backgrounds, races, classes, vehicles, adventures or books are placed in the `/compendium/` directory, while files defining conditions, weapon properties, or describing variant rules are in the `/rules/` directory. The placement for Pathfinder is a little different, as it aims for similarity with the Archives of Nethys.
+
+You can configure the location of these two groups (to match your Vault paths) using the `paths` element (a json object), as we can see below: 
 
     ```json
     "paths": {
@@ -305,23 +340,31 @@ I use something like this:
       "rules": "/rules/"
     },
     ```
-    > 🔹 Note: the leading slash indicates the path starting at the root of your vault.
+🔹 **NOTE**: the leading slash is optional. It indicates the path starts at the **root** of your vault.
 
-- `exclude` and `excludePattern`: Exclude a single identifier (as listed in the generated index files), or all identifiers matching a pattern. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. As it happens, I own these materials, but I don't want these variants in the formatted bestiary.
+### Source Filtering 
 
-- `include` (as of 1.0.13): Include a single identifier (as listed in the generated index files). 
-This allows you to include a specific resource without including the whole source and excluding everything else. Useful for single resources (classes, backgrounds, races, items, etc.) purchased from D&D Beyond. To include the Changeling race from _Mordenkainen Presents: Monsters of the Multiverse_, for example, you would add the folowing: 
+We can filter from the sources from which we're drawing data in two basic ways, through *excluding* material from a source we otherwise wish to draw from, or through *including* material from a source we otherwise don't wish to use. 
+
+The exclusion filter has two forms `exclude` and `excludePattern`. The `exclude` key means we exclude a single identifier (as listed in the generated index files); the `excludePattern` key means we exclude  all identifiers matching a pattern. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. As it happens, I own these materials, but I don't want these variants in the formatted bestiary.
+
+The `include` key ensures the identified content is included. Thus requires specifying an identifier, which can be found in the generated index files when using the `--index` command line flag. 
+
+The main use of the `include` key is that it allows you to include a specific resource without including the whole source and excluding everything else. This is useful for single resources (classes, backgrounds, races, items, etc.) purchased from elsewhere, (e.g. D&D Beyond). To include the Changeling race from _Mordenkainen Presents: Monsters of the Multiverse_, for example, you would add the folowing to the array value: 
 
     ```json
     "include": [
         "race|changeling|mpmm"
     ]
     ```
+### Full Source Inclusion
 
-- `convert` (as of 1.0.18): specify books or adventures to import into the compendium (which will allow cross-linking, etc.). Either provide the full relative path to the adventure or book json file, or specify its Id (as found in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md)): 
+The keys `convert` or `full-source` (they are equivalent) allow you to specify complete books or adventures to import into the compendium (which will allow cross-linking, etc.). You can include such sources by either providing the full relative path to the adventure or book json file, or its abbreviation ID (as found in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md))
+
+You can see both methods being used in the following example: 
 
     ```json
-    "convert": {
+    "full-source": {
         "adventure": [
             "WBtW",
             "tftyp-wpm", 
@@ -331,12 +374,14 @@ This allows you to include a specific resource without including the whole sourc
         ]
     }
     ```
+    
+**NOTE**: Any source that you want included in full must be specified **both** in the `sources` list array, **and** in the `full-source` object, either as an adventure or as a book. 
 
-Note that some adventures, like _Tales from the Yawning Portal_, are treated as a collection of standalone modules. The generated index contains these as either `adventure` or `book` items. If you're unsure, check the generated index file (`allIndex.json`): _Tales from the Yawning Portal: The Forge of Fury_ is an adventure (`adventure|adventure-tftyp-tfof`). _Acquisitions Incorporated_ is a book (`book|book-ai`). 
+Also note that some adventures, like _Tales from the Yawning Portal_, are treated as a collection of standalone modules. The generated index contains these as either `adventure` or `book` items. If you're unsure as which is correct, check the generated index file (`allIndex.json`): _Tales from the Yawning Portal: The Forge of Fury_ is an adventure (`adventure|adventure-tftyp-tfof`), while _Acquisitions Incorporated_ is a book (`book|book-ai`). 
 
-### Additional example
+### Another Example Configuration File
 
-To generate player-focused reference content for a Wild Beyond the Witchlight campaign, I constrained things further. I am pulling from a smaller set of sources. I included Elemental Evil Player's Companion (Genasi) and Volo's Guide to Monsters (Tabaxi), but also used `exclude` and `excludePattern` to remove elements from these sourcebooks that I don't want my players to use in this campaign (some simplification for beginners). 
+Here is another example. To generate player-focused reference content for a *Wild Beyond the Witchlight* campaign, I wanted to filter from available sources in a variety of ways. In particular, I want to control how races and feats are presented so as to provide some simplification for beginners at my table. To accomplish this I used filters and included the sources *Elemental Evil Player's Companion* (Genasi) and *Volo's Guide to Monsters* (Tabaxi), but also used `exclude` and `excludePattern` to remove elements from these sourcebooks that I don't want my players to use in this campaign.
 
 The JSON looks like this:
 
@@ -415,6 +460,8 @@ The JSON looks like this:
   ]
 ```
 
+This includes various races and feats, but includes information about familiars. When used in this manner, the cli tool can help make very precise modifications in the kind of information to which you give players access for a campaign. 
+
 ## Templates
 
 This application uses the [Qute Templating Engine](https://quarkus.io/guides/qute). You can make simple customizations to markdown output by copying a template from `src/main/resources/templates`, making the desired modifications, and then specifying that template on the command line.
@@ -425,7 +472,7 @@ ttrpg-convert 5etools \
   --index -o dm dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
 ```
 
-Additional templates can also be specified in your configuration file: 
+Additional templates can also be specified as a json object in your configuration file: 
 
 ```json
   "template": {
@@ -434,10 +481,30 @@ Additional templates can also be specified in your configuration file:
   }
 ```
 
+You would include this in the `config.json` as a base level key-value pair, and the entire file might look something like this: 
+
+``` json
+{
+    "from": [
+        "DMG",
+        "PHB",
+        "MM"
+    ],
+    "paths": {
+        "compendium": "z_compendium/",
+        "rules": "z_compendium/rules"
+    },
+    "template": {
+        "background": "examples/templates/tools5e/images-background2md.txt",
+        "monster": "examples/templates/tools5e/monster2md-scores.txt"
+    }
+}
+```
+
 The flag used to specify a template (either on the command line or in a config file) corresponds to the type of template being used. In general, take the file name of a [default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates) and remove the `2md.txt` suffix.
 
-- Valid keys for 5etools: `background`, `class`, `deity`, `feat`, `hazard`, `item`, `monster`, `note`, `race`, `reward`, `spell`, `subclass`.
-- Valid keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-ability`, `inline-affliction`, `inline-attack`, `item`, `note`, `ritual`, `spell`, `trait`.
+- Valid template keys for 5etools: `background`, `class`, `deity`, `feat`, `hazard`, `item`, `monster`, `note`, `race`, `reward`, `spell`, `subclass`.
+- Valid template keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-ability`, `inline-affliction`, `inline-attack`, `item`, `note`, `ritual`, `spell`, `trait`.
 
 ### Built-in / example templates
 
