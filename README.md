@@ -176,7 +176,7 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
 
 ## Use with 5eTools JSON data
 
-1. Download a release of the 5e tools mirror, or create a shallow clone of the repo (which can/should be deleted afterwards):
+1. Create a shallow clone of the 5eTools mirror repo (which can/should be deleted afterwards):
 
     ```shell
     git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
