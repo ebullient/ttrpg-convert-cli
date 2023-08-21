@@ -81,111 +81,119 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         instance = this;
     }
 
+    private void indexTypes(String filename, JsonNode node) {
+
+        // Reference/Internal Types
+
+        Tools5eIndexType.backgroundFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.conditionFluff.withArrayFrom(node, this::addToIndex);
+
+        Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
+
+        Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.objectFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.monsterTemplate.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
+        Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.subclassFeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
+
+        // TODO
+        Tools5eIndexType.psionic.withArrayFrom(node, this::addToIndex);
+
+        // Output Types
+
+        Tools5eIndexType.action.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.condition.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.disease.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemProperty.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemType.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.sense.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.skill.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.status.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.variantrule.withArrayFrom(node, this::addToIndex);
+
+        // tables
+
+        Tools5eIndexType.table.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.tableGroup.withArrayFrom(node, this::addToIndex);
+
+        // templated types
+
+        Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
+        Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.feat.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.hazard.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.item.withArrayFrom(node, "baseitem", this::addToIndex);
+        Tools5eIndexType.item.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.monster.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.object.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.race.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.reward.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.spell.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.trap.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.vehicle.withArrayFrom(node, this::addToIndex);
+
+        Tools5eIndexType.adventure.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.book.withArrayFrom(node, this::addToIndex);
+
+        // 5e tools book/adventure data
+        if (node.has("data") && !filename.isEmpty()) {
+            int slash = filename.indexOf('/');
+            int dot = filename.indexOf('.');
+            String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
+
+            ((ObjectNode) node).put("id", basename.replace("book-", "").replace("adventure-", ""));
+            addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData,
+                    node);
+        }
+    }
+
     public Tools5eIndex importTree(String filename, JsonNode node) {
-        if (!node.isObject()) {
+        if (!node.isObject() || addHomebrewSourcesIfPresent(filename, node)) {
             return this;
         }
+        // user configuration
+        config.readConfigurationIfPresent(node);
 
-        try {
-            // user configuration
-            config.readConfigurationIfPresent(node);
-
-            homebrew = addHomebrewSourcesIfPresent(filename, node);
-
-            // Reference/Internal Types
-
-            Tools5eIndexType.backgroundFluff.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.conditionFluff.withArrayFrom(node, this::addToIndex);
-
-            Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.itemFluff.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
-
-            Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.monsterTemplate.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
-            Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.subclassFeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
-
-            // TODO
-            Tools5eIndexType.object.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.psionic.withArrayFrom(node, this::addToIndex);
-
-            // Output Types
-
-            // notes
-
-            Tools5eIndexType.action.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.condition.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.disease.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.itemProperty.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.itemType.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.sense.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.skill.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.status.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.variantrule.withArrayFrom(node, this::addToIndex);
-
-            // tables
-
-            Tools5eIndexType.table.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.tableGroup.withArrayFrom(node, this::addToIndex);
-
-            // templated types
-
-            Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
-            Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.feat.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.hazard.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.item.withArrayFrom(node, "baseitem", this::addToIndex);
-            Tools5eIndexType.item.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.monster.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.race.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.reward.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.spell.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.trap.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.vehicle.withArrayFrom(node, this::addToIndex);
-
-            Tools5eIndexType.adventure.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.adventureData.withArrayFrom(node, this::addToIndex); // homebrew
-            Tools5eIndexType.book.withArrayFrom(node, this::addToIndex);
-            Tools5eIndexType.bookData.withArrayFrom(node, this::addToIndex); // homebrew
-
-            // 5e tools book/adventure data
-            if (node.has("data") && !filename.isEmpty()) {
-                int slash = filename.indexOf('/');
-                int dot = filename.indexOf('.');
-                String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
-
-                ((ObjectNode) node).put("id", basename.replace("book-", "").replace("adventure-", ""));
-                addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData, node);
-            }
-        } finally {
-            homebrew = null;
-        }
+        // Index content types
+        indexTypes(filename, node);
 
         return this;
     }
 
-    private HomebrewMetaTypes addHomebrewSourcesIfPresent(String filename, JsonNode node) {
+    private void importHomebrewTree(HomebrewMetaTypes homebrew) {
+        this.homebrew = homebrew;
+        try {
+            // Index content types
+            indexTypes(homebrew.filename, homebrew.homebrewNode);
+            Tools5eIndexType.adventureData.withArrayFrom(homebrew.homebrewNode, this::addToIndex); // homebrew
+            Tools5eIndexType.bookData.withArrayFrom(homebrew.homebrewNode, this::addToIndex); // homebrew
+        } finally {
+            this.homebrew = null;
+        }
+    }
+
+    private boolean addHomebrewSourcesIfPresent(String filename, JsonNode node) {
         JsonNode sources = SourceField.meta.getFieldFrom(node, HomebrewFields.sources);
         if (sources == null || sources.size() == 0) {
-            return null;
+            return false;
         }
         String json = HomebrewFields.json.getTextOrNull(sources.get(0));
         if (json == null) {
             tui().errorf("Source does not define json id: %s", sources.get(0));
-            return null;
+            return false;
         }
 
-        HomebrewMetaTypes metaTypes = new HomebrewMetaTypes(json, filename);
-
+        HomebrewMetaTypes metaTypes = new HomebrewMetaTypes(json, filename, node);
         for (JsonNode source : iterableElements(sources)) {
             String fullName = HomebrewFields.full.getTextOrEmpty(source);
             String abbreviation = HomebrewFields.abbreviation.getTextOrEmpty(source);
@@ -194,15 +202,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 tui().warnf("Homebrew source %s missing full name: %s", json, fullName);
             }
             // add homebrew to known sources
-            if (abbreviation == null) {
-                TtrpgConfig.addHomebrewSource(fullName, json);
+            if (TtrpgConfig.addHomebrewSource(fullName, json, abbreviation)) {
+                // one homebrew file may include multiple sources, the same mapping applies to
+                // all
+                HomebrewMetaTypes old = homebrewMetaTypes.put(json, metaTypes);
+                if (old != null) {
+                    tui().errorf("Shared homebrew id: %s and %s", old.filename, metaTypes.filename);
+                }
             } else {
-                TtrpgConfig.addHomebrewSource(fullName, json, abbreviation);
-            }
-            // one homebrew file may include multiple sources, the same mapping applies to all
-            HomebrewMetaTypes old = homebrewMetaTypes.put(json, metaTypes);
-            if (old != null) {
-                tui().errorf("Shared homebrew id: %s and %s", old.filename, metaTypes.filename);
+                tui().errorf("Skipping homebrew id %s from %s; duplicate source id", json, metaTypes.filename);
             }
         }
 
@@ -228,12 +236,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     tui().warnf("Homebrew skill type missing name: %s", skill);
                     continue;
                 }
-                addToIndex(Tools5eIndexType.skill, skill);
                 metaTypes.setSkillType(skillName, skill);
             }
         }
-
-        return metaTypes;
+        return true;
     }
 
     void addToIndex(Tools5eIndexType type, JsonNode node) {
@@ -346,6 +352,12 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (variantIndex != null || filteredIndex != null) {
             return;
         }
+
+        // Properly import homebrew sources
+        for (HomebrewMetaTypes homebrew : homebrewMetaTypes.values()) {
+            importHomebrewTree(homebrew);
+        }
+
         variantIndex = new HashMap<>();
 
         setClassFeaturePatterns();
@@ -1072,6 +1084,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     static class HomebrewMetaTypes {
         final String jsonKey;
         final String filename;
+        final JsonNode homebrewNode;
         // name, long name
         final Map<String, String> optionalFeatureTypes = new HashMap<>();
         final Map<String, String> psionicTypes = new HashMap<>();
@@ -1080,9 +1093,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         final Map<String, CustomItemType> itemTypes = new HashMap<>();
         final Map<String, CustomItemProperty> itemProperties = new HashMap<>();
 
-        HomebrewMetaTypes(String jsonKey, String filename) {
+        HomebrewMetaTypes(String jsonKey, String filename, JsonNode homebrewNode) {
             this.jsonKey = jsonKey;
             this.filename = filename;
+            this.homebrewNode = homebrewNode;
         }
 
         public String getOptionalFeatureType(String key) {

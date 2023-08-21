@@ -114,6 +114,7 @@ public interface ItemType {
         TACK("Adventuring Gear", "TAH", "Tack and Harness"),
         TRADE_GOOD("Adventuring Gear", "TG", "Trade Good"),
         GEAR("Adventuring Gear", "G", ""),
+        IDG("Adventuring Gear", "IDG", "Illegal Drug"),
 
         AIRSHIP("Vehicle", "AIR", "Airship, Vehicle (air)"),
         SHIP("Vehicle", "SHP", "Ship, Vehicle (water)"),

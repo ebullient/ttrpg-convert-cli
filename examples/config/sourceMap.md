@@ -126,6 +126,7 @@ _Support content creators. Only use or include sources that you own._
 | SRC_SCREEN_SPELLJAMMER | ScreenSpelljammer |
 | SjA | Spelljammer Academy |
 | TCE | Tasha's Cauldron of Everything |
+| TDCSR | Tal'Dorei Campaign Setting Reborn |
 | TLK | The Lost Kenku |
 | TTP | The Tortle Package |
 | TYP | Tales from the Yawning Portal |

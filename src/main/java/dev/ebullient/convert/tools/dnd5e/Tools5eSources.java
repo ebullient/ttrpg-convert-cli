@@ -61,8 +61,8 @@ public class Tools5eSources extends CompendiumSources {
         Tools5eIndexType type = Tools5eIndexType.getTypeFromNode(node);
         if (type == null) {
             type = SourceField.source.existsIn(node)
-                ? Tools5eIndexType.reference
-                : Tools5eIndexType.syntheticGroup;
+                    ? Tools5eIndexType.reference
+                    : Tools5eIndexType.syntheticGroup;
         }
         String key = TtrpgValue.indexKey.getFromNode(node);
         if (key == null) {

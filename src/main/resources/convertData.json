@@ -211,7 +211,17 @@
               "srd": true,
               "basicRules": true,
               "entries": [
-                "This weapon adds 5 feet to your reach when you attack with it. This property also determines your reach for opportunity attacks with a reach weapon."
+                "This weapon adds 5 feet to your reach when you attack with it. This property also determines your reach for {@action opportunity attack|PHB|opportunity attacks} with a reach weapon.",
+                {
+                  "type": "entries",
+                  "name": "Extended Reach",
+                  "abbreviation": "ER",
+                  "source": "TDCSR",
+                  "page": 195,
+                  "entries": [
+                    "This weapon adds additional (more than 5) feet to your reach when you attack with it. This property also determines your reach for {@action opportunity attack|PHB|opportunity attacks} with an Extended Reach weapon."
+                  ]
+                }
               ]
             },
             {
@@ -314,6 +324,14 @@
               ]
             }
           ]
+        },
+        {
+					"name": "Vestige",
+          "source": "TDCSR",
+          "page": 200,
+          "entries": [
+						"A Vestige of Divergence, see {@book Tal'Dorei Treasures|TDCSR|5|Vestiges of Divergence} for more information."
+					]
         }
       ]
     },
@@ -358,6 +376,12 @@
         {
           "match": "\t\t\t\t\"MB\"",
           "replace": "\t\t\t\t\"TB\""
+        }
+      ],
+      "deities.json": [
+        {
+          "match": "deities/TDCSR/StormLord.webp",
+          "replace": "deities/TDCSR/Stormlord.webp"
         }
       ]
     },

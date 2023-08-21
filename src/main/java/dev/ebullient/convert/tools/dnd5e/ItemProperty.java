@@ -70,6 +70,7 @@ public interface ItemProperty {
         LIGHT("Light", "L", "property/light"),
         LOADING("Loading", "LD", "property/loading"),
         REACH("Reach", "R", "property/reach"),
+        EXTENDED_REACH("Extended Reach", "ER", "property/reach/extended"),
         SPECIAL("Special", "S", "property/special"),
         THROWN("Thrown", "T", "property/thrown"),
         TWO_HANDED("Two-handed", "2H", "property/two-handed"),
@@ -89,6 +90,7 @@ public interface ItemProperty {
         MINOR("Minor", "@", "tier/minor"),
 
         // Magic/Wondrous item attributes: rarity
+        VESTIGE("Vestige", "Vst", "property/vestige"),
         COMMON("Common", "1", "rarity/common"),
         UNCOMMON("Uncommon", "2", "rarity/uncommon"),
         RARE("Rare", "3", "rarity/rare"),
