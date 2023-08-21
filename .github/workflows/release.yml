@@ -22,7 +22,7 @@ on:
 env:
   JAVA_VERSION: 17
   JAVA_DISTRO: temurin
-  GRAALVM_VERSION: 22.3.2
+  GRAALVM_DIST: graalvm-community
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
   JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64'
@@ -150,7 +150,7 @@ jobs:
           components: "native-image"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           java-version: ${{ env.JAVA_VERSION }}
-          version: ${{ env.GRAALVM_VERSION }}
+          distribution: ${{ env.GRAALVM_DIST }}
 
       - name: Build ${{ matrix.os }} native binary
         id: mvn-native-build

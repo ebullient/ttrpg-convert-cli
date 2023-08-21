@@ -19,7 +19,7 @@ on:
 
 env:
   JAVA_VERSION: 17
-  GRAALVM_VERSION: 22.3.2
+  GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: ${{ env.GRAALVM_VERSION }}
+          distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
           components: "native-image"
           cache: 'maven'
