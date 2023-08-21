@@ -403,7 +403,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String key = index().getAliasOrDefault(Tools5eIndexType.deity.createKey(parts[0], source));
         return linkOrText(linkText, key,
                 Tools5eIndexType.deity.getRelativePath(),
-                Tools5eQuteBase.getDeityResourceName(parts[0], pantheon));
+                Tools5eQuteBase.getDeityResourceName(parts[0], source, pantheon));
     }
 
     default String linkifyClass(String match) {

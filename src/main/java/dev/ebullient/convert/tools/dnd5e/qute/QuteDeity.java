@@ -56,6 +56,6 @@ public class QuteDeity extends Tools5eQuteBase {
 
     @Override
     public String targetFile() {
-        return Tools5eQuteBase.getDeityResourceName(name, pantheon);
+        return Tools5eQuteBase.getDeityResourceName(name, sources().primarySource(), pantheon);
     }
 }

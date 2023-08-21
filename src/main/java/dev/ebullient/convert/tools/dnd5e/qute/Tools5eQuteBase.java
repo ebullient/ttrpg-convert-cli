@@ -63,8 +63,16 @@ public class Tools5eQuteBase extends QuteBase {
                 Tools5eQuteBase.sourceIfNotDefault(subclassSource, Tools5eIndexType.subclass);
     }
 
-    public static String getDeityResourceName(String name, String pantheon) {
-        return pantheon + "-" + name;
+    public static String getDeityResourceName(String name, String source, String pantheon) {
+        String suffix = "";
+        switch(pantheon.toLowerCase()) {
+            case "exandria" -> {
+                if (!source.equalsIgnoreCase("egw")) {
+                    suffix = "-" + source.toLowerCase();
+                }
+            }
+        }
+        return pantheon + "-" + name + suffix;
     }
 
     public Tools5eQuteBase withTargetFile(String filename) {
