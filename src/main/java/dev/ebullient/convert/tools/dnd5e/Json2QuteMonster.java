@@ -95,7 +95,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 isNpc,
                 size, creatureType, subtype, monsterAlignment(),
                 ac, acText, hp, hpText, hitDice,
-                speed(),
+                speed(Tools5eFields.speed.getFrom(rootNode)),
                 abilityScores(),
                 monsterSavesAndSkills(),
                 joinAndReplace(rootNode, "senses"),

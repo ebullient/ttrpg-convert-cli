@@ -45,6 +45,33 @@ public class Json2QuteRace extends Json2QuteCommon {
                 tags);
     }
 
+    String getSpeed(JsonNode value) {
+        JsonNode speed = value.get("speed");
+        try {
+            if (speed == null) {
+                return "30 ft.";
+            } else if (speed.isTextual()) {
+                return speed.asText();
+            } else if (speed.isIntegralNumber()) {
+                return speed.asText() + " ft.";
+            } else if (speed.isObject()) {
+                List<String> list = new ArrayList<>();
+                speed.fields().forEachRemaining(f -> {
+                    if (f.getValue().isIntegralNumber()) {
+                        list.add(String.format("%s: %s ft.",
+                                f.getKey(), f.getValue().asText()));
+                    } else if (f.getValue().isBoolean()) {
+                        list.add(f.getKey() + " equal to your walking speed");
+                    }
+                });
+                return String.join("; ", list);
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+        tui().errorf("Unable to parse speed for %s from %s", getSources(), speed);
+        return "30 ft.";
+    }
+
     String creatureTypes() {
         List<String> types = new ArrayList<>();
         for (JsonNode x : iterableElements(rootNode.get("creatureTypes"))) {

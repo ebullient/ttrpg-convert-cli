@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,6 +19,8 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteCommon implements JsonSource {
+    static final List<String> specialTraits = List.of("special equipment", "shapechanger");
+
     protected final Tools5eIndex index;
     protected final Tools5eSources sources;
     protected final Tools5eIndexType type;
@@ -145,6 +148,14 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     AbilityScores abilityScores() {
+        if (!rootNode.has("str")
+                && !rootNode.has("dex")
+                && !rootNode.has("con")
+                && !rootNode.has("int")
+                && !rootNode.has("wis")
+                && !rootNode.has("cha")) {
+            return null;
+        }
         return new AbilityScores(
                 intOrDefault(rootNode, "str", 10),
                 intOrDefault(rootNode, "dex", 10),
@@ -154,8 +165,7 @@ public class Json2QuteCommon implements JsonSource {
                 intOrDefault(rootNode, "cha", 10));
     }
 
-    String speed() {
-        JsonNode speedNode = Tools5eFields.speed.getFrom(rootNode);
+    String speed(JsonNode speedNode) {
         if (speedNode == null) {
             return null;
         } else if (speedNode.isNumber()) {
@@ -254,13 +264,12 @@ public class Json2QuteCommon implements JsonSource {
         for (JsonNode e : iterableElements(array)) {
             String name = SourceField.name.replaceTextFrom(e, this)
                     .replaceAll(":$", "");
-
             addNamedTrait(traits, name, e);
         }
         return traits;
     }
 
-    void addNamedTrait(List<NamedText> traits, String name, JsonNode node) {
+    void addNamedTrait(Collection<NamedText> traits, String name, JsonNode node) {
         List<String> text = new ArrayList<>();
         appendToText(text, SourceField.entry.getFrom(node), null);
         appendToText(text, SourceField.entries.getFrom(node), null);
@@ -268,6 +277,61 @@ public class Json2QuteCommon implements JsonSource {
         if (nt.hasContent()) {
             traits.add(nt);
         }
+    }
+
+    List<String> collectEntries(JsonNode node) {
+        List<String> text = new ArrayList<>();
+        appendToText(text, SourceField.entry.getFrom(node), null);
+        appendToText(text, SourceField.entries.getFrom(node), null);
+        return text;
+    }
+
+    Collection<JsonNode> sortedTraits(JsonNode arrayNode) {
+        if (arrayNode == null || arrayNode.isNull()) {
+            return List.of();
+        } else if (arrayNode.isObject()) {
+            tui().errorf("Can't sort an object: %s", arrayNode);
+            throw new IllegalArgumentException("Object passed to sortedTraits: " + getSources());
+        }
+
+        return streamOf(arrayNode).sorted((a, b) -> {
+            Optional<Integer> aSort = Tools5eFields.sort.getIntFrom(a);
+            Optional<Integer> bSort = Tools5eFields.sort.getIntFrom(b);
+
+            if (aSort.isPresent() && bSort.isPresent()) {
+                return aSort.get().compareTo(bSort.get());
+            } else if (aSort.isPresent() && bSort.isEmpty()) {
+                return -1;
+            } else if (aSort.isEmpty() && bSort.isPresent()) {
+                return 1;
+            }
+
+            String aName = SourceField.name.replaceTextFrom(a, this).toLowerCase();
+            String bName = SourceField.name.replaceTextFrom(b, this).toLowerCase();
+            if (aName.isEmpty() && bName.isEmpty()) {
+                return 0;
+            }
+
+            boolean isOnlyA = aName.endsWith(" only)");
+            boolean isOnlyB = bName.endsWith(" only)");
+            if (!isOnlyA && isOnlyB) {
+                return -1;
+            } else if (isOnlyA && !isOnlyB) {
+                return 1;
+            }
+
+            int specialA = specialTraits.indexOf(aName);
+            int specialB = specialTraits.indexOf(bName);
+            if (specialA > -1 && specialB > -1) {
+                return specialA - specialB;
+            } else if (specialA > -1 && specialB == -1) {
+                return -1;
+            } else if (specialA == -1 && specialB > -1) {
+                return 1;
+            }
+
+            return aName.compareTo(bName);
+        }).toList();
     }
 
     public final Tools5eQuteBase build() {

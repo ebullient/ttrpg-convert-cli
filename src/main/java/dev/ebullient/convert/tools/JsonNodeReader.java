@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -56,7 +57,7 @@ public interface JsonNodeReader {
             return null;
         }
         if (!value.isNumber()) {
-            throw new IllegalArgumentException("Can only work with numbers: " + value);
+            throw new IllegalArgumentException("bonusOrNull can only work with numbers: " + value);
         }
         int n = value.asInt();
         return (n >= 0 ? "+" : "") + n;
@@ -153,7 +154,23 @@ public interface JsonNodeReader {
 
     default int intOrDefault(JsonNode source, int value) {
         JsonNode result = getFrom(source);
-        return result == null ? value : result.asInt();
+        return result == null || result.isNull() ? value : result.asInt();
+    }
+
+    default String joinAndReplace(JsonNode source, JsonTextConverter<?> replacer) {
+        return joinAndReplace(source, replacer, ", ");
+    }
+
+    default String joinAndReplace(JsonNode source, JsonTextConverter<?> replacer, String join) {
+        JsonNode array = getFrom(source);
+        if (array == null || array.isNull()) {
+            return "";
+        } else if (!array.isArray()) {
+            throw new IllegalArgumentException("joinAndReplace can only work with arrays: " + array);
+        }
+        return StreamSupport.stream(array.spliterator(), false)
+            .map(v -> replacer.replaceText(v.asText()))
+            .collect(Collectors.joining(join));
     }
 
     default <T extends IndexType> List<String> linkifyListFrom(JsonNode node, T type, JsonTextConverter<T> convert) {
