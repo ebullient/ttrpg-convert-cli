@@ -11,7 +11,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools spell attributes ({@code spell2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData
@@ -34,7 +34,7 @@ public class QuteSpell extends Tools5eQuteBase {
     public final String duration;
     /** List of links to classes that can use this spell. May be incomplete or empty. */
     public final String classes;
-    /** List of images for this spell (as {@link dev.ebullient.convert.qute.ImageRef ImageRef}) */
+    /** List of images for this spell (as {@link dev.ebullient.convert.qute.ImageRef}) */
     public final List<ImageRef> fluffImages;
 
     public QuteSpell(Tools5eSources sources, String name, String source, String level,

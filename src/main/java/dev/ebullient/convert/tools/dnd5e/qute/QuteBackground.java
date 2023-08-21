@@ -11,13 +11,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools background attributes ({@code background2md.txt}).
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData
 @RegisterForReflection
 public class QuteBackground extends Tools5eQuteBase {
-    /** List of images for this background (as {@link dev.ebullient.convert.qute.ImageRef ImageRef}) */
+    /** List of images for this background (as {@link dev.ebullient.convert.qute.ImageRef}) */
     public final List<ImageRef> fluffImages;
 
     public QuteBackground(Tools5eSources sources,

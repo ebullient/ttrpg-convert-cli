@@ -11,7 +11,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools deity attributes ({@code deity2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData
@@ -34,7 +34,7 @@ public class QuteDeity extends Tools5eQuteBase {
     public final String province;
     /** Text description of deity's symbol: Wave of white water on green */
     public final String symbol;
-    /** Image or symbol representing this deity (as {@link dev.ebullient.convert.qute.ImageRef ImageRef}) */
+    /** Image or symbol representing this deity (as {@link dev.ebullient.convert.qute.ImageRef}) */
     public final ImageRef image;
 
     public QuteDeity(Tools5eSources sources, String name, String source,

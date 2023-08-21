@@ -111,10 +111,12 @@ public class TestUtils {
                     resource = Path.of(baseDir, path);
                 }
 
-                Path indexResource = p.getParent().resolve(path);
-                if (!resource.toFile().exists() && !indexResource.toFile().exists()) {
-                    e.add(String.format("Unresolvable reference in %s: %s ", p, m.group(0)));
-                    return;
+                if (!resource.toFile().exists()) {
+                    resource = p.getParent().resolve(path);
+                    if (!resource.toFile().exists()) {
+                        e.add(String.format("Unresolvable reference in %s: %s ", p, m.group(0)));
+                        return;
+                    }
                 }
             }
 

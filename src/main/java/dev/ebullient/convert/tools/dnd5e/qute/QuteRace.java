@@ -11,7 +11,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools race attributes ({@code race2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData
@@ -32,7 +32,7 @@ public class QuteRace extends Tools5eQuteBase {
     public final String traits;
     /** Formatted text describing the race. Optional. Same as {resource.text} */
     public final String description;
-    /** List of images for this race (as {@link dev.ebullient.convert.qute.ImageRef ImageRef}) */
+    /** List of images for this race (as {@link dev.ebullient.convert.qute.ImageRef}) */
     public final List<ImageRef> fluffImages;
 
     public QuteRace(Tools5eSources sources, String name, String source,

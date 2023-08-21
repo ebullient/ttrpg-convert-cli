@@ -14,7 +14,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Attributes for notes that are generated from the 5eTools data.
- * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteBase QuteBase}.
+ * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteBase}.
  * <p>
  * Notes created from {@code Tools5eQuteBase} will use a specific template
  * for the type. For example, {@code QuteBackground} will use {@code background2md.txt}.
@@ -65,7 +65,7 @@ public class Tools5eQuteBase extends QuteBase {
 
     public static String getDeityResourceName(String name, String source, String pantheon) {
         String suffix = "";
-        switch(pantheon.toLowerCase()) {
+        switch (pantheon.toLowerCase()) {
             case "exandria" -> {
                 if (!source.equalsIgnoreCase("egw")) {
                     suffix = "-" + source.toLowerCase();

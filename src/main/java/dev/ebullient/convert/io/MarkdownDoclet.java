@@ -346,17 +346,31 @@ public class MarkdownDoclet implements Doclet {
                     break;
                 case LINK:
                     LinkTree linkTree = (LinkTree) docTree;
+                    String reference = linkTree.getReference().toString();
+
+                    // look at label before anchor has been removed from reference
                     String label = linkTree.getLabel().toString();
                     if (label == null || label.isEmpty()) {
-                        label = linkTree.getReference().toString();
+                        int classBegin = reference.lastIndexOf(".");
+                        label = classBegin > -1 ? reference.substring(classBegin + 1) : reference;
                     }
-                    String reference = qualifiedNameToPath(linkTree.getReference().toString());
+
+                    // remove anchor from the class reference
+                    String anchor = "";
+                    int hash = reference.indexOf("#");
+                    if (hash > -1) {
+                        anchor = reference.substring(hash);
+                        reference = reference.substring(0, hash);
+                    }
+
+                    // resolve the class reference to a path (and then make that link relative)
+                    reference = qualifiedNameToPath(reference);
                     if (!reference.startsWith("http")) {
                         Path target = outputDirectory.resolve(reference);
                         Path relative = currentResource.getParent().relativize(target);
                         reference = relative.toString();
                     }
-                    add(String.format("[%s](%s)", label, reference));
+                    add(String.format("[%s](%s%s)", label, reference, anchor));
                     break;
                 case ENTITY:
                     add(replacementFor(docTree.toString()));

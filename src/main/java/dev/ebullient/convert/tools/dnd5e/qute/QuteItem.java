@@ -11,7 +11,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools item attributes ({@code item2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData
@@ -38,7 +38,7 @@ public class QuteItem extends Tools5eQuteBase {
     public final String cost;
     /** Weight of the item (pounds) as a decimal value */
     public final Double weight;
-    /** List of images for this item (as {@link dev.ebullient.convert.qute.ImageRef ImageRef}) */
+    /** List of images for this item (as {@link dev.ebullient.convert.qute.ImageRef}) */
     public final List<ImageRef> fluffImages;
 
     public QuteItem(Tools5eSources sources, String name, String source, String detail,
