@@ -223,6 +223,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
         final JsonNode srdEntries = TtrpgConfig.activeGlobalConfig("srdEntries").get("properties");
 
         for (JsonNode srdEntry : iterableElements(srdEntries)) {
+            currentSources = Tools5eSources.findOrTemporary(srdEntry);
             boolean p2 = parseState().push(srdEntry);
             try {
                 String name = srdEntry.get("name").asText();
@@ -230,7 +231,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
                 maybeAddBlankLine(text);
                 text.add("## " + name);
                 if (!srdEntry.has("srd")) {
-                    text.add(getSourceText(srdEntry));
+                    text.add(getLabeledSource(srdEntry));
                 }
                 text.add("");
 

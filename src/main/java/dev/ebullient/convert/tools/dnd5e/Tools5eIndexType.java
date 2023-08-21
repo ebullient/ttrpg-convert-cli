@@ -75,6 +75,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     vehicleUpgrade,
 
     note, // qute data type
+    reference, // made up
     syntheticGroup, // qute data type
     ;
 

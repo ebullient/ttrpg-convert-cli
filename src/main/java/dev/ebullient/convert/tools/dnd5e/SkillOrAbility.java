@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
+
 public interface SkillOrAbility {
     static final Comparator<SkillOrAbility> comparator = Comparator.comparingInt(SkillOrAbility::ordinal)
             .thenComparing(Comparator.comparing(SkillOrAbility::value));
@@ -50,18 +52,18 @@ public interface SkillOrAbility {
     public class CustomSkillOrAbility implements SkillOrAbility {
         final String name;
         final String lower;
-        final Tools5eSources sources;
+        final String key;
 
         public CustomSkillOrAbility(String name) {
             this.name = name;
             this.lower = name.toLowerCase();
-            this.sources = null;
+            this.key = null;
         }
 
         public CustomSkillOrAbility(JsonNode skill) {
-            this.sources = Tools5eSources.constructSources(skill);
-            this.name = this.sources.getName();
+            this.name = SourceField.name.getTextOrEmpty(skill);
             this.lower = this.name.toLowerCase();
+            this.key = Tools5eIndexType.skill.createKey(skill);
         }
 
         @Override
