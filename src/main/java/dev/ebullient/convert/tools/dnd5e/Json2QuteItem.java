@@ -86,7 +86,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     private String gpValue() {
         if (rootNode.has("value")) {
-            return Currency.coinValue(rootNode.get("value").asInt());
+            return convertCurrency(rootNode.get("value").asInt());
         }
         return null;
     }

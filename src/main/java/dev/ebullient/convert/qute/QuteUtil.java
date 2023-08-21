@@ -5,16 +5,20 @@ import java.util.List;
 import java.util.Map;
 
 public interface QuteUtil {
-    default boolean isPresent(Collection<?> s) {
+    default boolean isPresent(Map<?, ?> s) {
         return s != null && !s.isEmpty();
     }
 
-    default boolean isPresent(Map<?, ?> s) {
+    default boolean isPresent(Collection<?> s) {
         return s != null && !s.isEmpty();
     }
 
     default boolean isPresent(String s) {
         return s != null && !s.isBlank();
+    }
+
+    default boolean isPresent(Object s) {
+        return s != null;
     }
 
     default void addIntegerUnlessEmpty(Map<String, Object> map, String key, Integer value) {
@@ -39,5 +43,13 @@ public interface QuteUtil {
         if (value != null && !value.isEmpty()) {
             map.put(key, value);
         }
+    }
+
+    default String makePlural(String s, int howMany) {
+        return s + (howMany == 1 ? "" : "s");
+    }
+
+    default String makePlural(String s, String howMany) {
+        return s + (howMany.equals("1") ? "" : "s");
     }
 }

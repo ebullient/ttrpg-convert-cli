@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -169,8 +170,8 @@ public interface JsonNodeReader {
             throw new IllegalArgumentException("joinAndReplace can only work with arrays: " + array);
         }
         return StreamSupport.stream(array.spliterator(), false)
-            .map(v -> replacer.replaceText(v.asText()))
-            .collect(Collectors.joining(join));
+                .map(v -> replacer.replaceText(v.asText()))
+                .collect(Collectors.joining(join));
     }
 
     default <T extends IndexType> List<String> linkifyListFrom(JsonNode node, T type, JsonTextConverter<T> convert) {
@@ -234,5 +235,12 @@ public interface JsonNodeReader {
             return List.of();
         }
         return () -> source.withArray(this.nodeName()).elements();
+    }
+
+    default Iterable<Entry<String, JsonNode>> iterateFieldsFrom(JsonNode source) {
+        if (source == null) {
+            return List.of();
+        }
+        return source::fields;
     }
 }

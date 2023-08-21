@@ -22,6 +22,7 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType.IndexFields;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType> {
+    Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
 
     Pattern linkifyPattern = Pattern.compile(
             "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|race|reward|sense|skill|spell|status|table|variantrule|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
@@ -190,6 +191,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                         .replaceAll("\\{@h}", "*Hit:* ")
+                        .replaceAll("\\{@m}", "*Miss:* ")
                         .replaceAll("\\{@atk g}", "*Magical Attack:*")
                         .replaceAll("\\{@atk m}", "*Melee Attack:*")
                         .replaceAll("\\{@atk mw}", "*Melee Weapon Attack:*")
@@ -700,5 +702,56 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             }
         }
         return name;
+    }
+
+    default double convertToNumber(String text) {
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+        Matcher m = FRACTIONAL.matcher(text);
+        if (m.matches()) {
+            double out = Double.parseDouble(m.group(1));
+            if (m.group(2) != null) {
+                switch (m.group(2)) {
+                    case "⅛":
+                        out += 0.125;
+                        break;
+                    case "¼":
+                        out += 0.25;
+                        break;
+                    case "⅜":
+                        out += 0.375;
+                        break;
+                    case "½":
+                        out += 0.5;
+                        break;
+                    case "⅝":
+                        out += 0.625;
+                        break;
+                    case "¾":
+                        out += 0.75;
+                        break;
+                    case "⅞":
+                        out += 0.875;
+                        break;
+                    case "⅓":
+                        out += 1 / 3;
+                        break;
+                    case "⅔":
+                        out += 2 / 3;
+                        break;
+                    case "⅙":
+                        out += 1 / 6;
+                        break;
+                    case "⅚":
+                        out += 5 / 6;
+                        break;
+                    case "":
+                        break;
+                }
+            }
+            return out;
+        }
+        throw new IllegalArgumentException("Unable to convert " + text + " to number");
     }
 }

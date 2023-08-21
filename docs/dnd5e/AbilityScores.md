@@ -2,7 +2,7 @@
 
 5eTools Ability Score attributes.
 
-Used by [QuteMonster](QuteMonster.md) to describe a monster's statistics.
+Used to describe a monster, object or vehicle's ability scores.
 
 If referenced as a unit (ignoring inner attributes), it will render ability scores as a `|` separated list of values, in `STR,DEX,CON,INT,WIS,CHA` order, for example:  
  `10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)`.

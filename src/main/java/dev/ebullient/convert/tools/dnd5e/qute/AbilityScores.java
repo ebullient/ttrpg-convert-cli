@@ -5,8 +5,7 @@ import io.quarkus.qute.TemplateData;
 /**
  * 5eTools Ability Score attributes.
  * <p>
- * Used by {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster QuteMonster} to
- * describe a monster's statistics.
+ * Used to describe a monster, object or vehicle's ability scores.
  * </p>
  * <p>
  * If referenced as a unit (ignoring inner attributes), it will render ability scores as

@@ -8,10 +8,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
@@ -19,6 +20,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteCommon implements JsonSource {
+    static final List<String> SPEED_MODE = List.of("walk", "burrow", "climb", "fly", "swim");
     static final List<String> specialTraits = List.of("special equipment", "shapechanger");
 
     protected final Tools5eIndex index;
@@ -166,26 +168,53 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     String speed(JsonNode speedNode) {
+        return speed(speedNode, true);
+    }
+
+    String speed(JsonNode speedNode, boolean includeZeroWalk) {
         if (speedNode == null) {
             return null;
         } else if (speedNode.isNumber()) {
             return String.format("%s ft.", speedNode.asText());
         }
+        JsonNode alternate = Tools5eFields.alternate.getFrom(speedNode);
 
         List<String> speed = new ArrayList<>();
-        for (Entry<String, JsonNode> f : iterableFields(speedNode)) {
-            if (f.getValue().isNumber()) {
-                speed.add(String.format("%s %s ft.", f.getKey(), f.getValue().asText()));
-            } else if (Tools5eFields.number.existsIn(f.getValue())) {
-                speed.add(String.format("%s %s ft.%s",
-                        f.getKey(),
-                        Tools5eFields.number.replaceTextFrom(f.getValue(), this),
-                        Tools5eFields.condition.existsIn(f.getValue())
-                                ? " " + Tools5eFields.condition.replaceTextFrom(f.getValue(), this)
-                                : ""));
+        for (String k : SPEED_MODE) {
+            JsonNode v = speedNode.get(k);
+            JsonNode altV = alternate == null ? null : alternate.get(k);
+            if (v != null) {
+                String prefix = "walk".equals(k) ? "" : k + " ";
+                speed.add(prefix + speedValue(k, v, includeZeroWalk));
+                if (altV != null && altV.isArray()) {
+                    altV.forEach(x -> speed.add(prefix + speedValue(k, x, includeZeroWalk)));
+                }
             }
         }
         return replaceText(String.join(", ", speed));
+    }
+
+    String speedValue(String key, JsonNode speedValue, boolean includeZeroWalk) {
+        if (speedValue == null || speedValue.isNull()) {
+            if (includeZeroWalk && "walk".equals(key)) {
+                return "0 ft.";
+            }
+            return "";
+        } else if (speedValue.isBoolean() && !"walk".equals(key)) {
+            return "equal to walking speed";
+        } else if (speedValue.isNumber()) {
+            return String.format("%s ft.", speedValue.asText());
+        } else if (speedValue.isTextual()) { // Varies
+            return speedValue.asText();
+        }
+
+        int number = Tools5eFields.number.intOrDefault(speedValue, 0);
+        if (!includeZeroWalk && number == 0 && "walk".equals(key)) {
+            return "";
+        }
+        String condition = Tools5eFields.condition.replaceTextFrom(speedValue, this);
+        return String.format("%s ft.%s", number,
+                condition.isEmpty() ? "" : " " + condition);
     }
 
     ImageRef getToken() {
@@ -245,6 +274,16 @@ public class Json2QuteCommon implements JsonSource {
         return null;
     }
 
+    Collection<NamedText> collectSortedTraits(JsonNode array) {
+        // gather traits into a sorted array
+        ArrayNode sorted = Tui.MAPPER.createArrayNode();
+        sorted.addAll(sortedTraits(array));
+
+        List<NamedText> namedText = new ArrayList<>();
+        collectTraits(namedText, sorted);
+        return namedText;
+    }
+
     Collection<NamedText> collectTraits(String field) {
         List<NamedText> traits = new ArrayList<>();
 
@@ -253,11 +292,15 @@ public class Json2QuteCommon implements JsonSource {
             addNamedTrait(traits, "", header);
         }
 
-        JsonNode array = rootNode.get(field);
+        collectTraits(traits, rootNode.get(field));
+        return traits;
+    }
+
+    void collectTraits(List<NamedText> traits, JsonNode array) {
         if (array == null || array.isNull()) {
-            return traits;
+            return;
         } else if (array.isObject()) {
-            tui().errorf("Unknown %s for %s: %s", field, sources.getKey(), array.toPrettyString());
+            tui().errorf("Unknown %s for %s: %s", array, sources.getKey(), array.toPrettyString());
             throw new IllegalArgumentException("Unknown field: " + getSources());
         }
 
@@ -266,7 +309,6 @@ public class Json2QuteCommon implements JsonSource {
                     .replaceAll(":$", "");
             addNamedTrait(traits, name, e);
         }
-        return traits;
     }
 
     void addNamedTrait(Collection<NamedText> traits, String name, JsonNode node) {

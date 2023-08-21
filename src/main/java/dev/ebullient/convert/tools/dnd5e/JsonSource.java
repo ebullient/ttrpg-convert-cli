@@ -121,7 +121,7 @@ public interface JsonSource extends JsonTextReplacement {
     default void appendToText(List<String> text, JsonNode node, String heading) {
         boolean pushed = parseState().push(node); // store state
         try {
-            if (node == null) {
+            if (node == null || node.isNull()) {
                 // do nothing
             } else if (node.isTextual()) {
                 text.add(replaceText(node.asText()));
@@ -924,7 +924,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String getSize(JsonNode value) {
-        JsonNode size = value.get("size");
+        JsonNode size = Tools5eFields.size.getFrom(value);
         if (size == null) {
             throw new IllegalArgumentException("Missing size attribute from " + getSources());
         }
@@ -956,33 +956,6 @@ public interface JsonSource extends JsonTextReplacement {
             case "SM" -> "Small or Medium";
             default -> "Unknown";
         };
-    }
-
-    default String getSpeed(JsonNode value) {
-        JsonNode speed = value.get("speed");
-        try {
-            if (speed == null) {
-                return "30 ft.";
-            } else if (speed.isTextual()) {
-                return speed.asText();
-            } else if (speed.isIntegralNumber()) {
-                return speed.asText() + " ft.";
-            } else if (speed.isObject()) {
-                List<String> list = new ArrayList<>();
-                speed.fields().forEachRemaining(f -> {
-                    if (f.getValue().isIntegralNumber()) {
-                        list.add(String.format("%s: %s ft.",
-                                f.getKey(), f.getValue().asText()));
-                    } else if (f.getValue().isBoolean()) {
-                        list.add(f.getKey() + " equal to your walking speed");
-                    }
-                });
-                return String.join("; ", list);
-            }
-        } catch (IllegalArgumentException ignored) {
-        }
-        tui().errorf("Unable to parse speed for %s from %s", getSources(), speed);
-        return "30 ft.";
     }
 
     default String raceToText(JsonNode race) {
@@ -1033,6 +1006,24 @@ public interface JsonSource extends JsonTextReplacement {
             case 3 -> "3rd";
             default -> level + "th";
         };
+    }
+
+    default String convertCurrency(int cp) {
+        List<String> result = new ArrayList<>();
+        int gp = cp / 100;
+        cp %= 100;
+        if (gp > 0) {
+            result.add(gp + " gp");
+        }
+        int sp = cp / 10;
+        cp %= 10;
+        if (sp > 0) {
+            result.add(sp + " sp");
+        }
+        if (cp > 0) {
+            result.add(cp + " cp");
+        }
+        return String.join(", ", result);
     }
 
     @RegisterForReflection
@@ -1095,6 +1086,7 @@ public interface JsonSource extends JsonTextReplacement {
     enum Tools5eFields implements JsonNodeReader {
         abbreviation,
         additionalEntries,
+        alternate,
         appliesTo,
         attributes,
         className,
@@ -1114,6 +1106,8 @@ public interface JsonSource extends JsonTextReplacement {
         optionalfeature,
         prop, // statblock
         regionalEffects, // legendary group
+        size,
+        sort, // monsters, vehicles (sorted traits)
         speed,
         style,
         tables, // for optfeature types

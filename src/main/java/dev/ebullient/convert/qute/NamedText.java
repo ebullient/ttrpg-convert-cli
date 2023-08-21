@@ -32,8 +32,8 @@ public class NamedText {
     }
 
     public NamedText(String name, Collection<String> text) {
-        this.name = name;
-        String body = String.join("\n", text);
+        this.name = name == null ? "" : name;
+        String body = text == null ? "" : String.join("\n", text);
         if (body.startsWith(">")) {
             body = "\n" + body;
         }
@@ -41,7 +41,7 @@ public class NamedText {
     }
 
     public boolean hasContent() {
-        return !desc.isBlank() && !name.isBlank();
+        return !(name.isBlank() && desc.isBlank());
     }
 
     /** Alternate accessor for the name */
@@ -65,6 +65,9 @@ public class NamedText {
     }
 
     public String toString() {
+        if (name.isBlank()) {
+            return desc;
+        }
         return String.format("**%s** %s", name, desc);
     }
 
