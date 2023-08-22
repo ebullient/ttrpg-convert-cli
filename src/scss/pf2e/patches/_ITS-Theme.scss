@@ -1,0 +1,20 @@
+// ITS Theme Specific Patches
+
+// Pathfinder Styling
+.pathfinder.pathfinder.pathfinder {
+
+  // Fixes Position of Single Action Icon in Actions Header
+  & h1 a.internal-link[href$="#Actions"][title="Single Action"] {
+    vertical-align: text-bottom;
+  }
+
+  & h1 a.internal-link[href$="#Actions"][title=Two-Action], a.internal-link[href$="#Actions"][title=Two-Action] .callout-title-inner {
+    width: 2.5em;
+    vertical-align: text-bottom;
+  }
+
+  // Fixes coloration when ITS Theme Applies a Bullet to a List
+  & .admonition[data-callout=embed-ability] .admonition-content ol > li::marker, & .admonition[data-callout=embed-ability] .admonition-content ul > li::marker {
+    color: transparent;
+  }
+}
