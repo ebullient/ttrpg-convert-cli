@@ -1,6 +1,9 @@
 // Variables
-@use 'pf2e/30-index-obsidian-var' as var;
+@use 'pf2e/pf2e-variables' as var;
 
 // Styling
-@use 'pf2e/styling/30-styling-index' as style;
+@use 'pf2e/styling/index' as style;
 @use 'pf2e/callmonitions/00-callmonitions-index' as callmonitions;
+
+// Patches
+@use 'pf2e/patches/index' as patches;
