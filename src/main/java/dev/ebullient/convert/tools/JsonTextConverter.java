@@ -387,6 +387,7 @@ public interface JsonTextConverter<T extends IndexType> {
         items,
         meta("_meta"),
         name,
+        note,
         page,
         source,
         type;

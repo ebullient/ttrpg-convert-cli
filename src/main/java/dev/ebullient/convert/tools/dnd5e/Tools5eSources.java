@@ -130,23 +130,27 @@ public class Tools5eSources extends CompendiumSources {
         }
         String srcText = super.findSourceText(type, jsonElement);
 
-        String srdBasic = null;
+        boolean basicRules = jsonElement.has("basicRules") && jsonElement.get("basicRules").asBoolean(false);
+        String value = jsonElement.has("srd") ? jsonElement.get("srd").asText() : null;
+        boolean srd = !(value == null || "false".equals(value));
+        String srdValue = srd && !"true".equals(value) ?  " (as '" + value + "')" : "";
+
+        String srdBasic = "";
         if (srd && basicRules) {
-            srdBasic = "Available in the SRD and the Basic Rules.";
+            srdBasic = "Available in the SRD and the Basic Rules"+srdValue+".";
         } else if (srd) {
-            srdBasic = "Available in the SRD.";
+            srdBasic = "Available in the SRD"+srdValue+".";
         } else if (basicRules) {
-            srdBasic = "Available in the Basic Rules.";
+            srdBasic = "Available in the Basic Rules"+srdValue+".";
         }
 
         String sourceText = String.join(", ", srcText);
-        if (srdBasic != null) {
-            return sourceText.isEmpty()
-                    ? srdBasic
-                    : sourceText + ". " + srdBasic;
+        if (srdBasic.isBlank()) {
+            return sourceText;
         }
-
-        return sourceText;
+        return sourceText.isEmpty()
+                ? srdBasic
+                : sourceText + ". " + srdBasic;
     }
 
     @Override

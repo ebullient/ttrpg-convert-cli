@@ -189,6 +189,7 @@ public class Json2QuteCommon implements JsonSource {
             return String.format("%s ft.", speedNode.asText());
         }
         JsonNode alternate = Tools5eFields.alternate.getFrom(speedNode);
+        String note = SourceField.note.replaceTextFrom(speedNode, this);
 
         List<String> speed = new ArrayList<>();
         for (String k : SPEED_MODE) {
@@ -202,7 +203,8 @@ public class Json2QuteCommon implements JsonSource {
                 }
             }
         }
-        return replaceText(String.join(", ", speed));
+        return replaceText(String.join(", ", speed)
+                + (note.isBlank() ? "" : " " + note));
     }
 
     String speedValue(String key, JsonNode speedValue, boolean includeZeroWalk) {
