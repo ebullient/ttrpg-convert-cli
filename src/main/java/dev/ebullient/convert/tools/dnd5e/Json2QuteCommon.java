@@ -15,7 +15,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
+import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
+import dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
@@ -149,6 +152,14 @@ public class Json2QuteCommon implements JsonSource {
         }
     }
 
+    ImmuneResist immuneResist() {
+        return new ImmuneResist(
+                collectImmunities("vulnerable"),
+                collectImmunities("resist"),
+                collectImmunities("immune"),
+                collectImmunities("conditionImmune"));
+    }
+
     AbilityScores abilityScores() {
         if (!rootNode.has("str")
                 && !rootNode.has("dex")
@@ -215,6 +226,80 @@ public class Json2QuteCommon implements JsonSource {
         String condition = Tools5eFields.condition.replaceTextFrom(speedValue, this);
         return String.format("%s ft.%s", number,
                 condition.isEmpty() ? "" : " " + condition);
+    }
+
+    void findAc(AcHp acHp) {
+        JsonNode acNode = MonsterFields.ac.getFrom(rootNode);
+        if (acNode == null) {
+            return;
+        }
+        if (acNode.isIntegralNumber()) {
+            acHp.ac = acNode.asInt();
+        } else if (acNode.isArray()) {
+            List<String> details = new ArrayList<>();
+            for (JsonNode acValue : iterableElements(acNode)) {
+                if (acHp.ac == null && details.isEmpty()) { // first time
+                    if (acValue.isIntegralNumber()) {
+                        acHp.ac = acValue.asInt();
+                    } else if (acValue.isObject()) {
+                        if (MonsterFields.ac.existsIn(acValue)) {
+                            acHp.ac = MonsterFields.ac.getFrom(acValue).asInt();
+                        }
+                        if (MonsterFields.special.existsIn(acValue)) {
+                            details.add(MonsterFields.special.replaceTextFrom(acValue, this));
+                        } else if (MonsterFields.from.existsIn(acValue)) {
+                            details.add(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
+                        }
+                    }
+                } else { // nth time: conditional AC. Append to acText
+                    StringBuilder value = new StringBuilder();
+                    value.append(MonsterFields.ac.replaceTextFrom(acValue, this));
+                    if (MonsterFields.from.existsIn(acValue)) {
+                        value.append(" from ").append(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
+                    }
+                    if (Tools5eFields.condition.existsIn(acValue)) {
+                        value.append(" ").append(Tools5eFields.condition.replaceTextFrom(acValue, this));
+                    }
+                    details.add(value.toString());
+                }
+            }
+            if (!details.isEmpty()) {
+                acHp.acText = replaceText(String.join("; ", details));
+            }
+        } else if (MonsterFields.special.existsIn(acNode)) {
+            acHp.acText = MonsterFields.special.replaceTextFrom(acNode, this);
+        } else {
+            tui().errorf("Unknown armor class in monster %s: %s", sources.getKey(), acNode.toPrettyString());
+        }
+    }
+
+    void findHp(AcHp acHp) {
+        JsonNode health = MonsterFields.hp.getFrom(rootNode);
+        if (health.isNumber()) {
+            acHp.hp = health.asInt();
+        } else if (MonsterFields.special.existsIn(health)) {
+            String special = MonsterFields.special.replaceTextFrom(health, this);
+            if (special.matches("^[\\d\"]+$")) {
+                acHp.hp = Integer.parseInt(special.replace("\"", ""));
+                if (MonsterFields.original.existsIn(health)) {
+                    acHp.hpText = MonsterFields.original.replaceTextFrom(health, this);
+                }
+            } else {
+                acHp.hpText = replaceText(special);
+            }
+        } else {
+            if (MonsterFields.average.existsIn(health)) {
+                acHp.hp = MonsterFields.average.getFrom(health).asInt();
+            }
+            if (MonsterFields.formula.existsIn(health)) {
+                acHp.hitDice = MonsterFields.formula.getFrom(health).asText();
+            }
+        }
+
+        if (acHp.hpText == null && acHp.hitDice == null && acHp.hp == null) {
+            tui().errorf("Unknown hp from %s: %s", getSources(), health.toPrettyString());
+            throw new IllegalArgumentException("Unknown hp from " + getSources());
+        }
     }
 
     ImageRef getToken() {

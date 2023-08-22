@@ -23,6 +23,7 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
@@ -48,18 +49,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     String creatureType;
     String subtype;
-    Integer ac;
-    String acText;
-    Integer hp;
-    String hpText;
-    String hitDice;
+    AcHp acHp = new AcHp();
     final boolean isNpc;
 
     Json2QuteMonster(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         findCreatureType();
-        findAc();
-        findHp();
+        findAc(acHp);
+        findHp(acHp);
         isNpc = isNpc(rootNode);
     }
 
@@ -94,16 +91,13 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 getSourceText(sources),
                 isNpc,
                 size, creatureType, subtype, monsterAlignment(),
-                ac, acText, hp, hpText, hitDice,
+                acHp,
                 speed(Tools5eFields.speed.getFrom(rootNode)),
                 abilityScores(),
                 monsterSavesAndSkills(),
                 joinAndReplace(rootNode, "senses"),
                 intOrDefault(rootNode, "passive", 10),
-                collectImmunities("vulnerable"),
-                collectImmunities("resist"),
-                collectImmunities("immune"),
-                collectImmunities("conditionImmune"),
+                immuneResist(),
                 joinAndReplace(rootNode, "languages"),
                 cr, pb,
                 collectTraits("trait"),
@@ -151,78 +145,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
         });
         if (!tags.isEmpty()) {
             subtype = String.join(", ", tags);
-        }
-    }
-
-    void findAc() {
-        JsonNode acNode = MonsterFields.ac.getFrom(rootNode);
-        if (acNode == null) {
-            return;
-        }
-        if (acNode.isIntegralNumber()) {
-            ac = acNode.asInt();
-        } else if (acNode.isArray()) {
-            List<String> details = new ArrayList<>();
-            for (JsonNode acValue : iterableElements(acNode)) {
-                if (ac == null && details.isEmpty()) { // first time
-                    if (acValue.isIntegralNumber()) {
-                        ac = acValue.asInt();
-                    } else if (acValue.isObject()) {
-                        if (MonsterFields.ac.existsIn(acValue)) {
-                            ac = MonsterFields.ac.getFrom(acValue).asInt();
-                        }
-                        if (MonsterFields.special.existsIn(acValue)) {
-                            details.add(MonsterFields.special.replaceTextFrom(acValue, this));
-                        } else if (MonsterFields.from.existsIn(acValue)) {
-                            details.add(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
-                        }
-                    }
-                } else { // nth time: conditional AC. Append to acText
-                    StringBuilder value = new StringBuilder();
-                    value.append(MonsterFields.ac.replaceTextFrom(acValue, this));
-                    if (MonsterFields.from.existsIn(acValue)) {
-                        value.append(" from ").append(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
-                    }
-                    if (Tools5eFields.condition.existsIn(acValue)) {
-                        value.append(" ").append(Tools5eFields.condition.replaceTextFrom(acValue, this));
-                    }
-                    details.add(value.toString());
-                }
-            }
-            if (!details.isEmpty()) {
-                acText = replaceText(String.join("; ", details));
-            }
-        } else if (MonsterFields.special.existsIn(acNode)) {
-            acText = MonsterFields.special.replaceTextFrom(acNode, this);
-        } else {
-            tui().errorf("Unknown armor class in monster %s: %s", sources.getKey(), acNode.toPrettyString());
-        }
-    }
-
-    void findHp() {
-        JsonNode health = MonsterFields.hp.getFrom(rootNode);
-        if (MonsterFields.special.existsIn(health)) {
-            String special = MonsterFields.special.replaceTextFrom(health, this);
-            if (special.matches("^[\\d\"]+$")) {
-                hp = Integer.parseInt(special.replace("\"", ""));
-                if (MonsterFields.original.existsIn(health)) {
-                    hpText = MonsterFields.original.replaceTextFrom(health, this);
-                }
-            } else {
-                hpText = replaceText(special);
-            }
-        } else {
-            if (MonsterFields.average.existsIn(health)) {
-                hp = MonsterFields.average.getFrom(health).asInt();
-            }
-            if (MonsterFields.formula.existsIn(health)) {
-                hitDice = MonsterFields.formula.getFrom(health).asText();
-            }
-        }
-
-        if (hpText == null && hitDice == null && hp == null) {
-            tui().errorf("Unknown hp from %s: %s", getSources(), health.toPrettyString());
-            throw new IllegalArgumentException("Unknown hp from " + getSources());
         }
     }
 

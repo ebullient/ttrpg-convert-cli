@@ -24,8 +24,7 @@ title: {resource.name}{#if resource.token}
 ![{resource.token.title}]({resource.token.vaultPath}#token){/if}
 *{resource.size} {resource.objectType}{#if resource.creatureType } ({resource.creatureType}){/if}*
 
-- **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }({resource.acText}){/if}
-- **Hit Points** {resource.hp or ' '} {#if resource.hpText }({resource.hpText}){/if}
+{resource.acHp}
 - **Speed** {resource.speed}
 
 |STR|DEX|CON|INT|WIS|CHA|
@@ -34,16 +33,9 @@ title: {resource.name}{#if resource.token}
 
 {#if resource.senses }
 - **Senses** {resource.senses}
-{/if}{#if resource.vulnerable }
-- **Damage Vulnerabilities** {resource.vulnerable}
-{/if}{#if resource.resist}
-- **Damage Resistances** {resource.resist}
-{/if}{#if resource.immune}
-- **Damage Immunities** {resource.immune}
-{/if}{#if resource.conditionImmune}
-- **Condition Immunities** {resource.conditionImmune}
-{/if}
-{#if resource.action}
+{/if}{#if resource.immuneResist }
+{resource.immuneResist}
+{/if}{#if resource.action}
 
 ## Actions
 {#for action in resource.action}

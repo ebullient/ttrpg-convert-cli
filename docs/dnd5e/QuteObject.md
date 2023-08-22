@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acText](#actext), [action](#action), [books](#books), [conditionImmune](#conditionimmune), [creatureType](#creaturetype), [fluffImages](#fluffimages), [hasSections](#hassections), [hp](#hp), [hpText](#hptext), [immune](#immune), [isNpc](#isnpc), [labeledSource](#labeledsource), [name](#name), [objectType](#objecttype), [resist](#resist), [scores](#scores), [senses](#senses), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [token](#token), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
+[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [books](#books), [conditionImmune](#conditionimmune), [creatureType](#creaturetype), [fluffImages](#fluffimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [name](#name), [objectType](#objecttype), [resist](#resist), [scores](#scores), [senses](#senses), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [token](#token), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
 
 
 ### 5eInitiativeYaml
@@ -19,15 +19,19 @@ Complete object attributes in the format required by the Fantasy statblock plugi
 
 ### ac
 
-Armor class (number)
+See [AcHp#ac](AcHp.md#ac)
+
+### acHp
+
+Object AC and HP as [AcHp](AcHp.md)
 
 ### acText
 
-Additional armor class text: natural armor. May link to related items.
+See [AcHp#acText](AcHp.md#acText)
 
 ### action
 
-List of object ([actions](../NamedText.md))
+Object actions as a list of [NamedText](../NamedText.md)
 
 ### books
 
@@ -35,7 +39,7 @@ List of source books (abbreviated name). Fantasy statblock uses this list.
 
 ### conditionImmune
 
-Comma-separated string of creature condition immunities (if present).
+See [ImmuneResist#conditionImmune](ImmuneResist.md#conditionImmune)
 
 ### creatureType
 
@@ -49,17 +53,25 @@ List of [ImageRef](../ImageRef.md) related to the creature
 
 True if the content (text) contains sections
 
+### hitDice
+
+See [AcHp#hitDice](AcHp.md#hitDice)
+
 ### hp
 
-Hit points (number); optional
+See [AcHp#hp](AcHp.md#hp)
 
 ### hpText
 
-Additional hit point text. May link to related items.
+See [AcHp#hpText](AcHp.md#hpText)
 
 ### immune
 
-Comma-separated string of creature damage immunities (if present).
+See [ImmuneResist#immune](ImmuneResist.md#immune)
+
+### immuneResist
+
+Object immunities and resistances as [ImmuneResist](ImmuneResist.md)
 
 ### isNpc
 
@@ -79,11 +91,11 @@ Object type
 
 ### resist
 
-Comma-separated string of creature damage resistances (if present).
+See [ImmuneResist#resist](ImmuneResist.md#resist)
 
 ### scores
 
-Object ability scores ([AbilityScores](AbilityScores.md))
+Object ability scores as [AbilityScores](AbilityScores.md)
 
 ### senses
 
@@ -123,4 +135,4 @@ Path to this note in the vault
 
 ### vulnerable
 
-Comma-separated string of creature damage vulnerabilities (if present).
+See [ImmuneResist#vulnerable](ImmuneResist.md#vulnerable)

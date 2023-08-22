@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acText](#actext), [action](#action), [alignment](#alignment), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [name](#name), [passive](#passive), [pb](#pb), [reaction](#reaction), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
+[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [alignment](#alignment), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [name](#name), [passive](#passive), [pb](#pb), [reaction](#reaction), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
 
 
 ### 5eInitiativeYaml
@@ -19,15 +19,19 @@ Complete monster attributes in the format required by the Fantasy statblock plug
 
 ### ac
 
-Creature armor class (number)
+See [AcHp#ac](AcHp.md#ac)
+
+### acHp
+
+Creature AC and HP as [AcHp](AcHp.md)
 
 ### acText
 
-Additional armor class text: natural armor. May link to related items.
+See [AcHp#acText](AcHp.md#acText)
 
 ### action
 
-List of creature ([actions](../NamedText.md))
+Creature actions as a list of [NamedText](../NamedText.md)
 
 ### alignment
 
@@ -35,7 +39,7 @@ Creature alignment
 
 ### bonusAction
 
-List of creature ([bonus actions](../NamedText.md))
+Creature bonus actions as a list of [NamedText](../NamedText.md)
 
 ### books
 
@@ -43,7 +47,7 @@ List of source books (abbreviated name). Fantasy statblock uses this list.
 
 ### conditionImmune
 
-Comma-separated string of creature condition immunities (if present).
+See [ImmuneResist#conditionImmune](ImmuneResist.md#conditionImmune)
 
 ### cr
 
@@ -51,7 +55,7 @@ Challenge rating
 
 ### description
 
-Formatted text containing the creature description. Same as {resource.text}
+Formatted text containing the creature description. Same as `{resource.text}`
 
 ### environment
 
@@ -71,19 +75,23 @@ True if the content (text) contains sections
 
 ### hitDice
 
-Hit dice formula as formatted string: `7d10 + 14`
+See [AcHp#hitDice](AcHp.md#hitDice)
 
 ### hp
 
-Creature hit points. If using the dice roller plugin is enabled, this will be a dice roll formula.
+See [AcHp#hp](AcHp.md#hp)
 
 ### hpText
 
-Additional hit point text. In the case of summoned creatures, this will contain notes for how hit points should be calculated relative to the player's modifiers.
+See [AcHp#hpText](AcHp.md#hpText)
 
 ### immune
 
-Comma-separated string of creature damage immunities (if present).
+See [ImmuneResist#immune](ImmuneResist.md#immune)
+
+### immuneResist
+
+Creature immunities and resistances as [ImmuneResist](ImmuneResist.md)
 
 ### isNpc
 
@@ -99,11 +107,11 @@ Comma-separated string of languages the creature understands.
 
 ### legendary
 
-List of creature ([legendary traits](../NamedText.md))
+Creature legendary traits as a list of [NamedText](../NamedText.md)
 
 ### legendaryGroup
 
-Map of grouped legendary traits. The key the group name, and the value is the list of associated ([traits](../NamedText.md)). Used for lair actions, as an example.
+Map of grouped legendary traits (Lair Actions, Regional Effects, etc.). The key the group name, and the value is a list of [NamedText](../NamedText.md).
 
 ### name
 
@@ -119,15 +127,15 @@ Proficiency bonus (modifier)
 
 ### reaction
 
-List of creature ([reactions](../NamedText.md))
+Creature reactions as a list of [NamedText](../NamedText.md)
 
 ### resist
 
-Comma-separated string of creature damage resistances (if present).
+See [ImmuneResist#resist](ImmuneResist.md#resist)
 
 ### savesSkills
 
-Creature saving throws and skill modifiers ([SavesAndSkills](SavesAndSkills.md))
+Creature saving throws and skill modifiers as [SavesAndSkills](SavesAndSkills.md)
 
 ### savingThrows
 
@@ -135,7 +143,7 @@ String representation of saving throws. Equivalent to `{resource.savesSkills.sav
 
 ### scores
 
-Creature ability scores ([AbilityScores](AbilityScores.md))
+Creature ability scores as [AbilityScores](AbilityScores.md)
 
 ### senses
 
@@ -163,7 +171,7 @@ Creature speed as a comma-separated list
 
 ### spellcasting
 
-List of creature ([spellcasting abilities](Spellcasting.md))
+Creature abilities as a list of [Spellcasting](Spellcasting.md) attributes
 
 ### subtype
 
@@ -183,7 +191,7 @@ Token image as [ImageRef](../ImageRef.md)
 
 ### trait
 
-List of creature ([traits](../NamedText.md))
+Creature traits as a list of [NamedText](../NamedText.md)
 
 ### type
 
@@ -195,4 +203,4 @@ Path to this note in the vault
 
 ### vulnerable
 
-Comma-separated string of creature damage vulnerabilities (if present).
+See [ImmuneResist#vulnerable](ImmuneResist.md#vulnerable)

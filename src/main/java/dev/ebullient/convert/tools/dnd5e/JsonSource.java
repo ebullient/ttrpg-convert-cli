@@ -1013,15 +1013,15 @@ public interface JsonSource extends JsonTextReplacement {
         int gp = cp / 100;
         cp %= 100;
         if (gp > 0) {
-            result.add(gp + " gp");
+            result.add(String.format("%,d gp", gp));
         }
         int sp = cp / 10;
         cp %= 10;
         if (sp > 0) {
-            result.add(sp + " sp");
+            result.add(String.format("%,d sp", sp));
         }
         if (cp > 0) {
-            result.add(cp + " cp");
+            result.add(String.format("%,d cp", cp));
         }
         return String.join(", ", result);
     }

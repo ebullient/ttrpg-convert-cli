@@ -18,7 +18,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools creature attributes ({@code monster2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData
@@ -35,79 +35,63 @@ public class QuteMonster extends Tools5eQuteBase {
     public final String subtype;
     /** Creature alignment */
     public final String alignment;
-    /** Creature armor class (number) */
-    public final Integer ac;
-    /** Additional armor class text: natural armor. May link to related items. */
-    public final String acText;
-    /** @see #getHp() */
-    final Integer hp;
-    /**
-     * Additional hit point text.
-     * In the case of summoned creatures, this will contain notes for how hit points
-     * should be calculated relative to the player's modifiers.
-     */
-    public final String hpText;
-    /** Hit dice formula as formatted string: `7d10 + 14` */
-    public final String hitDice;
+
+    /** Creature AC and HP as {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp} */
+    public AcHp acHp;
+    /** Creature immunities and resistances as {@link dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist} */
+    public final ImmuneResist immuneResist;
+
     /** Creature speed as a comma-separated list */
     public final String speed;
-    /** Creature ability scores ({@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores AbilityScores}) */
+    /** Creature ability scores as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores} */
     public final AbilityScores scores;
     /**
-     * Creature saving throws and skill modifiers ({@link dev.ebullient.convert.tools.dnd5e.qute.SavesAndSkills SavesAndSkills})
+     * Creature saving throws and skill modifiers as {@link dev.ebullient.convert.tools.dnd5e.qute.SavesAndSkills}
      */
     public final SavesAndSkills savesSkills;
     /** Comma-separated string of creature senses (if present). */
     public final String senses;
     /** Passive perception as a numerical value */
     public final int passive;
-    /** Comma-separated string of creature damage vulnerabilities (if present). */
-    public final String vulnerable;
-    /** Comma-separated string of creature damage resistances (if present). */
-    public final String resist;
-    /** Comma-separated string of creature damage immunities (if present). */
-    public final String immune;
-    /** Comma-separated string of creature condition immunities (if present). */
-    public final String conditionImmune;
+
     /** Comma-separated string of languages the creature understands. */
     public final String languages;
     /** Challenge rating */
     public final String cr;
     /** Proficiency bonus (modifier) */
     public final String pb;
-    /** List of creature ({@link dev.ebullient.convert.qute.NamedText traits}) */
+    /** Creature traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final Collection<NamedText> trait;
-    /** List of creature ({@link dev.ebullient.convert.qute.NamedText actions}) */
+    /** Creature actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final Collection<NamedText> action;
-    /** List of creature ({@link dev.ebullient.convert.qute.NamedText bonus actions}) */
+    /** Creature bonus actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final Collection<NamedText> bonusAction;
-    /** List of creature ({@link dev.ebullient.convert.qute.NamedText reactions}) */
+    /** Creature reactions as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final Collection<NamedText> reaction;
-    /** List of creature ({@link dev.ebullient.convert.qute.NamedText legendary traits}) */
+    /** Creature legendary traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final Collection<NamedText> legendary;
     /**
-     * Map of grouped legendary traits. The key the group name, and the value is the list of associated
-     * ({@link dev.ebullient.convert.qute.NamedText traits}). Used for lair actions, as an example.
+     * Map of grouped legendary traits (Lair Actions, Regional Effects, etc.). The key the group name, and the value is a list
+     * of
+     * {@link dev.ebullient.convert.qute.NamedText}.
      */
     public final Collection<NamedText> legendaryGroup;
-    /** List of creature ({@link dev.ebullient.convert.tools.dnd5e.qute.Spellcasting spellcasting abilities}) */
+    /** Creature abilities as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.Spellcasting} attributes */
     public final List<Spellcasting> spellcasting;
-    /** Formatted text containing the creature description. Same as {resource.text} */
+    /** Formatted text containing the creature description. Same as `{resource.text}` */
     public final String description;
     /** Formatted text describing the creature's environment. Usually a single word. */
     public final String environment;
-    /** Token image as {@link dev.ebullient.convert.qute.ImageRef ImageRef} */
+    /** Token image as {@link dev.ebullient.convert.qute.ImageRef} */
     public final ImageRef token;
-    /** List of {@link dev.ebullient.convert.qute.ImageRef ImageRef} related to the creature */
+    /** List of {@link dev.ebullient.convert.qute.ImageRef} related to the creature */
     public final List<ImageRef> fluffImages;
-
-    private final boolean useDiceRoller;
 
     public QuteMonster(Tools5eSources sources, String name, String source, boolean isNpc, String size, String type,
             String subtype, String alignment,
-            Integer ac, String acText, Integer hp, String hpText, String hitDice, String speed,
+            AcHp acHp, String speed,
             AbilityScores scores, SavesAndSkills savesSkills, String senses, int passive,
-            String vulnerable, String resist, String immune, String conditionImmune,
+            ImmuneResist immuneResist,
             String languages, String cr, String pb,
             Collection<NamedText> trait,
             Collection<NamedText> action, Collection<NamedText> bonusAction, Collection<NamedText> reaction,
@@ -123,20 +107,13 @@ public class QuteMonster extends Tools5eQuteBase {
         this.type = type;
         this.subtype = subtype;
         this.alignment = alignment;
-        this.ac = ac;
-        this.acText = acText;
-        this.hp = hp;
-        this.hpText = hpText;
-        this.hitDice = hitDice;
+        this.acHp = acHp;
         this.speed = speed;
         this.scores = scores;
         this.savesSkills = savesSkills;
         this.senses = senses;
         this.passive = passive;
-        this.vulnerable = vulnerable;
-        this.resist = resist;
-        this.immune = immune;
-        this.conditionImmune = conditionImmune;
+        this.immuneResist = immuneResist;
         this.languages = languages;
         this.cr = cr;
         this.pb = pb;
@@ -151,8 +128,6 @@ public class QuteMonster extends Tools5eQuteBase {
         this.environment = environment;
         this.token = tokenImage;
         this.fluffImages = fluffImages;
-
-        this.useDiceRoller = useDiceRoller;
     }
 
     @Override
@@ -167,15 +142,49 @@ public class QuteMonster extends Tools5eQuteBase {
                 .toList();
     }
 
-    /**
-     * Creature hit points. If using the dice roller plugin is enabled,
-     * this will be a dice roll formula.
-     */
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#hp} */
     public String getHp() {
-        if (useDiceRoller && hitDice != null) {
-            return "`dice: " + hitDice + "|text(" + hp + ")`";
-        }
-        return "" + hp;
+        return acHp.getHp();
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#ac} */
+    public Integer getAc() {
+        return acHp.ac;
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#acText} */
+    public String getAcText() {
+        return acHp.acText;
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#hpText} */
+    public String getHpText() {
+        return acHp.hpText;
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#hitDice} */
+    public String getHitDice() {
+        return acHp.hitDice;
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist#vulnerable} */
+    public String getVulnerable() {
+        return immuneResist.vulnerable;
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist#resist} */
+    public String getResist() {
+        return immuneResist.resist;
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist#immune} */
+    public String getImmune() {
+        return immuneResist.immune;
+    }
+
+    /** See {@link dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist#conditionImmune} */
+    public String getConditionImmune() {
+        return immuneResist.conditionImmune;
     }
 
     /** Creature type (lowercase) and subtype if present: `{resource.type} ({resource.subtype})` */
@@ -227,9 +236,9 @@ public class QuteMonster extends Tools5eQuteBase {
     public String get5eInitiativeYaml() {
         Map<String, Object> map = new LinkedHashMap<>();
         addUnlessEmpty(map, "name", name);
-        addIntegerUnlessEmpty(map, "ac", ac);
-        addIntegerUnlessEmpty(map, "hp", hp);
-        addUnlessEmpty(map, "hit_dice", hitDice);
+        addIntegerUnlessEmpty(map, "ac", acHp.ac);
+        addIntegerUnlessEmpty(map, "hp", acHp.hp);
+        addUnlessEmpty(map, "hit_dice", acHp.hitDice);
         addUnlessEmpty(map, "cr", cr);
         map.put("stats", scores.toArray()); // for initiative
         addUnlessEmpty(map, "source", getBooks());
@@ -249,9 +258,9 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "subtype", subtype);
         addUnlessEmpty(map, "alignment", alignment);
 
-        addIntegerUnlessEmpty(map, "ac", ac);
-        addIntegerUnlessEmpty(map, "hp", hp);
-        addUnlessEmpty(map, "hit_dice", hitDice);
+        addIntegerUnlessEmpty(map, "ac", acHp.ac);
+        addIntegerUnlessEmpty(map, "hp", acHp.hp);
+        addUnlessEmpty(map, "hit_dice", acHp.hitDice);
 
         map.put("stats", scores.toArray());
         addUnlessEmpty(map, "speed", speed);
@@ -263,10 +272,10 @@ public class QuteMonster extends Tools5eQuteBase {
                 map.put("skillsaves", savesSkills.skillMap);
             }
         }
-        addUnlessEmpty(map, "damage_vulnerabilities", vulnerable);
-        addUnlessEmpty(map, "damage_resistances", resist);
-        addUnlessEmpty(map, "damage_immunities", immune);
-        addUnlessEmpty(map, "condition_immunities", conditionImmune);
+        addUnlessEmpty(map, "damage_vulnerabilities", immuneResist.vulnerable);
+        addUnlessEmpty(map, "damage_resistances", immuneResist.resist);
+        addUnlessEmpty(map, "damage_immunities", immuneResist.immune);
+        addUnlessEmpty(map, "condition_immunities", immuneResist.conditionImmune);
         map.put("senses", (senses.isBlank() ? "" : senses + ", ") + "passive Perception " + passive);
         map.put("languages", languages);
         addUnlessEmpty(map, "cr", cr);

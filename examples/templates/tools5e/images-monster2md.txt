@@ -25,6 +25,9 @@ aliases: ["{resource.name}"]
 {#each resource.fluffImages}
 ![{it.title}]({it.vaultPath}#center)  
 {/each}
+{/if}{#if resource.hasSections }
+
+## Statblock
 {/if}
 
 ```ad-statblock

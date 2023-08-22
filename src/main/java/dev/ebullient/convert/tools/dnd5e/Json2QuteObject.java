@@ -39,15 +39,11 @@ public class Json2QuteObject extends Json2QuteMonster {
                 getSourceText(sources),
                 isNpc, size,
                 creatureType, objectType,
-                ac, acText,
-                hp, hpText,
+                acHp,
                 speed(Tools5eFields.speed.getFrom(rootNode)),
                 abilityScores(),
                 joinAndReplace(rootNode, "senses"),
-                collectImmunities("vulnerable"),
-                collectImmunities("resist"),
-                collectImmunities("immune"),
-                collectImmunities("conditionImmune"),
+                immuneResist(),
                 collectTraits("actionEntries"),
                 getToken(), fluffImages,
                 String.join("\n", text),
@@ -62,16 +58,6 @@ public class Json2QuteObject extends Json2QuteMonster {
             case "U" -> "Unknown";
             default -> type;
         };
-    }
-
-    @Override
-    void findHp() {
-        JsonNode hpNode = MonsterFields.hp.getFrom(rootNode);
-        if (hpNode.isInt()) {
-            hp = hpNode.asInt();
-        } else if (MonsterFields.special.existsIn(hpNode)) {
-            hpText = MonsterFields.special.replaceTextFrom(hpNode, this);
-        }
     }
 
     @Override

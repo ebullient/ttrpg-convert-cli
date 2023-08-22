@@ -24,8 +24,7 @@ title: {resource.name}{#if resource.token}
 ![{resource.token.title}]({resource.token.vaultPath}#token){/if}
 *{resource.size} {resource.fullType}, {resource.alignment}*
 
-- **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }({resource.acText}){/if}
-- **Hit Points** {resource.hp or ' '} {#if resource.hitDice }(`{resource.hitDice}`){/if} {#if resource.hpText }({resource.hpText}){/if}
+{resource.acHp}
 - **Speed** {resource.speed}
 
 |STR|DEX|CON|INT|WIS|CHA|
@@ -36,14 +35,8 @@ title: {resource.name}{#if resource.token}
 - **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
 - **Skills** {#if resource.skills }{resource.skills}{#else}⏤{/if}
 - **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
-{#if resource.vulnerable }
-- **Damage Vulnerabilities** {resource.vulnerable}
-{/if}{#if resource.resist}
-- **Damage Resistances** {resource.resist}
-{/if}{#if resource.immune}
-- **Damage Immunities** {resource.immune}
-{/if}{#if resource.conditionImmune}
-- **Condition Immunities** {resource.conditionImmune}
+{#if resource.immuneResist }
+{resource.immuneResist}
 {/if}
 - **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}
 - **Challenge** {resource.cr}
