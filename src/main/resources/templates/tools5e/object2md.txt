@@ -21,7 +21,7 @@ aliases: ["{resource.name}"]
 {/if}
 ```ad-statblock
 title: {resource.name}{#if resource.token}
-![{resource.token.title}]({resource.token.vaultPath}#token){/if}
+{resource.token.getEmbeddedLink("token")}{/if}
 *{resource.size} {resource.objectType}{#if resource.creatureType } ({resource.creatureType}){/if}*
 
 {resource.acHp}

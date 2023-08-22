@@ -3,6 +3,8 @@ Qute templates for generating content from 5eTools data.
 ## References
 
 - [AbilityScores](AbilityScores.md): 5eTools Ability Score attributes.
+- [AcHp](AcHp.md): 5eTools armor class and hit points attributes
+- [ImmuneResist](ImmuneResist.md): 5eTools vulnerabilities, resistances, immunities, and condition immunities
 - [QuteBackground](QuteBackground.md): 5eTools background attributes (`background2md.txt`).
 - [QuteClass](QuteClass.md): 5eTools class attributes (`class2md.txt`)
 - [QuteDeity](QuteDeity.md): 5eTools deity attributes (`deity2md.txt`)
@@ -15,5 +17,6 @@ Qute templates for generating content from 5eTools data.
 - [QuteReward](QuteReward.md): 5eTools reward attributes (`reward2md.txt`)
 - [QuteSpell](QuteSpell.md): 5eTools spell attributes (`spell2md.txt`)
 - [QuteSubclass](QuteSubclass.md): 5eTools subclass attributes (`subclass2md.txt`)
+- [QuteVehicle](QuteVehicle.md): 5eTools vehicle attributes (`vehicle2md.txt`)
 - [Tools5eQuteBase](Tools5eQuteBase.md): Attributes for notes that are generated from the 5eTools data.
 - [Tools5eQuteNote](Tools5eQuteNote.md): Attributes for notes that are generated from the 5eTools data.

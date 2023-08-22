@@ -18,12 +18,12 @@ aliases: ["{resource.name}"]
 {/let}{/if}
 {resource.description}
 
-{#each resource.fluffImages}{#if it_index != 0 }
-![{it.title}]({it.vaultPath}#center)  
+{#each resource.fluffImages}{#if it_index != 0}
+{it.getEmbeddedLink}  
 {/if}{/each}
 {#else}
 {#each resource.fluffImages}
-![{it.title}]({it.vaultPath}#center)  
+{it.getEmbeddedLink} 
 {/each}
 {/if}{#if resource.hasSections }
 

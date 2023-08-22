@@ -1,0 +1,99 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-vehicle
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+%%-- Embedded content starts on the next line. --%%
+*Source: {resource.source}*  
+
+{#if resource.text && !resource.isObject }
+{resource.text}
+
+{/if}{#if resource.hasSections && !resource.isObject }
+## Statblock
+
+{/if}
+```ad-statblock
+title: {resource.name}{#if resource.token}
+{resource.token.getEmbeddedLink("token")}{/if}
+*{resource.sizeDimension}; {resource.terrain}*
+{#if resource.shipCrewCargoPace}
+
+{resource.shipCrewCargoPace}
+{/if}{#if resource.isObject }{! ----- BEGIN OBJECT (type) ----- !}
+{#if resource.scores}
+
+|STR|DEX|CON|INT|WIS|CHA|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|{resource.scores}|
+
+{/if}{#if resource.immuneResist }
+{resource.immuneResist}
+{/if}{#if resource.text }
+
+{resource.text}
+
+{/if}{#if resource.shipSections}{#each resource.shipSections}
+
+{it}
+{/each}{/if}
+{#else if resource.isCreature }{! ----- BEGIN CREATURE (type) ----- !}
+{#if resource.scores}
+
+|STR|DEX|CON|INT|WIS|CHA|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|{resource.scores}|
+
+{/if}{#if resource.immuneResist }
+{resource.immuneResist}
+{/if}{#if resource.shipSections}{#each resource.shipSections}
+
+{it}
+{/each}{/if}
+{#else if resource.isWarMachine }{! ----- BEGIN INFERNAL WAR MACHINE (type) ----- !}
+{#if resource.scores}
+
+|STR|DEX|CON|INT|WIS|CHA|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|{resource.scores}|
+
+{/if}{#if resource.immuneResist }
+{resource.immuneResist}
+{/if}{#if resource.shipSections}{#each resource.shipSections}
+
+{it}
+{/each}{/if}
+{#else if resource.isSpelljammer }{! ----- BEGIN SPELLJAMMER (type) ----- !}
+{#if resource.shipSections}{#each resource.shipSections}
+
+{it}
+{/each}{/if}
+{#else if resource.isShip }{! ----- BEGIN SHIP (type) ----- !}
+{#if resource.scores}
+
+|STR|DEX|CON|INT|WIS|CHA|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|{resource.scores}|
+
+{/if}{#if resource.immuneResist }
+{resource.immuneResist}
+{/if}{#if resource.action}
+
+## Actions
+{#each resource.action}
+
+{it}
+{/each}{/if}{#if resource.shipSections}{#each resource.shipSections}
+
+{it}
+{/each}{/if}
+{/if}{! END SHIP (type) !}
+```
+^statblock
+

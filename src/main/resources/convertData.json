@@ -13,7 +13,8 @@
       "race",
       "reward",
       "spell",
-      "subclass"
+      "subclass",
+      "vehicle"
     ],
     "srdEntries": {
       "properties": [

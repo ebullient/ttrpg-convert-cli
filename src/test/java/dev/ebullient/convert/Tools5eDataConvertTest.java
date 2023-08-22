@@ -80,12 +80,8 @@ public class Tools5eDataConvertTest {
             final Path allIndex = outputPath_5e.resolve("all-index");
             TestUtils.deleteDir(allIndex);
 
-            List<String> args = new ArrayList<>(List.of("--index", "--debug", "-s", "ALL",
-                    "--background", "examples/templates/tools5e/images-background2md.txt",
-                    "--item", "examples/templates/tools5e/images-item2md.txt",
-                    "--monster", "examples/templates/tools5e/images-monster2md.txt",
-                    "--race", "examples/templates/tools5e/images-race2md.txt",
-                    "--spell", "examples/templates/tools5e/images-spell2md.txt",
+            List<String> args = new ArrayList<>(List.of("--index", "--debug",
+                    "-c", TestUtils.TEST_RESOURCES.resolve("sources-images.yaml").toString(),
                     "-o", allIndex.toString(),
                     TestUtils.TOOLS_PATH_5E.toString()));
 

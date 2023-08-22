@@ -97,4 +97,9 @@ public class JsonDataNoneTest {
     public void testTrapsHazardsList() {
         commonTests.testTrapsHazardsList(outputPath);
     }
+
+    @Test
+    public void testVehicleList() {
+        commonTests.testVehicleList(outputPath);
+    }
 }

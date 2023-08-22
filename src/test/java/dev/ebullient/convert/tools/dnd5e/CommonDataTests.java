@@ -364,7 +364,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            Path ofDir = deleteDir(Tools5eIndexType.object, outputPath, index.compendiumFilePath());
+            Path outDir = deleteDir(Tools5eIndexType.object, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
@@ -372,7 +372,7 @@ public class CommonDataTests {
                             Tools5eIndexType.object))
                     .writeImages();
 
-            TestUtils.assertDirectoryContents(ofDir, tui);
+            TestUtils.assertDirectoryContents(outDir, tui);
         }
     }
 
@@ -472,6 +472,21 @@ public class CommonDataTests {
                     .writeImages();
 
             TestUtils.assertDirectoryContents(trapsDir, tui);
+        }
+    }
+
+    public void testVehicleList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path outDir = deleteDir(Tools5eIndexType.vehicle, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(List.of(Tools5eIndexType.vehicle))
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(outDir, tui);
         }
     }
 

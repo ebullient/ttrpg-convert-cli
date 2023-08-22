@@ -13,15 +13,15 @@ aliases: ["{resource.name}"]
 
 {#if resource.text }
 {#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-![{first.title}]({first.vaultPath}#right)  
+{first.getEmbeddedLink("right")}  
 {/let}{/if}
 {resource.text}
-{#each resource.fluffImages}{#if it_index != 0 }
-![{it.title}]({it.vaultPath}#center)  
+{#each resource.fluffImages}{#if it_index != 0}
+{it.getEmbeddedLink()} 
 {/if}{/each}
 {#else}
 {#each resource.fluffImages}
-![{it.title}]({it.vaultPath}#center)  
+{it.getEmbeddedLink()}  
 {/each}
 {/if}{#if resource.hasSections }
 ## Statblock

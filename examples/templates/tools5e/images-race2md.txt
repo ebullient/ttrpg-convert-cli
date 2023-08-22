@@ -37,6 +37,6 @@ aliases: ["{resource.name}"]
 {/if}
 {#if resource.fluffImages.size > 1 }
 
-{#each resource.fluffImages}{#if it_index != 0}![{it.title}]({it.vaultPath}#center)  
+{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
 {/if}{/each}
 {/if}

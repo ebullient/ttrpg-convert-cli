@@ -117,6 +117,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             case race, subrace -> new Json2QuteRace(index, type, jsonSource).build();
             case reward -> new Json2QuteReward(index, type, jsonSource).build();
             case spell -> new Json2QuteSpell(index, type, jsonSource).build();
+            case vehicle -> new Json2QuteVehicle(index, type, jsonSource).build();
             default -> throw new IllegalArgumentException("Unsupported type " + type);
         };
     }

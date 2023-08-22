@@ -123,4 +123,9 @@ public class JsonDataSubsetTest {
     public void testTrapsHazardsList() {
         commonTests.testTrapsHazardsList(outputPath);
     }
+
+    @Test
+    public void testVehicleList() {
+        commonTests.testVehicleList(outputPath);
+    }
 }
