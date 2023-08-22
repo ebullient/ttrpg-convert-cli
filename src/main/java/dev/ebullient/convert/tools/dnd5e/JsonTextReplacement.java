@@ -25,7 +25,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
 
     Pattern linkifyPattern = Pattern.compile(
-            "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|race|reward|sense|skill|spell|status|table|variantrule|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
+            "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|object|race|reward|sense|skill|spell|status|table|variantrule|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
 
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
 
@@ -277,6 +277,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@item alchemy jug} assumes DMG by default,
             // {@item longsword|phb} can have sources added with a pipe,
             // {@item longsword|phb|and optional link text added with another pipe}.",
+            // {@object Ballista} assumes DMG by default,
+            // {@object Ballista|DMG|and optional link text added with another pipe}.",
             // {@race Human} assumes PHB by default,
             // {@race Aasimar (Fallen)|VGM}
             // {@race Aasimar|DMG|racial traits for the aasimar}
@@ -300,6 +302,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     deck,
                     hazard,
                     item,
+                    object,
                     race,
                     reward,
                     spell,

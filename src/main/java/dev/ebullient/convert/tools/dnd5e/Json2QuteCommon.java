@@ -398,10 +398,14 @@ public class Json2QuteCommon implements JsonSource {
 
     void addNamedTrait(Collection<NamedText> traits, String name, JsonNode node) {
         List<String> text = new ArrayList<>();
-        appendToText(text, SourceField.entry.getFrom(node), null);
-        appendToText(text, SourceField.entries.getFrom(node), null);
-        if (text.isEmpty() && !SourceField.name.existsIn(node)) {
-            // the node doesn't have obvious entry/entries. Include it directly
+        if (node.isObject()) {
+            if (!SourceField.name.existsIn(node)) {
+                appendToText(text, node, null);
+            } else {
+                appendToText(text, SourceField.entry.getFrom(node), null);
+                appendToText(text, SourceField.entries.getFrom(node), null);
+            }
+        } else {
             appendToText(text, node, null);
         }
         NamedText nt = new NamedText(name, text);
