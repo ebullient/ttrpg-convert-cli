@@ -36,7 +36,7 @@ public class QuteObject extends Tools5eQuteBase {
 
     /** Object speed as a comma-separated list */
     public final String speed;
-    /** Object ability scores as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores} */
+    /** Object ability scores as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores}) */
     public final AbilityScores scores;
     /** Comma-separated string of object senses (if present). */
     public final String senses;

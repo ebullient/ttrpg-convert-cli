@@ -157,6 +157,7 @@ public interface JsonSource extends JsonTextReplacement {
         try {
             if (type != null) {
                 switch (type) {
+                    case attack -> appendAttack(text, node);
                     case entries, section -> appendEntriesToText(text, node, heading);
                     case entry, item, itemSpell, itemSub -> appendEntryItem(text, node);
                     case abilityDc, abilityAttackMod, abilityGeneric -> appendAbility(type, text, node);
@@ -257,6 +258,18 @@ public interface JsonSource extends JsonTextReplacement {
             text.add(String.join(" ", inner));
             maybeAddBlankLine(text);
         }
+    }
+
+    default void appendAttack(List<String> text, JsonNode entry) {
+        String name = SourceField.name.getTextOrNull(entry);
+        String attackType = AttackFields.attackType.getTextOrDefault(entry, "MW");
+        String atkString = flattenToString(AttackFields.attackEntries.getFrom(entry), " ");
+        String hitString = flattenToString(AttackFields.hitEntries.getFrom(entry), " ");
+
+        text.add(String.format("%s*%s:* %s *Hit:* %s",
+                name == null ? "" : "***" + name + ".*** ",
+                "MW".equals(attackType) ? "Melee Weapon Attack" : "Ranged Weapon Attack",
+                atkString, hitString));
     }
 
     default void appendCallout(String callout, String title, List<String> text, JsonNode entry) {
@@ -1140,6 +1153,12 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
+    enum AttackFields implements JsonNodeReader {
+        attackType,
+        attackEntries,
+        hitEntries,
+    }
+
     enum RollFields implements JsonNodeReader {
         roll,
         exact,
@@ -1197,6 +1216,9 @@ public interface JsonSource extends JsonTextReplacement {
 
         // homebrew changes
         homebrew,
+
+        // attack / action entries
+        attack,
 
         // misc
         hr;

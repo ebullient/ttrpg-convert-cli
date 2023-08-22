@@ -400,6 +400,10 @@ public class Json2QuteCommon implements JsonSource {
         List<String> text = new ArrayList<>();
         appendToText(text, SourceField.entry.getFrom(node), null);
         appendToText(text, SourceField.entries.getFrom(node), null);
+        if (text.isEmpty() && !SourceField.name.existsIn(node)) {
+            // the node doesn't have obvious entry/entries. Include it directly
+            appendToText(text, node, null);
+        }
         NamedText nt = new NamedText(name, text);
         if (nt.hasContent()) {
             traits.add(nt);

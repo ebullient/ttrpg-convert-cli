@@ -95,7 +95,7 @@ See [ImmuneResist#resist](ImmuneResist.md#resist)
 
 ### scores
 
-Object ability scores as [AbilityScores](AbilityScores.md)
+Object ability scores as [AbilityScores](AbilityScores.md))
 
 ### senses
 
