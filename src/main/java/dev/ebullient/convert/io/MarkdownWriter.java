@@ -71,7 +71,7 @@ public class MarkdownWriter {
         for (Map.Entry<FileMap, List<T>> pathEntry : pathMap.entrySet()) {
             if (pathEntry.getValue().size() > 1) {
                 tui.warnf("Conflict: several entries would write to the same file:\n  %s",
-                        pathEntry.getValue().stream().map(x -> String.format("%s: %s", x.getName(), x.getSource()))
+                        pathEntry.getValue().stream().map(x -> String.format("[%s]: %s", x.getName(), x.getSource()))
                                 .collect(Collectors.joining("\n  ")));
             }
             fileMappings.add(doWrite(pathEntry.getKey(), pathEntry.getValue().get(0), counts));

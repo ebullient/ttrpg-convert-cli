@@ -148,7 +148,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         // entriesOtherSource handled here.
         if (!source.isEmpty() && !cfg().sourceIncluded(source)) {
-            if (!cfg().sourceIncluded(getSources().alternateSource())) {
+            if (!cfg().sourceIncluded(getSources())) {
                 return;
             }
         }
@@ -215,12 +215,9 @@ public interface JsonSource extends JsonTextReplacement {
 
             JsonNode additionalEntries = Tools5eFields.additionalEntries.getFrom(node);
             if (additionalEntries != null) {
-                String altSource = getSources().alternateSource();
                 for (JsonNode entry : iterableElements(additionalEntries)) {
                     String entrySource = SourceField.source.getTextOrNull(entry);
-                    if (entrySource != null && !index().sourceIncluded(entrySource)) {
-                        return;
-                    } else if (!index().sourceIncluded(altSource)) {
+                    if (entrySource != null && !cfg().sourceIncluded(getSources())) {
                         return;
                     }
                     appendToText(text, entry, heading);
@@ -249,7 +246,7 @@ public interface JsonSource extends JsonTextReplacement {
                     .forEach(x -> abilities.add(asAbilityEnum(x)));
 
             List<String> inner = new ArrayList<>();
-            SourceField.name.appendUnlessEmptyFrom(entry, inner);
+            SourceField.name.appendUnlessEmptyFrom(entry, inner, this);
             Tools5eFields.text.appendUnlessEmptyFrom(entry, inner);
             inner.add(String.join(", ", abilities));
             inner.add("modifier");
@@ -261,7 +258,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendAttack(List<String> text, JsonNode entry) {
-        String name = SourceField.name.getTextOrNull(entry);
+        String name = SourceField.name.replaceTextFrom(entry, this);
         String attackType = AttackFields.attackType.getTextOrDefault(entry, "MW");
         String atkString = flattenToString(AttackFields.attackEntries.getFrom(entry), " ");
         String hitString = flattenToString(AttackFields.hitEntries.getFrom(entry), " ");
@@ -274,7 +271,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendCallout(String callout, String title, List<String> text, JsonNode entry) {
         List<String> inner = new ArrayList<>();
-        appendToText(inner, entry.get("entries"), null);
+        appendToText(inner, SourceField.entries.getFrom(entry), null);
 
         maybeAddBlankLine(text);
         text.add("> [!" + callout + "] " + replaceText(SourceField.name.getTextOrDefault(entry, title)));
@@ -296,18 +293,18 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendEntriesToText(List<String> text, JsonNode entryNode, String heading) {
-        String name = SourceField.name.getTextOrNull(entryNode);
+        String name = SourceField.name.replaceTextFrom(entryNode, this);
         if (heading == null) {
             List<String> inner = new ArrayList<>();
             appendToText(inner, SourceField.entries.getFrom(entryNode), null);
-            if (prependField(entryNode, SourceField.name, inner)) {
+            if (prependField(entryNode, name, inner)) {
                 maybeAddBlankLine(text);
             }
             text.addAll(inner);
         } else if (name != null) {
             maybeAddBlankLine(text);
             // strip links from heading titles. Cross-referencing headers with links is hard
-            text.add(heading + " " + replaceText(name).replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1"));
+            text.add(heading + " " + name.replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1"));
             if (index().differentSource(getSources(), parseState().getSource())) {
                 text.add(getSourceText(entryNode));
             }
@@ -393,7 +390,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendOptionalFeature(List<String> text, JsonNode entry, String heading) {
         maybeAddBlankLine(text);
-        text.add(heading + " " + SourceField.name.getTextOrEmpty(entry));
+        text.add(heading + " " + SourceField.name.replaceTextFrom(entry, this));
         String prereq = getTextOrDefault(entry, "prerequisite", null);
         if (prereq != null) {
             text.add("*Prerequisites* " + prereq);
@@ -414,7 +411,7 @@ public interface JsonSource extends JsonTextReplacement {
         String key = Tools5eIndexType.optionalfeature.createKey(lookup, nodeSource);
         if (index().isIncluded(key)) {
             if (parseState().inList()) {
-                text.add(linkifyOptionalFeature(lookup));
+                text.add(linkify(Tools5eIndexType.optionalfeature, lookup));
             } else {
                 tui().errorf("TODO refOptionalfeature %s -> %s",
                         lookup, Tools5eIndexType.optionalfeature.fromRawKey(lookup));
@@ -452,7 +449,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendInset(List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
-        appendToText(insetText, entry.get("entries"), null);
+        appendToText(insetText, SourceField.entries.getFrom(entry), null);
         if (insetText.isEmpty()) {
             return; // nothing to do (empty content)
         }
@@ -460,13 +457,13 @@ public interface JsonSource extends JsonTextReplacement {
         String title = null;
         String id = null;
         if (entry.has("name")) {
-            title = entry.get("name").asText();
+            title = SourceField.name.getTextOrEmpty(entry);
             id = title;
         } else if (getSources().getType() == Tools5eIndexType.race) {
             title = insetText.remove(0);
             id = title;
         } else if (entry.has("id")) {
-            id = entry.get("id").asText();
+            id = SourceField.id.getTextOrEmpty(entry);
         }
 
         maybeAddBlankLine(text);
@@ -489,12 +486,12 @@ public interface JsonSource extends JsonTextReplacement {
     default void appendFlowchart(List<String> text, JsonNode entry, String heading) {
         if (entry.has("name")) {
             maybeAddBlankLine(text);
-            text.add(heading + " " + entry.get("name").asText());
+            text.add(heading + " " + SourceField.name.replaceTextFrom(entry, this));
         }
 
         for (JsonNode n : entry.withArray("blocks")) {
             maybeAddBlankLine(text);
-            text.add("> [!flowchart] " + getTextOrEmpty(n, "name"));
+            text.add("> [!flowchart] " + SourceField.name.replaceTextFrom(n, this));
             for (JsonNode e : n.withArray("entries")) {
                 text.add("> " + replaceText(e.asText()));
             }
@@ -505,12 +502,12 @@ public interface JsonSource extends JsonTextReplacement {
     default void appendQuote(List<String> text, JsonNode entry) {
         List<String> quoteText = new ArrayList<>();
         if (entry.has("by")) {
-            String by = replaceText(entry.get("by").asText());
+            String by = replaceText(Tools5eFields.by.getTextOrEmpty(entry));
             quoteText.add("[!quote]- A quote from " + by + "  ");
         } else {
             quoteText.add("[!quote]-  ");
         }
-        appendToText(quoteText, entry.get("entries"), null);
+        appendToText(quoteText, SourceField.entries.getFrom(entry), null);
 
         maybeAddBlankLine(text);
         quoteText.forEach(x -> text.add("> " + x));
@@ -551,7 +548,7 @@ public interface JsonSource extends JsonTextReplacement {
         TtrpgValue.indexKey.addToNode(data, finalKey);
         TtrpgValue.indexInputType.addToNode(data, type.name());
 
-        JsonNode copy = SourceField.copy.getFrom(data);
+        JsonNode copy = SourceField._copy.getFrom(data);
         if (copy != null) {
             String copyName = SourceField.name.getTextOrEmpty(copy).strip();
             String copySource = SourceField.source.getTextOrEmpty(copy).strip();
@@ -882,11 +879,11 @@ public interface JsonSource extends JsonTextReplacement {
 
     default String monsterCr(JsonNode monster) {
         if (monster.has("cr")) {
-            JsonNode crNode = monster.get("cr");
+            JsonNode crNode = Tools5eFields.cr.getFrom(monster);
             if (crNode.isTextual()) {
                 return crNode.asText();
             } else if (crNode.has("cr")) {
-                return crNode.get("cr").asText();
+                return Tools5eFields.cr.getFrom(crNode).asText();
             } else {
                 tui().errorf("Unable to parse cr value from %s", crNode.toPrettyString());
             }
@@ -896,10 +893,10 @@ public interface JsonSource extends JsonTextReplacement {
 
     default int crToXp(JsonNode cr) {
         if (cr.has("xp")) {
-            return cr.get("xp").asInt();
+            return Tools5eFields.xp.getFrom(cr).asInt();
         }
         if (cr.has("cr")) {
-            cr = cr.get("cr");
+            cr = Tools5eFields.cr.getFrom(cr);
         }
         String crKey = cr.asText();
         return XP_CHART_ALT.get(crKey);
@@ -909,7 +906,7 @@ public interface JsonSource extends JsonTextReplacement {
         if (cr.isTextual()) {
             return crToPb(cr.asText());
         }
-        return crToPb(cr.get("cr").asText());
+        return crToPb(Tools5eFields.cr.getFrom(cr).asText());
     }
 
     default int crToPb(String crValue) {
@@ -973,9 +970,9 @@ public interface JsonSource extends JsonTextReplacement {
 
     default String raceToText(JsonNode race) {
         StringBuilder str = new StringBuilder();
-        str.append(race.get("name").asText());
-        if (race.has("subrace")) {
-            str.append(" (").append(race.get("subrace").asText()).append(")");
+        str.append(SourceField.name.getTextOrEmpty(race));
+        if (Tools5eFields.subrace.existsIn(race)) {
+            str.append(" (").append(Tools5eFields.subrace.getTextOrEmpty(race)).append(")");
         }
         return str.toString();
     }
@@ -983,17 +980,18 @@ public interface JsonSource extends JsonTextReplacement {
     default String levelToText(JsonNode levelNode) {
         if (levelNode.isObject()) {
             List<String> levelText = new ArrayList<>();
-            levelText.add(levelToText(levelNode.get("level").asText()));
+            levelText.add(levelToText(Tools5eFields.level.getFrom(levelNode).asText()));
             if (levelNode.has("class") || levelNode.has("subclass")) {
-                JsonNode classNode = levelNode.get("class");
+                JsonNode classNode = SourceField._class_.getFrom(levelNode);
                 if (classNode == null) {
-                    classNode = levelNode.get("subclass");
+                    classNode = Tools5eFields.subclass.getFrom(levelNode);
                 }
-                boolean visible = !classNode.has("visible") || classNode.get("visible").asBoolean();
-                JsonNode source = classNode.get("source");
+                boolean visible = !Tools5eFields.visible.existsIn(classNode)
+                        || Tools5eFields.visible.booleanOrDefault(classNode, false);
+                JsonNode source = SourceField.source.getFrom(classNode);
                 boolean included = source == null || index().sourceIncluded(source.asText());
                 if (visible && included) {
-                    levelText.add(classNode.get("name").asText());
+                    levelText.add(SourceField.name.getTextOrEmpty(classNode));
                 }
             }
             return String.join(" ", levelText);
@@ -1097,16 +1095,19 @@ public interface JsonSource extends JsonTextReplacement {
             entry("30", 155000));
 
     enum Tools5eFields implements JsonNodeReader {
+        _monsterFluff,
         abbreviation,
         additionalEntries,
         alternate,
         appliesTo,
         attributes,
+        by,
         className,
         classSource,
         condition, // speed, ac
-        dataType, // statblockInline
+        cr,
         data, // statblock, statblockInline
+        dataType, // statblockInline
         featureType,
         fluff,
         group,
@@ -1114,20 +1115,25 @@ public interface JsonSource extends JsonTextReplacement {
         hasFluffImages,
         hasToken,
         lairActions, // legendary group
-        _monsterFluff,
+        level,
         number, // speed
         optionalfeature,
         prop, // statblock
+        race,
         regionalEffects, // legendary group
         size,
         sort, // monsters, vehicles (sorted traits)
         speed,
         style,
+        subclass,
+        subrace,
         tables, // for optfeature types
         tag, // statblock
         text,
         tokenUrl,
         typeLookup,
+        visible,
+        xp,
     }
 
     enum TableFields implements JsonNodeReader {

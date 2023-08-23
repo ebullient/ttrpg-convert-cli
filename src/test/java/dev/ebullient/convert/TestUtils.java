@@ -106,7 +106,8 @@ public class TestUtils {
                 anchor = path.substring(1);
             } else if (hash > 0) {
                 anchor = path.substring(hash + 1);
-                path = path.substring(0, hash);
+                path = path.substring(0, hash)
+                        .replace("%20", " ");
                 if (!p.toString().endsWith(path)) {
                     resource = Path.of(baseDir, path);
                 }

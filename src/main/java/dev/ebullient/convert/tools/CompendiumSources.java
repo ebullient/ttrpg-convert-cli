@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -124,13 +123,9 @@ public abstract class CompendiumSources {
         return TtrpgConfig.sourceToAbbreviation(primary);
     }
 
-    public String alternateSource() {
-        if (sources.size() > 1) {
-            Iterator<String> i = sources.iterator();
-            i.next();
-            return i.next();
-        }
-        return null;
+    public boolean includedBy(Set<String> sources) {
+        return TtrpgConfig.getConfig().allSources()
+                || this.sources.stream().anyMatch(x -> sources.contains(x.toLowerCase()));
     }
 
     public String getKey() {

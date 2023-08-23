@@ -59,7 +59,7 @@ public class Json2QuteBook extends Json2QuteCommon {
                 boolean p2 = parseState().push(x); // inner node
                 try {
                     List<String> text = new ArrayList<>();
-                    appendToText(text, x.get("entries"), "##");
+                    appendToText(text, SourceField.entries.getFrom(x), "##");
 
                     String content = String.join("\n", text);
 
@@ -69,7 +69,7 @@ public class Json2QuteBook extends Json2QuteCommon {
                             String page = x.get("page").asText();
                             titlePage = title + ", p. " + page;
                         }
-                        String name = getTextOrDefault(x, "name", "");
+                        String name = replaceText(SourceField.name.getTextOrEmpty(x));
                         Tools5eQuteNote note = new Tools5eQuteNote(name, titlePage, content, tags)
                                 .withTargetPath(imagePath)
                                 .withTargetFile(String.format("%s-%s",

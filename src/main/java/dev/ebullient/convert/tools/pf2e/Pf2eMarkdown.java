@@ -111,7 +111,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
             }
 
             switch (type) {
-                case ability -> rules.add(Pf2eTypeAbility.createAbility(node, index, false));
+                case ability -> rules.add(new Json2QuteAbility(index, type, node).buildNote());
                 case book -> {
                     index.tui().printlnf("📖 Looking at book: %s", e.getKey());
                     JsonNode data = index.getIncludedNode(key.replace("book|", "data|"));

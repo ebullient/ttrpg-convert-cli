@@ -81,6 +81,7 @@ public class Json2QuteCommon implements JsonSource {
 
     public String getFluffDescription(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
         List<String> text = getFluff(fluffType, heading, images);
+        appendFootnotes(text, 0);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
@@ -114,8 +115,6 @@ public class Json2QuteCommon implements JsonSource {
 
     public void unpackFluffNode(Tools5eIndexType fluffType, JsonNode fluffNode, List<String> text, String heading,
             List<ImageRef> images) {
-        JsonSourceCopier copier = new JsonSourceCopier(index);
-        fluffNode = copier.handleCopy(fluffType, fluffNode);
         if (fluffNode.has("entries")) {
             boolean pushed = parseState().push(getSources(), fluffNode);
             try {
@@ -133,8 +132,6 @@ public class Json2QuteCommon implements JsonSource {
             String fluffKey = fluffType.createKey(rootNode);
             JsonNode fluffNode = index.getNode(fluffKey);
             if (fluffNode != null) {
-                JsonSourceCopier copier = new JsonSourceCopier(index);
-                fluffNode = copier.handleCopy(fluffType, fluffNode);
                 getImages(fluffNode.get("images"), images);
             }
         }

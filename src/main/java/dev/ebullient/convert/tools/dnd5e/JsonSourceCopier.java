@@ -24,7 +24,7 @@ public class JsonSourceCopier implements JsonSource {
     static final Pattern to_hit_subst = Pattern.compile("\\+?<\\$to_hit__([^$]+)\\$>");
     static final Pattern dmg_mod_subst = Pattern.compile("<\\$damage_mod__([^$]+)\\$>");
     static final Pattern dmg_avg_subst = Pattern.compile("<\\$damage_avg__([\\d.,]+)([+*-])([^$]+)\\$>");
-    static final List<String> alwaysSkip = List.of("name", "indexInputType", "indexKey");
+    static final List<String> alwaysSkip = List.of("indexInputType", "indexKey");
 
     final Tools5eIndex index;
 
@@ -117,7 +117,7 @@ public class JsonSourceCopier implements JsonSource {
         return value;
     }
 
-    JsonNode mergeNodes(String originKey, JsonNode baseNode, JsonNode overlayNode) {
+    JsonNode mergeNodes(String originKey, JsonNode baseNode, JsonNode incompleteNode) {
         ObjectNode target = (ObjectNode) copyNode(baseNode);
         target.put("merged", true);
         target.remove("srd");
@@ -125,7 +125,7 @@ public class JsonSourceCopier implements JsonSource {
         target.remove("_versions");
         target.remove("_copy");
 
-        JsonNode _copy = overlayNode.get("_copy");
+        JsonNode _copy = incompleteNode.get("_copy");
         JsonNode _mod = _copy == null ? null : _copy.get("_mod");
         JsonNode _preserve = _copy == null ? null : _copy.get("_preserve");
         JsonNode _trait = _copy == null ? null : _copy.get("_trait");
@@ -144,18 +144,21 @@ public class JsonSourceCopier implements JsonSource {
             target.remove("hasToken");
         }
 
-        for (Iterator<String> it = overlayNode.fieldNames(); it.hasNext();) {
+        for (Iterator<String> it = incompleteNode.fieldNames(); it.hasNext();) {
             String f = it.next();
-            JsonNode overlayField = overlayNode.get(f);
+            JsonNode overlayField = incompleteNode.get(f);
             switch (f) {
                 case "_copy":
                 case "_mod":
                 case "_versions":
                     // skip -- do not copy
                     break;
+                case "name":
+                    target.set(f, copyNode(overlayField));
+                    break;
                 case "ability":
                     JsonNode baseAbilityNode = baseNode.get("ability");
-                    if (overlayNode.has("raceName")) {
+                    if (incompleteNode.has("raceName")) {
                         target.set("ability", copyNode(overlayField));
                     } else if (baseAbilityNode == null) {
                         if (overwrite != null && overwrite.has("ability")) {
@@ -182,7 +185,7 @@ public class JsonSourceCopier implements JsonSource {
                 case "weaponProficiencies":
                 case "armorProficiencies":
                 case "languageProficiencies": {
-                    if (overlayNode.has("raceName")) {
+                    if (incompleteNode.has("raceName")) {
                         target.set(f, copyNode(overlayField));
                     } else {
                         ArrayNode cpyArray = target.withArray(f);
@@ -206,9 +209,11 @@ public class JsonSourceCopier implements JsonSource {
                 default:
                     if (overlayField == null) {
                         target.remove(f);
+                    } else if (alwaysSkip.contains(f)) {
+                        // tui().debugf("Copy/Merge: Always skip field %s (from %s)", f, originKey);
                     } else if (_preserve == null || _preserve.has(f)) {
                         target.replace(f, copyNode(overlayField));
-                    } else if (!alwaysSkip.contains(f)) {
+                    } else {
                         tui().debugf("Copy/Merge: Skip field %s (from %s)", f, originKey);
                     }
                     break;

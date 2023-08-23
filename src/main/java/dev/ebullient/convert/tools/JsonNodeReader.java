@@ -52,6 +52,13 @@ public interface JsonNodeReader {
         }
     }
 
+    default void appendUnlessEmptyFrom(JsonNode x, List<String> text, JsonTextConverter<?> replacer) {
+        String value = replacer.replaceText(getTextOrEmpty(x));
+        if (!value.isEmpty()) {
+            text.add(value);
+        }
+    }
+
     default String bonusOrNull(JsonNode x) {
         JsonNode value = getFrom(x);
         if (value == null) {

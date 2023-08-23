@@ -19,20 +19,24 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType.IndexFields;
+import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType> {
     Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
 
     Pattern linkifyPattern = Pattern.compile(
-            "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|object|race|reward|sense|skill|spell|status|table|variantrule|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
+            "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|object|race|reward|sense|skill|spell|status|table|variantrule|vehicle|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
 
-    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
+    Pattern nestedDice = Pattern.compile("\\{@damage ([^{}]+(\\{@dice [^{}}]+})[^}]+)}");
+    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
 
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
+    Pattern homebrewPattern = Pattern.compile("\\{@homebrew ([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
-    Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+) ([^}]+)}"); // {@skillCheck animal_handling 5}
+    Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str 20}
+    Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+)}"); // {@skillCheck animal_handling 5}
     Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]+)*}");
     Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
     Pattern featureSourcePattern = Pattern.compile("source=([^|}]+)");
@@ -123,6 +127,15 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
                     .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
 
+            // Inside-pattern formatting (nested formatting tags)
+            result = replaceFormatting(result);
+            result = replaceFormatting(result);
+
+            result = nestedDice.matcher(result).replaceAll((match) -> {
+                String text = match.group(0);
+                return text.replaceAll("\\{@dice (" + DICE_FORMULA + ")}", "$1");
+            });
+
             // Dice roller tags; {@dice 1d2-2+2d3+5} for regular dice rolls
             // - {@dice 1d6;2d6} for multiple options;
             // - {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
@@ -145,12 +158,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 return parts[0] + "% chance";
             });
 
-            result = skillCheckPattern.matcher(result).replaceAll((match) -> {
-                SkillOrAbility skill = index().findSkillOrAbility(match.group(1), getSources());
-                if (skill == null) {
-                    return match.group(1);
+            result = abilitySavePattern.matcher(result).replaceAll(this::replaceSkillOrAbility);
+            result = skillCheckPattern.matcher(result).replaceAll(this::replaceSkillCheck);
+
+            result = homebrewPattern.matcher(result).replaceAll((match) -> {
+                // {@homebrew changes|modifications}, {@homebrew additions} or {@homebrew |removals}
+                String s = match.group(1);
+                int pos = s.indexOf('|');
+                if (pos == 0) { // removal
+                    return "[...] ^[The following text has been removed with this homebrew: " + s.substring(1) + "]";
+                } else if (pos < 0) { // addition
+                    return s + " ^[This is a homebrew addition]";
                 }
-                return linkifyRules(Tools5eIndexType.skill, skill.value(), "skills");
+                String oldText = s.substring(0, pos);
+                String newText = s.substring(pos + 1);
+
+                return newText + " ^[This is a homebrew addition, replacing the following: " + oldText + "]";
             });
 
             result = footnoteReference.matcher(result)
@@ -162,54 +185,68 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             result = optionalFeaturesFilter.matcher(result)
                     .replaceAll(this::linkifyOptionalFeatureType);
 
-            result = quickRefPattern.matcher(result)
-                    .replaceAll((match) -> {
-                        String[] parts = match.group(1).split("\\|");
-                        if (parts.length > 4) {
-                            return parts[4];
-                        }
-                        return parts[0];
-                    });
+            result = quickRefPattern.matcher(result).replaceAll((match) -> {
+                String[] parts = match.group(1).split("\\|");
+                if (parts.length > 4) {
+                    return parts[4];
+                }
+                return parts[0];
+            });
+
+            result = linkifyPattern.matcher(result)
+                    .replaceAll(this::linkify);
 
             try {
                 result = result
                         .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
+                        // "Internal links: {@5etools This Is Your Life|lifegen.html}",
+                        // "External links: {@link https://discord.gg/5etools} or {@link Discord|https://discord.gg/5etools}"
                         .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
+                        .replaceAll("\\{@link ([^}|]+)}", "$1") // this must come first
                         .replaceAll("\\{@5etools ([^}|]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@loader ([^}|]+)\\|([^}]+)}", "$1 ^[$2]")
                         .replaceAll("\\{@area ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@vehupgrade ([^|}]+)\\|?[^}]*}", "$1") // TODO: vehicle upgrade type
-                        .replaceAll("\\{@vehicle ([^|}]+)\\|?[^}]*}", "$1") // TODO: vehicle type
                         .replaceAll("\\{@dc ([^}]+)}", "DC $1")
                         .replaceAll("\\{@d20 ([^}]+?)}", "$1") // when not using dice roller
                         .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
                         .replaceAll("\\{@recharge}", "(Recharge 6)")
+                        .replaceAll("\\{@coinflip ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@coinflip}", "flip a coin")
                         .replaceAll("\\{@(scaledice|scaledamage) [^|]+\\|[^|]+\\|([^|}]+)[^}]*}", "$2")
                         .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@boon ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
+                        .replaceAll("\\{@boon ([^|}]+)\\|[^}]*}", "$1")
+                        .replaceAll("\\{@boon ([^|}]+)}", "$1")
+                        .replaceAll("\\{@charoption ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
+                        .replaceAll("\\{@charoption ([^|}]+)\\|[^}]*}", "$1")
+                        .replaceAll("\\{@charoption ([^|}]+)}", "$1")
                         .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                         .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
+                        .replaceAll("\\{@cult ([^|}]+)}", "$1")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                         .replaceAll("\\{@h}", "*Hit:* ")
                         .replaceAll("\\{@m}", "*Miss:* ")
+                        .replaceAll("\\{@atk a}", "*Area Attack:*")
+                        .replaceAll("\\{@atk aw}", "*Area Weapon Attack:*")
                         .replaceAll("\\{@atk g}", "*Magical Attack:*")
                         .replaceAll("\\{@atk m}", "*Melee Attack:*")
+                        .replaceAll("\\{@atk r}", "*Ranged Attack:*")
                         .replaceAll("\\{@atk mw}", "*Melee Weapon Attack:*")
                         .replaceAll("\\{@atk rw}", "*Ranged Weapon Attack:*")
+                        .replaceAll("\\{@atk m,r}", "*Melee or Ranged Attack:*")
                         .replaceAll("\\{@atk mw,rw}", "*Melee or Ranged Weapon Attack:*")
+                        .replaceAll("\\{@atk mp}", "*Melee Power Attack:*")
+                        .replaceAll("\\{@atk rp}", "*Ranged Power Attack:*")
+                        .replaceAll("\\{@atk mp,rp}", "*Melee or Ranged Power Attack:*")
                         .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
                         .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
-                        .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
-                        .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
-                        .replaceAll("\\{@b ([^}]+?)}", "**$1**")
-                        .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
-                        .replaceAll("\\{@i ([^}]+?)}", "_$1_")
-                        .replaceAll("\\{@italic ([^}]+)}", "_$1_");
+                        .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*");
             } catch (Exception e) {
                 tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
             }
-            result = linkifyPattern.matcher(result)
-                    .replaceAll(this::linkify);
 
             result = notePattern.matcher(result)
                     .replaceAll((match) -> {
@@ -221,6 +258,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         return String.join("\n", text);
                     });
 
+            // Outside-of-pattern formatting
+            result = replaceFormatting(result);
+            result = replaceFormatting(result);
+
             // after other replacements
             return result.replaceAll("\\{@adventure ([^|}]+)\\|[^}]*}", "$1");
 
@@ -229,6 +270,75 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
 
         return input;
+    }
+
+    default String replaceFormatting(String input) {
+        try {
+            return input
+                    .replaceAll("\\{@color ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
+                    .replaceAll("\\{@b ([^}]+?)}", "**$1**")
+                    .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
+                    .replaceAll("\\{@i ([^}]+?)}", "*$1*")
+                    .replaceAll("\\{@italic ([^}]+)}", "*$1*")
+                    .replaceAll("\\{@s ([^}]+?)}", "~~$1~~")
+                    .replaceAll("\\{@strike ([^}]+)}", "~~$1~~")
+                    .replaceAll("\\{@u ([^}]+?)}", "_$1_")
+                    .replaceAll("\\{@underline ([^}]+?)}", "_$1_")
+                    .replaceAll("\\{@comic ([^}]+?)}", "$1")
+                    .replaceAll("\\{@comicH1 ([^}]+?)}", "$1")
+                    .replaceAll("\\{@comicH2 ([^}]+?)}", "$1")
+                    .replaceAll("\\{@comicH3 ([^}]+?)}", "$1")
+                    .replaceAll("\\{@comicH4 ([^}]+?)}", "$1")
+                    .replaceAll("\\{@comicNote ([^}]+?)}", "$1")
+                    .replaceAll("\\{@highlight ([^}]+?)}", "==$1==")
+                    .replaceAll("\\{@kbd ([^}]+?)}", "`$1`")
+                    .replaceAll("\\{@b}", " ")
+                    .replaceAll("\\{@i}", " ");
+        } catch (Exception e) {
+            tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
+        }
+        return input;
+    }
+
+    default String replaceSkillOrAbility(MatchResult match) {
+        // format: {@ability str 20} or {@ability str 20|Display Text}
+        //      or {@ability str 20|Display Text|Roll Name Text}
+        // format: {@savingThrow str 5} or {@savingThrow str 5|Display Text}
+        //      or {@savingThrow str 5|Display Text|Roll Name Text}
+        String[] parts = match.group(2).split("\\|");
+        String[] score = parts[0].split(" ");
+        SkillOrAbility ability = index().findSkillOrAbility(score[0], getSources());
+        boolean abilityCheck = match.group(1).equals("ability");
+        String text = parts.length > 1 && !parts[1].isBlank() ? parts[1] : null;
+
+        if (!abilityCheck && !score[1].matches("\\d+")) { // saving throw: +PB
+            return text == null ? ability.value() + " " + score[1] : text;
+        } else {
+            int value = Integer.parseInt(score[1]);
+            String mod = abilityCheck
+                    ? "" + AbilityScores.getModifier(value)
+                    : (value >= 0 ? "+" : "") + value;
+            return String.format("%s (%s)", text == null ? ability.value() : text, mod);
+        }
+    }
+
+    default String replaceSkillCheck(MatchResult match) {
+        // format: {@skillCheck animal_handling 5} or {@skillCheck animal_handling 5|Display Text}
+        //      or {@skillCheck animal_handling 5|Display Text|Roll Name Text}
+        String[] parts = match.group(1).split("\\|");
+        String[] score = parts[0].split(" ");
+        SkillOrAbility skill = index().findSkillOrAbility(score[0], getSources());
+        String text = parts.length > 1 && !parts[1].isBlank()
+                ? parts[1]
+                : linkifyRules(Tools5eIndexType.skill, skill.value(), "skills");
+
+        String dice = score[1];
+        if (score[1].matches("\\d+")) {
+            int value = Integer.parseInt(score[1]);
+            dice = (value >= 0 ? "+" : "") + value;
+        }
+        return String.format("%s (%s)", text, dice);
     }
 
     default String replaceFootnoteReference(MatchResult match) {
@@ -279,6 +389,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@item longsword|phb|and optional link text added with another pipe}.",
             // {@object Ballista} assumes DMG by default,
             // {@object Ballista|DMG|and optional link text added with another pipe}.",
+            // {@optfeature Agonizing Blast} assumes PHB by default,
+            // {@optfeature Aspect of the Moon|xge} can have sources added with a pipe,
+            // {@optfeature Aspect of the Moon|xge|and optional link text added with another pipe}.",
             // {@race Human} assumes PHB by default,
             // {@race Aasimar (Fallen)|VGM}
             // {@race Aasimar|DMG|racial traits for the aasimar}
@@ -297,17 +410,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@trap falling net} assumes DMG by default,
             // {@trap falling portcullis|xge} can have sources added with a pipe,
             // {@trap falling portcullis|xge|and optional link text added with another pipe}.",
+            // {@vehicle Galley} assumes GoS by default,
+            // {@vehicle Galley|UAOfShipsAndSea} can have sources added with a pipe,
+            // {@vehicle Galley|GoS|and optional link text added with another pipe}.",
             case background,
                     feat,
                     deck,
                     hazard,
                     item,
                     object,
+                    optionalfeature,
                     race,
                     reward,
                     spell,
                     table,
-                    trap ->
+                    trap,
+                    vehicle ->
                 linkifyType(type, s);
             case action -> linkifyRules(type, s, "actions");
             case condition, status -> linkifyRules(type, s, "conditions");
@@ -318,7 +436,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             case subclass, classtype -> linkifyClass(s);
             case deity -> linkifyDeity(s);
             case card -> linkifyCardType(s);
-            case optionalfeature -> linkifyOptionalFeature(s);
             case classfeature -> linkifyClassFeature(s);
             case subclassFeature -> linkifySubclassFeature(s);
             case variantrule -> linkifyVariant(s);
@@ -350,18 +467,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return linkText;
         }
         Tools5eSources linkSource = Tools5eSources.findSources(jsonSource);
-        String name = linkSource.getName();
-        if (type == Tools5eIndexType.background) {
-            return linkOrText(linkText, key, dirName,
-                    Json2QuteBackground.decoratedBackgroundName(name)
-                            + Tools5eQuteBase.sourceIfNotDefault(linkSource));
-        } else if (type == Tools5eIndexType.race) {
-            return linkOrText(linkText, key, dirName,
-                    decoratedRaceName(jsonSource, linkSource)
-                            + Tools5eQuteBase.sourceIfNotDefault(linkSource));
-        }
         return linkOrText(linkText, key, dirName,
-                decoratedTypeName(linkSource) + Tools5eQuteBase.sourceIfNotDefault(linkSource));
+                type.decoratedName(jsonSource) + Tools5eQuteBase.sourceIfNotDefault(linkSource));
     }
 
     default String linkifyCardType(String match) {
@@ -474,23 +581,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 resource, toAnchorTag(headerName));
     }
 
-    default String linkifyOptionalFeature(String match) {
-        // "Invocations and Other Optional Features:
-        // {@optfeature Agonizing Blast} assumes PHB by default,
-        // {@optfeature Aspect of the Moon|xge} can have sources added with a pipe,
-        // {@optfeature Aspect of the Moon|xge|and optional link text added with another pipe}.",
-        String[] parts = match.split("\\|");
-        String source = parts.length > 1 && !parts[1].isBlank() ? parts[1]
-                : Tools5eIndexType.optionalfeature.defaultSourceString();
-        String linkText = parts.length > 2 ? parts[2] : parts[0];
-        String featureKey = index().getAliasOrDefault(Tools5eIndexType.optionalfeature.createKey(parts[0].trim(), source));
-        JsonNode featureJson = index().getNode(featureKey);
-        Tools5eSources linkSources = Tools5eSources.findSources(featureJson);
-        return linkOrText(linkText, featureKey,
-                Tools5eIndexType.optionalfeature.getRelativePath(),
-                decoratedTypeName(linkSources) + Tools5eQuteBase.sourceIfNotDefault(linkSources));
-    }
-
     default String linkifyOptionalFeatureType(MatchResult match) {
         String linkText = match.group(1);
         String conditions = match.group(2);
@@ -567,27 +657,28 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String linkifyCreature(String match) {
+        Tools5eIndexType indexType = Tools5eIndexType.monster;
         // "Creatures:
         // {@creature goblin} assumes MM by default,
         // {@creature cow|vgm} can have sources added with a pipe,
         // {@creature cow|vgm|and optional link text added with another pipe}.",
         String[] parts = match.trim().split("\\|");
-        String source = parts.length < 2 || parts[1].isBlank() ? "mm" : parts[1];
-        String linkText = parts.length < 3 || parts[2].isBlank() ? parts[0] : parts[2];
+        String source = parts.length > 1 && !parts[1].isBlank() ? parts[1] : indexType.defaultSourceString();
+        String linkText = parts.length > 2 ? parts[2] : parts[0];
 
-        String key = index().getAliasOrDefault(Tools5eIndexType.monster.createKey(parts[0], source));
+        String key = index().getAliasOrDefault(indexType.createKey(parts[0], source));
         if (index().isExcluded(key)) {
             return linkText;
         }
         JsonNode jsonSource = index().getNode(key);
         Tools5eSources sources = Tools5eSources.findSources(key);
-        String resourceName = decoratedMonsterName(sources);
-        String type = getMonsterType(jsonSource); // may be missing for partial index
-        if (type == null) {
+        String resourceName = indexType.decoratedName(jsonSource);
+        String creatureType = getMonsterType(jsonSource); // may be missing for partial index
+        if (creatureType == null) {
             return linkText;
         }
         boolean isNpc = Json2QuteMonster.isNpc(jsonSource);
-        return linkOrText(linkText, key, Tools5eQuteBase.monsterPath(isNpc, type),
+        return linkOrText(linkText, key, Tools5eQuteBase.monsterPath(isNpc, creatureType),
                 resourceName + Tools5eQuteBase.sourceIfNotDefault(sources));
     }
 
@@ -603,32 +694,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     parts[0], index().rulesVaultRoot(),
                     slugify(parts[0]) + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.variantrule));
         }
-    }
-
-    default String decoratedRaceName(JsonNode jsonSource, Tools5eSources sources) {
-        String raceName = sources.getName();
-        JsonNode raceNameNode = jsonSource.get("raceName");
-        if (raceNameNode != null) {
-            raceName = String.format("%s (%s)", raceNameNode.asText(), raceName);
-        }
-        return decoratedTypeName(raceName.replace("Variant; ", ""), getSources());
-    }
-
-    default String decoratedMonsterName(Tools5eSources sources) {
-        return sources.getName().replace("\"", "");
-    }
-
-    default String decoratedTypeName(Tools5eSources sources) {
-        return decoratedTypeName(sources.getName(), sources);
-    }
-
-    default String decoratedTypeName(String name, Tools5eSources sources) {
-        if (sources.isPrimarySource("DMG")
-                && !sources.type.defaultSourceString().equals("DMG")
-                && !name.contains("(DMG)")) {
-            return name + " (DMG)";
-        }
-        return name;
     }
 
     default String decoratedUaName(String name, Tools5eSources sources) {

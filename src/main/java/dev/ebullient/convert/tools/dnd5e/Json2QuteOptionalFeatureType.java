@@ -43,9 +43,10 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
             if (index().isExcluded(featureSource.getKey())) {
                 continue;
             }
-            text.add("- " + linkifyOptionalFeature(featureSource.getName()
-                    + "|" + featureSource.primarySource()
-                    + "|" + decoratedUaName(featureSource.getName(), featureSource)));
+            text.add("- " + linkify(Tools5eIndexType.optionalfeature,
+                    featureSource.getName()
+                            + "|" + featureSource.primarySource()
+                            + "|" + decoratedUaName(featureSource.getName(), featureSource)));
         }
         if (text.isEmpty()) {
             return null;

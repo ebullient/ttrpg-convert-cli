@@ -21,7 +21,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
     Json2QuteSpell(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        decoratedName = decoratedTypeName(getSources());
+        decoratedName = type.decoratedName(jsonNode);
     }
 
     @Override

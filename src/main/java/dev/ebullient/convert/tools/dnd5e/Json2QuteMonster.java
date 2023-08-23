@@ -87,7 +87,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String fluff = getFluffDescription(Tools5eIndexType.monsterFluff, "##", fluffImages);
 
         return new QuteMonster(sources,
-                decoratedMonsterName(sources),
+                type.decoratedName(rootNode),
                 getSourceText(sources),
                 isNpc,
                 size, creatureType, subtype, monsterAlignment(),

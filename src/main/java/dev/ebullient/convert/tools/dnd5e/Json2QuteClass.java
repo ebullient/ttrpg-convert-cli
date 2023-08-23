@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
@@ -42,7 +43,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 findClassProficiencies();
             }
 
-            decoratedClassName = decoratedTypeName(getSources());
+            decoratedClassName = type.decoratedName(jsonNode);
             classSource = jsonNode.get("source").asText();
             subclassTitle = getTextOrEmpty(rootNode, "subclassTitle");
 
@@ -369,6 +370,10 @@ public class Json2QuteClass extends Json2QuteCommon {
 
             keyToClassFeature.put(finalKey, feature);
         }
+        // check inclusion of class feature sources
+        if (!converter.cfg().sourceIncluded(feature.cfSources)) {
+            return null; // skipped
+        }
         return feature;
     }
 
@@ -389,9 +394,6 @@ public class Json2QuteClass extends Json2QuteCommon {
             String parentClassSource = scNodes.get(scNode);
             String scKey = Tools5eIndexType.subclass.createKey(scNode);
             JsonNode resolved = index.resolveClassFeatureNode(scKey, scNode);
-            if (resolved == null) {
-                continue; // e.g. excluded
-            }
 
             Subclass sc = new Subclass();
             sc.subclassNode = resolved;
@@ -399,6 +401,11 @@ public class Json2QuteClass extends Json2QuteCommon {
             sc.parentKey = getSources().getKey();
             sc.shortName = resolved.get("shortName").asText();
             sc.sources = Tools5eSources.findSources(scKey);
+
+            // If parent sources does not contain subclass source...
+            if (!getSources().contains(sc.sources) && index.isExcluded(scKey)) {
+                continue; // excluded
+            }
 
             // subclass features are text elements (null field)
             findClassFeatures(Tools5eIndexType.subclassFeature, resolved.get("subclassFeatures"), sc.classFeatures, null);
@@ -715,5 +722,9 @@ public class Json2QuteClass extends Json2QuteCommon {
         } else {
             throw new IllegalArgumentException("Unknown column value: " + c.toPrettyString());
         }
+    }
+
+    enum ClassFields implements JsonNodeReader {
+        optionalfeatureProgression,
     }
 }

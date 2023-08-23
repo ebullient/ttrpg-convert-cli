@@ -78,7 +78,7 @@ public interface JsonTextConverter<T extends IndexType> {
 
     default String replaceWithDiceRoller(String text) {
         return text.replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
-                "Hit: `dice: $2|avg` (`$2`)")
+                "*Hit:* `dice: $2|avg` (`$2`)")
                 .replaceAll("plus ([\\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
                         "plus `dice: $2|avg` (`$2`)")
                 .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
@@ -210,21 +210,25 @@ public interface JsonTextConverter<T extends IndexType> {
 
     /** Internal / recursive parse */
     default boolean prependField(JsonNode entry, JsonNodeReader field, List<String> inner) {
-        String n = field.getTextOrNull(entry);
-        if (n != null) {
-            n = replaceText(n.trim());
+        String n = field.replaceTextFrom(entry, this);
+        return prependField(entry, n, inner);
+    }
+
+    default boolean prependField(JsonNode entry, String name, List<String> inner) {
+        if (name != null) {
+            name = replaceText(name.trim());
             if (inner.isEmpty()) {
-                inner.add(n);
+                inner.add(name);
             } else if (inner.get(0).startsWith("|") || inner.get(0).startsWith(">")) {
                 // we have a table or a blockquote
-                n = "**" + n + "** ";
+                name = "**" + name + "** ";
                 inner.add(0, "");
-                inner.add(0, n);
+                inner.add(0, name);
                 return true;
             } else {
-                n = n.replace(":", "");
-                n = "**" + n + ".** ";
-                inner.set(0, n + inner.get(0));
+                name = name.replace(":", "");
+                name = "**" + name + ".** ";
+                inner.set(0, name + inner.get(0));
                 return true;
             }
         }
@@ -380,12 +384,13 @@ public interface JsonTextConverter<T extends IndexType> {
 
     enum SourceField implements JsonNodeReader {
         abbreviation,
-        copy("_copy"),
+        _class_("class"),
+        _copy,
         entry,
         entries,
         id,
         items,
-        meta("_meta"),
+        _meta,
         name,
         note,
         page,

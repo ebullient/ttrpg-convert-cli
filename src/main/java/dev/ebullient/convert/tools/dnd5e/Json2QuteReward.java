@@ -26,6 +26,7 @@ public class Json2QuteReward extends Json2QuteCommon {
         }
 
         appendToText(text, rootNode.get("entries"), "##");
+        appendFootnotes(text, 0);
 
         List<String> details = new ArrayList<>();
 

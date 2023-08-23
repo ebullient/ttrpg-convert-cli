@@ -267,12 +267,44 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     public String linkify(JsonSource convert, JsonNode entry) {
         String name = SourceField.name.getTextOrEmpty(entry);
         String source = SourceField.source.getTextOrEmpty(entry);
-        return this == Tools5eIndexType.subclass
-                ? convert.linkify(this, Tools5eIndexType.getSubclassTextReference(
-                        Tools5eFields.className.getTextOrEmpty(entry),
-                        Tools5eFields.classSource.getTextOrEmpty(entry),
-                        name, source, name))
-                : convert.linkify(this, name + "|" + source);
+        return switch (this) {
+            case subclass -> convert.linkify(this, Tools5eIndexType.getSubclassTextReference(
+                    Tools5eFields.className.getTextOrEmpty(entry),
+                    Tools5eFields.classSource.getTextOrEmpty(entry),
+                    name, source, name));
+            default -> convert.linkify(this, name + "|" + source + "|" + this.decoratedName(entry));
+        };
+    }
+
+    public String decoratedName(JsonNode entry) {
+        String name = SourceField.name.getTextOrEmpty(entry);
+        switch (this) {
+            case background -> {
+                if (name.startsWith("Variant")) {
+                    name = name.replace("Variant ", "") + " (Variant)";
+                }
+            }
+            case race, subrace -> {
+                JsonNode raceNameNode = entry.get("raceName");
+                if (raceNameNode != null) {
+                    name = String.format("%s (%s)", raceNameNode.asText(), name);
+                }
+                name = name.replace("Variant; ", "");
+            }
+            default -> {
+            }
+        }
+        return decoratedName(name, entry);
+    }
+
+    public String decoratedName(String name, JsonNode entry) {
+        Tools5eSources sources = Tools5eSources.findOrTemporary(entry);
+        if (sources.isPrimarySource("DMG")
+                && !sources.type.defaultSourceString().equals("DMG")
+                && !name.contains("(DMG)")) {
+            return name + " (DMG)";
+        }
+        return name;
     }
 
     public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {

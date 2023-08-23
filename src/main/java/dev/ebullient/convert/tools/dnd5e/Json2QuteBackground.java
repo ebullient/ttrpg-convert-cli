@@ -23,7 +23,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
 
     Json2QuteBackground(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        backgroundName = decoratedTypeName(decoratedBackgroundName(sources.getName()), sources);
+        backgroundName = type.decoratedName(jsonNode);
     }
 
     @Override
@@ -60,12 +60,4 @@ public class Json2QuteBackground extends Json2QuteCommon {
                 images,
                 tags);
     }
-
-    public static String decoratedBackgroundName(String name) {
-        if (name.startsWith("Variant")) {
-            name = name.replace("Variant ", "") + " (Variant)";
-        }
-        return name;
-    }
-
 }

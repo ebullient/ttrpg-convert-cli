@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.ParseState;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -86,6 +87,13 @@ public class CompendiumConfig {
             return false;
         }
         return allowedSources.contains(source.toLowerCase());
+    }
+
+    public boolean sourceIncluded(CompendiumSources source) {
+        if (allSources) {
+            return true;
+        }
+        return source.includedBy(allowedSources);
     }
 
     public boolean excludeItem(JsonNode sourceNode, boolean allowWhenEmpty) {

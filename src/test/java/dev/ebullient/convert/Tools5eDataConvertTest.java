@@ -97,7 +97,10 @@ public class Tools5eDataConvertTest {
             tui.init(null, false, false);
             TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
-                content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
                 return errors;
             });
         }
@@ -110,11 +113,23 @@ public class Tools5eDataConvertTest {
             TestUtils.deleteDir(target);
 
             // No basics
-            LaunchResult result = launcher.launch("-s", "ERLW",
+            LaunchResult result = launcher.launch("-s", "ERLW", "--debug",
                     "-o", target.toString(), TestUtils.TOOLS_PATH_5E.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+
+            TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                    if (l.matches(".*-ua[^.]\\.md.*$")) {
+                        errors.add(String.format("Found UA resources in %s: %s", p.toString(), l));
+                    }
+                });
+                return errors;
+            });
         }
     }
 
@@ -164,7 +179,10 @@ public class Tools5eDataConvertTest {
 
             TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
-                content.forEach(l -> TestUtils.checkMarkdownLinks(target.toString(), p, l, errors));
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
                 return errors;
             });
         }
@@ -229,7 +247,6 @@ public class Tools5eDataConvertTest {
                         }
                         return errors;
                     }));
-
         }
     }
 
@@ -288,26 +305,20 @@ public class Tools5eDataConvertTest {
             assertThat(phb).exists();
             assertThat(phb).isDirectory();
 
-            List.of(
-                    target.resolve("compend ium/adventures"),
-                    target.resolve("compend ium/backgrounds"),
-                    target.resolve("compend ium/books"),
-                    target.resolve("compend ium/classes"),
-                    target.resolve("compend ium/deities"),
-                    target.resolve("compend ium/feats"),
-                    target.resolve("compend ium/items"),
-                    target.resolve("compend ium/races"),
-                    target.resolve("compend ium/spells"))
-                    .forEach(directory -> TestUtils.assertDirectoryContents(directory, tui, (p, content) -> {
-                        List<String> errors = new ArrayList<>();
-                        if (content.stream().anyMatch(l -> l.contains("/ru les/"))) {
-                            errors.add("Found '/ru les/' " + p); // not escaped
-                        }
-                        if (content.stream().anyMatch(l -> l.contains("/compend ium/"))) {
-                            errors.add("Found '/compend ium/' " + p); // not escaped
-                        }
-                        return errors;
-                    }));
+            TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                    if (l.contains("/ru les/")) {
+                        errors.add("Found '/ru les/' " + p); // not escaped
+                    }
+                    if (l.contains("/compend ium/")) {
+                        errors.add("Found '/compend ium/' " + p); // not escaped
+                    }
+                });
+                return errors;
+            });
         }
     }
 }

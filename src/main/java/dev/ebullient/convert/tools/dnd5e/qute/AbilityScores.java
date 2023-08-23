@@ -31,7 +31,7 @@ public class AbilityScores {
         this.charisma = charisma;
     }
 
-    private int getModifier(int score) {
+    public static int getModifier(int score) {
         int mod = score - 10;
         if (mod % 2 != 0) {
             mod -= 1; // round down

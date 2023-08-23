@@ -33,6 +33,7 @@ import dev.ebullient.convert.tools.dnd5e.ItemProperty.CustomItemProperty;
 import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
 import dev.ebullient.convert.tools.dnd5e.ItemType.CustomItemType;
 import dev.ebullient.convert.tools.dnd5e.ItemType.ItemEnum;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFields;
 import dev.ebullient.convert.tools.dnd5e.SkillOrAbility.CustomSkillOrAbility;
 import dev.ebullient.convert.tools.dnd5e.SpellSchool.CustomSpellSchool;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
@@ -64,6 +65,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private final Map<String, String> aliases = new HashMap<>();
     private final Map<String, String> classRoot = new HashMap<>();
     private final Map<String, Set<String>> spellClassIndex = new HashMap<>();
+    private final Map<String, String> nameToLink = new HashMap<>();
 
     private final Set<String> srdKeys = new HashSet<>();
     private final Set<String> familiarKeys = new HashSet<>();
@@ -87,16 +89,18 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         Tools5eIndexType.backgroundFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.conditionFluff.withArrayFrom(node, this::addToIndex);
-
-        Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.featFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemFluff.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
-
-        Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.objectFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.vehicleFluff.withArrayFrom(node, this::addToIndex);
+
+        Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
+
         Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.monsterTemplate.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
@@ -183,7 +187,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     private boolean addHomebrewSourcesIfPresent(String filename, JsonNode node) {
-        JsonNode sources = SourceField.meta.getFieldFrom(node, HomebrewFields.sources);
+        JsonNode sources = SourceField._meta.getFieldFrom(node, HomebrewFields.sources);
         if (sources == null || sources.size() == 0) {
             return false;
         }
@@ -214,9 +218,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         }
 
-        JsonNode featureTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.optionalFeatureTypes);
-        JsonNode spellSchools = SourceField.meta.getFieldFrom(node, HomebrewFields.spellSchools);
-        JsonNode psionicTypes = SourceField.meta.getFieldFrom(node, HomebrewFields.psionicTypes);
+        JsonNode featureTypes = SourceField._meta.getFieldFrom(node, HomebrewFields.optionalFeatureTypes);
+        JsonNode spellSchools = SourceField._meta.getFieldFrom(node, HomebrewFields.spellSchools);
+        JsonNode psionicTypes = SourceField._meta.getFieldFrom(node, HomebrewFields.psionicTypes);
         JsonNode skillTypes = HomebrewFields.skill.getFrom(node);
         if (featureTypes != null || spellSchools != null || psionicTypes != null || skillTypes != null) {
             for (Entry<String, JsonNode> entry : iterableFields(featureTypes)) {
@@ -316,14 +320,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
     }
 
-    public boolean differentSource(Tools5eSources sources, String source) {
-        String primarySource = sources == null ? null : sources.primarySource();
-        if (primarySource == null || source == null) {
-            return false;
-        }
-        return !primarySource.equals(source);
-    }
-
     void addAlias(String key, String alias) {
         if (key.equals(alias)) {
             return;
@@ -369,8 +365,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             // check for / manage copies first.
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
             JsonNode jsonSource = copier.handleCopy(type, node);
+
             TtrpgValue.indexKey.addToNode(node, key);
-            Tools5eSources.constructSources(node);
+            Tools5eSources sources = Tools5eSources.constructSources(node);
 
             if (type == Tools5eIndexType.subrace ||
                     type == Tools5eIndexType.monsterTemplate ||
@@ -399,6 +396,17 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 TtrpgValue.indexKey.addToNode(v.node, v.key);
                 Tools5eSources.constructSources(v.node);
             });
+
+            if (type == Tools5eIndexType.classtype || type == Tools5eIndexType.subclass) {
+                for (JsonNode ofp : iterableElements(ClassFields.optionalfeatureProgression.getFrom(node))) {
+                    for (String featureType : Tools5eFields.featureType.getListOfStrings(ofp, tui())) {
+                        OptionalFeatureType oft = getOptionalFeatureTypes(featureType, sources.primarySource());
+                        if (oft != null) {
+                            oft.appendSources(sources);
+                        }
+                    }
+                }
+            }
         }
 
         // Find/Merge deities (this will also exclude based on sources)
@@ -774,34 +782,38 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .map(Entry::getValue);
     }
 
-    public String lookupName(Tools5eIndexType type, String name) {
+    public String linkifyByName(Tools5eIndexType type, String name) {
         String prefix = String.format("%s|%s|", type, name).toLowerCase();
 
-        List<String> target = filteredIndex.keySet().stream()
-                .filter(k -> k.startsWith(prefix))
-                .filter(k -> isIncluded(k))
-                .collect(Collectors.toList());
-        if (target.isEmpty()) {
-            target = aliases.keySet().stream()
+        return nameToLink.computeIfAbsent(prefix, p -> {
+            List<String> target = filteredIndex.keySet().stream()
                     .filter(k -> k.startsWith(prefix))
                     .filter(k -> isIncluded(k))
                     .collect(Collectors.toList());
-        }
-
-        if (target.isEmpty()) {
-            tui().debugf("Did not find element for %s using [%s]", name, prefix);
-            return name;
-        } else if (target.size() > 1) {
-            List<String> reduce = target.stream().filter(x -> !x.matches(".*\\|ua[^|]*$")).collect(Collectors.toList());
-            if (reduce.size() > 1) {
-                tui().debugf("Found several elements for %s using [%s]: %s", name, prefix, target);
-                return name;
-            } else if (reduce.size() == 1) {
-                target = reduce;
+            if (target.isEmpty()) {
+                target = aliases.keySet().stream()
+                        .filter(k -> k.startsWith(prefix))
+                        .filter(k -> isIncluded(k))
+                        .collect(Collectors.toList());
             }
-        }
-        String key = getAliasOrDefault(target.get(0));
-        return filteredIndex.get(key).get("name").asText();
+
+            if (target.isEmpty()) {
+                tui().debugf("Did not find element for %s using [%s]", name, prefix);
+                return name;
+            } else if (target.size() > 1) {
+                List<String> reduce = target.stream().filter(x -> !x.matches(".*\\|ua[^|]*$")).collect(Collectors.toList());
+                if (reduce.size() > 1) {
+                    tui().debugf("Found several elements for %s using [%s]: %s", name, prefix, target);
+                    return name;
+                } else if (reduce.size() == 1) {
+                    target = reduce;
+                }
+            }
+
+            String key = getAliasOrDefault(target.get(0));
+            JsonNode node = filteredIndex.get(key);
+            return type.linkify(this, node);
+        });
     }
 
     public boolean srdOnly() {
@@ -840,7 +852,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         Tools5eSources sources = Tools5eSources.findSources(key);
-        return sources.getSources().stream().anyMatch(config::sourceIncluded);
+        return cfg().sourceIncluded(sources);
     }
 
     boolean isIncluded(String key) {
@@ -850,6 +862,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public boolean isExcluded(String key) {
         return !isIncluded(key);
+    }
+
+    public boolean differentSource(Tools5eSources sources, String source) {
+        String primarySource = sources == null ? null : sources.primarySource();
+        if (primarySource == null || source == null) {
+            return false;
+        }
+        return !primarySource.equals(source);
     }
 
     public Set<Entry<String, JsonNode>> includedEntries() {
@@ -869,10 +889,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     public JsonNode resolveClassFeatureNode(String finalKey, JsonNode featureNode) {
-        if (isExcluded(finalKey)) {
-            tui().debugf("excluded: %s", finalKey);
-            return null; // skip this
-        }
         // TODO: Handle copies or other fill-in / fluff?
         return featureNode;
     }
@@ -1042,6 +1058,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 featureTypeNode.put("srd", true);
             }
             index.addToIndex(Tools5eIndexType.optionalFeatureTypes, featureTypeNode);
+        }
+
+        public void appendSources(Tools5eSources otherSources) {
+            // Update sources from those of a consuming/using class or subclass
+            Tools5eSources mySources = Tools5eSources.constructSources(featureTypeNode);
+            if (otherSources.contains(mySources)) {
+                mySources.amendSources(otherSources);
+            }
         }
 
         public void add(JsonNode node) {

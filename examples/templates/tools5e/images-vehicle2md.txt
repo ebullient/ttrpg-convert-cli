@@ -27,7 +27,7 @@ aliases: ["{resource.name}"]
 {it.getEmbeddedLink} 
 {/each}
 
-{/if}{#if !resource.isObject && hasSections }
+{/if}{#if !resource.isObject && resource.hasSections }
 ## Statblock
 
 {/if}

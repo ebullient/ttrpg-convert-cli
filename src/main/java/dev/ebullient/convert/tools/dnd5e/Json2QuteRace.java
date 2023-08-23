@@ -19,14 +19,14 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     @Override
     protected QuteRace buildQuteResource() {
-        String name = decoratedRaceName(rootNode, sources);
+        String name = type.decoratedName(rootNode);
         Tags tags = new Tags(getSources());
 
         String[] split = name.split("\\(");
         for (int i = 0; i < split.length; i++) {
             split[i] = slugify(split[i].trim());
         }
-        tags.add("race", String.join("/", split));
+        tags.addRaw("race", String.join("/", split));
 
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.raceFluff, "###", fluffImages);

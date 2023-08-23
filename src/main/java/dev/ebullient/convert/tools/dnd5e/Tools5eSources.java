@@ -4,10 +4,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -163,16 +163,6 @@ public class Tools5eSources extends CompendiumSources {
         return source.map(TtrpgConfig::sourceToAbbreviation);
     }
 
-    public String alternateSource() {
-        if (sources.size() < 2) {
-            return null;
-        }
-
-        Iterator<String> i = sources.iterator();
-        i.next(); // primary
-        return i.next();
-    }
-
     public ImageRef buildImageRef(String title, String hrefString) {
         return new ImageRef.Builder()
                 .setTitle(title)
@@ -228,5 +218,22 @@ public class Tools5eSources extends CompendiumSources {
         } else {
             throw new IllegalArgumentException("We have an ImageRef with no path");
         }
+    }
+
+    /** Amend optionalfeaturetype with sources of related optional features */
+    public void amendSources(Tools5eSources otherSources) {
+        this.sources.addAll(otherSources.sources);
+        this.bookRef.addAll(otherSources.bookRef);
+    }
+
+    @Override
+    public boolean includedBy(Set<String> sources) {
+        return super.includedBy(sources) ||
+                (TtrpgConfig.getConfig().noSources() && (this.srd || this.basicRules));
+    }
+
+    public boolean contains(Tools5eSources sources) {
+        Collection<String> sourcesList = sources.getSources();
+        return this.sources.stream().anyMatch(sourcesList::contains);
     }
 }

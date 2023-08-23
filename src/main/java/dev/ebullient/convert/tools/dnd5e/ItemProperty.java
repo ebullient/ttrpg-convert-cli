@@ -2,8 +2,10 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +16,7 @@ import dev.ebullient.convert.io.Tui;
 import io.quarkus.qute.TemplateData;
 
 public interface ItemProperty {
+    static final Map<ItemProperty, String> propertyToLink = new HashMap<>();
 
     Comparator<ItemProperty> comparator = Comparator.comparing(ItemProperty::value);
 
@@ -26,9 +29,10 @@ public interface ItemProperty {
     class CustomItemProperty implements ItemProperty {
         final String name;
         final String tag;
+        final String abbreviation;
 
         public CustomItemProperty(JsonNode property) {
-            String abbreviation = property.get("abbreviation").asText();
+            abbreviation = property.get("abbreviation").asText();
 
             String name = abbreviation;
             JsonNode entries = property.has("entries")
@@ -48,7 +52,18 @@ public interface ItemProperty {
 
         @Override
         public String getMarkdownLink(Tools5eIndex index) {
-            return name;
+            return propertyToLink.computeIfAbsent(this, p -> {
+                List<JsonNode> targets = index.elementsMatching(Tools5eIndexType.itemProperty, abbreviation.toLowerCase());
+                if (targets.isEmpty() || targets.size() > 1) {
+                    return name;
+                }
+                String key = Tools5eIndexType.itemProperty.createKey(targets.get(0));
+
+                return index.isIncluded(key)
+                        ? String.format("[%s](%s)", name,
+                                index.rulesVaultRoot() + "item-properties.md#" + index.toAnchorTag(name))
+                        : name;
+            });
         }
 
         @Override
@@ -144,8 +159,18 @@ public interface ItemProperty {
             if (rarityProperties.contains(this)) {
                 return longName;
             }
-            return String.format("[%s](%s)", longName,
-                    index.rulesVaultRoot() + "item-properties.md#" + index.toAnchorTag(longName));
+            return propertyToLink.computeIfAbsent(this, p -> {
+                List<JsonNode> targets = index.elementsMatching(Tools5eIndexType.itemProperty, encodedValue.toLowerCase());
+                if (targets.isEmpty() || targets.size() > 1) {
+                    return longName;
+                }
+                String key = Tools5eIndexType.itemProperty.createKey(targets.get(0));
+
+                return index.isIncluded(key)
+                        ? String.format("[%s](%s)", longName,
+                                index.rulesVaultRoot() + "item-properties.md#" + index.toAnchorTag(longName))
+                        : longName;
+            });
         }
 
         public static PropertyEnum fromValue(String v) {

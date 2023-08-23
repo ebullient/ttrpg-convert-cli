@@ -78,10 +78,8 @@ public interface JsonSource extends JsonTextReplacement {
         String source = SourceField.source.getTextOrEmpty(node);
 
         // entriesOtherSource handled here.
-        if (!source.isEmpty() && !cfg().sourceIncluded(source)) {
-            if (!cfg().sourceIncluded(getSources().alternateSource())) {
-                return;
-            }
+        if (!source.isEmpty() && !cfg().sourceIncluded(getSources())) {
+            return;
         }
 
         boolean pushed = parseState().push(node);
