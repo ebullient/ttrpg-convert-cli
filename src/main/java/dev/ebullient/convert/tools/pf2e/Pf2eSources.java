@@ -136,6 +136,11 @@ public class Pf2eSources extends CompendiumSources {
         return type;
     }
 
+    /** Documents that have no primary source (compositions) */
+    protected boolean isSynthetic() {
+        return type == Pf2eIndexType.syntheticGroup;
+    }
+
     public boolean fromDefaultSource() {
         if (type == Pf2eIndexType.data) {
             return true;

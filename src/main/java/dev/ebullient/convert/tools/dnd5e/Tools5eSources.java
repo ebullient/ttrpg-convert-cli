@@ -102,6 +102,11 @@ public class Tools5eSources extends CompendiumSources {
         return type;
     }
 
+    @Override
+    protected boolean isSynthetic() {
+        return type == Tools5eIndexType.syntheticGroup;
+    }
+
     public String getSourceText(boolean useSrd) {
         if (useSrd) {
             return "SRD / Basic Rules";

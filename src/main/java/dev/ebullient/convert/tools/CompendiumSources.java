@@ -12,8 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
-import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import io.quarkus.qute.TemplateData;
 
 @TemplateData
@@ -149,8 +147,9 @@ public abstract class CompendiumSources {
         TtrpgConfig.checkKnown(this.sources);
     }
 
-    boolean isSynthetic() {
-        return type == Pf2eIndexType.syntheticGroup || type == Tools5eIndexType.syntheticGroup;
+    /** Documents that have no primary source (compositions) */
+    protected boolean isSynthetic() {
+        return false;
     }
 
     protected enum Fields implements JsonNodeReader {
