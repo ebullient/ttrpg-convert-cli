@@ -264,7 +264,7 @@ public interface JsonSource extends JsonTextReplacement {
         String hitString = flattenToString(AttackFields.hitEntries.getFrom(entry), " ");
 
         text.add(String.format("%s*%s:* %s *Hit:* %s",
-                name == null ? "" : "***" + name + ".*** ",
+                isPresent(name) ? "***" + name + ".*** " : "",
                 "MW".equals(attackType) ? "Melee Weapon Attack" : "Ranged Weapon Attack",
                 atkString, hitString));
     }
@@ -301,7 +301,7 @@ public interface JsonSource extends JsonTextReplacement {
                 maybeAddBlankLine(text);
             }
             text.addAll(inner);
-        } else if (name != null) {
+        } else if (isPresent(name)) {
             maybeAddBlankLine(text);
             // strip links from heading titles. Cross-referencing headers with links is hard
             text.add(heading + " " + name.replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1"));
@@ -473,7 +473,7 @@ public interface JsonSource extends JsonTextReplacement {
         } else {
             if (id != null) {
                 insetText.add(0, "");
-                insetText.add(0, "[!quote] " + (title == null ? "..." : title));
+                insetText.add(0, "[!quote] " + (isPresent(title) ? title : "..."));
             }
             insetText.forEach(x -> text.add("> " + x));
         }
