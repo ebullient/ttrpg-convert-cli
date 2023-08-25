@@ -76,8 +76,6 @@ public class Json2QuteClass extends Json2QuteCommon {
         maybeAddBlankLine(progression);
         buildClassProgression(rootNode, progression, "classTableGroups");
 
-        appendFootnotes(text, 0);
-
         return new QuteClass(getSources(),
                 decoratedClassName,
                 getSourceText(getSources()),

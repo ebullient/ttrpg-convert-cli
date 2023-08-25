@@ -58,10 +58,10 @@ public interface JsonSource extends JsonTextReplacement {
             } else if (node.isTextual()) {
                 text.add(replaceText(node.asText()));
             } else if (node.isArray()) {
-                node.elements().forEachRemaining(f -> {
+                for (JsonNode f : iterableElements(node)) {
                     maybeAddBlankLine(text);
                     appendToText(text, f, heading);
-                });
+                }
             } else if (node.isObject()) {
                 appendObjectToText(text, node, heading);
             } else {
@@ -361,42 +361,49 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendTable(List<String> text, JsonNode tableNode) {
+        boolean pushed = parseState().pushTable(true);
+        try {
+            List<String> table = new ArrayList<>();
 
-        List<String> table = new ArrayList<>();
+            String name = SourceField.name.getTextOrEmpty(tableNode);
+            String id = SourceField.id.getTextOrEmpty(tableNode);
 
-        String name = SourceField.name.getTextOrEmpty(tableNode);
-        String id = SourceField.id.getTextOrEmpty(tableNode);
+            String blockid;
+            if (TableField.spans.getFrom(tableNode) != null || tableNode.toString().contains("multiRow")) {
+                blockid = appendHtmlTable(tableNode, table, id, name);
+            } else {
+                blockid = appendMarkdownTable(tableNode, table, id, name);
+            }
 
-        String blockid;
-        if (TableField.spans.getFrom(tableNode) != null || tableNode.toString().contains("multiRow")) {
-            blockid = appendHtmlTable(tableNode, table, id, name);
-        } else {
-            blockid = appendMarkdownTable(tableNode, table, id, name);
-        }
-
-        JsonNode intro = TableField.intro.getFrom(tableNode);
-        if (intro != null) {
+            JsonNode intro = TableField.intro.getFrom(tableNode);
+            if (intro != null) {
+                maybeAddBlankLine(text);
+                appendToText(text, intro, null);
+            }
             maybeAddBlankLine(text);
-            appendToText(text, intro, null);
-        }
-        maybeAddBlankLine(text);
 
-        text.addAll(table);
-        if (!blockid.isEmpty()) {
-            table.add("^" + blockid);
-        }
-        maybeAddBlankLine(text);
-        JsonNode footnotes = Field.footnotes.getFrom(tableNode);
-        if (footnotes != null) {
+            text.addAll(table);
+            if (!blockid.isEmpty()) {
+                table.add("^" + blockid);
+            }
             maybeAddBlankLine(text);
-            boolean pushed = parseState().push(true);
-            appendToText(text, footnotes, null);
+            JsonNode footnotes = Field.footnotes.getFrom(tableNode);
+            if (footnotes != null) {
+                maybeAddBlankLine(text);
+                boolean pushFoot = parseState().pushFootnotes(true);
+                try {
+                    appendToText(text, footnotes, null);
+                } finally {
+                    parseState().pop(pushFoot);
+                }
+            }
+            JsonNode outro = TableField.outro.getFrom(tableNode);
+            if (outro != null) {
+                maybeAddBlankLine(text);
+                appendToText(text, outro, null);
+            }
+        } finally {
             parseState().pop(pushed);
-        }
-        JsonNode outro = TableField.outro.getFrom(tableNode);
-        if (outro != null) {
-            maybeAddBlankLine(text);
-            appendToText(text, outro, null);
         }
     }
 
@@ -496,8 +503,13 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default String replaceHtmlText(JsonNode cell) {
-        return replaceText(cell.asText().trim())
-                .replaceAll("\\n", "<br/>");
+        return replaceText(cell.asText().trim()
+                .replaceAll("\\n", "<br/>"));
+    }
+
+    /** Internal */
+    default String replaceMarkdownTableText(JsonNode cell) {
+        return replaceText(cell.asText().trim());
     }
 
     /** Internal */
@@ -519,7 +531,7 @@ public interface JsonSource extends JsonTextReplacement {
 
             if (labelIdx.contains(r)) {
                 String header = streamOf(rowNode)
-                        .map(x -> replaceText(x.asText()))
+                        .map(x -> replaceMarkdownTableText(x))
                         .collect(Collectors.joining(" | "));
 
                 // make rollable dice headers
@@ -538,17 +550,9 @@ public interface JsonSource extends JsonTextReplacement {
                 }
                 table.add(header);
                 table.add(header.replaceAll("[^|]", "-"));
-            } else if (FieldValue.multiRow.isValueOfField(rowNode, SourceField.type)) {
-                TableField.rows.withArrayFrom(rowNode).forEach(mr -> {
-                    String row = "| " + streamOf(rowNode)
-                            .map(x -> replaceText(x.asText()))
-                            .collect(Collectors.joining(" | "))
-                            + " |";
-                    table.add(row);
-                });
             } else {
                 String row = "| " + streamOf(rowNode)
-                        .map(x -> replaceText(x.asText()))
+                        .map(x -> replaceMarkdownTableText(x))
                         .collect(Collectors.joining(" | "))
                         + " |";
                 table.add(row);

@@ -28,7 +28,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     Pattern linkifyPattern = Pattern.compile(
             "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|object|race|reward|sense|skill|spell|status|table|variantrule|vehicle|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
 
-    Pattern nestedDice = Pattern.compile("\\{@damage ([^{}]+(\\{@dice [^{}}]+})[^}]+)}");
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
 
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
@@ -40,8 +39,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]+)*}");
     Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
     Pattern featureSourcePattern = Pattern.compile("source=([^|}]+)");
-
-    Pattern footnoteReference = Pattern.compile("\\{@sup ([^}]+)}");
 
     Tools5eIndex index();
 
@@ -112,10 +109,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String replaceText(String input) {
-        if (input == null || input.isEmpty()) {
-            return input;
-        }
+        return replaceTokens(input, (s, b) -> this._replaceTokenText(s, b));
+    }
 
+    default String _replaceTokenText(String input, boolean nested) {
         String result = input;
 
         try {
@@ -126,15 +123,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
                     .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
                     .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
-
-            // Inside-pattern formatting (nested formatting tags)
-            result = replaceFormatting(result);
-            result = replaceFormatting(result);
-
-            result = nestedDice.matcher(result).replaceAll((match) -> {
-                String text = match.group(0);
-                return text.replaceAll("\\{@dice (" + DICE_FORMULA + ")}", "$1");
-            });
 
             // Dice roller tags; {@dice 1d2-2+2d3+5} for regular dice rolls
             // - {@dice 1d6;2d6} for multiple options;
@@ -175,9 +163,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
                 return newText + " ^[This is a homebrew addition, replacing the following: " + oldText + "]";
             });
-
-            result = footnoteReference.matcher(result)
-                    .replaceAll(this::replaceFootnoteReference);
 
             result = linkifyPattern.matcher(result)
                     .replaceAll(this::linkify);
@@ -224,6 +209,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                         .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
                         .replaceAll("\\{@cult ([^|}]+)}", "$1")
+                        // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
+                        // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
+                        .replaceAll("\\{@footnote ([^|}]+)\\|([^|}]+)\\|([^}]*)}", "$1 ^[$2, _$3_]")
+                        .replaceAll("\\{@footnote ([^|}]+)\\|([^}]*)}", "$1 ^[$2]")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@hit ([^}<]+)}", "+$1")
@@ -243,24 +232,45 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@atk mp,rp}", "*Melee or Ranged Power Attack:*")
                         .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
                         .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
-                        .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*");
+                        .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
+                        .replaceAll("\\{@color ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@b ([^}]+?)}", "**$1**")
+                        .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
+                        .replaceAll("\\{@c ([^}]+?)}", "$1")
+                        .replaceAll("\\{@center ([^}]+?)}", "$1")
+                        .replaceAll("\\{@i ([^}]+?)}", "*$1*")
+                        .replaceAll("\\{@italic ([^}]+)}", "*$1*")
+                        .replaceAll("\\{@s ([^}]+?)}", "~~$1~~")
+                        .replaceAll("\\{@strike ([^}]+)}", "~~$1~~")
+                        .replaceAll("\\{@u ([^}]+?)}", "_$1_")
+                        .replaceAll("\\{@underline ([^}]+?)}", "_$1_")
+                        .replaceAll("\\{@comic ([^}]+?)}", "$1")
+                        .replaceAll("\\{@comicH1 ([^}]+?)}", "$1")
+                        .replaceAll("\\{@comicH2 ([^}]+?)}", "$1")
+                        .replaceAll("\\{@comicH3 ([^}]+?)}", "$1")
+                        .replaceAll("\\{@comicH4 ([^}]+?)}", "$1")
+                        .replaceAll("\\{@comicNote ([^}]+?)}", "$1")
+                        .replaceAll("\\{@highlight ([^}]+?)}", "==$1==")
+                        .replaceAll("\\{@kbd ([^}]+?)}", "`$1`")
+                        .replaceAll("\\{@b}", " ")
+                        .replaceAll("\\{@i}", " ");
             } catch (Exception e) {
                 tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
             }
 
-            result = notePattern.matcher(result)
-                    .replaceAll((match) -> {
-                        List<String> text = new ArrayList<>();
-                        text.add("> [!note]");
-                        for (String line : match.group(2).split("\n")) {
-                            text.add("> " + line);
-                        }
-                        return String.join("\n", text);
-                    });
-
-            // Outside-of-pattern formatting
-            result = replaceFormatting(result);
-            result = replaceFormatting(result);
+            result = notePattern.matcher(result).replaceAll((match) -> {
+                if (nested) {
+                    return "***Note:** " + match.group(2).trim() + "*";
+                } else {
+                    List<String> text = new ArrayList<>();
+                    text.add("> [!note]");
+                    for (String line : match.group(2).split("\n")) {
+                        text.add("> " + line);
+                    }
+                    return String.join("\n", text);
+                }
+            });
 
             // after other replacements
             return result.replaceAll("\\{@adventure ([^|}]+)\\|[^}]*}", "$1");
@@ -269,35 +279,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             tui().errorf(e, "Failure replacing text: %s", e.getMessage());
         }
 
-        return input;
-    }
-
-    default String replaceFormatting(String input) {
-        try {
-            return input
-                    .replaceAll("\\{@color ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
-                    .replaceAll("\\{@b ([^}]+?)}", "**$1**")
-                    .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
-                    .replaceAll("\\{@i ([^}]+?)}", "*$1*")
-                    .replaceAll("\\{@italic ([^}]+)}", "*$1*")
-                    .replaceAll("\\{@s ([^}]+?)}", "~~$1~~")
-                    .replaceAll("\\{@strike ([^}]+)}", "~~$1~~")
-                    .replaceAll("\\{@u ([^}]+?)}", "_$1_")
-                    .replaceAll("\\{@underline ([^}]+?)}", "_$1_")
-                    .replaceAll("\\{@comic ([^}]+?)}", "$1")
-                    .replaceAll("\\{@comicH1 ([^}]+?)}", "$1")
-                    .replaceAll("\\{@comicH2 ([^}]+?)}", "$1")
-                    .replaceAll("\\{@comicH3 ([^}]+?)}", "$1")
-                    .replaceAll("\\{@comicH4 ([^}]+?)}", "$1")
-                    .replaceAll("\\{@comicNote ([^}]+?)}", "$1")
-                    .replaceAll("\\{@highlight ([^}]+?)}", "==$1==")
-                    .replaceAll("\\{@kbd ([^}]+?)}", "`$1`")
-                    .replaceAll("\\{@b}", " ")
-                    .replaceAll("\\{@i}", " ");
-        } catch (Exception e) {
-            tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
-        }
         return input;
     }
 
@@ -339,11 +320,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             dice = (value >= 0 ? "+" : "") + value;
         }
         return String.format("%s (%s)", text, dice);
-    }
-
-    default String replaceFootnoteReference(MatchResult match) {
-        return String.format("[^%s]%s", match.group(1),
-                parseState().inFootnotes() ? ": " : "");
     }
 
     default String linkifyRules(Tools5eIndexType type, String text, String rules) {

@@ -33,7 +33,6 @@ public class Json2QuteDeity extends Json2QuteBase {
         tags.add("deity", category);
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         JsonNode alignNode = Pf2eDeity.alignment.getFrom(rootNode);
         String alignment = join(", ", toAlignments(alignNode, Pf2eDeity.alignment));

@@ -35,7 +35,6 @@ public class Json2QuteSpell extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         Collection<String> traits = collectTraitsFrom(rootNode, tags);
 

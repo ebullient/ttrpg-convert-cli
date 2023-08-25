@@ -47,6 +47,7 @@ public class CommonDataTests {
 
         this.variant = variant;
         this.outputPath = TestUtils.OUTPUT_ROOT_PF2.resolve(variant.name());
+        tui.setOutputPath(outputPath);
         outputPath.toFile().mkdirs();
 
         TtrpgConfig.init(tui, Datasource.toolsPf2e);

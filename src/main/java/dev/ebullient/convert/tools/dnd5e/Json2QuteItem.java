@@ -126,7 +126,6 @@ public class Json2QuteItem extends Json2QuteCommon {
         PropertyEnum.findAdditionalProperties(getName(),
                 itemType, propertyEnums, s -> text.stream().anyMatch(l -> l.matches(s)));
 
-        appendFootnotes(text, 0);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 

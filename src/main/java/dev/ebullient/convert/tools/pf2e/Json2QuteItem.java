@@ -36,7 +36,6 @@ public class Json2QuteItem extends Json2QuteBase {
         Set<String> traits = collectTraitsFrom(rootNode, tags);
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         String duration = Pf2eItem.duration.existsIn(rootNode)
                 ? SourceField.entry.getTextOrEmpty(Pf2eItem.duration.getFrom(rootNode))

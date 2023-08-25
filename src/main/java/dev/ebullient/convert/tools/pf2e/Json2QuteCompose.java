@@ -45,7 +45,6 @@ public class Json2QuteCompose extends Json2QuteBase {
         for (JsonNode entry : nodes) {
             appendElement(entry, text, tags);
         }
-        appendFootnotes(text, 0);
 
         return new Pf2eQuteNote(type,
                 title,

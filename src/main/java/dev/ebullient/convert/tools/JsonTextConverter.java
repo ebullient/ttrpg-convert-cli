@@ -1,10 +1,12 @@
 package dev.ebullient.convert.tools;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,48 +19,10 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 
 public interface JsonTextConverter<T extends IndexType> {
-    String DICE_FORMULA = "[ +d\\d-‒]+";
+    public static String DICE_FORMULA = "[ +d\\d-‒]+";
     Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
 
     void appendToText(List<String> inner, JsonNode target, String heading);
-
-    /**
-     * Find and format footnotes referenced in the provided content
-     *
-     * @param text List of text lines (joined or not) that may contain footnotes
-     * @param count The number of footnotes found previously (to avoid duplicates)
-     * @return The number of footnotes found.
-     */
-    default int appendFootnotes(List<String> text, int count) {
-        boolean pushed = parseState().push(true);
-        try {
-            List<String> footnotes = new ArrayList<>();
-            text.replaceAll(input -> {
-                // "Footnote tags; allows a footnote to be embedded
-                // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
-                // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
-                return footnotePattern.matcher(input)
-                        .replaceAll((match) -> {
-                            int index = count + footnotes.size() + 1;
-                            String footnote = replaceText(match.group(1));
-                            String[] parts = footnote.split("\\|");
-                            footnotes.add(String.format("[^%s]: %s%s", index, parts[1],
-                                    parts.length > 2 ? " (" + parts[2] + ")" : ""));
-
-                            return String.format("%s[^%s]", parts[0], index);
-                        });
-            });
-
-            if (footnotes.size() > 0) {
-                maybeAddBlankLine(text);
-                footnotes.forEach(f -> text.add(replaceText(f)));
-
-            }
-            return count + footnotes.size();
-        } finally {
-            parseState().pop(pushed);
-        }
-    }
 
     CompendiumConfig cfg();
 
@@ -71,19 +35,19 @@ public interface JsonTextConverter<T extends IndexType> {
         if (pos >= 0) {
             diceRoll = diceRoll.substring(0, pos);
         }
-        return cfg().alwaysUseDiceRoller() && diceRoll.matches(DICE_FORMULA)
+        return cfg().alwaysUseDiceRoller() && diceRoll.matches(JsonTextConverter.DICE_FORMULA)
                 ? "`dice: " + diceRoll + "|avg` (`" + diceRoll + "`)"
                 : '`' + diceRoll + '`';
     }
 
     default String replaceWithDiceRoller(String text) {
-        return text.replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+        return text.replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
                 "*Hit:* `dice: $2|avg` (`$2`)")
-                .replaceAll("plus ([\\d]+) \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                .replaceAll("plus ([\\d]+) \\(\\{@damage (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
                         "plus `dice: $2|avg` (`$2`)")
-                .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + DICE_FORMULA + ")}\\)",
+                .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
                         "$1 `dice: $2|avg` (`$2`)")
-                .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + DICE_FORMULA + ")}\\)",
+                .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
                         "$1 `dice: $2|avg` (`$2`)")
                 .replaceAll("\\{@hit (\\d+)} to hit", "`dice: d20+$1` (+$1 to hit)")
                 .replaceAll("\\{@hit (-\\d+)} to hit", "`dice: d20-$1` (-$1 to hit)")
@@ -91,6 +55,48 @@ public interface JsonTextConverter<T extends IndexType> {
                 .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
                 .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
                 .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)");
+    }
+
+    /** Tokenizer: use a stack of StringBuilders to deal with nested tags */
+    default String replaceTokens(String input, BiFunction<String, Boolean, String> tokenResolver) {
+        if (input == null || input.isBlank()) {
+            return input;
+        }
+
+        StringBuilder out = new StringBuilder();
+        ArrayDeque<StringBuilder> stack = new ArrayDeque<>();
+        StringBuilder buffer = new StringBuilder();
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            //char c2 = i + 1 < input.length() ? input.charAt(i + 1) : NUL;
+
+            switch (c) {
+                case '{':
+                    stack.push(buffer);
+                    buffer = new StringBuilder();
+                    buffer.append(c);
+                    break;
+                case '}':
+                    buffer.append(c);
+                    String replace = tokenResolver.apply(buffer.toString(), stack.size() > 1);
+                    if (stack.isEmpty()) {
+                        tui().warnf("Mismatched braces? Found '}' with an empty stack. Input: %s", input);
+                    } else {
+                        buffer = stack.pop();
+                    }
+                    buffer.append(replace);
+                    break;
+                default:
+                    buffer.append(c);
+                    break;
+            }
+        }
+
+        if (buffer.length() > 0) {
+            out.append(buffer);
+        }
+        return out.toString();
     }
 
     default Iterable<JsonNode> iterableElements(JsonNode source) {

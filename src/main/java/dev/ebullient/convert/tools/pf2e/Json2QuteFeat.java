@@ -21,7 +21,6 @@ public class Json2QuteFeat extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         List<String> leadsTo = Pf2eFeat.leadsTo.getListOfStrings(rootNode, tui())
                 .stream()
@@ -57,7 +56,6 @@ public class Json2QuteFeat extends Json2QuteBase {
         }
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         return new QuteFeat(sources, text, tags,
                 collectTraitsFrom(rootNode, tags),

@@ -21,7 +21,6 @@ public class Json2QuteBackground extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         Pf2eBackground.boosts.getListOfStrings(rootNode, tui())
                 .stream()

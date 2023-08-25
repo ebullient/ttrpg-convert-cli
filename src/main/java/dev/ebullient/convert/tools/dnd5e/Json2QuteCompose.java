@@ -69,9 +69,8 @@ public class Json2QuteCompose extends Json2QuteCommon {
         if (type == Tools5eIndexType.itemProperty) {
             appendItemProperties(text, tags);
         } else {
-            int count = 0;
             for (JsonNode entry : nodes) {
-                count = appendElement(entry, text, tags, count);
+                appendElement(entry, text, tags);
             }
         }
 
@@ -79,7 +78,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
                 .withTargetPath(targetPath);
     }
 
-    private int appendElement(JsonNode entry, List<String> text, Tags tags, int count) {
+    private void appendElement(JsonNode entry, List<String> text, Tags tags) {
         currentSources = Tools5eSources.findOrTemporary(entry);
 
         boolean pushed = parseState().push(entry);
@@ -107,8 +106,6 @@ public class Json2QuteCompose extends Json2QuteCommon {
                     appendToText(text, m, "###");
                 }
             }
-
-            return appendFootnotes(text, count);
         } finally {
             parseState().pop(pushed);
         }

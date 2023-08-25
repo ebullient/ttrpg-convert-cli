@@ -24,7 +24,6 @@ public class Json2QuteAction extends Json2QuteBase {
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
         appendToText(text, Pf2eAction.info.getFrom(rootNode), null);
-        appendFootnotes(text, 0);
 
         ActionType actionType = Pf2eAction.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 

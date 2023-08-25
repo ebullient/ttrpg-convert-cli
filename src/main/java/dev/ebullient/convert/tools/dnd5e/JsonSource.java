@@ -743,7 +743,7 @@ public interface JsonSource extends JsonTextReplacement {
             JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
             if (footnotes != null) {
                 maybeAddBlankLine(text);
-                boolean pushF = parseState().push(true);
+                boolean pushF = parseState().pushFootnotes(true);
                 appendToText(text, footnotes, null);
                 parseState().pop(pushF);
             }

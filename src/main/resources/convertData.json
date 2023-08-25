@@ -347,8 +347,14 @@
     "fixes": {
       "adventure/adventure-lr.json": [
         {
-          "match": " \\(see the \\\\\\\"\\{@condition Bluerot\\|GoS}\\\\\\\" sidebar\\)",
+          "match": " \\(see the \\\"\\{@condition Bluerot\\|GoS}\\\" sidebar\\)",
           "replace": ""
+        }
+      ],
+      "adventure/adventure-rot.json": [
+        {
+          "match": "\\{@i \\{@i The Rise of Tiamat}.}",
+          "replace": "{@i The Rise of Tiamat}."
         }
       ],
       "class/class-artificer.json": [
@@ -484,6 +490,12 @@
       "vehicles.json"
     ],
     "fixes": {
+      "actions.json": [
+        {
+          "match": "(connecting areas \\{@b A12}} and \\{@b A22})",
+          "replace": "(connecting areas {@b A12} and {@b A22})"
+        }
+      ],
       "backgrounds/backgrounds-apg.json": [
         {
           "match": "\"\\(concentrate\\)\"",
@@ -504,10 +516,22 @@
           "replace": "\\{@class Cleric}"
         }
       ],
+      "feats/feats-apg.json": [
+        {
+          "match": "\\{@note \\{@sup 1}Mwangi Expanse, p.76}",
+          "replace": "{@sup 1}Mwangi Expanse, p.76"
+        }
+      ],
       "feats/feats-roe.json": [
         {
           "match": "\\{@condition daze}",
           "replace": "\\{@condition dazzled}"
+        }
+      ],
+      "feats/feats-som.json": [
+        {
+          "match": "Searching}}",
+          "replace": "Searching}"
         }
       ],
       "items/items-apg.json": [
@@ -580,6 +604,12 @@
         {
           "match": "\"Interact ",
           "replace": "\"{@action Interact} "
+        }
+      ],
+      "spells/spells-logm.json": [
+        {
+          "match": "the target can't recover from the condition until they are cured}",
+          "replace": "the target can't recover from the condition until they are cured."
         }
       ]
     }

@@ -26,7 +26,6 @@ public class Json2QuteArchetype extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         List<String> benefits = ArchetypeField.benefits.getListOfStrings(rootNode, tui());
         benefits.forEach(b -> tags.add("archetype", "benefit", b));

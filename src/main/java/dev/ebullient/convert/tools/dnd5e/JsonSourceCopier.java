@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -188,14 +190,12 @@ public class JsonSourceCopier implements JsonSource {
                     if (incompleteNode.has("raceName")) {
                         target.set(f, copyNode(overlayField));
                     } else {
-                        ArrayNode cpyArray = target.withArray(f);
-                        if ((overwrite != null && overwrite.has(f)) || cpyArray.isEmpty()) {
+                        ArrayNode tgtArray = target.withArray(f);
+                        if ((overwrite != null && overwrite.has(f)) || tgtArray.isEmpty()) {
                             target.set(f, copyNode(overlayField));
                         } else {
                             // usually size of one... so just append fields
-                            for (int i = 0; i < overlayField.size(); i++) {
-                                mergeFields(overlayField.get(i), (ObjectNode) cpyArray.get(i));
-                            }
+                            tgtArray.addAll((ArrayNode) copyNode(overlayField));
                         }
                     }
                     break;
@@ -360,7 +360,11 @@ public class JsonSourceCopier implements JsonSource {
     }
 
     void mergeFields(JsonNode sourceNode, ObjectNode targetNode) {
-        sourceNode.fields().forEachRemaining(f -> targetNode.set(f.getKey(), copyNode(f.getValue())));
+        Objects.requireNonNull(sourceNode);
+        Objects.requireNonNull(targetNode);
+        for (Entry<String, JsonNode> f : iterableFields(sourceNode)) {
+            targetNode.set(f.getKey(), copyNode(f.getValue()));
+        }
     }
 
     void handleModifications(String originKey, String prop, JsonNode modInfo, JsonNode target) {
@@ -839,9 +843,9 @@ public class JsonSourceCopier implements JsonSource {
             if (flags.asText().contains("i")) {
                 pFlags |= Pattern.CASE_INSENSITIVE;
             }
-            pattern = Pattern.compile(replace, pFlags);
+            pattern = Pattern.compile("\\b" + replace, pFlags);
         } else {
-            pattern = Pattern.compile(replace);
+            pattern = Pattern.compile("\\b" + replace);
         }
 
         JsonNode targetField = target.get(modFieldName);

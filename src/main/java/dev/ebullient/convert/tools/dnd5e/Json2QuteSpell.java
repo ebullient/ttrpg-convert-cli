@@ -48,7 +48,6 @@ public class Json2QuteSpell extends Json2QuteCommon {
             appendToText(text, rootNode.get("entriesHigherLevel"),
                     textContains(text, "## ") ? "##" : null);
         }
-        appendFootnotes(text, 0);
 
         return new QuteSpell(sources,
                 decoratedName,

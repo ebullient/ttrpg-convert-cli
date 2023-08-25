@@ -19,6 +19,7 @@ public class ParseState {
 
     public static class ParseStateInfo {
         boolean inFootnotes;
+        boolean inTable;
         boolean inList;
         final String listIndent;
         final String src;
@@ -34,11 +35,6 @@ public class ParseState {
 
         private ParseStateInfo(String src, int page) {
             this(src, page, "");
-        }
-
-        private ParseStateInfo(boolean inFootnotes) {
-            this(null, 0, "");
-            this.inFootnotes = inFootnotes;
         }
 
         private ParseStateInfo(String src, int page, String listIndent) {
@@ -57,6 +53,11 @@ public class ParseState {
             return this;
         }
 
+        private ParseStateInfo setInTable(boolean inTable) {
+            this.inTable = inTable;
+            return this;
+        }
+
         private static ParseStateInfo srcAndPage(ParseStateInfo prev, String src, int page) {
             if (prev == null) {
                 return new ParseState.ParseStateInfo(src, page);
@@ -66,6 +67,7 @@ public class ParseState {
                     page,
                     prev.listIndent)
                     .setInFootnotes(prev.inFootnotes)
+                    .setInTable(prev.inTable)
                     .setInList(prev.inList);
         }
 
@@ -75,15 +77,27 @@ public class ParseState {
             }
             return new ParseStateInfo(prev.src, page, prev.listIndent)
                     .setInFootnotes(prev.inFootnotes)
+                    .setInTable(prev.inTable)
                     .setInList(prev.inList);
         }
 
         private static ParseStateInfo inFootnotes(ParseStateInfo prev, boolean inFootnotes) {
             if (prev == null) {
-                return new ParseStateInfo(inFootnotes);
+                return new ParseStateInfo().setInFootnotes(inFootnotes);
+            }
+            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
+                    .setInFootnotes(inFootnotes)
+                    .setInTable(prev.inTable)
+                    .setInList(prev.inList);
+        }
+
+        private static ParseStateInfo inTable(ParseStateInfo prev, boolean inTable) {
+            if (prev == null) {
+                return new ParseStateInfo().setInTable(inTable);
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
                     .setInFootnotes(prev.inFootnotes)
+                    .setInTable(prev.inTable)
                     .setInList(prev.inList);
         }
 
@@ -93,6 +107,7 @@ public class ParseState {
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent + "    ")
                     .setInFootnotes(prev.inFootnotes)
+                    .setInTable(prev.inTable)
                     .setInList(true);
         }
 
@@ -102,6 +117,7 @@ public class ParseState {
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, value)
                     .setInFootnotes(prev.inFootnotes)
+                    .setInTable(prev.inTable)
                     .setInList(true);
         }
     }
@@ -150,8 +166,13 @@ public class ParseState {
             return false;
     }
 
-    public boolean push(boolean inFootnotes) {
+    public boolean pushFootnotes(boolean inFootnotes) {
         stack.addFirst(ParseStateInfo.inFootnotes(stack.peek(), inFootnotes));
+        return true;
+    }
+
+    public boolean pushTable(boolean inTable) {
+        stack.addFirst(ParseStateInfo.inTable(stack.peek(), inTable));
         return true;
     }
 
@@ -184,6 +205,11 @@ public class ParseState {
     public boolean inList() {
         ParseState.ParseStateInfo current = stack.peek();
         return current != null && current.inList;
+    }
+
+    public boolean inTable() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current != null && current.inTable;
     }
 
     public String sourcePageString() {

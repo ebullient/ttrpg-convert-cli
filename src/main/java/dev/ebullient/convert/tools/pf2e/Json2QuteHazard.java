@@ -25,7 +25,6 @@ public class Json2QuteHazard extends Json2QuteBase {
         List<String> text = new ArrayList<>();
 
         appendToText(text, Pf2eHazard.description.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         return new QuteHazard(sources, text, tags,
                 collectTraitsFrom(rootNode, tags),

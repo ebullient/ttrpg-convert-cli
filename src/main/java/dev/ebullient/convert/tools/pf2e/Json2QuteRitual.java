@@ -27,7 +27,6 @@ public class Json2QuteRitual extends Json2QuteSpell {
         List<String> text = new ArrayList<>();
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");
         tags.add(RITUAL_TAG, level);

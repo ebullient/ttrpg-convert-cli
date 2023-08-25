@@ -1,6 +1,7 @@
 package dev.ebullient.convert.io;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,7 +87,7 @@ public class MarkdownWriter {
                     try {
                         writeFile(new FileMap(title, fileName, dir, false), templates.renderIndex(title, value));
                     } catch (IOException ex) {
-                        throw new WrappedIOException(ex);
+                        throw new UncheckedIOException(ex);
                     }
                 });
 
@@ -99,7 +100,7 @@ public class MarkdownWriter {
             writeFile(fileMap, templates.render(qs));
             counts.compute(qs.type().name(), (k, v) -> (v == null) ? 1 : v + 1);
         } catch (IOException e) {
-            throw new WrappedIOException(e);
+            throw new UncheckedIOException(e);
         }
         return fileMap;
     }
@@ -139,7 +140,7 @@ public class MarkdownWriter {
         try {
             Files.write(target, content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new WrappedIOException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -189,13 +190,6 @@ public class MarkdownWriter {
                 return other.dir == null;
             }
             return dir.equals(other.dir);
-        }
-    }
-
-    // IOException -> RuntimeException .. for working w/in stream/function
-    public static class WrappedIOException extends RuntimeException {
-        WrappedIOException(IOException cause) {
-            super(cause);
         }
     }
 }

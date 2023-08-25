@@ -21,10 +21,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
         List<String> temptedCurse = new ArrayList<>();
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        int count = appendFootnotes(text, 0);
-
         appendToText(temptedCurse, AfflictionField.temptedCurse.getFrom(rootNode), null);
-        appendFootnotes(temptedCurse, count);
 
         String type = AfflictionField.type.getTextOrEmpty(rootNode);
         String level = AfflictionField.level.getTextOrDefault(rootNode, "1");

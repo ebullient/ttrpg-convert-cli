@@ -43,7 +43,6 @@ public class Json2QuteTrait extends Json2QuteBase {
         });
 
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         return new QuteTrait(sources, text, tags, List.of(), categories);
     }

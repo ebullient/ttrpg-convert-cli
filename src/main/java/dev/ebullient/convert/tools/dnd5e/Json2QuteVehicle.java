@@ -39,7 +39,6 @@ public class Json2QuteVehicle extends Json2QuteCommon {
         List<ImageRef> fluffImages = new ArrayList<>();
         List<String> text = getFluff(Tools5eIndexType.vehicleFluff, "##", fluffImages);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendFootnotes(text, 0);
 
         return new QuteVehicle(sources,
                 getSources().getName(),

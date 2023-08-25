@@ -50,9 +50,6 @@ public class Json2QuteBackground extends Json2QuteCommon {
                 }
             }
         }
-
-        appendFootnotes(text, 0);
-
         return new QuteBackground(sources,
                 backgroundName,
                 getSourceText(sources),

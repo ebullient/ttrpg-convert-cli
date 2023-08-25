@@ -38,7 +38,7 @@ public class Pf2eDataConvertTest {
             final Path allIndex = outputPath_pf2.resolve("all-index");
             TestUtils.deleteDir(allIndex);
 
-            List<String> args = new ArrayList<>(List.of("--index",
+            List<String> args = new ArrayList<>(List.of("--index", "--debug",
                     "-s", "ALL",
                     "-o", allIndex.toString(),
                     "-g", "pf2e",

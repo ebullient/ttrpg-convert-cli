@@ -75,13 +75,11 @@ public class Json2QuteCommon implements JsonSource {
     public String getText(String heading) {
         List<String> text = new ArrayList<>();
         appendToText(text, rootNode, heading);
-        appendFootnotes(text, 0);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
     public String getFluffDescription(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
         List<String> text = getFluff(fluffType, heading, images);
-        appendFootnotes(text, 0);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 

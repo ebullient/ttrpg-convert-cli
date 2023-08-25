@@ -48,7 +48,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
-    Pattern footnoteReference = Pattern.compile("\\{@sup ([^}]+)}");
 
     Pf2eIndex index();
 
@@ -73,6 +72,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     }
 
     default String replaceText(String input) {
+        return replaceTokens(input, (s, b) -> this._replaceTokenText(s, b));
+    }
+
+    default String _replaceTokenText(String input, boolean nested) {
         if (input == null || input.isEmpty()) {
             return input;
         }
@@ -85,6 +88,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
                     .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
                     .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
                     .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
+
+            if (parseState().inList() || parseState().inTable()) {
+                result = result.replaceAll("\\{@sup ([^}]+)}", "[^$1]");
+            } else {
+                result = result.replaceAll("\\{@sup ([^}]+)}", "[$1]: ");
+            }
 
             // TODO: review against Pf2e formatting patterns
             if (cfg().alwaysUseDiceRoller()) {
@@ -105,9 +114,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
             result = asPattern.matcher(result)
                     .replaceAll(this::replaceActionAs);
-
-            result = footnoteReference.matcher(result)
-                    .replaceAll(this::replaceFootnoteReference);
 
             result = quickRefPattern.matcher(result)
                     .replaceAll((match) -> {
@@ -141,6 +147,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
                         .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
                         .replaceAll("\\{@pf2etools ([^}|]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@Pf2eTools ([^}|]+)\\|?[^}]*}", "$1")
+                        // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
+                        // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
+                        .replaceAll("\\{@footnote ([^|}]+)\\|([^|}]+)\\|([^}]*)}", "$1 ^[$2, _$3_]")
+                        .replaceAll("\\{@footnote ([^|}]+)\\|([^}]*)}", "$1 ^[$2]")
                         .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@dc ([^}]+)}", "DC $1")
                         .replaceAll("\\{@flatDC ([^}]+)}", "$1")
@@ -176,18 +186,18 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
                     .replaceAll(this::linkify);
 
             // note pattern often wraps others. Do this one last.
-            result = notePattern.matcher(result)
-                    .replaceAll((match) -> {
-                        if (parseState().inFootnotes()) {
-                            return match.group(2);
-                        }
-                        List<String> text = new ArrayList<>();
-                        text.add("> [!pf2-note]");
-                        for (String line : match.group(2).split("\n")) {
-                            text.add("> " + line);
-                        }
-                        return String.join("\n", text);
-                    });
+            result = notePattern.matcher(result).replaceAll((match) -> {
+                if (nested) {
+                    return "***Note:** " + match.group(2).trim() + "*";
+                } else {
+                    List<String> text = new ArrayList<>();
+                    text.add("> [!pf2-note]");
+                    for (String line : match.group(2).split("\n")) {
+                        text.add("> " + line);
+                    }
+                    return String.join("\n", text);
+                }
+            });
             return result;
         } catch (IllegalArgumentException e) {
             tui().errorf(e, "Failure replacing text: %s", e.getMessage());
