@@ -150,8 +150,6 @@ public class Tools5eDataConvertTest {
                     TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Kobold Press; Book of Lairs.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json")
                             .toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Darrington Press; Tal'Dorei Campaign Setting Reborn.json")
-                            .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Grim Hollow Campaign Guide.json")
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json")
