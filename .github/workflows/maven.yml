@@ -88,17 +88,9 @@ jobs:
         run: |
           ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat
 
-  update-snapshot:
-    if: github.ref == 'refs/heads/main'
-    needs: build
-    uses: ./.github/workflows/antifreeze.yml
-    with:
-      update-snapshot-tag: true
-    secrets: inherit
-
   release:
     runs-on: ubuntu-latest
-    needs: [build, native-build, update-snapshot]
+    needs: [build, native-build]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -116,6 +108,12 @@ jobs:
           SNAPSHOT: ${{ needs.build.outputs.snapshot }}
         run: |
           ARTIFACT=${{ needs.build.outputs.artifact }}-${{ needs.build.outputs.snapshot }}-runner.jar
-
           gh release upload "${SNAPSHOT}" --clobber ./artifacts/${ARTIFACT}#${ARTIFACT}
-          gh release edit "${SNAPSHOT}"  -t "${SNAPSHOT}" --prerelease --draft=false
+
+  update-snapshot:
+    if: github.ref == 'refs/heads/main'
+    needs: release
+    uses: ./.github/workflows/antifreeze.yml
+    with:
+      update-snapshot-tag: true
+    secrets: inherit

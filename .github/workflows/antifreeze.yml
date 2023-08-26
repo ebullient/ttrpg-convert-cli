@@ -54,6 +54,8 @@ jobs:
           git tag -f $SNAPSHOT
           git push --tags
 
+          gh release edit "${SNAPSHOT}"  -t "${SNAPSHOT}" --prerelease --draft=false
+
       - name: Delete Jitpack resource
         id: jitpack-antifreeze
         env:
