@@ -15,7 +15,7 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
         Tags tags = new Tags(getSources());
 
         for (String featureType : Tools5eFields.featureType.getListOfStrings(rootNode, tui())) {
-            tags.add("optional-feature", slugify(featureType));
+            tags.add("optional-feature", featureType);
         }
 
         return new Tools5eQuteBase(getSources(),

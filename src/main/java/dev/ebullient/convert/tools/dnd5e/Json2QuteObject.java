@@ -24,10 +24,10 @@ public class Json2QuteObject extends Json2QuteMonster {
         String objectType = findObjectType();
 
         Tags tags = new Tags(getSources());
-        tags.add("object", "size", slugify(size));
-        tags.add("object", "type", slugify(objectType));
+        tags.add("object", "size", size);
+        tags.add("object", "type", objectType);
         if (creatureType != null) {
-            tags.add("object", "type", slugify(creatureType));
+            tags.add("object", "type", creatureType);
         }
 
         List<ImageRef> fluffImages = new ArrayList<>();

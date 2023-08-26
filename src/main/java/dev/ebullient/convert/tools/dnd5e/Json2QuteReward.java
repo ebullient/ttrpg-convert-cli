@@ -22,7 +22,7 @@ public class Json2QuteReward extends Json2QuteCommon {
         List<String> text = new ArrayList<>();
 
         for (String type : SourceField.type.getListOfStrings(rootNode, tui())) {
-            tags.add("reward", slugify(type));
+            tags.add("reward", type);
         }
 
         appendToText(text, rootNode.get("entries"), "##");

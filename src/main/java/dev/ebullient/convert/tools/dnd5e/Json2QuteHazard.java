@@ -23,7 +23,7 @@ public class Json2QuteHazard extends Json2QuteCommon {
 
         String hazardType = TrapHazFields.trapHazType.getTextOrNull(rootNode);
         if (hazardType != null) {
-            tags.add("hazard", slugify(hazardType));
+            tags.add("hazard", hazardType);
         }
 
         appendToText(text, rootNode.get("entries"), "##");

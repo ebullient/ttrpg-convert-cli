@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools;
 
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,20 +25,22 @@ public class Tags {
         }
     }
 
-    public void add(String... tag) {
-        tags.add(config.tagOf(tag));
+    /** Prepend configured prefix and slugify parts */
+    public void addRaw(String first, String rawValue) {
+        tags.add(config.tagOfRaw(first + "/" + rawValue));
     }
 
-    public Tags addAll(List<String> newTags) {
-        newTags.forEach(x -> add(x));
-        return this;
+    /** Prepend configured prefix and slugify parts */
+    public void add(String... tag) {
+        tags.add(config.tagOf(tag));
     }
 
     public Set<String> build() {
         return tags;
     }
 
-    public void addRaw(String first, String rawValue) {
-        tags.add(first + "/" + rawValue);
+    @Override
+    public String toString() {
+        return "Tags [tags=" + tags + "]";
     }
 }

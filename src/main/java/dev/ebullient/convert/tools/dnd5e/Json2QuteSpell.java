@@ -32,7 +32,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
         Tags tags = new Tags(getSources());
 
-        tags.add("spell", "school", slugify(school.name()));
+        tags.add("spell", "school", school.name());
         tags.add("spell", "level", (level.equals("0") ? "cantrip" : level));
         if (ritual) {
             tags.add("spell", "ritual");
@@ -259,7 +259,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     private String getClass(Tags tags, String className, String classSource, String classKey) {
-        tags.add("spell", "class", slugify(className));
+        tags.add("spell", "class", className);
         return linkOrText(
                 className,
                 classKey,
@@ -269,7 +269,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
     private String getSubclass(Tags tags, String className, String classSource, String subclassName,
             String subclassSource, String subclassKey) {
-        tags.add("spell", "class", slugify(className), slugify(subclassName));
+        tags.add("spell", "class", className, subclassName);
         return linkOrText(
                 String.format("%s (%s)", className, subclassName),
                 subclassKey,

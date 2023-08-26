@@ -58,7 +58,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     @Override
     protected QuteClass buildQuteResource() {
         Tags tags = new Tags(getSources());
-        tags.add("class", slugify(getName()));
+        tags.add("class", getName());
 
         // May have fluff text. Does not have separate fluff images
         List<String> text = getFluff(Tools5eIndexType.classFluff, "##", new ArrayList<>());
@@ -94,11 +94,10 @@ public class Json2QuteClass extends Json2QuteCommon {
             boolean pushed = parseState().push(sc.sources);
             try {
                 Tags tags = new Tags(sc.sources);
-                String tag = slugify(getName()) + "/" + slugify(sc.shortName);
-                tags.add("class", tag);
+                tags.add("class", getName(), sc.shortName);
 
-                if (tag.contains("cleric")) {
-                    tags.add("domain", tag.substring(tag.lastIndexOf("/") + 1));
+                if (tags.toString().contains("cleric")) {
+                    tags.add("domain", sc.shortName);
                 }
 
                 List<String> text = new ArrayList<>();

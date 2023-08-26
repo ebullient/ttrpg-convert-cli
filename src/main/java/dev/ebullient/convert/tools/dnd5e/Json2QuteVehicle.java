@@ -31,10 +31,10 @@ public class Json2QuteVehicle extends Json2QuteCommon {
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         Tags tags = new Tags(getSources());
-        tags.add("vehicle", "type", slugify(vehicleType.value));
+        tags.add("vehicle", "type", vehicleType.value);
 
         List<String> terrain = VehicleFields.terrain.replaceTextFromList(rootNode, index);
-        terrain.forEach(x -> tags.add("vehicle", "terrain", slugify(x)));
+        terrain.forEach(x -> tags.add("vehicle", "terrain", x));
 
         List<ImageRef> fluffImages = new ArrayList<>();
         List<String> text = getFluff(Tools5eIndexType.vehicleFluff, "##", fluffImages);
@@ -74,7 +74,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
         }
         if (Tools5eFields.size.existsIn(rootNode)) {
             String size = getSize(rootNode);
-            tags.add("vehicle", "size", slugify(size));
+            tags.add("vehicle", "size", size);
 
             return size + " vehicle" + dimensions + weight;
         } else if (!dimensions.isBlank()) {

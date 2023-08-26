@@ -24,14 +24,14 @@ public class Json2QuteDeity extends Json2QuteCommon {
 
         String pantheon = getTextOrDefault(rootNode, "pantheon", null);
         if (pantheon != null) {
-            tags.add("deity", slugify(pantheon));
+            tags.add("deity", pantheon);
         }
 
         List<String> domains = new ArrayList<>();
         if (rootNode.has("domains")) {
             rootNode.withArray("domains").forEach(d -> {
                 String domain = d.asText();
-                tags.add("domain", slugify(domain));
+                tags.add("domain", domain);
                 domains.add(domain);
             });
         }

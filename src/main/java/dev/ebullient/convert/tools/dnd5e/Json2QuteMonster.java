@@ -68,18 +68,17 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String pb = monsterPb(cr);
 
         Tags tags = new Tags(getSources());
-        tags.add("monster", "size", slugify(size));
+        tags.add("monster", "size", size);
         if (subtype == null || subtype.isEmpty()) {
-            tags.add("monster", "type", slugify(creatureType));
+            tags.add("monster", "type", creatureType);
         } else {
-            String sType = slugify(creatureType);
             for (String detail : subtype.split("\\s*,\\s*")) {
-                tags.add("monster", "type", sType, slugify(detail));
+                tags.add("monster", "type", creatureType, detail);
             }
         }
         if (!environment.isBlank()) {
             for (String env : environment.split("\\s*,\\s*")) {
-                tags.add("monster", "environment", slugify(env));
+                tags.add("monster", "environment", env);
             }
         }
 

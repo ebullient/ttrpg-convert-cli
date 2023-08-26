@@ -147,6 +147,10 @@ public class CompendiumConfig {
                 .collect(Collectors.joining("/"));
     }
 
+    public String tagOfRaw(String tag) {
+        return tagPrefix + tag;
+    }
+
     public List<String> getBooks() {
         // works for 5eTools and pf2eTools
         return books.stream()
