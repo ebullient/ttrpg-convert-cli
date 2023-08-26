@@ -215,7 +215,7 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
     ```
 
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide (all sources I own).  
-        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md). Only use sources you own.  
+        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md). Only use sources you own.  
 
     - `-c dm-sources.json` contains configuration parameters (shown in detail [below](#additional-parameters))
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) to include as well.
@@ -326,7 +326,7 @@ Lets look at each of these a bit more closely.
 
 The `from` key specifies an array of sources from which to pull data. **Please only include content from sources you own**. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.
 
-All sources are specified by an abbreviation. You *cannot* specify a source simply by its title, you must use an abbreviation. **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md). Again, **only use sources you own**.
+All sources are specified by an abbreviation. You *cannot* specify a source simply by its title, you must use an abbreviation. **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md). Again, **only use sources you own**.
 
 ### Paths
 
@@ -359,7 +359,7 @@ The main use of the `include` key is that it allows you to include a specific re
     ```
 ### Full Source Inclusion
 
-The keys `convert` or `full-source` (they are equivalent) allow you to specify complete books or adventures to import into the compendium (which will allow cross-linking, etc.). You can include such sources by either providing the full relative path to the adventure or book json file, or its abbreviation ID (as found in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/examples/config/sourceMap.md))
+The keys `convert` or `full-source` (they are equivalent) allow you to specify complete books or adventures to import into the compendium (which will allow cross-linking, etc.). You can include such sources by either providing the full relative path to the adventure or book json file, or its abbreviation ID (as found in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md))
 
 You can see both methods being used in the following example: 
 

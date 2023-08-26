@@ -132,8 +132,10 @@ public class TestUtils {
                     }
                 } else {
                     String heading = simplifyAnchor(anchor).replaceAll("%20", " ");
+                    String ghHeading = heading.replace("-", " ");
                     List<String> headings = findHeadingsIn(resource);
-                    if (!headings.contains(heading)) {
+                    // obsidian or github style anchors
+                    if (!headings.contains(heading) && !headings.contains(ghHeading)) {
                         e.add(String.format("Unresolvable anchor (%s) in %s: %s", heading, p, m.group(0)));
                     }
                 }

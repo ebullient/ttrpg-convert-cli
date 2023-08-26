@@ -163,9 +163,15 @@
                             <followSymlinks>false</followSymlinks>
                             <includes>
                                 <include>config/config*</include>
-                                <include>config/sourceMap*</include>
                                 <include>css-snippets/dnd5e-*.css</include>
                                 <include>css-snippets/pf2-*.css</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>docs</directory>
+                            <followSymlinks>false</followSymlinks>
+                            <includes>
+                                <include>sourceMap*</include>
                             </includes>
                         </fileset>
                     </filesets>

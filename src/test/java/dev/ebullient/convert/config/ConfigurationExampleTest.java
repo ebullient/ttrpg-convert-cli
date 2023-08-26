@@ -28,7 +28,7 @@ public class ConfigurationExampleTest {
     @Test
     public void exportSourceMap() throws Exception {
         Path in = Path.of("src/test/resources/sourcemap.txt");
-        Path out = Path.of("examples/config/sourceMap.md");
+        Path out = Path.of("docs/sourceMap.md");
 
         JsonNode node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/sourceMap.json"));
         JsonNode config5e = ConfigKeys.config5e.get(node);
