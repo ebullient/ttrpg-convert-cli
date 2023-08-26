@@ -63,7 +63,7 @@ Notes:
     If you want the latest _unreleased snapshot_ (may not match this doc!): 
 
     ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://jitpack.io/dev/ebullient/ttrpg-convert-cli/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar
     ```
 
     There may be a pause if you download the snapshot; it is rebuilt on demand.
