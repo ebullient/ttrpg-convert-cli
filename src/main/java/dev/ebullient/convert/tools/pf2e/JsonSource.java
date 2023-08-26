@@ -361,7 +361,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendTable(List<String> text, JsonNode tableNode) {
-        boolean pushed = parseState().pushTable(true);
+        boolean pushed = parseState().push(tableNode);
         try {
             List<String> table = new ArrayList<>();
 
@@ -409,96 +409,101 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default String appendHtmlTable(JsonNode tableNode, List<String> table, String id, String name) {
-        ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
-        JsonNode colStyles = TableField.colStyles.getFrom(tableNode);
-        int numCols = colStyles != null
-                ? colStyles.size()
-                : TableField.rows.streamOf(tableNode)
-                        .map(JsonNode::size)
-                        .max(Integer::compare).get();
+        boolean pushed = parseState().pushHtmlTable(true);
+        try {
+            ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
+            JsonNode colStyles = TableField.colStyles.getFrom(tableNode);
+            int numCols = colStyles != null
+                    ? colStyles.size()
+                    : TableField.rows.streamOf(tableNode)
+                            .map(JsonNode::size)
+                            .max(Integer::compare).get();
 
-        ArrayNode spans = TableField.spans.withArrayFrom(tableNode);
-        int spanIdx = 0;
+            ArrayNode spans = TableField.spans.withArrayFrom(tableNode);
+            int spanIdx = 0;
 
-        List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
-        if (labelIdx == null) {
-            labelIdx = List.of(0);
-        }
-
-        String blockid = slugify(id);
-        if (!name.isEmpty()) {
-            blockid = slugify(name + " " + id);
-        }
-
-        table.add("<table>");
-        for (int r = 0; r < rows.size(); r++) {
-            JsonNode rowNode = rows.get(r);
-            int cols = rowNode.size(); // varies by row
-
-            if (FieldValue.multiRow.isValueOfField(rowNode, SourceField.type)) {
-                ArrayNode rows2 = TableField.rows.withArrayFrom(rowNode);
-                List<List<String>> multicol = new ArrayList<>();
-                for (int r2 = 0; r2 < rows2.size(); r2++) {
-                    ArrayNode row = (ArrayNode) rows2.get(r2);
-                    for (int c = 0; c < row.size(); c++) {
-                        if (multicol.size() <= c) {
-                            multicol.add(new ArrayList<>());
-                        }
-                        multicol.get(c).add(replaceHtmlText(row.get(c)));
-                    }
-                }
-                table.add("<tr>");
-                table.add("  <td>"
-                        + multicol.stream()
-                                .map(x -> String.join("<br />", x))
-                                .collect(Collectors.joining("</td>\n  <td>"))
-                        + "</td>");
-                table.add("</tr>");
-            } else if (cols != numCols) {
-                String cellFormat = labelIdx.contains(r)
-                        ? "  <th colspan=\"%s\">%s</th>"
-                        : "  <td colspan=\"%s\">%s</td>";
-
-                ArrayNode spanSizes = (ArrayNode) spans.get(spanIdx);
-                int last = 0;
-                table.add("<tr>");
-
-                for (int i = 0; i < cols; i++) {
-                    ArrayNode colSpan = (ArrayNode) spanSizes.get(i);
-                    JsonNode cell = rowNode.get(i);
-
-                    int start = colSpan.get(0).asInt();
-                    int end = colSpan.get(1).asInt();
-
-                    if (i == 0 && start > 1) {
-                        table.add(String.format(cellFormat, start, ""));
-                    } else {
-                        table.add(String.format(cellFormat,
-                                end - last, replaceHtmlText(cell)));
-                    }
-                    last = end;
-                }
-                table.add("</tr>");
-                spanIdx++;
-            } else {
-                table.add("<tr>");
-                if (labelIdx.contains(r)) {
-                    table.add("  <th>" + streamOf(rowNode)
-                            .map(this::replaceHtmlText)
-                            .collect(Collectors.joining("</th>\n  <th>"))
-                            + "</th>");
-                } else {
-                    table.add("  <td>" + streamOf(rowNode)
-                            .map(this::replaceHtmlText)
-                            .collect(Collectors.joining("</td>\n  <td>"))
-                            + "</td>");
-                }
-                table.add("</tr>");
+            List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
+            if (labelIdx == null) {
+                labelIdx = List.of(0);
             }
-        }
-        table.add("</table>");
 
-        return blockid;
+            String blockid = slugify(id);
+            if (!name.isEmpty()) {
+                blockid = slugify(name + " " + id);
+            }
+
+            table.add("<table>");
+            for (int r = 0; r < rows.size(); r++) {
+                JsonNode rowNode = rows.get(r);
+                int cols = rowNode.size(); // varies by row
+
+                if (FieldValue.multiRow.isValueOfField(rowNode, SourceField.type)) {
+                    ArrayNode rows2 = TableField.rows.withArrayFrom(rowNode);
+                    List<List<String>> multicol = new ArrayList<>();
+                    for (int r2 = 0; r2 < rows2.size(); r2++) {
+                        ArrayNode row = (ArrayNode) rows2.get(r2);
+                        for (int c = 0; c < row.size(); c++) {
+                            if (multicol.size() <= c) {
+                                multicol.add(new ArrayList<>());
+                            }
+                            multicol.get(c).add(replaceHtmlText(row.get(c)));
+                        }
+                    }
+                    table.add("<tr>");
+                    table.add("  <td>"
+                            + multicol.stream()
+                                    .map(x -> String.join("<br />", x))
+                                    .collect(Collectors.joining("</td>\n  <td>"))
+                            + "</td>");
+                    table.add("</tr>");
+                } else if (cols != numCols) {
+                    String cellFormat = labelIdx.contains(r)
+                            ? "  <th colspan=\"%s\">%s</th>"
+                            : "  <td colspan=\"%s\">%s</td>";
+
+                    ArrayNode spanSizes = (ArrayNode) spans.get(spanIdx);
+                    int last = 0;
+                    table.add("<tr>");
+
+                    for (int i = 0; i < cols; i++) {
+                        ArrayNode colSpan = (ArrayNode) spanSizes.get(i);
+                        JsonNode cell = rowNode.get(i);
+
+                        int start = colSpan.get(0).asInt();
+                        int end = colSpan.get(1).asInt();
+
+                        if (i == 0 && start > 1) {
+                            table.add(String.format(cellFormat, start, ""));
+                        } else {
+                            table.add(String.format(cellFormat,
+                                    end - last, replaceHtmlText(cell)));
+                        }
+                        last = end;
+                    }
+                    table.add("</tr>");
+                    spanIdx++;
+                } else {
+                    table.add("<tr>");
+                    if (labelIdx.contains(r)) {
+                        table.add("  <th>" + streamOf(rowNode)
+                                .map(this::replaceHtmlText)
+                                .collect(Collectors.joining("</th>\n  <th>"))
+                                + "</th>");
+                    } else {
+                        table.add("  <td>" + streamOf(rowNode)
+                                .map(this::replaceHtmlText)
+                                .collect(Collectors.joining("</td>\n  <td>"))
+                                + "</td>");
+                    }
+                    table.add("</tr>");
+                }
+            }
+            table.add("</table>");
+
+            return blockid;
+        } finally {
+            parseState().pop(pushed);
+        }
     }
 
     /** Internal */
@@ -514,51 +519,56 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default String appendMarkdownTable(JsonNode tableNode, List<String> table, String id, String name) {
-        ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
-        List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
+        boolean pushed = parseState().pushMarkdownTable(true);
+        try {
+            ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
+            List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
 
-        String blockid = slugify(id);
-        if (!name.isEmpty()) {
-            blockid = slugify(name + " " + id);
-        }
-
-        if (labelIdx == null) {
-            labelIdx = List.of(0);
-        }
-
-        for (int r = 0; r < rows.size(); r++) {
-            JsonNode rowNode = rows.get(r);
-
-            if (labelIdx.contains(r)) {
-                String header = streamOf(rowNode)
-                        .map(x -> replaceMarkdownTableText(x))
-                        .collect(Collectors.joining(" | "));
-
-                // make rollable dice headers
-                header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
-
-                if (r == 0 && blockid.isBlank()) {
-                    blockid = slugify(header.replaceAll("d\\d+", "")
-                            .replace("|", "")
-                            .replaceAll("\\s+", " ")
-                            .trim());
-                } else if (r != 0) {
-                    if (!blockid.isEmpty()) {
-                        table.add("^" + blockid + "-" + r);
-                    }
-                    table.add("");
-                }
-                table.add(header);
-                table.add(header.replaceAll("[^|]", "-"));
-            } else {
-                String row = "| " + streamOf(rowNode)
-                        .map(x -> replaceMarkdownTableText(x))
-                        .collect(Collectors.joining(" | "))
-                        + " |";
-                table.add(row);
+            String blockid = slugify(id);
+            if (!name.isEmpty()) {
+                blockid = slugify(name + " " + id);
             }
+
+            if (labelIdx == null) {
+                labelIdx = List.of(0);
+            }
+
+            for (int r = 0; r < rows.size(); r++) {
+                JsonNode rowNode = rows.get(r);
+
+                if (labelIdx.contains(r)) {
+                    String header = streamOf(rowNode)
+                            .map(x -> replaceMarkdownTableText(x))
+                            .collect(Collectors.joining(" | "));
+
+                    // make rollable dice headers
+                    header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
+
+                    if (r == 0 && blockid.isBlank()) {
+                        blockid = slugify(header.replaceAll("d\\d+", "")
+                                .replace("|", "")
+                                .replaceAll("\\s+", " ")
+                                .trim());
+                    } else if (r != 0) {
+                        if (!blockid.isEmpty()) {
+                            table.add("^" + blockid + "-" + r);
+                        }
+                        table.add("");
+                    }
+                    table.add(header);
+                    table.add(header.replaceAll("[^|]", "-"));
+                } else {
+                    String row = "| " + streamOf(rowNode)
+                            .map(x -> replaceMarkdownTableText(x))
+                            .collect(Collectors.joining(" | "))
+                            + " |";
+                    table.add(row);
+                }
+            }
+            return blockid;
+        } finally {
+            parseState().pop(pushed);
         }
-        return blockid;
     }
 
     /** Internal */

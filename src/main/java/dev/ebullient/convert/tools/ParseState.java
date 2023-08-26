@@ -19,7 +19,8 @@ public class ParseState {
 
     public static class ParseStateInfo {
         boolean inFootnotes;
-        boolean inTable;
+        boolean inHtmlTable;
+        boolean inMarkdownTable;
         boolean inList;
         final String listIndent;
         final String src;
@@ -53,8 +54,13 @@ public class ParseState {
             return this;
         }
 
-        private ParseStateInfo setInTable(boolean inTable) {
-            this.inTable = inTable;
+        private ParseStateInfo setInHtmlTable(boolean inTable) {
+            this.inHtmlTable = inTable;
+            return this;
+        }
+
+        private ParseStateInfo setInMarkdownTable(boolean inTable) {
+            this.inMarkdownTable = inTable;
             return this;
         }
 
@@ -67,7 +73,8 @@ public class ParseState {
                     page,
                     prev.listIndent)
                     .setInFootnotes(prev.inFootnotes)
-                    .setInTable(prev.inTable)
+                    .setInHtmlTable(prev.inHtmlTable)
+                    .setInMarkdownTable(prev.inMarkdownTable)
                     .setInList(prev.inList);
         }
 
@@ -77,7 +84,8 @@ public class ParseState {
             }
             return new ParseStateInfo(prev.src, page, prev.listIndent)
                     .setInFootnotes(prev.inFootnotes)
-                    .setInTable(prev.inTable)
+                    .setInHtmlTable(prev.inHtmlTable)
+                    .setInMarkdownTable(prev.inMarkdownTable)
                     .setInList(prev.inList);
         }
 
@@ -87,17 +95,32 @@ public class ParseState {
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
                     .setInFootnotes(inFootnotes)
-                    .setInTable(prev.inTable)
+                    .setInHtmlTable(prev.inHtmlTable)
+                    .setInMarkdownTable(prev.inMarkdownTable)
                     .setInList(prev.inList);
         }
 
-        private static ParseStateInfo inTable(ParseStateInfo prev, boolean inTable) {
+        private static ParseStateInfo inHtmlTable(ParseStateInfo prev, boolean inHtmlTable) {
             if (prev == null) {
-                return new ParseStateInfo().setInTable(inTable);
+                return new ParseStateInfo().setInHtmlTable(inHtmlTable);
+
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
                     .setInFootnotes(prev.inFootnotes)
-                    .setInTable(prev.inTable)
+                    .setInHtmlTable(inHtmlTable)
+                    .setInMarkdownTable(prev.inMarkdownTable)
+                    .setInList(prev.inList);
+        }
+
+        private static ParseStateInfo inMarkdownTable(ParseStateInfo prev, boolean inMarkdownTable) {
+            if (prev == null) {
+                return new ParseStateInfo().setInMarkdownTable(inMarkdownTable);
+
+            }
+            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
+                    .setInFootnotes(prev.inFootnotes)
+                    .setInHtmlTable(prev.inHtmlTable)
+                    .setInMarkdownTable(inMarkdownTable)
                     .setInList(prev.inList);
         }
 
@@ -107,7 +130,8 @@ public class ParseState {
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent + "    ")
                     .setInFootnotes(prev.inFootnotes)
-                    .setInTable(prev.inTable)
+                    .setInHtmlTable(prev.inHtmlTable)
+                    .setInMarkdownTable(prev.inMarkdownTable)
                     .setInList(true);
         }
 
@@ -117,7 +141,8 @@ public class ParseState {
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, value)
                     .setInFootnotes(prev.inFootnotes)
-                    .setInTable(prev.inTable)
+                    .setInHtmlTable(prev.inHtmlTable)
+                    .setInMarkdownTable(prev.inMarkdownTable)
                     .setInList(true);
         }
     }
@@ -171,8 +196,13 @@ public class ParseState {
         return true;
     }
 
-    public boolean pushTable(boolean inTable) {
-        stack.addFirst(ParseStateInfo.inTable(stack.peek(), inTable));
+    public boolean pushHtmlTable(boolean inTable) {
+        stack.addFirst(ParseStateInfo.inHtmlTable(stack.peek(), inTable));
+        return true;
+    }
+
+    public boolean pushMarkdownTable(boolean inTable) {
+        stack.addFirst(ParseStateInfo.inMarkdownTable(stack.peek(), inTable));
         return true;
     }
 
@@ -207,9 +237,19 @@ public class ParseState {
         return current != null && current.inList;
     }
 
+    public boolean inHtmlTable() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current != null && current.inHtmlTable;
+    }
+
+    public boolean inMarkdownTable() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current != null && current.inMarkdownTable;
+    }
+
     public boolean inTable() {
         ParseState.ParseStateInfo current = stack.peek();
-        return current != null && current.inTable;
+        return current != null && (current.inHtmlTable || current.inMarkdownTable);
     }
 
     public String sourcePageString() {

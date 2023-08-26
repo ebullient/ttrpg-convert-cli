@@ -31,30 +31,29 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String formatDice(String diceRoll) {
+        // needs to be escaped: \\ to escape the \\ so it is preserved in the output
+        String avg = parseState().inMarkdownTable() ? "\\\\|avg" : "|avg";
         int pos = diceRoll.indexOf(";");
         if (pos >= 0) {
             diceRoll = diceRoll.substring(0, pos);
         }
         return cfg().alwaysUseDiceRoller() && diceRoll.matches(JsonTextConverter.DICE_FORMULA)
-                ? "`dice: " + diceRoll + "|avg` (`" + diceRoll + "`)"
+                ? "`dice: " + diceRoll + avg + "` (`" + diceRoll + "`)"
                 : '`' + diceRoll + '`';
     }
 
     default String replaceWithDiceRoller(String text) {
-        return text.replaceAll("\\{@h}([ \\d]+) \\(\\{@damage (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
-                "*Hit:* `dice: $2|avg` (`$2`)")
-                .replaceAll("plus ([\\d]+) \\(\\{@damage (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
-                        "plus `dice: $2|avg` (`$2`)")
-                .replaceAll("(takes?) [\\d]+ \\(\\{@damage (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
-                        "$1 `dice: $2|avg` (`$2`)")
-                .replaceAll("(takes?) [\\d]+ \\(\\{@dice (" + JsonTextConverter.DICE_FORMULA + ")}\\)",
-                        "$1 `dice: $2|avg` (`$2`)")
-                .replaceAll("\\{@hit (\\d+)} to hit", "`dice: d20+$1` (+$1 to hit)")
-                .replaceAll("\\{@hit (-\\d+)} to hit", "`dice: d20-$1` (-$1 to hit)")
+        return text
                 .replaceAll("\\{@hit (\\d+)}", "`dice: d20+$1` (+$1)")
                 .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
                 .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
                 .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)");
+    }
+
+    default String simplifyFormattedDiceText(String text) {
+        return text
+                .replaceAll("` \\((" + JsonTextConverter.DICE_FORMULA + ")\\) to hit", "` ($1 to hit)")
+                .replaceAll("\\d+ \\((`dice: [^|]+\\?\\|avg` \\([^)]+\\))\\)", "$1");
     }
 
     /** Tokenizer: use a stack of StringBuilders to deal with nested tags */
@@ -66,6 +65,7 @@ public interface JsonTextConverter<T extends IndexType> {
         StringBuilder out = new StringBuilder();
         ArrayDeque<StringBuilder> stack = new ArrayDeque<>();
         StringBuilder buffer = new StringBuilder();
+        boolean foundDice = false;
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -80,6 +80,7 @@ public interface JsonTextConverter<T extends IndexType> {
                 case '}':
                     buffer.append(c);
                     String replace = tokenResolver.apply(buffer.toString(), stack.size() > 1);
+                    foundDice |= replace.contains("`dice:");
                     if (stack.isEmpty()) {
                         tui().warnf("Mismatched braces? Found '}' with an empty stack. Input: %s", input);
                     } else {
@@ -96,7 +97,9 @@ public interface JsonTextConverter<T extends IndexType> {
         if (buffer.length() > 0) {
             out.append(buffer);
         }
-        return out.toString();
+        return foundDice
+                ? simplifyFormattedDiceText(out.toString())
+                : out.toString();
     }
 
     default Iterable<JsonNode> iterableElements(JsonNode source) {

@@ -669,60 +669,64 @@ public interface JsonSource extends JsonTextReplacement {
                 return;
             }
 
-            if (TableFields.colLabels.existsIn(tableNode)) {
-                header = String.join(" | ", TableFields.colLabels.replaceTextFromList(tableNode, this));
+            boolean pushTable = parseState().pushMarkdownTable(true);
+            try {
+                if (TableFields.colLabels.existsIn(tableNode)) {
+                    header = String.join(" | ", TableFields.colLabels.replaceTextFromList(tableNode, this));
 
-                blockid = slugify(header.replaceAll("d\\d+", "")
-                        .replace("|", "")
-                        .replaceAll("\\s+", " ")
-                        .trim());
-            } else if (TableFields.colStyles.existsIn(tableNode)) {
-                header = TableFields.colStyles.getListOfStrings(tableNode, tui()).stream()
-                        .map(x -> "  ")
-                        .collect(Collectors.joining(" | "));
-            } else {
-                int length = TableFields.rows.size(tableNode);
-                String[] array = new String[length];
-                Arrays.fill(array, " ");
-                header = "|" + String.join(" | ", array) + " |";
-            }
-
-            for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
-                JsonNode cells;
-                if ("row".equals(TableFields.type.getTextOrNull(r))) {
-                    cells = TableFields.row.getFrom(r);
+                    blockid = slugify(header.replaceAll("d\\d+", "")
+                            .replace("|", "")
+                            .replaceAll("\\s+", " ")
+                            .trim());
+                } else if (TableFields.colStyles.existsIn(tableNode)) {
+                    header = TableFields.colStyles.getListOfStrings(tableNode, tui()).stream()
+                            .map(x -> "  ")
+                            .collect(Collectors.joining(" | "));
                 } else {
-                    cells = r;
+                    int length = TableFields.rows.size(tableNode);
+                    String[] array = new String[length];
+                    Arrays.fill(array, " ");
+                    header = "|" + String.join(" | ", array) + " |";
                 }
 
-                String row = "| " + streamOf(cells)
-                        .map(x -> {
-                            JsonNode roll = RollFields.roll.getFrom(x);
-                            if (roll != null) {
-                                if (RollFields.exact.existsIn(roll)) {
-                                    return RollFields.exact.getFrom(roll);
-                                }
-                                return new TextNode(
-                                        RollFields.min.getTextOrEmpty(roll) + "-" + RollFields.max.getTextOrEmpty(roll));
+                for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
+                    JsonNode cells;
+                    if ("row".equals(TableFields.type.getTextOrNull(r))) {
+                        cells = TableFields.row.getFrom(r);
+                    } else {
+                        cells = r;
+                    }
+
+                    String row = "| " + streamOf(cells).map(x -> {
+                        JsonNode roll = RollFields.roll.getFrom(x);
+                        if (roll != null) {
+                            if (RollFields.exact.existsIn(roll)) {
+                                return RollFields.exact.getFrom(roll);
                             }
-                            return x;
-                        })
-                        .map(x -> flattenToString(x).replace("\n", "<br />"))
-                        .collect(Collectors.joining(" | ")) + " |";
-                table.add(row);
-            }
+                            return new TextNode(
+                                    RollFields.min.getTextOrEmpty(roll) + "-" + RollFields.max.getTextOrEmpty(roll));
+                        }
+                        return x;
+                    })
+                            .map(x -> flattenToString(x).replace("\n", "<br />"))
+                            .collect(Collectors.joining(" | ")) + " |";
+                    table.add(row);
+                }
 
-            header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
-            table.add(0, header.replaceAll("[^|]", "-"));
-            table.add(0, header);
+                header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
+                table.add(0, header.replaceAll("[^|]", "-"));
+                table.add(0, header);
 
-            if (!caption.isBlank()) {
-                table.add(0, "");
-                table.add(0, "**" + caption + "**");
-                blockid = slugify(caption);
-            }
-            if (!blockid.isBlank()) {
-                table.add("^" + blockid);
+                if (!caption.isBlank()) {
+                    table.add(0, "");
+                    table.add(0, "**" + caption + "**");
+                    blockid = slugify(caption);
+                }
+                if (!blockid.isBlank()) {
+                    table.add("^" + blockid);
+                }
+            } finally {
+                parseState().pop(pushTable);
             }
 
             switch (blockid) {

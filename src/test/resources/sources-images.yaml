@@ -9,3 +9,4 @@ template:
   race: "examples/templates/tools5e/images-race2md.txt"
   spell: "examples/templates/tools5e/images-spell2md.txt"
   vehicle: "examples/templates/tools5e/images-vehicle2md.txt"
+useDiceRoller: true
