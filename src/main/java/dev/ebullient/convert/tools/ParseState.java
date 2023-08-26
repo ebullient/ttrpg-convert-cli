@@ -5,6 +5,7 @@ import java.util.Deque;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
@@ -266,8 +267,16 @@ public class ParseState {
         if (current == null || current.page == 0) {
             return "";
         }
+        return String.format(formatString, current.src, current.page);
+    }
+
+    public String longSourcePageString(String formatString) {
+        ParseState.ParseStateInfo current = stack.peek();
+        if (current == null || current.page == 0) {
+            return "";
+        }
         return String.format(formatString,
-                current.src, current.page);
+                TtrpgConfig.sourceToLongName(current.src), current.page);
     }
 
     public String getSource() {

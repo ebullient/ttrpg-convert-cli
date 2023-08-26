@@ -131,7 +131,7 @@ public class Tools5eSources extends CompendiumSources {
     @Override
     protected String findSourceText(IndexType type, JsonNode jsonElement) {
         if (type == Tools5eIndexType.syntheticGroup) {
-            return this.key.replaceAll(".*\\|([^|]+)$", "$1");
+            return this.key.replaceAll(".*\\|([^|]+)\\|", "$1");
         }
         String srcText = super.findSourceText(type, jsonElement);
 

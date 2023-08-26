@@ -100,27 +100,25 @@ public class Json2QuteCommon implements JsonSource {
         }
 
         if (fluffNode != null) {
-            if (fluffNode.isArray()) {
-                for (JsonNode f : iterableElements(fluffNode)) {
-                    unpackFluffNode(fluffType, f, text, heading, images);
-                }
-            } else {
-                unpackFluffNode(fluffType, fluffNode, text, heading, images);
-            }
+            unpackFluffNode(fluffType, fluffNode, text, heading, images);
         }
         return text;
     }
 
     public void unpackFluffNode(Tools5eIndexType fluffType, JsonNode fluffNode, List<String> text, String heading,
             List<ImageRef> images) {
-        if (fluffNode.has("entries")) {
-            boolean pushed = parseState().push(getSources(), fluffNode);
-            try {
+
+        boolean pushed = parseState().push(getSources(), fluffNode);
+        try {
+            if (fluffNode.isArray()) {
                 appendToText(text, fluffNode, heading);
-            } finally {
-                parseState().pop(pushed);
+            } else {
+                appendToText(text, SourceField.entries.getFrom(fluffNode), heading);
             }
+        } finally {
+            parseState().pop(pushed);
         }
+
         getImages(fluffNode.get("images"), images);
     }
 

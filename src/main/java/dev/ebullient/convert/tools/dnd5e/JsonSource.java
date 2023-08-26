@@ -85,7 +85,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String getSourceText(ParseState parseState) {
-        return parseState().sourcePageString("_Source: %s_");
+        return parseState().longSourcePageString("_Source: %s_");
     }
 
     default String getSourceText(Tools5eSources currentSource) {
@@ -306,7 +306,7 @@ public interface JsonSource extends JsonTextReplacement {
             // strip links from heading titles. Cross-referencing headers with links is hard
             text.add(heading + " " + name.replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1"));
             if (index().differentSource(getSources(), parseState().getSource())) {
-                text.add(getSourceText(entryNode));
+                text.add(getSourceText(parseState()));
             }
             text.add("");
             appendToText(text, SourceField.entries.getFrom(entryNode), "#" + heading);
