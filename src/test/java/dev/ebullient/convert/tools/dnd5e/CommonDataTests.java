@@ -276,7 +276,7 @@ public class CommonDataTests {
                 }
 
                 for (String l : content.subList(1, content.size())) {
-                    if (l.equals("cssclass: json5e-note")) {
+                    if (l.equals("cssclasses: json5e-note")) {
                         index = true;
                     } else if (l.equals("statblock: true")) {
                         found = true;

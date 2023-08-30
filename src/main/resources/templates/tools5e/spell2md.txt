@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: json5e-spell
+cssclasses: json5e-spell
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}

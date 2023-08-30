@@ -1,5 +1,5 @@
 ---
-cssclass: json5e-monster
+cssclasses: json5e-monster
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}

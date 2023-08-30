@@ -1,6 +1,6 @@
 ---
 obsidianUIMode: preview
-cssclass: pf2e,pf2e-hazard
+cssclasses: pf2e,pf2e-hazard
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}
