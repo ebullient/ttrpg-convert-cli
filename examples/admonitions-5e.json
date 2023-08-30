@@ -31,5 +31,17 @@
     "injectColor": false,
     "noTitle": true,
     "copy": false
+  },
+  {
+    "type": "readaloud",
+    "icon": {
+      "name": "book-reader",
+      "type": "font-awesome"
+    },
+    "title": "Read Aloud",
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
   }
 ]

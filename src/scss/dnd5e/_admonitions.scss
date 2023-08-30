@@ -30,6 +30,7 @@ body {
 .callout[data-callout="npc"] {
   --callout-color: var(--admonition-npc);
 }
+.callout[data-callout="readaloud"],
 .callout[data-callout="scene"] {
   --callout-color: var(--admonition-scene);
 }

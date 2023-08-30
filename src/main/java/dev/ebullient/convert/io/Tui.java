@@ -331,7 +331,7 @@ public class Tui {
 
                 // If the file is still not found, bail..
                 if (sourceRoot.isEmpty()) {
-                    errorf("Unable to find image for %s", image.sourcePath());
+                    errorf("Unable to find image '%s'", image.sourcePath());
                     continue;
                 }
             }

@@ -175,7 +175,7 @@ public interface JsonSource extends JsonTextReplacement {
                         appendToText(inner, SourceField.entries.getFrom(node), null);
                         text.add(String.join("", inner));
                     }
-                    case inset, insetReadaloud -> appendInset(text, node);
+                    case inset, insetReadaloud -> appendInset(type, text, node);
                     case link -> appendLink(text, node);
                     case list -> {
                         String style = Tools5eFields.style.getTextOrEmpty(node);
@@ -447,7 +447,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    default void appendInset(List<String> text, JsonNode entry) {
+    default void appendInset(AppendTypeValue type, List<String> text, JsonNode entry) {
         List<String> insetText = new ArrayList<>();
         appendToText(insetText, SourceField.entries.getFrom(entry), null);
         if (insetText.isEmpty()) {
@@ -472,13 +472,14 @@ public interface JsonSource extends JsonTextReplacement {
             text.addAll(insetText);
         } else {
             if (id != null) {
+                String admonition = type == AppendTypeValue.insetReadaloud ? "[!readaloud] " : "[!note] ";
                 insetText.add(0, "");
-                insetText.add(0, "[!quote] " + (isPresent(title) ? title : "..."));
+                insetText.add(0, admonition + (isPresent(title) ? title : ""));
             }
             insetText.forEach(x -> text.add("> " + x));
         }
 
-        if (id != null) {
+        if (isPresent(id)) {
             text.add("^" + slugify(id));
         }
     }
