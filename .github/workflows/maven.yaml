@@ -1,0 +1,114 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/maven.yml
+      - .github/project.yml
+      - "**.xml"
+      - "*.yml"
+      - "src/**"
+      - "ide-config"
+
+env:
+  JAVA_VERSION: 17
+  GRAALVM_DIST: graalvm-community
+  JAVA_DISTRO: temurin
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      snapshot: ${{ steps.metadata.outputs.snapshot }}
+      artifact: ${{ steps.metadata.outputs.artifact }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: yq - portable yaml processor
+        uses: mikefarah/yq@v4.35.1
+
+      - name: Project metadata
+        id: metadata
+        run: |
+          SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
+          ARTIFACT=$(yq '.jitpack.artifact' .github/project.yml)
+          echo "snapshot=${SNAPSHOT}" >> $GITHUB_OUTPUT
+          echo "artifact=${ARTIFACT}" >> $GITHUB_OUTPUT
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+          cache: maven
+
+      - name: Build with Maven
+        id: mvn-build
+        run: |
+          ./mvnw -B -ntp formatter:validate verify
+
+      - name: Upload ${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.snapshot }}-runner.jar
+        uses: actions/upload-artifact@v3
+        id: upload-jar
+        with:
+          name: artifacts
+          path: target/${{ steps.metadata.outputs.artifact }}-${{ steps.metadata.outputs.snapshot }}-runner.jar
+
+  native-build:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: ${{ env.GRAALVM_DIST }}
+          java-version: ${{ env.JAVA_VERSION }}
+          components: "native-image"
+          cache: 'maven'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and run in native mode
+        id: mvn-native-build
+        env:
+          MAVEN_OPTS: "-Xmx1g"
+        run: |
+          ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build, native-build]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: 'main'
+
+      - name: Download all workflow run artifacts
+        id: download
+        uses: actions/download-artifact@v3
+
+      - name: Update release with snapshot artifact
+        id: mvn-release-snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAPSHOT: ${{ needs.build.outputs.snapshot }}
+        run: |
+          ARTIFACT=${{ needs.build.outputs.artifact }}-${{ needs.build.outputs.snapshot }}-runner.jar
+          gh release upload "${SNAPSHOT}" --clobber ./artifacts/${ARTIFACT}#${ARTIFACT}
+
+  update-snapshot:
+    if: github.ref == 'refs/heads/main'
+    needs: release
+    uses: ./.github/workflows/antifreeze.yml
+    with:
+      update-snapshot-tag: true
+    secrets: inherit
