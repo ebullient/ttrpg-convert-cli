@@ -1,7 +1,7 @@
 # TTRPG convert CLI
 ![GitHub all releases](https://img.shields.io/github/downloads/ebullient/ttrpg-convert-cli/total?color=success)
 
-The tool formally known as Json 5e convert CLI.
+The tool formerly known as Json 5e convert CLI.
 
 CLI to convert 5eTools (🚧 and Pf2eTools) JSON into crosslinked, tagged, and formatted (with templates) markdown for use with [Obsidian.md](https://obsidian.md).
 
