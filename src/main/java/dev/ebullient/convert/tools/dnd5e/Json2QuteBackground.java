@@ -38,16 +38,17 @@ public class Json2QuteBackground extends Json2QuteCommon {
 
         if (fluff != null) {
             boolean found = false;
-            int max = Math.min(text.size(), 10);
-            for (int i = 0; i < max; i++) {
-                if (!found && text.get(i).startsWith("- **")) {
+            for (int i = 0; i < text.size(); i++) {
+                if (text.get(i).startsWith("##")) {
                     found = true;
-                } else if (found && !text.get(i).startsWith("- **")) {
-                    // first blank line after leading list
-                    text.addAll(i, fluff);
                     text.add(i, "");
+                    text.addAll(i, fluff);
                     break;
                 }
+            }
+            if (!found) {
+                maybeAddBlankLine(text);
+                text.addAll(fluff);
             }
         }
         return new QuteBackground(sources,

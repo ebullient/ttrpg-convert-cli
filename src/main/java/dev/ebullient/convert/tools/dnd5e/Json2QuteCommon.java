@@ -74,7 +74,7 @@ public class Json2QuteCommon implements JsonSource {
 
     public String getText(String heading) {
         List<String> text = new ArrayList<>();
-        appendToText(text, rootNode, heading);
+        appendToText(text, SourceField.entries.getFrom(rootNode), heading);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 

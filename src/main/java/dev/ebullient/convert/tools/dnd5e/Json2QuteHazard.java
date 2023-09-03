@@ -1,8 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonNodeReader;
@@ -19,20 +16,17 @@ public class Json2QuteHazard extends Json2QuteCommon {
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         Tags tags = new Tags(getSources());
-        List<String> text = new ArrayList<>();
 
         String hazardType = TrapHazFields.trapHazType.getTextOrNull(rootNode);
         if (hazardType != null) {
             tags.add("hazard", hazardType);
         }
 
-        appendToText(text, rootNode.get("entries"), "##");
-
         return new QuteHazard(getSources(),
                 getSources().getName(),
                 getSourceText(getSources()),
                 getHazardType(hazardType),
-                String.join("\n", text),
+                getText("##"),
                 tags);
     }
 

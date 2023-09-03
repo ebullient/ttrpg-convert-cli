@@ -19,13 +19,10 @@ public class Json2QuteReward extends Json2QuteCommon {
     @Override
     protected QuteReward buildQuteResource() {
         Tags tags = new Tags(getSources());
-        List<String> text = new ArrayList<>();
 
         for (String type : SourceField.type.getListOfStrings(rootNode, tui())) {
             tags.add("reward", type);
         }
-
-        appendToText(text, rootNode.get("entries"), "##");
 
         List<String> details = new ArrayList<>();
 
@@ -45,7 +42,7 @@ public class Json2QuteReward extends Json2QuteCommon {
                 RewardField.ability.transformTextFrom(rootNode, "\n", index),
                 getSources().getName().startsWith(detail) ? "" : detail,
                 RewardField.signaturespells.transformTextFrom(rootNode, "\n", index),
-                String.join("\n", text),
+                getText("##"),
                 tags);
     }
 
