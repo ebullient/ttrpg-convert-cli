@@ -30,7 +30,6 @@ public class Json2QuteBackground extends Json2QuteCommon {
     protected Tools5eQuteBase buildQuteResource() {
         Tags tags = new Tags(getSources());
         List<String> text = new ArrayList<>();
-
         appendToText(text, rootNode, "##");
 
         List<ImageRef> images = new ArrayList<>();

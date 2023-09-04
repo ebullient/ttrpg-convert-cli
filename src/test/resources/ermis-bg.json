@@ -1,0 +1,88 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TheGiddyLimit/5etools-utils/master/schema/brew-fast/homebrew.json",
+  "_meta": {
+    "sources": [
+      {
+        "json": "ermis-bg",
+        "abbreviation": "EB",
+        "full": "Ermis Backgrounds",
+        "authors": [
+          "LichLife"
+        ],
+        "version": "1.0.0"
+      }
+    ],
+    "dateAdded": 0,
+    "dateLastModified": 0
+  },
+  "background": [
+    {
+      "name": "Renegade",
+      "source": "ermis-bg",
+      "skillProficiencies": [
+        {
+          "survival": true,
+          "choose": {
+            "from": [
+              "arcana",
+              "deception",
+              "insight",
+              "persuasion",
+              "religion"
+            ],
+            "count": 1
+          }
+        }
+      ],
+      "toolProficiencies": [
+        {
+          "anyArtisansTool": 1,
+          "choose": {
+            "from": [
+              "disguise kit",
+              "forgery kit",
+              "thieves' tools"
+            ],
+            "count": 1
+          }
+        }
+      ],
+      "languageProficiencies": [
+        {
+          "anyStandard": 1
+        }
+      ],
+      "entries": [
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Skill Proficiencies:",
+              "entry": "{@skill Survival} and another of your choice from {@skill Arcana}, {@skill Deception}, {@skill Insight}, {@skill Persuasion}, or {@skill Religion}."
+            },
+            {
+              "type": "item",
+              "name": "Languages:",
+              "entry": "Two of your choice"
+            },
+            {
+              "type": "item",
+              "name": "Tool Proficiencies:",
+              "entry": "Any {@item Artisan's tools|phb} and one from {@item Disguise Kit|phb}, {@item Forgery Kit|phb}, or {@item Thieves' Tools|phb}."
+            }
+          ]
+        },
+        {
+          "name": "Life on the Run",
+          "type": "entries",
+          "entries": [
+            "You have lived your life on the run, constantly avoiding capture by the group or association you escaped years ago. Adopting false identities has become second nature to you. Few know your real name or your past. You may be seeking to undermine the group you came from. Or you may simply be trying to live out your life unperturbed by their interference."
+          ]
+        }
+      ],
+      "hasFluff": true
+    }
+  ]
+}
