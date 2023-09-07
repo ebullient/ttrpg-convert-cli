@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class TtrpgConfig {
@@ -220,7 +221,7 @@ public class TtrpgConfig {
         public String replace;
     }
 
-    enum ConfigKeys {
+    enum ConfigKeys implements JsonNodeReader {
         abvToName,
         config5e,
         configPf2e,

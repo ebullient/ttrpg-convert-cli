@@ -9,6 +9,8 @@ _Support content creators. Only use or include sources that you own._
 
 ## Source name mapping for 5etools
 
+### Abbreviations to long name
+
 | Abbreviation | Long name |
 |--------------|-----------|
 | AAG | Astral Adventurer's Guide |
@@ -129,14 +131,6 @@ _Support content creators. Only use or include sources that you own._
 | TDCSR | Tal'Dorei Campaign Setting Reborn |
 | TLK | The Lost Kenku |
 | TTP | The Tortle Package |
-| TYP | Tales from the Yawning Portal |
-| TYP_AtG | Tales from the Yawning Portal: Against the Giants |
-| TYP_DiT | Tales from the Yawning Portal: Dead in Thay |
-| TYP_TFoF | Tales from the Yawning Portal: The Forge of Fury |
-| TYP_THSoT | Tales from the Yawning Portal: The Hidden Shrine of Tamoachan |
-| TYP_TSC | Tales from the Yawning Portal: The Sunless Citadel |
-| TYP_ToH | Tales from the Yawning Portal: Tomb of Horrors |
-| TYP_WPM | Tales from the Yawning Portal: White Plume Mountain |
 | TftYP | Tales from the Yawning Portal |
 | TftYP-AtG | Tales from the Yawning Portal: Against the Giants |
 | TftYP-DiT | Tales from the Yawning Portal: Dead in Thay |
@@ -232,8 +226,124 @@ _Support content creators. Only use or include sources that you own._
 | XGE | Xanathar's Guide to Everything |
 | XMtS | X Marks the Spot |
 
+### Alternate abbreviation mapping
+
+You may see these abbreviations referenced in source material, this is how they map to sources listed above.
+
+| Abbreviation | Alias     |
+|--------------|-----------|
+| ALCurseOfStrahd | ALCoS |
+| ALElementalEvil | ALEE |
+| ALRageOfDemons | ALRoD |
+| Screen | SCREEN |
+| ScreenDungeonKit | SCREEN_DUNGEON_KIT |
+| ScreenSpelljammer | SRC_SCREEN_SPELLJAMMER |
+| ScreenWildernessKit | SCREEN_WILDERNESS_KIT |
+| TYP | TftYP |
+| TYP_AtG | TftYP-AtG |
+| TYP_DiT | TftYP-DiT |
+| TYP_TFoF | TftYP-TFoF |
+| TYP_THSoT | TftYP-THSoT |
+| TYP_TSC | TftYP-TSC |
+| TYP_ToH | TftYP-ToHs |
+| TYP_WPM | TftYP-WPM |
+| UA2020F | UA20F |
+| UA2020Feats | UA20F |
+| UA2020POR | UA20POR |
+| UA2020PsionicOptionsRevisited | UA20POR |
+| UA2020SC1 | UA20S1 |
+| UA2020SC2 | UA20S2 |
+| UA2020SC3 | UA20S3 |
+| UA2020SC4 | UA20S4 |
+| UA2020SC5 | UA20S5 |
+| UA2020SCR | UA20SCR |
+| UA2020SMT | UA20SMT |
+| UA2020SpellsAndMagicTattoos | UA20SMT |
+| UA2020SubclassesPt1 | UA20S1 |
+| UA2020SubclassesPt2 | UA20S2 |
+| UA2020SubclassesPt3 | UA20S3 |
+| UA2020SubclassesPt4 | UA20S4 |
+| UA2020SubclassesPt5 | UA20S5 |
+| UA2020SubclassesRevisited | UA20SCR |
+| UA2021DO | UA21DO |
+| UA2021DraconicOptions | UA21DO |
+| UA2021FF | UA21FF |
+| UA2021FolkOfTheFeywild | UA21FF |
+| UA2021GL | UA21GL |
+| UA2021GothicLineages | UA21GL |
+| UA2021MagesOfStrixhaven | UA21MoS |
+| UA2021MoS | UA21MoS |
+| UA2021TotM | UA21TotM |
+| UA2021TravelersOfTheMultiverse | UA21TotM |
+| UA2022GO | UA22GO |
+| UA2022GiantOptions | UA22GO |
+| UA2022HeroesOfKrynn | UA22HoK |
+| UA2022HeroesOfKrynnRevisited | UA22HoKR |
+| UA2022HoK | UA22HoK |
+| UA2022HoKR | UA22HoKR |
+| UA2022WondersOfTheMultiverse | UA22WotM |
+| UA2022WotM | UA22WotM |
+| UAATrioOfSubclasses | UAATOSC |
+| UAArtificer | UAA |
+| UAArtificerRevisited | UAAR |
+| UABarbarianAndMonk | UABAM |
+| UABarbarianPrimalPaths | UABPP |
+| UABardAndPaladin | UABAP |
+| UABardBardColleges | UABBC |
+| UACentaursMinotaurs | UACAM |
+| UAClassFeatureVariants | UACFV |
+| UAClericDivineDomains | UACDD |
+| UAClericDruidWizard | UACDW |
+| UADruid | UAD |
+| UAEberron | UAEBB |
+| UAEladrinAndGith | UAEAG |
+| UAElfSubraces | UAESR |
+| UAFeats | UAFT |
+| UAFeatsForRaces | UAFFR |
+| UAFeatsForSkills | UAFFS |
+| UAFiendishOptions | UAFO |
+| UAFighter | UAF |
+| UAFighterRangerRogue | UAFRR |
+| UAFighterRogueWizard | UAFRW |
+| UAGiantSoulSorcerer | UAGSS |
+| UAGothicHeroes | UAGH |
+| UAGreyhawkInitiative | UAGHI |
+| UAKitsOfOld | UAKOO |
+| UALightDarkUnderdark | UALDR |
+| UAMassCombat | UAMAC |
+| UAModernMagic | UAMDM |
+| UAModifyingClasses | UAMC |
+| UAMonk | UAM |
+| UAOfShipsAndSea | UAOSS |
+| UAOrderDomain | UAOD |
+| UAPaladin | UAP |
+| UAPrestigeClassesRunMagic | UAPCRM |
+| UARacesOfEberron | UARoE |
+| UARacesOfRavnica | UARoR |
+| UARanger | UAR |
+| UARangerAndRogue | UARAR |
+| UARevisedClassOptions | UARCO |
+| UARevisedSubclasses | UARSC |
+| UASidekicks | UASIK |
+| UASorcerer | UAS |
+| UASorcererAndWarlock | UASAW |
+| UAStarterSpells | UASSP |
+| UAThatOldBlackMagic | UATOBM |
+| UATheFaithful | UATF |
+| UATheMysticClass | UATMC |
+| UATheRangerRevised | UATRR |
+| UAThreePillarExperience | UA3PE |
+| UAThreeSubclasses | UATSC |
+| UAVariantRules | UAVR |
+| UAWarlockAndWizard | UAWAW |
+| UAWaterborneAdventures | UAWA |
+| UAWayfindersGuideToEberron | UAWGE |
+| UAWizardRevisited | UAWR |
+
 
 ## Source name mapping for Pf2eTools
+
+### Abbreviations to long name
 
 | Abbreviation | Long name |
 |--------------|-----------|
@@ -334,4 +444,15 @@ _Support content creators. Only use or include sources that you own._
 | TV | Treasure Vault |
 | TiO | Troubles in Otari |
 | ToK | Threshold of Knowledge |
+
+### Alternate abbreviation mapping
+
+You may see these abbreviations referenced in source material, this is how they map to sources listed above.
+
+| Abbreviation | Alias     |
+|--------------|-----------|
+| GnG | G&G |
+
+
+
 

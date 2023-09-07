@@ -31,29 +31,43 @@ public class ConfigurationExampleTest {
         Path out = Path.of("docs/sourceMap.md");
 
         JsonNode node = Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream("/sourceMap.json"));
-        JsonNode config5e = ConfigKeys.config5e.get(node);
-        JsonNode configPf2e = ConfigKeys.configPf2e.get(node);
 
         StringBuilder tools5e = new StringBuilder();
-
-        tools5e.append("| Abbreviation | Long name |\n");
-        tools5e.append("|--------------|-----------|\n");
+        writeToBuilder(ConfigKeys.config5e.get(node), tools5e);
 
         StringBuilder toolsPf2e = new StringBuilder();
-        toolsPf2e.append(tools5e.toString());
-
-        ConfigKeys.abvToName.getAsMap(config5e).entrySet()
-                .stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
-                .forEach(e -> tools5e.append("| ").append(e.getKey()).append(" | ").append(e.getValue()).append(" |\n"));
-
-        ConfigKeys.abvToName.getAsMap(configPf2e).entrySet()
-                .stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
-                .forEach(e -> toolsPf2e.append("| ").append(e.getKey()).append(" | ").append(e.getValue()).append(" |\n"));
+        writeToBuilder(ConfigKeys.configPf2e.get(node), toolsPf2e);
 
         String result = Files.readString(in)
                 .replace("<!--%% 5etools %% -->", tools5e.toString())
                 .replace("<!--%% Pf2eTools %% -->", toolsPf2e.toString());
         Files.writeString(out, result, StandardOpenOption.CREATE);
+
+    }
+
+    void writeToBuilder(JsonNode configMap, StringBuilder builder) {
+        if (ConfigKeys.abvToName.existsIn(configMap)) {
+            builder.append("### Abbreviations to long name\n\n");
+            builder.append("| Abbreviation | Long name |\n");
+            builder.append("|--------------|-----------|\n");
+
+            ConfigKeys.abvToName.getAsMap(configMap).entrySet()
+                    .stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+                    .forEach(e -> builder.append("| ").append(e.getKey()).append(" | ").append(e.getValue()).append(" |\n"));
+        }
+
+        if (ConfigKeys.longToAbv.existsIn(configMap)) {
+            builder.append("\n");
+            builder.append("### Alternate abbreviation mapping\n\n");
+            builder.append(
+                    "You may see these abbreviations referenced in source material, this is how they map to sources listed above.\n\n");
+            builder.append("| Abbreviation | Alias     |\n");
+            builder.append("|--------------|-----------|\n");
+
+            ConfigKeys.longToAbv.getAsMap(configMap).entrySet()
+                    .stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+                    .forEach(e -> builder.append("| ").append(e.getKey()).append(" | ").append(e.getValue()).append(" |\n"));
+        }
 
     }
 
