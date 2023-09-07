@@ -140,14 +140,21 @@ public class JsonSourceCopier implements JsonSource {
 
         // merge abilities
         if (RaceFields.ability.existsIn(cpySr)) {
+            ArrayNode cpySrAbility = (ArrayNode) RaceFields.ability.getFrom(cpySr);
+            ArrayNode outAbility = (ArrayNode) RaceFields.ability.getFrom(subraceOut);
             // If the base race doesn't have any ability scores, make a set of empty records
-            if (RaceFields.ability.existsIn(overwrite) || !RaceFields.ability.existsIn(subraceOut)) {
-
+            if (RaceFields.ability.existsIn(overwrite) || outAbility == null) {
+                subraceOut.set("ability", RaceFields.ability.getFrom(cpySr));
+            } else if (cpySrAbility.size() != outAbility.size()) {
+                // if (cpy.ability.length !== cpySr.ability.length) throw new Error(`Race and subrace ability array lengths did not match!`);
+                tui().errorf("Error (%s): Unable to merge abilities (different lengths). CopyTo: %s, CopyFrom: %s", subraceOut,
+                        cpySr);
+            } else {
+                // cpySr.ability.forEach((obj, i) => Object.assign(cpy.ability[i], obj));
+                for (int i = 0; i < cpySrAbility.size(); i++) {
+                    outAbility.set(i, cpySrAbility.get(i));
+                }
             }
-            // if ((cpySr.overwrite && cpySr.overwrite.ability) || !cpy.ability) cpy.ability = cpySr.ability.map(() => ({}));
-
-            // if (cpy.ability.length !== cpySr.ability.length) throw new Error(`Race and subrace ability array lengths did not match!`);
-            // cpySr.ability.forEach((obj, i) => Object.assign(cpy.ability[i], obj));
             RaceFields.ability.removeFrom(cpySr);
         }
 
