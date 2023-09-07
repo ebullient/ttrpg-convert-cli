@@ -47,7 +47,7 @@ public class Templates {
                     engine.putTemplate(key, template);
                     return template;
                 } catch (IOException e) {
-                    tui.errorf(e, "Failed reading template for %s from %s", id, customPath);
+                    tui.errorf(e, "Failed reading template for %s from %s", id, customPath.toAbsolutePath());
                 }
             }
             Template tpl = engine.getTemplate(key);
