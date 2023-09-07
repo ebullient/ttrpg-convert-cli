@@ -56,7 +56,7 @@ public class AcHp implements QuteUtil {
      * this will be a dice roll formula.
      */
     public String getHp() {
-        if (TtrpgConfig.getConfig().alwaysUseDiceRoller() && hitDice != null) {
+        if (TtrpgConfig.getConfig().alwaysUseDiceRoller() && isPresent(hitDice)) {
             return "`dice: " + hitDice + "|text(" + hp + ")`";
         }
         return "" + hp;
@@ -70,7 +70,7 @@ public class AcHp implements QuteUtil {
         if (isPresent(hp)) {
             out.add("- **Hit Points** " + (isPresent(hp) ? hp + " " : "")
                     + (isPresent(hitDice) ? "(`" + hitDice + "`)" : "")
-                    + (hpText != null ? " (" + hpText + ")" : ""));
+                    + (isPresent(hpText) ? " (" + hpText + ")" : ""));
         }
         return String.join("\n", out);
     }
