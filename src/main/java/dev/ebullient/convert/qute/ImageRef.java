@@ -53,7 +53,8 @@ public class ImageRef {
     private ImageRef(Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
         this.sourcePath = sourcePath;
         this.targetFilePath = targetFilePath;
-        this.title = title == null ? "" : title;
+        this.title = title == null ? ""
+                : title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
         this.vaultPath = vaultPath;
         this.width = width;
         this.url = null;
