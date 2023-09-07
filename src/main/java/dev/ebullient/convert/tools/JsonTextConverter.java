@@ -55,7 +55,8 @@ public interface JsonTextConverter<T extends IndexType> {
     default String simplifyFormattedDiceText(String text) {
         return text
                 .replaceAll("` \\((" + JsonTextConverter.DICE_FORMULA + ")\\) to hit", "` ($1 to hit)")
-                .replaceAll("\\d+ \\((`dice: [^|]+\\?\\|avg` \\([^)]+\\))\\)", "$1");
+                .replaceAll(" \\d+ \\((`dice:" + JsonTextConverter.DICE_FORMULA + "\\|avg` \\(`"
+                        + JsonTextConverter.DICE_FORMULA + "`\\))\\)", " $1");
     }
 
     /** Tokenizer: use a stack of StringBuilders to deal with nested tags */
