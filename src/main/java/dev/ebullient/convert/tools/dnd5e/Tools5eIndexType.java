@@ -279,7 +279,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
     public String decoratedName(JsonNode entry) {
         String name = SourceField.name.getTextOrEmpty(entry);
-                switch (this) {
+        switch (this) {
             case background -> {
                 if (name.startsWith("Variant")) {
                     name = name.replace("Variant ", "") + " (Variant)";

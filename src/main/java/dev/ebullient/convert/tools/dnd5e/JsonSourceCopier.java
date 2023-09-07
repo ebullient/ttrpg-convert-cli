@@ -306,6 +306,9 @@ public class JsonSourceCopier implements JsonSource {
 
         // indicate that this is a copy, and remove copy metadata (avoid revisit)
         target.put("isCopy", true);
+        MetaFields._copiedFrom.setIn(target, String.format("%s (%s)",
+                SourceField.name.getTextOrEmpty(copyFrom),
+                SourceField.source.getTextOrEmpty(copyFrom)));
         MetaFields._copy.removeFrom(target);
         return target;
     }
@@ -1190,6 +1193,7 @@ public class JsonSourceCopier implements JsonSource {
 
     enum MetaFields implements JsonNodeReader {
         _copy,
+        _copiedFrom, // mind
         _mod,
         _preserve,
         _root,
