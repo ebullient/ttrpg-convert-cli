@@ -168,6 +168,18 @@ public class Json2QuteRace extends Json2QuteCommon {
             JsonNode newNode = copier.mergeSubrace(type, sr, jsonSource);
             String srKey = Tools5eIndexType.subrace.createKey(newNode);
             variants.add(new Tuple(srKey, newNode));
+
+            // {@race Aasimar (Fallen)|VGM}
+            String[] parts = srKey.split("\\|");
+            final String lookupKey;
+            if (parts[1].contains("(")) {
+                lookupKey = String.format("race|%s|%s", parts[1], parts[3]).toLowerCase();
+            } else if (parts[1].isBlank()) {
+                lookupKey = String.format("race|%s|%s", parts[2], parts[3]).toLowerCase();
+            } else {
+                lookupKey = String.format("race|%s (%s)|%s", parts[2], parts[1], parts[3]).toLowerCase();
+            }
+            index.addAlias(lookupKey, srKey);
         });
         return variants;
     }

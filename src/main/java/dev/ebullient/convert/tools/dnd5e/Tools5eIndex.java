@@ -300,13 +300,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             // add subclass to alias. Referenced from spells
             addAlias(lookupKey, key);
         }
-        if (type == Tools5eIndexType.subrace) {
-            // {@race Aasimar (Fallen)|VGM}
-            String[] parts = key.split("\\|");
-            String lookupKey = String.format("race|%s (%s)|%s",
-                    parts[2], parts[1], parts[3]).toLowerCase();
-            addAlias(lookupKey, key);
-        }
         if (type == Tools5eIndexType.table || type == Tools5eIndexType.tableGroup) {
             SourceAndPage sp = new SourceAndPage(node);
             tableIndex.computeIfAbsent(sp, k -> new ArrayList<>()).add(node);
