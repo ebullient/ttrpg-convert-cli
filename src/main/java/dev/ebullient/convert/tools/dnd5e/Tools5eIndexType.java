@@ -38,6 +38,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     item,
     itemEntry,
     itemFluff,
+    itemGroup,
     itemType,
     itemTypeAdditionalEntries,
     itemProperty,
@@ -278,17 +279,13 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
     public String decoratedName(JsonNode entry) {
         String name = SourceField.name.getTextOrEmpty(entry);
-        switch (this) {
+                switch (this) {
             case background -> {
                 if (name.startsWith("Variant")) {
                     name = name.replace("Variant ", "") + " (Variant)";
                 }
             }
             case race, subrace -> {
-                JsonNode raceNameNode = entry.get("raceName");
-                if (raceNameNode != null) {
-                    name = String.format("%s (%s)", raceNameNode.asText(), name);
-                }
                 name = name.replace("Variant; ", "");
             }
             default -> {

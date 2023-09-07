@@ -12,6 +12,8 @@ import java.util.stream.StreamSupport;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
 
@@ -77,6 +79,9 @@ public interface JsonNodeReader {
     }
 
     default boolean existsIn(JsonNode source) {
+        if (source == null || !source.isObject()) {
+            return false;
+        }
         return source.has(this.nodeName());
     }
 
@@ -112,6 +117,22 @@ public interface JsonNodeReader {
                 : result;
     }
 
+    /**
+     * Find the first element in the array of this property.
+     * Useful for elements that are ceremonial arrays (they
+     * are always an array of one element)
+     */
+    default JsonNode getFirstFromArray(JsonNode source) {
+        if (source == null) {
+            return null;
+        }
+        JsonNode result = source.get(this.nodeName());
+        if (result == null || !result.isArray()) {
+            return null;
+        }
+        return result.get(0);
+    }
+
     default JsonNode getFieldFrom(JsonNode source, JsonNodeReader field) {
         JsonNode targetNode = getFrom(source);
         if (targetNode == null) {
@@ -123,6 +144,14 @@ public interface JsonNodeReader {
     default Optional<Integer> getIntFrom(JsonNode source) {
         JsonNode result = getFrom(source);
         return result == null ? Optional.empty() : Optional.of(result.asInt());
+    }
+
+    default int getIntOrThrow(JsonNode x) {
+        JsonNode result = getFrom(x);
+        if (result == null) {
+            throw new IllegalArgumentException("Missing int from " + this.nodeName());
+        }
+        return result.asInt();
     }
 
     default List<String> getListOfStrings(JsonNode source, Tui tui) {
@@ -158,6 +187,14 @@ public interface JsonNodeReader {
     default String getTextOrNull(JsonNode x) {
         JsonNode text = getFrom(x);
         return text == null || text.isNull() ? null : text.asText();
+    }
+
+    default String getTextOrThrow(JsonNode x) {
+        String text = getTextOrNull(x);
+        if (text == null) {
+            throw new IllegalArgumentException("Missing text from " + this.nodeName());
+        }
+        return text;
     }
 
     default int intOrDefault(JsonNode source, int value) {
@@ -249,5 +286,23 @@ public interface JsonNodeReader {
             return List.of();
         }
         return source::fields;
+    }
+
+    /** Destructive! */
+    default void removeFrom(JsonNode target) {
+        if (target == null) {
+            return;
+        }
+        ((ObjectNode) target).remove(this.nodeName());
+    }
+
+    /** Destructive! */
+    default void setIn(JsonNode target, JsonNode value) {
+        ((ObjectNode) target).set(this.nodeName(), value);
+    }
+
+    /** Destructive! */
+    default void setIn(JsonNode target, String value) {
+        ((ObjectNode) target).set(this.nodeName(), new TextNode(value));
     }
 }

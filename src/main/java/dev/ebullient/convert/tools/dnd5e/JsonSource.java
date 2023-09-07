@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +25,7 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
+import dev.ebullient.convert.tools.dnd5e.JsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -61,6 +61,15 @@ public interface JsonSource extends JsonTextReplacement {
         return result == null ? value : result.asInt();
     }
 
+    default int intOrThrow(JsonNode source, String key) {
+        JsonNode result = source.get(key);
+        if (result == null || !result.canConvertToInt()) {
+            throw new IllegalStateException(
+                    "Missing required field, or field is not a number. Key: " + key + "; value: " + result);
+        }
+        return result.asInt();
+    }
+
     default JsonNode copyNode(JsonNode sourceNode) {
         try {
             return mapper().readTree(sourceNode.toString());
@@ -70,13 +79,12 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    default JsonNode copyReplaceNode(JsonNode sourceNode, Pattern replace, String with) {
+    default JsonNode createNode(String source) {
         try {
-            String modified = replace.matcher(sourceNode.toString()).replaceAll(with);
-            return mapper().readTree(modified);
+            return mapper().readTree(source);
         } catch (JsonProcessingException ex) {
-            tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
-            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
+            tui().errorf(ex, "Unable to create node from %s", source);
+            throw new IllegalStateException("JsonProcessingException processing " + source);
         }
     }
 
@@ -125,7 +133,7 @@ public interface JsonSource extends JsonTextReplacement {
                 // do nothing
             } else if (node.isTextual()) {
                 text.add(replaceText(node.asText()));
-            } else if (node.isNumber()) {
+            } else if (node.isNumber() || node.isBoolean()) {
                 text.add(node.asText());
             } else if (node.isArray()) {
                 for (JsonNode f : iterableElements(node)) {
@@ -549,7 +557,8 @@ public interface JsonSource extends JsonTextReplacement {
         TtrpgValue.indexKey.addToNode(data, finalKey);
         TtrpgValue.indexInputType.addToNode(data, type.name());
 
-        JsonNode copy = SourceField._copy.getFrom(data);
+        // TODO: Remove me.
+        JsonNode copy = MetaFields._copy.getFrom(data);
         if (copy != null) {
             String copyName = SourceField.name.getTextOrEmpty(copy).strip();
             String copySource = SourceField.source.getTextOrEmpty(copy).strip();
@@ -673,7 +682,13 @@ public interface JsonSource extends JsonTextReplacement {
             boolean pushTable = parseState().pushMarkdownTable(true);
             try {
                 if (TableFields.colLabels.existsIn(tableNode)) {
-                    header = String.join(" | ", TableFields.colLabels.replaceTextFromList(tableNode, this));
+                    List<String> labels = TableFields.colLabels.getListOfStrings(tableNode, tui());
+                    header = String.join(" | ", labels.stream()
+                            // undo overly ambitious dice formatting in the column header
+                            .map(x -> x.replaceAll("\\{@dice ([^}|]+)\\|?[^}]*}", "$1"))
+                            // replace anything else
+                            .map(x -> replaceText(x))
+                            .toList());
 
                     blockid = slugify(header.replaceAll("d\\d+", "")
                             .replace("|", "")
@@ -896,15 +911,14 @@ public interface JsonSource extends JsonTextReplacement {
         return null;
     }
 
-    default int crToXp(JsonNode cr) {
-        if (cr.has("xp")) {
-            return Tools5eFields.xp.getFrom(cr).asInt();
+    default double crToXp(JsonNode cr) {
+        if (Tools5eFields.xp.existsIn(cr)) {
+            return Tools5eFields.xp.getFrom(cr).asDouble();
         }
-        if (cr.has("cr")) {
+        if (Tools5eFields.cr.existsIn(cr)) {
             cr = Tools5eFields.cr.getFrom(cr);
         }
-        String crKey = cr.asText();
-        return XP_CHART_ALT.get(crKey);
+        return XP_CHART_ALT.get(cr.asText());
     }
 
     default int crToPb(JsonNode cr) {
@@ -1024,6 +1038,14 @@ public interface JsonSource extends JsonTextReplacement {
         };
     }
 
+    default String asModifier(double value) {
+        return (value >= 0 ? "+" : "") + value;
+    }
+
+    default String asModifier(int value) {
+        return (value >= 0 ? "+" : "") + value;
+    }
+
     default String convertCurrency(int cp) {
         List<String> result = new ArrayList<>();
         int gp = cp / 100;
@@ -1104,12 +1126,14 @@ public interface JsonSource extends JsonTextReplacement {
         abbreviation,
         additionalEntries,
         alternate,
+        amount,
         appliesTo,
         attributes,
         by,
         className,
         classSource,
         condition, // speed, ac
+        count,
         cr,
         data, // statblock, statblockInline
         dataType, // statblockInline
@@ -1136,6 +1160,7 @@ public interface JsonSource extends JsonTextReplacement {
         tag, // statblock
         text,
         tokenUrl,
+        traitTags,
         typeLookup,
         visible,
         xp,

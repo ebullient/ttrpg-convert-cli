@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
@@ -354,11 +356,41 @@ public interface JsonTextConverter<T extends IndexType> {
         return Tui.slugify(s);
     }
 
+    default ArrayNode ensureArray(JsonNode source) {
+        if (source == null || source.isNull()) {
+            return Tui.MAPPER.createArrayNode();
+        }
+        if (source.isArray()) {
+            return (ArrayNode) source;
+        }
+        return Tui.MAPPER.createArrayNode().add(source);
+    }
+
+    default ObjectNode ensureObjectNode(JsonNode source) {
+        if (source == null || source.isNull()) {
+            return Tui.MAPPER.createObjectNode();
+        }
+        if (source.isArray()) {
+            throw new IllegalArgumentException("Can not make an ObjectNode from an ArrayNode");
+        }
+        return (ObjectNode) source;
+    }
+
     default Stream<JsonNode> streamOf(JsonNode source) {
+        if (source == null || source.isNull()) {
+            return Stream.of();
+        }
+        if (source.isObject()) {
+            return Stream.of(source);
+        }
+        return StreamSupport.stream(iterableElements(source).spliterator(), false);
+    }
+
+    default Stream<String> streamOfFieldNames(JsonNode source) {
         if (source == null) {
             return Stream.of();
         }
-        return StreamSupport.stream(iterableElements(source).spliterator(), false);
+        return StreamSupport.stream(iterableFieldNames(source).spliterator(), false);
     }
 
     default String toAnchorTag(String x) {
@@ -394,7 +426,6 @@ public interface JsonTextConverter<T extends IndexType> {
     enum SourceField implements JsonNodeReader {
         abbreviation,
         _class_("class"),
-        _copy,
         entry,
         entries,
         id,

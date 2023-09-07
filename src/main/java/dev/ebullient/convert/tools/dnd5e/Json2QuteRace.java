@@ -2,16 +2,21 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.qute.ImageRef;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
 
 public class Json2QuteRace extends Json2QuteCommon {
+
+    final static Pattern subraceNamePattern = Pattern.compile("^(.*?)\\((.*?)\\)$", Pattern.CASE_INSENSITIVE);
 
     Json2QuteRace(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
@@ -160,10 +165,33 @@ public class Json2QuteRace extends Json2QuteCommon {
         // For each subrace derived from the origin...
         Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
         index.originSubraces(sources).forEach(sr -> {
-            JsonNode newNode = copier.handleCopy(type, sr);
+            JsonNode newNode = copier.mergeSubrace(type, sr, jsonSource);
             String srKey = Tools5eIndexType.subrace.createKey(newNode);
             variants.add(new Tuple(srKey, newNode));
         });
         return variants;
+    }
+
+    public static String getSubraceName(String raceName, String subraceName) {
+        if (subraceName == null) {
+            return raceName;
+        }
+        Matcher m = subraceNamePattern.matcher(subraceName);
+        if (m.matches()) {
+            raceName = m.group(1);
+            subraceName = String.join("; ", List.of(m.group(2), subraceName));
+        }
+        return String.format("%s (%s)", raceName, subraceName);
+    }
+
+    enum RaceFields implements JsonNodeReader {
+        ability,
+        additionalSpells,
+        creatureTypes,
+        languageProficiencies,
+        skillProficiencies,
+        lineage,
+        race,
+        speed
     }
 }

@@ -365,6 +365,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             // check for / manage copies first.
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
             JsonNode jsonSource = copier.handleCopy(type, node);
+            entry.setValue(jsonSource); // update with resolved copy
 
             TtrpgValue.indexKey.addToNode(node, key);
             Tools5eSources sources = Tools5eSources.constructSources(node);
@@ -760,8 +761,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     public JsonNode getOrigin(Tools5eIndexType type, String name, String source) {
-        String key = String.format("%s|%s|%s", type, name, source)
-                .toLowerCase();
+        String key = type.createKey(name, source);
         return nodeIndex.get(key);
     }
 

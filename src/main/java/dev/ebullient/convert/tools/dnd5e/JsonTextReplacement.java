@@ -219,6 +219,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@footnote ([^|}]+)\\|([^}]*)}", "$1 ^[$2]")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
+                        .replaceAll("\\{@hit ([+-][^}<]+)}", "$1")
                         .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                         .replaceAll("\\{@h}", "*Hit:* ")
                         .replaceAll("\\{@m}", "*Miss:* ")

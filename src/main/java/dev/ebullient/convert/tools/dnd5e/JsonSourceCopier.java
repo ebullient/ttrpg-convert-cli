@@ -6,14 +6,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import java.util.function.ToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
@@ -21,12 +22,49 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
+
 public class JsonSourceCopier implements JsonSource {
-    static final Pattern spell_dc_subst = Pattern.compile("<\\$spell_dc__([^$]+)\\$>");
-    static final Pattern to_hit_subst = Pattern.compile("\\+?<\\$to_hit__([^$]+)\\$>");
-    static final Pattern dmg_mod_subst = Pattern.compile("<\\$damage_mod__([^$]+)\\$>");
-    static final Pattern dmg_avg_subst = Pattern.compile("<\\$damage_avg__([\\d.,]+)([+*-])([^$]+)\\$>");
-    static final List<String> alwaysSkip = List.of("indexInputType", "indexKey");
+    static final List<String> GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = List.of("caption", "type", "colLabels", "colLabelGroups",
+            "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
+
+    static final List<String> _MERGE_REQUIRES_PRESERVE_BASE = List.of(
+            "_versions",
+            "basicRules",
+            "hasFluff",
+            "hasFluffImages",
+            "hasToken",
+            "indexInputType", // mine: do I have the usage right?
+            "indexKey", // mine: do I have the usage right?
+            "otherSources",
+            "page",
+            "reprintedAs",
+            "srd");
+    static final Map<Tools5eIndexType, List<String>> _MERGE_REQUIRES_PRESERVE = Map.of(
+            Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
+                    "altArt", "variant", "dragonCastingColor", "familiar"),
+            Tools5eIndexType.item, List.of("lootTables", "tier"),
+            Tools5eIndexType.itemGroup, List.of("lootTables", "tier"));
+    static final List<String> COPY_ENTRY_PROPS = List.of(
+            "action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
+            "actionHeader", "bonusHeader", "reactionHeader", "legendaryHeader", "mythicHeader");
+    static final List<String> LEARNED_SPELL_TYPE = List.of("constant", "will", "ritual");
+    static final List<String> SPELL_CAST_FREQUENCY = List.of("recharge", "charges", "rest", "daily", "weekly", "yearly");
+
+    static final Pattern variable_subst = Pattern.compile("<\\$(?<variable>[^$]+)\\$>");
+    static final Pattern dmg_avg_subst = Pattern.compile("([\\d.,]+)([+*-])([^$]+)");
+
+    static boolean mergePreserveKey(Tools5eIndexType type, String key) {
+        List<String> preserveType = _MERGE_REQUIRES_PRESERVE.getOrDefault(type, List.of());
+        return _MERGE_REQUIRES_PRESERVE_BASE.contains(key) || preserveType.contains(key);
+    }
+
+    static boolean metaPreserveKey(JsonNode _preserve, String key) {
+        return _preserve != null && (_preserve.has("*") || _preserve.has(key));
+    }
 
     final Tools5eIndex index;
 
@@ -44,798 +82,387 @@ public class JsonSourceCopier implements JsonSource {
         throw new IllegalStateException("Should not call getSources while copying source");
     }
 
-    JsonNode handleCopy(Tools5eIndexType type, JsonNode jsonSource) {
-        String originKey = type.createKey(jsonSource);
-        if (type == Tools5eIndexType.race) {
-            return copyAndMergeRace(jsonSource);
-        }
-        if (type == Tools5eIndexType.classtype) {
-            return copyAndMergeClass(jsonSource);
-        }
-        JsonNode _copy = jsonSource.get("_copy");
+    JsonNode handleCopy(Tools5eIndexType type, JsonNode copyTo) {
+        String copyToKey = type.createKey(copyTo);
+        JsonNode _copy = MetaFields._copy.getFrom(copyTo);
         if (_copy != null) {
-            // Fix infinite loop: self-referencing copy
-            if (type == Tools5eIndexType.monsterFluff
-                    && jsonSource.get("name").asText().equalsIgnoreCase("Derro Savant")
-                    && _copy.get("name").asText().equalsIgnoreCase("Derro Savant")) {
-                ((ObjectNode) _copy).set("name", new TextNode("Derro"));
+            String copyFromKey = type.createKey(_copy);
+            JsonNode copyFrom = index().getOrigin(copyFromKey);
+            if (copyToKey.equals(copyFromKey)) {
+                tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, _copy);
+                return copyTo;
             }
-            JsonNode baseNode = index().getOrigin(type, _copy);
-            if (baseNode != null) {
-                // is the copy a copy?
-                baseNode = handleCopy(type, baseNode);
-                try {
-                    jsonSource = mergeNodes(originKey, baseNode, jsonSource);
-                } catch (IllegalStateException | StackOverflowError | UnsupportedOperationException e) {
-                    tui().errorf(e, "Unable to merge nodes for %s. BaseNode: %s, JsonSource: ", originKey, baseNode,
-                            jsonSource);
+            if (copyFrom == null) {
+                tui().errorf("Error (%s): Unable to find source for %s", copyToKey, copyFromKey);
+                return copyTo;
+            }
+            // is the copy a copy?
+            copyFrom = handleCopy(type, copyFrom);
+            try {
+                copyTo = mergeNodes(type, copyToKey, copyFrom, copyTo);
+            } catch (IllegalStateException | StackOverflowError | UnsupportedOperationException e) {
+                tui().errorf(e, "Error (%s): Unable to merge nodes. CopyTo: %s, CopyFrom: %s", copyToKey, copyTo, copyFrom);
+            }
+        }
+        return copyTo;
+    }
+
+    // render.js: _getMergedSubrace
+    public JsonNode mergeSubrace(Tools5eIndexType type, JsonNode subraceNode, JsonNode raceNode) {
+        ObjectNode cpySr = (ObjectNode) copyNode(subraceNode);
+        ObjectNode subraceOut = (ObjectNode) copyNode(raceNode);
+        List.of("name", "source", "srd", "basicRules")
+                .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
+
+        List.of("subraces", "srd", "basicRules", "_versions", "hasFluff", "hasFluffImages")
+                .forEach(subraceOut::remove);
+
+        cpySr.remove("__prop"); // cleanup: we copy remainder later
+
+        JsonNode overwrite = MetaFields.overwrite.getFrom(cpySr);
+
+        // merge names
+        if (SourceField.name.existsIn(cpySr)) {
+            String raceName = SourceField.name.getTextOrThrow(raceNode);
+            String subraceName = SourceField.name.getTextOrThrow(cpySr);
+            subraceOut.put("_subraceName", subraceName);
+            if (MetaFields.alias.existsIn(cpySr)) {
+                ArrayNode alias = (ArrayNode) MetaFields.alias.getFrom(cpySr);
+                for (int i = 0; i < alias.size(); i++) {
+                    alias.set(i, Json2QuteRace.getSubraceName(raceName, alias.get(i).asText()));
+                }
+                MetaFields.alias.setIn(subraceOut, alias);
+                MetaFields.alias.removeFrom(cpySr);
+            }
+            SourceField.name.removeFrom(cpySr);
+            SourceField.name.setIn(subraceOut, Json2QuteRace.getSubraceName(raceName, subraceName));
+        }
+
+        // merge abilities
+        if (RaceFields.ability.existsIn(cpySr)) {
+            // If the base race doesn't have any ability scores, make a set of empty records
+            if (RaceFields.ability.existsIn(overwrite) || !RaceFields.ability.existsIn(subraceOut)) {
+
+            }
+            // if ((cpySr.overwrite && cpySr.overwrite.ability) || !cpy.ability) cpy.ability = cpySr.ability.map(() => ({}));
+
+            // if (cpy.ability.length !== cpySr.ability.length) throw new Error(`Race and subrace ability array lengths did not match!`);
+            // cpySr.ability.forEach((obj, i) => Object.assign(cpy.ability[i], obj));
+            RaceFields.ability.removeFrom(cpySr);
+        }
+
+        // merge entries
+        if (SourceField.entries.existsIn(cpySr)) {
+            ArrayNode entries = ensureArray(SourceField.entries.getFrom(subraceOut));
+            SourceField.entries.setIn(subraceOut, entries); // make sure set as array
+            for (JsonNode entry : iterableEntries(cpySr)) {
+                JsonNode data = MetaFields.data.getFrom(entry);
+                if (MetaFields.overwrite.existsIn(data)) {
+                    // overwrite
+                    int index = findIndexByName("subracething", entries, MetaFields.overwrite.getTextOrThrow(data));
+                    if (index >= 0) {
+                        entries.set(index, entry);
+                    } else {
+                        appendToArray(entries, entry);
+                    }
+                } else {
+                    appendToArray(entries, entry);
+                }
+            }
+
+            SourceField.entries.removeFrom(cpySr);
+        }
+
+        // TODO: ATM, not tracking trait tags, languages, or skills separately from text
+        if (Tools5eFields.traitTags.existsIn(cpySr)) {
+            Tools5eFields.traitTags.removeFrom(cpySr);
+        }
+        if (RaceFields.languageProficiencies.existsIn(cpySr)) {
+            RaceFields.languageProficiencies.removeFrom(cpySr);
+        }
+        if (RaceFields.skillProficiencies.existsIn(cpySr)) {
+            RaceFields.skillProficiencies.removeFrom(cpySr);
+        }
+
+        // overwrite everything else
+        for (Entry<String, JsonNode> e : iterableFields(cpySr)) {
+            // already from a copy, just .. move it on over.
+            subraceOut.set(e.getKey(), e.getValue());
+        }
+
+        // For any null'd out fields on the subrace, delete the field
+        Iterator<Entry<String, JsonNode>> fields = subraceOut.fields();
+        while (fields.hasNext()) {
+            Entry<String, JsonNode> e = fields.next();
+            if (e.getValue().isNull()) {
+                fields.remove();
+            }
+        }
+
+        return subraceOut;
+    }
+
+    // 	utils.js: static getCopy (impl, copyFrom, copyTo, templateData,...) {
+    JsonNode mergeNodes(Tools5eIndexType type, String originKey, JsonNode copyFrom, JsonNode copyTo) {
+        // edit in place: if you don't, lower-level copies will keep being revisted.
+        ObjectNode target = (ObjectNode) copyTo;
+
+        JsonNode _copy = MetaFields._copy.getFrom(copyTo);
+        JsonNode _mod = _copy == null ? null : normalizeMods(MetaFields._mod.getFrom(_copy));
+        JsonNode _trait = _copy == null ? null : MetaFields._trait.getFrom(_copy);
+
+        JsonNode templateApplyRoot = null;
+
+        if (_trait != null) {
+            // fetch and apply external template mods
+            String templateKey = Tools5eIndexType.monsterTemplate.createKey(_trait);
+            JsonNode template = index.getOrigin(templateKey);
+            if (template == null) {
+                tui().warn("Unable to find trait for " + templateKey);
+            } else {
+                template = copyNode(template); // copy fast
+
+                JsonNode apply = MetaFields.apply.getFrom(template);
+                templateApplyRoot = MetaFields._root.getFrom(apply);
+
+                JsonNode templateMods = normalizeMods(MetaFields._mod.getFrom(apply));
+                if (templateMods != null) {
+                    if (_mod == null) {
+                        _mod = templateMods;
+                    } else {
+                        ObjectNode _modRw = (ObjectNode) _mod;
+                        for (Entry<String, JsonNode> e : iterableFields(templateMods)) {
+                            if (_modRw.has(e.getKey())) {
+                                appendToArray(_modRw.withArray(e.getKey()), e.getValue());
+                            } else {
+                                _modRw.set(e.getKey(), e.getValue());
+                            }
+                        }
+                    }
+                }
+            }
+            MetaFields._trait.removeFrom(_copy);
+        }
+
+        JsonNode _preserve = _copy == null
+                ? mapper().createObjectNode()
+                : MetaFields._preserve.getFrom(_copy);
+
+        // Copy required values from...
+        for (Entry<String, JsonNode> from : iterableFields(copyFrom)) {
+            String k = from.getKey();
+            JsonNode copyToField = copyTo.get(k);
+            if (copyToField != null && copyToField.isNull()) {
+                // copyToField exists as `null`. Remove the field.
+                target.remove(k);
+                continue;
+            }
+            if (copyToField == null) {
+                // not already present in copyTo -- should we copyFrom?
+                // Do merge rules indicate the value should be preserved
+                if (mergePreserveKey(type, k)) {
+                    // Does metadata indicate that it should be copied?
+                    if (metaPreserveKey(_preserve, k)) {
+                        target.set(k, copyNode(from.getValue()));
+                    }
+                } else {
+                    // in general, yes.
+                    target.set(k, copyNode(from.getValue()));
                 }
             }
         }
-        return jsonSource;
-    }
 
-    JsonNode copyAndMergeRace(JsonNode jsonSource) {
-        if (jsonSource.has("raceName") || jsonSource.has("_copy")) {
-            Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
-            jsonSource = cloneOrCopy(sources.getKey(),
-                    jsonSource, Tools5eIndexType.race,
-                    getTextOrDefault(jsonSource, "raceName", null),
-                    getTextOrDefault(jsonSource, "raceSource", null));
+        // Apply template _root properties
+        List<String> copyToRootProps = streamOfFieldNames(copyTo).toList();
+        if (templateApplyRoot != null) {
+            for (Entry<String, JsonNode> from : iterableFields(templateApplyRoot)) {
+                String k = from.getKey();
+                if (!copyToRootProps.contains(k)) {
+                    continue; // avoid overwriting any real properties with templates
+                }
+                target.set(k, copyNode(from.getValue()));
+            }
         }
-        return jsonSource;
-    }
 
-    JsonNode copyAndMergeClass(JsonNode jsonSource) {
-        if (jsonSource.has("className") || jsonSource.has("_copy")) {
-            // TODO: key may need to be constructed first? Is that all we needed the sources for?
-            Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
-            jsonSource = cloneOrCopy(sources.getKey(),
-                    jsonSource, Tools5eIndexType.classtype,
-                    getTextOrDefault(jsonSource, "className", null),
-                    getTextOrDefault(jsonSource, "classSource", null));
+        // Apply mods
+        if (_mod != null) {
+            for (Entry<String, JsonNode> entry : iterableFields(_mod)) {
+                // use the copyTo value as the attribute source for resolving dynamic text
+                entry.setValue(resolveDynamicText(originKey, entry.getValue(), copyTo));
+            }
+
+            for (Entry<String, JsonNode> entry : iterableFields(_mod)) {
+                String prop = entry.getKey();
+                JsonNode modInfos = entry.getValue();
+                if ("*".equals(prop)) {
+                    doMod(originKey, target, copyFrom, modInfos, COPY_ENTRY_PROPS);
+                } else if ("_".equals(prop)) {
+                    doMod(originKey, target, copyFrom, modInfos, null);
+                } else {
+                    doMod(originKey, target, copyFrom, modInfos, List.of(prop));
+                }
+            }
         }
-        return jsonSource;
+
+        // indicate that this is a copy, and remove copy metadata (avoid revisit)
+        target.put("isCopy", true);
+        MetaFields._copy.removeFrom(target);
+        return target;
     }
 
-    JsonNode cloneOrCopy(String originKey, JsonNode value, Tools5eIndexType parentType, String parentName,
-            String parentSource) {
-        JsonNode parentNode = parentName == null ? null : index().getOrigin(parentType, parentName, parentSource);
-        JsonNode copyNode = index().getOrigin(parentType, value.get("_copy"));
-        if (parentNode == null && copyNode == null) {
-            tui().errorf("both parent and requested copy are null? (from %s with _copy=%s)", originKey,
-                    value.get("_copy").toPrettyString());
-        } else if (parentNode == null) {
-            value = mergeNodes(originKey, copyNode, value);
-        } else if (copyNode == null) {
-            value = mergeNodes(originKey, parentNode, value);
-        } else {
-            // base type first
-            JsonNode mergeNode = mergeNodes(originKey, parentNode, copyNode);
-            value = mergeNodes(originKey, mergeNode, value);
-            tui().errorf("Check my work: %s is a copy of %s based on %s", originKey,
-                    getTextOrEmpty(copyNode, "name"), getTextOrEmpty(parentNode, "name"));
+    // DataUtil.generic.variableResolver
+    /**
+     * @param value JsonNode to be checked for values to replace
+     * @param copyTo JsonNode with attributes that can be used to resolve templates
+     */
+    private JsonNode resolveDynamicText(String originKey, JsonNode value, JsonNode target) {
+        Matcher matcher = variable_subst.matcher(value.toString());
+        while (matcher.find()) {
+            String[] pieces = matcher.group("variable").split("__");
+            TemplateVariable variableMode = TemplateVariable.valueFrom(pieces[0]);
+            return switch (variableMode) {
+                case name -> new TextNode(SourceField.name.getTextOrEmpty(target));
+                case short_name -> new TextNode(getShortName(target, false));
+                case title_short_name -> new TextNode(getShortName(target, true));
+                case dc, spell_dc -> {
+                    if (pieces.length < 2 || !target.has(pieces[1])) {
+                        tui().errorf("Error (%s): Missing detail for %s", originKey, value);
+                        yield value;
+                    }
+                    int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
+                    int pb = crToPb(MonsterFields.cr.getFrom(target));
+                    yield new TextNode("" + (8 + pb + mod));
+                }
+                case to_hit -> {
+                    if (pieces.length < 2 || !target.has(pieces[1])) {
+                        tui().errorf("Error (%s): Missing detail for %s", originKey, value);
+                        yield value;
+                    }
+                    int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
+                    int pb = crToPb(MonsterFields.cr.getFrom(target));
+                    yield new TextNode(asModifier(pb + mod));
+                }
+                case damage_mod -> {
+                    if (pieces.length < 2 || !target.has(pieces[1])) {
+                        tui().errorf("Error (%s): Missing detail for %s", originKey, value);
+                        yield value;
+                    }
+                    int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
+                    yield new TextNode(mod == 0 ? "" : asModifier(mod));
+                }
+                case damage_avg -> {
+                    Matcher m = dmg_avg_subst.matcher(pieces[1]);
+                    if (m.matches()) {
+                        String amount = m.group(1);
+                        String op = m.group(2);
+                        int mod = getAbilityModNumber(target.get(m.group(3)).asInt());
+                        if ("+".equals(op)) {
+                            double total = Double.parseDouble(amount) + mod;
+                            yield new TextNode("" + Math.floor(total));
+                        }
+                    }
+                    tui().errorf("Error (%s): Unrecognized damage average template %s", originKey, value);
+                    yield value;
+                }
+                default -> {
+                    variableMode.notSupported(tui(), originKey, value);
+                    yield value;
+                }
+            };
         }
         return value;
     }
 
-    JsonNode mergeNodes(String originKey, JsonNode baseNode, JsonNode incompleteNode) {
-        ObjectNode target = (ObjectNode) copyNode(baseNode);
-        target.put("merged", true);
-        target.remove("srd");
-        target.remove("basicRules");
-        target.remove("_versions");
-        target.remove("_copy");
-
-        JsonNode _copy = incompleteNode.get("_copy");
-        JsonNode _mod = _copy == null ? null : _copy.get("_mod");
-        JsonNode _preserve = _copy == null ? null : _copy.get("_preserve");
-        JsonNode _trait = _copy == null ? null : _copy.get("_trait");
-        JsonNode overwrite = _copy == null ? null : _copy.get("overwrite");
-
-        if (_preserve == null || !_preserve.has("reprintedAs")) {
-            target.remove("reprintedAs");
+    private JsonNode normalizeMods(JsonNode copyMeta) {
+        if (copyMeta == null || !copyMeta.isObject()) {
+            return copyMeta;
         }
-        if (_preserve == null || !_preserve.has("otherSources")) {
-            target.remove("otherSources");
-        }
-        if (_preserve == null || !_preserve.has("additionalSources")) {
-            target.remove("additionalSources");
-        }
-        if (_preserve == null || !_preserve.has("hasToken")) {
-            target.remove("hasToken");
-        }
-
-        for (Iterator<String> it = incompleteNode.fieldNames(); it.hasNext();) {
-            String f = it.next();
-            JsonNode overlayField = incompleteNode.get(f);
-            switch (f) {
-                case "_copy":
-                case "_mod":
-                case "_versions":
-                    // skip -- do not copy
-                    break;
-                case "name":
-                    target.set(f, copyNode(overlayField));
-                    break;
-                case "ability":
-                    JsonNode baseAbilityNode = baseNode.get("ability");
-                    if (incompleteNode.has("raceName")) {
-                        target.set("ability", copyNode(overlayField));
-                    } else if (baseAbilityNode == null) {
-                        if (overwrite != null && overwrite.has("ability")) {
-                            target.set("ability", copyNode(overlayField));
-                        }
-                    } else if (baseAbilityNode.isArray()) {
-                        ArrayNode cpyAbility = target.withArray("ability");
-                        if (cpyAbility.size() == 0) {
-                            target.set("ability", copyNode(overlayField));
-                            break;
-                        }
-                        if (cpyAbility.size() != overlayField.size()) {
-                            tui().errorf(
-                                    "Copy/Merge: Ability array lengths did not match (from %s):%nBASE:%n%s%nCOPY:%n%s",
-                                    originKey, cpyAbility.toPrettyString(), overlayField.toPrettyString());
-                            continue;
-                        }
-                        for (int i = 0; i < overlayField.size(); i++) {
-                            mergeFields(overlayField.get(i), (ObjectNode) cpyAbility.get(i));
-                        }
-                    }
-                    break;
-                case "skillProficiencies":
-                case "weaponProficiencies":
-                case "armorProficiencies":
-                case "languageProficiencies": {
-                    if (incompleteNode.has("raceName")) {
-                        target.set(f, copyNode(overlayField));
-                    } else {
-                        ArrayNode tgtArray = target.withArray(f);
-                        if ((overwrite != null && overwrite.has(f)) || tgtArray.isEmpty()) {
-                            target.set(f, copyNode(overlayField));
-                        } else {
-                            // usually size of one... so just append fields
-                            tgtArray.addAll((ArrayNode) copyNode(overlayField));
-                        }
-                    }
-                    break;
-                }
-                case "entries":
-                    if (_mod == null) {
-                        ArrayNode targetEntries = target.withArray("entries");
-                        appendToArray(targetEntries, overlayField);
-                    }
-                    break;
-                default:
-                    if (overlayField == null) {
-                        target.remove(f);
-                    } else if (alwaysSkip.contains(f)) {
-                        // tui().debugf("Copy/Merge: Always skip field %s (from %s)", f, originKey);
-                    } else if (_preserve == null || _preserve.has(f)) {
-                        target.replace(f, copyNode(overlayField));
-                    } else {
-                        tui().debugf("Copy/Merge: Skip field %s (from %s)", f, originKey);
-                    }
-                    break;
+        for (String name : iterableFieldNames(copyMeta)) {
+            JsonNode mod = copyMeta.get(name);
+            if (!mod.isArray()) {
+                ((ObjectNode) copyMeta).set(name, mapper().createArrayNode().add(mod));
             }
         }
+        return copyMeta;
+    }
 
-        if (_trait != null) {
-            // template = templateData.monsterTemplate.find(t => t.name.toLowerCase() === copyMeta._trait.name.toLowerCase() && t.source.toLowerCase() === copyMeta._trait.source.toLowerCase());
-            String key = Tools5eIndexType.monsterTemplate.createKey(_trait);
-            JsonNode trait = index.getOrigin(key);
-            if (trait == null) {
-                tui().warn("Unable to find trait for " + key);
-            } else {
-                JsonNode apply = trait.get("apply");
-                if (apply != null) {
-                    if (apply.has("_root")) {
-                        apply.get("_root").fields()
-                                .forEachRemaining(field -> target.replace(field.getKey(), copyNode(field.getValue())));
-                    }
-                    handleMod(originKey, target, apply.get("_mod"));
-                }
+    private void doMod(String originKey, ObjectNode target, JsonNode copyFrom, JsonNode modInfos, List<String> props) {
+        if (props == null || props.isEmpty()) { // '_' case
+            doModProp(originKey, modInfos, copyFrom, null, target);
+        } else {
+            for (String prop : props) {
+                doModProp(originKey, modInfos, copyFrom, prop, target);
             }
         }
-
-        handleMod(originKey, target, _mod);
-
-        String targetString = target.toString()
-                .replace("<$name$>", baseNode.get("name").asText())
-                .replace("<$title_short_name$>", getShortName(target, true))
-                .replace("<$short_name$>", getShortName(target, false));
-
-        targetString = spell_dc_subst.matcher(targetString)
-                .replaceAll((match) -> getSpellDc(target, match.group(1)));
-
-        targetString = to_hit_subst.matcher(targetString)
-                .replaceAll((match) -> getToHitString(target, match.group(1)));
-
-        targetString = dmg_mod_subst.matcher(targetString)
-                .replaceAll((match) -> getDamageMod(target, match.group(1)));
-
-        targetString = dmg_avg_subst.matcher(targetString)
-                .replaceAll((match) -> getDamageAvg(target, match.group(1), match.group(2), match.group(3)));
-
-        try {
-            return mapper().readTree(targetString);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return target;
-        }
     }
 
-    private String getSpellDc(JsonNode target, String ability) {
-        int mod = getAbilityModNumber(target.get(ability).asInt());
-        int pb = crToPb(target.get("cr"));
-        return (8 + mod + pb) + "";
-    }
-
-    private String getDamageMod(JsonNode target, String ability) {
-        int mod = getAbilityModNumber(target.get(ability).asInt());
-        return mod == 0
-                ? ""
-                : (mod >= 0 ? "+" : "") + mod;
-    }
-
-    private String getDamageAvg(JsonNode target, String amount, String op, String ability) {
-        int mod = getAbilityModNumber(target.get(ability).asInt());
-        if ("+".equals(op)) {
-            double total = Double.parseDouble(amount) + mod;
-            return (total >= 0 ? "+" : "") + Math.floor(total);
-        }
-        throw new IllegalArgumentException("Unknown damage average operation: " + op + " for " + target.get("name").asText());
-    }
-
-    private String getToHitString(JsonNode target, String ability) {
-        int pb = crToPb(target.get("cr"));
-        int mod = getAbilityModNumber(target.get(ability).asInt());
-        int total = pb + mod;
-        return (total >= 0 ? "+" : "") + total;
-    }
-
-    private String getShortName(JsonNode target, boolean isTitleCase) {
-        String name = target.get("name").asText();
-        JsonNode shortName = target.get("shortName");
-        boolean isNamedCreature = target.has("isNamedCreature");
-        String prefix = isNamedCreature
-                ? ""
-                : isTitleCase ? "The " : "the ";
-
-        if (shortName != null) {
-            return shortName.isBoolean()
-                    ? prefix + name
-                    : prefix + (isNamedCreature
-                            ? shortName.asText()
-                            : isTitleCase
-                                    ? toTitleCase(shortName.asText())
-                                    : shortName.asText().toLowerCase());
-        }
-
-        return prefix + getShortNameFromName(name, isNamedCreature);
-    }
-
-    private String getShortNameFromName(String name, boolean isNamedCreature) {
-        String result = name.split(",")[0]
-                .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
-
-        return isNamedCreature
-                ? result.split(" ")[0]
-                : result.toLowerCase();
-    }
-
-    void handleMod(String originKey, JsonNode target, JsonNode _mod) {
-        if (_mod != null) {
-            _mod.fields().forEachRemaining(field -> {
-                if (field.getKey().equals("*")) {
-                    List.of("action", "bonus", "reaction", "trait", "legendary",
-                            "mythic", "variant", "spellcasting",
-                            "legendaryHeader").forEach(x -> {
-                                if (target.has(x)) {
-                                    handleModifications(originKey, x, field.getValue(), target);
-                                }
-                            });
-                } else if (field.getKey().equals("_")) {
-                    handleModifications(originKey, null, field.getValue(), target);
+    void doModProp(String originKey, JsonNode modInfos, JsonNode copyFrom, String prop, ObjectNode target) {
+        for (JsonNode modInfo : iterableElements(modInfos)) {
+            if (modInfo.isTextual()) {
+                if ("remove".equals(modInfo.asText()) && prop != null) {
+                    target.remove(prop);
                 } else {
-                    handleModifications(originKey, field.getKey(), field.getValue(), target);
-                }
-            });
-
-            if (_mod.has("calculateProp")) {
-                doCalculateProp(originKey, _mod.get("calculateProp"), target);
-            }
-        }
-    }
-
-    ArrayNode sortArrayNode(ArrayNode array) {
-        if (array == null || array.size() <= 1) {
-            return array;
-        }
-        Set<JsonNode> elements = new TreeSet<>(Comparator.comparing(a -> a.asText().toLowerCase()));
-        array.forEach(elements::add);
-        ArrayNode sorted = mapper().createArrayNode();
-        elements.forEach(sorted::add);
-        return sorted;
-    }
-
-    void mergeFields(JsonNode sourceNode, ObjectNode targetNode) {
-        Objects.requireNonNull(sourceNode);
-        Objects.requireNonNull(targetNode);
-        for (Entry<String, JsonNode> f : iterableFields(sourceNode)) {
-            targetNode.set(f.getKey(), copyNode(f.getValue()));
-        }
-    }
-
-    void handleModifications(String originKey, String prop, JsonNode modInfo, JsonNode target) {
-        if (modInfo.isTextual()) {
-            if ("remove".equals(modInfo.asText())) {
-                ((ObjectNode) target).remove(prop);
-            } else {
-                tui().errorf("Unknown modification mode: %s (from %s)", modInfo.toPrettyString(), originKey);
-            }
-        } else if (modInfo.isArray()) {
-            modInfo.forEach(modItem -> doMod(originKey, modItem, prop, target));
-        } else {
-            doMod(originKey, modInfo, prop, target);
-        }
-    }
-
-    void doMod(String originKey, JsonNode modItem, String modFieldName, JsonNode target) {
-        switch (modItem.get("mode").asText()) {
-            case "prependArr":
-            case "appendArr":
-            case "insertArr":
-            case "removeArr":
-            case "replaceArr":
-            case "replaceOrAppendArr":
-            case "appendIfNotExistsArr":
-                doModArray(originKey, modItem, modFieldName, target);
-                break;
-            case "replaceTxt":
-                doReplaceText(modItem, modFieldName, target);
-                break;
-            case "addSenses":
-                doAddSenses(originKey, modItem, target);
-                break;
-            case "addSaves":
-                doAddSaves(originKey, modItem, target, false);
-                break;
-            case "addSkills":
-                doAddSkills(originKey, modItem, target, false);
-                break;
-            case "addSpells":
-                doAddSpells(originKey, modItem, target);
-                break;
-            case "removeSpells":
-                doRemoveSpells(originKey, modItem, target);
-                break;
-            case "replaceSpells":
-                doReplaceSpells(originKey, modItem, target);
-                break;
-            case "maxSize":
-                doMaxSize(originKey, modItem, target);
-                break;
-            case "scalarAddProp":
-                doScalarAddProp(originKey, modItem, target, modFieldName);
-                break;
-            case "scalarMultProp":
-                doScalarMultProp(originKey, modItem, target, modFieldName);
-                break;
-            case "scalarAddHit":
-                doScalarAddHit(originKey, modItem, target, modFieldName);
-                break;
-            case "scalarAddDc":
-                doScalarAddDc(originKey, modItem, target, modFieldName);
-                break;
-            case "scalarMultXp":
-                doScalarMultXp(originKey, modItem, target);
-                break;
-            case "addAllSaves":
-            case "addAllSkills":
-            case "calculateProp":
-                // ignore
-                break;
-            default:
-                tui().errorf("Unknown modification mode: %s (from %s)", modItem.toPrettyString(), originKey);
-                break;
-        }
-    }
-
-    static final Pattern dcPattern = Pattern.compile("\\{@dc (\\d+)(?:\\|[^}]+)?}");
-
-    private void doScalarAddDc(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
-        if (!target.has(modFieldName)) {
-            return;
-        }
-        int scalar = modItem.get("scalar").asInt();
-        String fullNode = dcPattern.matcher(target.get(modFieldName).toString())
-                .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
-
-        try {
-            ((ObjectNode) target).replace(modFieldName, mapper().readTree(fullNode));
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Unable to apply scalar to dc " + target.get(modFieldName).toString());
-        }
-    }
-
-    static final Pattern hitPattern = Pattern.compile("\\{@hit ([-+]?\\d+)}");
-
-    private void doScalarAddHit(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
-        if (!target.has(modFieldName)) {
-            return;
-        }
-        int scalar = modItem.get("scalar").asInt();
-        String fullNode = hitPattern.matcher(target.get(modFieldName).toString())
-                .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
-
-        try {
-            ((ObjectNode) target).replace(modFieldName, mapper().readTree(fullNode));
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Unable to apply scalar to hit " + target.get(modFieldName).toString());
-        }
-    }
-
-    private void doScalarMultXp(String originKey, JsonNode modItem, JsonNode target) {
-        double scalar = modItem.get("scalar").asDouble();
-        boolean floor = booleanOrDefault(modItem, "floor", false);
-
-        JsonNode crNode = target.get("cr");
-        int xp = crToXp(crNode);
-        double result = xp * scalar;
-
-        String newCr = JsonSource.XP_CHART_ALT.entrySet().stream()
-                .filter(e -> e.getValue() <= result)
-                .max(Comparator.comparingInt(Map.Entry::getValue)).get().getKey();
-
-        ObjectNode o = mapper().createObjectNode();
-        o.set("cr", new TextNode(newCr));
-        o.set("xp", doubleToJsonNode(null, result, floor));
-
-        ((ObjectNode) target).replace("cr", o);
-    }
-
-    private void doScalarMultProp(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
-        if (!target.has(modFieldName)) {
-            return;
-        }
-        double scalar = modItem.get("scalar").asDouble();
-        String prop = modItem.get("prop").asText();
-        boolean floor = booleanOrDefault(modItem, "floor", false);
-        if (prop.equals("*")) {
-            Iterator<String> i = target.get(modFieldName).fieldNames();
-            while (i.hasNext()) {
-                String name = i.next();
-                applyMultiply((ObjectNode) target.get(modFieldName), name, scalar, floor);
-            }
-        } else {
-            applyMultiply((ObjectNode) target.get(modFieldName), prop, scalar, floor);
-        }
-    }
-
-    private void applyMultiply(ObjectNode target, String prop, double scalar, boolean floor) {
-        double value = target.get(prop).asDouble();
-        double newValue = value * scalar;
-        target.replace(prop, doubleToJsonNode(target.get(prop), newValue, floor));
-    }
-
-    private void doScalarAddProp(String originKey, JsonNode modItem, JsonNode target, String modFieldName) {
-        if (!target.has(modFieldName)) {
-            return;
-        }
-        double scalar = modItem.get("scalar").asDouble();
-        String prop = modItem.get("prop").asText();
-        if (prop.equals("*")) {
-            Iterator<String> i = target.get(modFieldName).fieldNames();
-            while (i.hasNext()) {
-                String name = i.next();
-                applyAdd((ObjectNode) target.get(modFieldName), name, scalar);
-            }
-        } else {
-            applyAdd((ObjectNode) target.get(modFieldName), prop, scalar);
-        }
-    }
-
-    private void applyAdd(ObjectNode target, String prop, double scalar) {
-        double value = target.get(prop).asDouble();
-        double newValue = value + scalar;
-        target.replace(prop, doubleToJsonNode(target.get(prop), newValue, true));
-    }
-
-    private void doCalculateProp(String originKey, JsonNode modItem, JsonNode target) {
-        String prop = modItem.get("prop").asText();
-        String formula = modItem.get("formula").asText();
-        double prBonus = crToPb(target.get("cr"));
-        int dexMod = getAbilityModNumber(target.get("dex").asInt());
-
-        throw new IllegalStateException("doCalculateProp is implemented yet");
-    }
-
-    JsonNode doubleToJsonNode(JsonNode original, double newValue, boolean floor) {
-        if (original != null && original.isTextual()) {
-            return new TextNode((newValue >= 0 ? "+" : "") + (int) Math.floor(newValue));
-        }
-        if (floor) {
-            return new IntNode((int) Math.floor(newValue));
-        }
-        return new DoubleNode(newValue);
-    }
-
-    private void doMaxSize(String originKey, JsonNode modItem, JsonNode target) {
-        final String sizes = "VFDTSMLHGC";
-        String maxValue = getTextOrEmpty(modItem, "max");
-        int max = sizes.indexOf(maxValue);
-        boolean set = false;
-        ArrayNode size = target.withArray("size");
-        for (int i = size.size() - 1; i >= 0; i--) {
-            String s = size.get(i).asText();
-            if (sizes.indexOf(s) > max) {
-                size.remove(i);
-                set = true;
-            }
-        }
-        if (set) {
-            size.add(maxValue);
-        }
-    }
-
-    void doRemoveSpells(String originKey, JsonNode modItem, JsonNode target) {
-        if (!target.has("spellcasting")) {
-            throw new IllegalStateException("Can't remove spells from a monster without spellcasting: " + originKey);
-        }
-
-        JsonNode arrayNode = target.get("spellcasting");
-        arrayNode.forEach(targetSpellcasting -> List.of("rest", "daily", "weekly", "yearly").forEach(prop -> {
-            if (!modItem.has(prop)) {
-                return;
-            }
-            ObjectNode targetGroup = targetSpellcasting.withObject("/" + prop);
-            for (int i = 1; i <= 9; ++i) {
-                String key = i + "";
-                if (modItem.get(prop).has(key)) {
-                    ArrayNode tgtArray = targetGroup.withArray(key);
-                    modItem.withArray(key).forEach(spell -> {
-                        int index = findIndexByName(originKey, tgtArray, spell.asText());
-                        if (index >= 0) {
-                            tgtArray.remove(index);
-                        }
-                    });
-                    targetGroup.set(key, tgtArray);
-                }
-
-                String e = i + "e";
-                if (modItem.get(prop).has(e)) {
-                    ArrayNode tgtArray = targetGroup.withArray(e);
-                    modItem.withArray(e).forEach(spell -> {
-                        int index = findIndexByName(originKey, tgtArray, spell.asText());
-                        if (index >= 0) {
-                            tgtArray.remove(index);
-                        }
-                    });
-                    targetGroup.set(key, tgtArray);
-                }
-            }
-        }));
-    }
-
-    void doReplaceSpells(String originKey, JsonNode modItem, JsonNode target) {
-        if (!target.has("spellcasting")) {
-            throw new IllegalStateException("Can't replace spells for a monster without spellcasting: " + originKey);
-        }
-
-        JsonNode arrayNode = target.get("spellcasting");
-        arrayNode.forEach(targetSpellcasting -> {
-            if (modItem.has("spells")) {
-                JsonNode spells = modItem.get("spells");
-                ObjectNode targetSpells = targetSpellcasting.withObject("/spells");
-                spells.fields().forEachRemaining(ss -> {
-                    if (targetSpells.has(ss.getKey())) {
-                        JsonNode levelMetas = ss.getValue();
-                        ObjectNode targetLevel = targetSpells.withObject("/" + ss.getKey());
-                        ArrayNode targetLevelSpells = targetLevel.withArray("spells");
-                        levelMetas.forEach(x -> replaceArray(originKey, x, targetLevelSpells,
-                                x.get("replace"), x.get("with")));
-                        targetSpells.set(ss.getKey(), sortArrayNode(targetLevelSpells));
-                    }
-                });
-            }
-
-            List.of("rest", "daily", "weekly", "yearly").forEach(prop -> {
-                if (!modItem.has(prop)) {
-                    return;
-                }
-                ObjectNode targetGroup = targetSpellcasting.withObject("/" + prop);
-                for (int i = 1; i <= 9; ++i) {
-                    String key = i + "";
-                    if (modItem.get(prop).has(key)) {
-                        modItem.get(prop).get(key).forEach(
-                                sp -> replaceArray(originKey, sp, targetGroup.withArray(key),
-                                        sp.get("replace"), sp.get("with")));
-                        targetGroup.set(key, sortArrayNode(targetGroup.withArray(key)));
-                    }
-
-                    String e = i + "e";
-                    if (modItem.get(prop).has(e)) {
-                        modItem.get(prop).get(e).forEach(
-                                sp -> replaceArray(originKey, sp, targetGroup.withArray(e),
-                                        sp.get("replace"), sp.get("with")));
-                        targetGroup.set(e, sortArrayNode(targetGroup.withArray(e)));
-                    }
-                }
-            });
-        });
-    }
-
-    void doAddSpells(String originKey, JsonNode modItem, JsonNode target) {
-        if (!target.has("spellcasting")) {
-            throw new IllegalStateException("Can't add spells to a monster without spellcasting: " + originKey);
-        }
-        tui().debugf("Add spells %s", originKey);
-        ObjectNode targetSpellcasting = (ObjectNode) target.get("spellcasting").get(0);
-        if (modItem.has("spells")) {
-            JsonNode spells = modItem.get("spells");
-            ObjectNode targetSpells = targetSpellcasting.withObject("/spells");
-            spells.fields().forEachRemaining(s -> {
-                if (!targetSpells.has(s.getKey())) {
-                    targetSpells.set(s.getKey(), sortArrayNode((ArrayNode) s.getValue()));
-                } else {
-                    JsonNode spellsNew = spells.get(s.getKey());
-                    ObjectNode spellsTgt = targetSpells.withObject("/" + s.getKey());
-                    spellsNew.fields().forEachRemaining(ss -> {
-                        if (!spellsTgt.has(ss.getKey())) {
-                            spellsTgt.set(ss.getKey(), sortArrayNode((ArrayNode) ss.getValue()));
-                        } else if (spellsTgt.get(ss.getKey()).isArray()) {
-                            ArrayNode spellsArray = spellsTgt.withArray(ss.getKey());
-                            appendToArray(spellsArray, copyNode(ss.getValue()));
-                            targetSpells.set(s.getKey(), sortArrayNode(spellsArray));
-                        } else if (spellsTgt.get(ss.getKey()).isObject()) {
-                            throw new IllegalArgumentException(
-                                    String.format("Object %s is not an array (referenced from %s)", ss.getKey(),
-                                            originKey));
-                        }
-                    });
-                }
-            });
-        }
-
-        List.of("constant", "will", "ritual").forEach(prop -> {
-            if (!modItem.has(prop)) {
-                return;
-            }
-            ArrayNode targetGroup = targetSpellcasting.withArray(prop);
-            modItem.get(prop).forEach(targetGroup::add);
-            targetSpellcasting.set(prop, sortArrayNode(targetGroup));
-        });
-
-        List.of("rest", "daily", "weekly", "yearly").forEach(prop -> {
-            if (!modItem.has(prop)) {
-                return;
-            }
-
-            ObjectNode targetGroup = targetSpellcasting.withObject("/" + prop);
-            for (int i = 1; i <= 9; ++i) {
-                String key = i + "";
-                if (modItem.get(prop).has(key)) {
-                    modItem.get(prop).get(key).forEach(
-                            sp -> targetGroup.withArray(key).add(sp));
-                    targetGroup.set(key, sortArrayNode(targetGroup.withArray(key)));
-                }
-
-                String e = i + "e";
-                if (modItem.get(prop).has(e)) {
-                    modItem.get(prop).get(e).forEach(
-                            sp -> targetGroup.withArray(e).add(sp));
-                    targetGroup.set(e, sortArrayNode(targetGroup.withArray(e)));
-                }
-            }
-        });
-
-    }
-
-    void doAddSenses(String originKey, JsonNode modItem, JsonNode target) {
-        tui().debugf("Add senses %s", originKey);
-        if (!modItem.has("senses") || modItem.get("senses").size() == 0) {
-            return;
-        }
-        JsonNode senses = modItem.get("senses");
-        if (senses.isObject()) {
-            senses = mapper().createArrayNode();
-            ((ArrayNode) senses).add(modItem.get("senses"));
-        }
-
-        ArrayNode targetSenses = target.withArray("senses");
-
-        senses.forEach(sense -> {
-            String type = sense.get("type").asText();
-            int range = sense.get("range").asInt();
-            TextNode newValue = new TextNode(String.format("%s %s ft.", type, range));
-
-            boolean found = false;
-            for (int i = 0; i < targetSenses.size(); i++) {
-                Matcher m = Pattern.compile(type + " (\\d+)", i).matcher(sense.asText());
-                if (m.matches()) {
-                    found = true;
-                    if (Integer.parseInt(m.group(1)) < range) {
-                        targetSenses.set(i, newValue);
-                    }
-                }
-            }
-            if (!found) {
-                targetSenses.add(newValue);
-            }
-        });
-
-    }
-
-    void doAddSaves(String originKey, JsonNode modItem, JsonNode target, boolean allSaves) {
-        tui().debugf("Add saves %s", originKey);
-        // if (allSaves) {
-        //     int value = modItem.get("saves").asInt();
-        //     if (value > 0) {
-        //         ObjectNode recurse = mapper().createObjectNode();
-        //         ObjectNode newSaves = mapper().createObjectNode();
-        //         SkillOrAbility.allSaves.forEach(x -> newSaves.put(x, value));
-        //         recurse.set("saves", newSaves);
-        //         doAddSaves(originKey, recurse, target, false);
-        //     }
-        //     return;
-        // }
-        ObjectNode targetSaves = target.withObject("/save");
-        modItem.get("saves").fields().forEachRemaining(e -> {
-            int mode = e.getValue().asInt();
-            String ability = e.getKey();
-            String cr = monsterCr(target);
-            double total = mode * crToPb(cr) + getAbilityModNumber(target.get(ability).asInt());
-            String totalAsText = (total >= 0 ? "+" : "") + ((int) total);
-
-            if (targetSaves.has(ability)) {
-                if (targetSaves.get(ability).asDouble() < total) {
-                    targetSaves.set(ability, new TextNode(totalAsText));
+                    tui().errorf("Error(%s): Unknown text modification mode for %s: %s", originKey, prop, modInfo);
                 }
             } else {
-                targetSaves.set(ability, new TextNode(totalAsText));
-            }
-        });
-    }
-
-    void doAddSkills(String originKey, JsonNode modItem, JsonNode target, boolean allSkills) {
-        tui().debugf("Add skills %s", originKey);
-        // if (allSkills) {
-        //     int value = modItem.get("skills").asInt();
-        //     if (value > 0) {
-        //         ObjectNode recurse = mapper().createObjectNode();
-        //         ObjectNode newSkills = mapper().createObjectNode();
-        //         SkillOrAbility.allSkills.forEach(x -> newSkills.put(x, value));
-        //         recurse.set("skills", newSkills);
-        //         doAddSkills(originKey, recurse, target, false);
-        //     }
-        //     return;
-        // }
-        ObjectNode targetSkills = target.withObject("/skills");
-        modItem.get("skills").fields().forEachRemaining(e -> {
-            // mode: 1 = proficient; 2 = expert
-            int mode = e.getValue().asInt();
-            String skill = e.getKey();
-            String ability = getAbilityForSkill(skill);
-            int score = target.get(ability).asInt();
-            String cr = monsterCr(target);
-            double total = mode * crToPb(cr) + getAbilityModNumber(score);
-            String totalAsText = (total >= 0 ? "+" : "") + ((int) total);
-
-            if (targetSkills.has(skill)) {
-                if (targetSkills.get(skill).asDouble() < total) {
-                    targetSkills.set(skill, new TextNode(totalAsText));
+                ModFieldMode mode = ModFieldMode.valueFrom(modInfo, MetaFields.mode);
+                switch (mode) {
+                    // Strings & text
+                    case appendStr -> doAppendText(originKey, modInfo, copyFrom, prop, target);
+                    case replaceName -> mode.notSupported(tui(), originKey, modInfo);
+                    case replaceTxt -> doReplaceText(originKey, modInfo, copyFrom, prop, target);
+                    // Arrays
+                    case prependArr, appendArr, replaceArr, replaceOrAppendArr, appendIfNotExistsArr, insertArr, removeArr ->
+                        doModArray(
+                                originKey, mode, modInfo, prop, target);
+                    // Properties
+                    case setProp -> doSetProp(originKey, modInfo, prop, target);
+                    // Bestiary
+                    case addSenses -> doAddSenses(originKey, modInfo, copyFrom, target); // no prop
+                    case addSaves -> mode.notSupported(tui(), originKey, modInfo);
+                    case addSkills -> doAddSkills(originKey, modInfo, target); // no prop
+                    case addAllSaves -> mode.notSupported(tui(), originKey, modInfo);
+                    case addAllSkills -> mode.notSupported(tui(), originKey, modInfo);
+                    case addSpells -> doAddSpells(originKey, modInfo, copyFrom, target); // no prop
+                    case replaceSpells -> doReplaceSpells(originKey, modInfo, copyFrom, target); // no prop
+                    case removeSpells -> doRemoveSpells(originKey, modInfo, copyFrom, target); // no prop
+                    // MATH
+                    case calculateProp -> mode.notSupported(tui(), originKey, modInfo);
+                    case scalarAddProp -> doScalarAddProp(originKey, modInfo, prop, target);
+                    case scalarMultProp -> doScalarMultProp(originKey, modInfo, prop, target);
+                    case scalarMultXp -> doScalarMultXp(originKey, modInfo, target); // no prop
+                    case scalarAddDc -> doScalarAddDc(originKey, modInfo, prop, target);
+                    case scalarAddHit -> doScalarAddHit(originKey, modInfo, prop, target);
+                    case maxSize -> doMaxSize(originKey, modInfo, target); // no prop
+                    default -> tui().errorf("Error (%s): Unknown modification mode: %s", originKey, modInfo);
                 }
-            } else {
-                targetSkills.set(skill, new TextNode(totalAsText));
             }
-        });
+        }
     }
 
-    void doReplaceText(JsonNode modItem, String modFieldName, JsonNode target) {
-        String replace = modItem.get("replace").asText();
-        String with = modItem.get("with").asText();
-        JsonNode flags = modItem.get("flags");
+    void doAppendText(String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target) {
+        if (target.has(prop)) {
+            String joiner = MetaFields.joiner.getTextOrEmpty(modInfo);
+            target.put(prop, getTextOrEmpty(target, prop) + joiner
+                    + MetaFields.str.getTextOrEmpty(modInfo));
+        } else {
+            target.put(prop, MetaFields.str.getTextOrEmpty(modInfo));
+        }
+    }
+
+    void doReplaceText(String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target) {
+        if (!target.has(prop)) {
+            return;
+        }
+        if (!target.get(prop).isArray()) {
+            tui().warnf("replaceTxt for %s with a property %s that is not an array %s: %s", originKey, prop, modInfo,
+                    target.get(prop));
+            return;
+        }
+
+        String replace = MetaFields.replace.getTextOrEmpty(modInfo);
+        String with = MetaFields.with.getTextOrEmpty(modInfo);
+        JsonNode flags = MetaFields.flags.getFrom(modInfo);
 
         final Pattern pattern;
         if (flags != null) {
@@ -848,87 +475,511 @@ public class JsonSourceCopier implements JsonSource {
             pattern = Pattern.compile("\\b" + replace);
         }
 
-        JsonNode targetField = target.get(modFieldName);
-        List<String> properties;
         final boolean findPlainText;
-        if (modItem.has("props")) {
-            properties = new ArrayList<>();
-            modItem.withArray("props").forEach(x -> properties.add(x.isNull() ? "null" : x.asText()));
-            properties.remove("null");
-            findPlainText = properties.contains("null");
-        } else {
-            properties = List.of("entries", "headerEntries", "footerEntries");
+        final List<String> propNames;
+        JsonNode props = MetaFields.props.getFrom(modInfo);
+        if (props == null) {
             findPlainText = true;
+            propNames = List.of("entries", "headerEntries", "footerEntries");
+        } else if (props.isEmpty()) {
+            tui().warnf("replaceText with empty props in %s: %s", originKey, modInfo);
+            return;
+        } else {
+            propNames = new ArrayList<>();
+            props.forEach(x -> propNames.add(x.isNull() ? "null" : x.asText()));
+            findPlainText = propNames.remove("null");
         }
 
-        if (findPlainText && targetField.isTextual()) {
-            ((ObjectNode) target).set(modFieldName, copyReplaceNode(targetField, pattern, with));
+        ArrayNode tgtArray = target.withArray(prop);
+        for (int i = 0; i < tgtArray.size(); i++) {
+            JsonNode it = tgtArray.get(i);
+            if (it.isTextual() && findPlainText) {
+                tgtArray.set(i, copyReplaceText(it, pattern, with));
+            } else if (it.isObject()) {
+                for (String k : propNames) {
+                    if (it.has(k)) {
+                        ((ObjectNode) it).set(k, copyReplaceText(it.get(k), pattern, with));
+                    }
+                }
+            }
+        }
+    }
+
+    private JsonNode copyReplaceText(JsonNode sourceNode, Pattern replace, String with) {
+        String modified = replace.matcher(sourceNode.toString()).replaceAll(with);
+        return createNode(modified);
+    }
+
+    ArrayNode sortArrayNode(ArrayNode array) {
+        if (array == null || array.size() <= 1) {
+            return array;
+        }
+        Set<JsonNode> elements = new TreeSet<>(Comparator.comparing(a -> a.asText().toLowerCase()));
+        array.forEach(elements::add);
+        ArrayNode sorted = mapper().createArrayNode();
+        sorted.addAll(elements);
+        return sorted;
+    }
+
+    private void doSetProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
+        List<String> propPath = List.of(MetaFields.prop.getTextOrEmpty(modInfo).split("\\."));
+        if (!"*".equals(prop)) {
+            propPath = new ArrayList<>(propPath);
+            propPath.add(0, prop);
+        }
+        String last = propPath.remove(propPath.size() - 1);
+
+        ObjectNode targetRw = ((ObjectNode) target).withObject("/" + String.join("/", propPath));
+        targetRw.set(last, copyNode(MetaFields.value.getFrom(modInfo)));
+    }
+
+    private void doScalarAddHit(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
+        final Pattern hitPattern = Pattern.compile("\\{@hit ([-+]?\\d+)}");
+        if (!target.has(prop)) {
             return;
         }
 
-        targetField.forEach(x -> {
-            if (!x.isObject()) {
-                return;
-            }
-            properties.forEach(prop -> {
-                if (x.has(prop)) {
-                    ((ObjectNode) x).set(prop, copyReplaceNode(x.get(prop), pattern, with));
-                }
-            });
-        });
+        int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
+        String fullNode = hitPattern.matcher(target.get(prop).toString())
+                .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+        target.set(prop, createNode(fullNode));
     }
 
-    void doModArray(String originKey, JsonNode modItem, String fieldName, JsonNode target) {
-        JsonNode items = modItem.has("items") ? copyNode(modItem.get("items")) : null;
-        ArrayNode tgtArray = target.withArray(fieldName);
-        switch (modItem.get("mode").asText()) {
-            case "prependArr":
-                insertIntoArray(tgtArray, 0, items);
-                break;
-            case "appendArr":
-                appendToArray(tgtArray, items);
-                break;
-            case "appendIfNotExistsArr":
-                if (tgtArray.size() == 0) {
-                    appendToArray(tgtArray, items);
-                } else {
-                    assert items != null;
-                    if (items.isArray()) {
-                        List<JsonNode> filtered = streamOf((ArrayNode) items)
-                                .filter(it -> streamOf(tgtArray).noneMatch(it::equals))
-                                .collect(Collectors.toList());
-                        tgtArray.addAll(filtered);
+    private void doScalarAddDc(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
+        final Pattern dcPattern = Pattern.compile("\\{@dc (\\d+)(?:\\|[^}]+)?}");
+        if (!target.has(prop)) {
+            return;
+        }
+        int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
+        String fullNode = dcPattern.matcher(target.get(prop).toString())
+                .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+        target.set(prop, createNode(fullNode));
+    }
+
+    private void doScalarAddProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
+        if (!target.has(prop)) {
+            return;
+        }
+        ObjectNode propRw = (ObjectNode) target.get(prop);
+        int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
+        Consumer<String> scalarAdd = (k) -> {
+            JsonNode node = propRw.get(k);
+            boolean isString = node.isTextual();
+            int value = isString
+                    ? Integer.parseInt(node.asText())
+                    : node.asInt();
+            value += scalar;
+            propRw.replace(k, isString
+                    ? new TextNode(asModifier(value))
+                    : new IntNode(value));
+        };
+
+        String modProp = MetaFields.prop.getTextOrNull(modInfo);
+        if ("*".equals(modProp)) {
+            for (String fieldName : iterableFieldNames(propRw)) {
+                scalarAdd.accept(fieldName);
+            }
+        } else {
+            scalarAdd.accept(modProp);
+        }
+    }
+
+    private void doScalarMultProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
+        if (!target.has(prop)) {
+            return;
+        }
+        ObjectNode propRw = (ObjectNode) target.get(prop);
+        double scalar = MetaFields.scalar.getFrom(modInfo).asDouble();
+        boolean floor = MetaFields.floor.booleanOrDefault(modInfo, false);
+        Consumer<String> scalarMult = (k) -> {
+            JsonNode node = propRw.get(k);
+            boolean isString = node.isTextual();
+            double value = isString
+                    ? Double.parseDouble(node.asText())
+                    : node.asDouble();
+            value *= scalar;
+            if (floor) {
+                value = Math.floor(value);
+            }
+            propRw.replace(k, isString
+                    ? new TextNode(asModifier(value))
+                    : new DoubleNode(value));
+        };
+
+        String modProp = MetaFields.prop.getTextOrNull(modInfo);
+        if ("*".equals(modProp)) {
+            for (String fieldName : iterableFieldNames(propRw)) {
+                scalarMult.accept(fieldName);
+            }
+        } else {
+            scalarMult.accept(modProp);
+        }
+    }
+
+    private void doScalarMultXp(String originKey, JsonNode modInfo, ObjectNode target) {
+        JsonNode crNode = Tools5eFields.cr.getFrom(target);
+        if (crNode == null) {
+            tui().errorf("Error (%s): modifying scalarMultXp on an object that does not define cr; %s", originKey, target);
+            return;
+        }
+        double scalar = MetaFields.scalar.getFrom(modInfo).asDouble();
+        boolean floor = MetaFields.floor.booleanOrDefault(modInfo, false);
+
+        ToDoubleFunction<Double> scalarMult = (x) -> {
+            double value = x * scalar;
+            if (floor) {
+                value = Math.floor(value);
+            }
+            return value;
+        };
+
+        if (Tools5eFields.xp.existsIn(crNode)) {
+            double input = Tools5eFields.xp.getFrom(crNode).asDouble();
+            Tools5eFields.xp.setIn(target, new DoubleNode(scalarMult.applyAsDouble(input)));
+        } else {
+            double crValue = crToXp(crNode);
+            if (!Tools5eFields.cr.existsIn(crNode)) {
+                // Wrap cr in a containing object
+                ObjectNode crNodeRw = mapper().createObjectNode();
+                Tools5eFields.cr.setIn(crNodeRw, crNode);
+                Tools5eFields.cr.setIn(target, crNodeRw);
+                crNode = crNodeRw;
+            }
+            Tools5eFields.xp.setIn(crNode, new DoubleNode(scalarMult.applyAsDouble(crValue)));
+        }
+    }
+
+    private void doMaxSize(String originKey, JsonNode modInfo, ObjectNode target) {
+        final String SIZES = "FDTSMLHGCV";
+        if (!Tools5eFields.size.existsIn(target)) {
+            tui().errorf("Error (%s): enforcing maxSize on an object that does not define size; %s", originKey, target);
+            return;
+        }
+
+        String maxValue = MetaFields.max.getTextOrEmpty(modInfo);
+        int maxIdx = SIZES.indexOf(maxValue);
+        if (maxValue.isBlank() || maxIdx < 0) {
+            tui().errorf("Error (%s): Invalid maxSize value %s", originKey, maxValue.isBlank() ? "(missing)" : maxValue);
+            return;
+        }
+
+        ArrayNode size = Tools5eFields.size.withArrayFrom(target);
+        List<JsonNode> collect = streamOf(size)
+                .filter(x -> SIZES.indexOf(x.asText()) <= maxIdx)
+                .collect(Collectors.toList());
+
+        if (size.size() != collect.size()) {
+            size.removeAll();
+            if (collect.isEmpty()) {
+                size.add(new TextNode(maxValue));
+            } else {
+                size.addAll(collect);
+            }
+        }
+    }
+
+    // static _doMod_addSpells ({copyTo, copyFrom,...
+    void doAddSpells(String originKey, JsonNode modInfo, JsonNode copyFrom, ObjectNode target) {
+        ObjectNode spellcasting = (ObjectNode) MonsterFields.spellcasting.getFirstFromArray(target);
+        if (spellcasting == null) {
+            tui().errorf("Error (%s): Can't add spells to a monster without spellcasting", originKey);
+            throw new IllegalStateException("Can't add spells to a monster without spellcasting; copy/merge of " + originKey);
+        }
+
+        if (MonsterFields.spells.existsIn(modInfo)) {
+            ObjectNode spells = ensureObjectNode(MonsterFields.spells.getFrom(spellcasting));
+            MonsterFields.spells.setIn(spellcasting, spells); // ensure saved as object
+
+            for (Entry<String, JsonNode> modSpellEntry : iterableFields(MonsterFields.spells.getFrom(modInfo))) {
+                String k = modSpellEntry.getKey();
+                if (!spells.has(k)) {
+                    spells.set(k, copyNode(modSpellEntry.getValue()));
+                    continue;
+                }
+
+                // merge the spell objects (yikes)
+                ObjectNode targetSpell = (ObjectNode) spells.get(k);
+                JsonNode modSpell = modSpellEntry.getValue();
+
+                for (Entry<String, JsonNode> modSpellProp : iterableFields(modSpell)) {
+                    String prop = modSpellProp.getKey();
+                    JsonNode modSpellList = modSpellProp.getValue();
+                    JsonNode tgtSpellList = targetSpell.get(prop);
+
+                    if (tgtSpellList == null) {
+                        targetSpell.set(prop, copyNode(modSpellList));
+                    } else if (tgtSpellList.isArray()) {
+                        // append and sort
+                        appendToArray((ArrayNode) tgtSpellList, copyNode(modSpellList));
+                        targetSpell.set(prop, sortArrayNode((ArrayNode) tgtSpellList));
+                    } else if (tgtSpellList.isObject()) {
+                        // throw. Not supported
+                        tui().errorf("Error (%s): Object at key %s, not an array", originKey, prop);
+                        throw new IllegalStateException("Badly formed spell list in " + originKey
+                                + "; found JSON Object instead of an array for " + prop);
                     } else {
-                        if (streamOf(tgtArray).noneMatch(items::equals)) {
-                            tgtArray.add(items);
+                        // overwrite
+                        targetSpell.set(prop, copyNode(modSpellList));
+                    }
+                }
+            }
+        }
+
+        for (String type : LEARNED_SPELL_TYPE) {
+            if (modInfo.has(type)) {
+                ArrayNode spells = spellcasting.withArray(type);
+                spells.addAll((ArrayNode) modInfo.get(type));
+            }
+        }
+
+        for (String cast : SPELL_CAST_FREQUENCY) {
+            JsonNode modSpells = modInfo.get(cast);
+            if (modSpells == null) {
+                continue;
+            }
+            ObjectNode spells = ensureObjectNode(spellcasting.get(cast));
+            spellcasting.set(cast, spells); // ensure saved as object
+
+            for (int i = 1; i <= 9; i++) {
+                String k = i + "";
+                if (modSpells.has(k)) {
+                    ArrayNode spellList = spells.withArray(k);
+                    appendToArray(spellList, (ArrayNode) modSpells.get(k));
+                }
+
+                String each = i + "e";
+                if (modSpells.has(each)) {
+                    ArrayNode spellList = spells.withArray(each);
+                    appendToArray(spellList, (ArrayNode) modSpells.get(each));
+                }
+            }
+        }
+    }
+
+    void doReplaceSpells(String originKey, JsonNode modInfo, JsonNode copyFrom, ObjectNode target) {
+        ObjectNode spellcasting = (ObjectNode) MonsterFields.spellcasting.getFirstFromArray(target);
+        if (spellcasting == null) {
+            tui().errorf("Error (%s): Can't replace spells for a monster without spellcasting", originKey);
+            throw new IllegalStateException(
+                    "Can't replace spells for a monster without spellcasting; copy/merge of " + originKey);
+        }
+
+        if (MonsterFields.spells.existsIn(modInfo) && MonsterFields.spells.existsIn(spellcasting)) {
+            ObjectNode spells = ensureObjectNode(MonsterFields.spells.getFrom(spellcasting));
+            MonsterFields.spells.setIn(spellcasting, spells); // ensure saved as object
+
+            for (Entry<String, JsonNode> modSpellEntry : iterableFields(MonsterFields.spells.getFrom(modInfo))) {
+                String k = modSpellEntry.getKey();
+                if (spells.has(k)) { // replace if exists
+                    JsonNode replaceMetas = modSpellEntry.getValue();
+                    ObjectNode currentSpells = (ObjectNode) spells.get(k);
+                    replaceSpells(originKey, currentSpells, replaceMetas, MonsterFields.spells.name());
+                }
+            }
+        }
+
+        JsonNode modDailySpells = MonsterFields.daily.getFrom(modInfo);
+        ObjectNode dailySpells = (ObjectNode) MonsterFields.daily.getFrom(spellcasting);
+        if (modDailySpells != null && dailySpells != null) {
+            for (int i = 1; i <= 9; i++) {
+                String k = i + "";
+                for (JsonNode replaceMetas : iterableElements(modDailySpells.get(k))) {
+                    replaceSpells(originKey, dailySpells, replaceMetas, k);
+                }
+                String each = i + "e";
+                for (JsonNode replaceMetas : iterableElements(modDailySpells.get(each))) {
+                    replaceSpells(originKey, dailySpells, replaceMetas, each);
+                }
+            }
+        }
+    }
+
+    void replaceSpells(String originKey, ObjectNode currentSpells, JsonNode replaceMetas, String k) {
+        replaceMetas = ensureArray(replaceMetas);
+        for (JsonNode replaceMeta : iterableElements(replaceMetas)) {
+            JsonNode with = ensureArray(MetaFields.with.getFrom(replaceMeta));
+            JsonNode replace = MetaFields.replace.getFrom(replaceMeta);
+            if (replace == null) {
+                tui().errorf("Error (%s): Missing replace value for %s", originKey, replaceMeta);
+                continue;
+            }
+            ArrayNode spellList = currentSpells.withArray(k);
+
+            int index = findIndexByName(originKey, spellList, replace.asText());
+            if (index >= 0) {
+                spellList.remove(index);
+                insertIntoArray(spellList, index, with);
+            } else {
+                tui().errorf("Error (%s): Unable to find spell %s to replace", originKey, replace);
+            }
+        }
+    }
+
+    // static _doMod_removeSpells ({copyTo, copyFrom,...
+    void doRemoveSpells(String originKey, JsonNode modInfo, JsonNode copyFrom, ObjectNode target) {
+        ObjectNode spellcasting = (ObjectNode) MonsterFields.spellcasting.getFirstFromArray(target);
+        if (spellcasting == null) {
+            tui().errorf("Error (%s): Can't remove spells from a monster without spellcasting", originKey);
+            throw new IllegalStateException(
+                    "Can't remove spells from a monster without spellcasting; copy/merge of " + originKey);
+        }
+
+        if (MonsterFields.spells.existsIn(modInfo) && MonsterFields.spells.existsIn(spellcasting)) {
+            ObjectNode spells = (ObjectNode) MonsterFields.spells.getFrom(spellcasting);
+
+            for (Entry<String, JsonNode> modSpellEntry : iterableFields(MonsterFields.spells.getFrom(modInfo))) {
+                String k = modSpellEntry.getKey();
+                // Look for spell levels: spells.1.spells
+                if (MonsterFields.spells.existsIn(spells.get(k))) {
+                    removeSpells(originKey,
+                            MonsterFields.spells.withArrayFrom(spells.get(k)),
+                            modSpellEntry.getValue());
+                }
+            }
+
+            for (String k : LEARNED_SPELL_TYPE) {
+                if (modInfo.has(k) && spellcasting.has(k)) {
+                    ArrayNode spellList = spellcasting.withArray(k);
+                    removeSpells(originKey, spellList, modInfo.get(k));
+                }
+            }
+
+            for (String cast : SPELL_CAST_FREQUENCY) {
+                if (modInfo.has(cast) && spellcasting.has(cast)) {
+                    ObjectNode spellCast = (ObjectNode) spellcasting.get(cast);
+                    for (int i = 1; i <= 9; i++) {
+                        String k = i + "";
+                        String each = i + "e";
+                        if (spellCast.has(k)) {
+                            ArrayNode interval = spellcasting.withArray(k);
+                            removeSpells(originKey, interval, modInfo.get(k));
+                        }
+                        if (spellCast.has(each)) {
+                            ArrayNode eachList = spellcasting.withArray(each);
+                            removeSpells(originKey, eachList, modInfo.get(each));
                         }
                     }
                 }
-                break;
-            case "insertArr": {
-                int index = modItem.get("index").asInt();
+            }
+        }
+    }
+
+    void removeSpells(String originKey, ArrayNode spellList, JsonNode removeSpellList) {
+        for (JsonNode spell : iterableElements(removeSpellList)) {
+            int index = findIndexByName(originKey, spellList, spell.asText());
+            if (index >= 0) {
+                spellList.remove(index);
+            }
+        }
+    }
+
+    void doAddSenses(String originKey, JsonNode modInfo, JsonNode copyFrom, ObjectNode target) {
+        ArrayNode senses = ensureArray(MonsterFields.senses.getFrom(target));
+        MonsterFields.senses.setIn(target, senses); // make sure set as array
+
+        JsonNode modSenses = ensureArray(MonsterFields.senses.getFrom(modInfo));
+        for (JsonNode modSense : iterableElements(modSenses)) {
+            boolean found = false;
+            String modType = MetaFields.type.getTextOrThrow(modSense);
+            int modRange = MetaFields.range.getIntOrThrow(modSense);
+            Pattern p = Pattern.compile(modType + " (\\d+)", Pattern.CASE_INSENSITIVE);
+            for (int i = 0; i < senses.size(); i++) {
+                Matcher m = p.matcher(senses.get(i).asText());
+                if (m.matches()) {
+                    found = true;
+                    int range = Integer.parseInt(m.group(1));
+                    if (range < modRange) {
+                        senses.set(i, new TextNode(modType + " " + modRange + " ft."));
+                    }
+                    break;
+                }
+            }
+            if (!found) {
+                senses.add(new TextNode(modType + " " + modRange + " ft."));
+            }
+        }
+    }
+
+    void doAddSkills(String originKey, JsonNode modInfo, ObjectNode target) {
+        ObjectNode allSkills = ensureObjectNode(MonsterFields.skill.getFrom(target));
+        MonsterFields.skill.setIn(target, allSkills); // ensure saved as object
+        int pb = crToPb(Tools5eFields.cr.getFrom(target));
+
+        JsonNode modSkills = ensureArray(MetaFields.skills.getFrom(modInfo));
+        for (Entry<String, JsonNode> entry : iterableFields(modSkills)) {
+            String modSkill = entry.getKey();
+            int abilityScore = intOrThrow(target, getAbilityForSkill(modSkill));
+            int abilityMod = getAbilityModNumber(abilityScore);
+
+            // mode: 1 = proficient; 2 = expert
+            int mode = MetaFields.mode.getIntOrThrow(entry.getValue());
+            int total = mode * pb + abilityMod;
+
+            if (allSkills.has(modSkill)) {
+                int existing = intOrThrow(allSkills, modSkill);
+                if (total > existing) {
+                    allSkills.put(modSkill, asModifier(total));
+                }
+            } else {
+                allSkills.put(modSkill, asModifier(total));
+            }
+        }
+    }
+
+    void doModArray(String originKey, ModFieldMode mode, JsonNode modInfo, String prop, ObjectNode target) {
+        JsonNode items = ensureArray(MetaFields.items.getFrom(modInfo));
+        switch (mode) {
+            case prependArr -> {
+                ArrayNode tgtArray = target.withArray(prop);
+                insertIntoArray(tgtArray, 0, items);
+            }
+            case appendArr -> {
+                ArrayNode tgtArray = target.withArray(prop);
+                appendToArray(tgtArray, items);
+            }
+            case appendIfNotExistsArr -> {
+                ArrayNode tgtArray = target.withArray(prop);
+                appendIfNotExistsArr(tgtArray, items);
+            }
+            case insertArr -> {
+                if (!target.has(prop)) {
+                    tui().errorf("Error (%s): Unable to insert into array; %s is not present: %s", originKey, prop, target);
+                    return;
+                }
+                ArrayNode tgtArray = target.withArray(prop);
+                int index = MetaFields.index.intOrDefault(modInfo, -1);
+                if (index < 0) {
+                    index = tgtArray.size();
+                }
                 insertIntoArray(tgtArray, index, items);
-                break;
             }
-            case "removeArr": {
-                removeFromArray(originKey, modItem, tgtArray, items);
-                break;
+            case removeArr -> {
+                if (!target.has(prop)) {
+                    tui().errorf("Error (%s): Unable to remove from array; %s is not present: %s", originKey, prop, target);
+                    return;
+                }
+                ArrayNode tgtArray = target.withArray(prop);
+                removeFromArray(originKey, modInfo, prop, tgtArray);
             }
-            case "replaceArr": {
-                JsonNode replace = modItem.get("replace");
-                replaceArray(originKey, modItem, tgtArray, replace, items);
-                break;
+            case replaceArr -> {
+                if (!target.has(prop)) {
+                    tui().errorf("Error (%s): Unable to replace array; %s is not present: %s", originKey, prop, target);
+                    return;
+                }
+                ArrayNode tgtArray = target.withArray(prop);
+                replaceArray(originKey, modInfo, tgtArray, items);
             }
-            case "replaceOrAppendArr": {
-                JsonNode replace = modItem.get("replace");
-                if (!replaceArray(originKey, modItem, tgtArray, replace, items)) {
+            case replaceOrAppendArr -> {
+                ArrayNode tgtArray = target.withArray(prop);
+                boolean didReplace = false;
+                if (tgtArray.size() > 0) {
+                    didReplace = replaceArray(originKey, modInfo, tgtArray, items);
+                }
+                if (!didReplace) {
                     appendToArray(tgtArray, items);
                 }
-                break;
             }
-            default:
-                tui().errorf("Unknown modification mode: %s (from %s)", modItem.toPrettyString(), originKey);
-                break;
+            default -> tui().errorf("Error (%s): Unknown modification mode for property %s: %s", originKey, prop, modInfo);
         }
     }
 
@@ -957,43 +1008,65 @@ public class JsonSourceCopier implements JsonSource {
         }
     }
 
-    void removeFromArray(String originKey, JsonNode modItem, ArrayNode tgtArray, JsonNode items) {
-        JsonNode names = modItem.get("names");
-        if (modItem.has("names")) {
-            if (names.isTextual()) {
-                int index = findIndexByName(originKey, tgtArray, names.asText());
-                if (index >= 0) {
-                    tgtArray.remove(index);
-                }
-            } else if (names.isArray()) {
-                modItem.withArray("names").forEach(name -> {
-                    int index = findIndexByName(originKey, tgtArray, name.asText());
-                    if (index >= 0) {
-                        tgtArray.remove(index);
-                    }
-                });
-            }
-        } else if (items != null && items.isArray()) {
-            items.forEach(x -> {
-                int index = findIndex(tgtArray, x);
-                if (index >= 0) {
-                    tgtArray.remove(index);
-                }
-            });
+    void appendIfNotExistsArr(ArrayNode tgtArray, JsonNode items) {
+        if (items == null) {
+            return;
+        }
+        if (tgtArray.size() == 0) {
+            appendToArray(tgtArray, items);
+        } else {
+            // Remove inbound items that already exist in the target array
+            // Use anyMatch to stop filtering ASAP
+            List<JsonNode> filtered = streamOf(items)
+                    .filter(it -> !streamOf(tgtArray).anyMatch(it::equals))
+                    .collect(Collectors.toList());
+            tgtArray.addAll(filtered);
         }
     }
 
-    boolean replaceArray(String originKey, JsonNode modItem, ArrayNode tgtArray, JsonNode replace, JsonNode items) {
-        if (items == null) {
+    void removeFromArray(String originKey, JsonNode modInfo, String prop, ArrayNode tgtArray) {
+        JsonNode names = ensureArray(MetaFields.names.getFrom(modInfo));
+        JsonNode items = ensureArray(MetaFields.items.getFrom(modInfo));
+        if (names != null) {
+            for (JsonNode name : iterableElements(names)) {
+                int index = findIndexByName(originKey, tgtArray, name.asText());
+                if (index >= 0) {
+                    tgtArray.remove(index);
+                } else if (!MetaFields.force.booleanOrDefault(modInfo, false)) {
+                    tui().errorf("Error (%s / %s): Unable to remove %s; %s", originKey, prop, name.asText(), modInfo);
+                }
+            }
+        } else if (items != null) {
+            for (JsonNode itemToRemove : iterableElements(items)) {
+                int index = findIndex(tgtArray, itemToRemove);
+                if (index >= 0) {
+                    tgtArray.remove(index);
+                } else {
+                    tui().errorf("Error (%s / %s): Unable to remove %s; %s", originKey, prop, itemToRemove, modInfo);
+                }
+            }
+        } else {
+            tui().errorf("Error (%s / %s): One of names or items must be provided to remove elements from array; %s", originKey,
+                    prop, modInfo);
+        }
+    }
+
+    boolean replaceArray(String originKey, JsonNode modInfo, ArrayNode tgtArray, JsonNode items) {
+        if (items == null || !items.isArray()) {
             return false;
         }
-        int index;
+        JsonNode replace = MetaFields.replace.getFrom(modInfo);
+
+        final int index;
         if (replace.isTextual()) {
             index = findIndexByName(originKey, tgtArray, replace.asText());
-        } else if (replace.isObject() && replace.has("index")) {
-            index = replace.get("index").asInt();
+        } else if (replace.isObject() && MetaFields.index.existsIn(replace)) {
+            index = MetaFields.index.intOrDefault(replace, 0);
+        } else if (replace.isObject() && MetaFields.regex.existsIn(replace)) {
+            Pattern pattern = Pattern.compile("\\b" + MetaFields.regex.getTextOrEmpty(replace));
+            index = matchFirstIndexByName(originKey, tgtArray, pattern);
         } else {
-            tui().errorf("Unknown modification mode: %s (from %s)", modItem.toPrettyString(), originKey);
+            tui().errorf("Error (%s): Unknown replace; %s", originKey, modInfo);
             return false;
         }
 
@@ -1005,24 +1078,38 @@ public class JsonSourceCopier implements JsonSource {
         return false;
     }
 
-    int findIndexByName(String originKey, ArrayNode haystack, String needle) {
-        int index = -1;
+    int matchFirstIndexByName(String originKey, ArrayNode haystack, Pattern needle) {
         for (int i = 0; i < haystack.size(); i++) {
+            final String toMatch;
             if (haystack.get(i).isObject()) {
-                if (haystack.get(i).has("name") && haystack.get(i).get("name").asText().equals(needle)) {
-                    index = i;
-                    break;
-                }
+                toMatch = SourceField.name.getTextOrEmpty(haystack.get(i));
             } else if (haystack.get(i).isTextual()) {
-                if (haystack.get(i).asText().equals(needle)) {
-                    index = i;
-                    break;
-                }
+                toMatch = haystack.asText();
             } else {
-                tui().errorf("Unknown entry type: %s (from %s)", haystack.get(i), originKey);
+                continue;
+            }
+            if (!toMatch.isBlank() && needle.matcher(toMatch).find()) {
+                return i;
             }
         }
-        return index;
+        return -1;
+    }
+
+    int findIndexByName(String originKey, ArrayNode haystack, String needle) {
+        for (int i = 0; i < haystack.size(); i++) {
+            final String toMatch;
+            if (haystack.get(i).isObject()) {
+                toMatch = SourceField.name.getTextOrEmpty(haystack.get(i));
+            } else if (haystack.get(i).isTextual()) {
+                toMatch = haystack.get(i).asText();
+            } else {
+                continue;
+            }
+            if (needle.equals(toMatch)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     int findIndex(ArrayNode haystack, JsonNode needle) {
@@ -1032,6 +1119,40 @@ public class JsonSourceCopier implements JsonSource {
             }
         }
         return -1;
+    }
+
+    private String getShortName(JsonNode target, boolean isTitleCase) {
+        String name = SourceField.name.getTextOrEmpty(target);
+        JsonNode shortName = MonsterFields.shortName.getFrom(target);
+        boolean isNamedCreature = MonsterFields.isNamedCreature.booleanOrDefault(target, false);
+        String prefix = isNamedCreature
+                ? ""
+                : isTitleCase ? "The " : "the ";
+
+        if (shortName != null) {
+            if (shortName.isBoolean() && shortName.asBoolean()) {
+                return prefix + name;
+            }
+            String text = shortName.asText();
+            String result = prefix;
+            if (prefix.isBlank() && isTitleCase) {
+                result += toTitleCase(text);
+            } else {
+                result += text.toLowerCase();
+            }
+            return result;
+        }
+
+        return prefix + getShortNameFromName(name, isNamedCreature);
+    }
+
+    private String getShortNameFromName(String name, boolean isNamedCreature) {
+        String result = name.split(",")[0]
+                .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
+
+        return isNamedCreature
+                ? result.split(" ")[0]
+                : result.toLowerCase();
     }
 
     int getAbilityModNumber(int abilityScore) {
@@ -1065,5 +1186,122 @@ public class JsonSourceCopier implements JsonSource {
                 return "cha";
         }
         throw new IllegalArgumentException("Unknown skill: " + skill);
+    }
+
+    enum MetaFields implements JsonNodeReader {
+        _copy,
+        _mod,
+        _preserve,
+        _root,
+        _trait,
+        apply,
+        data,
+        dex,
+        dex_mod,
+        flags,
+        force,
+        index,
+        items,
+        joiner,
+        mode,
+        names,
+        prof_bonus,
+        props,
+        regex,
+        replace,
+        root,
+        str,
+        with,
+        prop,
+        scalar,
+        floor,
+        max,
+        value,
+        type,
+        range,
+        skills,
+        alias,
+        overwrite;
+    }
+
+    enum TemplateVariable implements JsonNodeReader.FieldValue {
+        name,
+        short_name,
+        title_short_name,
+        dc,
+        spell_dc,
+        to_hit,
+        damage_mod,
+        damage_avg;
+
+        @Override
+        public String value() {
+            return name();
+        }
+
+        public void notSupported(Tui tui, String originKey, JsonNode variableText) {
+            tui.errorf("Error (%s): Support for %s must be implemented. Raise an issue with this message. Text: %s",
+                    originKey, this.value(), variableText);
+        }
+
+        static TemplateVariable valueFrom(String value) {
+            return Stream.of(TemplateVariable.values())
+                    .filter((t) -> t.matches(value))
+                    .findFirst().orElse(null);
+        }
+    }
+
+    enum ModFieldMode implements JsonNodeReader.FieldValue {
+        appendStr,
+        replaceName,
+        replaceTxt,
+
+        prependArr,
+        appendArr,
+        replaceArr,
+        replaceOrAppendArr,
+        appendIfNotExistsArr,
+        insertArr,
+        removeArr,
+
+        calculateProp,
+        scalarAddProp,
+        scalarMultProp,
+        setProp,
+
+        addSenses,
+        addSaves,
+        addSkills,
+        addAllSaves,
+        addAllSkills,
+
+        addSpells,
+        removeSpells,
+        replaceSpells,
+
+        maxSize,
+        scalarMultXp,
+        scalarAddHit,
+        scalarAddDc;
+
+        @Override
+        public String value() {
+            return name();
+        }
+
+        public void notSupported(Tui tui, String originKey, JsonNode modInfo) {
+            tui.errorf("Error (%s): %s must be implemented. Raise an issue with this message. modInfo: %s",
+                    originKey, this.value(), modInfo);
+        }
+
+        static ModFieldMode valueFrom(JsonNode source, JsonNodeReader field) {
+            String textOrNull = field.getTextOrNull(source);
+            if (textOrNull == null) {
+                return null;
+            }
+            return Stream.of(ModFieldMode.values())
+                    .filter((t) -> t.matches(textOrNull))
+                    .findFirst().orElse(null);
+        }
     }
 }

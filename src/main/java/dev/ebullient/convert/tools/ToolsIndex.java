@@ -26,6 +26,9 @@ public interface ToolsIndex {
         }
 
         public String getFromNode(JsonNode node) {
+            if (node == null) {
+                return null;
+            }
             return this.getTextOrNull(node);
         }
     }

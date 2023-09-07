@@ -521,11 +521,19 @@ public class Json2QuteMonster extends Json2QuteCommon {
         alignmentPrefix,
         average,
         creatureType, // object -- alternate to monster type
+        daily,
         formula,
         from,
         hp,
         original,
+        save,
         senses,
+        skill,
         special,
+        spellcasting,
+        spells,
+        isNamedCreature,
+        shortName,
+        cr,
     }
 }
