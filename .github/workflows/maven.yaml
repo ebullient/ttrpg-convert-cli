@@ -84,8 +84,9 @@ jobs:
           ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat
 
   release:
-    runs-on: ubuntu-latest
+    if: "github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'"
     needs: [build, native-build]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -106,7 +107,7 @@ jobs:
           gh release upload "${SNAPSHOT}" --clobber ./artifacts/${ARTIFACT}#${ARTIFACT}
 
   update-snapshot:
-    if: github.ref == 'refs/heads/main'
+    if: "github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'"
     needs: release
     uses: ./.github/workflows/antifreeze.yml
     with:
