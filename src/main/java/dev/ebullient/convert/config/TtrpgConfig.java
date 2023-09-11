@@ -2,7 +2,6 @@ package dev.ebullient.convert.config;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -108,14 +108,14 @@ public class TtrpgConfig {
         });
     }
 
-    public static List<String> getMarkerFiles() {
+    public static Collection<String> getMarkerFiles() {
         DatasourceConfig activeConfig = activeConfig();
-        return Collections.unmodifiableList(activeConfig.markerFiles);
+        return Collections.unmodifiableSet(activeConfig.markerFiles);
     }
 
-    public static List<String> getFileSources() {
+    public static Collection<String> getFileSources() {
         DatasourceConfig activeConfig = activeConfig();
-        return Collections.unmodifiableList(activeConfig.sources);
+        return Collections.unmodifiableSet(activeConfig.sources);
     }
 
     private static void readSystemConfig() {
@@ -177,9 +177,9 @@ public class TtrpgConfig {
         final Map<String, String> fallbackImagePaths = new HashMap<>();
         final Map<String, List<Fix>> fixes = new HashMap<>();
         final Map<String, String> indexes = new HashMap<>();
-        final List<String> sources = new ArrayList<>();
-        final List<String> markerFiles = new ArrayList<>();
-        final List<String> templateKeys = new ArrayList<>();
+        final Set<String> sources = new HashSet<>();
+        final Set<String> markerFiles = new HashSet<>();
+        final Set<String> templateKeys = new TreeSet<>();
 
         public List<Fix> findFixesFor(String filepath) {
             for (Map.Entry<String, List<Fix>> entry : fixes.entrySet()) {

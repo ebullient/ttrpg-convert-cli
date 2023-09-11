@@ -413,8 +413,8 @@ public class Tui {
     }
 
     public boolean readToolsDir(Path toolsBase, BiConsumer<String, JsonNode> callback) {
-        List<String> inputs = TtrpgConfig.getFileSources();
-        List<String> markers = TtrpgConfig.getMarkerFiles();
+        Collection<String> inputs = TtrpgConfig.getFileSources();
+        Collection<String> markers = TtrpgConfig.getMarkerFiles();
 
         if (!markers.stream().allMatch(f -> toolsBase.resolve(f).toFile().exists())) {
             debugf("Unable to find tools data in %s", toolsBase.toString());
