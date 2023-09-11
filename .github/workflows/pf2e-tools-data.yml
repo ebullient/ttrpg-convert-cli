@@ -34,7 +34,7 @@ jobs:
 
       - name: Check Cache Data
         id: test-data-check
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v3.3.2
         with:
           path: sources/Pf2eTools
           key: ${{ steps.test-data-key.outputs.cache_key }}
@@ -70,7 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/cache/restore@v3.3.1
+      - uses: actions/cache/restore@v3.3.2
         id: cache
         with:
           path: sources/Pf2eTools
@@ -104,7 +104,7 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - uses: actions/cache/restore@v3.3.1
+      - uses: actions/cache/restore@v3.3.2
         id: cache
         with:
           path: sources/Pf2eTools
