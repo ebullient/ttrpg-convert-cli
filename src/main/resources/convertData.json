@@ -523,6 +523,12 @@
           "replace": "{@sup 1}Mwangi Expanse, p.76"
         }
       ],
+      "feats/feats-loil.json": [
+        {
+          "match": "\\{@condition sustain a spell\\|\\|Sustaining the Spell}",
+          "replace": "{@action sustain a spell||Sustaining the Spell}"
+        }
+      ],
       "feats/feats-roe.json": [
         {
           "match": "\\{@condition daze}",
