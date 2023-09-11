@@ -36,7 +36,7 @@ jobs:
 
       - name: Check Cache Data
         id: test-data-check
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v3.3.2
         with:
           path: sources/5etools-mirror-1.github.io
           key: ${{ steps.test-data-key.outputs.cache_key }}
@@ -74,7 +74,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: actions/cache/restore@v3.3.1
+      - uses: actions/cache/restore@v3.3.2
         id: cache
         with:
           path: sources/5etools-mirror-1.github.io
@@ -110,7 +110,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: actions/cache/restore@v3.3.1
+      - uses: actions/cache/restore@v3.3.2
         id: cache
         with:
           path: sources/5etools-mirror-1.github.io
