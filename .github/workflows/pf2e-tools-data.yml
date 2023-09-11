@@ -19,7 +19,7 @@ jobs:
       cache_key: ${{ steps.test-data-key.outputs.cache_key }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Pf2e Tools release cache key
         id: test-data-key
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/cache/restore@v3.3.1
         id: cache
@@ -102,7 +102,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/cache/restore@v3.3.1
         id: cache
@@ -148,7 +148,7 @@ jobs:
     needs: [test-with-data, native-test-with-data]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: gh-issue
         env:
