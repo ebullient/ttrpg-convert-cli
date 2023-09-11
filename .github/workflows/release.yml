@@ -39,7 +39,7 @@ jobs:
       current: ${{ steps.metadata.outputs.current }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Fetches all tags for the repo
       - name: Fetch tags
@@ -140,7 +140,7 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: 'main'
 
@@ -187,7 +187,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_tag, native-binaries]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: 'main'
@@ -226,7 +226,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_tag, release]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
           ref: 'main'
