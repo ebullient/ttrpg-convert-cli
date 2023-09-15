@@ -28,16 +28,23 @@ env:
   JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64'
 
 jobs:
+  main-root:
+    runs-on: ubuntu-latest
+    if: "github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'"
+    steps:
+      - name: Echo a message
+        id: is-main-root
+        run: echo "This is the main branch of 'ebullient/ttrpg-convert-cli'"
+
   build_tag:
     runs-on: ubuntu-latest
-
+    needs: main-root
     outputs:
       group: ${{ steps.metadata.outputs.group }}
       artifact: ${{ steps.metadata.outputs.artifact }}
       snapshot: ${{ steps.metadata.outputs.snapshot }}
       version: ${{ steps.metadata.outputs.next }}
       current: ${{ steps.metadata.outputs.current }}
-
     steps:
       - uses: actions/checkout@v4
 
@@ -138,7 +145,6 @@ jobs:
       max-parallel: 3
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-
     steps:
       - uses: actions/checkout@v4
         with:

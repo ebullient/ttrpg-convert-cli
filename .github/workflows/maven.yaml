@@ -20,6 +20,14 @@ env:
   GH_BOT_NAME: "GitHub Action"
 
 jobs:
+  main-root:
+    runs-on: ubuntu-latest
+    if: "github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'"
+    steps:
+      - name: Echo a message
+        id: is-main-root
+        run: echo "This is the main branch of 'ebullient/ttrpg-convert-cli'"
+
   build:
     runs-on: ubuntu-latest
     outputs:
@@ -84,8 +92,7 @@ jobs:
           ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat
 
   release:
-    if: "github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'"
-    needs: [build, native-build]
+    needs: [main-root, build, native-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -107,8 +114,7 @@ jobs:
           gh release upload "${SNAPSHOT}" --clobber ./artifacts/${ARTIFACT}#${ARTIFACT}
 
   update-snapshot:
-    if: "github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'"
-    needs: release
+    needs: [main-root, release]
     uses: ./.github/workflows/antifreeze.yml
     with:
       update-snapshot-tag: true
