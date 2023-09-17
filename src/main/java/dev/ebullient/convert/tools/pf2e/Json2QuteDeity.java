@@ -142,13 +142,13 @@ public class Json2QuteDeity extends Json2QuteBase {
             avatar.shield = "shield (" + shield + " Hardness, can't be damaged)";
         }
 
-        avatar.melee = Pf2eDeity.melee.streamOf(avatarNode)
+        avatar.melee = Pf2eDeity.melee.streamFrom(avatarNode)
                 .map(n -> buildAvatarAction(n, tags))
                 .collect(Collectors.toList());
-        avatar.ranged = Pf2eDeity.ranged.streamOf(avatarNode)
+        avatar.ranged = Pf2eDeity.ranged.streamFrom(avatarNode)
                 .map(n -> buildAvatarAction(n, tags))
                 .collect(Collectors.toList());
-        avatar.ability = Pf2eDeity.ability.streamOf(avatarNode)
+        avatar.ability = Pf2eDeity.ability.streamFrom(avatarNode)
                 .map(this::buildAvatarAbility)
                 .collect(Collectors.toList());
 

@@ -260,7 +260,7 @@ public interface JsonSource extends JsonTextReplacement {
     default void appendLevelEffect(List<String> text, JsonNode node) {
         maybeAddBlankLine(text);
 
-        SourceField.entries.streamOf(node).forEach(e -> {
+        SourceField.entries.streamFrom(node).forEach(e -> {
             String range = Field.range.getTextOrEmpty(e);
             prependTextMakeListItem(text, e, "**" + range + "** ", "    ");
         });
@@ -415,7 +415,7 @@ public interface JsonSource extends JsonTextReplacement {
             JsonNode colStyles = TableField.colStyles.getFrom(tableNode);
             int numCols = colStyles != null
                     ? colStyles.size()
-                    : TableField.rows.streamOf(tableNode)
+                    : TableField.rows.streamFrom(tableNode)
                             .map(JsonNode::size)
                             .max(Integer::compare).get();
 

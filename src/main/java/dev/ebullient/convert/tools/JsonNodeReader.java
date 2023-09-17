@@ -240,7 +240,7 @@ public interface JsonNodeReader {
         return target.size();
     }
 
-    default Stream<JsonNode> streamOf(JsonNode source) {
+    default Stream<JsonNode> streamFrom(JsonNode source) {
         JsonNode result = getFrom(source);
         if (result == null) {
             return Stream.of();

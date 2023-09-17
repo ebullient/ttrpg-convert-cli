@@ -68,25 +68,25 @@ public class Json2QuteFeat extends Json2QuteCommon {
             if (FeatFields.patron.existsIn(entry)) {
                 prereqs.add(FeatFields.patron.replaceTextFrom(entry, this) + " Patron");
             }
-            FeatFields.spell.streamOf(entry).forEach(s -> {
+            FeatFields.spell.streamFrom(entry).forEach(s -> {
                 String text = s.asText().replaceAll("#c", "");
                 prereqs.add(index.linkifyByName(Tools5eIndexType.spell, text));
             });
-            FeatFields.feat.streamOf(entry).forEach(f -> prereqs
+            FeatFields.feat.streamFrom(entry).forEach(f -> prereqs
                     .add(featPattern.matcher(f.asText())
                             .replaceAll(m -> index.linkifyByName(Tools5eIndexType.feat, m.group(1)))));
-            FeatFields.feature.streamOf(entry).forEach(f -> prereqs.add(featPattern.matcher(f.asText())
+            FeatFields.feature.streamFrom(entry).forEach(f -> prereqs.add(featPattern.matcher(f.asText())
                     .replaceAll(m -> index.linkifyByName(Tools5eIndexType.optionalfeature, m.group(1)))));
-            FeatFields.background.streamOf(entry).forEach(b -> prereqs
+            FeatFields.background.streamFrom(entry).forEach(b -> prereqs
                     .add(index.linkifyByName(Tools5eIndexType.background, SourceField.name.getTextOrEmpty(b)) + " background"));
-            FeatFields.item.streamOf(entry).forEach(i -> prereqs.add(index.linkifyByName(Tools5eIndexType.item, i.asText())));
+            FeatFields.item.streamFrom(entry).forEach(i -> prereqs.add(index.linkifyByName(Tools5eIndexType.item, i.asText())));
 
             if (FeatFields.psionics.existsIn(entry)) {
                 prereqs.add("Psionics");
             }
 
             List<String> profs = new ArrayList<>();
-            FeatFields.proficiency.streamOf(entry).forEach(f -> f.fields().forEachRemaining(field -> {
+            FeatFields.proficiency.streamFrom(entry).forEach(f -> f.fields().forEachRemaining(field -> {
                 String key = field.getKey();
                 if ("weapon".equals(key)) {
                     key += "s";

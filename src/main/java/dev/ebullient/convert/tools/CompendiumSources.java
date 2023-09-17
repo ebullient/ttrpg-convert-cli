@@ -77,7 +77,7 @@ public abstract class CompendiumSources {
 
         // find/add additional sources
         if (Fields.additionalSources.existsIn(jsonElement)) { // Additional information from...
-            srcText.addAll(Fields.additionalSources.streamOf(jsonElement)
+            srcText.addAll(Fields.additionalSources.streamFrom(jsonElement)
                     .map(SourceAndPage::new)
                     .filter(sp -> sp.source != null)
                     .filter(sp -> !sp.source.equals(copySrc))
@@ -88,7 +88,7 @@ public abstract class CompendiumSources {
                     .collect(Collectors.toList()));
         }
         if (Fields.otherSources.existsIn(jsonElement)) { // Also found in...
-            srcText.addAll(Fields.otherSources.streamOf(jsonElement)
+            srcText.addAll(Fields.otherSources.streamFrom(jsonElement)
                     .map(SourceAndPage::new)
                     .filter(sp -> sp.source != null)
                     .filter(sp -> !sp.source.equals(copySrc))
