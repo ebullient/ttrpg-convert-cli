@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.dnd5e;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -311,10 +310,8 @@ public class Json2QuteClass extends Json2QuteCommon {
                     startingTextJoinOrDefault(gained, "tools")));
 
             if (gained.has("skills")) {
-                List<String> list = new ArrayList<>();
-                int count = classSkills(gained, list, sources);
                 startMulticlass.add(String.format("- **Skills**: %s",
-                        skillChoices(list, count)));
+                        classSkills(gained, sources)));
             }
         }
         return String.join("\n", startMulticlass);
@@ -473,14 +470,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 put("tools", findAndReplace(startingProf, "tools"));
             }
             if (startingProf.has("skills")) {
-                Set<String> set = new HashSet<>();
-                int count = classSkills(startingProf, set, sources);
-                put("numSkills", List.of(count + ""));
-
-                if (count == SkillOrAbility.allSkills.size()) { // any
-                    set.addAll(SkillOrAbility.allSkills);
-                }
-                put("skills", List.of(skillChoices(set, count)));
+                put("skills", List.of(classSkills(startingProf, sources)));
             }
         }
     }
@@ -546,44 +536,41 @@ public class Json2QuteClass extends Json2QuteCommon {
                         .collect(Collectors.joining(", ")));
     }
 
-    int classSkills(JsonNode source, Collection<String> list, Tools5eSources sources) {
+    String chooseSkillListFrom(JsonNode choose) {
+        int count = choose.has("count")
+                ? choose.get("count").asInt()
+                : 1;
+
+        ArrayNode from = choose.withArray("from");
+        return skillChoices(toListOfStrings(from), count);
+    }
+
+    String classSkills(JsonNode source, Tools5eSources sources) {
+        List<String> result = new ArrayList<>();
+
         ArrayNode skillNode = source.withArray("skills");
         if (skillNode.size() > 1) {
             tui().errorf("Multivalue skill array in %s: %s", sources, source.toPrettyString());
         }
         JsonNode skills = skillNode.get(0);
-        int count = 2;
 
         for (Entry<String, JsonNode> e : iterableFields(skills)) {
             String skill = e.getKey();
             if ("choose".equals(skill)) {
-                count = chooseSkillListFrom(skills.get("choose"), list);
-            } else if ("from".equals(skill)) {
-                count = chooseSkillListFrom(skills, list);
+                result.add(chooseSkillListFrom(e.getValue()));
             } else if ("any".equals(skill)) {
-                count = skills.get("any").asInt();
-                list.addAll(SkillOrAbility.allSkills);
+                int count = skills.get("any").asInt();
+                result.add(skillChoices(SkillOrAbility.allSkills, count));
             } else {
                 SkillOrAbility custom = index.findSkillOrAbility(skill, getSources());
                 if (custom == null) {
                     tui().errorf("Unexpected skills in starting proficiencies for %s: %s",
                             sources, source.toPrettyString());
                 }
-                list.add(custom.value());
+                result.add("*" + custom.value() + "*");
             }
         }
-
-        return count;
-    }
-
-    int chooseSkillListFrom(JsonNode choose, Collection<String> skillList) {
-        int count = choose.has("count")
-                ? choose.get("count").asInt()
-                : 1;
-
-        ArrayNode from = choose.withArray("from");
-        from.forEach(s -> skillList.add(s.asText()));
-        return count;
+        return String.join("; ", result);
     }
 
     List<String> defaultEquipment(JsonNode equipment) {

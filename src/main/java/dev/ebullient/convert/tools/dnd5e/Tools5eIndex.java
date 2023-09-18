@@ -34,6 +34,7 @@ import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
 import dev.ebullient.convert.tools.dnd5e.ItemType.CustomItemType;
 import dev.ebullient.convert.tools.dnd5e.ItemType.ItemEnum;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFields;
+import dev.ebullient.convert.tools.dnd5e.PsionicType.CustomPsionicType;
 import dev.ebullient.convert.tools.dnd5e.SkillOrAbility.CustomSkillOrAbility;
 import dev.ebullient.convert.tools.dnd5e.SpellSchool.CustomSpellSchool;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
@@ -232,7 +233,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                         new CustomSpellSchool(HomebrewFields.full.getTextOrEmpty(entry.getValue())));
             }
             for (Entry<String, JsonNode> entry : iterableFields(psionicTypes)) {
-                metaTypes.setPsionicType(entry.getKey(), HomebrewFields.full.getTextOrEmpty(entry.getValue()));
+                metaTypes.setPsionicType(entry.getKey(),
+                        tui().readJsonValue(entry.getValue(), CustomPsionicType.class));
             }
             for (JsonNode skill : iterableElements(skillTypes)) {
                 String skillName = SourceField.name.getTextOrEmpty(skill);
@@ -692,6 +694,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return itemType;
     }
 
+    public HomebrewMetaTypes getHomebrewMetaTypes(Tools5eSources sources) {
+        return homebrewMetaTypes.get(sources.primarySource());
+    }
+
     public SkillOrAbility findSkillOrAbility(String key, Tools5eSources sources) {
         if (key == null || key.isEmpty()) {
             return null;
@@ -1104,7 +1110,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         final JsonNode homebrewNode;
         // name, long name
         final Map<String, String> optionalFeatureTypes = new HashMap<>();
-        final Map<String, String> psionicTypes = new HashMap<>();
+        final Map<String, PsionicType> psionicTypes = new HashMap<>();
         final Map<String, SkillOrAbility> skillOrAbility = new HashMap<>();
         final Map<String, CustomSpellSchool> spellSchoolTypes = new HashMap<>();
         final Map<String, CustomItemType> itemTypes = new HashMap<>();
@@ -1124,11 +1130,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             optionalFeatureTypes.put(key.toLowerCase(), value);
         }
 
-        public String getPsionicType(String key) {
+        public PsionicType getPsionicType(String key) {
             return psionicTypes.get(key.toLowerCase());
         }
 
-        public void setPsionicType(String key, String value) {
+        public void setPsionicType(String key, PsionicType value) {
             psionicTypes.put(key.toLowerCase(), value);
         }
 

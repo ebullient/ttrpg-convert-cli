@@ -88,6 +88,11 @@ public class JsonDataTest {
     }
 
     @Test
+    public void testPsionicList() {
+        commonTests.testPsionicList(outputPath);
+    }
+
+    @Test
     public void testRaceList() {
         commonTests.testRaceList(outputPath);
     }

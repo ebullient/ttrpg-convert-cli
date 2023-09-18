@@ -393,6 +393,21 @@ public class CommonDataTests {
         }
     }
 
+    public void testPsionicList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path outDir = deleteDir(Tools5eIndexType.psionic, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(Tools5eIndexType.psionic)
+                    .writeImages();
+
+            TestUtils.assertDirectoryContents(outDir, tui);
+        }
+    }
+
     public void testRaceList(Path outputPath) {
         tui.setOutputPath(outputPath);
 

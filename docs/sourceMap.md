@@ -453,4 +453,3 @@ You may see these abbreviations referenced in source material, this is how they 
 |--------------|-----------|
 | GnG | G&G |
 
-
