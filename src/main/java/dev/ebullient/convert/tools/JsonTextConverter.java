@@ -223,10 +223,10 @@ public interface JsonTextConverter<T extends IndexType> {
     /** Internal / recursive parse */
     default boolean prependField(JsonNode entry, JsonNodeReader field, List<String> inner) {
         String n = field.replaceTextFrom(entry, this);
-        return prependField(entry, n, inner);
+        return prependField(n, inner);
     }
 
-    default boolean prependField(JsonNode entry, String name, List<String> inner) {
+    default boolean prependField(String name, List<String> inner) {
         if (name != null) {
             name = replaceText(name.trim());
             if (inner.isEmpty()) {

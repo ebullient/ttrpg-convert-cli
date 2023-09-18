@@ -305,7 +305,7 @@ public interface JsonSource extends JsonTextReplacement {
         if (heading == null) {
             List<String> inner = new ArrayList<>();
             appendToText(inner, SourceField.entries.getFrom(entryNode), null);
-            if (prependField(entryNode, name, inner)) {
+            if (prependField(name, inner)) {
                 maybeAddBlankLine(text);
             }
             text.addAll(inner);
