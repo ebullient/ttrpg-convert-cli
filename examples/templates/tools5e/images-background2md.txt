@@ -15,6 +15,10 @@ aliases: ["{resource.name}"]
 {first.getEmbeddedLink("right")}  
 {/let}{/if}
 
+{#if resource.prerequisite}
+***Prerequisites*** {resource.prerequisite}
+
+{/if}
 {resource.text}
 {#if resource.fluffImages.size > 1 }
 

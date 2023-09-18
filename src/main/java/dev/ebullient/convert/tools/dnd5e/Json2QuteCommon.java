@@ -5,9 +5,13 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,6 +19,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
@@ -23,6 +28,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteCommon implements JsonSource {
+    static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
     static final List<String> SPEED_MODE = List.of("walk", "burrow", "climb", "fly", "swim");
     static final List<String> specialTraits = List.of("special equipment", "shapechanger");
 
@@ -143,6 +149,76 @@ public class Json2QuteCommon implements JsonSource {
                 }
             }
         }
+    }
+
+    String listPrerequisites() {
+        List<String> prereqs = new ArrayList<>();
+        Tools5eIndex index = index();
+        for (JsonNode entry : iterableElements(PrereqFields.prerequisite.getFrom(rootNode))) {
+            if (PrereqFields.level.existsIn(entry)) {
+                prereqs.add(levelToText(entry.get("level")));
+            }
+
+            for (JsonNode r : iterableElements(PrereqFields.race.getFrom(entry))) {
+                prereqs.add(index.linkifyByName(Tools5eIndexType.race, raceToText(r)));
+            }
+
+            Map<String, List<String>> abilityScores = new HashMap<>();
+
+            for (JsonNode a : iterableElements(PrereqFields.ability.getFrom(entry))) {
+                for (Entry<String, JsonNode> score : iterableFields(a)) {
+                    abilityScores.computeIfAbsent(score.getValue().asText(), k -> new ArrayList<>())
+                            .add(SkillOrAbility.format(score.getKey(), index(), getSources()));
+                }
+            }
+
+            abilityScores.forEach(
+                    (k, v) -> prereqs.add(String.format("%s %s or higher", String.join(" or ", v), k)));
+
+            if (PrereqFields.spellcasting.existsIn(entry) && PrereqFields.spellcasting.booleanOrDefault(entry, false)) {
+                prereqs.add("The ability to cast at least one spell");
+            }
+            if (PrereqFields.pact.existsIn(entry)) {
+                prereqs.add("Pact of the " + PrereqFields.pact.replaceTextFrom(entry, this));
+            }
+            if (PrereqFields.patron.existsIn(entry)) {
+                prereqs.add(PrereqFields.patron.replaceTextFrom(entry, this) + " Patron");
+            }
+            PrereqFields.spell.streamFrom(entry).forEach(s -> {
+                String text = s.asText().replaceAll("#c", "");
+                prereqs.add(index.linkifyByName(Tools5eIndexType.spell, text));
+            });
+            PrereqFields.feat.streamFrom(entry).forEach(f -> prereqs
+                    .add(featPattern.matcher(f.asText())
+                            .replaceAll(m -> index.linkifyByName(Tools5eIndexType.feat, m.group(1)))));
+            PrereqFields.feature.streamFrom(entry).forEach(f -> prereqs.add(featPattern.matcher(f.asText())
+                    .replaceAll(m -> index.linkifyByName(Tools5eIndexType.optionalfeature, m.group(1)))));
+            PrereqFields.background.streamFrom(entry).forEach(b -> prereqs
+                    .add(index.linkifyByName(Tools5eIndexType.background, SourceField.name.getTextOrEmpty(b)) + " background"));
+            PrereqFields.item.streamFrom(entry)
+                    .forEach(i -> prereqs.add(index.linkifyByName(Tools5eIndexType.item, i.asText())));
+
+            if (PrereqFields.psionics.existsIn(entry)) {
+                prereqs.add("Psionics");
+            }
+
+            List<String> profs = new ArrayList<>();
+            PrereqFields.proficiency.streamFrom(entry).forEach(f -> f.fields().forEachRemaining(field -> {
+                String key = field.getKey();
+                if ("weapon".equals(key)) {
+                    key += "s";
+                }
+                profs.add(String.format("%s %s", field.getValue().asText(), key));
+            }));
+            if (!profs.isEmpty()) {
+                prereqs.add(String.format("Proficiency with %s", String.join(" or ", profs)));
+            }
+
+            if (PrereqFields.other.existsIn(entry)) {
+                prereqs.add(PrereqFields.other.replaceTextFrom(entry, this));
+            }
+        }
+        return prereqs.isEmpty() ? null : String.join(", ", prereqs);
     }
 
     ImmuneResist immuneResist() {
@@ -496,5 +572,23 @@ public class Json2QuteCommon implements JsonSource {
     protected Tools5eQuteNote buildQuteNote() {
         tui().warnf("The default buildQuteNote method was called for %s. Was this intended?", sources.toString());
         return null;
+    }
+
+    enum PrereqFields implements JsonNodeReader {
+        ability,
+        background,
+        feat,
+        feature,
+        level,
+        other,
+        pact,
+        patron,
+        prerequisite,
+        psionics,
+        proficiency,
+        race,
+        spell,
+        spellcasting,
+        item,
     }
 }

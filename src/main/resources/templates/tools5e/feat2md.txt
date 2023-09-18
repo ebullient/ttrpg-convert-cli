@@ -14,10 +14,10 @@ aliases: ["{resource.name}"]
 
 {#if resource.level || resource.prerequisite}
 {#if resource.prerequisite}
-***Prerequisites*** {resource.prerequisite}
+**Prerequisite**: {resource.prerequisite}
 {/if}
 {#if resource.level}
-***Level*** {resource.level}
+**Level**: {resource.level}
 {/if}
 
 {/if}

@@ -1,6 +1,6 @@
 # QuteFeat
 
-5eTools feat attributes (`feat2md.txt`)
+5eTools feat and optional feat attributes (`feat2md.txt`)
 
 Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
@@ -27,7 +27,7 @@ Note name
 
 ### prerequisite
 
-Formatted text listing other prerequisite conditions
+Formatted text listing other prerequisite conditions (optional)
 
 ### source
 

@@ -40,12 +40,14 @@ public class QuteItem extends Tools5eQuteBase {
     public final Double weight;
     /** List of images for this item (as {@link dev.ebullient.convert.qute.ImageRef}) */
     public final List<ImageRef> fluffImages;
+    /** Formatted text listing other prerequisite conditions (optional) */
+    public final String prerequisite;
 
     public QuteItem(Tools5eSources sources, String name, String source, String detail,
             String armorClass, String damage, String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
-            String costGp, Double weightLbs, String text,
-            List<ImageRef> images, Tags tags) {
+            String costGp, Double weightLbs, String prerequisite,
+            String text, List<ImageRef> images, Tags tags) {
         super(sources, name, source, text, tags);
 
         this.detail = detail;
@@ -59,5 +61,6 @@ public class QuteItem extends Tools5eQuteBase {
         this.cost = costGp;
         this.weight = weightLbs;
         this.fluffImages = images;
+        this.prerequisite = prerequisite; // optional
     }
 }

@@ -12,4 +12,8 @@ aliases: ["{resource.name}"]
 # {resource.name}
 *Source: {resource.source}*  
 
+{#if resource.prerequisite}
+***Prerequisites*** {resource.prerequisite}
+
+{/if}
 {resource.text}

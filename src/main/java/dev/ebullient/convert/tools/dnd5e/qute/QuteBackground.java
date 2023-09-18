@@ -19,12 +19,14 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class QuteBackground extends Tools5eQuteBase {
     /** List of images for this background (as {@link dev.ebullient.convert.qute.ImageRef}) */
     public final List<ImageRef> fluffImages;
+    /** Formatted text listing other prerequisite conditions (optional) */
+    public final String prerequisite;
 
-    public QuteBackground(Tools5eSources sources,
-            String name, String source, String text,
-            List<ImageRef> images,
-            Tags tags) {
+    public QuteBackground(Tools5eSources sources, String name, String source,
+            String prerequisite,
+            String text, List<ImageRef> images, Tags tags) {
         super(sources, name, source, text, tags);
         this.fluffImages = images;
+        this.prerequisite = prerequisite; // optional
     }
 }

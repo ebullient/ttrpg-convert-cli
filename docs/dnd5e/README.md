@@ -8,7 +8,7 @@ Qute templates for generating content from 5eTools data.
 - [QuteBackground](QuteBackground.md): 5eTools background attributes (`background2md.txt`).
 - [QuteClass](QuteClass.md): 5eTools class attributes (`class2md.txt`)
 - [QuteDeity](QuteDeity.md): 5eTools deity attributes (`deity2md.txt`)
-- [QuteFeat](QuteFeat.md): 5eTools feat attributes (`feat2md.txt`)
+- [QuteFeat](QuteFeat.md): 5eTools feat and optional feat attributes (`feat2md.txt`)
 - [QuteHazard](QuteHazard.md): 5eTools hazard attributes (`hazard2md.txt`)
 - [QuteItem](QuteItem.md): 5eTools item attributes (`item2md.txt`)
 - [QuteMonster](QuteMonster.md): 5eTools creature attributes (`monster2md.txt`)

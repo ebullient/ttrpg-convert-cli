@@ -12,7 +12,9 @@ aliases: ["{resource.name}"]
 # {resource.name}
 {#if resource.detail }*{resource.detail}*  {/if}
 
-{#if resource.armorClass }
+{#if resource.prerequisite}
+- **Prerequisites**: {resource.prerequisite}
+{/if}{#if resource.armorClass }
 - **Armor Class**: {resource.armorClass}
 {#else if resource.damage }{#if resource.damage2h }
 - **Damage**:

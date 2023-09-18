@@ -79,6 +79,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 damage, damage2h,
                 range, properties,
                 strength, stealthPenalty, gpValue(), weight,
+                listPrerequisites(),
                 text,
                 fluffImages,
                 tags);

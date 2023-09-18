@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.dnd5e;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteOptionalFeature extends Json2QuteCommon {
@@ -18,14 +19,16 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
             tags.add("optional-feature", featureType);
         }
 
-        return new Tools5eQuteBase(getSources(),
+        return new QuteFeat(getSources(),
                 getSources().getName(),
                 getSourceText(sources),
+                listPrerequisites(),
+                null,
                 getText("##"),
                 tags) {
             @Override
             public String template() {
-                return "note2md.txt";
+                return "feat2md.txt";
             }
         };
     }
