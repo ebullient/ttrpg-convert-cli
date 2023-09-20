@@ -99,6 +99,7 @@ _Support content creators. Only use or include sources that you own._
 | PSK | Plane Shift: Kaladesh |
 | PSX | Plane Shift: Ixalan |
 | PSZ | Plane Shift: Zendikar |
+| PaBTSO | Phandelver and Below: The Shattered Obelisk |
 | PotA | Princes of the Apocalypse |
 | RMBRE | The Lost Dungeon of Rickedness: Big Rick Energy |
 | RMR | Dungeons & Dragons vs. Rick and Morty: Basic Rules |
