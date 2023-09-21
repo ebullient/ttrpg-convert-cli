@@ -3,6 +3,7 @@
     "templateKeys": [
       "background",
       "class",
+      "deck",
       "deity",
       "feat",
       "hazard",
@@ -405,6 +406,7 @@
       "bestiary/template.json",
       "class",
       "conditionsdiseases.json",
+      "decks.json",
       "deities.json",
       "feats.json",
       "optionalfeatures.json",

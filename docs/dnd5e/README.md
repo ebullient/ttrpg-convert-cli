@@ -7,6 +7,7 @@ Qute templates for generating content from 5eTools data.
 - [ImmuneResist](ImmuneResist.md): 5eTools vulnerabilities, resistances, immunities, and condition immunities
 - [QuteBackground](QuteBackground.md): 5eTools background attributes (`background2md.txt`).
 - [QuteClass](QuteClass.md): 5eTools class attributes (`class2md.txt`)
+- [QuteDeck](QuteDeck.md): 5eTools deck attributes (`deck2md.txt`)
 - [QuteDeity](QuteDeity.md): 5eTools deity attributes (`deity2md.txt`)
 - [QuteFeat](QuteFeat.md): 5eTools feat and optional feat attributes (`feat2md.txt`)
 - [QuteHazard](QuteHazard.md): 5eTools hazard attributes (`hazard2md.txt`)

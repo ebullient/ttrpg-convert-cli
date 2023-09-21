@@ -155,6 +155,26 @@ public class CommonDataTests {
         }
     }
 
+    public void testDeckList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path outDir = deleteDir(Tools5eIndexType.deck, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+                    .writeFiles(Tools5eIndexType.deck)
+                    .writeImages();
+
+            if (variant != TestInput.none) {
+                Path imageDir = outDir.resolve("img");
+                assertThat(imageDir.toFile()).exists();
+            }
+
+            TestUtils.assertDirectoryContents(outDir, tui);
+        }
+    }
+
     public void testDeityList(Path outputPath) {
         tui.setOutputPath(outputPath);
 

@@ -47,13 +47,19 @@ body {
 }
 .json5e-background,
 .json5e-class,
+.json5e-deck,
 .json5e-deity,
 .json5e-feat,
+.json5e-hazard,
 .json5e-item,
 .json5e-monster,
 .json5e-note,
+.json5e-object,
+.json5e-psionic,
 .json5e-race,
-.json5e-spell {
+.json5e-reward,
+.json5e-spell,
+.json5e-vehicle  {
   div:has(> .callout[data-callout="flowchart"]):has(+ div > .callout[data-callout="flowchart"]) {
     position: relative;
   

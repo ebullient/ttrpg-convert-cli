@@ -125,12 +125,12 @@ To run commands listed below, either:
   The following directories may be created in the `compendium` directory depending on what sources you have enabled: `backgrounds`, `bestiary` (with contents organized by monster type), `classes` (separate documents for classes and subclasses), `deities`, `feats`, `items`, `names`, `races`, and `spells`.
 
 - **Styles.** Every document has a `cssclass` attribute that you can use to further tweak how page elements render. `css-snippets` has some snippets you can use to customize elements of the compendium. 
-  - 5e tools: `json5e-background`, `json5e-class`, `json5e-deity`, `json5e-feat`, `json5e-item`, `json5e-monster`, `json5e-names`, `json5e-note`, `json5e-race`, and `json5e-spell`.
+  - 5e tools: `json5e-background`, `json5e-class`, `json5e-deck`, `json5e-deity`, `json5e-feat`, `json5e-hazard`, `json5e-item`, `json5e-monster`, `json5e-note`, `json5e-object`, `json5e-psionic`, `json5e-race`, `json5e-reward`, `json5e-spell`, and `json5e-vehicle`.
   - pf2e tools: `pf2e`, `pf2e-ability`, `pf2e-action`, `pf2e-affliction`, `pf2e-archetype`, `pf2e-background`, `pf2e-book`, `pf2e-delity`, `pf2e-feat`, `pf2e-hazard`, `pf2e-index`, `pf2e-item`, `pf2e-note`, `pf2e-ritual`, `pf2e-sleep`, `pf2e-trait`, 
 
 - **Admonitions.** 
   - `ad-statblock`
-  - 5e tools: `ad-flowchart`, `ad-gallery`
+  - 5e tools: `ad-flowchart`, `ad-gallery`, `ad-embed-action`, `ad-embed-feat`, `ad-embed-monster`, `ad-embed-object`, `ad-embed-race`, `ad-embed-spell`, `ad-embed-table`
   - pf2e tools: `ad-embed-ability`, `ad-embed-action`, `ad-embed-affliction`, `ad-embed-avatar`, `ad-embed-disease`, `ad-embed-feat`, `ad-embed-item`, `ad-pf2-note`, `ad-pf2-ritual`.
 
 

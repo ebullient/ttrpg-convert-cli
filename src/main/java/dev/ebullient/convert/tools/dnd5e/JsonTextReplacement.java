@@ -461,7 +461,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String deckName = parts[1];
         String source = parts.length < 3 || parts[2].isBlank() ? Tools5eIndexType.card.defaultSourceString() : parts[2];
 
-        String key = index().getAliasOrDefault(Tools5eIndexType.item.createKey(deckName, source));
+        String key = index().getAliasOrDefault(Tools5eIndexType.deck.createKey(deckName, source));
         if (index().isExcluded(key)) {
             return cardName;
         }

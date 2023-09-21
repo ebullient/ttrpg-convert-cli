@@ -101,6 +101,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.card.withArrayFrom(node, this::addToIndex);
 
         Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.monsterTemplate.withArrayFrom(node, this::addToIndex);
@@ -134,6 +135,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
+        Tools5eIndexType.deck.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.feat.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.hazard.withArrayFrom(node, this::addToIndex);

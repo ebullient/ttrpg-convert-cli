@@ -1046,6 +1046,51 @@ public interface JsonSource extends JsonTextReplacement {
         return (value >= 0 ? "+" : "") + value;
     }
 
+    default String numberToText(int value) {
+        int abs = Math.abs(value);
+        if (abs >= 100) {
+            return "" + value;
+        }
+        String strValue = switch (abs) {
+            case 0 -> "zero";
+            case 1 -> "one";
+            case 2 -> "two";
+            case 3 -> "three";
+            case 4 -> "four";
+            case 5 -> "five";
+            case 6 -> "six";
+            case 7 -> "seven";
+            case 8 -> "eight";
+            case 9 -> "nine";
+            case 10 -> "ten";
+            case 11 -> "eleven";
+            case 12 -> "twelve";
+            case 13 -> "thirteen";
+            case 14 -> "fourteen";
+            case 15 -> "fifteen";
+            case 16 -> "sixteen";
+            case 17 -> "seventeen";
+            case 18 -> "eighteen";
+            case 19 -> "nineteen";
+            case 20 -> "twenty";
+            case 30 -> "thirty";
+            case 40 -> "forty";
+            case 50 -> "fifty";
+            case 60 -> "sixty";
+            case 70 -> "seventy";
+            case 80 -> "eighty";
+            case 90 -> "ninety";
+            default -> {
+                tui().errorf("Unable to convert %d to text", value);
+                yield "unknown";
+            }
+        };
+
+        return String.format("%s%s",
+                value < 0 ? "negative " : "",
+                strValue);
+    }
+
     default String convertCurrency(int cp) {
         List<String> result = new ArrayList<>();
         int gp = cp / 100;

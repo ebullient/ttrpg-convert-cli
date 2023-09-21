@@ -31,9 +31,4 @@ public class QutePsionic extends Tools5eQuteBase {
         this.focus = focus;
         this.modes = modes;
     }
-
-    @Override
-    public String template() {
-        return "psionic2md.txt";
-    }
 }

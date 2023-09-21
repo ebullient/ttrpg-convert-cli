@@ -9,6 +9,7 @@ import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteDeck.DeckFields;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 
 public enum Tools5eIndexType implements IndexType, JsonNodeReader {
@@ -147,6 +148,15 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                         source.equalsIgnoreCase(classSource) ? "" : "|" + source)
                         .toLowerCase();
             }
+            case card -> {
+                String set = DeckFields.set.getTextOrThrow(x);
+                return String.format("%s|%s|%s|%s",
+                        this.name(),
+                        name.trim(),
+                        set.trim(),
+                        source)
+                        .toLowerCase();
+            }
             case deity -> {
                 return String.format("%s|%s|%s|%s",
                         this.name(),
@@ -260,6 +270,18 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             // 4    source.equalsIgnoreCase(classSource) ? "" : "|" + source)
             String featureSource = parts.length > 4 ? parts[4] : parts[2];
             return getClassFeatureKey(parts[0], featureSource, parts[1], parts[2], parts[3]);
+        }
+        if (this.equals(card)) {
+            String[] parts = crossRef.split("\\|");
+            // 0    name,
+            // 1    set,
+            // 2    source
+            return String.format("%s|%s|%s|%s",
+                    this.name(),
+                    parts[0].trim(),
+                    parts[1].trim(),
+                    parts.length > 2 ? parts[2] : defaultSourceString())
+                    .toLowerCase();
         }
 
         return String.format("%s|%s", this.name(), crossRef).toLowerCase();
@@ -379,6 +401,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         return switch (this) {
             case background,
                     classtype,
+                    deck,
                     deity,
                     feat,
                     hazard,
@@ -439,7 +462,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         return switch (this) {
             case adventureData -> "adventures";
             case bookData -> "books";
-            case card, deck -> "items";
+            case card, deck -> "decks";
             case deity -> "deities";
             case monster -> "bestiary";
             case optionalfeature, optionalFeatureTypes -> "optional-features";

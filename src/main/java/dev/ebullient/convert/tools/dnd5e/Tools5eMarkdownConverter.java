@@ -107,6 +107,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
     private QuteBase json2qute(Tools5eIndexType type, JsonNode jsonSource) {
         return switch (type) {
             case background -> new Json2QuteBackground(index, type, jsonSource).build();
+            case deck -> new Json2QuteDeck(index, type, jsonSource).build();
             case deity -> new Json2QuteDeity(index, type, jsonSource).build();
             case feat -> new Json2QuteFeat(index, type, jsonSource).build();
             case hazard, trap -> new Json2QuteHazard(index, type, jsonSource).build();

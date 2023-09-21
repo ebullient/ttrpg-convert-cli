@@ -44,6 +44,11 @@ public class JsonDataNoneTest {
     }
 
     @Test
+    public void testDeckList() {
+        commonTests.testDeckList(outputPath);
+    }
+
+    @Test
     public void testDeityList() {
         commonTests.testDeityList(outputPath);
     }

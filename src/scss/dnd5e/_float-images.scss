@@ -1,19 +1,26 @@
 .json5e-background,
 .json5e-class,
+.json5e-deck,
 .json5e-deity,
 .json5e-feat,
+.json5e-hazard,
 .json5e-item,
 .json5e-monster,
 .json5e-note,
+.json5e-object,
+.json5e-psionic,
 .json5e-race,
-.json5e-spell {
+.json5e-reward,
+.json5e-spell,
+.json5e-vehicle {
   div {
     &[src$="#center"] {
       text-align: center;
     }
+    &[src$="#card"],
     &[src$="#symbol"],
     &[src$="#portrait"],
-    &[src$="#token"],
+    &[src$="#token"]    
     &[src$="#right"] {
       float: right;
       padding-left: 5px;
@@ -27,6 +34,7 @@
     &[src$="#right"] {
       max-width: 50%;
     }
+    &[src$="#card"],
     &[src$="#token"] {
       width: 150px;
     }
@@ -34,5 +42,11 @@
     &[src$="#portrait"] {
       width: 200px;
     }
+  }
+}
+/* For decks of cards, ensure images don't overlap */
+.json5e-deck {
+  h3 {
+    clear: both;
   }
 }
