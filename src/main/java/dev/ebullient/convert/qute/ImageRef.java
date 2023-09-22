@@ -39,36 +39,39 @@ public class ImageRef {
 
     /** Descriptive title (or caption) for the image. This can be long. */
     public final String title;
+    final String titleAttr;
 
-    private ImageRef(String title, String url, Integer width) {
-        this.url = url.replace(" ", "%20");
-        this.sourcePath = null;
-        this.targetFilePath = null;
-        this.title = title == null ? ""
+    private ImageRef(String url, Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
+        this.url = url == null ? null : url.replace(" ", "%20");
+        this.sourcePath = sourcePath;
+        this.targetFilePath = targetFilePath;
+        title = title == null ? ""
                 : title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
-        this.vaultPath = null;
+
+        if (title.length() > 50) {
+            this.title = escape(title.substring(0, 26) + "...");
+            this.titleAttr = " \"" + escape(title) + "\"";
+        } else {
+            this.title = escape(title);
+            this.titleAttr = "";
+        }
+        this.vaultPath = vaultPath;
         this.width = width;
     }
 
-    private ImageRef(Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
-        this.sourcePath = sourcePath;
-        this.targetFilePath = targetFilePath;
-        this.title = title == null ? ""
-                : title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
-        this.vaultPath = vaultPath;
-        this.width = width;
-        this.url = null;
+    String escape(String s) {
+        return s.replace("\"", "&quot;");
     }
 
     /**
      * A shortened image title (max 50 characters) for use in markdown links.
      */
     public String getShortTitle() {
-        return title.length() > 50 ? title.substring(0, 26) + "..." : title;
+        return title;
     }
 
     private String titleAttribute() {
-        return title.length() > 50 ? " \"" + title + "\"" : "";
+        return titleAttr;
     }
 
     /** Path of the image in the vault or url for external images. */
@@ -190,7 +193,7 @@ public class ImageRef {
 
         public ImageRef build() {
             if (url != null) {
-                return new ImageRef(title, url, width);
+                return new ImageRef(url, null, null, title, null, width);
             }
             if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
                 throw new IllegalStateException("Set paths first (source, relative, vaultRoot, fileRoot) first");
@@ -199,12 +202,13 @@ public class ImageRef {
             String vaultPath = String.format("%s%s", vaultRoot,
                     relativeTarget.toString().replace('\\', '/'));
 
-            return new ImageRef(sourcePath, targetFilePath, title, vaultPath, width);
+            return new ImageRef(null, sourcePath, targetFilePath, title, vaultPath, width);
         }
 
         public ImageRef build(ImageRef previous) {
             if (previous != null) {
-                return new ImageRef(previous.sourcePath,
+                return new ImageRef(null,
+                        previous.sourcePath,
                         previous.targetFilePath,
                         title,
                         previous.vaultPath,
