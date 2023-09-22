@@ -326,6 +326,9 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     @Override
     public String getImagePath() {
+        if (type != Tools5eIndexType.monster) {
+            return super.getImagePath();
+        }
         return Tools5eQuteBase.monsterPath(isNpc, creatureType);
     }
 

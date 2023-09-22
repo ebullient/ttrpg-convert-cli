@@ -261,6 +261,17 @@ public class TestUtils {
     static List<String> checkDirectoryContents(Path directory, Tui tui,
             BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = new ArrayList<>();
+
+        Path bestiary = directory.resolve("bestiary");
+        Path nullDir = bestiary.resolve("null");
+        Path compendium = directory.resolve("compendium");
+        if (bestiary.toFile().exists() && nullDir.toFile().exists()) {
+            errors.add(String.format("Found null directory in bestiary: %s", nullDir));
+        }
+        if (bestiary.toFile().exists() && compendium.toFile().exists()) {
+            errors.add(String.format("Found compendium directory as a peer of bestiary: %s", compendium));
+        }
+
         try (Stream<Path> walk = Files.list(directory)) {
             walk.forEach(p -> {
                 if (p.toFile().isDirectory()) {
