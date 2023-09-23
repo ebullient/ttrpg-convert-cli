@@ -26,7 +26,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
 
     Pattern linkifyPattern = Pattern.compile(
-            "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|object|race|reward|sense|skill|spell|status|table|variantrule|vehicle|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
+            "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|legroup|object|race|reward|sense|skill|spell|status|table|variantrule|vehicle|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
 
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
 
@@ -248,6 +248,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@italic ([^}]+)}", "*$1*")
                         .replaceAll("\\{@s ([^}]+?)}", "~~$1~~")
                         .replaceAll("\\{@strike ([^}]+)}", "~~$1~~")
+                        .replaceAll("\\{@sup ([^}]+?)}", "<sup>$1</sup>")
                         .replaceAll("\\{@u ([^}]+?)}", "_$1_")
                         .replaceAll("\\{@underline ([^}]+?)}", "_$1_")
                         .replaceAll("\\{@comic ([^}]+?)}", "$1")
@@ -368,6 +369,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@item alchemy jug} assumes DMG by default,
             // {@item longsword|phb} can have sources added with a pipe,
             // {@item longsword|phb|and optional link text added with another pipe}.",
+            // {@legroup unicorn} assumes MM by default,
+            // {@legroup balhannoth|MPMM} can have sources added with a pipe,
+            // {@legroup balhannoth|MPMM|and optional link text added with another pipe}.",
             // {@object Ballista} assumes DMG by default,
             // {@object Ballista|DMG|and optional link text added with another pipe}.",
             // {@optfeature Agonizing Blast} assumes PHB by default,
@@ -399,6 +403,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     deck,
                     hazard,
                     item,
+                    legendaryGroup,
                     object,
                     optionalfeature,
                     race,

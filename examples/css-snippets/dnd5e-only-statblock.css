@@ -8,6 +8,9 @@ body {
 
 .callout[data-callout=statblock] {
   --callout-color: var(--statblock-accent);
+  --embed-border-left: none;
+  --embed-border-right: none;
+  --embed-padding: 0;
 }
 .callout[data-callout=statblock] .callout-title {
   line-height: var(--line-height);
@@ -50,6 +53,21 @@ body {
 .callout[data-callout=statblock] .callout-content li {
   line-height: 1.2em;
   margin-block-start: 0.5em;
+}
+.callout[data-callout=statblock] .markdown-embed .markdown-embed-title,
+.callout[data-callout=statblock] .markdown-embed .mod-header {
+  display: none;
+}
+.callout[data-callout=statblock] .markdown-embed pre.frontmatter,
+.callout[data-callout=statblock] .markdown-embed h1[data-heading] {
+  display: none;
+}
+.callout[data-callout=statblock] .markdown-embed .markdown-embed-content {
+  max-height: unset;
+  overflow: unset;
+}
+.callout[data-callout=statblock] .markdown-embed .markdown-embed-content > .markdown-preview-view {
+  overflow-y: unset;
 }
 
 .callout[data-callout=statblock] div[src$="#token"],

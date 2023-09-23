@@ -105,14 +105,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         Tools5eIndexType.subrace.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.monsterTemplate.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.subclass.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.classfeature.withArrayFrom(node, "classFeature", this::addToIndex);
-        Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.subclassFeature.withArrayFrom(node, "subclassFeature", this::addToIndex);
-
-        // TODO
-        Tools5eIndexType.psionic.withArrayFrom(node, this::addToIndex);
 
         // Output Types
 
@@ -125,6 +120,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.skill.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.status.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.variantrule.withArrayFrom(node, this::addToIndex);
+
+        Tools5eIndexType.psionic.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.legendaryGroup.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.optionalfeature.withArrayFrom(node, this::addToIndex);
 
         // tables
 
@@ -369,10 +368,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
             if (type == Tools5eIndexType.subrace ||
                     type == Tools5eIndexType.monsterTemplate ||
-                    type == Tools5eIndexType.legendaryGroup ||
                     type == Tools5eIndexType.deity) {
                 // subraces are pulled in by races
-                // traits and legendary groups are pulled in my monsters
+                // traits (templates) groups are pulled in my monsters
                 // deities are a hot mess
                 continue;
             }

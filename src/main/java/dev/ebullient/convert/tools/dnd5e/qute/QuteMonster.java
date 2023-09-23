@@ -76,6 +76,10 @@ public class QuteMonster extends Tools5eQuteBase {
      * {@link dev.ebullient.convert.qute.NamedText}.
      */
     public final Collection<NamedText> legendaryGroup;
+    /**
+     * Markdown link to legendary group (can be embedded).
+     */
+    public final String legendaryGroupLink;
     /** Creature abilities as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.Spellcasting} attributes */
     public final List<Spellcasting> spellcasting;
     /** Formatted text containing the creature description. Same as `{resource.text}` */
@@ -96,7 +100,7 @@ public class QuteMonster extends Tools5eQuteBase {
             Collection<NamedText> trait,
             Collection<NamedText> action, Collection<NamedText> bonusAction, Collection<NamedText> reaction,
             Collection<NamedText> legendary,
-            Collection<NamedText> legendaryGroup,
+            Collection<NamedText> legendaryGroup, String legendaryGroupLink,
             List<Spellcasting> spellcasting, String description, String environment,
             ImageRef tokenImage, List<ImageRef> fluffImages, Tags tags, boolean useDiceRoller) {
 
@@ -123,6 +127,7 @@ public class QuteMonster extends Tools5eQuteBase {
         this.reaction = reaction;
         this.legendary = legendary;
         this.legendaryGroup = legendaryGroup;
+        this.legendaryGroupLink = legendaryGroupLink;
         this.spellcasting = spellcasting;
         this.description = description;
         this.environment = environment;

@@ -181,6 +181,12 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                             t -> new Json2QuteCompose(nodeType, index, "Item Types"));
                     itemTypes.add(node);
                 }
+                case legendaryGroup -> {
+                    QuteNote converted = new Json2QuteLegendaryGroup(index, nodeType, node).buildNote();
+                    if (converted != null) {
+                        compendium.add(converted);
+                    }
+                }
                 case optionalFeatureTypes -> {
                     OptionalFeatureType oft = index.getOptionalFeatureTypes(node);
                     QuteNote converted = new Json2QuteOptionalFeatureType(index, node, oft).buildNote();

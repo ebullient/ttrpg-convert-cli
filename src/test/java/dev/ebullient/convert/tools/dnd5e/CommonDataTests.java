@@ -233,11 +233,18 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.monster)
+                    .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup))
                     .writeImages();
 
             Path tokenDir = bestiaryDir.resolve("undead/token");
             assertThat(tokenDir.toFile()).exists();
+
+            Path lgDir = bestiaryDir.resolve("legendary-group");
+            if (variant == TestInput.all) {
+                assertThat(lgDir.toFile()).exists();
+            } else {
+                assertThat(lgDir.toFile()).doesNotExist();
+            }
 
             try (Stream<Path> paths = Files.list(bestiaryDir)) {
                 paths.forEach(p -> {
@@ -263,7 +270,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.monster);
+                    .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
         }
     }
 
@@ -279,7 +286,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.monster);
+                    .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
             assertThat(undead.toFile()).exists();
@@ -336,7 +343,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.monster);
+                    .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
             assertThat(undead.toFile()).exists();

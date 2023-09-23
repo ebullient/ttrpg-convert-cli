@@ -73,12 +73,10 @@ title: {resource.name}{#if resource.token}
 {#for legendary in resource.legendary}
 
 {#if legendary.name }***{legendary.name}.*** {/if}{legendary.desc}
-{/for}{/if}{#if resource.legendaryGroup}{#for group in resource.legendaryGroup}
+{/for}{/if}{#if resource.legendaryGroupLink}
 
-## {group.name}
-
-{group.desc}
-{/for}{/if}
+!{resource.legendaryGroupLink}
+{/if}
 ```
 ^statblock
 {#if resource.environment }

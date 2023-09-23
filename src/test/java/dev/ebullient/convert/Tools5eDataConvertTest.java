@@ -170,7 +170,9 @@ public class Tools5eDataConvertTest {
                     TestUtils.HOMEBREW_PATH_5E
                             .resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
                             .toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("deity/Frog God Games; The Lost Lands.json").toString());
+                    TestUtils.HOMEBREW_PATH_5E.resolve("deity/Frog God Games; The Lost Lands.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("creature/MCDM Productions; Flee, Mortals!.json")
+                            .toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
@@ -296,11 +298,11 @@ public class Tools5eDataConvertTest {
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
-            Path wbtw = target.resolve("compend ium/adventures/the-wild-beyond-the-witchlight");
+            Path wbtw = target.resolve("compend. ium/adventures/the-wild-beyond-the-witchlight");
             assertThat(wbtw).exists();
             assertThat(wbtw).isDirectory();
 
-            Path phb = target.resolve("compend ium/books/players-handbook");
+            Path phb = target.resolve("compend. ium/books/players-handbook");
             assertThat(phb).exists();
             assertThat(phb).isDirectory();
 
@@ -309,11 +311,11 @@ public class Tools5eDataConvertTest {
                 content.forEach(l -> {
                     TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
                     TestUtils.commonTests(p, l, errors);
-                    if (l.contains("/ru les/")) {
-                        errors.add("Found '/ru les/' " + p); // not escaped
+                    if (l.contains("/ru. les/")) {
+                        errors.add("Found '/ru. les/' " + p); // not escaped
                     }
-                    if (l.contains("/compend ium/")) {
-                        errors.add("Found '/compend ium/' " + p); // not escaped
+                    if (l.contains("/compend. ium/")) {
+                        errors.add("Found '/compend. ium/' " + p); // not escaped
                     }
                 });
                 return errors;

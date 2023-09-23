@@ -21,7 +21,6 @@ import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
@@ -32,11 +31,6 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteMonster extends Json2QuteCommon {
-
-    private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|\\d+)");
-    private static final List<String> LEGENDARY_IGNORE_LIST = List.of("name", "source", "page",
-            TtrpgValue.indexInputType.name(), TtrpgValue.indexKey.name(), "_copy", "_meta");
-
     public static boolean isNpc(JsonNode source) {
         if (source.has("isNpc")) {
             return source.get("isNpc").asBoolean(false);
@@ -85,6 +79,27 @@ public class Json2QuteMonster extends Json2QuteCommon {
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.monsterFluff, "##", fluffImages);
 
+        Collection<NamedText> legendaryGroupText = null;
+        String legendaryGroupLink = null;
+        if (MonsterFields.legendaryGroup.existsIn(rootNode)) {
+            JsonNode nameSource = MonsterFields.legendaryGroup.getFrom(rootNode);
+            String lgKey = index().getAliasOrDefault(Tools5eIndexType.legendaryGroup.createKey(nameSource));
+            if (index.sourceIncluded(SourceField.source.getTextOrThrow(nameSource))) {
+                JsonNode lgNode = index.getOrigin(lgKey);
+                if (lgNode == null) {
+                    tui().debugf("No legendary group content for %s", lgKey);
+                } else {
+                    Tools5eSources lgSources = Tools5eSources.findSources(lgKey);
+                    legendaryGroupText = legendaryGroup(lgNode);
+                    legendaryGroupLink = linkifyType(Tools5eIndexType.legendaryGroup,
+                            lgKey,
+                            lgSources.getName());
+                }
+            } else {
+                tui().debugf("Legendary group %s source excluded", lgKey);
+            }
+        }
+
         return new QuteMonster(sources,
                 type.decoratedName(rootNode),
                 getSourceText(sources),
@@ -104,7 +119,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 collectTraits("bonus"),
                 collectTraits("reaction"),
                 collectTraits("legendary"),
-                legendaryGroup(),
+                legendaryGroupText,
+                legendaryGroupLink,
                 monsterSpellcasting(),
                 fluff,
                 environment,
@@ -294,29 +310,15 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return spells;
     }
 
-    Collection<NamedText> legendaryGroup() {
-        JsonNode group = rootNode.get("legendaryGroup");
-        if (group == null) {
-            return null;
-        }
-        String key = Tools5eIndexType.legendaryGroup.createKey(group);
-        if (!index.sourceIncluded(group.get("source").asText())) {
-            tui().debugf("Legendary group %s source excluded", key);
-        }
-        JsonNode content = index.getOrigin(key);
-        if (content == null) {
-            tui().debugf("No legendary group content for %s", key);
-            return null;
-        }
-
+    Collection<NamedText> legendaryGroup(JsonNode content) {
         List<NamedText> traits = new ArrayList<>();
         for (Entry<String, JsonNode> field : iterableFields(content)) {
             String fieldName = field.getKey();
-            if (LEGENDARY_IGNORE_LIST.contains(fieldName)) {
+            if (Json2QuteLegendaryGroup.LEGENDARY_IGNORE_LIST.contains(fieldName)) {
                 continue;
             }
             fieldName = fieldName.substring(0, 1).toUpperCase()
-                    + UPPERCASE_LETTER.matcher(fieldName.substring(1))
+                    + Json2QuteLegendaryGroup.UPPERCASE_LETTER.matcher(fieldName.substring(1))
                             .replaceAll(matchResult -> " " + (matchResult.group(1).toLowerCase()));
 
             addNamedTrait(traits, fieldName, field.getValue());
@@ -528,6 +530,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         formula,
         from,
         hp,
+        legendaryGroup,
         original,
         save,
         senses,

@@ -63,4 +63,29 @@ body {
       margin-block-start: .5em;
     }
   }
+
+  // naked/invisible embed (legendary-group)
+  --embed-border-left: none;
+  --embed-border-right: none;
+  --embed-padding: 0;
+
+  .markdown-embed {
+    .markdown-embed-title,
+    .mod-header {
+      display: none;
+    }
+    pre.frontmatter,
+    h1[data-heading] {
+      display: none;
+    }
+    .markdown-embed-content {
+      max-height: unset;
+      overflow: unset;
+  
+      > .markdown-preview-view  {
+        // no scroll
+        overflow-y: unset;
+      }
+    }
+  }
 }

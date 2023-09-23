@@ -313,7 +313,7 @@ public interface JsonSource extends JsonTextReplacement {
             maybeAddBlankLine(text);
             // strip links from heading titles. Cross-referencing headers with links is hard
             text.add(heading + " " + name.replaceAll("\\[(.*?)\\]\\(.*?\\)", "$1"));
-            if (index().differentSource(getSources(), parseState().getSource())) {
+            if (!parseState().sourcePageString().isBlank() && index().differentSource(getSources(), parseState().getSource())) {
                 text.add(getSourceText(parseState()));
             }
             text.add("");
@@ -328,7 +328,7 @@ public interface JsonSource extends JsonTextReplacement {
         List<String> inner = new ArrayList<>();
         appendToText(inner, SourceField.entry.getFrom(itemNode), null);
         appendToText(inner, SourceField.entries.getFrom(itemNode), null);
-        if (prependField(itemNode, SourceField.name, inner)) {
+        if (SourceField.name.existsIn(itemNode) && prependField(itemNode, SourceField.name, inner)) {
             maybeAddBlankLine(text);
         }
         text.addAll(inner);
