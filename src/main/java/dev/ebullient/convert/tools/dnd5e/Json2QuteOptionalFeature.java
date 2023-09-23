@@ -19,17 +19,13 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
             tags.add("optional-feature", featureType);
         }
 
+        // set the template to use
         return new QuteFeat(getSources(),
                 getSources().getName(),
                 getSourceText(sources),
                 listPrerequisites(),
                 null,
                 getText("##"),
-                tags) {
-            @Override
-            public String template() {
-                return "feat2md.txt";
-            }
-        };
+                tags);
     }
 }

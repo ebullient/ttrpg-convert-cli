@@ -48,5 +48,4 @@ public class Json2QuteHazard extends Json2QuteCommon {
             default -> "Generic Hazard"; // also "GEN"
         };
     }
-
 }

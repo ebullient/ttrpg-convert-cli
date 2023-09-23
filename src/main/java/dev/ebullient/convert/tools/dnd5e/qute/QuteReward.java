@@ -28,13 +28,9 @@ public class QuteReward extends Tools5eQuteBase {
             String ability, String detail, String signatureSpells,
             String text, Tags tags) {
         super(sources, name, source, text, tags);
+        withTemplate("reward2md.txt");
         this.ability = ability;
         this.detail = detail;
         this.signatureSpells = signatureSpells;
-    }
-
-    @Override
-    public String template() {
-        return "reward2md.txt";
     }
 }

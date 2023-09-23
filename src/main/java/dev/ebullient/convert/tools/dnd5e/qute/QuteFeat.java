@@ -24,6 +24,7 @@ public class QuteFeat extends Tools5eQuteBase {
             String prerequisite, String level,
             String text, Tags tags) {
         super(sources, name, source, text, tags);
+        withTemplate("feat2md.txt"); // Feat and OptionalFeature
         this.level = level;
         this.prerequisite = prerequisite; // optional
     }

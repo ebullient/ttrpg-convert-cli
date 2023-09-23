@@ -23,10 +23,6 @@ public class QuteHazard extends Tools5eQuteBase {
             String text, Tags tags) {
         super(sources, name, source, text, tags);
         this.hazardType = hazardType;
-    }
-
-    @Override
-    public String template() {
-        return "hazard2md.txt";
+        withTemplate("hazard2md.txt"); // not trap or hazard (types)
     }
 }
