@@ -631,19 +631,9 @@ public interface JsonSource extends JsonTextReplacement {
     default void embedReference(List<String> text, JsonNode entry, Tools5eIndexType type, String heading) {
         String name = SourceField.name.getTextOrEmpty(entry);
 
-        if (type == Tools5eIndexType.legendaryGroup) {
-            // legendaryGroup is a special case, there is no template for it
-            // and it is not a linkable type.
-            if (Tools5eFields.lairActions.existsIn(entry)) {
-                maybeAddBlankLine(text);
-                text.add(heading + " Lair actions");
-                appendToText(text, Tools5eFields.lairActions.getFrom(entry), null);
-            }
-            if (Tools5eFields.regionalEffects.existsIn(entry)) {
-                maybeAddBlankLine(text);
-                text.add(heading + " Regional effects");
-                appendToText(text, Tools5eFields.lairActions.getFrom(entry), null);
-            }
+        if (type == Tools5eIndexType.charoption) {
+            // charoption is a special case, it is not a linkable type.
+            tui().warnf("charoption is not yet an embeddable type: %s", entry);
             return;
         }
 
