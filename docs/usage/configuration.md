@@ -74,7 +74,7 @@ List the codes or abbreviations for your chosen sources.
   ]
 ```
 
-> 🚀 Note: Ensure you own the content you're including. Find the abbreviations for your sources in the [Source Map][https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md].
+> 🚀 Note: Ensure you own the content you're including. Find the abbreviations for your sources in the [Source Map](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md).
 
 ## Specifying Target Paths: The `paths` Key
 

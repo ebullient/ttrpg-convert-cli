@@ -172,7 +172,7 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
     ```
 
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide (all sources I own).  
-        > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md). Only use sources you own.  
+        > 🚀 Note: Only use content you own. Find the abbreviations for your sources in the [Source Map](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md).  
 
     - `-c dm-sources.json` contains configuration parameters (shown in detail [below](#using-a-configuration-file))
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) to include as well.
