@@ -1,20 +1,16 @@
 # TTRPG convert CLI
 ![GitHub all releases](https://img.shields.io/github/downloads/ebullient/ttrpg-convert-cli/total?color=success)
 
-The tool formerly known as Json 5e convert CLI.
-
-CLI to convert 5eTools (🚧 and Pf2eTools) JSON into crosslinked, tagged, and formatted (with templates) markdown for use with [Obsidian.md](https://obsidian.md).
-
-The instructions below still reference the released `ttrpg-convert` CLI. New stuff is on the way!
+A Command-Line Interface designed to convert TTRPG data from 5eTools (and upcoming support for Pf2eTools) into crosslinked, tagged, and formatted markdown optimized for [Obsidian.md](https://obsidian.md). 
 
 <table><tr>
 <td>Jump</td>
-<td><a href="##install-the-command-line-utility">⬇ Download</a></td>
-<td><a href="#build-and-run-optional">⚙️ Build</a></td>
+<td><a href="#install-the-command-line-utility">⬇ Download</a></td>
 <td><a href="#conventions">📝 Conventions</a></td>
-</tr><tr>
 <td><a href="#recommended-plugins">🔌 Plugins</a></td>
-<td><a href="#use-with-5etools-json-data">📖 5etools Data</a></td>
+</tr><tr>
+<td><a href="#use-with-5etools-json-data">📖 5eTools</a></td>
+<td><a href="#use-with-pf2etools-json-data">📖 Pf2eTools</a></td>
 <td><a href="#templates">🎨 Templates</a></td>
 <td><a href="#changes-that-impact-generated-templates-and-files">🚜 Changelog</a></td>
 </tr></table>
@@ -28,103 +24,66 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 There are several options for running `ttrpg-convert`. Choose whichever you are the most comfortable with: 
 
 - [Use pre-built platform binary](#use-pre-built-platform-binary) (no Java required)
-- [Use JBang](#use-jbang)
-- [Use Java to run the jar](#use-java-to-run-the-jar)
-- [Build from source](#build-and-run)
+- [Use JBang](docs/usage/alternateRun.md#use-jbang)
+- [Use Java to run the jar](docs/usage/alternateRun.md#use-java-to-run-the-jar)
+- [Build from source](docs/usage/alternateRun.md#build-and-run-from-source)
 - **Using Windows?** See the [Windows README](README-WINDOWS.md)
 
 ### Use pre-built platform binary
 
+> 📝 Where do these binaries come from?  
+> They are built on GitHub managed CI runners using the workflow defined [here](.github/workflows/release.yml), which compiles a Quarkus application (Java) into a platform-native binary using [GraalVM](https://www.graalvm.org/). I build and upload the mac arm64 binary myself (not supported by GH CI) using [this script](.github/workflows/augment-release.yml). 
+
 [Download the latest release](https://github.com/ebullient/ttrpg-convert-cli/releases/latest) of the zip or tgz for your platform. Extract the archive. A `ttrpg-convert` binary executable will be in the extracted bin directory. 
+
+In a terminal or command shell, navigate to the directory where you extracted the archive and run the command:
 
 ```shell
 ttrpg-convert --help
 ```
 
-Use this binary in the instructions below. Continue to notes about [Conventions](#conventions).
+We'll use this command in the instructions below.
 
-Notes:
+Notes: 
+- Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
 
+Notes for Windows:
 - [Open a command prompt in a folder (Windows) ](https://www.lifewire.com/open-command-prompt-in-a-folder-5185505)
 - [Running executables from the command line (Windows)](https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window)
 - To show emoji in Windows Commmand Prompt: `chcp 65001` and choose a font with emoji support (Consolas is one). You can also try the new Windows Terminal (`wt.exe`).
+- See the [Windows README](README-WINDOWS.md)
+
+Notes for MacOS:
+
 - MacOS permission checking (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
-### Use JBang
-
-1. Install JBang: https://www.jbang.dev/documentation/guide/latest/installation.html
-
-2. Install the pre-built release: 
-
-    ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.2.4/ttrpg-convert-cli-2.2.4-runner.jar
-    ```
-
-    If you want the latest _unreleased snapshot_ (may not match this doc!): 
-
-    ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar
-    ```
-
-    There may be a pause if you download the snapshot; it is rebuilt on demand.
-
-    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands shown below accordingly.
-
-3. Verify the install by running the command: 
-
-    ```shell
-    ttrpg-convert --help
-    ```
-
-Continue to notes about [Conventions](#conventions).
-
-### Use Java to run the jar
-
-1. Install Java 17: https://adoptium.net/, or with your favorite package manager.
-
-2. Download the latest [ttrpg-convert-cli jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.2.4/ttrpg-convert-cli-2.2.4-runner.jar):  
-
-3. Verify the install by running the command: 
-
-    ```shell
-    java -jar ttrpg-convert-cli-2.2.4-runner.jar --help
-    ```
-
-To run commands listed below, replace `ttrpg-convert` with `java -jar ttrpg-convert-cli-2.2.4-runner.jar`
-
-Continue to notes about [Conventions](#conventions).
-
-### Build and run
-
-1. Clone this repository
-2. Ensure you have [Java installed on your system](https://adoptium.net/installation/) and active in your path.
-3. Build this project: `quarkus build` or `./mvnw install`
-4. Verify the build: `java -jar target/ttrpg-convert-cli-299-SNAPSHOT-runner.jar --help`
-
-To run commands listed below, either: 
-
-- Replace `ttrpg-convert` with `java -jar target/ttrpg-convert-cli-299-SNAPSHOT-runner.jar`, or
-- Use JBang to create an alias that points to the built jar: 
-
-    ```shell
-    jbang app install --name ttrpg-convert --force --fresh ~/.m2/repository/dev/ebullient/ttrpg-convert-cli/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar
-    ```
-
-    > 🔹 Feel free to use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands shown below accordingly.
+**Looking for a different method?** See [Alternate ways to run the CLI](docs/usage/alternateRun.md) for more options to download and run the CLI.
 
 ## Conventions
 
-- **Links.** Documents generated by this plugin will use markdown links rather than wiki links. A css snippet can make these links less invasive in edit mode by hiding the URL portion of the string.
+> 💭 **Recommendations** 
+> - Keep generated content isolated in your vault and treat it as read-only.
+> - Run the CLI against a separate directory. Use a comparison tool to preview changes.  
+>   You can use `git diff` to compare arbitrary directories, for example:
+>   ```
+>   git diff --no-index vault/compendium/bestiary generated/compendium/bestiary
+>   ```
+>  - Use a copy tool that only updates modified files, like rsync or robocopy, to avoid unnecessary file copying when updating your vault.
+
+- **Links.** Documents generated by this plugin will use markdown links rather than wiki links. A [css snippet](examples/css-snippets/hide-markdown-link-url.css) can make these links less invasive in edit mode by hiding the URL portion of the string.
 
 - **File names.** To avoid conflicts and issues with different operating systems, all file names are slugified (all lower case, symbols stripped, and spaces replaced by dashes). This is a familiar convention for those used to jekyll, hugo, or other blogging systems.
 
   File names for resources outside of the core books (PHB, MM, and DMG) have the abbreviated source name appended to the end to avoid file collisions.
 
-- **Organization.** Files are generated in two roots: `compendium` and `rules`. The location of these roots is configurable (see below).   
+- **Organization.** Files are generated in two roots: `compendium` and `rules`. The location of these roots is configurable (see below). These directories will be populated depending on the sources you have enabled. 
 
-  The following directories may be created in the `compendium` directory depending on what sources you have enabled: `backgrounds`, `bestiary` (with contents organized by monster type), `classes` (separate documents for classes and subclasses), `deities`, `feats`, `items`, `names`, `races`, and `spells`.
+  - `compendium` contains files for items, spells, monsters, etc. 
+    The `compendium` directory is further organized into subdirectories for each type of content. For example, all items are in the `compendium/items` directory.  
 
-- **Styles.** Every document has a `cssclass` attribute that you can use to further tweak how page elements render. `css-snippets` has some snippets you can use to customize elements of the compendium. 
+  - `rules` contains files for conditions, weapon properties, variant rules, etc. 
+
+- **Styles.** Every document has a `cssclasses` attribute that assigns a CSS class. We have some [CSS snippets](#optional-css-snippets) that you can use to customize elements of the compendium. 
   - 5e tools: `json5e-background`, `json5e-class`, `json5e-deck`, `json5e-deity`, `json5e-feat`, `json5e-hazard`, `json5e-item`, `json5e-monster`, `json5e-note`, `json5e-object`, `json5e-psionic`, `json5e-race`, `json5e-reward`, `json5e-spell`, and `json5e-vehicle`.
   - pf2e tools: `pf2e`, `pf2e-ability`, `pf2e-action`, `pf2e-affliction`, `pf2e-archetype`, `pf2e-background`, `pf2e-book`, `pf2e-delity`, `pf2e-feat`, `pf2e-hazard`, `pf2e-index`, `pf2e-item`, `pf2e-note`, `pf2e-ritual`, `pf2e-sleep`, `pf2e-trait`, 
 
@@ -133,10 +92,9 @@ To run commands listed below, either:
   - 5e tools: `ad-flowchart`, `ad-gallery`, `ad-embed-action`, `ad-embed-feat`, `ad-embed-monster`, `ad-embed-object`, `ad-embed-race`, `ad-embed-spell`, `ad-embed-table`
   - pf2e tools: `ad-embed-ability`, `ad-embed-action`, `ad-embed-affliction`, `ad-embed-avatar`, `ad-embed-disease`, `ad-embed-feat`, `ad-embed-item`, `ad-pf2-note`, `ad-pf2-ritual`.
 
-
 ## Recommended plugins 
 
-- **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: The admonitions plugin is used to render the statblocks and other admonitions. It also supports a codeblock style that is used for more complicated content like statblocks, where callout syntax would be difficult to manage. 
+- **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: The admonitions plugin supports a codeblock style that is used for more complicated content like statblocks, where callout syntax would be difficult to manage. 
 
     Import one or more admonition json files in the [examples](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples) directory to create the custom admonition types used for converted content:
 
@@ -148,8 +106,8 @@ To run commands listed below, either:
 
     Ensure the plugin has the following options enabled: 
 
-    - "Ignore force view when not in front matter": the plugin will only change the view mode if `obsidianUIMode` is defined in the front matter.    
-    - "Ignore open files": the plugin won't try to change the view mode if the file is already open.
+    - *"Ignore force view when not in front matter"*: the plugin will only change the view mode if `obsidianUIMode` is defined in the front matter.    
+    - *"Ignore open files"*: the plugin won't try to change the view mode if the file is already open.
 
 - **[TTRPG Statblocks](obsidian://show-plugin?id=obsidian-5e-statblocks)**: Templates for rendering monsters can define a `statblock` in the document body or provide a full or abridged yaml monster in the document header to update monsters in the plugin's bestiary. See [Templates](#templates) for more information.
 
@@ -157,7 +115,7 @@ To run commands listed below, either:
 
 ### Optional CSS Snippets
 
-Within the `examples/css-snippets` folder, you will find some CSS snippets that have been created to further customize the look of the generated content. They include:
+Within the [examples/css-snippets](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets/) folder, you will find some CSS snippets that have been created to further customize the look of the generated content. They include:
 - Functionality to float token images to side of a statblock.
 - Further enhancement of the admonition styles.
 - _PF2 Only_: More realistic looking Statblocks
@@ -171,8 +129,7 @@ Compendium (`*-compendium`) snippets include styles for statblocks.
 
 If you aren't using a `*-compendium` snippet, you may want to download either `dnd5e-only-statblocks.css` or `pf2-only-statblocks.css` to style your statblocks.
 
-> :warning: Do not use an `*-only-statblock.css` snippet and a `*-compendium.css` snippet together.
-
+> ⚠️ Do not use an `*-only-statblock.css` snippet and a `*-compendium.css` snippet together.
 
 ## Use with 5eTools JSON data
 
@@ -217,16 +174,9 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
     - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide (all sources I own).  
         > 🔸 **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md). Only use sources you own.  
 
-    - `-c dm-sources.json` contains configuration parameters (shown in detail [below](#additional-parameters))
+    - `-c dm-sources.json` contains configuration parameters (shown in detail [below](#using-a-configuration-file))
     - Books (`/book/book-aag.json`) and adventures (`/adventure/adventure-lox.json`) to include as well.
     - `my-items.json` defines custom items for my campaign that follow 5etools JSON format.
-
-> 💭 I recommend running the CLI against a separate directory, and then using a comparison tool of your choice to preview changes before you copy or merge them in.
->
-> You can use `git diff` to compare arbitrary directories:
-> ```
-> git diff --no-index vault/compendium/bestiary generated/compendium/bestiary
-> ```
 
 ## Use with Pf2eTools Data
 
@@ -259,220 +209,40 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
 
 ## Using A Configuration File 
 
-So far we've seen use of the tool using command line parameters. But this can get very clunky when trying to do any sort of complex command, plus it is a lot of typing! Fortunately, configuration can also be provided as a JSON or YAML file, either instead of, or along with, using command line parameters. JSON and YAML are both file formats for storing data in useful and human-readable ways. See [examples/config](examples/config) for the general config file structure in versions of both formats. Below we'll use json as the preferred format, but you could also use yaml instead. It is your choice.
+So far we've seen use of the tool using command line parameters. But this can get very clunky when trying to do any sort of complex command, plus it is a lot of typing! 
 
-### Example JSON Configuration File
+You can configure the CLI with a JSON or YAML file, either instead of, or along with, command line parameters. See [examples/config](examples/config) for the general config file structure in both formats. We'll use JSON as the preferred format, but you could also use YAML instead. It is your choice.
 
-Here is an example of a `config.json` file. This particular config performs four basic functions, with each part having the structure of a KEY and a VALUE (if you want to know why the `{}` and `[]` are used in the ways that they are you can read about json *objects* and *arrays* [here](https://www.toolsqa.com/rest-assured/what-is-json/)). 
+> 📝 JSON and YAML are both file formats for storing data in useful and human-readable ways.
+> - If you want to know why the `{}` and `[]` are used in the ways that they are you can read about json *objects* and *arrays* [here](https://www.toolsqa.com/rest-assured/what-is-json/)).
+> - YAML (Yet another markup language) has a [specification](https://yaml.org/spec/1.2/spec.html) that describes how it should be used.
 
-```json
+Here is an example of a `config.json` file. As a JSON Object, it has a `"key": "value"` structure.
+
+``` json
 {
-    "from": [
-        "AI",
-        "PHB",
-        "DMG",
-        "TCE",
-        "LMoP",
-        "ESK",
-        "DIP",
-        "XGE",
-        "FTD",
-        "MM",
-        "MTF",
-        "VGM",
-        "LoX"
-    ],
-    "paths": {
-        "rules": "/compendium/rules/"
-    },
-    "excludePattern": [
-        "race|.*|dmg"
-    ],
-    "exclude": [
-        "monster|expert|dc",
-        "monster|expert|sdw",
-        "monster|expert|slw"
-    ],
-    "include": [
-        "race|changeling|mpmm"
-    ],
-    "full-source": {
-        "adventure": [
-            "LMoP",
-            "LoX"
-        ],
-        "book": [
-            "5etools-mirror-1.github.io/data/book/book-phb.json"
-        ]
-    }
+  "from": [
+    "DMG",
+    "PHB",
+    "MM"
+  ],
+  "paths": {
+    "compendium": "z_compendium/",
+    "rules": "z_compendium/rules"
+  }
 }
 ```
 
-The four functions performed in the example file are: 
+This example performs two basic functions:
 
-1. **Source** using the key `from`: the sources we are pulling data from (as an array) 
-2. **File Path** using the key `path`: a specified path, in this case for specifying where we want the rules data to go
-3. **Filtering** inclusion or exclusion of material. 
-    - `excludePattern`: an exclusion pattern, in this case a pattern to exclude all race data from the Dungeon Master's Guide
-    - `exclude`: a list of specific data files to exclude, in this case three monster files (the 'expert') from three different sources
-    - `include`, which forces the element to be included. 
+1. **Filter Input Sources:** Using the key `from`, we list the sources (that we own) that we want to include.
+2. **Target file path:** Using the key `path`, we specify the target path for writing generated `compendium` and `rules` content. These directories will be created if they don't exist, and are relative to the output directory specified on the command line with `-o`.
 
-    The values used for these attribute match the strings contained in `allIndex.json`, which is generated using the `--index` option: 
-4. **Full source inclusion** using the key `full-source` (or alternatively, `convert`) to pull in an entire book or adventure, rather than just elements thereof. 
-
-Lets look at each of these a bit more closely. 
-
-### Sources
-
-The `from` key specifies an array of sources from which to pull data. **Please only include content from sources you own**. If you omit this parameter (and don't specify any other sources on the command line), this tool will only include content from the SRD.
-
-All sources are specified by an abbreviation. You *cannot* specify a source simply by its title, you must use an abbreviation. **Source abbreviations** are found in the [source code (around line 138)](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md). Again, **only use sources you own**.
-
-### Paths
-
-Generated content is split into two groups: `compendium` and `rules`. For the most part, "content" like items, spells, monsters, backgrounds, races, classes, vehicles, adventures or books are placed in the `/compendium/` directory, while files defining conditions, weapon properties, or describing variant rules are in the `/rules/` directory. The placement for Pathfinder is a little different, as it aims for similarity with the Archives of Nethys.
-
-You can configure the location of these two groups (to match your Vault paths) using the `paths` element (a json object), as we can see below: 
-
-    ```json
-    "paths": {
-      "compendium": "/compendium/",
-      "rules": "/rules/"
-    },
-    ```
-🔹 **NOTE**: the leading slash is optional. It indicates the path starts at the **root** of your vault.
-
-### Source Filtering 
-
-We can filter from the sources from which we're drawing data in two basic ways, through *excluding* material from a source we otherwise wish to draw from, or through *including* material from a source we otherwise don't wish to use. 
-
-The exclusion filter has two forms `exclude` and `excludePattern`. The `exclude` key means we exclude a single identifier (as listed in the generated index files); the `excludePattern` key means we exclude  all identifiers matching a pattern. In the above example, I'm excluding all of the race variants from the DMG, and the monster-form of the expert sidekick from the Essentials Kit. As it happens, I own these materials, but I don't want these variants in the formatted bestiary.
-
-The `include` key ensures the identified content is included. Thus requires specifying an identifier, which can be found in the generated index files when using the `--index` command line flag. 
-
-The main use of the `include` key is that it allows you to include a specific resource without including the whole source and excluding everything else. This is useful for single resources (classes, backgrounds, races, items, etc.) purchased from elsewhere, (e.g. D&D Beyond). To include the Changeling race from _Mordenkainen Presents: Monsters of the Multiverse_, for example, you would add the folowing to the array value: 
-
-    ```json
-    "include": [
-        "race|changeling|mpmm"
-    ]
-    ```
-### Full Source Inclusion
-
-The keys `convert` or `full-source` (they are equivalent) allow you to specify complete books or adventures to import into the compendium (which will allow cross-linking, etc.). You can include such sources by either providing the full relative path to the adventure or book json file, or its abbreviation ID (as found in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md))
-
-You can see both methods being used in the following example: 
-
-    ```json
-    "full-source": {
-        "adventure": [
-            "WBtW",
-            "tftyp-wpm", 
-        ],
-        "book": [
-            "5etools-mirror-1.github.io/data/book/book-phb.json"
-        ]
-    }
-    ```
-    
-**NOTE**: Any source that you want included in full must be specified **both** in the `sources` list array, **and** in the `full-source` object, either as an adventure or as a book. 
-
-Also note that some adventures, like _Tales from the Yawning Portal_, are treated as a collection of standalone modules. The generated index contains these as either `adventure` or `book` items. If you're unsure as which is correct, check the generated index file (`allIndex.json`): _Tales from the Yawning Portal: The Forge of Fury_ is an adventure (`adventure|adventure-tftyp-tfof`), while _Acquisitions Incorporated_ is a book (`book|book-ai`). 
-
-### Another Example Configuration File
-
-Here is another example. To generate player-focused reference content for a *Wild Beyond the Witchlight* campaign, I wanted to filter from available sources in a variety of ways. In particular, I want to control how races and feats are presented so as to provide some simplification for beginners at my table. To accomplish this I used filters and included the sources *Elemental Evil Player's Companion* (Genasi) and *Volo's Guide to Monsters* (Tabaxi), but also used `exclude` and `excludePattern` to remove elements from these sourcebooks that I don't want my players to use in this campaign.
-
-The JSON looks like this:
-
-```json
-{
-  "from": [
-    "PHB",
-    "DMG",
-    "XGE",
-    "TCE",
-    "EEPC",
-    "WBtW",
-    "VGM"
-  ],
-  "includeGroups": [
-    "familiars"
-  ],
-  "excludePattern": [
-    ".*sidekick.*",
-    "race|.*|dmg",
-    "race|(?!tabaxi).*|vgm",
-    "subrace|.*|aasimar|vgm",
-    "item|.*|vgm",
-    "monster|.*|tce",
-    "monster|.*|dmg",
-    "monster|.*|vgm",
-    "monster|.*|wbtw",
-    "monster|animated object.*|phb"
-  ],
-  "exclude": [
-    "race|aarakocra|eepc",
-    "feat|actor|phb",
-    "feat|artificer initiate|tce",
-    "feat|athlete|phb",
-    "feat|bountiful luck|xge",
-    "feat|chef|tce",
-    "feat|dragon fear|xge",
-    "feat|dragon hide|xge",
-    "feat|drow high magic|xge",
-    "feat|durable|phb",
-    "feat|dwarven fortitude|xge",
-    "feat|elven accuracy|xge",
-    "feat|fade away|xge",
-    "feat|fey teleportation|xge",
-    "feat|fey touched|tce",
-    "feat|flames of phlegethos|xge",
-    "feat|gunner|tce",
-    "feat|heavily armored|phb",
-    "feat|heavy armor master|phb",
-    "feat|infernal constitution|xge",
-    "feat|keen mind|phb",
-    "feat|lightly armored|phb",
-    "feat|linguist|phb",
-    "feat|lucky|phb",
-    "feat|medium armor master|phb",
-    "feat|moderately armored|phb",
-    "feat|mounted combatant|phb",
-    "feat|observant|phb",
-    "feat|orcish fury|xge",
-    "feat|piercer|tce",
-    "feat|poisoner|tce",
-    "feat|polearm master|phb",
-    "feat|prodigy|xge",
-    "feat|resilient|phb",
-    "feat|second chance|xge",
-    "feat|shadow touched|tce",
-    "feat|skill expert|tce",
-    "feat|slasher|tce",
-    "feat|squat nimbleness|xge",
-    "feat|tavern brawler|phb",
-    "feat|telekinetic|tce",
-    "feat|telepathic|tce",
-    "feat|weapon master|phb",
-    "feat|wood elf magic|xge",
-    "item|iggwilv's cauldron|wbtw"
-  ]
-```
-
-This includes various races and feats, but includes information about familiars. When used in this manner, the cli tool can help make very precise modifications in the kind of information to which you give players access for a campaign. 
+**For additional information on configuration**, see [Configuration](docs/usage/configuration.md).
 
 ## Templates
 
-This application uses the [Qute Templating Engine](https://quarkus.io/guides/qute). You can make simple customizations to markdown output by copying a template from `src/main/resources/templates`, making the desired modifications, and then specifying that template on the command line.
-
-```
-ttrpg-convert 5etools \
-  --background examples/templates/tools5e/images-background2md.txt \
-  --index -o dm dm-sources.json ~/git/dnd/5etools-mirror-1.github.io/data my-items.json
-```
-
-Additional templates can also be specified as a json object in your configuration file: 
+This application uses the [Qute Templating Engine](https://quarkus.io/guides/qute). You can make simple customizations to markdown output by copying a template from `src/main/resources/templates`, making the desired modifications, and specifying that template in your configuration: 
 
 ```json
   "template": {
@@ -485,25 +255,25 @@ You would include this in the `config.json` as a base level key-value pair, and 
 
 ``` json
 {
-    "from": [
-        "DMG",
-        "PHB",
-        "MM"
-    ],
-    "paths": {
-        "compendium": "z_compendium/",
-        "rules": "z_compendium/rules"
-    },
-    "template": {
-        "background": "examples/templates/tools5e/images-background2md.txt",
-        "monster": "examples/templates/tools5e/monster2md-scores.txt"
-    }
+  "from": [
+    "DMG",
+    "PHB",
+    "MM"
+  ],
+  "paths": {
+    "compendium": "z_compendium/",
+    "rules": "z_compendium/rules"
+  },
+  "template": {
+    "background": "examples/templates/tools5e/images-background2md.txt",
+    "monster": "examples/templates/tools5e/monster2md-scores.txt"
+  }
 }
 ```
 
-The flag used to specify a template (either on the command line or in a config file) corresponds to the type of template being used. In general, take the file name of a [default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates) and remove the `2md.txt` suffix.
+The flag used to specify a template corresponds to the type of template being used. You can find the list of valid template keys in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/convertData.json) (look for `templateKeys`).
 
-- Valid template keys for 5etools: `background`, `class`, `deity`, `feat`, `hazard`, `item`, `monster`, `note`, `race`, `reward`, `spell`, `subclass`.
+- Valid template keys for 5etools: `background`, `class`, `deck`, `deity`, `feat`, `hazard`, `item`, `monster`, `note`, `object`, `psionic`, `race`, `reward`, `spell`, `subclass`, `vehicle`.
 - Valid template keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-ability`, `inline-affliction`, `inline-attack`, `item`, `note`, `ritual`, `spell`, `trait`.
 
 ### Built-in / example templates
@@ -522,9 +292,31 @@ Of particular note are the varied monster templates:
 - TTRPG statblock in the body: [monster2md-yamlStatblock-body.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-yamlStatblock-body.txt)
 - Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-yamlStatblock-header.txt)
 
+## Getting Help
+
+- There is a `#cli-support` thread in the `#tabletop-games` channel of the [Obsidian Discord](https://discord.gg/veuWUTm).
+- There is a `TTRPG-convert-help` post in the `obsidian-support` forum of the [Obsidian TTRPG Community Discord](https://discord.gg/Zpmr37Uv).
+
+### Want to help fix it?
+
+- If you're familiar with the command line and are comfortable running the tool, I hope you'll consider running [unreleased snapshots](docs/usage/alternateRun.md#run-unreleased-snapshots) and reporting issues.
+- If you want to contribute, I'll take help of all kinds: documentation, examples, sample templates, stylesheets are just as important as Java code. See [CONTRIBUTING](CONTRIBUTING.md).
+
 ## Changes that impact generated templates and files
 
-### 🔥 2.1.0: File name and path changes, template docs and attribute changes
+**Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
+
+### 🔖 2.2.5: New templates for decks (and cards), legendary groups, and psionics
+
+- **New templates**: `deck2md.txt`, `legendaryGroup2md.txt`, `psionic2md.txt`
+  - Decks, when present, will be generated under `compendium/decks`. Cards are part of decks.
+  - Legendary groups, when present, will be generated under `bestiary/legendary-groups`
+  - Psionics, when present, will be generated under `compendium/psionics`.
+- `feat2md.txt` is now also used for optional features.
+- The default `monster2md.txt` template has been updated to embed the legendary group.
+- CSS snippets have been updated to support legendary groups embedded in statblocks.
+
+### 🔖 🔥 2.1.0: File name and path changes, template docs and attribute changes
 
 1. 🔥 **Variant rules include the source in the file name**: this avoids duplicates (and there were some).
 2. 🔥 **5eTools changed the classification for some creatures**, which moves them in the bestiary. Specifically: the Four-armed troll is a giant (and not an npc), a river serpent is a monstrosity rather than a beast, and ogre skeletons and red dracoliches are both undead.
@@ -535,8 +327,7 @@ Of particular note are the varied monster templates:
 
 ✨ **New template documentation** is available in [docs](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
 
-
-### 🔥 2.0.0: File name and path changes, and styles!
+### 🔖 🔥 2.0.0: File name and path changes, and styles!
 
 1. 🔥 **A leading slash (`/`) is no longer used at the beginning of compendium and root paths**. This should allow you to move these two directories around more easily. 
     - I recommend that you keep the compendium and rules sections together as big balls of mud.
@@ -555,172 +346,7 @@ Of particular note are the varied monster templates:
 
     Note: `admonitions-5e.json` and `other-admonitions.json` use colors from CSS snippets to adjust for light and dark mode.
 
-### 🔖 1.1.1: Dice roller in statblocks and text
-
-If you are using the default templates and want to render dice rolls, set
-`useDiceRoller` to true to use dice roller strings when replacing dice `{@dice
-}`, and `{@damage }` strings. This can be set differently for either "5e" or
-"pf2e" configurations. Please note that if you are using a custom template and fantasy statblocks, you do **not** need to set the dice roller in your config. Fantasy statblocks will take care of the rendering itself. 
-
-See [examples/config](examples/config) for the general structure of config.
-
-### 🔖 1.1.0: Images for backgrounds, items, monsters, races, and spells
-
-The conversion tool downloads fluff images into `img` directories within each type, e.g. `backgrounds/img` or `bestiary/aberration/img`. These images are unordered, and are not referenced in entry text. Templates must be modified to include them.
-
-To display all images, you can do something like this: 
-
-```
-{#each resource.fluffImages}![{it.caption}]({it.path})  
-{/each}
-```
-
-Note that the line above ends with two spaces, which serves as a line break when you have strict line endings enabled. You may need something a little different to get things to wrap the way you want in the case that there are multiple images (which is infrequent for these types).
-
-You can also use two separate blocks, such that the first image is used at the top of the document, and any others are included later: 
-
-```
-{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-![{first.title}]({first.vaultPath}#right)  
-{/let}{/if}
-...
-
-{#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
-{/if}{/each}
-```
-
-Notice the `#right` and `#center` anchor tags in the example above. The following CSS snippet defines formatting for two anchor tags: `#right` (which will float the image to the right) and `#center` (which will display the image as a centered block). 
-
-```css
-.json5e-background div[src$="#center"],
-.json5e-item div[src$="#center"],
-.json5e-monster div[src$="#center"],
-.json5e-race div[src$="#center"],
-.json5e-spell div[src$="#center"] {
-  text-align: center;
-}
-.json5e-background div[src$="#center"] img,
-.json5e-item div[src$="#center"] img,
-.json5e-monster div[src$="#center"] img,
-.json5e-race div[src$="#center"] img,
-.json5e-spell div[src$="#center"] img {
-  height: 300px;
-}
-.json5e-background div[src$="#right"],
-.json5e-item div[src$="#right"],
-.json5e-monster div[src$="#right"],
-.json5e-race div[src$="#right"],
-.json5e-spell div[src$="#right"] {
-  float: right;
-  margin-left: 5px;
-}
-.json5e-background div[src$="#right"] img,
-.json5e-item div[src$="#right"] img,
-.json5e-monster div[src$="#right"] img,
-.json5e-race div[src$="#right"] img,
-.json5e-spell div[src$="#right"] img {
-  height: 300px;
-}
-
-.rendered-widget .admonition-statblock-parent,
-.markdown-rendered .admonition-statblock-parent,
-.markdown-preview-section .admonition-statblock-parent {
-  clear: both;
-}
-```
-
-Notes: 
-
-- I recommend constraining the image height (rather than the width) in your CSS snippet for images. 
-- The above snippet also adds a `clear` setting to the admonition parent. Some text descriptions are shorter than the constrained image height. Setting `clear: both` on `admonition-parent` ensures that images floated to the right do not impact the `statblock` display.
-- This configuration is in the [compendium.css snippet](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets/compendium.css).
-- There is an example for each type in the [example templates directory](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/) directory. Relevant file names start with `images-`.
-
-
-### 🔖  1.0.18: You can put more things in json input now!
-
-Use `convert` to import source text for books and adventures that you own: 
-
-```json
-  "convert": {
-    "adventure": [
-      "WBtW"
-    ],
-    "book": [
-      "PHB"
-    ]
-  }
-```
-
-Specify templates in json:
-
-```json
-  "template": {
-    "background": "path/to/template.txt",
-  }
-```
-
-Be careful of paths here. Relative paths will be resolved depending on where the command is run from. Absolute paths will be machine specific (most likely). Use forward slashes for path segments, even if you're working on windows. 
-
-You can place this configuration one file or several, your choice. 
-
-### 🔖  1.0.16: Sections in Spell text
-
-Text for changes to spells at higher levels is added to spells a little differently depending on how complicated the spell is.
-
-Some spells effectively have subsections. Create or Destroy Water, from the PHB, has one subsection describing how water is created, and another describing how it is destroyed. In many layouts, there is just a bit of bold text to visually highlight this information. I've opted to make these proper sections (with a heading) instead, because you can then embed/transclude just the variant you want into your notes where that is relevant.
-
-If a spell has sections, then "At Higher Levels" will be added as an additional section. Otherwise, it will be appended with `**At Higher Levels.**` as leading eyecatcher text.
-
-The [default spell template](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/spell2md.txt) has also been amended. It will test for sections in the spell text, and if so, now inserts a `## Summary` header above the Classes/Sources information, to ensure that the penultimate section can be embedded cleanly.
-
-### 🔖  1.0.15: Flowcharts, optfeature in text, styled rows
-
-- `optfeature` text is rendered (Tortle package)
-- `flowcharts` is rendered as a series of `flowchart` callouts  
-    Use the admonition plugin to create a custom `flowchart` callout with an icon of your choice.
-- The adventuring gear tables from the PHB have been corrected
-
-### 🔖  1.0.14: Ability Scores
-
-As shown in [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-scores.txt), you can now access ability scores directly to achieve alternate layouts in templates, for example: 
-
-```
-- STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
-- DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}`
-- CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}`
-- INT: {resource.scores.int} `dice: 1d20 {resource.scores.intMod}`
-- WIS: {resource.scores.wis} `dice: 1d20 {resource.scores.wisMod}`
-- CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
-```
-
-### 🔖  1.0.13: Item property tags are now sorted
-
-Property tags on items are now sorted (not alphabetically) to stabilize their order in generated files. This should be a one-time bit of noise as you cross this release (using a version before to using some version after).
-
-### 🔥 1.0.12: File name changes
-
-Each file name will now contain an abbreviation of the primary source to avoid conflicts (for anything that does not come from phb, mm, dmg).
-
-***If you use the Templater plugin***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/json5e-cli-renameFiles-1.0.12.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
-
-### 🔥 1.0.12: Deity symbols and Bestiary Tokens
-
-Symbols and tokens have changed in structure. Custom templates will need a bit of adjustment.
-
-For bestiary tokens:
-
-```
-{#if resource.token}
-![{resource.token.caption}]({resource.token.path}#token){/if}
-```
-
-For deities:
-
-```
-{#if resource.image}
-![{resource.image.caption}]({resource.image.path}#symbol){/if}
-```
+**See [usage notes](docs/usage/README.md) for older changes.**
 
 ## Other notes
 

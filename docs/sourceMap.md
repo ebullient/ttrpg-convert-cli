@@ -73,6 +73,7 @@ _Support content creators. Only use or include sources that you own._
 | MCV1SC | Monstrous Compendium Volume 1: Spelljammer Creatures |
 | MCV2DC | Monstrous Compendium Volume 2: Dragonlance Creatures |
 | MCV3MC | Monstrous Compendium Volume 3: Minecraft Creatures |
+| MCV4EC | Monstrous Compendium Volume 3: 4: Eldraine Creatures |
 | MFF | Mordenkainen's Fiendish Folio |
 | MGELFT | Muk's Guide To Everything He Learned From Tasha |
 | MM | Monster Manual |

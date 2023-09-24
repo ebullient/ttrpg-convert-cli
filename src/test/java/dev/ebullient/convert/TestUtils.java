@@ -38,6 +38,8 @@ public class TestUtils {
     public final static Path TOOLS_PATH_5E = PROJECT_PATH.resolve("sources/5etools-mirror-1.github.io/data");
     public final static Path HOMEBREW_PATH_5E = PROJECT_PATH.resolve("sources/5e-homebrew");
     public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
+    public final static Path README = PROJECT_PATH.resolve("README.md").normalize().toAbsolutePath();
+    public final static Path USAGE_README = PROJECT_PATH.resolve("docs/usage/README.md").normalize().toAbsolutePath();
 
     // Obnoxious regular expression because markdown links are complicated:
     // Matches: [link text](vaultPath "title")
@@ -97,7 +99,8 @@ public class TestUtils {
             if (path.startsWith("http") && path.contains(" ")) {
                 e.add(String.format("HTTP path with space in %s: %s ", p, m.group(0)));
                 return;
-            } else if (path.startsWith("http") || path.contains("vaultPath")) {
+            } else if (path.startsWith("http") || path.contains("vaultPath")
+                    || path.startsWith("{it.") || path.startsWith("{resource.")) {
                 // vaultPath is used for template examples
                 return;
             }
@@ -148,12 +151,13 @@ public class TestUtils {
         if (!p.toString().endsWith(".md")) {
             return List.of();
         }
+        Path absPath = p.normalize().toAbsolutePath();
         return pathHeadings.computeIfAbsent(p, key -> {
             List<String> headings = new ArrayList<>();
             try (Stream<String> lines = Files.lines(key)) {
                 lines.forEach(l -> {
                     if (l.startsWith("#")) {
-                        if (l.contains(".")) {
+                        if (l.contains(".") && !README.equals(absPath) && !USAGE_README.equals(absPath)) {
                             System.out.println("🔮 Found dot in heading in " + p + ": " + l);
                         }
                         headings.add(simplifyAnchor(l));

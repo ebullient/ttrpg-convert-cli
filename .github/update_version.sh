@@ -12,6 +12,8 @@ fi
 # Messy and not maven-y, but whatever.
 sed -E -i "s|/$CURRENT|/$NEXT|g" README.md
 sed -E -i "s|-$CURRENT|-$NEXT|g" README.md
+sed -E -i "s|/$CURRENT|/$NEXT|g" docs/usage/alternateRun.md
+sed -E -i "s|-$CURRENT|-$NEXT|g" docs/usage/alternateRun.md
 sed -E -i "s|<revision>.*</revision>|<revision>$NEXT</revision>|" pom.xml
 sed -E -i "s/  current-version: .*/  current-version: $NEXT/g" .github/project.yml
 sed -E -i "s/  next-version: .*/  next-version: $NEXT/g" .github/project.yml

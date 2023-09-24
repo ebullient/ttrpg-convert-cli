@@ -6,7 +6,7 @@ Use a `reference.` prefix to access these attributes unless otherwise noted. For
 
 For more information about Qute, see the [Qute guide](https://quarkus.io/guides/qute).
 
-- Configuration file examples are in the [examples](../examples/config) directory
+- Additional CLI [Usage help](usage)
 - [Source Map](sourceMap.md) (Source abbreviations)
 - [5eTools template attributes](dnd5e/README.md)
 - [Pf2eTools template attributes](pf2e/README.md)

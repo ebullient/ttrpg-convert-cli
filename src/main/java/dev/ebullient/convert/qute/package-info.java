@@ -16,7 +16,7 @@
  * </p>
  *
  * <ul>
- * <li>Configuration file examples are in the [examples](../examples/config) directory</li>
+ * <li>Additional CLI [Usage help](usage)</li>
  * <li>[Source Map](sourceMap.md) (Source abbreviations)</li>
  * <li>{@link dev.ebullient.convert.tools.dnd5e.qute 5eTools template attributes}</li>
  * <li>{@link dev.ebullient.convert.tools.pf2e.qute Pf2eTools template attributes}</li>

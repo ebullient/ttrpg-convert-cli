@@ -157,6 +157,12 @@
                         <fileset>
                             <directory>docs</directory>
                             <followSymlinks>false</followSymlinks>
+                            <includes>
+                                <include>sourceMap*</include>
+                            </includes>
+                            <excludes>
+                                <exclude>usage</exclude>
+                            </excludes>
                         </fileset>
                         <fileset>
                             <directory>examples</directory>
@@ -165,13 +171,6 @@
                                 <include>config/config*</include>
                                 <include>css-snippets/dnd5e-*.css</include>
                                 <include>css-snippets/pf2-*.css</include>
-                            </includes>
-                        </fileset>
-                        <fileset>
-                            <directory>docs</directory>
-                            <followSymlinks>false</followSymlinks>
-                            <includes>
-                                <include>sourceMap*</include>
                             </includes>
                         </fileset>
                     </filesets>
