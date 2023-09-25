@@ -20,7 +20,7 @@ If there isn't an issue yet, open one! Be as specific as you can, and include th
 
 ## Coding standards and Conventions
 
-Two maven tasks that will format code and sort imports to reduce whitespace/ordering churn in PRs and commits.
+There are two tasks in the Maven build that will format code and sort imports to reduce whitespace/ordering churn in PRs and commits.
 Make sure to run `./mvnw package` or `./mvnw process-sources` before you commit, and everything will be formatted correctly.
 
 This project also has a `.editorconfig` file that defines expected behavior for whitespace and line endings.
@@ -28,7 +28,7 @@ Most IDEs have an editorconfig plugin that will automatically format your code t
 
 ### IDE Config and Code Style
 
-If you want your IDE to format your code for you, the files in the `src/ide-config` directory can help.
+If you want your IDE to format your code for you, use the files in the `src/ide-config` directory.
 
 #### Eclipse Setup
 
@@ -39,9 +39,21 @@ Open the *Preferences* window, and then navigate to _Java_ -> _Code Style_ -> _F
 
 Next navigate to _Java_ -> _Code Style_ -> _Organize Imports_. Click _Import_ and select `src/ide-config/eclipse.importorder`.
 
-#### VSCode Setup
+### VS Code
 
-A .vscode directory is included with the project that contains formatting and import settings.
+1. Install and enable the "Language Support for Java by Red Hat" extension.
+2. Open settings (use the gear icon in the lower left corner of the window), and click the "Workspace" link in the header under the search box to open the workspace settings.
+3. Type `eclipse` in the search box, you should see two: `Java > Format: Eclipse` and `Java > Format: Eclipse Export Profile`. 
+4. Set _Java_ -> _Format_ -> _Settings URL_ to `https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/src/ide-config/eclipse-format.xml`
+5. Set _Java_ -> _Format_ -> _Profile_ to `ttrpg-convert-cli`
+6. Click "Edit in settings.json" under _Java_ -> _Completion_ -> _Import Order_ and paste the following into the `java.format.imports.order` setting:
+    ```json
+      "java",
+      "javax",
+      "jakarta",
+      "org",
+      "com",
+    ```
 
 ## Build and test the CLI
 
