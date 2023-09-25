@@ -7,6 +7,15 @@ In this guide, we'll walk through the configuration options and their practical 
 
 > 🚀 Remember to respect copyrights, and use only the sources you own.
 
+- [Overview](#overview)
+- [Select data sources with the `from` key](#select-data-sources-with-the-from-key)
+- [Specify target paths with the `paths` key](#specify-target-paths-with-the-paths-key)
+- [Refine content choices](#refine-content-choices)
+    - [Exclude items matching an `excludePattern`](#exclude-items-matching-an-excludePattern)
+    - [Exclude items with `exclude`](#exclude-items-with-exclude)
+    - [Include items with `include`](#include-items-with-include)
+    - [Include source-book content with `full-source`](#include-source-book-content-with-full-source)
+
 ## Overview
 
 Below is a detailed example of a `config.json` file. This configuration aims to:
@@ -59,7 +68,7 @@ Below is a detailed example of a `config.json` file. This configuration aims to:
 }
 ```
 
-## Selecting Data Sources: The `from` Key
+## Select data sources with the `from` key
 
 The `from` key lets you specify which sources to draw data from. 
 List the codes or abbreviations for your chosen sources.
@@ -76,7 +85,7 @@ List the codes or abbreviations for your chosen sources.
 
 > 🚀 Note: Ensure you own the content you're including. Find the abbreviations for your sources in the [Source Map](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md).
 
-## Specifying Target Paths: The `paths` Key
+## Specify target paths with the `paths` key
 
 The `paths` key informs the CLI where to store the generated content.
 
@@ -99,7 +108,7 @@ Content typically falls into:
 
 🔹 The leading slash is optional. It marks a path starting from the root of your Obsidian vault.
 
-## Refining Content Choices: Detailed Filtering
+## Refine content choices
 
 You can achieve more precision in content selection by utilizing data keys.
 
@@ -107,7 +116,7 @@ The CLI `--index` option compiles two lists of data keys:
 - `allIndex.json`: Lists all potential data keys.
 - `allSourceIndex.json`: Lists the data keys actually used in your output.
 
-### Using `excludePattern`
+### Exclude items matching an `excludePattern`
 
 This option allows you to exclude data entries based on matching patterns.
 
@@ -117,7 +126,7 @@ This option allows you to exclude data entries based on matching patterns.
 ]
 ```
 
-### Direct Exclusion with `exclude`
+### Exclude items with `exclude`
 
 Specify the data keys you want to omit.
 
@@ -128,7 +137,7 @@ Specify the data keys you want to omit.
 ]
 ```
 
-### Direct Inclusion with `include`
+### Include items with `include`
 
 Specify the data keys you want to include.
 
@@ -140,12 +149,23 @@ Specify the data keys you want to include.
 
 This is particularly useful for content acquired piecemeal, like individual items from D&D Beyond.
 
-## Incorporating Complete Sources with `full-source`
+### Include source-book content with `full-source`
 
-By default, the CLI extracts specific entries, such as monsters or spells. 
-Use the `full-source` or `convert` key if you want to generate notes for entire texts, like complete books or adventures.
+By default, the CLI generates notes for specific items like monsters or spells. 
+
+Use the `full-source` key if you want to generate notes for the text of the source you own, either book or adventure. To fully incorporate a source, its abbreviation should appear in both the `from` list and the `full-source` section.
+
+> 📝 The `convert` configuration attribute is an older (less intuitive) name for `full-source`.
+
+Here is an example that will create notes for the *Player's Handbook* (a book, PHB) and *The Wild Beyond the Witchlight* (an adventure, WBtW):
 
 ```json
+"from": {
+    "PHB",
+    "WBtW"
+    ...
+}
+...
 "full-source": {
     "adventure": [
         "WBtW",
@@ -157,6 +177,6 @@ Use the `full-source` or `convert` key if you want to generate notes for entire 
 }
 ```
 
-To fully incorporate a source, its abbreviation should appear in both the `from` list and the `full-source` section.
+Note that you can either use the resource identifier ("WBtW") or specify the path to the resource JSON (".../book-phb.json") file in the `full-source` section.
 
-Keep in mind that certain adventures may be broken down into individual modules. If there's any confusion about how to reference them, the generated index (`allIndex.json`) can be a helpful reference.
+Some adventures may be broken down into individual modules. If there's any confusion about how to reference them (book or adventure), the generated index (`allIndex.json`) can be a helpful reference.
