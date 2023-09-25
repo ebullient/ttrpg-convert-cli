@@ -48,11 +48,15 @@ Next navigate to _Java_ -> _Code Style_ -> _Organize Imports_. Click _Import_ an
 5. Set _Java_ -> _Format_ -> _Profile_ to `ttrpg-convert-cli`
 6. Click "Edit in settings.json" under _Java_ -> _Completion_ -> _Import Order_ and paste the following into the `java.format.imports.order` setting:
     ```json
+    "java.completion.importOrder": [
+      "#",
       "java",
       "javax",
       "jakarta",
       "org",
       "com",
+      ""
+    ],
     ```
 
 ## Build and test the CLI
