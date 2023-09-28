@@ -38,7 +38,9 @@ public class TestUtils {
     public final static Path TOOLS_PATH_5E = PROJECT_PATH.resolve("sources/5etools-mirror-1.github.io/data");
     public final static Path HOMEBREW_PATH_5E = PROJECT_PATH.resolve("sources/5e-homebrew");
     public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
+
     public final static Path README = PROJECT_PATH.resolve("README.md").normalize().toAbsolutePath();
+    static String USAGE = PROJECT_PATH.resolve("docs/usage").normalize().toAbsolutePath().toString();
 
     // Obnoxious regular expression because markdown links are complicated:
     // Matches: [link text](vaultPath "title")
@@ -84,7 +86,7 @@ public class TestUtils {
 
     public static void checkMarkdownLinks(String baseDir, Path p, String line, List<String> errors) {
         Path absPath = p.normalize().toAbsolutePath();
-        if (!absPath.toString().endsWith(".md") || absPath.equals(README) || absPath.toString().contains("docs/usage")) {
+        if (!absPath.toString().endsWith(".md") || absPath.equals(README) || absPath.toString().startsWith(USAGE)) {
             // GH anchor links
             return;
         }
