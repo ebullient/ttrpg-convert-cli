@@ -66,6 +66,7 @@ _Support content creators. Only use or include sources that you own._
 | JttRC | Journeys through the Radiant Citadel |
 | KKW | Krenko's Way |
 | KftGV | Keys from the Golden Vault |
+| LK | Lightning Keep |
 | LLK | Lost Laboratory of Kwalish |
 | LMoP | Lost Mine of Phandelver |
 | LR | Locathah Rising |
