@@ -1,6 +1,7 @@
 package dev.ebullient.convert.qute;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,13 @@ public interface QuteUtil {
         if (value != null) {
             map.put(key, value);
         }
+    }
+
+    /** Remove leading '+' */
+    default Map<String, Integer> mapOfNumbers(Map<String, String> map) {
+        Map<String, Integer> result = new HashMap<>();
+        map.forEach((k, v) -> result.put(k, Integer.parseInt(v)));
+        return result;
     }
 
     default void addUnlessEmpty(Map<String, Object> map, String key, String value) {

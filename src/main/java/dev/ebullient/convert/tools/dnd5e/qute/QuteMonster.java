@@ -271,10 +271,10 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "speed", speed);
         if (savesSkills != null) {
             if (!savesSkills.saveMap.isEmpty()) {
-                map.put("saves", savesSkills.saveMap);
+                map.put("saves", mapOfNumbers(savesSkills.saveMap));
             }
             if (!savesSkills.skillMap.isEmpty()) {
-                map.put("skillsaves", savesSkills.skillMap);
+                map.put("skillsaves", mapOfNumbers(savesSkills.skillMap));
             }
         }
         addUnlessEmpty(map, "damage_vulnerabilities", immuneResist.vulnerable);
