@@ -207,6 +207,22 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
     - `Pf2eTools/data` Path to the Pf2eTools `data` directory (from a clone or release of the repo)
 
 
+## Use with Homebrew 
+The CLI tool also has the ability to import homebrewed content, though this content must still fit the json standards that are set by 5e or PF2e. 
+
+Perhaps the simplest thing to do to import homebrew is to use already existing homebrew data from the 5etools homebrew github repo: https://github.com/TheGiddyLimit/homebrew. 
+
+NOTE: You *do not* need to download the entire homebrew repo to use something from it with the CLI tool. *You only need the particular file you wish to import*. In this aspect homebrew data is different from the 5etools 'official' repo, which has data spread out among a variety of files.
+
+So, for example, if you wanted to use Benjamin Huffman's popular homebrewed [Pugilist class](https://www.dmsguild.com/product/184921/The-Pugilist-Class) (and if so please make sure you have supported Benjamin by purchasing the content!), you would need to have a local copy of the [Pugilist json file](https://github.com/TheGiddyLimit/homebrew/blob/master/class/Benjamin%20Huffman%3B%20Pugilist.json). You would then run the command like so: 
+
+``` shell
+ttrpg-convert  --index -s 'SterlingVermin' -o hb-compendium '/path/to/Benjamin Huffman; Pugilist.json' 
+```
+
+Note that you need to include both the path to the json file *and* the source name, which you can get from the "json" field, at the top of the file under "_meta" and "sources". The process is similar for other homebrew, including your own, so long as it is broadly compatible with the [5e-tools json spec](https://wiki.tercept.net/en/Homebrew/FromZeroToHero). If you use the CLI tool with a config, then you would (staying with our example from above) put 'SterlingVermin' in the "from" field of the config and add the path to the pugilist json file to your build command. 
+
+
 ## Using A Configuration File 
 
 So far we've seen use of the tool using command line parameters. But this can get very clunky when trying to do any sort of complex command, plus it is a lot of typing! 
@@ -296,6 +312,7 @@ Of particular note are the varied monster templates:
 
 - There is a `#cli-support` thread in the `#tabletop-games` channel of the [Obsidian Discord](https://discord.gg/veuWUTm).
 - There is a `TTRPG-convert-help` post in the `obsidian-support` forum of the [Obsidian TTRPG Community Discord](https://discord.gg/Zpmr37Uv).
+- There is a TTRPG-convert tutorial (currently aimed at Windows users, but much of it is helpful no matter your OS) at [Obsidian TTRPG Tutorials](https://obsidianttrpgtutorials.com/Obsidian+TTRPG+Tutorials/Plugin+Tutorials/TTRPG-Convert-CLI/TTRPG-Convert-CLI+5e).
 
 ### Want to help fix it?
 
