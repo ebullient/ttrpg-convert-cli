@@ -1,0 +1,100 @@
+---
+obsidianUIMode: preview
+cssclass: json5e-monster
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+
+# {resource.name}
+*Source: {resource.source}*  
+
+{#if resource.description }
+{resource.description}
+
+{/if}
+```statblock
+{resource.5eStatblockYaml}
+```
+^statblock
+
+```ad-statblock
+title: {resource.name}{#if resource.token}
+![{resource.token.title}]({resource.token.vaultPath}#token){/if}
+*{resource.size} {resource.fullType}, {resource.alignment}*
+
+- **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }({resource.acText}){/if}
+- **Hit Points** {resource.hp or ' '} {#if resource.hitDice }(`{resource.hitDice}`){/if} {#if resource.hpText }({resource.hpText}){/if}
+- **Speed** {resource.speed}
+
+|STR|DEX|CON|INT|WIS|CHA|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|{resource.scores}|
+
+- **Proficiency Bonus** {resource.pb}
+- **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
+- **Skills** {#if resource.skills }{resource.skills}{#else}⏤{/if}
+- **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
+{#if resource.vulnerable }
+- **Damage Vulnerabilities** {resource.vulnerable}
+{/if}{#if resource.resist}
+- **Damage Resistances** {resource.resist}
+{/if}{#if resource.immune}
+- **Damage Immunities** {resource.immune}
+{/if}{#if resource.conditionImmune}
+- **Condition Immunities** {resource.conditionImmune}
+{/if}
+- **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}
+- **Challenge** {resource.cr}
+{#if resource.trait}
+
+## Traits
+{#for trait in resource.trait}
+
+{#if trait.name }***{trait.name}.*** {/if}{trait.desc}
+{/for}{/if}{#if resource.spellcasting}{#for spellcasting in resource.spellcasting}
+
+***{spellcasting.name}.*** {spellcasting.desc}
+{/for}{/if}{#if resource.action}
+
+## Actions
+{#for action in resource.action}
+
+{#if action.name }***{action.name}.*** {/if}{action.desc}
+{/for}{/if}{#if resource.bonusAction}
+
+## Bonus Actions
+{#for bonusAction in resource.bonusAction}
+
+{#if bonusAction.name }***{bonusAction.name}.*** {/if}{bonusAction.desc}
+{/for}{/if}{#if resource.reaction}
+
+## Reactions
+{#for reaction in resource.reaction}
+
+{#if reaction.name }***{reaction.name}.*** {/if}{reaction.desc}
+{/for}{/if}{#if resource.legendary}
+
+## Legendary Actions
+{#for legendary in resource.legendary}
+
+{#if legendary.name }***{legendary.name}.*** {/if}{legendary.desc}
+{/for}{/if}{#if resource.legendaryGroup}{#for group in resource.legendaryGroup}
+
+## {group.name}
+
+{group.desc}
+{/for}{/if}
+```
+^statblock-manual
+
+{#if resource.environment }
+
+## Environment
+
+{resource.environment}
+{/if}

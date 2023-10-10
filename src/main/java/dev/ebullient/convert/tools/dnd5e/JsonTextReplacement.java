@@ -34,6 +34,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     Pattern homebrewPattern = Pattern.compile("\\{@homebrew ([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
+    Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
     Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str 20}
     Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+)}"); // {@skillCheck animal_handling 5}
     Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]+)*}");
@@ -213,10 +214,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                         .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
                         .replaceAll("\\{@cult ([^|}]+)}", "$1")
-                        // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
-                        // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
-                        .replaceAll("\\{@footnote ([^|}]+)\\|([^|}]+)\\|([^}]*)}", "$1 ^[$2, _$3_]")
-                        .replaceAll("\\{@footnote ([^|}]+)\\|([^}]*)}", "$1 ^[$2]")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@hit ([+-][^}<]+)}", "$1")
@@ -264,6 +261,21 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             } catch (Exception e) {
                 tui().errorf(e, "Unable to parse string from %s: %s", getSources().getKey(), input);
             }
+
+            result = footnotePattern.matcher(result).replaceAll((match) -> {
+                // {@footnote directly in text|This is primarily for homebrew purposes, as the official texts (so far) avoid using footnotes},
+                // {@footnote optional reference information|This is the footnote. References are free text.|Footnote 1, page 20}.",
+                // We're converting these to _inline_ markdown footnotes, as numbering is difficult to track
+                String[] parts = match.group(1).split("\\|");
+                if (parts[0].contains("<sup>")) {
+                    // This already assumes what the footnote name will be
+                    return String.format("%s", parts[0]);
+                }
+                if (parts.length > 2) {
+                    return String.format("%s ^[%s, _%s_]", parts[0], parts[1], parts[2]);
+                }
+                return String.format("%s ^[%s]", parts[0], parts[1]);
+            });
 
             result = notePattern.matcher(result).replaceAll((match) -> {
                 if (nested) {
