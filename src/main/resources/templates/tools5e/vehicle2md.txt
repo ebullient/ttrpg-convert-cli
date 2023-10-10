@@ -33,7 +33,7 @@ title: {resource.name}{#if resource.token}
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |{resource.scores}|
 
-{/if}{#if resource.immuneResist }
+{/if}{#if resource.immuneResist && resource.immuneResist.present }
 {resource.immuneResist}
 {/if}{#if resource.text }
 
@@ -81,7 +81,7 @@ title: {resource.name}{#if resource.token}
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |{resource.scores}|
 
-{/if}{#if resource.immuneResist }
+{/if}{#if resource.immuneResist && resource.immuneResist.present }
 {resource.immuneResist}
 {/if}{#if resource.action}
 

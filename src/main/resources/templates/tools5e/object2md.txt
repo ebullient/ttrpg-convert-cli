@@ -33,7 +33,7 @@ title: {resource.name}{#if resource.token}
 
 {#if resource.senses }
 - **Senses** {resource.senses}
-{/if}{#if resource.immuneResist }
+{/if}{#if resource.immuneResist && resource.immuneResist.present }
 {resource.immuneResist}
 {/if}{#if resource.action}
 

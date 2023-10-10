@@ -6,7 +6,7 @@ This data object provides a default mechanism for creating a marked up string ba
 
 ## Attributes
 
-[conditionImmune](#conditionimmune), [immune](#immune), [resist](#resist), [vulnerable](#vulnerable)
+[conditionImmune](#conditionimmune), [immune](#immune), [present](#present), [resist](#resist), [vulnerable](#vulnerable)
 
 
 ### conditionImmune
@@ -16,6 +16,10 @@ Comma-separated string of creature condition immunities (if present).
 ### immune
 
 Comma-separated string of creature damage immunities (if present).
+
+### present
+
+True if immunities or resistances are present (otherwise false)
 
 ### resist
 

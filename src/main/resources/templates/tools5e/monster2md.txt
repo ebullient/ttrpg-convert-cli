@@ -35,7 +35,7 @@ title: {resource.name}{#if resource.token}
 - **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
 - **Skills** {#if resource.skills }{resource.skills}{#else}⏤{/if}
 - **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
-{#if resource.immuneResist }
+{#if resource.immuneResist && resource.immuneResist.present }
 {resource.immuneResist}
 {/if}
 - **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}

@@ -223,10 +223,10 @@ public class Json2QuteCommon implements JsonSource {
 
     ImmuneResist immuneResist() {
         return new ImmuneResist(
-                collectImmunities("vulnerable"),
-                collectImmunities("resist"),
-                collectImmunities("immune"),
-                collectImmunities("conditionImmune"));
+                collectImmunities(rootNode, VulnerabilityFields.vulnerable),
+                collectImmunities(rootNode, VulnerabilityFields.resist),
+                collectImmunities(rootNode, VulnerabilityFields.immune),
+                collectImmunities(rootNode, VulnerabilityFields.conditionImmune));
     }
 
     AbilityScores abilityScores() {
@@ -401,33 +401,46 @@ public class Json2QuteCommon implements JsonSource {
         return null;
     }
 
-    String collectImmunities(String field) {
-        if (rootNode.has(field) && rootNode.get(field).isArray()) {
+    String collectImmunities(JsonNode fromNode, VulnerabilityFields field) {
+        if (field.existsIn(fromNode)) { // filter out null elements
             List<String> immunities = new ArrayList<>();
             StringBuilder separator = new StringBuilder();
-            rootNode.withArray(field).forEach(immunity -> {
-                if (immunity.isTextual()) {
-                    immunities.add(immunity.asText());
-                } else {
-                    StringBuilder str = new StringBuilder();
-                    str.append(joinAndReplace(immunity, field));
-                    if (immunity.has("note")) {
-                        str.append(" ")
-                                .append(immunity.get("note").asText());
-                    }
 
-                    if (separator.length() == 0) {
-                        separator.append("; ");
+            for (JsonNode value : field.iterateArrayFrom(fromNode)) {
+                if (value.isTextual()) { // damage or condition type
+                    immunities.add(textValue(field, value.asText()));
+                } else if (VulnerabilityFields.special.existsIn(value)) { // "special"
+                    immunities.add(VulnerabilityFields.special.replaceTextFrom(value, this)
+                            .replace("see (below|above)", "see details"));
+                } else { // conditional
+                    List<String> allText = new ArrayList<>();
+                    if (VulnerabilityFields.preNote.existsIn(value)) {
+                        allText.add(VulnerabilityFields.preNote.replaceTextFrom(value, this));
                     }
-                    immunities.add(str.toString());
+                    allText.add(collectImmunities(value, field));
+                    if (VulnerabilityFields.note.existsIn(value)) {
+                        allText.add(VulnerabilityFields.note.replaceTextFrom(value, this));
+                    }
+                    if (separator.length() == 0 && !allText.isEmpty()) {
+                        separator.append("; ");
+                        immunities.add(String.join(" ", allText));
+                    }
                 }
-            });
+            }
+
             if (separator.length() == 0) {
                 separator.append(", ");
             }
             return String.join(separator.toString(), immunities);
         }
         return null;
+    }
+
+    private String textValue(VulnerabilityFields field, String text) {
+        if (field == VulnerabilityFields.conditionImmune) {
+            return linkify(Tools5eIndexType.condition, text);
+        }
+        return text;
     }
 
     Collection<NamedText> collectSortedTraits(JsonNode array) {
@@ -574,21 +587,32 @@ public class Json2QuteCommon implements JsonSource {
         return null;
     }
 
+    enum VulnerabilityFields implements JsonNodeReader {
+        cond,
+        conditionImmune,
+        immune,
+        note,
+        preNote,
+        resist,
+        special,
+        vulnerable,
+    }
+
     enum PrereqFields implements JsonNodeReader {
         ability,
         background,
         feat,
         feature,
+        item,
         level,
         other,
         pact,
         patron,
         prerequisite,
-        psionics,
         proficiency,
+        psionics,
         race,
         spell,
         spellcasting,
-        item,
     }
 }

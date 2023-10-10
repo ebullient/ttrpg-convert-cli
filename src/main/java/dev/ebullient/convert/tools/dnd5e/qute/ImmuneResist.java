@@ -35,6 +35,14 @@ public class ImmuneResist implements QuteUtil {
         this.conditionImmune = conditionImmune;
     }
 
+    /** True if immunities or resistances are present (otherwise false) */
+    public boolean isPresent() {
+        return isPresent(vulnerable)
+                && isPresent(resist)
+                && isPresent(immune)
+                && isPresent(conditionImmune);
+    }
+
     @Override
     public String toString() {
         List<String> parts = new ArrayList<>();

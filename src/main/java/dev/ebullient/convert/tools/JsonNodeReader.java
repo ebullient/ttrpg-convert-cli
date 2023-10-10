@@ -79,7 +79,7 @@ public interface JsonNodeReader {
     }
 
     default boolean existsIn(JsonNode source) {
-        if (source == null || !source.isObject()) {
+        if (source == null || source.isNull()) {
             return false;
         }
         return source.has(this.nodeName());
