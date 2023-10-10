@@ -23,7 +23,7 @@ public class TemplatePaths {
 
         Path resolved = Path.of("").resolve(path);
         if (Files.isRegularFile(resolved)) {
-            customTemplates.put(key, path);
+            customTemplates.put(key, resolved);
             return;
         }
         badTemplates.put(key, path);

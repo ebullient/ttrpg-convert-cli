@@ -1,0 +1,14 @@
+{
+  "template": {
+    "background": "src/test/resources/other/background.txt",
+    "class": "src/test/resources/other/class.txt",
+    "deity": "src/test/resources/other/deity.txt",
+    "feat": "src/test/resources/other/feat.txt",
+    "index": "src/test/resources/other/index.txt",
+    "item": "src/test/resources/other/item.txt",
+    "note": "src/test/resources/other/note.txt",
+    "race": "src/test/resources/other/race.txt",
+    "spell": "src/test/resources/other/spell.txt",
+    "subclass": "src/test/resources/other/subclass.txt"
+  }
+}

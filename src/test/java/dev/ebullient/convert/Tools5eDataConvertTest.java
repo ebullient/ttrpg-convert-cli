@@ -190,6 +190,51 @@ public class Tools5eDataConvertTest {
     }
 
     @Test
+    void testCommandTemplates_5eJson(QuarkusMainLauncher launcher) {
+        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            Path target = outputPath_5e.resolve("json-templates");
+            TestUtils.deleteDir(target);
+
+            LaunchResult result = launcher.launch("--debug", "--index",
+                    "-c", TestUtils.TEST_RESOURCES.resolve("sources-templates.json").toString(),
+                    "-o", target.toString(), TestUtils.TOOLS_PATH_5E.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+
+            List.of(
+                    target.resolve("compendium/backgrounds"),
+                    target.resolve("compendium/classes"),
+                    target.resolve("compendium/deities"),
+                    target.resolve("compendium/feats"),
+                    target.resolve("compendium/items"),
+                    target.resolve("compendium/races"),
+                    target.resolve("compendium/spells"),
+                    target.resolve("rules"))
+                    .forEach(directory -> TestUtils.assertDirectoryContents(directory, tui, (p, content) -> {
+                        List<String> errors = new ArrayList<>();
+                        boolean frontmatter = false;
+                        boolean foundTestTag = false;
+                        for (String l : content) {
+                            if ("---".equals(l)) {
+                                frontmatter = !frontmatter;
+                            } else if (frontmatter && l.equals("- test")) {
+                                foundTestTag = true;
+                            } else if (l.startsWith("# ")) {
+                                break;
+                            }
+                        }
+
+                        if (!foundTestTag) {
+                            errors.add("Unable to find the - test tag in file " + p);
+                        }
+                        return errors;
+                    }));
+        }
+    }
+
+    @Test
     void testCommandTemplates_5e(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
             Path target = outputPath_5e.resolve("srd-templates");
@@ -237,7 +282,6 @@ public class Tools5eDataConvertTest {
                                 errors.add(
                                         String.format("H1 does not contain markdown link in %s: %s", p.toString(), l));
                             }
-
                             if (l.startsWith("# ")) {
                                 break;
                             }

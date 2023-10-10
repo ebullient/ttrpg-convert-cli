@@ -551,7 +551,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 }
             }
         }
-        // TODO: Even funner: homebrew classes and spells
     }
 
     boolean isReprinted(String finalKey, JsonNode jsonSource) {
