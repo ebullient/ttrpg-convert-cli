@@ -31,7 +31,16 @@ public interface QuteUtil {
     /** Remove leading '+' */
     default Map<String, Integer> mapOfNumbers(Map<String, String> map) {
         Map<String, Integer> result = new HashMap<>();
-        map.forEach((k, v) -> result.put(k, Integer.parseInt(v)));
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            int intVal = 0;
+            try {
+                intVal = Integer.parseInt(entry.getValue());
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+            result.put(entry.getKey(), intVal);
+        }
         return result;
     }
 
