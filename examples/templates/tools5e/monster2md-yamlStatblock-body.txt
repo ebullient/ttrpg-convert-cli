@@ -1,4 +1,5 @@
 ---
+obsidianUIMode: preview
 cssclasses: json5e-monster
 {#if resource.tags }
 tags:
@@ -6,6 +7,7 @@ tags:
 - {tag}
 {/for}
 {/if}
+statblock: inline
 aliases: ["{resource.name}"]
 ---
 # [{resource.name}]({resource.vaultPath})
