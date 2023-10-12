@@ -6,12 +6,16 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[classes](#classes), [components](#components), [duration](#duration), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [range](#range), [ritual](#ritual), [school](#school), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
+[classList](#classlist), [classes](#classes), [components](#components), [duration](#duration), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [range](#range), [ritual](#ritual), [school](#school), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
 
+
+### classList
+
+List of links to classes that can use this spell. May be incomplete or empty.
 
 ### classes
 
-List of links to classes that can use this spell. May be incomplete or empty.
+String: rendered list of links to classes that can use this spell. May be incomplete or empty.
 
 ### components
 

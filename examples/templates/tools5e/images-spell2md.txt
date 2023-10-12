@@ -33,7 +33,7 @@ aliases: ["{resource.name}"]
 {/if}{/each}
 
 {/if}{#if resource.classes }
-**Classes**: {resource.classes}
+**Classes**: {#each resource.classList}{it} {#if it_hasNext}, {/if}{/each}
 
 {/if}
 *Source: {resource.source}*
