@@ -1042,9 +1042,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 };
             }
             if (tmpTitle == null) {
-                index.tui().errorf("Could not find title for OptionalFeatureType: %s from %s",
+                index.tui().warnf("Could not find title for OptionalFeatureType: %s from %s",
                         abbreviation, homebrewMeta == null ? "unknown/core" : homebrewMeta.filename);
-                tmpTitle = "Unknown";
+                tmpTitle = abbreviation;
             }
             title = tmpTitle;
             source = getSource(homebrewMeta);
