@@ -1,7 +1,7 @@
 name: Json 5e convert CLI
 release:
-  current-version: 2.2.8
-  next-version: 2.2.8
+  current-version: 2.2.9
+  next-version: 2.2.9
   snapshot-version: 299-SNAPSHOT
 build:
   artifact: ttrpg-convert-cli
