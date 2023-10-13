@@ -146,33 +146,31 @@ public class Tools5eDataConvertTest {
                     TestUtils.TOOLS_PATH_5E.toString(),
                     TestUtils.TEST_RESOURCES.resolve("psion.json").toString(),
                     TestUtils.TEST_RESOURCES.resolve("ermis-bg.json").toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json")
-                            .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Kobold Press; Book of Lairs.json").toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json")
-                            .toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Grim Hollow Campaign Guide.json")
-                            .toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json")
-                            .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Grim Hollow Campaign Guide.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/MCDM Productions; Arcadia Issue 3.json").toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("class/badooga; Badooga's Psion.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/D&D Wiki; Swashbuckler.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("class/Foxfire94; Vampire.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("class/badooga; Badooga's Psion.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("class/Matthew Mercer; Blood Hunter (2022).json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("collection/Arcana Games; Arkadia.json").toString(),
-                    TestUtils.HOMEBREW_PATH_5E
-                            .resolve("collection/Ghostfire Gaming; Grim Hollow - The Monster Grimoire.json")
+                    TestUtils.HOMEBREW_PATH_5E.resolve("collection/Ghostfire Gaming; Grim Hollow - The Monster Grimoire.json")
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("collection/Keith Baker; Exploring Eberron.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("collection/Kobold Press; Deep Magic 14 Elemental Magic.json")
+                            .toString(),
+                    TestUtils.HOMEBREW_PATH_5E
+                            .resolve("collection/Kobold Press; Deep Magic Backgrounds, Feats, & Subclasses.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E
                             .resolve("collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json")
                             .toString(),
-                    TestUtils.HOMEBREW_PATH_5E
-                            .resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
+                    TestUtils.HOMEBREW_PATH_5E.resolve("creature/MCDM Productions; Flee, Mortals!.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
                             .toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("deity/Frog God Games; The Lost Lands.json").toString(),
-                    TestUtils.HOMEBREW_PATH_5E.resolve("creature/MCDM Productions; Flee, Mortals!.json")
-                            .toString());
+                    TestUtils.HOMEBREW_PATH_5E.resolve("deity/Frog God Games; The Lost Lands.json").toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))

@@ -856,6 +856,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "CECG" -> "Chaotic Evil or Chaotic Good";
             case "CGCN" -> "Chaotic Good or Chaotic Neutral";
             case "CGNE" -> "Chaotic Good or Neutral Evil";
+            case "CECN" -> "Chaotic Evil or Chaotic Neutral";
             case "CGNYE" -> "Any Chaotic alignment";
             case "CN" -> "Chaotic Neutral";
             case "L" -> "Lawful";
