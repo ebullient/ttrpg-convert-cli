@@ -11,7 +11,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ### classList
 
-List of links to classes that can use this spell. May be incomplete or empty.
+List of class names that can use this spell. May be incomplete or empty.
 
 ### classes
 

@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
@@ -54,10 +55,12 @@ public class QuteSpell extends Tools5eQuteBase {
         this.fluffImages = fluffImages;
     }
 
-    /** List of links to classes that can use this spell. May be incomplete or empty. */
+    /** List of class names that can use this spell. May be incomplete or empty. */
     public List<String> getClassList() {
         return classes == null || classes.isEmpty()
                 ? List.of()
-                : List.of(classes.split(",\\s*"));
+                : Stream.of(classes.split(",\\s*"))
+                        .map(s -> s.replaceAll("\\[(.*?)\\].*", "$1"))
+                        .toList();
     }
 }
