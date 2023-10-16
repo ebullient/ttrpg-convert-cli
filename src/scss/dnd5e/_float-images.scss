@@ -13,7 +13,8 @@
 .json5e-reward,
 .json5e-spell,
 .json5e-vehicle {
-  div {
+  div,
+  img {
     &[src$="#center"] {
       text-align: center;
     }
