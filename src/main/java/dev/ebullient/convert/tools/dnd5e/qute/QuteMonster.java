@@ -369,7 +369,11 @@ public class QuteMonster extends Tools5eQuteBase {
 
         /** Formatted description: renders all attributes (other than name) */
         public String getDesc() {
-            List<String> text = new ArrayList<>(headerEntries);
+            List<String> text = new ArrayList<>();
+            if (!headerEntries.isEmpty()) {
+                text.addAll(headerEntries);
+                text.add("");
+            }
 
             appendList(text, "At will", will);
             if (daily != null && !daily.isEmpty()) {
@@ -378,8 +382,10 @@ public class QuteMonster extends Tools5eQuteBase {
             if (spells != null && !spells.isEmpty()) {
                 spells.forEach((k, v) -> appendList(text, spellToTitle(k, v), v.spells));
             }
-
-            text.addAll(footerEntries);
+            if (!footerEntries.isEmpty()) {
+                text.add("");
+                text.addAll(footerEntries);
+            }
             return String.join("\n", text);
         }
 
