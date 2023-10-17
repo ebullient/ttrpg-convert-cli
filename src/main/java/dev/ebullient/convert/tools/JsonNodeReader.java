@@ -85,6 +85,20 @@ public interface JsonNodeReader {
         return source.has(this.nodeName());
     }
 
+    default boolean isArrayIn(JsonNode source) {
+        if (source == null || !source.has(this.nodeName())) {
+            return false;
+        }
+        return source.get(this.nodeName()).isArray();
+    }
+
+    default boolean isObjectIn(JsonNode source) {
+        if (source == null || !source.has(this.nodeName())) {
+            return false;
+        }
+        return source.get(this.nodeName()).isObject();
+    }
+
     default <T> T fieldFromTo(JsonNode source, Class<T> classTarget, Tui tui) {
         return tui.readJsonValue(source.get(this.nodeName()), classTarget);
     }
@@ -268,24 +282,24 @@ public interface JsonNodeReader {
     }
 
     default ArrayNode withArrayFrom(JsonNode source) {
-        if (source == null || !source.has(this.nodeName())) {
-            return Tui.MAPPER.createArrayNode();
+        if (isArrayIn(source)) {
+            return source.withArray(this.nodeName());
         }
-        return source.withArray(this.nodeName());
+        return Tui.MAPPER.createArrayNode();
     }
 
     default Iterable<JsonNode> iterateArrayFrom(JsonNode source) {
-        if (source == null || !source.has(this.nodeName())) {
-            return List.of();
+        if (isArrayIn(source)) {
+            return () -> source.withArray(this.nodeName()).elements();
         }
-        return () -> source.withArray(this.nodeName()).elements();
+        return List.of();
     }
 
     default Iterable<Entry<String, JsonNode>> iterateFieldsFrom(JsonNode source) {
-        if (source == null) {
-            return List.of();
+        if (isObjectIn(source)) {
+            return () -> source.get(this.nodeName()).fields();
         }
-        return source::fields;
+        return List.of();
     }
 
     /** Destructive! */

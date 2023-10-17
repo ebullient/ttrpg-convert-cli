@@ -1,8 +1,10 @@
 package dev.ebullient.convert.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.Collection;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -95,6 +97,25 @@ public class Templates {
             return tpl
                     .data("name", name)
                     .data("resources", resources)
+                    .render();
+        } catch (TemplateException tex) {
+            Throwable cause = tex.getCause();
+            String message = cause != null ? cause.toString() : tex.toString();
+            tui.error(tex, message);
+            return "%% ERROR: " + message + " %%";
+        }
+    }
+
+    public String renderCss(FontRef fontRef, InputStream data) throws IOException {
+        Template tpl = customTemplateOrDefault("css-font.txt");
+        try {
+            String encoded = Base64.getEncoder().encodeToString(data.readAllBytes());
+            int extpos = fontRef.sourcePath.lastIndexOf(".");
+            String type = fontRef.sourcePath.substring(extpos + 1);
+            return tpl
+                    .data("fontFamily", fontRef.fontFamily)
+                    .data("type", type)
+                    .data("encoded", encoded)
                     .render();
         } catch (TemplateException tex) {
             Throwable cause = tex.getCause();

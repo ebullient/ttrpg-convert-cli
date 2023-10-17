@@ -287,6 +287,7 @@ public class TestUtils {
                 if (!p.toString().endsWith(".md")) {
                     if (!p.toString().endsWith(".png")
                             && !p.toString().endsWith(".jpg")
+                            && !p.toString().endsWith(".css")
                             && !p.toString().endsWith(".svg")
                             && !p.toString().endsWith(".webp")
                             && !p.toString().endsWith(".json")

@@ -31,6 +31,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
 
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
+    Pattern fontPattern = Pattern.compile("\\{@font ([^}]+)}");
     Pattern homebrewPattern = Pattern.compile("\\{@homebrew ([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
@@ -186,6 +187,17 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             result = linkifyPattern.matcher(result)
                     .replaceAll(this::linkify);
 
+            result = fontPattern.matcher(result)
+                    .replaceAll((match) -> {
+                        String[] parts = match.group(1).split("\\|");
+                        String fontFamily = Tools5eSources.getFontReference(parts[1]);
+                        if (fontFamily != null) {
+                            return String.format("<span style=\"font-family: %s\">%s</span>",
+                                    fontFamily, parts[0]);
+                        }
+                        return parts[0];
+                    });
+
             try {
                 result = result
                         .replace("{@hitYourSpellAttack}", "the summoner's spell attack modifier")
@@ -216,8 +228,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@cult ([^|}]+)}", "$1")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
-                        .replaceAll("\\{@hit ([+-][^}<]+)}", "$1")
-                        .replaceAll("\\{@hit ([^}<]+)}", "+$1")
+                        .replaceAll("\\{@(hit|h) ([+-][^}<]+)}", "$2")
+                        .replaceAll("\\{@(hit|h) ([^}<]+)}", "+$2")
                         .replaceAll("\\{@h}", "*Hit:* ")
                         .replaceAll("\\{@m}", "*Miss:* ")
                         .replaceAll("\\{@atk a}", "*Area Attack:*")
@@ -235,6 +247,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
                         .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
                         .replaceAll("\\{@atk ms,rs}", "*Melee or Ranged Spell Attack:*")
+                        .replaceAll("\\{@spell\\s*}", "") // error in homebrew
                         .replaceAll("\\{@color ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@b ([^}]+?)}", "**$1**")
@@ -269,6 +282,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 String[] parts = match.group(1).split("\\|");
                 if (parts[0].contains("<sup>")) {
                     // This already assumes what the footnote name will be
+                    // TODO: Note content is lost on this path at the moment
                     return String.format("%s", parts[0]);
                 }
                 if (parts.length > 2) {

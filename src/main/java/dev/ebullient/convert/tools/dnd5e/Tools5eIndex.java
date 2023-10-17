@@ -98,6 +98,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.vehicleFluff.withArrayFrom(node, this::addToIndex);
 
+        Tools5eIndexType.language.withArrayFrom(node, this::addToIndex);
+
         Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
@@ -246,6 +248,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 metaTypes.setSkillType(skillName, skill);
             }
         }
+        Tools5eSources.addFonts(SourceField._meta.getFrom(node), HomebrewFields.fonts);
         return true;
     }
 
@@ -307,7 +310,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             SourceAndPage sp = new SourceAndPage(node);
             tableIndex.computeIfAbsent(sp, k -> new ArrayList<>()).add(node);
         }
-
+        if (type == Tools5eIndexType.language && HomebrewFields.fonts.existsIn(node)) {
+            Tools5eSources.addFonts(node, HomebrewFields.fonts);
+        }
         if (node.has("srd")) {
             srdKeys.add(key);
         }
@@ -1172,6 +1177,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     enum HomebrewFields implements JsonNodeReader {
         abbreviation,
+        fonts,
         full,
         json,
         optionalFeatureTypes,

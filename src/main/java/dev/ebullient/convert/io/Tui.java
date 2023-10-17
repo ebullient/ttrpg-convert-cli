@@ -1,9 +1,11 @@
 package dev.ebullient.convert.io;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,6 +57,12 @@ import picocli.CommandLine.ParameterException;
 
 @ApplicationScoped
 public class Tui {
+    static Tui instance;
+
+    public static Tui instance() {
+        return instance;
+    }
+
     public final static TypeReference<List<String>> LIST_STRING = new TypeReference<>() {
     };
     public final static TypeReference<List<Integer>> LIST_INT = new TypeReference<>() {
@@ -176,6 +184,8 @@ public class Tui {
         this.err = new PrintWriter(System.err);
         this.debug = false;
         this.verbose = true;
+
+        Tui.instance = this;
     }
 
     public void init(CommandSpec spec, boolean debug, boolean verbose) {
@@ -302,6 +312,33 @@ public class Tui {
         return inputRoot.stream()
                 .filter(x -> x.resolve(path).toFile().exists())
                 .findFirst();
+    }
+
+    public void copyFonts(Collection<FontRef> fonts, Map<String, String> fallbackPaths) {
+        for (FontRef fontRef : fonts) {
+            Path targetPath = output.resolve(Path.of("css-snippets", slugify(fontRef.fontFamily) + ".css"));
+            targetPath.getParent().toFile().mkdirs();
+
+            printlnf("⏱️ Generating CSS snippet for %s", fontRef.sourcePath);
+            if (fontRef.sourcePath.startsWith("http")) {
+                try (InputStream is = URI.create(fontRef.sourcePath.replace(" ", "%20")).toURL().openStream()) {
+                    Files.writeString(targetPath, templates.renderCss(fontRef, is));
+                } catch (IOException e) {
+                    errorf(e, "Unable to copy font from %s to %s", fontRef.sourcePath, targetPath);
+                }
+            } else {
+                Optional<Path> resolvedSource = resolvePath(Path.of(fontRef.sourcePath));
+                if (resolvedSource.isEmpty()) {
+                    errorf("Unable to find font '%s'", fontRef.sourcePath);
+                    continue;
+                }
+                try (BufferedInputStream is = new BufferedInputStream(Files.newInputStream(resolvedSource.get()))) {
+                    Files.writeString(targetPath, templates.renderCss(fontRef, is));
+                } catch (IOException e) {
+                    errorf(e, "Unable to copy font from %s to %s", fontRef.sourcePath, targetPath);
+                }
+            }
+        }
     }
 
     public void copyImages(Collection<ImageRef> images, Map<String, String> fallbackPaths) {
