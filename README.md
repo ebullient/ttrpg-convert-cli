@@ -1,7 +1,7 @@
 # TTRPG convert CLI
 ![GitHub all releases](https://img.shields.io/github/downloads/ebullient/ttrpg-convert-cli/total?color=success)
 
-A Command-Line Interface designed to convert TTRPG data from 5eTools (and upcoming support for Pf2eTools) into crosslinked, tagged, and formatted markdown optimized for [Obsidian.md](https://obsidian.md). 
+A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eTools into crosslinked, tagged, and formatted markdown optimized for [Obsidian.md](https://obsidian.md). 
 
 <table><tr>
 <td>Jump</td>
@@ -19,15 +19,41 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 
 > 🚜 Check out [Changes that impact generated templates and files](#changes-that-impact-generated-templates-and-files) and/or release notes for breaking changes and new capabilities. 
 
-## Install the command line utility
+## Using the Command Line
+
+This tool works in the command line, which is a text-based way to give instructions to your computer. 
+If you're new to it, we have resources to help you get started below.
+
+If you don't have a favorite method already, or you don't know what those words mean, here are some resources to get you started:
+
+- For MacOS / OSX Users:
+    - Start with the built-in `Terminal` application.
+    - [Learn the Mac OS X Command Line][]
+- For Windows Users:
+    - Use the native [Command Prompt][]
+    - [Open a command prompt in a folder (Windows)][]
+    - [Running executables from the command line (Windows)][]
+    - To show emoji in Windows Commmand Prompt: `chcp 65001` and choose a font with emoji support (Consolas is one). 
+
+[Learn the Mac OS X Command Line]: https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line
+[Command Prompt]: https://www.digitaltrends.com/computing/how-to-use-command-prompt/
+[Open a command prompt in a folder (Windows)]: https://www.lifewire.com/open-command-prompt-in-a-folder-5185505
+[Running executables from the command line (Windows)]: https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window
+
+## Install the TTRPG Convert CLI
 
 There are several options for running `ttrpg-convert`. Choose whichever you are the most comfortable with: 
 
-- [Use pre-built platform binary](#use-pre-built-platform-binary) (no Java required)
-- [Use JBang](docs/usage/alternateRun.md#use-jbang)
+- [Use a pre-built platform binary](#use-pre-built-platform-binary) (no Java required)
+- [Use JBang](docs/usage/alternateRun.md#use-jbang) (hides Java invocation; sets up command aliases)
 - [Use Java to run the jar](docs/usage/alternateRun.md#use-java-to-run-the-jar)
 - [Build from source](docs/usage/alternateRun.md#build-and-run-from-source)
-- **Using Windows?** See the [Windows README](README-WINDOWS.md)
+- **Using Windows?** 
+    - See the [Windows README](README-WINDOWS.md)
+    - Obsidian TTRPG Tutorials: [TTRPG-Convert-CLI 5e][] or [TTRPG-Convert-CLI PF2e][]
+
+[TTRPG-Convert-CLI 5e]: https://obsidianttrpgtutorials.com/Obsidian+TTRPG+Tutorials/Plugin+Tutorials/TTRPG-Convert-CLI/TTRPG-Convert-CLI+5e
+[TTRPG-Convert-CLI PF2e]: https://obsidianttrpgtutorials.com/Obsidian+TTRPG+Tutorials/Plugin+Tutorials/TTRPG-Convert-CLI/TTRPG-Convert-CLI+PF2e
 
 ### Use pre-built platform binary
 
@@ -46,29 +72,29 @@ We'll use this command in the instructions below.
 
 Notes: 
 - Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
-
-Notes for Windows:
-- [Open a command prompt in a folder (Windows) ](https://www.lifewire.com/open-command-prompt-in-a-folder-5185505)
-- [Running executables from the command line (Windows)](https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window)
-- To show emoji in Windows Commmand Prompt: `chcp 65001` and choose a font with emoji support (Consolas is one). You can also try the new Windows Terminal (`wt.exe`).
-- See the [Windows README](README-WINDOWS.md)
-
-Notes for MacOS:
-
-- MacOS permission checking (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
+- _MacOS permission checking_ (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
 **Looking for a different method?** See [Alternate ways to run the CLI](docs/usage/alternateRun.md) for more options to download and run the CLI.
 
-## Conventions
+## 🔮 Recommendations for using the CLI
 
-> 💭 **Recommendations** 
-> - Keep generated content isolated in your vault and treat it as read-only.
-> - Run the CLI against a separate directory. Use a comparison tool to preview changes.  
->   You can use `git diff` to compare arbitrary directories, for example:
->   ```
->   git diff --no-index vault/compendium/bestiary generated/compendium/bestiary
->   ```
->  - Use a copy tool that only updates modified files, like rsync or robocopy, to avoid unnecessary file copying when updating your vault.
+- 🔐 Keep generated content isolated in your vault and *treat it as read-only*.
+    Content is updated, or you bought another adventure... 
+    
+    Trust me, you will want to regenerate content from time to time. It's easier to do that if you don't have to worry about your own edits.
+
+- 🔎 Have the CLI generate output into a separate directory and use a comparison tool to preview changes.  
+
+    You can use `git diff` to compare arbitrary directories, for example:
+    ```
+    git diff --no-index vault/compendium/bestiary generated/compendium/bestiary
+    ```
+
+- 📑 Use a copy tool that only updates modified files, like [rsync][], to avoid unnecessary file copying when updating your vault. Use the checksum option (`-c`) to compare file contents; the file modification date is meaningless given generated files are recreated when the tool is run.
+
+[rsync]: https://stackoverflow.com/a/19540611
+
+## Conventions
 
 - **Links.** Documents generated by this plugin will use markdown links rather than wiki links. A [css snippet](examples/css-snippets/hide-markdown-link-url.css) can make these links less invasive in edit mode by hiding the URL portion of the string.
 
@@ -82,6 +108,8 @@ Notes for MacOS:
     The `compendium` directory is further organized into subdirectories for each type of content. For example, all items are in the `compendium/items` directory.  
 
   - `rules` contains files for conditions, weapon properties, variant rules, etc. 
+  
+  - `css-snippets` will contain **CSS files for special fonts** used by some content. You will need to copy these snippets into your vault (`.obsidian/snippets`) and enable them (`Appearance -> Snippets`) to ensure all content in your vault is styled correctly. 
 
 - **Styles.** Every document has a `cssclasses` attribute that assigns a CSS class. We have some [CSS snippets](#optional-css-snippets) that you can use to customize elements of the compendium. 
   - 5e tools: `json5e-background`, `json5e-class`, `json5e-deck`, `json5e-deity`, `json5e-feat`, `json5e-hazard`, `json5e-item`, `json5e-monster`, `json5e-note`, `json5e-object`, `json5e-psionic`, `json5e-race`, `json5e-reward`, `json5e-spell`, and `json5e-vehicle`.
