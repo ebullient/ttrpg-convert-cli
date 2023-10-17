@@ -5,7 +5,6 @@ import java.util.List;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Common attributes for simple notes. THese attributes are more
@@ -16,7 +15,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class QuteNote extends QuteBase {
 
     public QuteNote(String name, String sourceText, List<String> text, Tags tags) {

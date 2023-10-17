@@ -3,7 +3,6 @@ package dev.ebullient.convert.qute;
 import java.nio.file.Path;
 
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Create links to referenced images.
@@ -29,7 +28,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </ul>
  */
 @TemplateData
-@RegisterForReflection
 public class ImageRef {
     final Path sourcePath;
     final Path targetFilePath;

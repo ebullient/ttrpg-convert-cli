@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * 5eTools reward attributes ({@code reward2md.txt})
@@ -12,7 +11,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class QuteReward extends Tools5eQuteBase {
 
     /**

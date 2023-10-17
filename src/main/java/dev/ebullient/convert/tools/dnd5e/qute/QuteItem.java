@@ -6,7 +6,6 @@ import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * 5eTools item attributes ({@code item2md.txt})
@@ -15,7 +14,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class QuteItem extends Tools5eQuteBase {
 
     /** Item details: tier, rarity, category, attunement */

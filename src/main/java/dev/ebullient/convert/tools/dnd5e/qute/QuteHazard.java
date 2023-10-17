@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * 5eTools hazard attributes ({@code hazard2md.txt})
@@ -12,7 +11,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class QuteHazard extends Tools5eQuteBase {
 
     /** Type of hazard: "Magical Trap", "Wilderness Hazard" */
