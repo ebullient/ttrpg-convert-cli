@@ -22,7 +22,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class QuteMonster extends Tools5eQuteBase {
 
     /** True if this is an NPC */

@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Holder of a name or category and associated descriptive text.
@@ -17,7 +16,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class NamedText {
     public final static Comparator<NamedText> comparator = Comparator.comparing(NamedText::getKey);
 

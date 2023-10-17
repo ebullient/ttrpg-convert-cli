@@ -7,7 +7,6 @@ import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Defines attributes inherited by other Qute templates.
@@ -17,7 +16,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class QuteBase implements QuteUtil {
     protected final String name;
     protected final CompendiumSources sources;

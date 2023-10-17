@@ -16,7 +16,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  * </p>
  */
 @TemplateData
-@RegisterForReflection
 public class QuteDeck extends Tools5eQuteBase {
 
     /** Image from the back of the card as {@link dev.ebullient.convert.qute.ImageRef} (optional) */
