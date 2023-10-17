@@ -248,7 +248,8 @@ public class Tools5eSources extends CompendiumSources {
                     .build();
         }
         if (mediaHref.href.path != null) {
-            Path sourcePath = Path.of("img", mediaHref.href.path);
+            Path sourcePath = Path.of("img",
+                    mediaHref.href.path.replace("%20", " "));
 
             String fileName = sourcePath.getFileName().toString();
             if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
