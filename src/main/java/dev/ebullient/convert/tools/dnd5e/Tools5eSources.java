@@ -6,16 +6,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.io.FontRef;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.JsonMediaHref;
@@ -27,6 +31,7 @@ public class Tools5eSources extends CompendiumSources {
 
     private static final Map<String, Tools5eSources> keyToSources = new HashMap<>();
     private static final Map<Path, ImageRef> imageSourceToRef = new HashMap<>();
+    private static final Map<String, FontRef> fontSourceToRef = new HashMap<>();
     private static final Map<String, List<QuteBase>> keyToInlineNotes = new HashMap<>();
 
     public static Tools5eSources findSources(String key) {
@@ -84,6 +89,51 @@ public class Tools5eSources extends CompendiumSources {
 
     public void addInlineNote(QuteBase note) {
         keyToInlineNotes.computeIfAbsent(this.key, k -> new ArrayList<>()).add(note);
+    }
+
+    public static Collection<FontRef> getFonts() {
+        return fontSourceToRef.values().stream()
+                .filter(FontRef::hasTextReference)
+                .toList();
+    }
+
+    public static void addFonts(JsonNode source, JsonNodeReader field) {
+        if (field.isArrayIn(source)) {
+            for (JsonNode font : field.iterateArrayFrom(source)) {
+                addFont(font.asText());
+            }
+        } else if (field.isObjectIn(source)) {
+            for (Entry<String, JsonNode> font : field.iterateFieldsFrom(source)) {
+                addFont(font.getKey(), font.getValue().asText());
+            }
+        }
+    }
+
+    static void addFont(String fontFamily, String fontString) {
+        FontRef ref = FontRef.of(fontFamily, fontString);
+        if (ref == null) {
+            Tui.instance().warnf("Font '%s' is invalid, empty, or not found", fontString);
+        } else {
+            FontRef previous = fontSourceToRef.putIfAbsent(fontFamily, ref);
+            if (previous != null) {
+                Tui.instance().warnf("Font '%s' is already defined as '%s'", fontString, previous);
+            }
+        }
+    }
+
+    static void addFont(String fontString) {
+        String fontFamily = FontRef.fontFamily(fontString);
+        addFont(fontFamily, fontString);
+    }
+
+    public static String getFontReference(String fontString) {
+        String fontFamily = FontRef.fontFamily(fontString);
+        FontRef ref = fontSourceToRef.get(fontFamily);
+        if (ref == null) {
+            return null;
+        }
+        ref.addTextReference();
+        return fontFamily;
     }
 
     final boolean srd;

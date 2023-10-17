@@ -43,6 +43,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     itemType,
     itemTypeAdditionalEntries,
     itemProperty,
+    language,
     legendaryGroup,
     magicvariant,
     monster,

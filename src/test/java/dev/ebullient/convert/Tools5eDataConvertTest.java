@@ -147,6 +147,7 @@ public class Tools5eDataConvertTest {
                     TestUtils.TEST_RESOURCES.resolve("psion.json").toString(),
                     TestUtils.TEST_RESOURCES.resolve("ermis-bg.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json").toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("adventure/JVC Parry; Call from the Deep.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("adventure/Kobold Press; Book of Lairs.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("background/D&D Wiki; Featured Quality Backgrounds.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("book/Ghostfire Gaming; Grim Hollow Campaign Guide.json").toString(),
@@ -166,6 +167,8 @@ public class Tools5eDataConvertTest {
                             .resolve("collection/Kobold Press; Deep Magic Backgrounds, Feats, & Subclasses.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E
                             .resolve("collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json")
+                            .toString(),
+                    TestUtils.HOMEBREW_PATH_5E.resolve("creature/Kobold Press; Creature Codex.json")
                             .toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("creature/MCDM Productions; Flee, Mortals!.json").toString(),
                     TestUtils.HOMEBREW_PATH_5E.resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")

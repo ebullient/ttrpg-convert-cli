@@ -44,6 +44,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
 
     public Tools5eMarkdownConverter writeImages() {
         index.tui().copyImages(Tools5eSources.getImages(), fallbackPaths);
+        index.tui().copyFonts(Tools5eSources.getFonts(), fallbackPaths);
         return this;
     }
 
