@@ -63,6 +63,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         Tags tags = new Tags(getSources());
         tags.add("monster", "size", size);
+        tags.add("monster", "cr", cr);
         if (subtype == null || subtype.isEmpty()) {
             tags.add("monster", "type", creatureType);
         } else {
