@@ -2,6 +2,7 @@
   "config5e": {
     "abvToName": {
       "AAG": "Astral Adventurer's Guide",
+      "AATM": "Adventure Atlas: The Mortuary",
       "AI": "Acquisitions Incorporated",
       "AitFR-AVT": "Adventures in the Forgotten Realms: A Verdant Tomb",
       "AitFR-DN": "Adventures in the Forgotten Realms: Deepest Night",
@@ -72,6 +73,7 @@
       "MM": "Monster Manual",
       "MOT": "Mythic Odysseys of Theros",
       "MPMM": "Mordenkainen Presents: Monsters of the Multiverse",
+      "MPP": "Morte's Planar Parade",
       "MTF": "Mordenkainen's Tome of Foes",
       "NRH-ASS": "NERDS Restoring Harmony: A Sticky Situation",
       "NRH-AT": "NERDS Restoring Harmony: Adventure Together",
@@ -101,6 +103,7 @@
       "SAC": "Sage Advice Compendium",
       "SADS": "Sapphire Anniversary Dice Set",
       "SAiS": "Spelljammer: Adventures in Space",
+      "SatO": "Sigil and the Outlands",
       "SCAG": "Sword Coast Adventurer's Guide",
       "SCC-ARiR": "A Reckoning in Ruins",
       "SCC-CK": "Campus Kerfuffle",
@@ -125,6 +128,7 @@
       "TLK": "The Lost Kenku",
       "ToA": "Tomb of Annihilation",
       "ToD": "Tyranny of Dragons",
+      "ToFW": "Turn of Fortune's Wheel",
       "TTP": "The Tortle Package",
       "TftYP": "Tales from the Yawning Portal",
       "TftYP-AtG": "Tales from the Yawning Portal: Against the Giants",
