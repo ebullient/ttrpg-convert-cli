@@ -1033,6 +1033,15 @@ public interface JsonSource extends JsonTextReplacement {
         };
     }
 
+    static String crToTagValue(String cr) {
+        return switch (cr) {
+            case "1/8" -> "⅛";
+            case "1/4" -> "¼";
+            case "1/2" -> "½";
+            default -> cr;
+        };
+    }
+
     default String asModifier(double value) {
         return (value >= 0 ? "+" : "") + value;
     }
