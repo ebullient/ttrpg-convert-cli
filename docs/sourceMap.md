@@ -14,6 +14,7 @@ _Support content creators. Only use or include sources that you own._
 | Abbreviation | Long name |
 |--------------|-----------|
 | AAG | Astral Adventurer's Guide |
+| AATM | Adventure Atlas: The Mortuary |
 | AI | Acquisitions Incorporated |
 | AL | Adventurers' League |
 | ALCoS | Adventurers League: Curse of Strahd |
@@ -80,6 +81,7 @@ _Support content creators. Only use or include sources that you own._
 | MM | Monster Manual |
 | MOT | Mythic Odysseys of Theros |
 | MPMM | Mordenkainen Presents: Monsters of the Multiverse |
+| MPP | Morte's Planar Parade |
 | MTF | Mordenkainen's Tome of Foes |
 | MaBJoV | Minsc and Boo's Journal of Villainy |
 | MisMV1 | Misplaced Monsters: Volume 1 |
@@ -129,6 +131,7 @@ _Support content creators. Only use or include sources that you own._
 | SKT | Storm King's Thunder |
 | SLW | Storm Lord's Wrath |
 | SRC_SCREEN_SPELLJAMMER | ScreenSpelljammer |
+| SatO | Sigil and the Outlands |
 | SjA | Spelljammer Academy |
 | TCE | Tasha's Cauldron of Everything |
 | TDCSR | Tal'Dorei Campaign Setting Reborn |
@@ -144,6 +147,7 @@ _Support content creators. Only use or include sources that you own._
 | TftYP-WPM | Tales from the Yawning Portal: White Plume Mountain |
 | ToA | Tomb of Annihilation |
 | ToD | Tyranny of Dragons |
+| ToFW | Turn of Fortune's Wheel |
 | ToR | Tide of Retribution |
 | UA20F | Unearthed Arcana: 2020 Feats |
 | UA20POR | Unearthed Arcana: 2020 Psionic Options Revisited |
