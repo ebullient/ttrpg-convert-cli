@@ -1,6 +1,7 @@
 ---
 obsidianUIMode: preview
 cssclass: json5e-monster
+statblock: inline
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}
