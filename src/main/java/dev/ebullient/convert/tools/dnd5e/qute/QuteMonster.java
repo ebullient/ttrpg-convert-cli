@@ -11,6 +11,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -239,7 +240,7 @@ public class QuteMonster extends Tools5eQuteBase {
      */
     public String get5eInitiativeYaml() {
         Map<String, Object> map = new LinkedHashMap<>();
-        addUnlessEmpty(map, "name", name);
+        addUnlessEmpty(map, "name", name + yamlMonsterName());
         addIntegerUnlessEmpty(map, "ac", acHp.ac);
         addIntegerUnlessEmpty(map, "hp", acHp.hp);
         addUnlessEmpty(map, "hit_dice", acHp.hitDice);
@@ -256,7 +257,7 @@ public class QuteMonster extends Tools5eQuteBase {
      */
     public String get5eStatblockYaml() {
         Map<String, Object> map = new LinkedHashMap<>();
-        addUnlessEmpty(map, "name", name);
+        addUnlessEmpty(map, "name", name + yamlMonsterName());
         addUnlessEmpty(map, "size", size);
         addUnlessEmpty(map, "type", type);
         addUnlessEmpty(map, "subtype", subtype);
@@ -304,6 +305,15 @@ public class QuteMonster extends Tools5eQuteBase {
                 .replaceAll("\\*([^*]+)\\*", "$1") // em
                 .replaceAll("\\*([^*]+)\\*", "$1") // bold
                 .replaceAll("\\*([^*]+)\\*", "$1"); // bold em
+    }
+
+    public String yamlMonsterName() {
+        String source = getBooks().get(0);
+        if (Tools5eIndexType.monster.defaultSourceString().equalsIgnoreCase(source)) {
+            return "";
+        } else {
+            return " (" + source + ")";
+        }
     }
 
     Collection<NamedText> spellcastingToTraits() {
