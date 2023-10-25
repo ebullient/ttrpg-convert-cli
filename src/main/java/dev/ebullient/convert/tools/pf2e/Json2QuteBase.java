@@ -1,7 +1,11 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
@@ -30,6 +34,12 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
     @Override
     public Pf2eSources getSources() {
         return sources;
+    }
+
+    List<String> toAlignments(JsonNode alignNode, JsonNodeReader alignmentField) {
+        return alignmentField.getListOfStrings(alignNode, tui()).stream()
+                .map(a -> a.length() > 2 ? a : linkify(Pf2eIndexType.trait, a.toUpperCase()))
+                .collect(Collectors.toList());
     }
 
     public Pf2eQuteBase build() {
