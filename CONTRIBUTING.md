@@ -75,6 +75,10 @@ git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.
 git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
 ```
 
+### Building native images
+
+A Pull Request build will automatically build a native image for Linux. Building a native image requires a few more steps (GraalVM, native-image, etc). See the [Quarkus documentation](https://quarkus.io/guides/building-native-image) for more information.
+
 ### Build CSS only
 
 - **build css**: `./mvnw sass-cli:run`
