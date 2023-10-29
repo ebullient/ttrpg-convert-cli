@@ -296,6 +296,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     spellcasting.spells.put(f.getKey(), spells);
                 });
             }
+            parseState().popCitations(spellcasting.footerEntries);
             casting.add(spellcasting);
         });
         return casting;

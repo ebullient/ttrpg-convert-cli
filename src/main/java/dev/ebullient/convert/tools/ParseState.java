@@ -2,10 +2,14 @@ package dev.ebullient.convert.tools;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
@@ -13,7 +17,6 @@ import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 public class ParseState {
 
     enum ParseStateField implements JsonNodeReader {
-        footnotes,
         page,
         source
     }
@@ -149,6 +152,7 @@ public class ParseState {
     }
 
     private final Deque<ParseState.ParseStateInfo> stack = new ArrayDeque<>();
+    private final Map<String, String> citations = new HashMap<>();
 
     public boolean push(CompendiumSources sources, JsonNode rootNode) {
         if (rootNode != null && (rootNode.has("page") || rootNode.has("source"))) {
@@ -219,7 +223,12 @@ public class ParseState {
 
     public void pop(boolean pushed) {
         if (pushed) {
-            stack.removeFirst();
+            String source = sourcePageString();
+            ParseStateInfo removed = stack.removeFirst();
+            if (stack.isEmpty() && !citations.isEmpty()) {
+                Tui.instance().errorf("%s left unreferenced citations behind", source.isEmpty() ? removed : source);
+                citations.clear();
+            }
         }
     }
 
@@ -258,7 +267,7 @@ public class ParseState {
         if (current == null || current.page == 0) {
             return "";
         }
-        return String.format("<sup>%s p. %s</sup>",
+        return String.format("%s p. %s",
                 current.src, current.page);
     }
 
@@ -307,5 +316,24 @@ public class ParseState {
 
     public SourceAndPage toSourceAndPage() {
         return new SourceAndPage(getSource(), getPage());
+    }
+
+    public void addCitation(String key, String citationText) {
+        String old = citations.put(key, citationText);
+        if (old != null && !old.equals(citationText)) {
+            Tui.instance().errorf("Duplicate citation text for %s:\nOLD:\n%s\nNEW:\n%s", key, old, citationText);
+        }
+    }
+
+    public void popCitations(List<String> footerEntries) {
+        citations.forEach((k, v) -> {
+            if (v.startsWith("|")) { // we have a table, assume noted thing is in the footnote
+                footerEntries.add(v);
+                return;
+            }
+            footerEntries.add(String.format("[%s]: %s",
+                    k, v));
+        });
+        citations.clear();
     }
 }

@@ -99,6 +99,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.vehicleFluff.withArrayFrom(node, this::addToIndex);
 
         Tools5eIndexType.language.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.citation.withArrayFrom(node, this::addToIndex);
 
         Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
@@ -306,7 +307,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             // add subclass to alias. Referenced from spells
             addAlias(lookupKey, key);
         }
-        if (type == Tools5eIndexType.table || type == Tools5eIndexType.tableGroup) {
+        if (type == Tools5eIndexType.table || type == Tools5eIndexType.tableGroup || type == Tools5eIndexType.citation) {
             SourceAndPage sp = new SourceAndPage(node);
             tableIndex.computeIfAbsent(sp, k -> new ArrayList<>()).add(node);
         }
