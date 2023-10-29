@@ -141,7 +141,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendTextHeaderBlock(List<String> text, JsonNode node, String heading) {
-        String pageRef = parseState().sourcePageString();
+        String pageRef = parseState().sourcePageString("<sup>%s p. %s</sup>");
 
         if (heading == null) {
             List<String> inner = new ArrayList<>();

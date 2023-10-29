@@ -41,6 +41,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]+)*}");
     Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
     Pattern featureSourcePattern = Pattern.compile("source=([^|}]+)");
+    Pattern superscriptCitationPattern = Pattern.compile("\\{@(sup|cite) ([^}]+)}");
 
     Tools5eIndex index();
 
@@ -155,6 +156,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             result = abilitySavePattern.matcher(result).replaceAll(this::replaceSkillOrAbility);
             result = skillCheckPattern.matcher(result).replaceAll(this::replaceSkillCheck);
 
+            result = superscriptCitationPattern.matcher(result).replaceAll((match) -> {
+                // {@sup {@cite Casting Times|FleeMortals|A}}
+                // {@sup whatever}
+                // {@cite Casting Times|FleeMortals|A}
+                // {@cite Casting Times|FleeMortals|{@sup A}}
+                if (match.group(1).equals("sup")) {
+                    String text = replaceText(match.group(2));
+                    if (text.startsWith("[^") || text.startsWith("^[")) {
+                        // do not put citations in superscript (obsidian/markdown will do it)
+                        return text;
+                    }
+                    return "<sup>" + text + "</sup>";
+                }
+                return handleCitation(match.group(2));
+            });
+
             result = homebrewPattern.matcher(result).replaceAll((match) -> {
                 // {@homebrew changes|modifications}, {@homebrew additions} or {@homebrew |removals}
                 String s = match.group(1);
@@ -258,7 +275,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@italic ([^}]+)}", "*$1*")
                         .replaceAll("\\{@s ([^}]+?)}", "~~$1~~")
                         .replaceAll("\\{@strike ([^}]+)}", "~~$1~~")
-                        .replaceAll("\\{@sup ([^}]+?)}", "<sup>$1</sup>")
                         .replaceAll("\\{@u ([^}]+?)}", "_$1_")
                         .replaceAll("\\{@underline ([^}]+?)}", "_$1_")
                         .replaceAll("\\{@comic ([^}]+?)}", "$1")
@@ -706,6 +722,32 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     parts[0], index().rulesVaultRoot(),
                     slugify(parts[0]) + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.variantrule));
         }
+    }
+
+    default String handleCitation(String citationTag) {
+        // Casting Times|FleeMortals|A
+        // Casting Times|FleeMortals|{@sup A}
+        String[] parts = citationTag.split("\\|");
+        if (parts.length < 3) {
+            tui().errorf("Badly formed citation %s in %s", citationTag, getSources().getKey());
+            return citationTag;
+        }
+        String key = index().getAliasOrDefault(Tools5eIndexType.citation.createKey(parts[0], parts[1]));
+        String annotation = replaceText(parts[2]).replaceAll("</?sup>", "");
+        JsonNode jsonSource = index().getNode(key);
+        if (index().isExcluded(key) || jsonSource == null) {
+            return annotation;
+        }
+        String blockRef = "^" + slugify(key);
+        List<String> text = new ArrayList<>();
+        appendToText(text, jsonSource, null);
+        if (text.get(text.size() - 1).startsWith("^")) {
+            blockRef = text.get(text.size() - 1);
+        } else {
+            text.add(blockRef);
+        }
+        parseState().addCitation(key, String.join("\n", text));
+        return String.format("[%s](#%s)", annotation, blockRef);
     }
 
     default String decoratedUaName(String name, Tools5eSources sources) {

@@ -24,6 +24,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     card,
     charoption,
     charoptionFluff,
+    citation,
     classtype("class"),
     classFluff, // not really a thing.
     classfeature,
