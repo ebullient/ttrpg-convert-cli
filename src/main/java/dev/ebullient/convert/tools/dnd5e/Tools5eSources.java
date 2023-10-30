@@ -39,7 +39,7 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     public static Tools5eSources findSources(JsonNode node) {
-        String key = TtrpgValue.indexKey.getFromNode(node);
+        String key = TtrpgValue.indexKey.getTextOrEmpty(node);
         return keyToSources.get(key);
     }
 
@@ -47,7 +47,7 @@ public class Tools5eSources extends CompendiumSources {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
         }
-        String key = TtrpgValue.indexKey.getFromNode(node);
+        String key = TtrpgValue.indexKey.getTextOrEmpty(node);
         if (key == null) {
             throw new IllegalArgumentException("Node has not been indexed (no key)");
         }
@@ -69,7 +69,7 @@ public class Tools5eSources extends CompendiumSources {
                     ? Tools5eIndexType.reference
                     : Tools5eIndexType.syntheticGroup;
         }
-        String key = TtrpgValue.indexKey.getFromNode(node);
+        String key = TtrpgValue.indexKey.getTextOrNull(node);
         if (key == null) {
             key = type.createKey(node);
         }

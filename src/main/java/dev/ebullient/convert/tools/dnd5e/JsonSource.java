@@ -70,24 +70,6 @@ public interface JsonSource extends JsonTextReplacement {
         return result.asInt();
     }
 
-    default JsonNode copyNode(JsonNode sourceNode) {
-        try {
-            return mapper().readTree(sourceNode.toString());
-        } catch (JsonProcessingException ex) {
-            tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
-            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
-        }
-    }
-
-    default JsonNode createNode(String source) {
-        try {
-            return mapper().readTree(source);
-        } catch (JsonProcessingException ex) {
-            tui().errorf(ex, "Unable to create node from %s", source);
-            throw new IllegalStateException("JsonProcessingException processing " + source);
-        }
-    }
-
     default String getSourceText(JsonNode node) {
         return getSourceText(Tools5eSources.findOrTemporary(node));
     }
@@ -554,8 +536,8 @@ public interface JsonSource extends JsonTextReplacement {
         String finalKey = type.createKey(data);
 
         JsonNode existingNode = index().getNode(finalKey);
-        TtrpgValue.indexKey.addToNode(data, finalKey);
-        TtrpgValue.indexInputType.addToNode(data, type.name());
+        TtrpgValue.indexKey.setIn(data, finalKey);
+        TtrpgValue.indexInputType.setIn(data, type.name());
 
         // TODO: Remove me.
         JsonNode copy = MetaFields._copy.getFrom(data);

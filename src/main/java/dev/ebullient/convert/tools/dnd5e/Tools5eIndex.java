@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -176,6 +177,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // Index content types
         indexTypes(filename, node);
 
+        // base items are special: add an additional flag
+        Tools5eIndexType.item.withArrayFrom(node, "baseitem", (type, x) -> {
+            TtrpgValue.indexBaseItem.setIn(x, BooleanNode.TRUE);
+        });
+
         return this;
     }
 
@@ -259,8 +265,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return;
         }
         nodeIndex.put(key, node);
-        TtrpgValue.indexInputType.addToNode(node, type.name());
-        TtrpgValue.indexKey.addToNode(node, key);
+        TtrpgValue.indexInputType.setIn(node, type.name());
+        TtrpgValue.indexKey.setIn(node, key);
 
         if (type == Tools5eIndexType.classtype
                 && !booleanOrDefault(node, "isReprinted", false)) {
@@ -369,7 +375,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             JsonNode jsonSource = copier.handleCopy(type, node);
             entry.setValue(jsonSource); // update with resolved copy
 
-            TtrpgValue.indexKey.addToNode(node, key);
+            TtrpgValue.indexKey.setIn(node, key);
             Tools5eSources sources = Tools5eSources.constructSources(node);
 
             if (type == Tools5eIndexType.subrace ||
@@ -395,7 +401,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     tui().errorf("Duplicate key: %s", v.key);
                 }
                 // store unique key / construct sources for variants
-                TtrpgValue.indexKey.addToNode(v.node, v.key);
+                TtrpgValue.indexKey.setIn(v.node, v.key);
                 Tools5eSources.constructSources(v.node);
             });
 
@@ -1105,7 +1111,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         String getKey() {
-            return TtrpgValue.indexKey.getFromNode(featureTypeNode);
+            return TtrpgValue.indexKey.getTextOrNull(featureTypeNode);
         }
     }
 

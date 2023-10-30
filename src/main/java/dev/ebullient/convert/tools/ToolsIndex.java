@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.Datasource;
@@ -19,18 +18,8 @@ public interface ToolsIndex {
     // Special one-offs for accounting/tracking
     enum TtrpgValue implements JsonNodeReader {
         indexKey,
-        indexInputType;
-
-        public void addToNode(JsonNode node, String value) {
-            ((ObjectNode) node).put(this.name(), value);
-        }
-
-        public String getFromNode(JsonNode node) {
-            if (node == null) {
-                return null;
-            }
-            return this.getTextOrNull(node);
-        }
+        indexInputType,
+        indexBaseItem;
     }
 
     static ToolsIndex createIndex() {

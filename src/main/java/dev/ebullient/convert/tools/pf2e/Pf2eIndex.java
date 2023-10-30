@@ -90,7 +90,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
             // always use item (baseitem is a detail that we have remembered if we need it)
             type = Pf2eIndexType.item;
         }
-        TtrpgValue.indexInputType.addToNode(node, type.name());
+        TtrpgValue.indexInputType.setIn(node, type.name());
         // TODO: Variants? Reprints?
         String key = type.createKey(node);
         String hash = Field.add_hash.getTextOrNull(node);
@@ -114,7 +114,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
             return;
         }
         imported.put(key, node);
-        TtrpgValue.indexKey.addToNode(node, key);
+        TtrpgValue.indexKey.setIn(node, key);
     }
 
     String prepareTrait(String key, JsonNode node) {
@@ -173,7 +173,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
         if (dash >= 0) {
             newNode.put("source", name.substring(dash + 1));
         }
-        TtrpgValue.indexKey.addToNode(newNode, key); // backlink
+        TtrpgValue.indexKey.setIn(newNode, key); // backlink
         imported.put(key, newNode);
     }
 
