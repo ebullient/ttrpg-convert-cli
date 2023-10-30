@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.ToolsIndex;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteCompose extends Json2QuteCommon {
@@ -33,7 +33,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
     }
 
     public void add(JsonNode node) {
-        String key = ToolsIndex.TtrpgValue.indexKey.getFromNode(node);
+        String key = TtrpgValue.indexKey.getTextOrEmpty(node);
         if (index.isIncluded(key)) {
             nodes.add(node);
         } else {

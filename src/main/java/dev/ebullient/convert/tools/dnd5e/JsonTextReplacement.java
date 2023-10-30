@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -53,10 +52,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
     default CompendiumConfig cfg() {
         return index().cfg();
-    }
-
-    default ObjectMapper mapper() {
-        return Tui.MAPPER;
     }
 
     default boolean isPresent(String s) {

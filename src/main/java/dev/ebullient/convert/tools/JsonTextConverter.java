@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -26,10 +28,34 @@ public interface JsonTextConverter<T extends IndexType> {
 
     void appendToText(List<String> inner, JsonNode target, String heading);
 
+    Tui tui();
+
     CompendiumConfig cfg();
+
+    default ObjectMapper mapper() {
+        return Tui.MAPPER;
+    }
 
     default ParseState parseState() {
         return cfg().parseState();
+    }
+
+    default JsonNode copyNode(JsonNode sourceNode) {
+        try {
+            return mapper().readTree(sourceNode.toString());
+        } catch (JsonProcessingException ex) {
+            tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
+            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
+        }
+    }
+
+    default JsonNode createNode(String source) {
+        try {
+            return mapper().readTree(source);
+        } catch (JsonProcessingException ex) {
+            tui().errorf(ex, "Unable to create node from %s", source);
+            throw new IllegalStateException("JsonProcessingException processing " + source);
+        }
     }
 
     default String formatDice(String diceRoll) {
@@ -421,8 +447,6 @@ public interface JsonTextConverter<T extends IndexType> {
                                 .toLowerCase())
                 .collect(Collectors.joining(" "));
     }
-
-    Tui tui();
 
     enum SourceField implements JsonNodeReader {
         abbreviation,
