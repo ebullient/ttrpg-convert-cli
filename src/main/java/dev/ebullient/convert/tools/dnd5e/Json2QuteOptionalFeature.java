@@ -23,7 +23,7 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
         return new QuteFeat(getSources(),
                 getSources().getName(),
                 getSourceText(sources),
-                listPrerequisites(),
+                listPrerequisites(rootNode),
                 null,
                 getText("##"),
                 tags);

@@ -217,7 +217,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.item)
+                    .writeFiles(List.of(Tools5eIndexType.item, Tools5eIndexType.itemGroup))
                     .writeImages();
 
             TestUtils.assertDirectoryContents(itemDir, tui);

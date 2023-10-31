@@ -351,7 +351,20 @@ Of particular note are the varied monster templates:
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
-### 🔖 2.2.5: New templates for decks (and cards), legendary groups, and psionics
+### 🔖 ✨ 2.2.6: 5e support for generic and magic item variants
+
+Items may have variants, which are defined as a list in the `variants` attribute.
+
+- Use `resource.variantAliases` to get a list of aliases for variants
+- Use `resource.variantSectionLinks` to get a list of links to variant sections
+- Iterate over the section list to generate sections (`##`) for each variant
+
+See the following examples:
+
+- [Default `item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/item2md.txt)
+- [Example `examples/templates/tools5e/images-item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/images-item2md.txt)
+
+### 🔖 ✨ 2.2.5: New templates for decks (and cards), legendary groups, and psionics
 
 - **New templates**: `deck2md.txt`, `legendaryGroup2md.txt`, `psionic2md.txt`
   - Decks, when present, will be generated under `compendium/decks`. Cards are part of decks.

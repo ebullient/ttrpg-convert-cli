@@ -98,7 +98,6 @@ public interface JsonTextConverter<T extends IndexType> {
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
-            //char c2 = i + 1 < input.length() ? input.charAt(i + 1) : NUL;
 
             switch (c) {
                 case '{':

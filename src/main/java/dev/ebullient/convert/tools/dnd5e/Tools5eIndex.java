@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -103,6 +104,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.citation.withArrayFrom(node, this::addToIndex);
 
         Tools5eIndexType.itemEntry.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemGroup.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemTypeAdditionalEntries.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.magicvariant.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.card.withArrayFrom(node, this::addToIndex);
@@ -260,6 +262,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     void addToIndex(Tools5eIndexType type, JsonNode node) {
+        if (type == Tools5eIndexType.magicvariant) {
+            // This will populate the source field..
+            MagicVariant.INSTANCE.populateGenericVariant(node);
+        }
         String key = type.createKey(node);
         if (nodeIndex.containsKey(key)) {
             return;
@@ -275,18 +281,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 String lookupKey = String.format("%s|%s|", parts[0], parts[1]);
                 classRoot.put(lookupKey, key);
             }
-        }
-        if (type == Tools5eIndexType.itemProperty && homebrew != null) {
+        } else if (type == Tools5eIndexType.itemProperty && homebrew != null) {
             // lookup by abbreviation
             String[] parts = key.split("\\|");
             homebrew.itemProperties.put(parts[1].toLowerCase(), new CustomItemProperty(node));
-        }
-        if (type == Tools5eIndexType.itemType && homebrew != null) {
+        } else if (type == Tools5eIndexType.itemType && homebrew != null) {
             // lookup by abbreviation
             String[] parts = key.split("\\|");
             homebrew.itemTypes.put(parts[1].toLowerCase(), new CustomItemType(node));
-        }
-        if (type == Tools5eIndexType.optionalfeature) {
+        } else if (type == Tools5eIndexType.optionalfeature) {
             String lookup = null;
             for (String ft : toListOfStrings(node.get("featureType"))) {
                 try {
@@ -305,21 +308,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             if (lookup != null) {
                 ((ObjectNode) node).put("typeLookup", lookup);
             }
-        }
-        if (type == Tools5eIndexType.subclass) {
+        } else if (type == Tools5eIndexType.subclass) {
             String lookupKey = Tools5eIndexType.getSubclassKey(
                     getTextOrEmpty(node, "className"), getTextOrEmpty(node, "classSource"),
                     getTextOrEmpty(node, "shortName"), getTextOrEmpty(node, "source"));
             // add subclass to alias. Referenced from spells
             addAlias(lookupKey, key);
-        }
-        if (type == Tools5eIndexType.table || type == Tools5eIndexType.tableGroup || type == Tools5eIndexType.citation) {
+        } else if (type == Tools5eIndexType.table || type == Tools5eIndexType.tableGroup) {
             SourceAndPage sp = new SourceAndPage(node);
             tableIndex.computeIfAbsent(sp, k -> new ArrayList<>()).add(node);
-        }
-        if (type == Tools5eIndexType.language && HomebrewFields.fonts.existsIn(node)) {
+        } else if (type == Tools5eIndexType.language && HomebrewFields.fonts.existsIn(node)) {
             Tools5eSources.addFonts(node, HomebrewFields.fonts);
         }
+
         if (node.has("srd")) {
             srdKeys.add(key);
         }
@@ -493,10 +494,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     List<Tuple> findVariants(String key, JsonNode jsonSource) {
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-        if (type == Tools5eIndexType.race) {
-            return Json2QuteRace.findRaceVariants(this, type, key, jsonSource, copier);
+        if (type == Tools5eIndexType.itemGroup) {
+            return Json2QuteItem.findGroupVariant(instance, type, key, jsonSource, copier);
+        } else if (type == Tools5eIndexType.magicvariant) {
+            return MagicVariant.INSTANCE.findSpecificVariants(this, type, key, jsonSource, copier);
         } else if (type == Tools5eIndexType.monster && jsonSource.has("summonedBySpellLevel")) {
             return Json2QuteMonster.findConjuredMonsterVariants(this, type, key, jsonSource);
+        } else if (type == Tools5eIndexType.race) {
+            return Json2QuteRace.findRaceVariants(this, type, key, jsonSource, copier);
         } else if (key.contains("splugoth the returned") || key.contains("prophetess dran")) {
             // Fix.
             ObjectNode copy = (ObjectNode) copier.copyNode(jsonSource);
@@ -764,6 +769,13 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return Optional.of(table);
         }
         return Optional.empty();
+    }
+
+    public List<JsonNode> originNodesMatching(Function<JsonNode, Boolean> filter) {
+        return nodeIndex.entrySet().stream()
+                .filter(e -> filter.apply(e.getValue()))
+                .map(Entry::getValue)
+                .collect(Collectors.toList());
     }
 
     public JsonNode getOrigin(String finalKey) {
@@ -1083,8 +1095,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         public String getFilename() {
-            return "list-" + Tui.slugify(title)
-                    + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.optionalFeatureTypes);
+            return "list-" + Tools5eQuteBase.fixFileName(title, source, Tools5eIndexType.optionalFeatureTypes);
         }
 
         private String getSource(HomebrewMetaTypes homebrewMeta) {

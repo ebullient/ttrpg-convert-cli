@@ -30,7 +30,7 @@ public class Json2QuteNote extends Json2QuteCommon {
     protected Tools5eQuteNote buildQuteNote() {
         Tags tags = new Tags(getSources());
         String targetFile = useSuffix
-                ? slugify(getName()) + Tools5eQuteBase.sourceIfNotDefault(getSources())
+                ? Tools5eQuteBase.fixFileName(getName(), getSources())
                 : null;
 
         return new Tools5eQuteNote(title,

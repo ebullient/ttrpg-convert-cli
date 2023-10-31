@@ -30,11 +30,16 @@ public class Tools5eQuteBase extends QuteBase {
         super(sources, name, source, text, tags);
     }
 
-    public static String sourceIfNotDefault(Tools5eSources sources) {
-        return sourceIfNotDefault(sources.primarySource(), sources.getType());
+    public static String fixFileName(String name, Tools5eSources sources) {
+        return fixFileName(name, sources.primarySource(), sources.getType());
     }
 
-    public static String sourceIfNotDefault(String source, Tools5eIndexType type) {
+    public static String fixFileName(String name, String source, Tools5eIndexType type) {
+        name = Tui.slugify(name.replaceAll(" \\(\\*\\)", "-gv"));
+        return name + sourceIfNotDefault(source, type);
+    }
+
+    private static String sourceIfNotDefault(String source, Tools5eIndexType type) {
         switch (source.toLowerCase()) {
             case "phb":
             case "mm":
@@ -53,12 +58,14 @@ public class Tools5eQuteBase extends QuteBase {
     }
 
     public static String getClassResource(String className, String classSource) {
-        return Tui.slugify(className) + Tools5eQuteBase.sourceIfNotDefault(classSource, Tools5eIndexType.classtype);
+        return fixFileName(className, classSource, Tools5eIndexType.classtype);
     }
 
     public static String getSubclassResource(String subclass, String parentClass, String subclassSource) {
-        return Tui.slugify(parentClass) + "-" + Tui.slugify(subclass) +
-                Tools5eQuteBase.sourceIfNotDefault(subclassSource, Tools5eIndexType.subclass);
+        return fixFileName(
+                Tui.slugify(parentClass) + "-" + Tui.slugify(subclass),
+                subclassSource,
+                Tools5eIndexType.subclass);
     }
 
     public static String getDeityResourceName(String name, String source, String pantheon) {
@@ -83,10 +90,7 @@ public class Tools5eQuteBase extends QuteBase {
             return filename;
         }
         Tools5eSources sources = (Tools5eSources) sources();
-        if (sources != null) {
-            return getName() + sourceIfNotDefault(sources);
-        }
-        return getName();
+        return fixFileName(getName(), sources);
     }
 
     public Tools5eQuteBase withTargetPath(String path) {

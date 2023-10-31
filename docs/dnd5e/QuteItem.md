@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[armorClass](#armorclass), [cost](#cost), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [source](#source), [sourceAndPage](#sourceandpage), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [tags](#tags), [text](#text), [vaultPath](#vaultpath), [weight](#weight)
+[armorClass](#armorclass), [cost](#cost), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [source](#source), [sourceAndPage](#sourceandpage), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [tags](#tags), [text](#text), [variantAliases](#variantaliases), [variantSectionLinks](#variantsectionlinks), [variants](#variants), [vaultPath](#vaultpath), [weight](#weight)
 
 
 ### armorClass
@@ -80,6 +80,16 @@ Collected tags for inclusion in frontmatter
 ### text
 
 Formatted text. For most templates, this is the bulk of the content.
+
+### variantAliases
+
+
+### variantSectionLinks
+
+
+### variants
+
+List of magic item variants (as [Variant](QuteItem/Variant.md), optional)
 
 ### vaultPath
 
