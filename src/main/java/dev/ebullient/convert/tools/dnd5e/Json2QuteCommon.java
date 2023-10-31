@@ -151,10 +151,10 @@ public class Json2QuteCommon implements JsonSource {
         }
     }
 
-    String listPrerequisites() {
+    String listPrerequisites(JsonNode variantNode) {
         List<String> prereqs = new ArrayList<>();
         Tools5eIndex index = index();
-        for (JsonNode entry : iterableElements(PrereqFields.prerequisite.getFrom(rootNode))) {
+        for (JsonNode entry : iterableElements(PrereqFields.prerequisite.getFrom(variantNode))) {
             if (PrereqFields.level.existsIn(entry)) {
                 prereqs.add(levelToText(entry.get("level")));
             }

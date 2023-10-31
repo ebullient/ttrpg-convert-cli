@@ -34,7 +34,7 @@ public class QuteDeck extends Tools5eQuteBase {
     @TemplateData
     @RegisterForReflection
     public static class Card {
-        /** Image from the front of the card as {@link ImageRef} (optional) */
+        /** Image from the front of the card as {@link dev.ebullient.convert.qute.ImageRef} (optional) */
         public final ImageRef face;
 
         /** Name of the card */

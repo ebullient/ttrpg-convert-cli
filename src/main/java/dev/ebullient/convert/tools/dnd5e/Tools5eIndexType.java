@@ -409,7 +409,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     hazard,
                     item,
                     legendaryGroup,
-                    // magicvariant,
+                    magicvariant,
                     monster,
                     object,
                     optionalfeature,
@@ -470,7 +470,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case card, deck -> "decks";
             case deity -> "deities";
             case legendaryGroup -> "bestiary/legendary-group";
-            // case magicvariant -> "items";
+            case magicvariant -> "items";
             case monster -> "bestiary";
             case optionalfeature, optionalFeatureTypes -> "optional-features";
             case race, subrace -> "races";

@@ -1047,17 +1047,19 @@ public class JsonSourceCopier implements JsonSource {
                 }
             }
         } else if (items != null) {
-            for (JsonNode itemToRemove : iterableElements(items)) {
-                int index = findIndex(tgtArray, itemToRemove);
-                if (index >= 0) {
-                    tgtArray.remove(index);
-                } else {
-                    tui().errorf("Error (%s / %s): Unable to remove %s; %s", originKey, prop, itemToRemove, modInfo);
-                }
-            }
+            removeFromArr(tgtArray, items);
         } else {
             tui().errorf("Error (%s / %s): One of names or items must be provided to remove elements from array; %s", originKey,
                     prop, modInfo);
+        }
+    }
+
+    void removeFromArr(ArrayNode tgtArray, JsonNode items) {
+        for (JsonNode itemToRemove : iterableElements(items)) {
+            int index = findIndex(tgtArray, itemToRemove);
+            if (index >= 0) {
+                tgtArray.remove(index);
+            }
         }
     }
 
@@ -1205,34 +1207,35 @@ public class JsonSourceCopier implements JsonSource {
         _preserve,
         _root,
         _trait,
+        alias,
         apply,
         data,
         dex,
         dex_mod,
         flags,
+        floor,
         force,
         index,
         items,
         joiner,
+        max,
         mode,
         names,
+        overwrite,
         prof_bonus,
+        prop,
         props,
+        range,
         regex,
         replace,
         root,
-        str,
-        with,
-        prop,
         scalar,
-        floor,
-        max,
-        value,
-        type,
-        range,
         skills,
-        alias,
-        overwrite;
+        str,
+        type,
+        value,
+        with,
+        ;
     }
 
     enum TemplateVariable implements JsonNodeReader.FieldValue {

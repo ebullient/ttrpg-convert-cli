@@ -22,25 +22,22 @@ import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType> {
-    Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
-
-    Pattern linkifyPattern = Pattern.compile(
+    static final Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
+    static final Pattern linkifyPattern = Pattern.compile(
             "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|legroup|object|race|reward|sense|skill|spell|status|table|variantrule|vehicle|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
-
-    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
-
-    Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
-    Pattern fontPattern = Pattern.compile("\\{@font ([^}]+)}");
-    Pattern homebrewPattern = Pattern.compile("\\{@homebrew ([^}]+)}");
-    Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
-    Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
-    Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
-    Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str 20}
-    Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+)}"); // {@skillCheck animal_handling 5}
-    Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]+)*}");
-    Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
-    Pattern featureSourcePattern = Pattern.compile("source=([^|}]+)");
-    Pattern superscriptCitationPattern = Pattern.compile("\\{@(sup|cite) ([^}]+)}");
+    static final Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
+    static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
+    static final Pattern fontPattern = Pattern.compile("\\{@font ([^}]+)}");
+    static final Pattern homebrewPattern = Pattern.compile("\\{@homebrew ([^}]+)}");
+    static final Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
+    static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
+    static final Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
+    static final Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str 20}
+    static final Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+)}"); // {@skillCheck animal_handling 5}
+    static final Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]+)*}");
+    static final Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
+    static final Pattern featureSourcePattern = Pattern.compile("source=([^|}]+)");
+    static final Pattern superscriptCitationPattern = Pattern.compile("\\{@(sup|cite) ([^}]+)}");
 
     Tools5eIndex index();
 
@@ -485,13 +482,17 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
     default String linkifyType(Tools5eIndexType type, String key, String linkText) {
         String dirName = type.getRelativePath();
-        JsonNode jsonSource = index().getNode(key);
+        JsonNode jsonSource = index().getNode(index().getAliasOrDefault(key));
         if (index().isExcluded(key) || jsonSource == null) {
+            if (type != Tools5eIndexType.table && index().getOrigin(index().getAliasOrDefault(key)) == null) {
+                // sources can be excluded, that's fine.. but if this is something that doesn't exist at all..
+                tui().debugf("🫣 Unable to create link, source for %s not found", key);
+            }
             return linkText;
         }
         Tools5eSources linkSource = Tools5eSources.findSources(jsonSource);
         return linkOrText(linkText, key, dirName,
-                type.decoratedName(jsonSource) + Tools5eQuteBase.sourceIfNotDefault(linkSource));
+                Tools5eQuteBase.fixFileName(type.decoratedName(jsonSource), linkSource));
     }
 
     default String linkifyCardType(String match) {
@@ -507,7 +508,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         if (index().isExcluded(key)) {
             return cardName;
         }
-        String resource = slugify(deckName + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.card));
+        String resource = Tools5eQuteBase.fixFileName(deckName, source, Tools5eIndexType.card);
         return String.format("[%s](%s%s/%s.md#%s)", cardName,
                 index().compendiumVaultRoot(), dirName,
                 resource, cardName.replace(" ", "%20"));
@@ -702,7 +703,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
         boolean isNpc = Json2QuteMonster.isNpc(jsonSource);
         return linkOrText(linkText, key, Tools5eQuteBase.monsterPath(isNpc, creatureType),
-                resourceName + Tools5eQuteBase.sourceIfNotDefault(sources));
+                Tools5eQuteBase.fixFileName(resourceName, sources));
     }
 
     default String linkifyVariant(String variant) {
@@ -715,7 +716,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         } else {
             return String.format("[%s](%svariant-rules/%s.md)",
                     parts[0], index().rulesVaultRoot(),
-                    slugify(parts[0]) + Tools5eQuteBase.sourceIfNotDefault(source, Tools5eIndexType.variantrule));
+                    Tools5eQuteBase.fixFileName(parts[0], source, Tools5eIndexType.variantrule));
         }
     }
 

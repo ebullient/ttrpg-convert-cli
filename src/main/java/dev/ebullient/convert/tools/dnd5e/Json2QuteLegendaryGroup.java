@@ -53,7 +53,7 @@ public class Json2QuteLegendaryGroup extends Json2QuteCommon {
                 null,
                 String.join("\n", text),
                 tags)
-                .withTargetFile(getName() + Tools5eQuteBase.sourceIfNotDefault(sources))
+                .withTargetFile(Tools5eQuteBase.fixFileName(getName(), sources))
                 .withTargetPath(type.getRelativePath());
     }
 }

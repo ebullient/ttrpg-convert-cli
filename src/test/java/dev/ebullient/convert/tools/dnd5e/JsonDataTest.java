@@ -1,10 +1,14 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
@@ -60,6 +64,139 @@ public class JsonDataTest {
     @Test
     public void testItemList() {
         commonTests.testItemList(outputPath);
+    }
+
+    @Test
+    public void testMagicVariants() {
+        if (!TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+            return;
+        }
+
+        // "requires":[{"type":"HA"},{"type":"MA"}], "excludes": {"name": "Hide Armor" }
+        JsonNode adamantineArmor = commonTests.index.getOrigin("magicvariant|adamantine armor|dmg");
+
+        // "requires":[{"type":"M"}],"excludes":{"property":"2H"}
+        JsonNode armBlade = commonTests.index.getOrigin("magicvariant|armblade|erlw");
+
+        // "requires":[{"type":"R"},{"type":"T"}],
+        JsonNode arrowSlaying = commonTests.index.getOrigin("magicvariant|arrow of slaying (*)|dmg");
+
+        // "requires":[{"sword":true}]
+        JsonNode luckBlade = commonTests.index.getOrigin("magicvariant|luck blade|dmg");
+
+        // "requires":[{"type":"SCF","scfType":"arcane"}],
+        // "excludes":{"name":["Staff","Rod","Wand"]}
+        JsonNode orbOfShielding = commonTests.index.getOrigin("magicvariant|orb of shielding (irian quartz)|erlw");
+
+        // "requires":[{"type":"R"},{"property":"T"}],
+        // "excludes":{"net":true}
+        JsonNode oceanicWeapon = commonTests.index.getOrigin("magicvariant|oceanic weapon|tdcsr");
+
+        JsonNode x;
+
+        x = commonTests.index.getOrigin("item|arrow|phb");
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(arrowSlaying, x))
+                .describedAs("arrowSlaying: Arrow has one required property")
+                .isTrue();
+
+        x = commonTests.index.getOrigin("item|crystal|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(armBlade, x))
+                .describedAs("armBlade: Crystal is not a two-handed weapon (2H)")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(orbOfShielding, x))
+                .describedAs("orbOfShielding: Crystal does not have excluded name")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(oceanicWeapon, x))
+                .describedAs("oceanicWeapon: Crystal does not have excluded property (net)")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(armBlade, x))
+                .describedAs("armBlade: Crystal is not a melee type (M)")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(arrowSlaying, x))
+                .describedAs("arrowSlaying: Crystal does not have either required property")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(luckBlade, x))
+                .describedAs("luckBlade: Crystal is not a sword")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(orbOfShielding, x))
+                .describedAs("orbOfShielding: Crystal has required property (SCF)")
+                .isTrue();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(oceanicWeapon, x))
+                .describedAs("oceanicWeapon: Crystal is not the right type (R) and does not have the right property (T)")
+                .isFalse();
+
+        x = commonTests.index.getOrigin("item|dagger|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(armBlade, x))
+                .describedAs("armBlade: Dagger is not a two-handed weapon (2H)")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(armBlade, x))
+                .describedAs("armBlade: Dagger is a melee type (M)")
+                .isTrue();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(luckBlade, x))
+                .describedAs("luckBlade: Dagger is not a sword")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(orbOfShielding, x))
+                .describedAs("orbOfShielding: Dagger does not have the required property (SCF / arcane)")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(oceanicWeapon, x))
+                .describedAs("oceanicWeapon: Dagger has one of two required properties")
+                .isTrue();
+
+        x = commonTests.index.getOrigin("item|greatsword|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(armBlade, x))
+                .describedAs("armBlade: Greatsword is a two-handed weapon (2H)")
+                .isTrue();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(luckBlade, x))
+                .describedAs("luckBlade: Greatsword is a sword")
+                .isTrue();
+
+        x = commonTests.index.getOrigin("item|net|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(oceanicWeapon, x))
+                .describedAs("oceanicWeapon: Net property is excluded")
+                .isTrue();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(oceanicWeapon, x))
+                .describedAs("oceanicWeapon: Net has the right type (R) and the right property (T)")
+                .isTrue();
+
+        x = commonTests.index.getOrigin("item|scimitar|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(armBlade, x))
+                .describedAs("armBlade: Scimitar is not a two-handed weapon (2H)")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(armBlade, x))
+                .describedAs("armBlade: Scimitar is a melee type (M)")
+                .isTrue();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(luckBlade, x))
+                .describedAs("luckBlade: Scimitar is a sword")
+                .isTrue();
+
+        x = commonTests.index.getOrigin("item|wand|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(orbOfShielding, x))
+                .describedAs("orbOfShielding: Wand is an excluded name")
+                .isTrue();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(orbOfShielding, x))
+                .describedAs("orbOfShielding: Wand has the required property (SCF / arcane)")
+                .isTrue();
+
+        x = commonTests.index.getOrigin("item|wooden staff|phb");
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(orbOfShielding, x))
+                .describedAs("orbOfShielding: Wooden staff (SCF / druid) does not have all required properties (SCF / arcane)")
+                .isFalse();
+
+        x = commonTests.index.getOrigin("item|chain mail|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(adamantineArmor, x))
+                .describedAs("adamantineArmor: Chain Mail is not excluded")
+                .isFalse();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(adamantineArmor, x))
+                .describedAs("adamantineArmor: Chain Mail is HA")
+                .isTrue();
+
+        x = commonTests.index.getOrigin("item|hide armor|phb");
+        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(adamantineArmor, x))
+                .describedAs("adamantineArmor: Hide Armor is excluded")
+                .isTrue();
+        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(adamantineArmor, x))
+                .describedAs("adamantineArmor: Hide Armor is MA")
+                .isTrue();
     }
 
     @Test

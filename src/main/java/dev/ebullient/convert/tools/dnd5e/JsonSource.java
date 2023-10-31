@@ -1077,6 +1077,25 @@ public interface JsonSource extends JsonTextReplacement {
                 strValue);
     }
 
+    default String damageTypeToFull(String dmgType) {
+        return switch (dmgType) {
+            case "A" -> "acid";
+            case "B" -> "bludgeoning";
+            case "C" -> "cold";
+            case "F" -> "fire";
+            case "O" -> "force";
+            case "L" -> "lightning";
+            case "N" -> "necrotic";
+            case "P" -> "piercing";
+            case "I" -> "poison";
+            case "Y" -> "psychic";
+            case "R" -> "radiant";
+            case "S" -> "slashing";
+            case "T" -> "thunder";
+            default -> dmgType;
+        };
+    };
+
     default String convertCurrency(int cp) {
         List<String> result = new ArrayList<>();
         int gp = cp / 100;
@@ -1160,6 +1179,7 @@ public interface JsonSource extends JsonTextReplacement {
         amount,
         appliesTo,
         attributes,
+        basicRules,
         by,
         className,
         classSource,
@@ -1184,6 +1204,7 @@ public interface JsonSource extends JsonTextReplacement {
         size,
         sort, // monsters, vehicles (sorted traits)
         speed,
+        srd,
         style,
         subclass,
         subrace,

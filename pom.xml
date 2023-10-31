@@ -51,6 +51,7 @@
         <quarkus.platform.version>3.5.0</quarkus.platform.version>
         <!-- Libraries -->
         <assertj.version>3.24.2</assertj.version>
+        <evalex.version>3.0.5</evalex.version>
         <github-slugify.version>3.0.6</github-slugify.version>
         <icu4j.version>73.2</icu4j.version><!-- Optional dependency of Slugify -->
         <!-- Packaging -->
@@ -82,6 +83,11 @@
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
             <version>${icu4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ezylang</groupId>
+            <artifactId>EvalEx</artifactId>
+            <version>${evalex.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

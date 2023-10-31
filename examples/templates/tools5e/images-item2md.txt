@@ -7,7 +7,11 @@ tags:
 - {tag}
 {/for}
 {/if}
-aliases: ["{resource.name}"]
+aliases: 
+- "{resource.name}"
+{#if resource.variantAliases }
+{resource.variantAliases}
+{/if}
 ---
 # {resource.name}
 {#if resource.detail }*{resource.detail}*  
@@ -33,10 +37,11 @@ aliases: ["{resource.name}"]
 - **Strength**: Requires {resource.strengthRequirement} STR.
 {/if}{#if resource.stealthPenalty }
 - **Stealth**: The wearer has disadvantage on Stealth (DEX) checks.
-{/if}
-- **Cost**: {#if resource.cost }{resource.cost}{#else}⏤{/if}
-- **Weight**: {#if resource.weight }{resource.weight} lbs.{#else}⏤{/if}
-{#if resource.text }
+{/if}{#if resource.cost }
+- **Cost**: {resource.cost}
+{/if}{#if resource.weight }
+- **Weight**: {resource.weight} lbs.
+{/if}{#if resource.text }
 
 {resource.text}
 {/if}
@@ -45,6 +50,39 @@ aliases: ["{resource.name}"]
 {#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
  
 {/if}{/each}
+{/if}{#if resource.variants }
+
+**Variants**:
+{resource.variantSectionLinks}
+
+{#for variant in resource.variants}
+### {variant.name}
+
+{#if variant.prerequisite}
+- **Prerequisites**: {variant.prerequisite}
+{/if}{#if variant.armorClass }
+- **Armor Class**: {variant.armorClass}
+{#else if variant.damage }{#if variant.damage2h }
+- **Damage**:
+  - One-handed: {variant.damage}
+  - Two-handed: {variant.damage2h}
+{#else}
+- **Damage**: {variant.damage}
+{/if}{#if variant.range }
+- **Range**: {variant.range}
+{/if}{/if}{#if variant.properties }
+- **Properties**: {variant.properties}
+{/if}{#if variant.strengthRequirement }
+- **Strength**: Requires {variant.strengthRequirement} STR.
+{/if}{#if variant.stealthPenalty }
+- **Stealth**: The wearer has disadvantage on Stealth (DEX) checks.
+{/if}{#if variant.cost }
+- **Cost**: {variant.cost}
+{/if}{#if variant.weight }
+- **Weight**: {variant.weight} lbs.
+{/if}
+
+{/for}
 {/if}
 
 *Source: {resource.source}*

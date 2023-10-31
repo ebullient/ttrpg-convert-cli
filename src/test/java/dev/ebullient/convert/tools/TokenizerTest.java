@@ -28,31 +28,26 @@ public class TokenizerTest {
 
             @Override
             public void appendToText(List<String> inner, JsonNode target, String heading) {
-                // TODO Auto-generated method stub
                 throw new UnsupportedOperationException("Unimplemented method 'appendToText'");
             }
 
             @Override
             public CompendiumConfig cfg() {
-                // TODO Auto-generated method stub
                 throw new UnsupportedOperationException("Unimplemented method 'cfg'");
             }
 
             @Override
             public String linkify(IndexType type, String s) {
-                // TODO Auto-generated method stub
                 throw new UnsupportedOperationException("Unimplemented method 'linkify'");
             }
 
             @Override
             public String replaceText(String s) {
-                // TODO Auto-generated method stub
                 throw new UnsupportedOperationException("Unimplemented method 'replaceText'");
             }
 
             @Override
             public Tui tui() {
-                // TODO Auto-generated method stub
                 throw new UnsupportedOperationException("Unimplemented method 'tui'");
             }
 

@@ -48,9 +48,9 @@ public class CommonDataTests {
 
         TtrpgConfig.init(tui, Datasource.tools5e);
         configurator = new Configurator(tui);
+        index = new Tools5eIndex(TtrpgConfig.getConfig());
 
         if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
-            index = new Tools5eIndex(TtrpgConfig.getConfig());
             templates.setCustomTemplates(TtrpgConfig.getConfig());
 
             switch (variant) {
@@ -217,7 +217,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
-                    .writeFiles(Tools5eIndexType.item)
+                    .writeFiles(List.of(Tools5eIndexType.item, Tools5eIndexType.itemGroup))
                     .writeImages();
 
             TestUtils.assertDirectoryContents(itemDir, tui);

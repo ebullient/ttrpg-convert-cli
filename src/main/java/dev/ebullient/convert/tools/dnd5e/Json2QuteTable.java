@@ -51,7 +51,7 @@ public class Json2QuteTable extends Json2QuteCommon {
             }
 
             // prepend a dice roller
-            targetFile = slugify(getName()) + Tools5eQuteBase.sourceIfNotDefault(getSources());
+            targetFile = Tools5eQuteBase.fixFileName(getName(), getSources());
             text.add(0, String.format("`dice: [](%s.md#%s)`", targetFile, blockid));
             text.add(1, "");
         }

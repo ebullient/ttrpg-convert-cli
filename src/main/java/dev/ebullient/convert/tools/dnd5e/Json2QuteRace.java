@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
 
@@ -167,6 +168,8 @@ public class Json2QuteRace extends Json2QuteCommon {
         index.originSubraces(sources).forEach(sr -> {
             JsonNode newNode = copier.mergeSubrace(type, sr, jsonSource);
             String srKey = Tools5eIndexType.subrace.createKey(newNode);
+            TtrpgValue.indexInputType.setIn(newNode, Tools5eIndexType.subrace.name());
+            TtrpgValue.indexKey.setIn(newNode, srKey);
             variants.add(new Tuple(srKey, newNode));
 
             // {@race Aasimar (Fallen)|VGM}
