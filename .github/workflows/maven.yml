@@ -22,7 +22,7 @@ env:
 jobs:
   main-root:
     runs-on: ubuntu-latest
-    if: "github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'"
+    if: github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'
     steps:
       - name: Echo a message
         id: is-main-root

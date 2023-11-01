@@ -351,7 +351,7 @@ Of particular note are the varied monster templates:
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
-### 🔖 ✨ 2.2.6: 5e support for generic and magic item variants
+### 🔖 ✨ 2.2.12: 5e support for generic and magic item variants
 
 Items may have variants, which are defined as a list in the `variants` attribute.
 
