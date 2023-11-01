@@ -227,7 +227,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     tui().errorf("Shared homebrew id: %s and %s", old.filename, metaTypes.filename);
                 }
             } else {
-                tui().errorf("Skipping homebrew id %s from %s; duplicate source id", json, metaTypes.filename);
+                tui().errorf("🍺 Skipping homebrew id %s from %s; duplicate source id", json, metaTypes.filename);
             }
         }
 
@@ -594,7 +594,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                             return false;
                         }
                     }
-                    tui().debugf("Skipping %s; Reprinted as %s", finalKey, reprintKey);
+                    tui().debugf("📰 Skipping %s; Reprinted as %s", finalKey, reprintKey);
                     // the reprint will be used instead (exclude this one)
                     // include an alias mapping the old key to the reprinted key
                     addAlias(finalKey, reprintKey);
@@ -604,7 +604,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
         // This true/false flag tends to comes from UA resources (when printed in official source)
         if (booleanOrDefault(jsonSource, "isReprinted", false)) {
-            tui().debugf("Skipping %s (has been reprinted)", finalKey);
+            tui().debugf("🗞️ Skipping %s (has been reprinted)", finalKey);
             if (finalKey.startsWith("classtype")) {
                 String[] parts = finalKey.split("\\|");
                 String lookupKey = String.format("%s|%s|", parts[0], parts[1]);
@@ -820,7 +820,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
 
             if (target.isEmpty()) {
-                tui().debugf("Did not find element for %s using [%s]", name, prefix);
+                tui().debugf("🫥 Did not find element for \"%s\" using [%s]", name, prefix);
                 return name;
             } else if (target.size() > 1) {
                 List<String> reduce = target.stream().filter(x -> !x.matches(".*\\|ua[^|]*$")).collect(Collectors.toList());

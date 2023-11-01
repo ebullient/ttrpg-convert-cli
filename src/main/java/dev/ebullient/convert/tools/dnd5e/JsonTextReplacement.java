@@ -484,7 +484,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String dirName = type.getRelativePath();
         JsonNode jsonSource = index().getNode(index().getAliasOrDefault(key));
         if (index().isExcluded(key) || jsonSource == null) {
-            if (type != Tools5eIndexType.table && index().getOrigin(index().getAliasOrDefault(key)) == null) {
+            if (index().getOrigin(index().getAliasOrDefault(key)) == null) {
                 // sources can be excluded, that's fine.. but if this is something that doesn't exist at all..
                 tui().debugf("🫣 Unable to create link, source for %s not found", key);
             }
