@@ -25,13 +25,14 @@ project:
   stereotype: CLI
   java:
     groupId: dev.ebullient
-    version: 11
+    version: 17
     multiProject: false
   tags:
     - "quarkus"
     - "cli"
     - "5e-tools"
     - "pf2e-tools"
+    - "ttrpg"
     - "java"
     - "obsidian-md"
 
@@ -60,10 +61,19 @@ checksum:
   individual: true
 
 distributions:
-  uber-jar:
+  ttrpg-convert:
     type: SINGLE_JAR
     artifacts:
       - path: '{{uberJarDir}}/{{projectName}}-{{projectVersion}}-runner.jar'
+    brew:
+      active: RELEASE
+      continueOnError: true
+      formulaName: 'ttrpg-convert-cli'
+      templateDirectory: .github/jreleaser/brew
+      skipTemplates:
+        - README.md.tpl
+      repository:
+        commitMessage: '{{projectName}} {{tagName}}'
 
   native-archive:
     type: NATIVE_IMAGE

@@ -16,5 +16,5 @@ git checkout ${JRELEASER_PROJECT_VERSION}
 
 ./mvnw clean package -Dnative -DskipTests -DskipITs 
 jreleaser assemble -s archive --select-current-platform --output-directory target
-jreleaser release --output-directory target --select-current-platform --exclude-distribution uber-jar
+jreleaser release --output-directory target --select-current-platform --exclude-distribution ttrpg-convert
 
