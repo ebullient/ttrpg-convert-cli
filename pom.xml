@@ -53,7 +53,7 @@
         <assertj.version>3.24.2</assertj.version>
         <evalex.version>3.0.5</evalex.version>
         <github-slugify.version>3.0.6</github-slugify.version>
-        <icu4j.version>73.2</icu4j.version><!-- Optional dependency of Slugify -->
+        <icu4j.version>74.1</icu4j.version><!-- Optional dependency of Slugify -->
         <!-- Packaging -->
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <native.executable.name>ttrpg-convert</native.executable.name>
