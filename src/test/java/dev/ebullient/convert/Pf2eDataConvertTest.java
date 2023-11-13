@@ -16,7 +16,7 @@ import io.quarkus.test.junit.main.QuarkusMainTest;
 
 @QuarkusMainTest
 public class Pf2eDataConvertTest {
-    static Path outputPath_pf2;
+    static Path testOutput;
     static Tui tui;
 
     @BeforeAll
@@ -27,15 +27,15 @@ public class Pf2eDataConvertTest {
     public static void setupDir(String root) {
         tui = new Tui();
         tui.init(null, false, false);
-        outputPath_pf2 = TestUtils.OUTPUT_ROOT_PF2.resolve(root).resolve("test-cli");
-        outputPath_pf2.toFile().mkdirs();
+        testOutput = TestUtils.OUTPUT_ROOT_PF2.resolve(root).resolve("test-cli");
+        testOutput.toFile().mkdirs();
     }
 
     @Test
     void testLiveData_Pf2eAllSources(QuarkusMainLauncher launcher) {
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             // All, I mean it. Really for real.. ALL.
-            final Path allIndex = outputPath_pf2.resolve("all-index");
+            final Path allIndex = testOutput.resolve("all-index");
             TestUtils.deleteDir(allIndex);
 
             List<String> args = new ArrayList<>(List.of("--index", "--debug",

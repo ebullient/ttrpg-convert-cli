@@ -70,7 +70,7 @@ public class JsonDataSubsetTest {
     public void testMonsterList() {
         commonTests.testMonsterList(outputPath);
 
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             // Tree blight is from Curse of Strahd, but is also present in
             // The Wild Beyond the Witchlight --> an "otherSource".
             // The tree blight should be included when WBtW is included
@@ -97,7 +97,7 @@ public class JsonDataSubsetTest {
         commonTests.testRaceList(outputPath);
 
         // Changeling from mpmm is a reprint..
-        if (TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             final String raceRelative = Tools5eIndexType.race.getRelativePath();
 
             // Single included race: changeling from mpmm

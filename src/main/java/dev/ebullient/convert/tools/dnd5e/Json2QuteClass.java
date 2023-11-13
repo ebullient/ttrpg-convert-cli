@@ -421,7 +421,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         String source = entry.get("source").asText();
         for (JsonNode ofp : iterableElements(optionalFeatureProgession)) {
             for (String featureType : Tools5eFields.featureType.getListOfStrings(ofp, tui())) {
-                OptionalFeatureType oft = index.getOptionalFeatureTypes(featureType, source);
+                OptionalFeatureType oft = index.getOptionalFeatureType(featureType, source);
 
                 if (oft != null) {
                     maybeAddBlankLine(text);

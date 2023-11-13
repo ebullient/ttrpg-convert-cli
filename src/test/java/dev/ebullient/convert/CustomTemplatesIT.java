@@ -5,9 +5,9 @@ import org.junit.jupiter.api.BeforeAll;
 import io.quarkus.test.junit.main.QuarkusMainIntegrationTest;
 
 @QuarkusMainIntegrationTest
-public class Pf2eDataConvertIT extends Pf2eDataConvertTest {
+public class CustomTemplatesIT extends CustomTemplatesTest {
     @BeforeAll
     public static void setupDir() {
-        setupDir("Pf2eDataConvertIT");
+        setupDir("Tools5eDataConvertIT");
     }
 }

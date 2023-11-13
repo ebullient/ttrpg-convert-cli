@@ -92,9 +92,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 case "s" -> list.add("S");
                 case "m" -> {
                     if (f.getValue().isObject()) {
-                        list.add(f.getValue().get("text").asText());
+                        list.add(replaceText(f.getValue().get("text").asText()));
                     } else {
-                        list.add(f.getValue().asText());
+                        list.add(replaceText(f.getValue().asText()));
                     }
                 }
             }

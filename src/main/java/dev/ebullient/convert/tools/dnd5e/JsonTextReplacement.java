@@ -23,8 +23,11 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType> {
     static final Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
-    static final Pattern linkifyPattern = Pattern.compile(
-            "\\{@(action|background|class|condition|creature|deity|disease|feat|card|deck|hazard|item|legroup|object|race|reward|sense|skill|spell|status|table|variantrule|vehicle|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
+    static final Pattern linkifyPattern = Pattern.compile("\\{@("
+            + "|action|background|card|class|condition|creature|deck|deity|disease"
+            + "|feat|hazard|item|itemMastery|legroup|object|race|reward"
+            + "|sense|skill|spell|status|table|variantrule|vehicle"
+            + "|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
     static final Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     static final Pattern fontPattern = Pattern.compile("\\{@font ([^}]+)}");
@@ -455,6 +458,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             case disease -> linkifyRules(type, s, "diseases");
             case sense -> linkifyRules(type, s, "senses");
             case skill -> linkifyRules(type, s, "skills");
+            case itemMastery -> linkifyRules(type, s, "item-mastery");
             case monster -> linkifyCreature(s);
             case subclass, classtype -> linkifyClass(s);
             case deity -> linkifyDeity(s);
@@ -621,7 +625,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             featureSource = parseState().getSource();
         }
 
-        OptionalFeatureType oft = index().getOptionalFeatureTypes(featureType, featureSource);
+        OptionalFeatureType oft = index().getOptionalFeatureType(featureType, featureSource);
         if (oft == null) {
             return linkText;
         }

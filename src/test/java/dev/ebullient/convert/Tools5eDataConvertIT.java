@@ -8,6 +8,6 @@ import io.quarkus.test.junit.main.QuarkusMainIntegrationTest;
 public class Tools5eDataConvertIT extends Tools5eDataConvertTest {
     @BeforeAll
     public static void setupDir() {
-        setupDir("RpgDataConvertIT");
+        setupDir("Tools5eDataConvertIT");
     }
 }

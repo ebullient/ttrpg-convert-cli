@@ -68,7 +68,7 @@ public class JsonDataTest {
 
     @Test
     public void testMagicVariants() {
-        if (!TestUtils.TOOLS_PATH_5E.toFile().exists()) {
+        if (!TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             return;
         }
 

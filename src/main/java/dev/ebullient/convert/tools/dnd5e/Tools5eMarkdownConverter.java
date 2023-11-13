@@ -172,6 +172,11 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                             t -> new Json2QuteCompose(nodeType, index, "Diseases"));
                     disease.add(node);
                 }
+                case itemMastery -> {
+                    Json2QuteCompose itemMastery = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
+                            t -> new Json2QuteCompose(nodeType, index, "Item Mastery"));
+                    itemMastery.add(node);
+                }
                 case itemProperty -> {
                     Json2QuteCompose itemProperty = (Json2QuteCompose) combinedDocs.computeIfAbsent(nodeType,
                             t -> new Json2QuteCompose(nodeType, index, "Item Properties"));
@@ -189,7 +194,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                     }
                 }
                 case optionalFeatureTypes -> {
-                    OptionalFeatureType oft = index.getOptionalFeatureTypes(node);
+                    OptionalFeatureType oft = index.getOptionalFeatureType(node);
                     QuteNote converted = new Json2QuteOptionalFeatureType(index, node, oft).buildNote();
                     if (converted != null) {
                         compendium.add(converted);

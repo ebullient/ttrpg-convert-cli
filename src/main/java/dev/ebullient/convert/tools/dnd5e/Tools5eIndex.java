@@ -120,6 +120,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.action.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.condition.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.disease.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.itemMastery.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemProperty.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemType.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.sense.withArrayFrom(node, this::addToIndex);
@@ -409,7 +410,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             if (type == Tools5eIndexType.classtype || type == Tools5eIndexType.subclass) {
                 for (JsonNode ofp : iterableElements(ClassFields.optionalfeatureProgression.getFrom(node))) {
                     for (String featureType : Tools5eFields.featureType.getListOfStrings(ofp, tui())) {
-                        OptionalFeatureType oft = getOptionalFeatureTypes(featureType, sources.primarySource());
+                        OptionalFeatureType oft = getOptionalFeatureType(featureType, sources.primarySource());
                         if (oft != null) {
                             oft.appendSources(sources);
                         }
@@ -919,12 +920,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return spellClassIndex.get(spellKey);
     }
 
-    public OptionalFeatureType getOptionalFeatureTypes(JsonNode node) {
+    public OptionalFeatureType getOptionalFeatureType(JsonNode node) {
         String lookup = Tools5eFields.typeLookup.getTextOrDefault(node, SourceField.name.getTextOrEmpty(node));
         return optFeatureIndex.get(lookup);
     }
 
-    public OptionalFeatureType getOptionalFeatureTypes(String ft, String source) {
+    public OptionalFeatureType getOptionalFeatureType(String ft, String source) {
+        if (ft == null) {
+            return null;
+        }
         HomebrewMetaTypes metaTypes = homebrewMetaTypes.get(source);
         boolean homebrewType = metaTypes != null && metaTypes.getOptionalFeatureType(ft) != null;
 

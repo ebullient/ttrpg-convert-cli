@@ -1,0 +1,24 @@
+{
+  "from" : [
+    "PHB",
+    "DMG",
+    "UADowntime",
+    "UAEncounterBuilding",
+    "UAIntoTheWild",
+    "UAQuickCharacters",
+    "UATrapsRevisited",
+    "UAWhenArmiesClash",
+    "XUA2022CharacterOptions",
+    "XUA2022ExpertClasses",
+    "XUA2022ClericAndRevisedSpecies",
+    "XUA2023BastionsAndCantrips",
+    "XUA2023DruidAndPaladin",
+    "XUA2023PlayersHandbookP5",
+    "XUA2023PlayersHandbookP6",
+    "XUA2023PlayersHandbookP7"
+  ],
+  "paths" : {
+    "compendium" : "/",
+    "rules" : "/rules/"
+  }
+}

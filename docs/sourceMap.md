@@ -33,6 +33,7 @@ _Support content creators. Only use or include sources that you own._
 | BGG | Bigby Presents: Glory of the Giants |
 | CM | Candlekeep Mysteries |
 | CRCotN | Critical Role: Call of the Netherdeep |
+| CoA | Chains of Asmodeus |
 | CoS | Curse of Strahd |
 | DC | Divine Contention |
 | DD | Dangerous Designs |
