@@ -59,7 +59,8 @@ _Support content creators. Only use or include sources that you own._
 | GotSF | Giants of the Star Forge |
 | HAT-LMI | Honor Among Thieves: Legendary Magic Items |
 | HAT-TG | Honor Among Thieves: Thieves' Gallery |
-| HEROES_FEAST | Heroes' Feast |
+| HF | Heroes' Feast |
+| HFFotM | Heroes' Feast Flavors of the Multiverse |
 | HftT | Hunt for the Thessalhydra |
 | HoL | The House of Lament |
 | HotDQ | Hoard of the Dragon Queen |
@@ -243,6 +244,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | ALCurseOfStrahd | ALCoS |
 | ALElementalEvil | ALEE |
 | ALRageOfDemons | ALRoD |
+| HEROES_FEAST | HF |
 | Screen | SCREEN |
 | ScreenDungeonKit | SCREEN_DUNGEON_KIT |
 | ScreenSpelljammer | SRC_SCREEN_SPELLJAMMER |
@@ -439,6 +441,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | QFF2 | Quest for the Frozen Flame #2: Lost Mammoth Valley |
 | QFF3 | Quest for the Frozen Flame #3: Burning Tundra |
 | RoE | Rage of Elements |
+| SKT0 | Sky King's Tomb Player's Guide |
 | SaS | Shadows at Sundown |
 | Sli | The Slithering |
 | SoM | Secrets of Magic |
