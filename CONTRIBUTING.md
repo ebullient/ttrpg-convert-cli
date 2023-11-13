@@ -66,13 +66,18 @@ Next navigate to _Java_ -> _Code Style_ -> _Organize Imports_. Click _Import_ an
 - **Use maven:** `./mvnw install`
 - **Use the Quarkus CLI**: `quarkus build`
 
-To test with actual/live data, clone 5eTools and/or PF2eTools into a sources directory: 
+To test with actual/live data, clone 5eTools and/or PF2eTools into a `sources` directory.
+
+Using the GitHub CLI:
 
 ```
-mkdir sources
-cd sources
-git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
-git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
+mkdir -p sources
+# 5eTools
+gh repo clone 5etools-mirror-1/5etools-mirror-1.github.io sources/5etools-mirror-1.github.io -- --depth=1
+gh repo clone TheGiddyLimit/homebrew sources/5e-homebrew -- --depth=1
+gh repo clone TheGiddyLimit/unearthed-arcana sources/5e-unearthed-arcana -- --depth=1
+# PF2eTools
+gh repo clone Pf2eToolsOrg/Pf2eTools sources/Pf2eTools -- --depth=1
 ```
 
 ### Building native images

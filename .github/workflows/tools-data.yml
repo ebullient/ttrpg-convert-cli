@@ -48,7 +48,10 @@ jobs:
         if: steps.test-data-check.outputs.cache-hit != 'true'
         env:
           LATEST_VERSION: ${{ steps.test-data-key.outputs.tools_version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          mkdir -p sources
+
           echo "🔹 Download $LATEST_VERSION"
           ARTIFACT_URL="https://github.com/5etools-mirror-1/5etools-mirror-1.github.io/archive/refs/tags/$LATEST_VERSION.tar.gz"
           VER=$(echo $LATEST_VERSION | cut -c 2-)
@@ -56,12 +59,17 @@ jobs:
 
           curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
           tar xzf 5etools.tar.gz ${ROOT}/data ${ROOT}/img
-          # Remove image contents. We just need the files to exist (linking)
-          find ${ROOT}/img -type f | while read FILE; do echo > "$FILE"; done
-
-          mkdir -p sources
-          rm -rvf sources/5etools-mirror-1.github.io
           mv ${ROOT} sources/5etools-mirror-1.github.io
+
+          gh repo clone TheGiddyLimit/unearthed-arcana sources/5e-unearthed-arcana -- --depth=1
+          gh repo clone TheGiddyLimit/homebrew sources/5e-homebrew -- --depth=1
+
+          # Remove image contents. We just need the files to exist (linking)
+          find sources -type f -type f \
+             \( -iname \*.jpg -o -iname \*.png -o -iname \*.webp \) \
+             | while read FILE; do echo > "$FILE"; done
+
+          ls -al sources
 
   test-with-data:
   
