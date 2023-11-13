@@ -41,7 +41,7 @@
         <javadoc-plugin.version>3.6.2</javadoc-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <surefire-plugin.version>3.2.1</surefire-plugin.version>
+        <surefire-plugin.version>3.2.2</surefire-plugin.version>
         <git-commit-id-plugin.version>7.0.0</git-commit-id-plugin.version>
         <skipTests>false</skipTests>
         <skipITs>true</skipITs>
