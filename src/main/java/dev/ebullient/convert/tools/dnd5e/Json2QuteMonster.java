@@ -143,12 +143,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
             return;
         }
         if (typeNode.isTextual()) {
-            creatureType = typeNode.asText();
+            creatureType = mapType(typeNode.asText());
             return;
         }
 
         // We have an object: type + tags
-        creatureType = SourceField.type.getTextOrEmpty(typeNode);
+        creatureType = mapType(SourceField.type.getTextOrEmpty(typeNode));
         List<String> tags = new ArrayList<>();
         typeNode.withArray("tags").forEach(tag -> {
             if (tag.isTextual()) {
@@ -162,6 +162,53 @@ public class Json2QuteMonster extends Json2QuteCommon {
         if (!tags.isEmpty()) {
             subtype = String.join(", ", tags);
         }
+    }
+
+    // Aliases for consistency. Hard-coded for common types/corrections. Won't be fool-proof
+    String mapType(String type) {
+        for (MonsterTypes t : MonsterTypes.values()) {
+            if (type.toLowerCase().startsWith(t.name())) {
+                return t.name();
+            }
+        }
+        switch (type.toLowerCase()) {
+            case "abberation", "abberations" -> {
+                return MonsterTypes.aberration.name();
+            }
+            case "creature", "creatures" -> {
+                if (getName().toLowerCase().contains("zoblin")) {
+                    return MonsterTypes.undead.name();
+                }
+                if (getName().toLowerCase().contains("fandom")) {
+                    return MonsterTypes.humanoid.name();
+                }
+                return MonsterTypes.beast.name();
+            }
+            case "golem", "golems" -> {
+                subtype = "golem";
+                return MonsterTypes.construct.name();
+            }
+            default -> {
+                return type;
+            }
+        }
+    }
+
+    enum MonsterTypes {
+        aberration,
+        beast,
+        celestial,
+        construct,
+        dragon,
+        elemental,
+        fey,
+        fiend,
+        giant,
+        humanoid,
+        monstrosity,
+        ooze,
+        plant,
+        undead
     }
 
     String monsterPb(String cr) {
