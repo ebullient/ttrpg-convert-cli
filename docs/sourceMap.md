@@ -31,6 +31,7 @@ _Support content creators. Only use or include sources that you own._
 | BAM | Boo's Astral Menagerie |
 | BGDIA | Baldur's Gate: Descent Into Avernus |
 | BGG | Bigby Presents: Glory of the Giants |
+| BMT | The Book of Many Things |
 | CM | Candlekeep Mysteries |
 | CRCotN | Critical Role: Call of the Netherdeep |
 | CoA | Chains of Asmodeus |
@@ -61,6 +62,7 @@ _Support content creators. Only use or include sources that you own._
 | HAT-TG | Honor Among Thieves: Thieves' Gallery |
 | HF | Heroes' Feast |
 | HFFotM | Heroes' Feast Flavors of the Multiverse |
+| HFStCM | Heroes' Feast: Saving the Children's Menu |
 | HftT | Hunt for the Thessalhydra |
 | HoL | The House of Lament |
 | HotDQ | Hoard of the Dragon Queen |
@@ -106,6 +108,7 @@ _Support content creators. Only use or include sources that you own._
 | PSX | Plane Shift: Ixalan |
 | PSZ | Plane Shift: Zendikar |
 | PaBTSO | Phandelver and Below: The Shattered Obelisk |
+| PiP | Peril in Pinegrove |
 | PotA | Princes of the Apocalypse |
 | RMBRE | The Lost Dungeon of Rickedness: Big Rick Energy |
 | RMR | Dungeons & Dragons vs. Rick and Morty: Basic Rules |
