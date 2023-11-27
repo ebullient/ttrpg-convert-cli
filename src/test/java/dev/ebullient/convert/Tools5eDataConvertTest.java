@@ -149,6 +149,9 @@ public class Tools5eDataConvertTest {
                             .toString(),
                     TestUtils.PATH_5E_HOMEBREW.resolve("creature/Kobold Press; Creature Codex.json")
                             .toString(),
+                    TestUtils.PATH_5E_HOMEBREW.resolve("creature/Kobold Press; Tome of Beasts.json")
+                            .toString(),
+                    TestUtils.PATH_5E_HOMEBREW.resolve("creature/MCDM Productions; Flee, Mortals! preview.json").toString(),
                     TestUtils.PATH_5E_HOMEBREW.resolve("creature/MCDM Productions; Flee, Mortals!.json").toString(),
                     TestUtils.PATH_5E_HOMEBREW.resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
                             .toString(),
