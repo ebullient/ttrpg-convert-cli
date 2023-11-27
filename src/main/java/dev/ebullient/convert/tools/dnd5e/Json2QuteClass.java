@@ -93,7 +93,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             boolean pushed = parseState().push(sc.sources);
             try {
                 Tags tags = new Tags(sc.sources);
-                tags.add("class", getName(), sc.shortName);
+                tags.add("subclass", getName(), sc.shortName);
 
                 if (tags.toString().contains("cleric")) {
                     tags.add("domain", sc.shortName);
