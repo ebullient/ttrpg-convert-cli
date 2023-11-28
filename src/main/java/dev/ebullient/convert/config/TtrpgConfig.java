@@ -118,6 +118,11 @@ public class TtrpgConfig {
         return Collections.unmodifiableSet(activeConfig.sources);
     }
 
+    public static void addDefaultAliases(Map<String, String> aliases) {
+        DatasourceConfig activeConfig = activeConfig();
+        activeConfig.aliases.forEach((k, v) -> aliases.putIfAbsent(k, v));
+    }
+
     private static void readSystemConfig() {
         JsonNode node = Tui.readTreeFromResource("/convertData.json");
         readSystemConfig(node);
@@ -137,6 +142,7 @@ public class TtrpgConfig {
                 if (srdEntries != null) {
                     config.data.put(ConfigKeys.srdEntries.name(), srdEntries);
                 }
+                config.aliases.putAll(ConfigKeys.aliases.getAsMap(config5e));
                 config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(config5e));
                 config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(config5e));
                 config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(config5e));
@@ -172,6 +178,7 @@ public class TtrpgConfig {
 
     static class DatasourceConfig {
         final Map<String, JsonNode> data = new HashMap<>();
+        final Map<String, String> aliases = new HashMap<>();
         final Map<String, String> abvToName = new HashMap<>();
         final Map<String, String> longToAbv = new HashMap<>();
         final Map<String, String> fallbackImagePaths = new HashMap<>();
@@ -222,6 +229,7 @@ public class TtrpgConfig {
     }
 
     enum ConfigKeys implements JsonNodeReader {
+        aliases,
         abvToName,
         config5e,
         configPf2e,

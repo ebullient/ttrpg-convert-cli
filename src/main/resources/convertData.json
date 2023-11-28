@@ -330,12 +330,12 @@
           ]
         },
         {
-					"name": "Vestige",
+          "name": "Vestige",
           "source": "TDCSR",
           "page": 200,
           "entries": [
-						"A Vestige of Divergence, see {@book Tal'Dorei Treasures|TDCSR|5|Vestiges of Divergence} for more information."
-					]
+            "A Vestige of Divergence, see {@book Tal'Dorei Treasures|TDCSR|5|Vestiges of Divergence} for more information."
+          ]
         }
       ]
     },
@@ -351,6 +351,35 @@
       "cultsboons.json",
       "book/book-phb.json"
     ],
+    "aliases": {
+      "item|alchemist's tools|phb": "item|alchemist's supplies|phb",
+      "item|alchemists' supplies|phb": "item|alchemist's supplies|phb",
+      "item|breastplate|dmg": "item|breastplate|phb",
+      "item|caltrops (20)|phb": "item|caltrops (bag of 20)|phb",
+      "item|crysal ball|dmg": "item|crystal ball|dmg",
+      "item|everbright lantern|dmg": "item|everbright lantern|erlw",
+      "item|glassblower's tools|dmg": "item|glassblower's tools|phb",
+      "item|jeweler's tools|dmg": "item|jeweler's tools|phb",
+      "item|painter's tools|phb": "item|painter's supplies|phb",
+      "item|pale tincture (ingested)|dmg": "item|pale tincture|dmg",
+      "item|potion of speed|phb": "item|potion of speed|dmg",
+      "item|rope of climbing|xge": "item|rope of climbing|dmg",
+      "item|shield, +1|dmg": "item|+1 shield|dmg",
+      "item|thieves tools|phb": "item|thieves' tools|phb",
+      "item|wands of magic missiles|dmg": "item|wand of magic missiles|dmg",
+      "spell|acid arrow|phb": "spell|melf's acid arrow|phb",
+      "spell|bane spell|phb": "spell|bane|phb",
+      "spell|ceremony|phb": "spell|ceremony|xge",
+      "spell|charm monster|phb": "spell|charm monster|xge",
+      "spell|deception|phb": "skill|deception|phb",
+      "spell|detect good and evil|phb":"spell|detect evil and good|phb",
+      "spell|enlarge|phb": "spell|enlarge/reduce|phb",
+      "spell|history|phb": "skill|history|phb",
+      "spell|infestation|phb": "spell|infestation|xge",
+      "spell|phatasmal force|phb": "spell|phantasmal force|phb",
+      "spell|reduce|phb": "spell|enlarge/reduce|phb",
+      "trap|quicksand|dmg": "hazard|quicksand|dmg"
+    },
     "fixes": {
       "adventure/adventure-lr.json": [
         {
