@@ -104,7 +104,7 @@ public interface JsonSource extends JsonTextReplacement {
 
                     // lists & items
 
-                    case pf2options, list -> appendList(text, SourceField.items.withArrayFrom(node));
+                    case pf2options, list -> appendList(text, SourceField.items.readArrayFrom(node));
                     case item -> appendListItem(text, node);
                     case entries -> appendToText(text, SourceField.entries.getFrom(node), heading);
                     case table -> appendTable(text, node);
@@ -328,7 +328,7 @@ public interface JsonSource extends JsonTextReplacement {
         appendToText(effect, SourceField.entries.getFrom(node), null);
 
         Map<String, QuteAfflictionStage> stages = new LinkedHashMap<>();
-        AfflictionField.stages.withArrayFrom(node).forEach(stageNode -> {
+        AfflictionField.stages.readArrayFrom(node).forEach(stageNode -> {
             String title = String.format("Stage %s",
                     AfflictionField.stage.getTextOrDefault(stageNode, "1"));
 
@@ -411,7 +411,7 @@ public interface JsonSource extends JsonTextReplacement {
     default String appendHtmlTable(JsonNode tableNode, List<String> table, String id, String name) {
         boolean pushed = parseState().pushHtmlTable(true);
         try {
-            ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
+            ArrayNode rows = TableField.rows.readArrayFrom(tableNode);
             JsonNode colStyles = TableField.colStyles.getFrom(tableNode);
             int numCols = colStyles != null
                     ? colStyles.size()
@@ -419,7 +419,7 @@ public interface JsonSource extends JsonTextReplacement {
                             .map(JsonNode::size)
                             .max(Integer::compare).get();
 
-            ArrayNode spans = TableField.spans.withArrayFrom(tableNode);
+            ArrayNode spans = TableField.spans.readArrayFrom(tableNode);
             int spanIdx = 0;
 
             List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
@@ -438,7 +438,7 @@ public interface JsonSource extends JsonTextReplacement {
                 int cols = rowNode.size(); // varies by row
 
                 if (FieldValue.multiRow.isValueOfField(rowNode, SourceField.type)) {
-                    ArrayNode rows2 = TableField.rows.withArrayFrom(rowNode);
+                    ArrayNode rows2 = TableField.rows.readArrayFrom(rowNode);
                     List<List<String>> multicol = new ArrayList<>();
                     for (int r2 = 0; r2 < rows2.size(); r2++) {
                         ArrayNode row = (ArrayNode) rows2.get(r2);
@@ -521,7 +521,7 @@ public interface JsonSource extends JsonTextReplacement {
     default String appendMarkdownTable(JsonNode tableNode, List<String> table, String id, String name) {
         boolean pushed = parseState().pushMarkdownTable(true);
         try {
-            ArrayNode rows = TableField.rows.withArrayFrom(tableNode);
+            ArrayNode rows = TableField.rows.readArrayFrom(tableNode);
             List<Integer> labelIdx = TableField.labelRowIdx.fieldFromTo(tableNode, Tui.LIST_INT, tui());
 
             String blockid = slugify(id);

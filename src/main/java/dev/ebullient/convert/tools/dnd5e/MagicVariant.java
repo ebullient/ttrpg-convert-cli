@@ -141,7 +141,7 @@ public class MagicVariant implements JsonSource {
                 } else {
                     // add variant to list of variants for this generic variant
                     // magic variant remains in index as a magic variant
-                    ItemFields._variants.arrayFrom(genericVariant).add(specficVariant);
+                    ItemFields._variants.ensureArrayIn(genericVariant).add(specficVariant);
                     index.addAlias(newKey, gvKey);
                 }
             }
@@ -365,11 +365,11 @@ public class MagicVariant implements JsonSource {
                     SourceField.name.setIn(specificVariant, p.matcher(name).replaceAll(""));
                 }
                 case "propertyAdd" -> {
-                    ArrayNode itemProperty = ItemFields.property.arrayFrom(specificVariant);
+                    ArrayNode itemProperty = ItemFields.property.ensureArrayIn(specificVariant);
                     index().copier.appendIfNotExistsArr(itemProperty, property.getValue());
                 }
                 case "propertyRemove" -> {
-                    ArrayNode itemProperty = ItemFields.property.arrayFrom(specificVariant);
+                    ArrayNode itemProperty = ItemFields.property.ensureArrayIn(specificVariant);
                     index().copier.removeFromArr(itemProperty, property.getValue());
                 }
                 case "valueExpression", "weightExpression" -> {
@@ -405,7 +405,7 @@ public class MagicVariant implements JsonSource {
                     }
                 }
                 case "conditionImmune" -> {
-                    ArrayNode condImmune = MagicItemField.conditionImmune.arrayFrom(specificVariant);
+                    ArrayNode condImmune = MagicItemField.conditionImmune.ensureArrayIn(specificVariant);
                     index().copier.appendIfNotExistsArr(condImmune, property.getValue());
                 }
                 case "vulnerable", "resist", "immune" -> {

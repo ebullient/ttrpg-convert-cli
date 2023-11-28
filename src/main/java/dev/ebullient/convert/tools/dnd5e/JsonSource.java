@@ -172,12 +172,12 @@ public interface JsonSource extends JsonTextReplacement {
                         if ("list-no-bullets".equals(style)) {
                             if (node.has("columns")) {
                                 maybeAddBlankLine(text);
-                                appendToText(text, SourceField.items.arrayFrom(node), heading);
+                                appendToText(text, SourceField.items.readArrayFrom(node), heading);
                             } else {
-                                appendList(text, SourceField.items.arrayFrom(node), ListType.unstyled);
+                                appendList(text, SourceField.items.readArrayFrom(node), ListType.unstyled);
                             }
                         } else {
-                            appendList(text, SourceField.items.arrayFrom(node), ListType.unordered);
+                            appendList(text, SourceField.items.readArrayFrom(node), ListType.unordered);
                         }
                     }
                     case optfeature -> appendOptionalFeature(text, node, heading);
@@ -789,9 +789,7 @@ public interface JsonSource extends JsonTextReplacement {
             knownEntry = index().findTable(sp, TableFields.getFirstRow(matchTable));
         }
         if (knownEntry != null) {
-            name = SourceField.name.getTextOrDefault(knownEntry, name);
-            // replace with embed
-            String link = linkifyType(keyType, tableKey, name);
+            String link = keyType.linkify(this, knownEntry);
             return link.matches("\\[.+]\\(.+\\)") ? "!" + link : null;
         }
         return null;

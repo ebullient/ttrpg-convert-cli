@@ -319,14 +319,14 @@ public class Json2QuteCommon implements JsonSource {
                         if (MonsterFields.special.existsIn(acValue)) {
                             details.add(MonsterFields.special.replaceTextFrom(acValue, this));
                         } else if (MonsterFields.from.existsIn(acValue)) {
-                            details.add(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
+                            details.add(joinAndReplace(MonsterFields.from.readArrayFrom(acValue)));
                         }
                     }
                 } else { // nth time: conditional AC. Append to acText
                     StringBuilder value = new StringBuilder();
                     value.append(MonsterFields.ac.replaceTextFrom(acValue, this));
                     if (MonsterFields.from.existsIn(acValue)) {
-                        value.append(" from ").append(joinAndReplace(MonsterFields.from.arrayFrom(acValue)));
+                        value.append(" from ").append(joinAndReplace(MonsterFields.from.readArrayFrom(acValue)));
                     }
                     if (Tools5eFields.condition.existsIn(acValue)) {
                         value.append(" ").append(Tools5eFields.condition.replaceTextFrom(acValue, this));

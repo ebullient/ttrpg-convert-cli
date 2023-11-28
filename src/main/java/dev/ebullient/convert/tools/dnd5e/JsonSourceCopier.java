@@ -673,7 +673,7 @@ public class JsonSourceCopier implements JsonSource {
             return;
         }
 
-        ArrayNode size = Tools5eFields.size.withArrayFrom(target);
+        ArrayNode size = Tools5eFields.size.ensureArrayIn(target);
         List<JsonNode> collect = streamOf(size)
                 .filter(x -> SIZES.indexOf(x.asText()) <= maxIdx)
                 .collect(Collectors.toList());
@@ -842,7 +842,7 @@ public class JsonSourceCopier implements JsonSource {
                 // Look for spell levels: spells.1.spells
                 if (MonsterFields.spells.existsIn(spells.get(k))) {
                     removeSpells(originKey,
-                            MonsterFields.spells.withArrayFrom(spells.get(k)),
+                            MonsterFields.spells.ensureArrayIn(spells.get(k)),
                             modSpellEntry.getValue());
                 }
             }
