@@ -528,7 +528,11 @@ public class CommonDataTests {
                     .writeFiles(List.of(Tools5eIndexType.vehicle))
                     .writeImages();
 
-            TestUtils.assertDirectoryContents(outDir, tui);
+            if (variant == TestInput.none) {
+                assertThat(outDir.toFile()).doesNotExist();
+            } else {
+                TestUtils.assertDirectoryContents(outDir, tui);
+            }
         }
     }
 

@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -108,61 +109,61 @@ public class JsonSourceCopier implements JsonSource {
     }
 
     // render.js: _getMergedSubrace
-    public JsonNode mergeSubrace(Tools5eIndexType type, JsonNode subraceNode, JsonNode raceNode) {
-        ObjectNode cpySr = (ObjectNode) copyNode(subraceNode);
+    public JsonNode mergeSubrace(JsonNode subraceNode, JsonNode raceNode) {
+        ObjectNode copyFrom = (ObjectNode) copyNode(subraceNode);
         ObjectNode subraceOut = (ObjectNode) copyNode(raceNode);
+
         List.of("name", "source", "srd", "basicRules")
                 .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
-
         List.of("subraces", "srd", "basicRules", "_versions", "hasFluff", "hasFluffImages")
                 .forEach(subraceOut::remove);
 
-        cpySr.remove("__prop"); // cleanup: we copy remainder later
+        copyFrom.remove("__prop"); // cleanup: we copy remainder later
 
-        JsonNode overwrite = MetaFields.overwrite.getFrom(cpySr);
+        JsonNode overwrite = MetaFields.overwrite.getFrom(copyFrom);
 
         // merge names
-        if (SourceField.name.existsIn(cpySr)) {
+        if (SourceField.name.existsIn(copyFrom)) {
             String raceName = SourceField.name.getTextOrThrow(raceNode);
-            String subraceName = SourceField.name.getTextOrThrow(cpySr);
+            String subraceName = SourceField.name.getTextOrThrow(copyFrom);
             subraceOut.put("_subraceName", subraceName);
-            if (MetaFields.alias.existsIn(cpySr)) {
-                ArrayNode alias = (ArrayNode) MetaFields.alias.getFrom(cpySr);
+            if (MetaFields.alias.existsIn(copyFrom)) {
+                ArrayNode alias = (ArrayNode) MetaFields.alias.getFrom(copyFrom);
                 for (int i = 0; i < alias.size(); i++) {
                     alias.set(i, Json2QuteRace.getSubraceName(raceName, alias.get(i).asText()));
                 }
                 MetaFields.alias.setIn(subraceOut, alias);
-                MetaFields.alias.removeFrom(cpySr);
+                MetaFields.alias.removeFrom(copyFrom);
             }
-            SourceField.name.removeFrom(cpySr);
+            SourceField.name.removeFrom(copyFrom);
             SourceField.name.setIn(subraceOut, Json2QuteRace.getSubraceName(raceName, subraceName));
         }
 
         // merge abilities
-        if (RaceFields.ability.existsIn(cpySr)) {
-            ArrayNode cpySrAbility = (ArrayNode) RaceFields.ability.getFrom(cpySr);
+        if (RaceFields.ability.existsIn(copyFrom)) {
+            ArrayNode cpySrAbility = (ArrayNode) RaceFields.ability.getFrom(copyFrom);
             ArrayNode outAbility = (ArrayNode) RaceFields.ability.getFrom(subraceOut);
             // If the base race doesn't have any ability scores, make a set of empty records
             if (RaceFields.ability.existsIn(overwrite) || outAbility == null) {
-                subraceOut.set("ability", RaceFields.ability.getFrom(cpySr));
+                subraceOut.set("ability", RaceFields.ability.getFrom(copyFrom));
             } else if (cpySrAbility.size() != outAbility.size()) {
                 // if (cpy.ability.length !== cpySr.ability.length) throw new Error(`Race and subrace ability array lengths did not match!`);
                 tui().errorf("Error (%s): Unable to merge abilities (different lengths). CopyTo: %s, CopyFrom: %s", subraceOut,
-                        cpySr);
+                        copyFrom);
             } else {
                 // cpySr.ability.forEach((obj, i) => Object.assign(cpy.ability[i], obj));
                 for (int i = 0; i < cpySrAbility.size(); i++) {
                     outAbility.set(i, cpySrAbility.get(i));
                 }
             }
-            RaceFields.ability.removeFrom(cpySr);
+            RaceFields.ability.removeFrom(copyFrom);
         }
 
         // merge entries
-        if (SourceField.entries.existsIn(cpySr)) {
+        if (SourceField.entries.existsIn(copyFrom)) {
             ArrayNode entries = ensureArray(SourceField.entries.getFrom(subraceOut));
             SourceField.entries.setIn(subraceOut, entries); // make sure set as array
-            for (JsonNode entry : iterableEntries(cpySr)) {
+            for (JsonNode entry : iterableEntries(copyFrom)) {
                 JsonNode data = MetaFields.data.getFrom(entry);
                 if (MetaFields.overwrite.existsIn(data)) {
                     // overwrite
@@ -177,22 +178,22 @@ public class JsonSourceCopier implements JsonSource {
                 }
             }
 
-            SourceField.entries.removeFrom(cpySr);
+            SourceField.entries.removeFrom(copyFrom);
         }
 
         // TODO: ATM, not tracking trait tags, languages, or skills separately from text
-        if (Tools5eFields.traitTags.existsIn(cpySr)) {
-            Tools5eFields.traitTags.removeFrom(cpySr);
+        if (Tools5eFields.traitTags.existsIn(copyFrom)) {
+            Tools5eFields.traitTags.removeFrom(copyFrom);
         }
-        if (RaceFields.languageProficiencies.existsIn(cpySr)) {
-            RaceFields.languageProficiencies.removeFrom(cpySr);
+        if (RaceFields.languageProficiencies.existsIn(copyFrom)) {
+            RaceFields.languageProficiencies.removeFrom(copyFrom);
         }
-        if (RaceFields.skillProficiencies.existsIn(cpySr)) {
-            RaceFields.skillProficiencies.removeFrom(cpySr);
+        if (RaceFields.skillProficiencies.existsIn(copyFrom)) {
+            RaceFields.skillProficiencies.removeFrom(copyFrom);
         }
 
         // overwrite everything else
-        for (Entry<String, JsonNode> e : iterableFields(cpySr)) {
+        for (Entry<String, JsonNode> e : iterableFields(copyFrom)) {
             // already from a copy, just .. move it on over.
             subraceOut.set(e.getKey(), e.getValue());
         }
@@ -206,6 +207,7 @@ public class JsonSourceCopier implements JsonSource {
             }
         }
 
+        RaceFields._isSubRace.setIn(subraceOut, BooleanNode.TRUE);
         return subraceOut;
     }
 

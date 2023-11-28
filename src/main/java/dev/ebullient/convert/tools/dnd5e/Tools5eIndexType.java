@@ -217,11 +217,13 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                         .toLowerCase();
             }
             case subrace -> {
-                return String.format("%s|%s|%s|%s",
+                String raceSource = IndexFields.raceSource.getTextOrDefault(x, "PHB");
+                return String.format("%s|%s|%s|%s%s",
                         this.name(),
                         name,
-                        IndexFields.raceName.getTextOrEmpty(x),
-                        IndexFields.raceSource.getTextOrEmpty(x))
+                        IndexFields.raceName.getTextOrThrow(x),
+                        raceSource,
+                        source.equalsIgnoreCase(raceSource) ? "" : "|" + source)
                         .toLowerCase();
             }
             default -> {
