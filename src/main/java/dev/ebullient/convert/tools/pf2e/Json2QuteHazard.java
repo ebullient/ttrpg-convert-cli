@@ -58,7 +58,7 @@ public class Json2QuteHazard extends Json2QuteBase {
 
     List<String> buildAbilities() {
         List<QuteAbility> inlineAbilities = new ArrayList<>();
-        Pf2eHazard.abilities.withArrayFrom(rootNode)
+        Pf2eHazard.abilities.readArrayFrom(rootNode)
                 .forEach(a -> inlineAbilities.add(Pf2eTypeAbility.createAbility(a, this, true)));
 
         return inlineAbilities.stream()

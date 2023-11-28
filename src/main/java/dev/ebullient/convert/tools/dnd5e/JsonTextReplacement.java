@@ -450,6 +450,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     reward,
                     spell,
                     table,
+                    tableGroup,
                     trap,
                     vehicle ->
                 linkifyType(type, s);
@@ -483,22 +484,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String source = parts.length > 1 && !parts[1].isBlank() ? parts[1] : type.defaultSourceString();
         String linkText = parts.length > 2 ? parts[2] : parts[0];
 
-        String key = index().getAliasOrDefault(type.createKey(parts[0], source));
+        String key = index().getAliasOrDefault(type.createKey(parts[0].trim(), source));
         return linkifyType(type, key, linkText);
     }
 
-    default String linkifyType(Tools5eIndexType type, String key, String linkText) {
+    default String linkifyType(Tools5eIndexType type, String aliasKey, String linkText) {
         String dirName = type.getRelativePath();
-        JsonNode jsonSource = index().getNode(index().getAliasOrDefault(key));
-        if (index().isExcluded(key) || jsonSource == null) {
-            if (index().getOrigin(index().getAliasOrDefault(key)) == null) {
+        JsonNode jsonSource = index().getNode(aliasKey);
+        if (jsonSource == null) {
+            if (index().getOrigin(aliasKey) == null) {
                 // sources can be excluded, that's fine.. but if this is something that doesn't exist at all..
-                tui().debugf("🫣 Unable to create link, source for %s not found", key);
+                tui().debugf("🫣 Unable to create link, source for %s not found", aliasKey);
             }
             return linkText;
         }
         Tools5eSources linkSource = Tools5eSources.findSources(jsonSource);
-        return linkOrText(linkText, key, dirName,
+        return linkOrText(linkText, aliasKey, dirName,
                 Tools5eQuteBase.fixFileName(type.decoratedName(jsonSource), linkSource));
     }
 

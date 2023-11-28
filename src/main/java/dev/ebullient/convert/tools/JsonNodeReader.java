@@ -107,13 +107,6 @@ public interface JsonNodeReader {
         return tui.readJsonValue(source.get(this.nodeName()), targetRef);
     }
 
-    default ArrayNode arrayFrom(JsonNode source) {
-        if (source == null) {
-            return null;
-        }
-        return source.withArray(this.nodeName());
-    }
-
     default JsonNode getFrom(JsonNode source) {
         if (source == null) {
             return null;
@@ -281,7 +274,11 @@ public interface JsonNodeReader {
                 || (prevValue != null && prevValue.equals(nextValue));
     }
 
-    default ArrayNode withArrayFrom(JsonNode source) {
+    /**
+     * Will always return an array (no null checks)
+     * Does not create an array attribute if the element is not present
+     */
+    default ArrayNode readArrayFrom(JsonNode source) {
         if (isArrayIn(source)) {
             return source.withArray(this.nodeName());
         }
@@ -300,6 +297,17 @@ public interface JsonNodeReader {
             return () -> source.get(this.nodeName()).fields();
         }
         return List.of();
+    }
+
+    /**
+     * Will always return an array (no null checks)
+     * Will create an array attribute if the element is not present
+     */
+    default ArrayNode ensureArrayIn(JsonNode target) {
+        if (target == null) {
+            return Tui.MAPPER.createArrayNode();
+        }
+        return target.withArray(this.nodeName());
     }
 
     /** Destructive! */
