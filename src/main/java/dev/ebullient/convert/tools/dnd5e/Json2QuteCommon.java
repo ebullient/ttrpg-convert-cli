@@ -5,6 +5,7 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
@@ -31,6 +34,8 @@ public class Json2QuteCommon implements JsonSource {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
     static final List<String> SPEED_MODE = List.of("walk", "burrow", "climb", "fly", "swim");
     static final List<String> specialTraits = List.of("special equipment", "shapechanger");
+    static final Comparator<Entry<String, List<String>>> compareNumberStrings = Comparator
+            .comparingInt(e -> Integer.parseInt(e.getKey()));
 
     protected final Tools5eIndex index;
     protected final Tools5eSources sources;
@@ -151,74 +156,385 @@ public class Json2QuteCommon implements JsonSource {
         }
     }
 
-    String listPrerequisites(JsonNode variantNode) {
-        List<String> prereqs = new ArrayList<>();
-        Tools5eIndex index = index();
-        for (JsonNode entry : iterableElements(PrereqFields.prerequisite.getFrom(variantNode))) {
-            if (PrereqFields.level.existsIn(entry)) {
-                prereqs.add(levelToText(entry.get("level")));
-            }
+    // {"ability":[{"dex":13}]}
+    private String abilityPrereq(JsonNode abilityPrereq) {
+        ArrayNode elements = ensureArray(abilityPrereq);
 
-            for (JsonNode r : iterableElements(PrereqFields.race.getFrom(entry))) {
-                prereqs.add(index.linkifyByName(Tools5eIndexType.race, raceToText(r)));
-            }
+        boolean multipleInner = false;
+        boolean multiMultipleInner = false;
+        JsonNode allValuesEqual = null;
 
-            Map<String, List<String>> abilityScores = new HashMap<>();
+        // See if all of the abilities have the same value
+        outer: for (JsonNode abMetaNode : elements) {
+            ObjectNode objectNode = (ObjectNode) abMetaNode;
 
-            for (JsonNode a : iterableElements(PrereqFields.ability.getFrom(entry))) {
-                for (Entry<String, JsonNode> score : iterableFields(a)) {
-                    abilityScores.computeIfAbsent(score.getValue().asText(), k -> new ArrayList<>())
-                            .add(SkillOrAbility.format(score.getKey(), index(), getSources()));
+            for (JsonNode valueNode : objectNode) {
+                if (allValuesEqual == null) {
+                    allValuesEqual = valueNode;
+                } else {
+                    var ave = allValuesEqual;
+                    boolean allMatch = StreamSupport.stream(objectNode.spliterator(), false)
+                            .allMatch(node -> node.equals(ave));
+                    if (!allMatch) {
+                        allValuesEqual = null;
+                        break outer;
+                    }
                 }
-            }
-
-            abilityScores.forEach(
-                    (k, v) -> prereqs.add(String.format("%s %s or higher", String.join(" or ", v), k)));
-
-            if (PrereqFields.spellcasting.existsIn(entry) && PrereqFields.spellcasting.booleanOrDefault(entry, false)) {
-                prereqs.add("The ability to cast at least one spell");
-            }
-            if (PrereqFields.pact.existsIn(entry)) {
-                prereqs.add("Pact of the " + PrereqFields.pact.replaceTextFrom(entry, this));
-            }
-            if (PrereqFields.patron.existsIn(entry)) {
-                prereqs.add(PrereqFields.patron.replaceTextFrom(entry, this) + " Patron");
-            }
-            PrereqFields.spell.streamFrom(entry).forEach(s -> {
-                String text = s.asText().replaceAll("#c", "");
-                prereqs.add(index.linkifyByName(Tools5eIndexType.spell, text));
-            });
-            PrereqFields.feat.streamFrom(entry).forEach(f -> prereqs
-                    .add(featPattern.matcher(f.asText())
-                            .replaceAll(m -> index.linkifyByName(Tools5eIndexType.feat, m.group(1)))));
-            PrereqFields.feature.streamFrom(entry).forEach(f -> prereqs.add(featPattern.matcher(f.asText())
-                    .replaceAll(m -> index.linkifyByName(Tools5eIndexType.optionalfeature, m.group(1)))));
-            PrereqFields.background.streamFrom(entry).forEach(b -> prereqs
-                    .add(index.linkifyByName(Tools5eIndexType.background, SourceField.name.getTextOrEmpty(b)) + " background"));
-            PrereqFields.item.streamFrom(entry)
-                    .forEach(i -> prereqs.add(index.linkifyByName(Tools5eIndexType.item, i.asText())));
-
-            if (PrereqFields.psionics.existsIn(entry)) {
-                prereqs.add("Psionics");
-            }
-
-            List<String> profs = new ArrayList<>();
-            PrereqFields.proficiency.streamFrom(entry).forEach(f -> f.fields().forEachRemaining(field -> {
-                String key = field.getKey();
-                if ("weapon".equals(key)) {
-                    key += "s";
-                }
-                profs.add(String.format("%s %s", field.getValue().asText(), key));
-            }));
-            if (!profs.isEmpty()) {
-                prereqs.add(String.format("Proficiency with %s", String.join(" or ", profs)));
-            }
-
-            if (PrereqFields.other.existsIn(entry)) {
-                prereqs.add(PrereqFields.other.replaceTextFrom(entry, this));
             }
         }
-        return prereqs.isEmpty() ? null : String.join(", ", prereqs);
+
+        List<String> abilityOptions = new ArrayList<>();
+        for (JsonNode abMetaNode : elements) {
+            if (allValuesEqual != null) {
+                List<String> options = new ArrayList<>();
+                multipleInner |= abMetaNode.size() > 1;
+                abMetaNode.fieldNames().forEachRemaining(x -> {
+                    options.add(SkillOrAbility.format(x, index(), getSources()));
+                });
+                abilityOptions.add(joinConjunct(" and ", options));
+            } else {
+                Map<String, List<String>> groups = new HashMap<>();
+                for (Entry<String, JsonNode> score : iterableFields(abMetaNode)) {
+                    groups.computeIfAbsent(score.getValue().asText(), k -> new ArrayList<>())
+                            .add(SkillOrAbility.format(score.getKey(), index(), sources));
+                }
+
+                boolean isMulti = groups.values().stream().anyMatch(x -> x.size() > 1);
+                ;
+                multiMultipleInner |= isMulti;
+                multipleInner |= isMulti;
+
+                List<String> byScore = groups.entrySet().stream()
+                        .sorted((a, b) -> compareNumberStrings.compare(b, a))
+                        .map(e -> {
+                            List<String> abs = e.getValue().stream()
+                                    .map(x -> index().findSkillOrAbility(x, sources))
+                                    .sorted(SkillOrAbility.comparator)
+                                    .map(x -> x.value())
+                                    .toList();
+                            return String.format("%s %s or higher",
+                                    joinConjunct(" and ", abs),
+                                    e.getKey());
+                        })
+                        .toList();
+
+                abilityOptions.add(isMulti
+                        ? joinConjunct("; ", " and ", byScore)
+                        : joinConjunct(" and ", byScore));
+            }
+        }
+
+        var isComplex = multipleInner || multiMultipleInner || allValuesEqual == null;
+        String joined = joinConjunct(
+                multiMultipleInner ? " - " : multipleInner ? "; " : ", ",
+                isComplex ? " OR " : " or ",
+                abilityOptions);
+
+        return joined + (allValuesEqual != null
+                ? " " + allValuesEqual.asText() + " or higher"
+                : "");
+    }
+
+    // {"name":"Rune Carver","displayEntry":"{@background Rune Carver|BGG}"}]
+    private String backgroundPrereq(JsonNode backgroundPrereq) {
+        List<String> backgrounds = new ArrayList<>();
+        for (JsonNode p : iterableElements(backgroundPrereq)) {
+            JsonNode displayEntry = PrereqFields.displayEntry.getFrom(p);
+            if (displayEntry != null) {
+                backgrounds.add(replaceText(displayEntry.asText()));
+            } else {
+                String name = SourceField.name.getTextOrEmpty(p);
+                backgrounds.add(index.linkifyByName(Tools5eIndexType.background, name));
+            }
+        }
+        return joinConjunct(" or ", backgrounds);
+    }
+
+    private String campaignPrereq(JsonNode campaignPrereq) {
+        List<String> cmpn = new ArrayList<>();
+        for (JsonNode p : iterableElements(campaignPrereq)) {
+            replaceText(p.asText());
+        }
+        return joinConjunct(" or ", cmpn);
+    }
+
+    // "scion of the outer planes|ua2022wondersofthemultiverse|scion of the outer planes (good outer plane)"
+    // "scion of the outer planes|sato|scion of the outer planes (good outer plane)"
+    private String featPrereq(JsonNode featPrereq) {
+        List<String> feats = new ArrayList<>();
+        for (JsonNode p : iterableElements(featPrereq)) {
+            replaceText(String.format("{@feat %s} feat", p.asText()));
+        }
+        return joinConjunct(" or ", feats);
+    }
+
+    private String featurePrereq(JsonNode featurePrereq) {
+        List<String> features = new ArrayList<>();
+        for (JsonNode p : iterableElements(featurePrereq)) {
+            replaceText(p.asText());
+        }
+        return joinConjunct(" or ", features);
+    }
+
+    private String groupPrereq(JsonNode groupPrereq) {
+        List<String> grp = new ArrayList<>();
+        for (JsonNode p : iterableElements(groupPrereq)) {
+            replaceText(toTitleCase(p.asText()));
+        }
+        return joinConjunct(" or ", grp);
+    }
+
+    private String itemPrereq(JsonNode itemPrereq) {
+        List<String> items = new ArrayList<>();
+        for (JsonNode p : iterableElements(itemPrereq)) {
+            replaceText(p.asText());
+        }
+        return joinConjunct(" or ", items);
+    }
+
+    private String itemTypePrereq(JsonNode itemTypePrereq) {
+        List<String> types = new ArrayList<>();
+        for (JsonNode p : iterableElements(itemTypePrereq)) {
+            ItemType type = index.findItemType(p.asText(), getSources());
+            if (type != null) {
+                types.add(type.getSpecializedType());
+            } else {
+                tui().errorf("Unknown item type %s", p);
+            }
+        }
+        return joinConjunct(" and ", types);
+    }
+
+    private String itemPropertyPrereq(JsonNode itemPropertyPrereq) {
+        List<String> props = new ArrayList<>();
+        for (JsonNode p : iterableElements(itemPropertyPrereq)) {
+            ItemProperty prop = index.findItemProperty(p.asText(), getSources());
+            if (prop != null) {
+                props.add(prop.getMarkdownLink(index));
+            } else {
+                tui().errorf("Unknown item property %s", p);
+            }
+        }
+        return joinConjunct(" and ", props);
+    }
+
+    // "level":4
+    // "level":{"level":1,"class":{"name":"Fighter","visible":true}}}
+    private String levelPrereq(JsonNode levelPrereq) {
+        if (levelPrereq.isArray())
+            tui().error("levelPrereq: Array parameter");
+
+        if (levelPrereq.isNumber()) {
+            return levelToText(levelPrereq.asText());
+        }
+
+        String level = Tools5eFields.level.getTextOrThrow(levelPrereq);
+        JsonNode classNode = SourceField._class_.getFrom(levelPrereq);
+        JsonNode subclassNode = Tools5eFields.subclass.getFrom(levelPrereq);
+
+        // neither class nor subclass is defined
+        if (classNode == null && subclassNode == null) {
+            return levelToText(level);
+        }
+
+        boolean isLevelVisible = !"1".equals(level); // hide implied first level
+        boolean isSubclassVisible = Tools5eFields.visible.booleanOrDefault(subclassNode, false);
+        boolean isClassVisible = classNode != null
+                && (isSubclassVisible || Tools5eFields.visible.booleanOrDefault(classNode, false));
+
+        String classPart = "";
+        if (isClassVisible && isSubclassVisible) {
+            classPart = String.format("%s (%s)",
+                    SourceField.name.getTextOrEmpty(classNode),
+                    SourceField.name.getTextOrEmpty(subclassNode));
+        } else if (isClassVisible) {
+            classPart = SourceField.name.getTextOrEmpty(classNode);
+        } else if (isSubclassVisible) {
+            tui().warnf("Subclass %s without class in %s", subclassNode, levelPrereq);
+        }
+
+        return String.format("%s%s",
+                isLevelVisible ? levelToText(level) : "",
+                isClassVisible ? " " + classPart : "");
+    }
+
+    // {"proficiency":[{"armor":"medium"}]}
+    // {"proficiency":[{"weaponGroup":"martial"}]}
+    private String proficiencyPrereq(JsonNode profPrereq) {
+        List<String> profs = new ArrayList<>();
+        for (JsonNode p : iterableElements(profPrereq)) {
+            for (Entry<String, JsonNode> prof : iterableFields(p)) {
+                switch (prof.getKey()) {
+                    case "armor" -> profs.add(String.format("%s armor",
+                            replaceText(prof.getValue().asText())));
+                    case "weapon" -> profs.add(String.format("a %s weapon",
+                            replaceText(prof.getValue().asText())));
+                    case "weaponGroup" -> profs.add(String.format("%s weapons",
+                            replaceText(prof.getValue().asText())));
+                    default -> {
+                        tui().errorf("Unknown proficiency prereq", p);
+                    }
+                }
+            }
+        }
+        return String.format("Proficiency with %s", joinConjunct(" or ", profs));
+    }
+
+    // [{"name":"elf"}]
+    // [{"name":"half-elf"}]
+    // [{"name":"small race","displayEntry":"a Small race"}]
+    private String racePrereq(JsonNode racePrereq) {
+        List<String> races = new ArrayList<>();
+        for (JsonNode p : iterableElements(racePrereq)) {
+            JsonNode displayEntry = PrereqFields.displayEntry.getFrom(p);
+            if (displayEntry != null) {
+                races.add(replaceText(displayEntry.asText()));
+            } else {
+                String name = SourceField.name.getTextOrEmpty(p);
+                String subraceName = Tools5eFields.subrace.getTextOrNull(p);
+                races.add(index.linkifyByName(Tools5eIndexType.race, Json2QuteRace.getSubraceName(name, subraceName)));
+            }
+        }
+        return joinConjunct(" or ", races);
+    }
+
+    private List<String> testBoolean(JsonNode node, String valueIfTrue) {
+        return node.booleanValue()
+                ? List.of(valueIfTrue)
+                : List.of();
+    }
+
+    private String spellPrereq(JsonNode spellPrereq) {
+        List<String> spells = new ArrayList<>();
+        for (JsonNode p : iterableElements(spellPrereq)) {
+            if (p.isTextual()) {
+                String[] split = p.asText().split("#");
+                if (split.length == 1) {
+                    spells.add(replaceText(String.format("{@spell %s}", split[0])));
+                } else if ("c".equals(split[1])) {
+                    spells.add(replaceText(String.format("{@spell %s} cantrip", split[0])));
+                } else if ("x".equals(split[1])) {
+                    spells.add(replaceText(String.format("{@spell hex} spell or a warlock feature that curses", split[0])));
+                } else {
+                    tui().errorf("Unknown spell prereq %s", p);
+                }
+            } else {
+                spells.add(replaceText(String.format("{@filter %s|spells|%s}",
+                        SourceField.entry.getTextOrEmpty(p),
+                        PrereqFields.choose.getTextOrEmpty(p))));
+            }
+        }
+        return joinConjunct(" or ", spells);
+    }
+
+    private ObjectNode sharedPrerequisites(ArrayNode prerequisites) {
+        ObjectNode shared = prerequisites.objectNode();
+
+        if (prerequisites.size() > 1) {
+            List<JsonNode> others = streamOf(prerequisites).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            // slice(1)
+            JsonNode first = others.get(0);
+            others.remove(0);
+
+            others.stream()
+                    .reduce(first,
+                            (a, b) -> objectIntersect(a, b),
+                            (a, b) -> ((ObjectNode) a).setAll((ObjectNode) b));
+        }
+        return shared;
+    }
+
+    String listPrerequisites(JsonNode variantNode) {
+        List<String> allValues = new ArrayList<>();
+        boolean hasNote = false;
+
+        ArrayNode prerequisites = PrereqFields.prerequisite.readArrayFrom(variantNode);
+
+        // find shared/common prereqs
+        ObjectNode prereqsShared = sharedPrerequisites(prerequisites);
+        String sharedText = prereqsShared.size() > 0
+                ? listPrerequisites(prereqsShared)
+                : null;
+
+        for (JsonNode prerequisite : prerequisites) {
+            List<String> values = new ArrayList<>();
+            String note = null;
+
+            List<PrereqFields> fields = streamOfFieldNames(prerequisite)
+                    .map(x -> {
+                        PrereqFields field = fromString(x);
+                        if (field == PrereqFields.unknown) {
+                            tui().errorf("Unknown prerequisite %s from %s", x, prerequisite);
+                        }
+                        return field;
+                    })
+                    .sorted()
+                    .toList();
+
+            for (PrereqFields field : fields) {
+                if (prereqsShared.has(field.nodeName())) {
+                    continue;
+                }
+                JsonNode value = field.getFrom(prerequisite);
+
+                // TODO: blocklist?
+                switch (field) {
+                    case ability -> values.add(abilityPrereq(value));
+                    case alignment -> values.add(alignmentListToFull(value));
+                    case background -> values.add(backgroundPrereq(value));
+                    case campaign -> values.add(campaignPrereq(value));
+                    case feat -> values.add(featPrereq(value));
+                    case feature -> values.add(featurePrereq(value));
+                    case group -> values.add(groupPrereq(value));
+                    case item -> values.add(itemPrereq(value));
+                    case itemProperty -> values.add(itemPropertyPrereq(value));
+                    case itemType -> values.add(itemTypePrereq(value));
+                    case level -> values.add(levelPrereq(value));
+                    case other -> values.add(replaceText(value));
+                    case otherSummary -> values.add(SourceField.entry.replaceTextFrom(value, this));
+                    case pact -> values.add("Pact of the " + replaceText(value));
+                    case patron -> values.add(replaceText(value + " Patron"));
+                    case proficiency -> values.add(proficiencyPrereq(value));
+                    case race -> values.add(racePrereq(value));
+                    case spell -> values.add(spellPrereq(value));
+                    // --- Boolean values ----
+                    case psionics -> values.addAll(testBoolean(value,
+                            replaceText("Psionic Talent feature or {@feat Wild Talent|UA2020PsionicOptionsRevisited} feat")));
+                    case spellcasting -> values.addAll(testBoolean(value,
+                            "The ability to cast at least one spell"));
+                    case spellcasting2020 -> values.addAll(testBoolean(value,
+                            "Spellcasting or Pact Magic feature"));
+                    case spellcastingFeature -> values.addAll(testBoolean(value,
+                            "Spellcasting feature"));
+                    case spellcastingPrepared -> values.addAll(testBoolean(value,
+                            "Spellcasting feature from a class that prepares spells"));
+                    // --- Other: Note ----
+                    case note -> note = replaceText(value);
+                    default -> {
+                        tui().errorf("Unknown prerequisite %s from %s", field.nodeName(), prerequisite);
+                    }
+                }
+            }
+
+            // remove empty values
+            values = values.stream().filter(x -> isPresent(x)).toList();
+
+            hasNote |= isPresent(note);
+            String prereqs = String.join(
+                    values.stream().anyMatch(x -> x.contains(" or ")) ? "; " : ", ",
+                    values);
+            allValues.add(prereqs + (isPresent(note) ? ". " + note : ""));
+        }
+
+        String joinedText = hasNote
+                ? String.join(" Or, ", allValues)
+                : joinConjunct(allValues.stream().anyMatch(x -> x.contains(" or ")) ? "; " : ", ",
+                        " or ", allValues);
+
+        return sharedText == null
+                ? joinedText
+                : sharedText + ", plus " + joinedText;
+
     }
 
     ImmuneResist immuneResist() {
@@ -598,21 +914,44 @@ public class Json2QuteCommon implements JsonSource {
         vulnerable,
     }
 
+    // weighted (order matters)
     enum PrereqFields implements JsonNodeReader {
-        ability,
-        background,
-        feat,
-        feature,
-        item,
-        level,
-        other,
-        pact,
-        patron,
-        prerequisite,
-        proficiency,
-        psionics,
-        race,
-        spell,
-        spellcasting,
+        /* 1 */ level,
+        /* 2 */ pact,
+        /* 3 */ patron,
+        /* 4 */ spell,
+        /* 5 */ race,
+        /* 6 */ alignment,
+        /* 7 */ ability,
+        /* 8 */ proficiency,
+        /* 9 */ spellcasting,
+        /* 10 */ spellcasting2020,
+        /* 11 */ spellcastingFeature,
+        /* 12 */ spellcastingPrepared,
+        /* 13 */ psionics,
+        /* 14 */ feature,
+        /* 15 */ feat,
+        /* 16 */ background,
+        /* 17 */ item,
+        /* 18 */ itemType,
+        /* 19 */ itemProperty,
+        /* 20 */ campaign,
+        /* 21 */ group,
+        /* 22 */ other,
+        /* 23 */ otherSummary,
+        choose, // inner field for spells
+        displayEntry, // inner field for display
+        note, // field alongside other fields
+        prerequisite, // prereq field itself
+        unknown // catcher for unknown attributes (see #fromString())
+    }
+
+    static PrereqFields fromString(String name) {
+        for (PrereqFields f : PrereqFields.values()) {
+            if (f.name().equals(name)) {
+                return f;
+            }
+        }
+        return PrereqFields.unknown;
     }
 }

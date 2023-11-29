@@ -295,11 +295,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
     }
 
-    String toAlignmentCharacters(String src) {
-        return src.replaceAll("\"[A-Z]*[a-z ]+\"", "") // remove notes
-                .replaceAll("[^LCNEGAUXY]", ""); // keep only alignment characters
-    }
-
     List<Spellcasting> monsterSpellcasting() {
         JsonNode array = rootNode.get("spellcasting");
         if (array == null || array.isNull()) {

@@ -510,7 +510,7 @@ public interface JsonSource extends JsonTextReplacement {
         String tagPropText = Tools5eFields.tag.getTextOrDefault(entry, Tools5eFields.prop.getTextOrEmpty(entry));
         Tools5eIndexType type = Tools5eIndexType.fromText(tagPropText);
         if (type == null) {
-            tui().errorf("Unrecognized statblock type in %s", entry);
+            tui().warnf("🚧 Unrecognized statblock type in %s", entry);
             return;
         }
         embedReference(text, entry, type, heading);
@@ -520,7 +520,7 @@ public interface JsonSource extends JsonTextReplacement {
         // For inline statblocks, we start with the dataType
         Tools5eIndexType type = Tools5eIndexType.fromText(Tools5eFields.dataType.getTextOrEmpty(entry));
         if (type == null) {
-            tui().errorf("Unrecognized statblock dataType in %s", entry);
+            tui().warnf("🚧 Unrecognized statblock dataType in %s", entry);
             return;
         }
         JsonNode data = Tools5eFields.data.getFrom(entry);
@@ -615,7 +615,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         if (type == Tools5eIndexType.charoption) {
             // charoption is a special case, it is not a linkable type.
-            tui().warnf("charoption is not yet an embeddable type: %s", entry);
+            tui().warnf("🚧 charoption is not yet an embeddable type: %s", entry);
             return;
         }
 
@@ -827,8 +827,66 @@ public interface JsonSource extends JsonTextReplacement {
         return SkillOrAbility.format(textNode.asText(), index(), getSources());
     }
 
+    default String toAlignmentCharacters(String src) {
+        return src.replaceAll("\"[A-Z]*[a-z ]+\"", "") // remove notes
+                .replaceAll("[^LCNEGAUXY]", ""); // keep only alignment characters
+    }
+
+    default String alignmentListToFull(JsonNode alignmentList) {
+        if (alignmentList == null) {
+            return "";
+        }
+        boolean allText = streamOf(alignmentList).allMatch(JsonNode::isTextual);
+        boolean allObject = streamOf(alignmentList).allMatch(JsonNode::isObject);
+
+        if (allText) {
+            return mapAlignmentToString(toAlignmentCharacters(alignmentList.toString()));
+        } else if (allObject) {
+            return streamOf(alignmentList)
+                    .filter(x -> AlignmentFields.alignment.existsIn(x))
+                    .map(x -> {
+                        if (AlignmentFields.special.existsIn(x)
+                                || AlignmentFields.chance.existsIn(x)
+                                || AlignmentFields.note.existsIn(x)) {
+                            return alignmentObjToFull(x);
+                        } else {
+                            return alignmentListToFull(x.get("alignment"));
+                        }
+                    })
+                    .collect(Collectors.joining(" or "));
+
+        } else {
+            tui().errorf("Unable to parse alignment list from %s", alignmentList);
+        }
+        return "";
+    }
+
+    default String alignmentObjToFull(JsonNode alignmentNode) {
+        if (alignmentNode == null) {
+            return null;
+        }
+        if (alignmentNode.isObject()) {
+            if (AlignmentFields.special.existsIn(alignmentNode)) {
+                return AlignmentFields.special.replaceTextFrom(alignmentNode, index());
+            } else {
+                String chance = "";
+                String note = "";
+                if (AlignmentFields.chance.existsIn(alignmentNode)) {
+                    chance = String.format(" (%s%%)", AlignmentFields.chance.getFrom(alignmentNode));
+                }
+                if (AlignmentFields.note.existsIn(alignmentNode)) {
+                    note = " (" + AlignmentFields.note.replaceTextFrom(alignmentNode, index()) + ")";
+                }
+                return String.format("%s%s%s",
+                        alignmentObjToFull(AlignmentFields.alignment.getFrom(alignmentNode)),
+                        chance, note);
+            }
+        }
+        return mapAlignmentToString(alignmentNode.asText().toUpperCase());
+    }
+
     default String mapAlignmentToString(String a) {
-        return switch (a) {
+        return switch (a.toUpperCase()) {
             case "A" -> "Any alignment";
             case "C" -> "Chaotic";
             case "CE" -> "Chaotic Evil";
@@ -846,7 +904,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "LNCE" -> "Lawful Neutral or Chaotic Evil";
             case "LELG" -> "Lawful Evil or Lawful Good";
             case "LELN", "LNLE" -> "Lawful Evil or Lawful Neutral";
-            case "N", "NNXNYN" -> "Neutral";
+            case "N", "NXNY", "NNXNYN" -> "Neutral";
             case "NX" -> "Neutral (law/chaos axis)";
             case "NY" -> "Neutral (good/evil axis)";
             case "NE" -> "Neutral Evil";
@@ -858,7 +916,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "LGNYE" -> "Any Non-Chaotic alignment";
             case "LNXCNYE" -> "Any Non-Good alignment";
             case "NXCGNYE" -> "Any Non-Lawful alignment";
-            case "LNYNXCG" -> "Any Non-Evil alignment";
+            case "LNXCNYG", "LNYNXCG" -> "Any Non-Evil alignment";
             case "U" -> "Unaligned";
             default -> {
                 tui().errorf("What alignment is this? %s (from %s)", a, getSources());
@@ -960,38 +1018,6 @@ public interface JsonSource extends JsonTextReplacement {
             case "SM" -> "Small or Medium";
             default -> "Unknown";
         };
-    }
-
-    default String raceToText(JsonNode race) {
-        StringBuilder str = new StringBuilder();
-        str.append(SourceField.name.getTextOrEmpty(race));
-        if (Tools5eFields.subrace.existsIn(race)) {
-            str.append(" (").append(Tools5eFields.subrace.getTextOrEmpty(race)).append(")");
-        }
-        return str.toString();
-    }
-
-    default String levelToText(JsonNode levelNode) {
-        if (levelNode.isObject()) {
-            List<String> levelText = new ArrayList<>();
-            levelText.add(levelToText(Tools5eFields.level.getFrom(levelNode).asText()));
-            if (levelNode.has("class") || levelNode.has("subclass")) {
-                JsonNode classNode = SourceField._class_.getFrom(levelNode);
-                if (classNode == null) {
-                    classNode = Tools5eFields.subclass.getFrom(levelNode);
-                }
-                boolean visible = !Tools5eFields.visible.existsIn(classNode)
-                        || Tools5eFields.visible.booleanOrDefault(classNode, false);
-                JsonNode source = SourceField.source.getFrom(classNode);
-                boolean included = source == null || index().sourceIncluded(source.asText());
-                if (visible && included) {
-                    levelText.add(SourceField.name.getTextOrEmpty(classNode));
-                }
-            }
-            return String.join(" ", levelText);
-        } else {
-            return levelToText(levelNode.asText());
-        }
     }
 
     default String levelToText(String level) {
@@ -1237,6 +1263,13 @@ public interface JsonSource extends JsonTextReplacement {
             }
             return rowData.get(0).toString();
         }
+    }
+
+    enum AlignmentFields implements JsonNodeReader {
+        alignment,
+        chance,
+        note,
+        special
     }
 
     enum AttackFields implements JsonNodeReader {

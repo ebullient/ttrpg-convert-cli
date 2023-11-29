@@ -54,10 +54,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         return index().cfg();
     }
 
-    default boolean isPresent(String s) {
-        return s != null && !s.isBlank();
-    }
-
     default List<String> findAndReplace(JsonNode jsonSource, String field) {
         return findAndReplace(jsonSource, field, s -> s);
     }
