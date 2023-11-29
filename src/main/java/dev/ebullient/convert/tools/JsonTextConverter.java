@@ -58,6 +58,33 @@ public interface JsonTextConverter<T extends IndexType> {
         }
     }
 
+    default boolean isArrayNode(JsonNode node) {
+        return node != null && node.isArray();
+    }
+
+    default boolean isObjectNode(JsonNode node) {
+        return node != null && node.isObject();
+    }
+
+    default JsonNode objectIntersect(JsonNode a, JsonNode b) {
+        if (a.equals(b)) {
+            return a;
+        }
+        ObjectNode x = Tui.MAPPER.createObjectNode();
+        for (String k : iterableFieldNames(a)) {
+            if (a.get(k).equals(b.get(k))) {
+                x.set(k, a.get(k));
+            } else if (isObjectNode(a.get(k)) && isObjectNode(b.get(k))) {
+                x.set(k, objectIntersect(a.get(k), b.get(k)));
+            }
+        }
+        return x;
+    }
+
+    default boolean isPresent(String s) {
+        return s != null && !s.isBlank();
+    }
+
     default String formatDice(String diceRoll) {
         // needs to be escaped: \\ to escape the \\ so it is preserved in the output
         String avg = parseState().inMarkdownTable() ? "\\\\|avg" : "|avg";
@@ -134,6 +161,9 @@ public interface JsonTextConverter<T extends IndexType> {
         if (source == null) {
             return List.of();
         }
+        if (!source.isArray()) {
+            return List.of(source);
+        }
         return source::elements;
     }
 
@@ -168,6 +198,10 @@ public interface JsonTextConverter<T extends IndexType> {
 
     default String joinConjunct(String lastJoiner, List<String> list) {
         return joinConjunct(list, ", ", lastJoiner, false);
+    }
+
+    default String joinConjunct(String joiner, String lastJoiner, List<String> list) {
+        return joinConjunct(list, joiner, lastJoiner, false);
     }
 
     default String joinConjunct(List<String> list, String joiner, String lastJoiner, boolean nonOxford) {

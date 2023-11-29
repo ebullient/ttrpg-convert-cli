@@ -847,7 +847,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     public JsonNode getOrigin(String finalKey) {
         JsonNode result = nodeIndex.get(finalKey);
         if (result == null) {
-            List<String> target = nodeIndex.keySet().stream()
+            result = variantIndex.get(finalKey);
+        }
+        if (result == null) {
+            List<String> target = variantIndex.keySet().stream()
                     .filter(k -> k.startsWith(finalKey))
                     .collect(Collectors.toList());
             if (target.size() == 1) {
@@ -875,14 +878,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public JsonNode getOrigin(Tools5eIndexType type, String name, String source) {
         String key = type.createKey(name, source);
-        return nodeIndex.get(key);
+        return getOrigin(key);
     }
 
     public JsonNode getOrigin(Tools5eIndexType type, JsonNode x) {
         if (x == null) {
             return null;
         }
-        return nodeIndex.get(type.createKey(x));
+        String key = type.createKey(x);
+        return getOrigin(key);
     }
 
     public String linkifyByName(Tools5eIndexType type, String name) {
@@ -917,7 +921,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
             String key = getAliasOrDefault(target.get(0));
             JsonNode node = filteredIndex.get(key); // only included items
-            return type.linkify(this, node);
+            return node == null ? name : type.linkify(this, node);
         });
     }
 
