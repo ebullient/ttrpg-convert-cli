@@ -328,6 +328,21 @@ public class JsonSourceCopier implements JsonSource {
      * @param copyTo JsonNode with attributes that can be used to resolve templates
      */
     private JsonNode resolveDynamicText(String originKey, JsonNode value, JsonNode target) {
+        if (value == null || !(value.isArray() || value.isObject() || value.isTextual())) {
+            return value;
+        }
+        if (value.isArray()) {
+            for (int i = 0; i < value.size(); i++) {
+                ((ArrayNode) value).set(i, resolveDynamicText(originKey, value.get(i), target));
+            }
+            return value;
+        }
+        if (value.isObject()) {
+            for (Entry<String, JsonNode> e : iterableFields(value)) {
+                e.setValue(resolveDynamicText(originKey, e.getValue(), target));
+            }
+            return value;
+        }
         Matcher matcher = variable_subst.matcher(value.toString());
         while (matcher.find()) {
             String[] pieces = matcher.group("variable").split("__");
