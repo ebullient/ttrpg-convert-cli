@@ -68,11 +68,12 @@ public abstract class CompendiumSources {
         JsonNode copyElement = Fields._copy.getFrom(jsonElement);
         String copyOf = SourceField.name.getTextOrNull(copyElement);
         String copySrc = SourceField.source.getTextOrNull(copyElement);
+        String copiedFrom = Fields._copiedFrom.getTextOrNull(copyElement);
 
         if (copyOf != null) {
             srcText.add(String.format("Derived from %s (%s)", copyOf, copySrc));
-        } else if (Fields._copiedFrom.existsIn(jsonElement)) {
-            srcText.add(String.format("Derived from %s", Fields._copiedFrom.getTextOrEmpty(copyElement)));
+        } else if (copiedFrom != null) {
+            srcText.add(String.format("Derived from %s", copiedFrom));
         }
 
         // find/add additional sources
