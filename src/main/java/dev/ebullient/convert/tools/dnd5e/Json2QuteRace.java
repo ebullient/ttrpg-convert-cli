@@ -27,6 +27,10 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     @Override
     protected QuteRace buildQuteResource() {
+        if (RaceFields._rawName.existsIn(rootNode)) {
+            tui().debugf("Skipping output of base race %s", sources.getKey());
+            return null;
+        }
         String name = type.decoratedName(rootNode);
         Tags tags = new Tags(getSources());
 
@@ -229,8 +233,8 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     public static void updateBaseRace(Tools5eIndex tools5eIndex, JsonNode jsonSource, Set<JsonNode> inputSubraces,
             List<JsonNode> subraces) {
-        if (!RaceFields._isBaseRace.existsIn(jsonSource)) {
 
+        if (!RaceFields._isBaseRace.existsIn(jsonSource)) {
             // If one of the original subraces was missing a name, it shares
             // the base race name. Update the base race name to differentiate
             // it from the subrace.
@@ -243,37 +247,37 @@ public class Json2QuteRace extends Json2QuteCommon {
                         TtrpgValue.indexKey.getTextOrThrow(jsonSource));
             }
 
-            subraces.sort((a, b) -> {
-                String aName = SourceField.name.getTextOrThrow(a);
-                String bName = SourceField.name.getTextOrThrow(b);
-                return aName.compareTo(bName);
-            });
+            // subraces.sort((a, b) -> {
+            //     String aName = SourceField.name.getTextOrThrow(a);
+            //     String bName = SourceField.name.getTextOrThrow(b);
+            //     return aName.compareTo(bName);
+            // });
 
-            ArrayNode entries = SourceField.entries.readArrayFrom(jsonSource);
+            // ArrayNode entries = SourceField.entries.readArrayFrom(jsonSource);
 
-            ArrayNode subraceList = entries.arrayNode();
-            subraces.forEach(x -> subraceList.add(String.format("{@race %s|%s|%s (%s)}",
-                    SourceField.name.getTextOrThrow(x),
-                    SourceField.source.getTextOrThrow(x),
-                    SourceField.name.getTextOrThrow(x),
-                    SourceField.source.getTextOrThrow(x))));
+            // ArrayNode subraceList = entries.arrayNode();
+            // subraces.forEach(x -> subraceList.add(String.format("{@race %s|%s|%s (%s)}",
+            //         SourceField.name.getTextOrThrow(x),
+            //         SourceField.source.getTextOrThrow(x),
+            //         SourceField.name.getTextOrThrow(x),
+            //         SourceField.source.getTextOrThrow(x))));
 
-            ArrayNode sections = entries.arrayNode()
-                    .add(entries.objectNode()
-                            .put("type", "section")
-                            .set("entries", entries.arrayNode()
-                                    .add("This race has multiple subraces, as listed below:")
-                                    .add(entries.objectNode()
-                                            .put("type", "list")
-                                            .set("items", subraceList))))
-                    .add(entries.objectNode()
-                            .put("type", "section")
-                            .set("entries", entries.objectNode()
-                                    .put("type", "entries")
-                                    .put("name", "Traits")
-                                    .set("entries", entries)));
+            // ArrayNode sections = entries.arrayNode()
+            //         .add(entries.objectNode()
+            //                 .put("type", "section")
+            //                 .set("entries", entries.arrayNode()
+            //                         .add("This race has multiple subraces, as listed below:")
+            //                         .add(entries.objectNode()
+            //                                 .put("type", "list")
+            //                                 .set("items", subraceList))))
+            //         .add(entries.objectNode()
+            //                 .put("type", "section")
+            //                 .set("entries", entries.objectNode()
+            //                         .put("type", "entries")
+            //                         .put("name", "Traits")
+            //                         .set("entries", entries)));
 
-            SourceField.entries.setIn(jsonSource, sections);
+            // SourceField.entries.setIn(jsonSource, sections);
             RaceFields._isBaseRace.setIn(jsonSource, BooleanNode.TRUE);
         }
     }
