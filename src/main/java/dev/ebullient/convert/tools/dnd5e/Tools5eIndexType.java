@@ -136,8 +136,8 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     SourceField.source.getTextOrEmpty(x));
         }
 
-        String name = SourceField.name.getTextOrEmpty(x);
-        String source = SourceField.source.getTextOrEmpty(x);
+        String name = SourceField.name.getTextOrEmpty(x).trim();
+        String source = SourceField.source.getTextOrEmpty(x).trim();
 
         switch (this) {
             case classfeature -> {
@@ -152,11 +152,11 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                         .toLowerCase();
             }
             case card -> {
-                String set = DeckFields.set.getTextOrThrow(x);
+                String set = DeckFields.set.getTextOrThrow(x).trim();
                 return String.format("%s|%s|%s|%s",
                         this.name(),
-                        name.trim(),
-                        set.trim(),
+                        name,
+                        set,
                         source)
                         .toLowerCase();
             }
@@ -164,12 +164,12 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 return String.format("%s|%s|%s|%s",
                         this.name(),
                         name,
-                        IndexFields.pantheon.getTextOrEmpty(x),
+                        IndexFields.pantheon.getTextOrEmpty(x).trim(),
                         source)
                         .toLowerCase();
             }
             case itemType, itemProperty -> {
-                String abbreviation = IndexFields.abbreviation.getTextOrDefault(x, name);
+                String abbreviation = IndexFields.abbreviation.getTextOrDefault(x, name).trim();
                 return String.format("%s|%s|%s",
                         this.name(),
                         abbreviation,
@@ -197,7 +197,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 return String.format("%s|%s|%s|%s|%s",
                         this.name(),
                         name,
-                        IndexFields.className.getTextOrEmpty(x),
+                        IndexFields.className.getTextOrEmpty(x).trim(),
                         classSource,
                         scSource.equalsIgnoreCase(classSource) ? "" : scSource)
                         .toLowerCase();
@@ -208,9 +208,9 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 return String.format("%s|%s|%s|%s|%s|%s|%s%s",
                         this.name(),
                         name,
-                        IndexFields.className.getTextOrEmpty(x),
+                        IndexFields.className.getTextOrEmpty(x).trim(),
                         "phb".equalsIgnoreCase(classSource) ? "" : classSource,
-                        IndexFields.subclassShortName.getTextOrEmpty(x),
+                        IndexFields.subclassShortName.getTextOrEmpty(x).trim(),
                         "phb".equalsIgnoreCase(scSource) ? "" : scSource,
                         IndexFields.level.getTextOrEmpty(x),
                         source.equalsIgnoreCase(scSource) ? "" : "|" + source)
@@ -221,7 +221,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 return String.format("%s|%s|%s|%s%s",
                         this.name(),
                         name,
-                        IndexFields.raceName.getTextOrThrow(x),
+                        IndexFields.raceName.getTextOrEmpty(x).trim(),
                         raceSource,
                         source.equalsIgnoreCase(raceSource) ? "" : "|" + source)
                         .toLowerCase();
@@ -254,7 +254,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
     public String fromRawKey(String crossRef) {
         if (this.equals(subclassFeature)) {
-            String[] parts = crossRef.split("\\|");
+            String[] parts = crossRef.trim().split("\s?\\|\\s?");
             // 0    name,
             // 1    IndexFields.className.getTextOrEmpty(x),
             // 2    "phb".equalsIgnoreCase(classSource) ? "" : classSource,
@@ -267,7 +267,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     parts[5]);
         }
         if (this.equals(classfeature)) {
-            String[] parts = crossRef.split("\\|");
+            String[] parts = crossRef.trim().split("\s?\\|\\s?");
             // 0    name,
             // 1    IndexFields.className.getTextOrEmpty(x),
             // 2    "phb".equalsIgnoreCase(classSource) ? "" : classSource,
@@ -277,7 +277,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             return getClassFeatureKey(parts[0], featureSource, parts[1], parts[2], parts[3]);
         }
         if (this.equals(card)) {
-            String[] parts = crossRef.split("\\|");
+            String[] parts = crossRef.trim().split("\s?\\|\\s?");
             // 0    name,
             // 1    set,
             // 2    source
