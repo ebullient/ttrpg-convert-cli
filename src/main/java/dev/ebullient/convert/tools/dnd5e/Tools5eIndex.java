@@ -844,6 +844,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .collect(Collectors.toList());
     }
 
+    public JsonNode getOriginNoFallback(String finalKey) {
+        JsonNode result = nodeIndex.get(finalKey);
+        if (result == null) {
+            result = variantIndex.get(finalKey);
+        }
+        return result;
+    }
+
     public JsonNode getOrigin(String finalKey) {
         JsonNode result = nodeIndex.get(finalKey);
         if (result == null) {

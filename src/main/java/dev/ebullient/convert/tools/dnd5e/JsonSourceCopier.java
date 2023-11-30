@@ -88,7 +88,7 @@ public class JsonSourceCopier implements JsonSource {
         JsonNode _copy = MetaFields._copy.getFrom(copyTo);
         if (_copy != null) {
             String copyFromKey = type.createKey(_copy);
-            JsonNode copyFrom = index().getOrigin(copyFromKey);
+            JsonNode copyFrom = index().getOriginNoFallback(copyFromKey);
             if (copyToKey.equals(copyFromKey)) {
                 tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, _copy);
                 return copyTo;
@@ -115,7 +115,7 @@ public class JsonSourceCopier implements JsonSource {
 
         List.of("name", "source", "srd", "basicRules")
                 .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
-        List.of("subraces", "srd", "basicRules", "_versions", "hasFluff", "hasFluffImages")
+        List.of("subraces", "srd", "basicRules", "_versions", "hasFluff", "hasFluffImages", "_rawName")
                 .forEach(subraceOut::remove);
 
         copyFrom.remove("__prop"); // cleanup: we copy remainder later
@@ -167,7 +167,8 @@ public class JsonSourceCopier implements JsonSource {
                 JsonNode data = MetaFields.data.getFrom(entry);
                 if (MetaFields.overwrite.existsIn(data)) {
                     // overwrite
-                    int index = findIndexByName("subracething", entries, MetaFields.overwrite.getTextOrThrow(data));
+                    int index = findIndexByName("subrace-merge:" + SourceField.name.getTextOrThrow(subraceOut),
+                            entries, MetaFields.overwrite.getTextOrThrow(data));
                     if (index >= 0) {
                         entries.set(index, entry);
                     } else {
@@ -225,7 +226,7 @@ public class JsonSourceCopier implements JsonSource {
         if (_trait != null) {
             // fetch and apply external template mods
             String templateKey = Tools5eIndexType.monsterTemplate.createKey(_trait);
-            JsonNode template = index.getOrigin(templateKey);
+            JsonNode template = index.getOriginNoFallback(templateKey);
             if (template == null) {
                 tui().warn("Unable to find trait for " + templateKey);
             } else {
@@ -315,6 +316,7 @@ public class JsonSourceCopier implements JsonSource {
 
         // indicate that this is a copy, and remove copy metadata (avoid revisit)
         target.put("isCopy", true);
+        target.remove("_rawName");
         MetaFields._copiedFrom.setIn(target, String.format("%s (%s)",
                 SourceField.name.getTextOrEmpty(copyFrom),
                 SourceField.source.getTextOrEmpty(copyFrom)));
