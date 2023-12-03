@@ -315,7 +315,7 @@ public class JsonSourceCopier implements JsonSource {
         }
 
         // indicate that this is a copy, and remove copy metadata (avoid revisit)
-        target.put("isCopy", true);
+        target.put("_isCopy", true);
         target.remove("_rawName");
         MetaFields._copiedFrom.setIn(target, String.format("%s (%s)",
                 SourceField.name.getTextOrEmpty(copyFrom),

@@ -15,7 +15,8 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 public class Json2QuteLegendaryGroup extends Json2QuteCommon {
     static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|\\d+)");
     static final List<String> LEGENDARY_IGNORE_LIST = List.of("name", "source", "page",
-            TtrpgValue.indexInputType.name(), TtrpgValue.indexKey.name(), "_copy", "_meta", "additionalSources");
+            TtrpgValue.indexInputType.name(), TtrpgValue.indexKey.name(), "_copy", "_meta",
+            "additionalSources", "_rawName", "_isCopy", "_copiedFrom");
 
     Json2QuteLegendaryGroup(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
