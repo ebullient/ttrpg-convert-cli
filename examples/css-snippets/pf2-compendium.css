@@ -5807,7 +5807,7 @@ sup {
   flex: unset;
   display: none;
 }
-.admonition .callout[data-callout=pf2-note] .callout-title .callout-title-inner {
+.admonition-parent .callout[data-callout=pf2-note] .callout-title .callout-title-inner {
   display: inline;
 }
 .callout[data-callout=pf2-note] .callout-content {
@@ -5933,7 +5933,7 @@ sup {
   clear: right;
   float: right;
   max-height: 85vh;
-  max-width: 50vw;
+  max-width: 50%;
   overflow-wrap: break-word;
   overflow-y: scroll;
 }
