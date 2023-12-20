@@ -76,7 +76,7 @@ public class MarkdownDoclet implements Doclet {
         }
 
         public String getValue() {
-            return (value != null) ? value : "docs/";
+            return (value != null) ? value : "docs/templates/";
         }
 
         @Override

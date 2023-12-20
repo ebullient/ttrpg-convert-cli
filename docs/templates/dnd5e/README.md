@@ -1,4 +1,5 @@
-Qute templates for generating content from 5eTools data.
+# 5eTools templates
+ Qute templates for generating content from 5eTools data.
 
 ## References
 

@@ -1,4 +1,4 @@
-## Source mapping
+# Source mapping
 
 - [5etools](#source-name-mapping-for-5etools)
 - [Pf2eTools](#source-name-mapping-for-pf2etools)
@@ -56,6 +56,7 @@ _Support content creators. Only use or include sources that you own._
 | FS | Frozen Sick |
 | FTD | Fizban's Treasury of Dragons |
 | GGR | Guildmasters' Guide to Ravnica |
+| GHLoE | Grim Hollow: Lairs of Etharis |
 | GoS | Ghosts of Saltmarsh |
 | GotSF | Giants of the Star Forge |
 | HAT-LMI | Honor Among Thieves: Legendary Magic Items |

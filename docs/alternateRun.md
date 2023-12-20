@@ -1,6 +1,6 @@
 # Alternate ways to run the CLI
 
-[Conventions]: ../../README.md#conventions
+[Conventions]: ../README.md#conventions
 [_unreleased snapshot_]: #using-unreleased-snapshots
 [java_install]: https://adoptium.net/installation/
 

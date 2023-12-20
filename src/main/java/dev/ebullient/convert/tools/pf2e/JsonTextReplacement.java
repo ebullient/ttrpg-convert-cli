@@ -430,7 +430,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             classSource = parts[1];
         }
 
-        tui().debugf("TODO CLASS found: %s", match);
+        //tui().debugf("TODO CLASS found: %s", match);
         return linkText;
     }
 
@@ -442,7 +442,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         // {@classFeature rage|barbarian||1||optional display text}.
         // Class source is assumed to be CRB. Class feature source is assumed to be the
         // same as class source.",
-        tui().debugf("TODO CLASS FEATURE found: %s", match);
+        //tui().debugf("TODO CLASS FEATURE found: %s", match);
         return match;
     }
 
@@ -452,7 +452,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         // {@subclassFeature methodology|investigator|apg|empiricism|apg|1},
         // {@subclassFeature methodology|investigator|apg|empiricism|apg|1||and optional
         // display text} Class and Class feature source is assumed to be CRB.",
-        tui().debugf("TODO CLASS FEATURE found: %s", match);
+        //tui().debugf("TODO CLASS FEATURE found: %s", match);
         return match;
     }
 }

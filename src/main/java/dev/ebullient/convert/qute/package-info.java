@@ -1,5 +1,5 @@
 /**
- * <h1>Qute Template Reference</h1>
+ * <h2>Qute Template Reference</h2>
  *
  * <p>
  * The following pages describe attributes that you can use to customize
@@ -16,8 +16,6 @@
  * </p>
  *
  * <ul>
- * <li>Additional CLI [Usage help](usage)</li>
- * <li>[Source Map](sourceMap.md) (Source abbreviations)</li>
  * <li>{@link dev.ebullient.convert.tools.dnd5e.qute 5eTools template attributes}</li>
  * <li>{@link dev.ebullient.convert.tools.pf2e.qute Pf2eTools template attributes}</li>
  * </ul>

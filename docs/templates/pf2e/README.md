@@ -1,4 +1,5 @@
-Qute templates for generating content from Pf2eTools data. Pathfinder data uses a lot of inline and nested embedding, which creates additional template variants and some special behavior.
+# Pf2eTools templates
+ Qute templates for generating content from Pf2eTools data. Pathfinder data uses a lot of inline and nested embedding, which creates additional template variants and some special behavior.
 
 ## References
 

@@ -45,9 +45,9 @@ If you don't have a favorite method already, or you don't know what those words 
 There are several options for running `ttrpg-convert`. Choose whichever you are the most comfortable with: 
 
 - [Use a pre-built platform binary](#use-pre-built-platform-binary) (no Java required)
-- [Use JBang](docs/usage/alternateRun.md#use-jbang) (hides Java invocation; sets up command aliases)
-- [Use Java to run the jar](docs/usage/alternateRun.md#use-java-to-run-the-jar)
-- [Build from source](docs/usage/alternateRun.md#build-and-run-from-source)
+- [Use JBang](docs/alternateRun.md#use-jbang) (hides Java invocation; sets up command aliases)
+- [Use Java to run the jar](docs/alternateRun.md#use-java-to-run-the-jar)
+- [Build from source](docs/alternateRun.md#build-and-run-from-source)
 - **Using Windows?** 
     - See the [Windows README](README-WINDOWS.md)
     - Obsidian TTRPG Tutorials: [TTRPG-Convert-CLI 5e][] or [TTRPG-Convert-CLI PF2e][]
@@ -58,7 +58,7 @@ There are several options for running `ttrpg-convert`. Choose whichever you are 
 ### Use pre-built platform binary
 
 > 📝 Where do these binaries come from?  
-> They are built on GitHub managed CI runners using the workflow defined [here](.github/workflows/release.yml), which compiles a Quarkus application (Java) into a platform-native binary using [GraalVM](https://www.graalvm.org/). I build and upload the mac arm64 binary myself (not supported by GH CI) using [this script](.github/workflows/augment-release.yml). 
+> They are built on GitHub managed CI runners using the workflow defined [here](.github/workflows/release.yml), which compiles a Quarkus application (Java) into a platform-native binary using [GraalVM](https://www.graalvm.org/). I build and upload the mac arm64 binary myself (not supported by GH CI) using [this script](.github/augment-release.sh). 
 
 [Download the latest release](https://github.com/ebullient/ttrpg-convert-cli/releases/latest) of the zip or tgz for your platform. Extract the archive. A `ttrpg-convert` binary executable will be in the extracted bin directory. 
 
@@ -74,7 +74,7 @@ Notes:
 - Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
 - _MacOS permission checking_ (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
-**Looking for a different method?** See [Alternate ways to run the CLI](docs/usage/alternateRun.md) for more options to download and run the CLI.
+**Looking for a different method?** See [Alternate ways to run the CLI](docs/alternateRun.md) for more options to download and run the CLI.
 
 ## 🔮 Recommendations for using the CLI
 
@@ -127,7 +127,7 @@ Notes:
     Import one or more admonition json files in the [examples](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples) directory to create the custom admonition types used for converted content:
 
     - [admonitions-5e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-5e.json) for 5e tools
-    - [admonitions-pf2e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-pf2e.json) for pf2e tools
+    - [admonitions-pf2e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-pf2e-v3.json) for pf2e tools
     - [other-admonitions.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/other-admonitions.json) if they are interesting
 
 - **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read-only.  
@@ -216,7 +216,7 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
     git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
     ```
 
-2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content (using the alias set up when [installing the cli](#install-the-command-line-utility)):
+2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content (using the alias set up when [installing the cli](#install-the-ttrpg-convert-cli)):
 
     ```shell
     ttrpg-convert \
@@ -282,7 +282,7 @@ This example performs two basic functions:
 1. **Filter Input Sources:** Using the key `from`, we list the sources (that we own) that we want to include.
 2. **Target file path:** Using the key `path`, we specify the target path for writing generated `compendium` and `rules` content. These directories will be created if they don't exist, and are relative to the output directory specified on the command line with `-o`.
 
-**For additional information on configuration**, see [Configuration](docs/usage/configuration.md).
+**For additional information on configuration**, see [Configuration](docs/configuration.md).
 
 ## Templates
 
@@ -344,7 +344,7 @@ Of particular note are the varied monster templates:
 
 ### Want to help fix it?
 
-- If you're familiar with the command line and are comfortable running the tool, I hope you'll consider running [unreleased snapshots](docs/usage/alternateRun.md#run-unreleased-snapshots) and reporting issues.
+- If you're familiar with the command line and are comfortable running the tool, I hope you'll consider running [unreleased snapshots](docs/alternateRun.md#using-unreleased-snapshots) and reporting issues.
 - If you want to contribute, I'll take help of all kinds: documentation, examples, sample templates, stylesheets are just as important as Java code. See [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Changes that impact generated templates and files
@@ -381,7 +381,7 @@ See the following examples:
 3. 🔥 Better support for table rendering has superceded dedicated/hand-tended random name tables. All of the tables are still present, just in different units more directly related to source material.
 4. 🔥 **Change to monster template attributes:** Legendary group attributes have been simplified to `name` and `desc`, just like other traits. See the [default monster template](https://github.com/ebullient/ttrpg-convert-cli/blob/0736c3929a6d90fe01860692f487b8523b57e60d/src/main/resources/templates/tools5e/monster2md.txt#L80) for an example.
 
-> ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.2.13.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+> ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
 
 ✨ **New template documentation** is available in [docs](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
 
@@ -393,7 +393,7 @@ See the following examples:
 
 2. 🔥 **D&D 5e subclasses now use the source of the subclass in the file name**.
 
-   > ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-1.3.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+   > ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-2.0.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
 
 3. 🎨 CSS styles for D&D 5e and Pathfinder are now available in `examples/css-snippets`. 
 
@@ -404,7 +404,7 @@ See the following examples:
 
     Note: `admonitions-5e.json` and `other-admonitions.json` use colors from CSS snippets to adjust for light and dark mode.
 
-**See [usage notes](docs/usage/README.md) for older changes.**
+**See [usage notes](docs/README.md) for older changes.**
 
 ## Other notes
 

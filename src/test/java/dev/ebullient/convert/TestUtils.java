@@ -41,7 +41,7 @@ public class TestUtils {
     public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
 
     public final static Path README = PROJECT_PATH.resolve("README.md").normalize().toAbsolutePath();
-    static String USAGE = PROJECT_PATH.resolve("docs/usage").normalize().toAbsolutePath().toString();
+    static String USAGE = PROJECT_PATH.resolve("docs").normalize().toAbsolutePath().toString();
 
     // Obnoxious regular expression because markdown links are complicated:
     // Matches: [link text](vaultPath "title")

@@ -11,7 +11,7 @@ In this guide, we'll walk through the configuration options and their practical 
 - [Select data sources with the `from` key](#select-data-sources-with-the-from-key)
 - [Specify target paths with the `paths` key](#specify-target-paths-with-the-paths-key)
 - [Refine content choices](#refine-content-choices)
-    - [Exclude items matching an `excludePattern`](#exclude-items-matching-an-excludePattern)
+    - [Exclude items matching an `excludePattern`](#exclude-items-matching-an-excludepattern)
     - [Exclude items with `exclude`](#exclude-items-with-exclude)
     - [Include items with `include`](#include-items-with-include)
     - [Include source-book content with `full-source`](#include-source-book-content-with-full-source)

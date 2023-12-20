@@ -1,4 +1,6 @@
 /**
+ * <h1>Pf2eTools templates</h1>
+ *
  * Qute templates for generating content from Pf2eTools data.
  *
  * Pathfinder data uses a lot of inline and nested embedding,
