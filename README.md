@@ -5,7 +5,7 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 
 <table><tr>
 <td>Jump</td>
-<td><a href="#install-the-command-line-utility">⬇ Download</a></td>
+<td><a href="#install-the-ttrpg-convert-cli">⬇ Download</a></td>
 <td><a href="#conventions">📝 Conventions</a></td>
 <td><a href="#recommended-plugins">🔌 Plugins</a></td>
 </tr><tr>
