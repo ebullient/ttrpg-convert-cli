@@ -165,10 +165,8 @@
                             <followSymlinks>false</followSymlinks>
                             <includes>
                                 <include>sourceMap*</include>
+                                <include>templates/*</include>
                             </includes>
-                            <excludes>
-                                <exclude>usage</exclude>
-                            </excludes>
                         </fileset>
                         <fileset>
                             <directory>examples</directory>
