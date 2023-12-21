@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,6 +20,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
@@ -46,6 +48,7 @@ public class MarkdownDoclet implements Doclet {
     DocletEnvironment environment;
     Path outputDirectory;
     Path currentResource;
+    Map<String, String> classNameMapping = new HashMap<>();
 
     MarkdownOption targetDir = new MarkdownOption() {
         String value;
@@ -138,6 +141,17 @@ public class MarkdownDoclet implements Doclet {
         // Print package indexes (README.md)
         for (PackageElement p : ElementFilter.packagesIn(elements)) {
             writeReadmeFile(docTrees, p);
+        }
+
+        Map<TypeElement, List<TypeElement>> innerClasses = ElementFilter.typesIn(elements).stream()
+                .filter(t -> t.getKind() != ElementKind.INTERFACE)
+                .filter(t -> t.getNestingKind() != NestingKind.TOP_LEVEL)
+                .filter(t -> !isExcluded(t))
+                .collect(Collectors.groupingBy(t -> (TypeElement) t.getEnclosingElement()));
+
+        for (TypeElement t : innerClasses.keySet()) {
+            String reference = t.getQualifiedName().toString();
+            classNameMapping.put(reference, reference + ".README");
         }
 
         for (TypeElement t : ElementFilter.typesIn(elements)) {
@@ -289,11 +303,12 @@ public class MarkdownDoclet implements Doclet {
         return (TypeElement) ((DeclaredType) superclass).asElement();
     }
 
-    static String qualifiedNameToPath(QualifiedNameable element) {
-        return qualifiedNameToPath(element.getQualifiedName().toString());
+    String qualifiedNameToPath(QualifiedNameable element) {
+        String reference = element.getQualifiedName().toString();
+        return qualifiedNameToPath(classNameMapping.getOrDefault(reference, reference));
     }
 
-    static String qualifiedNameToPath(String reference) {
+    String qualifiedNameToPath(String reference) {
         if (reference.endsWith("qute")) {
             reference += ".README";
         }

@@ -22,7 +22,7 @@ public class TemplateDocTest {
         tui.init(null, true, false);
     }
 
-    // Uset this test in IDEs
+    // Use this test in IDEs
     @Test
     @DisabledIfSystemProperty(named = "maven.home", matches = ".*")
     public void buildVerifyDocs() throws Exception {
