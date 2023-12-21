@@ -83,14 +83,14 @@ jobs:
         uses: actions/upload-artifact@v4
         id: upload-jar
         with:
-          name: artifacts
+          name: artifacts-runner
           path: target/${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-runner.jar
 
       - name: Upload ${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-examples.zip
         uses: actions/upload-artifact@v4
         id: upload-zip
         with:
-          name: artifacts
+          name: artifacts-examples
           path: target/${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-examples.zip
   
   native-binaries:
