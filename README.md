@@ -74,7 +74,7 @@ Notes:
 - Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
 - _MacOS permission checking_ (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
-**Looking for a different method?** See [Alternate ways to run the CLI](docs/alternateRun.md) for more options to download and run the CLI.
+**Looking for a different method?** See [Other ways to run the CLI](docs/alternateRun.md) for more options to download and run the CLI.
 
 ## 🔮 Recommendations for using the CLI
 
@@ -320,11 +320,11 @@ The flag used to specify a template corresponds to the type of template being us
 - Valid template keys for 5etools: `background`, `class`, `deck`, `deity`, `feat`, `hazard`, `item`, `monster`, `note`, `object`, `psionic`, `race`, `reward`, `spell`, `subclass`, `vehicle`.
 - Valid template keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-ability`, `inline-affliction`, `inline-attack`, `item`, `note`, `ritual`, `spell`, `trait`.
 
-### Built-in / example templates
+### Customizing templates
 
 Not everything is customizable. In some cases, indenting, organizing, formatting, and linking text accurately is easier to do inline as a big blob. 
 
-[Documentation](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs) is generated for template-accessible attributes.
+[Documentation](docs/templates/) is generated for template-accessible attributes.
 
 - [Default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates)
 - [Example templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates)
@@ -351,6 +351,10 @@ Of particular note are the varied monster templates:
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
+> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault. 
+> 
+> To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
+
 ### 🔖 ✨ 2.2.12: 5e support for generic and magic item variants
 
 Items may have variants, which are defined as a list in the `variants` attribute.
@@ -374,37 +378,7 @@ See the following examples:
 - The default `monster2md.txt` template has been updated to embed the legendary group.
 - CSS snippets have been updated to support legendary groups embedded in statblocks.
 
-### 🔖 🔥 2.1.0: File name and path changes, template docs and attribute changes
-
-1. 🔥 **Variant rules include the source in the file name**: this avoids duplicates (and there were some).
-2. 🔥 **5eTools changed the classification for some creatures**, which moves them in the bestiary. Specifically: the Four-armed troll is a giant (and not an npc), a river serpent is a monstrosity rather than a beast, and ogre skeletons and red dracoliches are both undead.
-3. 🔥 Better support for table rendering has superceded dedicated/hand-tended random name tables. All of the tables are still present, just in different units more directly related to source material.
-4. 🔥 **Change to monster template attributes:** Legendary group attributes have been simplified to `name` and `desc`, just like other traits. See the [default monster template](https://github.com/ebullient/ttrpg-convert-cli/blob/0736c3929a6d90fe01860692f487b8523b57e60d/src/main/resources/templates/tools5e/monster2md.txt#L80) for an example.
-
-> ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
-
-✨ **New template documentation** is available in [docs](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
-
-### 🔖 🔥 2.0.0: File name and path changes, and styles!
-
-1. 🔥 **A leading slash (`/`) is no longer used at the beginning of compendium and root paths**. This should allow you to move these two directories around more easily. 
-    - I recommend that you keep the compendium and rules sections together as big balls of mud.
-    - If you do want to further move files around, do so from within obsidian, so obsidian can update its links.
-
-2. 🔥 **D&D 5e subclasses now use the source of the subclass in the file name**.
-
-   > ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-2.0.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
-
-3. 🎨 CSS styles for D&D 5e and Pathfinder are now available in `examples/css-snippets`. 
-
-4. 📝 Admonitions are also available for import:
-    - 🎨 [admonitions-5e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-5e.json)
-    - [admonitions-pf2e-v3.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-pf2e-v3.json)
-    - 🎨 [other-admonitions.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/other-admonitions.json)
-
-    Note: `admonitions-5e.json` and `other-admonitions.json` use colors from CSS snippets to adjust for light and dark mode.
-
-**See [usage notes](docs/README.md) for older changes.**
+**See [changelog](docs/changelog.md) for older changes.**
 
 ## Other notes
 

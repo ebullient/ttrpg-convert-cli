@@ -5,7 +5,7 @@ These files, written in JSON or YAML, establish guidelines for how data is conve
 
 In this guide, we'll walk through the configuration options and their practical uses.
 
-> 🚀 Remember to respect copyrights, and use only the sources you own.
+> 🚀 Respect copyrights and support content creators; use only the sources you own.
 
 - [Overview](#overview)
 - [Select data sources with the `from` key](#select-data-sources-with-the-from-key)

@@ -1,4 +1,4 @@
-# Alternate ways to run the CLI
+# Other ways to run the CLI
 
 [Conventions]: ../README.md#conventions
 [_unreleased snapshot_]: #using-unreleased-snapshots
