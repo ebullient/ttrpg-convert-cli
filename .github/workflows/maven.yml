@@ -37,6 +37,7 @@ jobs:
     with:
       artifact: ${{ needs.metadata.outputs.artifact }}
       snapshot: ${{ needs.metadata.outputs.snapshot }}
+      push: "README.md README-WINDOWS.md docs"
     secrets: inherit
 
   native-build:
