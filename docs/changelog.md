@@ -1,4 +1,4 @@
-## Changelog Archive
+# Changelog Archive
 
 [README.md]: https://github.com/ebullient/ttrpg-convert-cli
 [examples/config]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/config
@@ -12,7 +12,7 @@
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
-### 🔖 🔥 2.1.0: File name and path changes, template docs and attribute changes
+## 🔖 🔥 2.1.0: File name and path changes, template docs and attribute changes
 
 1. 🔥 **Variant rules include the source in the file name**: this avoids duplicates (and there were some).
 2. 🔥 **5eTools changed the classification for some creatures**, which moves them in the bestiary. Specifically: the Four-armed troll is a giant (and not an npc), a river serpent is a monstrosity rather than a beast, and ogre skeletons and red dracoliches are both undead.
@@ -23,7 +23,7 @@
 
 ✨ **New template documentation** is available in [docs](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
 
-### 🔖 🔥 2.0.0: File name and path changes, and styles!
+## 🔖 🔥 2.0.0: File name and path changes, and styles!
 
 1. 🔥 **A leading slash (`/`) is no longer used at the beginning of compendium and root paths**. This should allow you to move these two directories around more easily. 
     - I recommend that you keep the compendium and rules sections together as big balls of mud.
@@ -42,7 +42,7 @@
 
     Note: `admonitions-5e.json` and `other-admonitions.json` use colors from CSS snippets to adjust for light and dark mode.
 
-### 🔖 1.1.1: Dice roller in statblocks and text
+## 🔖 1.1.1: Dice roller in statblocks and text
 
 If you are using the default templates and want to render dice rolls, set
 `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice
@@ -51,7 +51,7 @@ If you are using the default templates and want to render dice rolls, set
 
 See [examples/config][] for the general structure of config.
 
-### 🔖 1.1.0: Images for backgrounds, items, monsters, races, and spells
+## 🔖 1.1.0: Images for backgrounds, items, monsters, races, and spells
 
 The conversion tool downloads fluff images into `img` directories within each type, e.g. `backgrounds/img` or `bestiary/aberration/img`. These images are unordered, and are not referenced in entry text. Templates must be modified to include them.
 
@@ -124,7 +124,7 @@ Notes:
 - There is an example for each type in the [example templates directory][ex-templates] directory. Relevant file names start with `images-`.
 
 
-### 🔖  1.0.18: You can put more things in json input now!
+## 🔖  1.0.18: You can put more things in json input now!
 
 Use `convert` to import source text for books and adventures that you own: 
 
@@ -151,7 +151,7 @@ Be careful of paths here. Relative paths will be resolved depending on where the
 
 You can place this configuration one file or several, your choice. 
 
-### 🔖  1.0.16: Sections in Spell text
+## 🔖  1.0.16: Sections in Spell text
 
 Text for changes to spells at higher levels is added to spells a little differently depending on how complicated the spell is.
 
@@ -161,14 +161,14 @@ If a spell has sections, then "At Higher Levels" will be added as an additional 
 
 The [default spell template (spell2md.txt)][def-templates] will test for sections in the spell text, and if so, now inserts a `## Summary` header above the Classes/Sources information, to ensure that the penultimate section can be embedded cleanly.
 
-### 🔖  1.0.15: Flowcharts, optfeature in text, styled rows
+## 🔖  1.0.15: Flowcharts, optfeature in text, styled rows
 
 - `optfeature` text is rendered (Tortle package)
 - `flowcharts` is rendered as a series of `flowchart` callouts  
     Use the admonition plugin to create a custom `flowchart` callout with an icon of your choice.
 - The adventuring gear tables from the PHB have been corrected
 
-### 🔖  1.0.14: Ability Scores
+## 🔖  1.0.14: Ability Scores
 
 As shown in [monster2md-scores.txt][ex-templates], you can now access ability scores directly to achieve alternate layouts in templates, for example: 
 
@@ -181,19 +181,19 @@ As shown in [monster2md-scores.txt][ex-templates], you can now access ability sc
 - CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
 ```
 
-### 🔖 1.0.13: Item property tags are now sorted
+## 🔖 1.0.13: Item property tags are now sorted
 
 Property tags on items are now sorted (not alphabetically) to stabilize their order in generated files. This should be a one-time bit of noise as you cross this release (using a version before to using some version after).
 
-### 🔖 🔥 1.0.12: File name and image reference changes
+## 🔖 🔥 1.0.12: File name and image reference changes
 
-#### 🔥 File name changes
+### 🔥 File name changes
 
 Each file name will now contain an abbreviation of the primary source to avoid conflicts (for anything that does not come from phb, mm, dmg).
 
 ***If you use the Templater plugin***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/json5e-cli-renameFiles-1.0.12.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top as necessary.
 
-#### 🔥 1.0.12: Deity symbols and Bestiary tokens
+### 🔥 1.0.12: Deity symbols and Bestiary tokens
 
 Symbols and tokens have changed in structure. Custom templates will need a bit of adjustment.
 

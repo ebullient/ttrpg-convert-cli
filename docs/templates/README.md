@@ -1,4 +1,4 @@
-## Qute Template Reference
+# Qute Template Reference
 
 The following pages describe attributes that you can use to customize generated output in Qute templates.
 
