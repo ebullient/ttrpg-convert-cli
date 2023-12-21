@@ -66,7 +66,7 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_PATHS: "docs examples"
-          TEXT_REPLACE: "README.md docs/alternateRun.md"
+          TEXT_REPLACE: "README.md README-WINDOWS.md docs/alternateRun.md"
         run: |
           gh repo clone ebullient/workflows shared-workflows -- --depth=1
           git config user.name ${{ env.GH_BOT_NAME }}
