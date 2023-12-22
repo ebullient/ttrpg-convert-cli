@@ -1,4 +1,4 @@
-# Changelog Archive
+# Changelog
 
 [README.md]: https://github.com/ebullient/ttrpg-convert-cli
 [examples/config]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/config
@@ -6,11 +6,34 @@
 [ex-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates
 [def-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates
 
-**For the latest changes, see the project [README.md][].**
-
----
-
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
+
+> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault. 
+> 
+> To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
+
+## 🔖 ✨ 2.2.12: 5e support for generic and magic item variants
+
+Items may have variants, which are defined as a list in the `variants` attribute.
+
+- Use `resource.variantAliases` to get a list of aliases for variants
+- Use `resource.variantSectionLinks` to get a list of links to variant sections
+- Iterate over the section list to generate sections (`##`) for each variant
+
+See the following examples:
+
+- [Default `item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/item2md.txt)
+- [Example `examples/templates/tools5e/images-item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/images-item2md.txt)
+
+## 🔖 ✨ 2.2.5: New templates for decks (and cards), legendary groups, and psionics
+
+- **New templates**: `deck2md.txt`, `legendaryGroup2md.txt`, `psionic2md.txt`
+  - Decks, when present, will be generated under `compendium/decks`. Cards are part of decks.
+  - Legendary groups, when present, will be generated under `bestiary/legendary-groups`
+  - Psionics, when present, will be generated under `compendium/psionics`.
+- `feat2md.txt` is now also used for optional features.
+- The default `monster2md.txt` template has been updated to embed the legendary group.
+- CSS snippets have been updated to support legendary groups embedded in statblocks.
 
 ## 🔖 🔥 2.1.0: File name and path changes, template docs and attribute changes
 
