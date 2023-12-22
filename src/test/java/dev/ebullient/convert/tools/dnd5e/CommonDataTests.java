@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -68,9 +69,13 @@ public class CommonDataTests {
                     break;
             }
 
-            for (String x : List.of("adventures.json", "books.json",
-                    "adventure/adventure-wdh.json", "adventure/adventure-pota.json",
-                    "book/book-vgm.json", "book/book-phb.json")) {
+            var additional = new ArrayList<>(List.of("adventures.json", "books.json"));
+            if (variant != TestInput.none) {
+                additional.addAll(List.of("adventure/adventure-wdh.json", "adventure/adventure-pota.json", "book/book-vgm.json",
+                        "book/book-phb.json"));
+            }
+
+            for (String x : additional) {
                 tui.readFile(TestUtils.PATH_5E_TOOLS_DATA.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
             }
             tui.readToolsDir(TestUtils.PATH_5E_TOOLS_DATA, index::importTree);
@@ -166,10 +171,14 @@ public class CommonDataTests {
                     .writeFiles(Tools5eIndexType.deck)
                     .writeImages();
 
-            if (variant != TestInput.none) {
-                Path imageDir = outDir.resolve("img");
-                assertThat(imageDir.toFile()).exists();
-            }
+            TestUtils.assertDirectoryContents(outDir, tui);
+            Path imageDir = outDir.resolve("img");
+            assertThat(imageDir).isDirectory();
+
+            List<Path> srd = List.of(outDir.resolve("deck-of-illusions.md"), outDir.resolve("deck-of-many-things.md"));
+            List<Path> some = List.of(outDir.resolve("roleplaying-cards-wbtw.md"));
+            List<Path> all = List.of(outDir.resolve("elder-runes-deck-wdmm.md"));
+            testVariants(srd, some, all);
 
             TestUtils.assertDirectoryContents(outDir, tui);
         }
@@ -179,19 +188,25 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
 
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
-            Path deitiesDir = deleteDir(Tools5eIndexType.deity, outputPath, index.compendiumFilePath());
+            Path outDir = deleteDir(Tools5eIndexType.deity, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
                     .writeFiles(Tools5eIndexType.deity)
                     .writeImages();
 
-            if (variant != TestInput.none) {
-                Path imageDir = deitiesDir.resolve("img");
-                assertThat(imageDir.toFile()).exists();
-            }
+            List<Path> srd = List.of(outDir.resolve("celtic-lugh.md"), outDir.resolve("forgotten-realms-oghma.md"));
+            List<Path> some = List.of(outDir.resolve("dragonlance-majere.md"));
+            List<Path> all = List.of(outDir.resolve("exandria-lolth.md"));
+            testVariants(srd, some, all);
 
-            TestUtils.assertDirectoryContents(deitiesDir, tui);
+            Path imageDir = outDir.resolve("img");
+            if (variant == TestInput.none) {
+                assertThat(imageDir).doesNotExist();
+            } else {
+                assertThat(imageDir).isDirectory();
+            }
+            TestUtils.assertDirectoryContents(outDir, tui);
         }
     }
 
@@ -240,10 +255,10 @@ public class CommonDataTests {
             assertThat(tokenDir.toFile()).exists();
 
             Path lgDir = bestiaryDir.resolve("legendary-group");
-            if (variant == TestInput.all) {
-                assertThat(lgDir.toFile()).exists();
+            if (variant == TestInput.none) {
+                assertThat(lgDir).doesNotExist();
             } else {
-                assertThat(lgDir.toFile()).doesNotExist();
+                assertThat(lgDir).exists();
             }
 
             try (Stream<Path> paths = Files.list(bestiaryDir)) {
@@ -289,7 +304,7 @@ public class CommonDataTests {
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
-            assertThat(undead.toFile()).exists();
+            assertThat(undead).exists();
 
             TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
@@ -346,7 +361,7 @@ public class CommonDataTests {
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
-            assertThat(undead.toFile()).exists();
+            assertThat(undead).exists();
 
             TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
@@ -398,6 +413,14 @@ public class CommonDataTests {
                     .writeFiles(List.of(
                             Tools5eIndexType.object))
                     .writeImages();
+
+            Path imageDir = outDir.resolve("token");
+            assertThat(imageDir).exists();
+
+            List<Path> srd = List.of(outDir.resolve("generic-object.md"));
+            List<Path> some = List.of(outDir.resolve("ballista.md"));
+            List<Path> all = List.of(outDir.resolve("boilerdrak-dsotdq.md"));
+            testVariants(srd, some, all);
 
             TestUtils.assertDirectoryContents(outDir, tui);
         }
@@ -462,7 +485,7 @@ public class CommonDataTests {
                     .writeImages();
 
             if (variant == TestInput.none) {
-                assertThat(rewardDir.toFile()).doesNotExist();
+                assertThat(rewardDir).doesNotExist();
             } else {
                 TestUtils.assertDirectoryContents(rewardDir, tui);
             }
@@ -529,7 +552,7 @@ public class CommonDataTests {
                     .writeImages();
 
             if (variant == TestInput.none) {
-                assertThat(outDir.toFile()).doesNotExist();
+                assertThat(outDir).doesNotExist();
             } else {
                 TestUtils.assertDirectoryContents(outDir, tui);
             }
@@ -545,5 +568,24 @@ public class CommonDataTests {
         final Path typeDir = outputPath.resolve(vaultPath).resolve(relative);
         TestUtils.deleteDir(typeDir);
         return typeDir;
+    }
+
+    void testVariants(List<Path> srd, List<Path> some, List<Path> all) {
+        if (variant == TestInput.none) {
+            assertAll(
+                    () -> srd.forEach(path -> assertThat(path).exists()),
+                    () -> some.forEach(path -> assertThat(path).doesNotExist()),
+                    () -> all.forEach(path -> assertThat(path).doesNotExist()));
+        } else if (variant == TestInput.subset) {
+            assertAll(
+                    () -> srd.forEach(path -> assertThat(path).exists()),
+                    () -> some.forEach(path -> assertThat(path).exists()),
+                    () -> all.forEach(path -> assertThat(path).doesNotExist()));
+        } else {
+            assertAll(
+                    () -> srd.forEach(path -> assertThat(path).exists()),
+                    () -> some.forEach(path -> assertThat(path).exists()),
+                    () -> all.forEach(path -> assertThat(path).exists()));
+        }
     }
 }

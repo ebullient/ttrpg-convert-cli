@@ -68,6 +68,10 @@ public class TtrpgConfig {
         return activeConfig().addSource(name, abv, longAbv);
     }
 
+    public static boolean includeBookAdventureSource(String src) {
+        return getConfig().allowedSources.add(src);
+    }
+
     public static Map<String, String> imageFallbackPaths() {
         return activeConfig().fallbackImagePaths;
     }

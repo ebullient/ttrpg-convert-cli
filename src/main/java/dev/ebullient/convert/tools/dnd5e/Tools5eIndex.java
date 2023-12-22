@@ -165,8 +165,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');
             String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
+            String source = basename.replace("book-", "").replace("adventure-", "");
+            TtrpgConfig.includeBookAdventureSource(source);
 
-            ((ObjectNode) node).put("id", basename.replace("book-", "").replace("adventure-", ""));
+            ((ObjectNode) node).put("id", source);
             addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData,
                     node);
         }
