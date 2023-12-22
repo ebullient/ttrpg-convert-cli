@@ -12,12 +12,12 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 <td><a href="#use-with-5etools-json-data">📖 5eTools</a></td>
 <td><a href="#use-with-pf2etools-json-data">📖 Pf2eTools</a></td>
 <td><a href="#templates">🎨 Templates</a></td>
-<td><a href="#changes-that-impact-generated-templates-and-files">🚜 Changelog</a></td>
+<td><a href="CHANGELOG.md">🚜 Changelog</a></td>
 </tr></table>
 
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
 
-> 🚜 Check out [Changes that impact generated templates and files](#changes-that-impact-generated-templates-and-files) and/or release notes for breaking changes and new capabilities. 
+> 🚜 Check out [Changes that impact generated templates and files](CHANGELOG.md) and/or release notes for breaking changes and new capabilities. 
 
 ## Using the Command Line
 
@@ -74,7 +74,9 @@ Notes:
 - Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
 - _MacOS permission checking_ (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
-**Looking for a different method?** See [Other ways to run the CLI](docs/alternateRun.md) for more options to download and run the CLI.
+**Looking for a different method?** 
+
+See [Other ways to run the CLI](docs/alternateRun.md) for more options to download and run the CLI.
 
 ## 🔮 Recommendations for using the CLI
 
@@ -89,9 +91,10 @@ Notes:
     git diff --no-index vault/compendium/bestiary generated/compendium/bestiary
     ```
 
-- 📑 Use a copy tool that only updates modified files, like [rsync][], to avoid unnecessary file copying when updating your vault. Use the checksum option (`-c`) to compare file contents; the file modification date is meaningless given generated files are recreated when the tool is run. We have some suggestions in [discussion #220](https://github.com/ebullient/ttrpg-convert-cli/discussions/220), but it is very much a work in progress.
+- 📑 Use a copy tool that only updates modified files, like [rsync][], to avoid unnecessary file copying when updating your vault. Use the checksum option (`-c`) to compare file contents; the file modification date is meaningless given generated files are recreated when the tool is run. We have some suggestions in [discussion #220][sync-discussion], but it is very much a work in progress.
 
 [rsync]: https://stackoverflow.com/a/19540611
+[sync-discussion]: https://github.com/ebullient/ttrpg-convert-cli/discussions/220
 
 ## Conventions
 
@@ -111,7 +114,7 @@ Notes:
   
   - `css-snippets` will contain **CSS files for special fonts** used by some content. You will need to copy these snippets into your vault (`.obsidian/snippets`) and enable them (`Appearance -> Snippets`) to ensure all content in your vault is styled correctly. 
 
-- **Styles.** Every document has a `cssclasses` attribute that assigns a CSS class. We have some [CSS snippets](#optional-css-snippets) that you can use to customize elements of the compendium. 
+- **Styles.** Every document has a `cssclasses` attribute that assigns a CSS class. We have some [CSS snippets](docs/README.md#optional-css-snippets) that you can use to customize elements of the compendium. 
   - 5e tools: `json5e-background`, `json5e-class`, `json5e-deck`, `json5e-deity`, `json5e-feat`, `json5e-hazard`, `json5e-item`, `json5e-monster`, `json5e-note`, `json5e-object`, `json5e-psionic`, `json5e-race`, `json5e-reward`, `json5e-spell`, and `json5e-vehicle`.
   - pf2e tools: `pf2e`, `pf2e-ability`, `pf2e-action`, `pf2e-affliction`, `pf2e-archetype`, `pf2e-background`, `pf2e-book`, `pf2e-delity`, `pf2e-feat`, `pf2e-hazard`, `pf2e-index`, `pf2e-item`, `pf2e-note`, `pf2e-ritual`, `pf2e-sleep`, `pf2e-trait`, 
 
@@ -122,42 +125,13 @@ Notes:
 
 ## Recommended plugins 
 
-- **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: The admonitions plugin supports a codeblock style that is used for more complicated content like statblocks, where callout syntax would be difficult to manage. 
+- **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: The admonitions plugin supports a codeblock style that is used for more complicated content like statblocks, where callout syntax would be difficult to manage. See [Admonition plugin notes](docs/README.md#admonitions) for more information.
 
-    Import one or more admonition json files in the [examples](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples) directory to create the custom admonition types used for converted content:
-
-    - [admonitions-5e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-5e.json) for 5e tools
-    - [admonitions-pf2e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-pf2e-v3.json) for pf2e tools
-    - [other-admonitions.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/other-admonitions.json) if they are interesting
-
-- **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read-only.  
-
-    Ensure the plugin has the following options enabled: 
-
-    - *"Ignore force view when not in front matter"*: the plugin will only change the view mode if `obsidianUIMode` is defined in the front matter.    
-    - *"Ignore open files"*: the plugin won't try to change the view mode if the file is already open.
+- **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read-only. See [Force note view mode plugin notes](docs/README.md#force-note-view-mode-by-front-matter) for more information.
 
 - **[TTRPG Statblocks](obsidian://show-plugin?id=obsidian-5e-statblocks)**: Templates for rendering monsters can define a `statblock` in the document body or provide a full or abridged yaml monster in the document header to update monsters in the plugin's bestiary. See [Templates](#templates) for more information.
 
 - **[Initiative Tracker](obsidian://show-plugin?id=initiative-tracker)**: Templates for rendering monsters can include information in the header to define monsters that initiative tracker can use when constructing encounters.
-
-### Optional CSS Snippets
-
-Within the [examples/css-snippets](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets/) folder, you will find some CSS snippets that have been created to further customize the look of the generated content. They include:
-- Functionality to float token images to side of a statblock.
-- Further enhancement of the admonition styles.
-- _PF2 Only_: More realistic looking Statblocks
-- _PF2 Only_: Link Test to display action icons.
-- _PF2 Only_: Light styling of pages as defined through css-classes.
-- And much more.
-
-#### Statblocks
-
-Compendium (`*-compendium`) snippets include styles for statblocks.
-
-If you aren't using a `*-compendium` snippet, you may want to download either `dnd5e-only-statblocks.css` or `pf2-only-statblocks.css` to style your statblocks.
-
-> ⚠️ Do not use an `*-only-statblock.css` snippet and a `*-compendium.css` snippet together.
 
 ## Use with 5eTools JSON data
 
@@ -236,6 +210,7 @@ If you aren't using a `*-compendium` snippet, you may want to download either `d
 
 
 ## Use with Homebrew 
+
 The CLI tool also has the ability to import homebrewed content, though this content must still fit the json standards that are set by 5e or PF2e. 
 
 Perhaps the simplest thing to do to import homebrew is to use already existing homebrew data from the 5etools homebrew github repo: https://github.com/TheGiddyLimit/homebrew. 
@@ -248,8 +223,7 @@ So, for example, if you wanted to use Benjamin Huffman's popular homebrewed [Pug
 ttrpg-convert  --index -s 'SterlingVermin' -o hb-compendium '/path/to/Benjamin Huffman; Pugilist.json' 
 ```
 
-Note that you need to include both the path to the json file *and* the source name, which you can get from the "json" field, at the top of the file under "_meta" and "sources". The process is similar for other homebrew, including your own, so long as it is broadly compatible with the [5e-tools json spec](https://wiki.tercept.net/en/Homebrew/FromZeroToHero). If you use the CLI tool with a config, then you would (staying with our example from above) put 'SterlingVermin' in the "from" field of the config and add the path to the pugilist json file to your build command. 
-
+Note that you need to include both the path to the json file *and* the source name, which you can get from the `json` field, at the top of the file under `_meta` and `sources`. The process is similar for other homebrew, including your own, so long as it is broadly compatible with the [5e-tools json spec](https://wiki.tercept.net/en/Homebrew/FromZeroToHero). If you use the CLI tool with a config, then you would (staying with our example from above) put `SterlingVermin` in the `from` field of the config and add the path to the pugilist json file to your build command. 
 
 ## Using A Configuration File 
 
@@ -346,39 +320,6 @@ Of particular note are the varied monster templates:
 
 - If you're familiar with the command line and are comfortable running the tool, I hope you'll consider running [unreleased snapshots](docs/alternateRun.md#using-unreleased-snapshots) and reporting issues.
 - If you want to contribute, I'll take help of all kinds: documentation, examples, sample templates, stylesheets are just as important as Java code. See [CONTRIBUTING](https://github.com/ebullient/ttrpg-convert-cli/tree/main/CONTRIBUTING.md).
-
-## Changes that impact generated templates and files
-
-**Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
-
-> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault. 
-> 
-> To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
-
-### 🔖 ✨ 2.2.12: 5e support for generic and magic item variants
-
-Items may have variants, which are defined as a list in the `variants` attribute.
-
-- Use `resource.variantAliases` to get a list of aliases for variants
-- Use `resource.variantSectionLinks` to get a list of links to variant sections
-- Iterate over the section list to generate sections (`##`) for each variant
-
-See the following examples:
-
-- [Default `item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/item2md.txt)
-- [Example `examples/templates/tools5e/images-item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/images-item2md.txt)
-
-### 🔖 ✨ 2.2.5: New templates for decks (and cards), legendary groups, and psionics
-
-- **New templates**: `deck2md.txt`, `legendaryGroup2md.txt`, `psionic2md.txt`
-  - Decks, when present, will be generated under `compendium/decks`. Cards are part of decks.
-  - Legendary groups, when present, will be generated under `bestiary/legendary-groups`
-  - Psionics, when present, will be generated under `compendium/psionics`.
-- `feat2md.txt` is now also used for optional features.
-- The default `monster2md.txt` template has been updated to embed the legendary group.
-- CSS snippets have been updated to support legendary groups embedded in statblocks.
-
-**See [changelog](docs/changelog.md) for older changes.**
 
 ## Other notes
 

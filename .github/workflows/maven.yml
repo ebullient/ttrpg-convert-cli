@@ -53,3 +53,15 @@ jobs:
       artifact: ${{ needs.metadata.outputs.artifact }}
       snapshot: ${{ needs.metadata.outputs.snapshot }}
     secrets: inherit
+
+  bump:
+    name: Update website
+    needs: [main-root, build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Bump website
+        env:
+          GH_TOKEN: ${{ secrets.EBULLIENT_PAT }}
+        run: |
+          gh workflow run -R ebullient/ebullient.github.io gh-pages.yml

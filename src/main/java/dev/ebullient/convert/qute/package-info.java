@@ -1,5 +1,5 @@
 /**
- * <h2>Qute Template Reference</h2>
+ * <h1>Qute Template Reference</h1>
  *
  * <p>
  * The following pages describe attributes that you can use to customize
