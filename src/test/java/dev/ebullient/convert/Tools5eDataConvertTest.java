@@ -34,19 +34,22 @@ public class Tools5eDataConvertTest {
     @Test
     void testLiveData_5e(QuarkusMainLauncher launcher) {
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
-            final Path target = testOutput.resolve("srd-index");
-            TestUtils.deleteDir(target);
-
             // SRD
+            final Path srd_index = testOutput.resolve("srd-index");
+            TestUtils.deleteDir(srd_index);
+
             LaunchResult result = launcher.launch("--index",
-                    "-o", target.toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
+                    "-o", srd_index.toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
             // Subset
+            final Path subset_index = testOutput.resolve("subset-index");
+            TestUtils.deleteDir(subset_index);
+
             result = launcher.launch("--index", "-s", "PHB,DMG,XGE,SCAG",
-                    "-o", testOutput.resolve("subset-index").toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
+                    "-o", subset_index.toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -230,13 +233,19 @@ public class Tools5eDataConvertTest {
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
-            Path wbtw = target.resolve("compend ium/adventures/the-wild-beyond-the-witchlight");
-            assertThat(wbtw).exists();
-            assertThat(wbtw).isDirectory();
+            List<Path> dirs = List.of(target.resolve("compend ium/adventures/the-wild-beyond-the-witchlight"),
+                    target.resolve("compend ium/books/players-handbook"));
 
-            Path phb = target.resolve("compend ium/books/players-handbook");
-            assertThat(phb).exists();
-            assertThat(phb).isDirectory();
+            dirs.forEach(d -> {
+                assertThat(d).isDirectory();
+            });
+
+            List<Path> files = List.of(target.resolve("compend ium/backgrounds/witchlight-hand-wbtw.md"),
+                    target.resolve("compend ium/backgrounds/folk-hero.md"));
+
+            files.forEach(f -> {
+                assertThat(f).isRegularFile();
+            });
 
             TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();

@@ -4,11 +4,9 @@
     "compendium": "/compend ium/"
   },
   "from": [
-    "PHB", 
     "DMG", 
     "XGE", 
-    "TCE",
-    "WbtW"
+    "TCE"
   ],
   "include": [
     "race|changeling|mpmm"
