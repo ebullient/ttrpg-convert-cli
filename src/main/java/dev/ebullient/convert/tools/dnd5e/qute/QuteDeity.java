@@ -10,7 +10,7 @@ import io.quarkus.qute.TemplateData;
 /**
  * 5eTools deity attributes ({@code deity2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData

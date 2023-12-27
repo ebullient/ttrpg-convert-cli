@@ -13,7 +13,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools item attributes ({@code item2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData

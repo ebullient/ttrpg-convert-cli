@@ -7,8 +7,8 @@
  * </p>
  *
  * <p>
- * Use a {@code reference.} prefix to access these attributes unless otherwise noted.
- * For example, {@code reference.title}.
+ * Use a {@code resource.} prefix to access these attributes unless otherwise noted.
+ * For example, {@code resource.title}.
  * </p>
  *
  * <p>

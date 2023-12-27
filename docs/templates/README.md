@@ -2,7 +2,7 @@
 
 The following pages describe attributes that you can use to customize generated output in Qute templates.
 
-Use a `reference.` prefix to access these attributes unless otherwise noted. For example, `reference.title`.
+Use a `resource.` prefix to access these attributes unless otherwise noted. For example, `resource.title`.
 
 For more information about Qute, see the [Qute guide](https://quarkus.io/guides/qute).
 

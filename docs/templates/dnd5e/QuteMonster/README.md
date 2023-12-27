@@ -139,7 +139,7 @@ See [ImmuneResist#resist](../ImmuneResist.md#resist)
 
 ### savesSkills
 
-Creature saving throws and skill modifiers as [SavesAndSkills](../SavesAndSkills.md)
+Creature saving throws and skill modifiers as [SavesAndSkills](SavesAndSkills.md)
 
 ### savingThrows
 
@@ -175,7 +175,7 @@ Creature speed as a comma-separated list
 
 ### spellcasting
 
-Creature abilities as a list of [Spellcasting](../Spellcasting.md) attributes
+Creature abilities as a list of [Spellcasting](Spellcasting.md) attributes
 
 ### subtype
 

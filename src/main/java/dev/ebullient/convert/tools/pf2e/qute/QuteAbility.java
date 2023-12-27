@@ -28,7 +28,7 @@ public class QuteAbility extends Pf2eQuteNote {
 
     /**
      * Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection.
-     * See <a href="#traitList">traitList</a> or <a href="#bareTraitList">bareTraitList</a>.
+     * See <a href="#traitlist">traitList</a> or <a href="#baretraitlist">bareTraitList</a>.
      */
     public final Collection<String> traits;
     /** Formatted string. Components required to activate this ability (embedded/inline only) */

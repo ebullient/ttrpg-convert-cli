@@ -19,7 +19,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * 5eTools creature attributes ({@code monster2md.txt})
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData
@@ -46,7 +46,7 @@ public class QuteMonster extends Tools5eQuteBase {
     /** Creature ability scores as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores} */
     public final AbilityScores scores;
     /**
-     * Creature saving throws and skill modifiers as {@link dev.ebullient.convert.tools.dnd5e.qute.SavesAndSkills}
+     * Creature saving throws and skill modifiers as {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills}
      */
     public final SavesAndSkills savesSkills;
     /** Comma-separated string of creature senses (if present). */
@@ -80,7 +80,7 @@ public class QuteMonster extends Tools5eQuteBase {
      * Markdown link to legendary group (can be embedded).
      */
     public final String legendaryGroupLink;
-    /** Creature abilities as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.Spellcasting} attributes */
+    /** Creature abilities as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting} attributes */
     public final List<Spellcasting> spellcasting;
     /** Formatted text containing the creature description. Same as `{resource.text}` */
     public final String description;
@@ -364,7 +364,7 @@ public class QuteMonster extends Tools5eQuteBase {
         public Map<String, List<String>> daily;
         /**
          * Map: key = spell level, value: spell level information as
-         * {@link dev.ebullient.convert.tools.dnd5e.qute.QuteSpell.Spells}
+         * {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells}
          */
         public Map<String, Spells> spells;
         /** Formatted text that should be printed after the list of spells */

@@ -99,7 +99,7 @@ Return a comma-separated list of trait links
 
 ### traits
 
-Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection. See [traitList](#traitList) or [bareTraitList](#bareTraitList).
+Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection. See [traitList](#traitlist) or [bareTraitList](#baretraitlist).
 
 ### trigger
 

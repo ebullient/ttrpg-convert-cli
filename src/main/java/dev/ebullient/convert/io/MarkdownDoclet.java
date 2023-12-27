@@ -138,11 +138,6 @@ public class MarkdownDoclet implements Doclet {
 
         Set<? extends Element> elements = environment.getIncludedElements();
 
-        // Print package indexes (README.md)
-        for (PackageElement p : ElementFilter.packagesIn(elements)) {
-            writeReadmeFile(docTrees, p);
-        }
-
         Map<TypeElement, List<TypeElement>> innerClasses = ElementFilter.typesIn(elements).stream()
                 .filter(t -> t.getKind() != ElementKind.INTERFACE)
                 .filter(t -> t.getNestingKind() != NestingKind.TOP_LEVEL)
@@ -152,6 +147,11 @@ public class MarkdownDoclet implements Doclet {
         for (TypeElement t : innerClasses.keySet()) {
             String reference = t.getQualifiedName().toString();
             classNameMapping.put(reference, reference + ".README");
+        }
+
+        // Print package indexes (README.md)
+        for (PackageElement p : ElementFilter.packagesIn(elements)) {
+            writeReadmeFile(docTrees, p);
         }
 
         for (TypeElement t : ElementFilter.typesIn(elements)) {
@@ -251,8 +251,16 @@ public class MarkdownDoclet implements Doclet {
             }
 
             Aggregator elements = new Aggregator();
-            members.values().forEach(te -> elements.add("- [" + te.getSimpleName() + "](" + te.getSimpleName() + ".md)"
-                    + getDescription(docTrees, te) + "\n"));
+            members.values().forEach(te -> {
+                var ref = classNameMapping.get(te.getQualifiedName().toString());
+                if (ref == null) {
+                    elements.add("- [" + te.getSimpleName() + "](" + te.getSimpleName() + ".md)"
+                            + getDescription(docTrees, te) + "\n");
+                } else {
+                    elements.add("- [" + te.getSimpleName() + "](" + te.getSimpleName() + "/README.md)"
+                            + getDescription(docTrees, te) + "\n");
+                }
+            });
 
             String result = elements.toString();
             if (!result.isEmpty()) {
@@ -311,6 +319,9 @@ public class MarkdownDoclet implements Doclet {
     String qualifiedNameToPath(String reference) {
         if (reference.endsWith("qute")) {
             reference += ".README";
+        } else if (!isValidClass(reference.replace(".README", ""))) {
+            // Check if the reference is a valid class
+            throw new RuntimeException("Invalid class reference: " + reference);
         }
         return reference
                 .replace("dev.ebullient.convert.", "")
@@ -514,6 +525,20 @@ public class MarkdownDoclet implements Doclet {
                 return ">";
             default:
                 return str;
+        }
+    }
+
+    private boolean isValidClass(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            int pos = className.lastIndexOf(".");
+            if (pos > -1) {
+                String innerClass = className.substring(0, pos) + "$" + className.substring(pos + 1);
+                return isValidClass(innerClass);
+            }
+            return false;
         }
     }
 }

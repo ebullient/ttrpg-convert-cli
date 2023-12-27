@@ -19,7 +19,7 @@ import io.quarkus.qute.TemplateData;
  * They can have very different properties. Treat most as optional.
  * </p>
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.dnd5e.Tools5eQuteBase}.
+ * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
  * </p>
  */
 @TemplateData

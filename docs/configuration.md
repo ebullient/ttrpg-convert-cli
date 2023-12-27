@@ -1,11 +1,16 @@
 # CLI Configuration guide
 
-The Command Line Interface (CLI) provides a means to tailor data transformation using configuration files. 
-These files, written in JSON or YAML, establish guidelines for how data is converted.
-
-In this guide, we'll walk through the configuration options and their practical uses.
-
 > 🚀 Respect copyrights and support content creators; use only the sources you own.
+
+The Command Line Interface (CLI) provides a means to tailor data transformation using configuration files. In this guide, we'll walk through the configuration options and their practical uses.
+
+You can configure the CLI with a JSON or YAML file, either instead of, or along with, command line parameters. See [examples/config](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/config) for the general config file structure in both formats. 
+
+> 📝 JSON and YAML are both file formats for storing data in useful and human-readable ways.
+> 
+> - JSON: If you want to know why the `{}` and `[]` are used in the ways that they are you can read about json *objects* and *arrays* [here](https://www.toolsqa.com/rest-assured/what-is-json/)).
+> - YAML (Yet another markup language) is described by a [specification](https://yaml.org/spec/1.2/spec.html). Leading whitespace (indentation) matters.
+
 
 - [Overview](#overview)
 - [Select data sources with the `from` key](#select-data-sources-with-the-from-key)
@@ -18,13 +23,34 @@ In this guide, we'll walk through the configuration options and their practical 
 
 ## Overview
 
-Below is a detailed example of a `config.json` file. This configuration aims to:
+The following examples use JSON.
 
-- Choose specific data sources.
-- Set target paths for the resulting content.
-- Designate which content to include or exclude.
-- Incorporate complete sources, such as entire books or adventures.
+### Basic configuration example
 
+Here is a simple example of a `config.json` file. As a JSON Object, it has a `"key": "value"` structure.
+
+``` json
+{
+  "from": [
+    "DMG",
+    "PHB",
+    "MM"
+  ],
+  "paths": {
+    "compendium": "z_compendium/",
+    "rules": "z_compendium/rules"
+  }
+}
+```
+
+This example performs two basic functions:
+
+1. **Filter Input Sources:** Using the key `from`, we list the sources (that we own) that we want to include.
+2. **Target vault path:** Using the key `path`, we specify the target path for writing generated `compendium` and `rules` content. These directories will be created if they don't exist, and are relative to the output directory specified on the command line with `-o`.
+
+### Extended configuration example
+
+Below is a more detailed example of a `config.json` file. 
 ```json
 {
     "from": [
@@ -68,6 +94,14 @@ Below is a detailed example of a `config.json` file. This configuration aims to:
 }
 ```
 
+This example performs additional functions:
+
+1. **Filter Input Sources:** Using the key `from`, we list the sources (that we own) that we want to include.
+2. **Target vault path:** Using the key `path`, we specify the target path for writing generated `rules` content. These directories will be created if they don't exist, and are relative to the output directory specified on the command line with `-o`.
+3. **Fine-grained exclusion:** Specific content is excluded using [`excludePattern`](#exclude-items-matching-an-excludepattern) and [`exclude`](#exclude-items-with-exclude).
+4. **Fine-grained inclusion:** Specific content is *always included* using [`include`](#include-items-with-include).
+5. **Incorporate complete sources:** Using [`full-source`](#include-source-book-content-with-full-source), we specify that we want to incorporate the complete text of the *Player's Handbook*  (book), the *Lost Mine of Phandelver* (adventure) and *Light of Xaryxis* (adventure).
+
 ## Select data sources with the `from` key
 
 The `from` key lets you specify which sources to draw data from. 
@@ -83,7 +117,9 @@ List the codes or abbreviations for your chosen sources.
   ]
 ```
 
-> 🚀 Note: Ensure you own the content you're including. Find the abbreviations for your sources in the [Source Map](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md).
+> 🚀 Note: Only include content you own. Find the abbreviations for your sources in the [Source Map](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md).
+> 
+> To find the abbreviation or reference for homebrew sources, look in the source file: 
 
 ## Specify target paths with the `paths` key
 

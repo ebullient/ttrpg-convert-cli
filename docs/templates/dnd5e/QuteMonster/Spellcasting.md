@@ -45,7 +45,7 @@ Name: "Spellcasting" or "Innate Spellcasting"
 
 ### spells
 
-Map: key = spell level, value: spell level information as [Spells](../QuteSpell/Spells.md)
+Map: key = spell level, value: spell level information as [Spells](Spells.md)
 
 ### will
 

@@ -4,11 +4,11 @@
 [examples/config]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/config
 [ex-snippets]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets
 [ex-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates
-[def-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates
+[def-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
-> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault. 
+> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault. 
 > 
 > To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
 
@@ -42,9 +42,9 @@ See the following examples:
 3. 🔥 Better support for table rendering has superceded dedicated/hand-tended random name tables. All of the tables are still present, just in different units more directly related to source material.
 4. 🔥 **Change to monster template attributes:** Legendary group attributes have been simplified to `name` and `desc`, just like other traits. See the [default monster template](https://github.com/ebullient/ttrpg-convert-cli/blob/0736c3929a6d90fe01860692f487b8523b57e60d/src/main/resources/templates/tools5e/monster2md.txt#L80) for an example.
 
-> ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+> ***If you use the Templater plugin***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
 
-✨ **New template documentation** is available in [docs](https://github.com/ebullient/ttrpg-convert-cli/tree/main/docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
+✨ **New template documentation** is available in [docs](docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
 
 ## 🔖 🔥 2.0.0: File name and path changes, and styles!
 
@@ -54,14 +54,14 @@ See the following examples:
 
 2. 🔥 **D&D 5e subclasses now use the source of the subclass in the file name**.
 
-   > ***If you use the Templater plugin***, you can use [a templater script](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/migration/ttrpg-cli-renameFiles-2.0.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+   > ***If you use the Templater plugin***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-2.0.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
 
 3. 🎨 CSS styles for D&D 5e and Pathfinder are now available in `examples/css-snippets`. 
 
 4. 📝 Admonitions are also available for import:
-    - 🎨 [admonitions-5e.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-5e.json)
-    - [admonitions-pf2e-v3.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/admonitions-pf2e-v3.json)
-    - 🎨 [other-admonitions.json](https://raw.githubusercontent.com/ebullient/ttrpg-convert-cli/main/examples/other-admonitions.json)
+    - 🎨 [admonitions-5e.json](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/admonitions/admonitions-5e.json)
+    - [admonitions-pf2e-v3.json](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/admonitions/admonitions-pf2e-v3.json)
+    - 🎨 [other-admonitions.json](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/admonitions/other-admonitions.json)
 
     Note: `admonitions-5e.json` and `other-admonitions.json` use colors from CSS snippets to adjust for light and dark mode.
 
