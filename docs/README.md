@@ -9,14 +9,14 @@
 - [Source Map](sourceMap.md)
 
 [README.md]: https://github.com/ebullient/ttrpg-convert-cli
-[ex-ad]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/admonitions
-[ex-css]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets
-[ex-config]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/config
-[ex-snippets]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets
-[ex-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates
-[def-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates
+[ex-ad]: ../examples/admonitions
+[ex-css]: ../examples/css-snippets
+[ex-config]: ../examples/config
+[ex-snippets]: ../examples/css-snippets
+[ex-templates]: ../examples/templates
+[def-templates]: ../src/main/resources/templates
 
-## Recommended plugin configuration
+## Recommended Obsidian plugin configuration
 
 ### Admonitions
 
@@ -35,21 +35,20 @@ Ensure the plugin has the following options enabled (for the most consistent and
 - *"Ignore force view when not in front matter"*: the plugin will only change the view mode if `obsidianUIMode` is defined in the front matter.    
 - *"Ignore open files"*: the plugin won't try to change the view mode if the file is already open.
 
-## Optional CSS Snippets
+## Fantasy Statblocks
 
-Within the [examples/css-snippets][ex-css] folder, you will find some CSS snippets that have been created to further customize the look of the generated content. They include:
+Fantasy Statblocks ([git](https://github.com/javalent/fantasy-statblocks)/[obsidian](obsidian://show-plugin?id=obsidian-5e-statblocks)) maintains a bestiary of monsters. It has its own (handlebars-basted) templates for monster statblocks.
 
-- Functionality to float token images to side of a statblock.
-- Further enhancement of the admonition styles.
-- _PF2 Only_: More realistic looking Statblocks
-- _PF2 Only_: Link Test to display action icons.
-- _PF2 Only_: Light styling of pages as defined through css-classes.
-- And much more.
+The CLI can generate notes that will populate the bestiary, see [5eTools example templates](../examples/templates/tools5e/README.md#5etools-alternate-monster-templates). 
 
-### Statblocks
+To populate *Fantasy Statblocks* from your notes, use the following settings:
 
-Compendium (`*-compendium`) snippets include styles for statblocks.
+- General Settings:
+    - *Optional*: Disable the 5e SRD
+- Note Parsing:
+    - Enable Parse Frontmatter for Creatures
+    - *Optional*: Add bestiary folders to constrain where the plugin looks for monsters
 
-If you aren't using a `*-compendium` snippet, you may want to download either `dnd5e-only-statblocks.css` or `pf2-only-statblocks.css` to style your statblocks.
+## Initiative Tracker
 
-> ⚠️ Do not use an `*-only-statblock.css` snippet and a `*-compendium.css` snippet together.
+Initiative Tracker ([git](https://github.com/javalent/initiative-tracker)/[obsidian](obsidian://show-plugin?id=initiative-tracker))

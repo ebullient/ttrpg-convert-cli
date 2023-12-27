@@ -4,7 +4,7 @@
 
 The Command Line Interface (CLI) provides a means to tailor data transformation using configuration files. In this guide, we'll walk through the configuration options and their practical uses.
 
-You can configure the CLI with a JSON or YAML file, either instead of, or along with, command line parameters. See [examples/config](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/config) for the general config file structure in both formats. 
+You can configure the CLI with a JSON or YAML file, either instead of, or along with, command line parameters. See [examples/config](../examples/config) for the general config file structure in both formats. 
 
 > 📝 JSON and YAML are both file formats for storing data in useful and human-readable ways.
 > 

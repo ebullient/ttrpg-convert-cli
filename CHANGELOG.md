@@ -1,10 +1,10 @@
 # Changelog
 
 [README.md]: https://github.com/ebullient/ttrpg-convert-cli
-[examples/config]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/config
-[ex-snippets]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/css-snippets
-[ex-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates
-[def-templates]: https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/
+[examples/config]: examples/config
+[ex-snippets]: examples/css-snippets
+[ex-templates]: examples/templates
+[def-templates]: src/main/resources/templates/
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
@@ -22,8 +22,8 @@ Items may have variants, which are defined as a list in the `variants` attribute
 
 See the following examples:
 
-- [Default `item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/item2md.txt)
-- [Example `examples/templates/tools5e/images-item2md.txt`](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/images-item2md.txt)
+- [Default `item2md.txt`](src/main/resources/templates/tools5e/item2md.txt)
+- [Example `examples/templates/tools5e/images-item2md.txt`](examples/templates/tools5e/images-item2md.txt)
 
 ## 🔖 ✨ 2.2.5: New templates for decks (and cards), legendary groups, and psionics
 
@@ -59,9 +59,9 @@ See the following examples:
 3. 🎨 CSS styles for D&D 5e and Pathfinder are now available in `examples/css-snippets`. 
 
 4. 📝 Admonitions are also available for import:
-    - 🎨 [admonitions-5e.json](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/admonitions/admonitions-5e.json)
-    - [admonitions-pf2e-v3.json](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/admonitions/admonitions-pf2e-v3.json)
-    - 🎨 [other-admonitions.json](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/admonitions/other-admonitions.json)
+    - 🎨 [admonitions-5e.json](examples/admonitions/admonitions-5e.json)
+    - [admonitions-pf2e-v3.json](examples/admonitions/admonitions-pf2e-v3.json)
+    - 🎨 [other-admonitions.json](examples/admonitions/other-admonitions.json)
 
     Note: `admonitions-5e.json` and `other-admonitions.json` use colors from CSS snippets to adjust for light and dark mode.
 

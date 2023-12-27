@@ -7,7 +7,7 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 <td>Jump</td>
 <td><a href="#install-the-ttrpg-convert-cli">⬇ Download</a></td>
 <td><a href="docs/configuration.md">⚙️ Configuration</a></td>
-<td><a href="#templates">🎨 Templates</a></td>
+<td><a href="examples/templates">🎨 Templates</a></td>
 </tr><tr>
 <td><a href="CHANGELOG.md">🚜 Changelog</a></td>
 <td><a href="#convert-5etools-json-data">📖 5eTools</a></td>
@@ -100,9 +100,9 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
   
   - `css-snippets` will contain **CSS files for special fonts** used by some content. You will need to copy these snippets into your vault (`.obsidian/snippets`) and enable them (`Appearance -> Snippets`) to ensure all content in your vault is styled correctly. 
 
-- **Styles.** Every document has a `cssclasses` attribute that assigns a CSS class. We have some [CSS snippets](docs/README.md#optional-css-snippets) that you can use to customize elements of the compendium. 
+- **Styles.** Every document has a `cssclasses` attribute that assigns a CSS class. We have some [CSS snippets](examples/css-snippets/) that you can use to customize elements of the compendium. 
   - 5e tools: `json5e-background`, `json5e-class`, `json5e-deck`, `json5e-deity`, `json5e-feat`, `json5e-hazard`, `json5e-item`, `json5e-monster`, `json5e-note`, `json5e-object`, `json5e-psionic`, `json5e-race`, `json5e-reward`, `json5e-spell`, and `json5e-vehicle`.
-  - pf2e tools: `pf2e`, `pf2e-ability`, `pf2e-action`, `pf2e-affliction`, `pf2e-archetype`, `pf2e-background`, `pf2e-book`, `pf2e-delity`, `pf2e-feat`, `pf2e-hazard`, `pf2e-index`, `pf2e-item`, `pf2e-note`, `pf2e-ritual`, `pf2e-sleep`, `pf2e-trait`, 
+  - pf2e tools: `pf2e`, `pf2e-ability`, `pf2e-action`, `pf2e-affliction`, `pf2e-archetype`, `pf2e-background`, `pf2e-book`, `pf2e-delity`, `pf2e-feat`, `pf2e-hazard`, `pf2e-index`, `pf2e-item`, `pf2e-note`, `pf2e-ritual`, `pf2e-sleep`, `pf2e-trait`.
 
 - **Admonitions.** 
   - `ad-statblock`
@@ -127,15 +127,19 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
 [rsync]: https://stackoverflow.com/a/19540611
 [sync-discussion]: https://github.com/ebullient/ttrpg-convert-cli/discussions/220
 
+### Required plugins
+
+- **Admonitions** ([git](https://github.com/javalent/admonitions)/[obsidian](obsidian://show-plugin?id=obsidian-admonition)): The admonitions plugin supports a codeblock style that is used for more complicated content like statblocks. See [Admonition plugin notes](docs/README.md#admonitions) for more recommendations.
+
 ### Recommended plugins 
 
-- **[Admonitions](obsidian://show-plugin?id=obsidian-admonition)**: The admonitions plugin supports a codeblock style that is used for more complicated content like statblocks. See [Admonition plugin notes](docs/README.md#admonitions) for more information.
+- **Force note view mode by front matter** ([git](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)/[obsidian](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)): I use this plugin to treat these generated notes as essentially read-only. See [Force note view mode plugin settings](docs/README.md#force-note-view-mode-by-front-matter) for recommendations.
 
-- **[Force note view mode by front matter](obsidian://show-plugin?id=obsidian-view-mode-by-frontmatter)**: I use this plugin to treat these generated notes as essentially read-only. See [Force note view mode plugin notes](docs/README.md#force-note-view-mode-by-front-matter) for more information.
+- **Fantasy Statblocks** ([git](https://github.com/javalent/fantasy-statblocks)/[obsidian](obsidian://show-plugin?id=obsidian-5e-statblocks)): Templates for rendering monsters can define a `statblock` in the document body or provide a full or abridged yaml monster in the document header to update monsters in the plugin's bestiary. 
+    - See [Fantasy Statblocks plugin settings](docs/README.md#fantasy-statblocks) for recommendations.
+    - See [Templates](examples/templates) for related template customization.
 
-- **[TTRPG Statblocks](obsidian://show-plugin?id=obsidian-5e-statblocks)**: Templates for rendering monsters can define a `statblock` in the document body or provide a full or abridged yaml monster in the document header to update monsters in the plugin's bestiary. See [Templates](#templates) for more information.
-
-- **[Initiative Tracker](obsidian://show-plugin?id=initiative-tracker)**: Templates for rendering monsters can include information in the header to define monsters that initiative tracker can use when constructing encounters.
+- **Initiative Tracker** ([git](https://github.com/javalent/initiative-tracker)/[obsidian](obsidian://show-plugin?id=initiative-tracker)): Templates for rendering monsters can include information in the header to define monsters that initiative tracker can use when constructing encounters. See [Initiative Tracker plugin settings](docs/README.md#initiative-tracker) for recommendations.
 
 ## Convert 5eTools JSON data
 
@@ -257,49 +261,6 @@ If we look inside the Pugilist class:
 
 - `SVM` is the abbreviation that will be shown in the 5eTools web interface
 - The *identifier* is `SterlingVermin` (`_meta` -> `sources` -> `json`)
-
-## Templates
-
-This application uses the [Qute Templating Engine](https://quarkus.io/guides/qute). You can make simple customizations to markdown output by copying a template from `src/main/resources/templates`, making the desired modifications, and specifying that template in your configuration file under the `template` key: 
-
-``` json
-{
-  "from": [
-    "DMG",
-    "PHB",
-    "MM"
-  ],
-  "paths": {
-    "compendium": "z_compendium/",
-    "rules": "z_compendium/rules"
-  },
-  "template": {
-    "background": "examples/templates/tools5e/images-background2md.txt",
-    "monster": "examples/templates/tools5e/monster2md-scores.txt"
-  }
-}
-```
-
-The flag used to specify a template corresponds to the type of template being used. You can find the list of valid template keys in the [source code](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/convertData.json) (look for `templateKeys`).
-
-- Valid template keys for 5etools: `background`, `class`, `deck`, `deity`, `feat`, `hazard`, `item`, `monster`, `note`, `object`, `psionic`, `race`, `reward`, `spell`, `subclass`, `vehicle`.
-- Valid template keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-ability`, `inline-affliction`, `inline-attack`, `item`, `note`, `ritual`, `spell`, `trait`.
-
-### Customizing templates
-
-Not everything is customizable. In some cases, indenting, organizing, formatting, and linking text accurately is easier to do inline as a big blob. 
-
-[Documentation](docs/templates/) is generated for template-accessible attributes.
-
-- [Default templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates)
-- [Example templates](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates)
-
-Of particular note are the varied monster templates: 
-
-- Admonition codeblock: [monster2md.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/src/main/resources/templates/tools5e/monster2md.txt)
-- Admonition codeblock with alternate score layout: [monster2md-scores.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-scores.txt)
-- TTRPG statblock in the body: [monster2md-yamlStatblock-body.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-yamlStatblock-body.txt)
-- Admonition codeblock in the body with minimal TTRPG/Initiative tracker YAML metadata in the header: [monster2md-yamlStatblock-header.txt](https://github.com/ebullient/ttrpg-convert-cli/tree/main/examples/templates/tools5e/monster2md-yamlStatblock-header.txt)
 
 ## Where to find help
 
