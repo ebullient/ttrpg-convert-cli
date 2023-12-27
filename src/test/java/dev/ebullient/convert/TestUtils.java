@@ -40,8 +40,7 @@ public class TestUtils {
     public final static Path PATH_5E_UA = PROJECT_PATH.resolve("sources/5e-unearthed-arcana");
     public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
 
-    public final static Path README = PROJECT_PATH.resolve("README.md").normalize().toAbsolutePath();
-    static String USAGE = PROJECT_PATH.resolve("docs").normalize().toAbsolutePath().toString();
+    static String GENERATED_DOCS = PROJECT_PATH.resolve("docs/templates").normalize().toAbsolutePath().toString();
 
     // Obnoxious regular expression because markdown links are complicated:
     // Matches: [link text](vaultPath "title")
@@ -85,12 +84,13 @@ public class TestUtils {
         }
     }
 
-    public static void checkMarkdownLinks(String baseDir, Path p, String line, List<String> errors) {
+    public static void checkMarkdownLink(String baseDir, Path p, String line, List<String> errors) {
         Path absPath = p.normalize().toAbsolutePath();
-        if (!absPath.toString().endsWith(".md") || absPath.equals(README) || absPath.toString().startsWith(USAGE)) {
+        if (!absPath.toString().endsWith(".md")) {
             // GH anchor links
             return;
         }
+        final boolean githubStyle = !absPath.toString().startsWith(GENERATED_DOCS);
         List<String> e = new ArrayList<>();
         // replace (Level x) or (1st level) or (Firearms) with :whatever: to simplify matching
         Matcher links = markdownLinkPattern.matcher(line);
@@ -140,7 +140,7 @@ public class TestUtils {
                 } else {
                     String heading = simplifyAnchor(anchor).replaceAll("%20", " ");
                     String ghHeading = heading.replace("-", " ");
-                    List<String> headings = findHeadingsIn(resource);
+                    List<String> headings = findHeadingsIn(resource, githubStyle);
                     // obsidian or github style anchors
                     if (!headings.contains(heading) && !headings.contains(ghHeading)) {
                         e.add(String.format("Unresolvable anchor (%s) in %s: %s", heading, p, m.group(0)));
@@ -151,7 +151,7 @@ public class TestUtils {
         errors.addAll(e);
     }
 
-    public static List<String> findHeadingsIn(Path p) {
+    public static List<String> findHeadingsIn(Path p, boolean githubStyle) {
         if (!p.toString().endsWith(".md")) {
             return List.of();
         }
@@ -163,7 +163,12 @@ public class TestUtils {
                         if (l.contains(".")) {
                             System.out.println("🔮 Found dot in heading in " + p + ": " + l);
                         }
-                        headings.add(simplifyAnchor(l));
+                        l = simplifyAnchor(l);
+                        if (githubStyle) {
+                            l = l.replace("`", "")
+                                    .replace("-", " ");
+                        }
+                        headings.add(l);
                     }
                 });
             } catch (UncheckedIOException | IOException e) {
@@ -265,6 +270,34 @@ public class TestUtils {
         assertThat(errors).isEmpty();
     }
 
+    public static void assertMarkdownLinks(Path filePath, Tui tui) {
+        List<String> errors = new ArrayList<>();
+        testMarkdownLinks(filePath, tui, errors);
+        assertThat(errors).isEmpty();
+    }
+
+    private static void testMarkdownLinks(Path filePath, Tui tui, List<String> errors) {
+        if (filePath.toFile().isDirectory()) {
+            try (Stream<Path> walk = Files.list(filePath)) {
+                walk.forEach(p -> {
+                    testMarkdownLinks(p, tui, errors);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                errors.add(String.format("Unable to parse files in directory %s: %s", filePath, e));
+            }
+        } else {
+            try {
+                Files.readAllLines(filePath).forEach(l -> {
+                    TestUtils.checkMarkdownLink(filePath.toString(), filePath, l, errors);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                errors.add(String.format("Unable to read lines from %s: %s", filePath, e));
+            }
+        }
+    }
+
     static List<String> checkDirectoryContents(Path directory, Tui tui,
             BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = new ArrayList<>();
@@ -287,6 +320,7 @@ public class TestUtils {
                 }
                 if (!p.toString().endsWith(".md")) {
                     if (!p.toString().endsWith(".png")
+                            && !p.toString().endsWith(".txt")
                             && !p.toString().endsWith(".jpg")
                             && !p.toString().endsWith(".css")
                             && !p.toString().endsWith(".svg")

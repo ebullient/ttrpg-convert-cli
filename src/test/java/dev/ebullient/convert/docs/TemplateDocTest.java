@@ -1,9 +1,5 @@
 package dev.ebullient.convert.docs;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
@@ -34,11 +30,10 @@ public class TemplateDocTest {
     @Test
     @EnabledIfSystemProperty(named = "maven.home", matches = ".*")
     public void verifyDocs() throws Exception {
-        Path docs = TestUtils.PROJECT_PATH.resolve("docs");
-        TestUtils.assertDirectoryContents(docs, tui, (p, content) -> {
-            List<String> errors = new ArrayList<>();
-            content.forEach(l -> TestUtils.checkMarkdownLinks(docs.toString(), p, l, errors));
-            return errors;
-        });
+        TestUtils.assertMarkdownLinks(TestUtils.PROJECT_PATH.resolve("docs"), tui);
+        TestUtils.assertMarkdownLinks(TestUtils.PROJECT_PATH.resolve("examples"), tui);
+        TestUtils.assertMarkdownLinks(TestUtils.PROJECT_PATH.resolve("README.md"), tui);
+        TestUtils.assertMarkdownLinks(TestUtils.PROJECT_PATH.resolve("README-WINDOWS.md"), tui);
+        TestUtils.assertMarkdownLinks(TestUtils.PROJECT_PATH.resolve("CHANGELOG.md"), tui);
     }
 }

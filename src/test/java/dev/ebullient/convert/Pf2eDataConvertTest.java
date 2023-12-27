@@ -60,7 +60,7 @@ public class Pf2eDataConvertTest {
 
             TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
-                content.forEach(l -> TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors));
+                content.forEach(l -> TestUtils.checkMarkdownLink(allIndex.toString(), p, l, errors));
                 return errors;
             });
         }

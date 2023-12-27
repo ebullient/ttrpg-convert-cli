@@ -196,7 +196,7 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
     git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
     ```
 
-2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content (using the alias set up when [installing the cli](#install-the-ttrpg-convert-cli)):
+2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content (using the alias set up when [installing the cli](#install-the-ttrpg-convert-cli):
 
     ```shell
     ttrpg-convert \

@@ -81,7 +81,7 @@ public class Tools5eDataConvertTest {
             TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {
-                    TestUtils.checkMarkdownLinks(allIndex.toString(), p, l, errors);
+                    TestUtils.checkMarkdownLink(allIndex.toString(), p, l, errors);
                     TestUtils.commonTests(p, l, errors);
                 });
                 return errors;
@@ -105,7 +105,7 @@ public class Tools5eDataConvertTest {
             TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {
-                    TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
+                    TestUtils.checkMarkdownLink(target.toString(), p, l, errors);
                     TestUtils.commonTests(p, l, errors);
                     if (l.matches(".*-ua[^.]\\.md.*$")) {
                         errors.add(String.format("Found UA resources in %s: %s", p.toString(), l));
@@ -167,7 +167,7 @@ public class Tools5eDataConvertTest {
             TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {
-                    TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
+                    TestUtils.checkMarkdownLink(target.toString(), p, l, errors);
                     TestUtils.commonTests(p, l, errors);
                 });
                 return errors;
@@ -210,7 +210,7 @@ public class Tools5eDataConvertTest {
             TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {
-                    TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
+                    TestUtils.checkMarkdownLink(target.toString(), p, l, errors);
                     TestUtils.commonTests(p, l, errors);
                 });
                 return errors;
@@ -250,7 +250,7 @@ public class Tools5eDataConvertTest {
             TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {
-                    TestUtils.checkMarkdownLinks(target.toString(), p, l, errors);
+                    TestUtils.checkMarkdownLink(target.toString(), p, l, errors);
                     TestUtils.commonTests(p, l, errors);
                     if (l.contains("/ru les/")) {
                         errors.add("Found '/ru les/' " + p); // not escaped
