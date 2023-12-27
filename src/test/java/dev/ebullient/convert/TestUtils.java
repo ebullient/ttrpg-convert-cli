@@ -286,7 +286,7 @@ public class TestUtils {
                 e.printStackTrace();
                 errors.add(String.format("Unable to parse files in directory %s: %s", filePath, e));
             }
-        } else {
+        } else if (filePath.endsWith(".md")) {
             try {
                 Files.readAllLines(filePath).forEach(l -> {
                     TestUtils.checkMarkdownLink(filePath.toString(), filePath, l, errors);
