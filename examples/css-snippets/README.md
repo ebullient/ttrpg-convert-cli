@@ -19,7 +19,7 @@ The following CSS snippets have been created to further customize the look of th
 - **Other**
     - [hide-markdown-link-url](hide-markdown-link-url.css) - hide url portion of markdown links in source mode
 
-### Styles for Fantasy Statblocks
+## Styles for Fantasy Statblocks
 
 Compendium (`*-compendium`) snippets include styles for statblocks.
 
