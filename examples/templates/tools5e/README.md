@@ -37,46 +37,48 @@ Some 5eTools data types have fluff images.  These templates include those images
 
 ## 5eTools alternate monster templates
 
-- **Markdown statblock with minimal YAML frontmatter** for use with *Initiative Tracker*
-    - [monster2md-yamlStatblock-header.txt](monster2md-yamlStatblock-header.txt)
-    - [object2md-yamlStatblock-header.txt](object2md-yamlStatblock-header.txt)
-    - The important frontmatter elements of this example:
-
-        ```yaml
-        statblock: true
-        statblock-link: "#^statblock"
-        {resource.5eInitiativeYaml}
-        ```
-
-    - In the body of the note:
-
-        ````markdown
-        ```ad-statblock
-        ...statblock content...
-        ```c
-        ^statblock
-        ````
-
+- **Markdown statblock with minimal YAML frontmatter** for use with *Fantasy Statblock* and *Initiative Tracker* plugins
     - Monsters, objects, and vehicles that have `statblock: true` will populate the *Fantasy Statblock* bestiary.
     - *Initiative Tracker* only needs a few elements from the statblock for encounter building. `{resource.5eInitiativeYaml}` will emit only those elements.
     - The `statblock-link` is used by *Initiative Tracker* to embed the markdown statblock in the creature view.
-- **5eTools *Fantasy Statblock* `statblocks` in the body**
+    - [monster2md-yamlStatblock-header.txt](monster2md-yamlStatblock-header.txt)
+    - [object2md-yamlStatblock-header.txt](object2md-yamlStatblock-header.txt)
+
+    The important frontmatter elements of this example:
+
+    ```yaml
+    statblock: true
+    statblock-link: "#^statblock"
+    {resource.5eInitiativeYaml}
+    ```
+
+    In the body of the note:
+
+    ````markdown
+    ```ad-statblock
+    ...statblock content...
+    ```c
+    ^statblock
+    ````
+
+- ***Fantasy Statblock* `statblock` in the body**
     - Monsters, objects, and vehicles that have `statblock: inline` will populate the *Fantasy Statblock* bestiary.
     - [monster2md-yamlStatblock-body.txt](monster2md-yamlStatblock-body.txt)
     - [object2md-yamlStatblock-body.txt](object2md-yamlStatblock-body.txt)
-    - The important frontmatter elements of this example:
 
-        ```yaml
-        statblock: inline
-        ```
+    The important frontmatter elements of this example:
 
-    - In the body of the note:
+    ```yaml
+    statblock: inline
+    ```
 
-        ````markdown
-        ```statblock
-        {resource.5eStatblockYaml}
-        ```
-        ````
+    In the body of the note:
+
+    ````markdown
+    ```statblock
+    {resource.5eStatblockYaml}
+    ```
+    ````
 
 - **Markdown statblock, alternate score display** - [monster2md-scores.txt](monster2md-scores.txt) (similar will work for objects)
 
