@@ -42,6 +42,7 @@ _Support content creators. Only use or include sources that you own._
 | DMG | Dungeon Master's Guide |
 | DSotDQ | Dragonlance: Shadow of the Dragon Queen |
 | DoD | Domains of Delight |
+| DoDk | Dungeons of Drakkenheim |
 | DoSI | Dragons of Stormwreck Isle |
 | EEPC | Elemental Evil Player's Companion |
 | EET | Elemental Evil: Trinkets |
