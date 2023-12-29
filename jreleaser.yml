@@ -73,7 +73,7 @@ distributions:
       skipTemplates:
         - README.md.tpl
       repository:
-        commitMessage: '{{projectName}} {{tagName}}'
+        commitMessage: '🔖  {{tagName}} {{projectName}}'
 
   native-archive:
     type: NATIVE_IMAGE

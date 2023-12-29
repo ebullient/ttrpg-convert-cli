@@ -105,8 +105,9 @@ jobs:
     uses: ebullient/workflows/.github/workflows/jreleaser-release.yml@main
     with:
       dry_run: ${{ inputs.dry_run }}
-      version: ${{ needs.build_tag.outputs.version }}
       extras: "${{ needs.build_tag.outputs.artifact }}-${{ needs.build_tag.outputs.version }}-examples.zip"
+      jreleaser_args: "--packager brew"
+      version: ${{ needs.build_tag.outputs.version }}
     secrets: inherit
 
   release-prep-next:
