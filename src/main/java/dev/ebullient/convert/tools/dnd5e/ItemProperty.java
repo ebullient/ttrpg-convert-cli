@@ -39,7 +39,7 @@ public interface ItemProperty {
                     ? property.get("entries")
                     : property.get("entriesTemplate");
 
-            if (entries != null) {
+            if (entries != null && entries.size() > 0) {
                 JsonNode firstEntry = entries.get(0);
                 if (firstEntry.has("name")) {
                     name = firstEntry.get("name").asText();

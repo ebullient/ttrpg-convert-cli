@@ -145,6 +145,7 @@ public class Tools5eDataConvertTest {
                     TestUtils.PATH_5E_HOMEBREW.resolve("collection/Keith Baker; Exploring Eberron.json").toString(),
                     TestUtils.PATH_5E_HOMEBREW.resolve("collection/Kobold Press; Deep Magic 14 Elemental Magic.json")
                             .toString(),
+                    TestUtils.PATH_5E_HOMEBREW.resolve("collection/Jasmine Yang; Hamund's Herbalism Handbook.json").toString(),
                     TestUtils.PATH_5E_HOMEBREW
                             .resolve("collection/Kobold Press; Deep Magic Backgrounds, Feats, & Subclasses.json").toString(),
                     TestUtils.PATH_5E_HOMEBREW
