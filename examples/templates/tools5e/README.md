@@ -2,26 +2,26 @@
 
 ## 5eTools default templates
 
-[5eTools default templates](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/)
+[5eTools default templates](../../../src/main/resources/templates/tools5e/)
 
 Valid template keys for 5etools:
-[`background`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/background2md.txt),
-[`class`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/class2md.txt),
-[`deck`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/deck2md.txt),
-[`deity`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/deity2md.txt),
-[`feat`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/feat2md.txt),
-[`hazard`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/hazard2md.txt),
-[`index.txt`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/index.txt),
-[`item`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/item2md.txt),
-[`monster`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/monster2md.txt),
-[`note`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/note2md.txt),
-[`object`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/object2md.txt),
-[`psionic`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/psionic2md.txt),
-[`race`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/race2md.txt),
-[`reward`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/reward2md.txt),
-[`spell`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/spell2md.txt),
-[`subclass`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/subclass2md.txt),
-[`vehicle`](https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/main/resources/templates/tools5e/vehicle2md.txt)
+[`background`](../../../src/main/resources/templates/tools5e/background2md.txt),
+[`class`](../../../src/main/resources/templates/tools5e/class2md.txt),
+[`deck`](../../../src/main/resources/templates/tools5e/deck2md.txt),
+[`deity`](../../../src/main/resources/templates/tools5e/deity2md.txt),
+[`feat`](../../../src/main/resources/templates/tools5e/feat2md.txt),
+[`hazard`](../../../src/main/resources/templates/tools5e/hazard2md.txt),
+[`index.txt`](../../../src/main/resources/templates/tools5e/index.txt),
+[`item`](../../../src/main/resources/templates/tools5e/item2md.txt),
+[`monster`](../../../src/main/resources/templates/tools5e/monster2md.txt),
+[`note`](../../../src/main/resources/templates/tools5e/note2md.txt),
+[`object`](../../../src/main/resources/templates/tools5e/object2md.txt),
+[`psionic`](../../../src/main/resources/templates/tools5e/psionic2md.txt),
+[`race`](../../../src/main/resources/templates/tools5e/race2md.txt),
+[`reward`](../../../src/main/resources/templates/tools5e/reward2md.txt),
+[`spell`](../../../src/main/resources/templates/tools5e/spell2md.txt),
+[`subclass`](../../../src/main/resources/templates/tools5e/subclass2md.txt),
+[`vehicle`](../../../src/main/resources/templates/tools5e/vehicle2md.txt)
 
 ## 5eTools templates with images
 

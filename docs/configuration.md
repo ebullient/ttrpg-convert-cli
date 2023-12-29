@@ -117,7 +117,7 @@ List the codes or abbreviations for your chosen sources.
   ]
 ```
 
-> 🚀 Note: Only include content you own. Find the abbreviations for your sources in the [Source Map](https://github.com/ebullient/ttrpg-convert-cli/blob/main/docs/sourceMap.md).
+> 🚀 Note: Only include content you own. Find the abbreviations for your sources in the [Source Map](sourceMap.md).
 > 
 > To find the abbreviation or reference for homebrew sources, look in the source file: 
 
