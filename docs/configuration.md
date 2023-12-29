@@ -4,13 +4,12 @@
 
 The Command Line Interface (CLI) provides a means to tailor data transformation using configuration files. In this guide, we'll walk through the configuration options and their practical uses.
 
-You can configure the CLI with a JSON or YAML file, either instead of, or along with, command line parameters. See [examples/config](../examples/config) for the general config file structure in both formats. 
+You can configure the CLI with a JSON or YAML file, either instead of, or along with, command line parameters. See [examples/config](../examples/config) for the general config file structure in both formats.
 
 > 📝 JSON and YAML are both file formats for storing data in useful and human-readable ways.
-> 
+>
 > - JSON: If you want to know why the `{}` and `[]` are used in the ways that they are you can read about json *objects* and *arrays* [here](https://www.toolsqa.com/rest-assured/what-is-json/)).
 > - YAML (Yet another markup language) is described by a [specification](https://yaml.org/spec/1.2/spec.html). Leading whitespace (indentation) matters.
-
 
 - [Overview](#overview)
 - [Select data sources with the `from` key](#select-data-sources-with-the-from-key)
@@ -50,7 +49,8 @@ This example performs two basic functions:
 
 ### Extended configuration example
 
-Below is a more detailed example of a `config.json` file. 
+Below is a more detailed example of a `config.json` file.
+
 ```json
 {
     "from": [
@@ -104,7 +104,7 @@ This example performs additional functions:
 
 ## Select data sources with the `from` key
 
-The `from` key lets you specify which sources to draw data from. 
+The `from` key lets you specify which sources to draw data from.
 List the codes or abbreviations for your chosen sources.
 
 **Example:**
@@ -118,8 +118,8 @@ List the codes or abbreviations for your chosen sources.
 ```
 
 > 🚀 Note: Only include content you own. Find the abbreviations for your sources in the [Source Map](sourceMap.md).
-> 
-> To find the abbreviation or reference for homebrew sources, look in the source file: 
+>
+> To find the abbreviation or reference for homebrew sources, look in the source file:
 
 ## Specify target paths with the `paths` key
 
@@ -149,6 +149,7 @@ Content typically falls into:
 You can achieve more precision in content selection by utilizing data keys.
 
 The CLI `--index` option compiles two lists of data keys:
+
 - `allIndex.json`: Lists all potential data keys.
 - `allSourceIndex.json`: Lists the data keys actually used in your output.
 
@@ -187,7 +188,7 @@ This is particularly useful for content acquired piecemeal, like individual item
 
 ### Include source-book content with `full-source`
 
-By default, the CLI generates notes for specific items like monsters or spells. 
+By default, the CLI generates notes for specific items like monsters or spells.
 
 Use the `full-source` key if you want to generate notes for the text of the source you own, either book or adventure. To fully incorporate a source, its abbreviation should appear in both the `from` list and the `full-source` section.
 
