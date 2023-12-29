@@ -57,7 +57,7 @@ Some 5eTools data types have fluff images.  These templates include those images
     ````markdown
     ```ad-statblock
     ...statblock content...
-    ```c
+    ```
     ^statblock
     ````
 

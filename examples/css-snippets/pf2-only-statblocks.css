@@ -159,6 +159,7 @@ body .is-live-preview .callout[data-callout=statblock-pf2e]:has(.creature-statbl
   min-width: 40%;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-only-statblocks.scss */
 body .callout[data-callout=statblock-pf2e][title="Common Rarity Trait"] {
   background: rgb(232, 232, 232);
   border-color: rgb(232, 232, 232);

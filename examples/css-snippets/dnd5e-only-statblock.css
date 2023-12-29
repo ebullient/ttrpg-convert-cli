@@ -70,6 +70,7 @@ body {
   overflow-y: unset;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-only-statblock.scss */
 .callout[data-callout=statblock] div[src$="#token"],
 .callout[data-callout=statblock] img[src$="#token"] {
   float: right;

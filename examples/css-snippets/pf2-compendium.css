@@ -6962,3 +6962,5 @@ body .is-live-preview .callout[data-callout=statblock-pf2e]:has(.creature-statbl
 .pathfinder.pathfinder.pathfinder .admonition[data-callout=embed-ability] .admonition-content ol > li::marker, .pathfinder.pathfinder.pathfinder .admonition[data-callout=embed-ability] .admonition-content ul > li::marker {
   color: transparent;
 }
+
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
