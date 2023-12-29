@@ -36,7 +36,7 @@ Ensure the plugin has the following options enabled (for the most consistent and
 
 ## Fantasy Statblocks
 
-Fantasy Statblocks ([git](https://github.com/javalent/fantasy-statblocks)/[obsidian](obsidian://show-plugin?id=obsidian-5e-statblocks)) maintains a bestiary of monsters. It has its own (handlebars-basted) templates for monster statblocks.
+Fantasy Statblocks ([git](https://github.com/javalent/fantasy-statblocks)/[obsidian](obsidian://show-plugin?id=obsidian-5e-statblocks)) maintains a bestiary of monsters. It has its own (handlebars-based) templates for monster statblocks.
 
 To populate *Fantasy Statblocks* from your notes, use the following settings:
 
