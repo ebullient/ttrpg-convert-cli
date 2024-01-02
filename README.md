@@ -18,7 +18,8 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
 
-> ✅ **Quick Tips**:
+> [!TIP]
+> **Quick Tips**:
 >
 > - 🚜 [**Review the changelog**](CHANGELOG.md) for new capabilities (✨) and breaking changes (🔥💥).
 > - 🔮 Check out [**Conventions**](#conventions) and  [**Recommendations**](#recommendations-for-using-the-cli)

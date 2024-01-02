@@ -1,5 +1,6 @@
 # Example configuration files
 
+> [!NOTE]
 > 📝 JSON and YAML are both file formats for storing data in useful and human-readable ways.
 >
 > - JSON: If you want to know why the `{}` and `[]` are used in the ways that they are you can read about json *objects* and *arrays* [here](https://www.toolsqa.com/rest-assured/what-is-json/)).

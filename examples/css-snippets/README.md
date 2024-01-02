@@ -25,4 +25,5 @@ Compendium (`*-compendium`) snippets include styles for statblocks.
 
 If you aren't using a `*-compendium` snippet, you may want to download either `dnd5e-only-statblocks.css` or `pf2-only-statblocks.css` to style your statblocks.
 
+> [!CAUTION]
 > ⚠️ Do not use an `*-only-statblock.css` snippet and a `*-compendium.css` snippet together.

@@ -1,11 +1,13 @@
 # CLI Configuration guide
 
+> [!IMPORTANT]
 > 🚀 Respect copyrights and support content creators; use only the sources you own.
 
 The Command Line Interface (CLI) provides a means to tailor data transformation using configuration files. In this guide, we'll walk through the configuration options and their practical uses.
 
 You can configure the CLI with a JSON or YAML file, either instead of, or along with, command line parameters. See [examples/config](../examples/config) for the general config file structure in both formats.
 
+> [!NOTE]
 > 📝 JSON and YAML are both file formats for storing data in useful and human-readable ways.
 >
 > - JSON: If you want to know why the `{}` and `[]` are used in the ways that they are you can read about json *objects* and *arrays* [here](https://www.toolsqa.com/rest-assured/what-is-json/)).

@@ -8,6 +8,7 @@
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
+> [!NOTE]
 > ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault. 
 > 
 > To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
