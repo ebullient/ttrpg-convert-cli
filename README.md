@@ -19,8 +19,6 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
 
 > [!TIP]
-> **Quick Tips**:
->
 > - 🚜 [**Review the changelog**](CHANGELOG.md) for new capabilities (✨) and breaking changes (🔥💥).
 > - 🔮 Check out [**Conventions**](#conventions) and  [**Recommendations**](#recommendations-for-using-the-cli)
 
@@ -62,6 +60,7 @@ There are several options for running `ttrpg-convert`. Choose whichever you are 
 
 ### Use pre-built platform binary
 
+> [!NOTE]
 > 📝 *Where do these binaries come from?*
 >
 > They are built on GitHub managed CI runners using the workflow defined [here](https://github.com/ebullient/ttrpg-convert-cli/blob/main/.github/workflows/release.yml), which compiles a Quarkus application (Java) into a platform-native binary using [GraalVM](https://www.graalvm.org/). I build and upload the mac arm64 binary myself (not supported by GH CI) using [this script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/.github/augment-release.sh).
@@ -224,7 +223,8 @@ The CLI tool also has the ability to import homebrewed content, though this cont
 
 Perhaps the simplest thing to do to import homebrew is to use already existing homebrew data from the 5etools homebrew github repo: <https://github.com/TheGiddyLimit/homebrew>.
 
-> 🍺 NOTE: *You only need the particular file you wish to import*.
+> [!TIP]
+> 🍺 *You only need the particular file you wish to import*.
 >
 > Homebrew data is different from the 5etools data. Each homebrew file is a complete reference. If you compare it to cooking: the 5etools mirror repo is organized by ingredient (all of the carrots, all of the onions, ... ); homebrew data is organized by prepared meal / complete receipe.
 
@@ -261,7 +261,6 @@ If we look inside the Pugilist class:
             "authors": [
                 "Benjamin Huffman"
             ],
-...
 ```
 
 - `SVM` is the abbreviation that will be shown in the 5eTools web interface
