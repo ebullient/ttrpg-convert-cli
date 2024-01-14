@@ -106,7 +106,6 @@ jobs:
     with:
       dry_run: ${{ inputs.dry_run }}
       extras: "${{ needs.build_tag.outputs.artifact }}-${{ needs.build_tag.outputs.version }}-examples.zip"
-      jreleaser_args: "--packager brew"
       version: ${{ needs.build_tag.outputs.version }}
     secrets: inherit
 
