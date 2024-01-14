@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
@@ -26,6 +28,19 @@ public class Json2QuteCompose extends Json2QuteBase {
 
     public void add(JsonNode node) {
         nodes.add(node);
+        if (ComposeFields.alias.existsIn(node)) {
+            String name = SourceField.name.getTextOrEmpty(node);
+            JsonNode entries = ((ObjectNode) node).arrayNode()
+                    .add(String.format("See [%s](#%s)", name, toAnchorTag(name)));
+
+            for (String alias : ComposeFields.alias.getListOfStrings(node, tui())) {
+                ObjectNode copy = (ObjectNode) copyNode(node);
+                copy.put("name", alias);
+                copy.remove("alias");
+                copy.set("entries", entries);
+                nodes.add(copy);
+            }
+        }
     }
 
     @Override
@@ -91,5 +106,9 @@ public class Json2QuteCompose extends Json2QuteBase {
                 .map(Pf2eSources::findSources)
                 .map(s -> linkify(Pf2eIndexType.spell, s.getName() + "|" + s.primarySource()))
                 .collect(Collectors.joining(", ")));
+    }
+
+    enum ComposeFields implements JsonNodeReader {
+        alias
     }
 }

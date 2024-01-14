@@ -440,6 +440,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | OoA1 | Outlaws of Alkenstar #1: Punks in a Powder Keg |
 | OoA2 | Outlaws of Alkenstar #2: Cradle of Quartz |
 | OoA3 | Outlaws of Alkenstar #3: The Smoking Gun |
+| PC1 | Player Core |
 | PFUM | PATHFINDER: FUMBUS! |
 | QFF0 | Quest for the Frozen Flame Player's Guide |
 | QFF1 | Quest for the Frozen Flame #1: Broken Tusk Moon |

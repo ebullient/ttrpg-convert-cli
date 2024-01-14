@@ -554,6 +554,12 @@
           "replace": "\\{@class Cleric}"
         }
       ],
+      "deities.json": [
+        {
+          "match": "immobilizied",
+          "replace": "immobilized"
+        }
+      ],
       "feats/feats-apg.json": [
         {
           "match": "\\{@note \\{@sup 1}Mwangi Expanse, p.76}",
@@ -654,6 +660,12 @@
         {
           "match": "the target can't recover from the condition until they are cured}",
           "replace": "the target can't recover from the condition until they are cured."
+        }
+      ],
+      "rituals.json": [
+        {
+          "match": "@skill Religion \\(legendary\\)",
+          "replace": "@skill Religion} (legendary),"
         }
       ]
     }
