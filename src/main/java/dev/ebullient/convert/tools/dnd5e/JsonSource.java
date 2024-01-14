@@ -1199,6 +1199,7 @@ public interface JsonSource extends JsonTextReplacement {
         _monsterFluff,
         abbreviation,
         additionalEntries,
+        additionalSources,
         alternate,
         amount,
         appliesTo,
@@ -1218,10 +1219,12 @@ public interface JsonSource extends JsonTextReplacement {
         hasFluff,
         hasFluffImages,
         hasToken,
+        id,
         lairActions, // legendary group
         level,
         number, // speed
         optionalfeature,
+        otherSources,
         prop, // statblock
         race,
         regionalEffects, // legendary group

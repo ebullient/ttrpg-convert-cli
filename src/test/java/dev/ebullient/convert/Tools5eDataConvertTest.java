@@ -264,4 +264,30 @@ public class Tools5eDataConvertTest {
             });
         }
     }
+
+    @Test
+    void testCommand_5eBookAdventureMinimalYaml(QuarkusMainLauncher launcher) {
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+            Path target = testOutput.resolve("yaml-adventure");
+            TestUtils.deleteDir(target);
+
+            LaunchResult result = launcher.launch("--index",
+                    "-o", target.toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("sources-no-phb.yaml").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+
+            List<Path> dirs = List.of(
+                    target.resolve("compendium/adventures/lost-mine-of-phandelver"),
+                    target.resolve("compendium/adventures/waterdeep-dragon-heist"),
+                    target.resolve("compendium/books/volos-guide-to-monsters"));
+
+            dirs.forEach(d -> {
+                assertThat(d).isDirectory();
+            });
+        }
+    }
 }

@@ -327,4 +327,15 @@ public interface JsonNodeReader {
     default void setIn(JsonNode target, String value) {
         ((ObjectNode) target).set(this.nodeName(), new TextNode(value));
     }
+
+    /** Destructive! */
+    default void copy(JsonNode source, JsonNode target) {
+        if (source == null || target == null) {
+            return;
+        }
+        if (!source.has(this.nodeName())) {
+            return;
+        }
+        ((ObjectNode) target).set(this.nodeName(), getFrom(source).deepCopy());
+    }
 }

@@ -395,15 +395,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         for (Entry<String, JsonNode> entry : nodeIndex.entrySet()) {
             String key = entry.getKey();
-            JsonNode node = entry.getValue();
+            JsonNode jsonSource = entry.getValue();
 
             // check for / manage copies first.
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-            JsonNode jsonSource = copier.handleCopy(type, node);
+            jsonSource = copier.handleCopy(type, jsonSource);
             entry.setValue(jsonSource); // update with resolved copy
 
-            TtrpgValue.indexKey.setIn(node, key);
-            Tools5eSources sources = Tools5eSources.constructSources(node);
+            if (type == Tools5eIndexType.adventureData || type == Tools5eIndexType.bookData) {
+                copySources(type, jsonSource);
+            }
+
+            TtrpgValue.indexKey.setIn(jsonSource, key);
+            Tools5eSources sources = Tools5eSources.constructSources(jsonSource);
 
             if (type == Tools5eIndexType.monsterTemplate ||
                     type == Tools5eIndexType.deity) {
@@ -432,7 +436,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             });
 
             if (type == Tools5eIndexType.classtype || type == Tools5eIndexType.subclass) {
-                for (JsonNode ofp : iterableElements(ClassFields.optionalfeatureProgression.getFrom(node))) {
+                for (JsonNode ofp : iterableElements(ClassFields.optionalfeatureProgression.getFrom(jsonSource))) {
                     for (String featureType : Tools5eFields.featureType.getListOfStrings(ofp, tui())) {
                         OptionalFeatureType oft = getOptionalFeatureType(featureType, sources.primarySource());
                         if (oft != null) {
@@ -1069,6 +1073,20 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     public JsonNode getBook(String id) {
         String finalKey = Tools5eIndexType.book.createKey("book", id);
         return getOrigin(finalKey);
+    }
+
+    void copySources(Tools5eIndexType type, JsonNode dataNode) {
+        String id = dataNode.get("id").asText();
+        JsonNode fromNode = type == Tools5eIndexType.adventureData
+                ? getAdventure(id)
+                : getBook(id);
+
+        // Adventures and Books have metadata in a different entry.
+        SourceField.name.copy(fromNode, dataNode);
+        SourceField.source.copy(fromNode, dataNode);
+        SourceField.page.copy(fromNode, dataNode);
+        Tools5eFields.otherSources.copy(fromNode, dataNode);
+        Tools5eFields.additionalSources.copy(fromNode, dataNode);
     }
 
     @Override

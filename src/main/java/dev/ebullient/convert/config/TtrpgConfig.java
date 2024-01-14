@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
+import dev.ebullient.convert.config.CompendiumConfig.Configurator;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -68,8 +69,9 @@ public class TtrpgConfig {
         return activeConfig().addSource(name, abv, longAbv);
     }
 
-    public static boolean includeBookAdventureSource(String src) {
-        return getConfig().allowedSources.add(src);
+    public static void includeBookAdventureSource(String src) {
+        Configurator config = new Configurator(getConfig());
+        config.setSources(List.of(src));
     }
 
     public static Map<String, String> imageFallbackPaths() {
