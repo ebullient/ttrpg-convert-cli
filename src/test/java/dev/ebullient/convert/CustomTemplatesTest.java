@@ -29,7 +29,7 @@ public class CustomTemplatesTest {
     public static void setupDir(String root) {
         tui = new Tui();
         tui.init(null, false, false);
-        testOutput = TestUtils.OUTPUT_ROOT_PF2.resolve(root).resolve("test-cli");
+        testOutput = TestUtils.OUTPUT_ROOT_5E.resolve(root).resolve("test-cli");
         testOutput.toFile().mkdirs();
     }
 
@@ -157,6 +157,11 @@ public class CustomTemplatesTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+
+            // test extra cp value attribute in yaml frontmatter
+            Path abacus = target.resolve("compendium/items/abacus.md");
+            assertThat(abacus).exists();
+            assertThat(abacus).content().contains("cost: 200");
 
             List.of(
                     target.resolve("compendium/backgrounds"),

@@ -37,6 +37,8 @@ public class QuteItem extends Tools5eQuteBase {
     public final boolean stealthPenalty;
     /** Cost of the item (gp, sp, cp). Usually missing for magic items. */
     public final String cost;
+    /** Cost of the item (cp) as number. Usually missing for magic items. */
+    public final Integer costCp;
     /** Weight of the item (pounds) as a decimal value */
     public final Double weight;
     /** List of images for this item (as {@link dev.ebullient.convert.qute.ImageRef}) */
@@ -49,7 +51,7 @@ public class QuteItem extends Tools5eQuteBase {
     public QuteItem(Tools5eSources sources, String name, String source, String detail,
             String armorClass, String damage, String damage2h,
             String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
-            String costGp, Double weightLbs, String prerequisite,
+            String costGp, Integer costCp, Double weightLbs, String prerequisite,
             String text, List<ImageRef> images, List<Variant> variants, Tags tags) {
         super(sources, name, source, text, tags);
 
@@ -62,6 +64,7 @@ public class QuteItem extends Tools5eQuteBase {
         this.strengthRequirement = strengthRequirement;
         this.stealthPenalty = stealthPenalty;
         this.cost = costGp;
+        this.costCp = costCp;
         this.weight = weightLbs;
         this.fluffImages = images == null ? List.of() : images;
         this.prerequisite = prerequisite; // optional
@@ -115,6 +118,8 @@ public class QuteItem extends Tools5eQuteBase {
         public final boolean stealthPenalty;
         /** Cost of the item (gp, sp, cp). Usually missing for magic items. */
         public final String cost;
+        /** Cost of the item (cp) as number. Usually missing for magic items. */
+        public final Integer costCp;
         /** Weight of the item (pounds) as a decimal value */
         public final Double weight;
         /** Formatted text listing other prerequisite conditions (optional) */
@@ -122,7 +127,7 @@ public class QuteItem extends Tools5eQuteBase {
 
         public Variant(String name, String armorClass, String damage, String damage2h,
                 String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
-                String costGp, Double weightLbs, String prerequisite) {
+                String cost, Integer costCp, Double weightLbs, String prerequisite) {
             this.name = name;
             this.armorClass = armorClass;
             this.damage = damage;
@@ -131,7 +136,8 @@ public class QuteItem extends Tools5eQuteBase {
             this.properties = properties;
             this.strengthRequirement = strengthRequirement;
             this.stealthPenalty = stealthPenalty;
-            this.cost = costGp;
+            this.cost = cost;
+            this.costCp = costCp;
             this.weight = weightLbs;
             this.prerequisite = prerequisite; // optional
         }

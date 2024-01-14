@@ -64,6 +64,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 rootVariant.strengthRequirement,
                 rootVariant.stealthPenalty,
                 rootVariant.cost,
+                rootVariant.costCp,
                 rootVariant.weight,
                 rootVariant.prerequisite,
                 text,
@@ -111,12 +112,13 @@ public class Json2QuteItem extends Json2QuteCommon {
                 properties,
                 strength,
                 booleanOrDefault(variantNode, "stealth", false),
-                gpValue(variantNode),
+                coinValue(variantNode),
+                ItemFields.value.getIntFrom(variantNode).orElse(null), // cpValue
                 weight,
                 listPrerequisites(variantNode));
     }
 
-    private String gpValue(JsonNode variantNode) {
+    private String coinValue(JsonNode variantNode) {
         if (variantNode.has("value")) {
             return convertCurrency(variantNode.get("value").asInt());
         }

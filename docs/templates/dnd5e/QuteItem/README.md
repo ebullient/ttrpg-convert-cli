@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[armorClass](#armorclass), [cost](#cost), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [source](#source), [sourceAndPage](#sourceandpage), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [tags](#tags), [text](#text), [variantAliases](#variantaliases), [variantSectionLinks](#variantsectionlinks), [variants](#variants), [vaultPath](#vaultpath), [weight](#weight)
+[armorClass](#armorclass), [cost](#cost), [costCp](#costcp), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [source](#source), [sourceAndPage](#sourceandpage), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [tags](#tags), [text](#text), [variantAliases](#variantaliases), [variantSectionLinks](#variantsectionlinks), [variants](#variants), [vaultPath](#vaultpath), [weight](#weight)
 
 
 ### armorClass
@@ -16,6 +16,10 @@ Changes to armor class provided by the item, if applicable
 ### cost
 
 Cost of the item (gp, sp, cp). Usually missing for magic items.
+
+### costCp
+
+Cost of the item (cp) as number. Usually missing for magic items.
 
 ### damage
 

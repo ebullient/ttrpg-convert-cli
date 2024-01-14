@@ -3,7 +3,7 @@
 
 ## Attributes
 
-[armorClass](#armorclass), [cost](#cost), [damage](#damage), [damage2h](#damage2h), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [weight](#weight)
+[armorClass](#armorclass), [cost](#cost), [costCp](#costcp), [damage](#damage), [damage2h](#damage2h), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [weight](#weight)
 
 
 ### armorClass
@@ -13,6 +13,10 @@ Changes to armor class provided by the item, if applicable
 ### cost
 
 Cost of the item (gp, sp, cp). Usually missing for magic items.
+
+### costCp
+
+Cost of the item (cp) as number. Usually missing for magic items.
 
 ### damage
 

@@ -1,6 +1,9 @@
 ---
 obsidianUIMode: preview
 cssclasses: json5e-item
+{#if resource.costCp }
+cost: {resource.costCp}
+{/if}
 tags: 
 - test
 {#if resource.tags }{#for tag in resource.tags}
