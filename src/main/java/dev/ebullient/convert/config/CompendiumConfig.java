@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -35,6 +38,7 @@ public class CompendiumConfig {
 
     String tagPrefix = "";
     PathAttributes paths;
+    ImageOptions images;
     boolean allSources = false;
     boolean useDiceRoller = false;
     final Set<String> allowedSources = new HashSet<>();
@@ -42,6 +46,7 @@ public class CompendiumConfig {
     final Set<String> includedGroups = new HashSet<>();
     final Set<String> excludedKeys = new HashSet<>();
     final Set<Pattern> excludedPatterns = new HashSet<>();
+    final Set<String> homebrew = new HashSet<>();
     final Set<String> adventures = new HashSet<>();
     final Set<String> books = new HashSet<>();
     final Map<String, Path> customTemplates = new HashMap<>();
@@ -126,19 +131,19 @@ public class CompendiumConfig {
     }
 
     public String rulesVaultRoot() {
-        return getPaths().rulesVaultRoot;
+        return pathAttributes().rulesVaultRoot;
     }
 
     public String compendiumVaultRoot() {
-        return getPaths().compendiumVaultRoot;
+        return pathAttributes().compendiumVaultRoot;
     }
 
     public Path rulesFilePath() {
-        return getPaths().rulesFilePath;
+        return pathAttributes().rulesFilePath;
     }
 
     public Path compendiumFilePath() {
-        return getPaths().compendiumFilePath;
+        return pathAttributes().compendiumFilePath;
     }
 
     public String tagOf(String... tag) {
@@ -175,6 +180,10 @@ public class CompendiumConfig {
                 .toList();
     }
 
+    public Collection<String> getHomebrew() {
+        return Collections.unmodifiableCollection(homebrew);
+    }
+
     public Path getCustomTemplate(String id) {
         return customTemplates.get(id);
     }
@@ -209,11 +218,18 @@ public class CompendiumConfig {
         excludedPatterns.add(Pattern.compile(String.join("|", split)));
     }
 
-    private PathAttributes getPaths() {
+    private PathAttributes pathAttributes() {
         if (paths == null) {
             return paths = new PathAttributes();
         }
         return paths;
+    }
+
+    ImageOptions imageOptions() {
+        if (images == null) {
+            return images = new ImageOptions();
+        }
+        return images;
     }
 
     /**
@@ -303,6 +319,7 @@ public class CompendiumConfig {
 
             config.books.addAll(input.fullSource.book);
             config.adventures.addAll(input.fullSource.adventure);
+            config.homebrew.addAll(input.fullSource.homebrew);
 
             config.paths = new PathAttributes(config.paths, input.paths);
 
@@ -415,54 +432,53 @@ public class CompendiumConfig {
     }
 
     @RegisterForReflection
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class InputConfig {
-        @JsonProperty()
         List<String> from = new ArrayList<>();
-
-        @JsonProperty()
-        InputPaths paths = new InputPaths();
-
-        @JsonProperty()
-        List<String> include = new ArrayList<>();
-
-        @JsonProperty()
-        List<String> includeGroup = new ArrayList<>();
-
-        @JsonProperty()
-        List<String> exclude = new ArrayList<>();
-
-        @JsonProperty()
-        List<String> excludePattern = new ArrayList<>();
-
-        @JsonProperty()
-        Map<String, String> template = new HashMap<>();
-
-        @JsonProperty()
-        boolean useDiceRoller = false;
-
-        @JsonProperty()
-        String tagPrefix = "";
 
         @JsonAlias({ "convert" })
         @JsonProperty(value = "full-source")
         FullSource fullSource = new FullSource();
+
+        InputPaths paths = new InputPaths();
+
+        List<String> include = new ArrayList<>();
+
+        List<String> includeGroup = new ArrayList<>();
+
+        List<String> exclude = new ArrayList<>();
+
+        List<String> excludePattern = new ArrayList<>();
+
+        Map<String, String> template = new HashMap<>();
+
+        boolean useDiceRoller = false;
+
+        String tagPrefix = "";
+
+        ImageOptions images = new ImageOptions();
     }
 
     @RegisterForReflection
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    static class ImageOptions {
+        String relativeRemoteRoot;
+        boolean copyRemote;
+        boolean checkRemote;
+    }
+
+    @RegisterForReflection
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     static class FullSource {
-        @JsonProperty()
-        List<String> book = new ArrayList<>();
-
-        @JsonProperty()
         List<String> adventure = new ArrayList<>();
+        List<String> book = new ArrayList<>();
+        List<String> homebrew = new ArrayList<>();
     }
 
     @RegisterForReflection
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     static class InputPaths {
-        @JsonProperty()
         String compendium;
-
-        @JsonProperty()
         String rules;
     }
 }

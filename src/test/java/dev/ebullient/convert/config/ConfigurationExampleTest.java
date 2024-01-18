@@ -88,6 +88,12 @@ public class ConfigurationExampleTest {
         tools5Config.template.put("background", "examples/templates/tools5e/images-background2md.txt");
         tools5Config.fullSource.book.add("PHB");
         tools5Config.fullSource.adventure.add("LMoP");
+        tools5Config.fullSource.homebrew.add("homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json");
+        tools5Config.images.checkRemote = false;
+        tools5Config.images.copyRemote = false;
+        tools5Config.images.relativeRemoteRoot = "alternate/path/for/remote/images";
+        tools5Config.useDiceRoller = true;
+        tools5Config.tagPrefix = "ttrpg-cli";
 
         tui.writeJsonFile(Path.of("examples/config/config.5e.json"), tools5Config);
         tui.writeYamlFile(Path.of("examples/config/config.5e.yaml"), tools5Config);
@@ -106,6 +112,8 @@ public class ConfigurationExampleTest {
 
         pf2eConfig.fullSource.book.add("crb");
         pf2eConfig.fullSource.book.add("gmg");
+        pf2eConfig.tagPrefix = "ttrpg-cli";
+        pf2eConfig.useDiceRoller = true;
 
         tui.writeJsonFile(Path.of("examples/config/config.pf2e.json"), pf2eConfig);
         tui.writeYamlFile(Path.of("examples/config/config.pf2e.yaml"), pf2eConfig);

@@ -21,12 +21,10 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 public class Tools5eMarkdownConverter implements MarkdownConverter {
     final Tools5eIndex index;
     final MarkdownWriter writer;
-    final Map<String, String> fallbackPaths;
 
-    public Tools5eMarkdownConverter(Tools5eIndex index, MarkdownWriter writer, Map<String, String> fallbackPaths) {
+    public Tools5eMarkdownConverter(Tools5eIndex index, MarkdownWriter writer) {
         this.index = index;
         this.writer = writer;
-        this.fallbackPaths = fallbackPaths;
     }
 
     public Tools5eMarkdownConverter writeAll() {
@@ -43,8 +41,8 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
     }
 
     public Tools5eMarkdownConverter writeImages() {
-        index.tui().copyImages(Tools5eSources.getImages(), fallbackPaths);
-        index.tui().copyFonts(Tools5eSources.getFonts(), fallbackPaths);
+        index.tui().copyImages(Tools5eSources.getImages());
+        index.tui().copyFonts(Tools5eSources.getFonts());
         return this;
     }
 

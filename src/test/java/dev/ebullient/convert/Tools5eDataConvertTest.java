@@ -125,41 +125,7 @@ public class Tools5eDataConvertTest {
             LaunchResult result = launcher.launch("--debug", "--index",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-homebrew.json").toString(),
                     "-o", target.toString(),
-                    TestUtils.PATH_5E_TOOLS_DATA.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("psion.json").toString(),
-                    TestUtils.TEST_RESOURCES.resolve("ermis-bg.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("adventure/Anthony Joyce; The Blood Hunter Adventure.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("adventure/JVC Parry; Call from the Deep.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("adventure/Kobold Press; Book of Lairs.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("background/D&D Wiki; Featured Quality Backgrounds.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("book/Ghostfire Gaming; Grim Hollow Campaign Guide.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("book/Ghostfire Gaming; Stibbles Codex of Companions.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("book/MCDM Productions; Arcadia Issue 3.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("class/D&D Wiki; Swashbuckler.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("class/Foxfire94; Vampire.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("class/badooga; Badooga's Psion.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("class/Matthew Mercer; Blood Hunter (2022).json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("collection/Arcana Games; Arkadia.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("collection/Ghostfire Gaming; Grim Hollow - The Monster Grimoire.json")
-                            .toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("collection/Keith Baker; Exploring Eberron.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("collection/Kobold Press; Deep Magic 14 Elemental Magic.json")
-                            .toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("collection/Jasmine Yang; Hamund's Herbalism Handbook.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW
-                            .resolve("collection/Kobold Press; Deep Magic Backgrounds, Feats, & Subclasses.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW
-                            .resolve("collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json")
-                            .toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("creature/Kobold Press; Creature Codex.json")
-                            .toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("creature/Kobold Press; Tome of Beasts.json")
-                            .toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("creature/MCDM Productions; Flee, Mortals! preview.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("creature/MCDM Productions; Flee, Mortals!.json").toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json")
-                            .toString(),
-                    TestUtils.PATH_5E_HOMEBREW.resolve("deity/Frog God Games; The Lost Lands.json").toString());
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))

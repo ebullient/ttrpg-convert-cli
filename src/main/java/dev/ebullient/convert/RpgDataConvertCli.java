@@ -210,6 +210,9 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                 allOk &= tui.readFile(toolsPath.resolve(book), TtrpgConfig.getFixes(book), index::importTree);
             }
         }
+        for (String brew : config.getHomebrew()) {
+            allOk &= tui.readFile(Path.of(brew), TtrpgConfig.getFixes(brew), index::importTree);
+        }
 
         if (!allOk) {
             tui.println("❌ errors reading data. Check the following: ",
@@ -237,7 +240,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             tpl.setCustomTemplates(config);
 
             MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeAll()
                     .writeNotesAndTables()
                     .writeImages();

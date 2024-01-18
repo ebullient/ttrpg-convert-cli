@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,7 +57,7 @@ public interface ToolsIndex {
 
     ToolsIndex importTree(String filename, JsonNode node);
 
-    MarkdownConverter markdownConverter(MarkdownWriter writer, Map<String, String> imageFallbackPaths);
+    MarkdownConverter markdownConverter(MarkdownWriter writer);
 
     void writeFullIndex(Path resolve) throws IOException;
 

@@ -306,8 +306,8 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     // --------- Write indexes ---------
 
     @Override
-    public MarkdownConverter markdownConverter(MarkdownWriter writer, Map<String, String> imageFallbackPaths) {
-        return new Pf2eMarkdown(this, writer, imageFallbackPaths);
+    public MarkdownConverter markdownConverter(MarkdownWriter writer) {
+        return new Pf2eMarkdown(this, writer);
     }
 
     @Override

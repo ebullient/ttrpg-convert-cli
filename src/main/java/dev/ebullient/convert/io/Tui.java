@@ -314,7 +314,7 @@ public class Tui {
                 .findFirst();
     }
 
-    public void copyFonts(Collection<FontRef> fonts, Map<String, String> fallbackPaths) {
+    public void copyFonts(Collection<FontRef> fonts) {
         for (FontRef fontRef : fonts) {
             Path targetPath = output.resolve(Path.of("css-snippets", slugify(fontRef.fontFamily) + ".css"));
             targetPath.getParent().toFile().mkdirs();
@@ -341,7 +341,7 @@ public class Tui {
         }
     }
 
-    public void copyImages(Collection<ImageRef> images, Map<String, String> fallbackPaths) {
+    public void copyImages(Collection<ImageRef> images) {
         for (ImageRef image : images) {
             Path targetPath = output.resolve(image.targetFilePath());
             if (targetPath.toFile().exists()) {
@@ -358,7 +358,7 @@ public class Tui {
             // adjust basePath for relocated image
             Path relativeImagePath = image.sourcePath();
             if (sourceRoot.isEmpty()) {
-                String adjustedPath = fallbackPaths.get(image.sourcePath().toString());
+                String adjustedPath = TtrpgConfig.imageFallbackPaths().get(image.sourcePath().toString());
                 if (adjustedPath != null) {
                     sourceRoot = inputRoot.stream()
                             .filter(x -> x.resolve(adjustedPath).toFile().exists())

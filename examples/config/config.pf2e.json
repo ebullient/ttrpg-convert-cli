@@ -10,7 +10,6 @@
   "include" : [
     "ability|buck|b1"
   ],
-  "includeGroup" : [ ],
   "exclude" : [
     "background|insurgent|apg"
   ],
@@ -20,13 +19,16 @@
   "template" : {
     "ability" : "../path/to/ability2md.txt"
   },
-  "useDiceRoller" : false,
-  "tagPrefix" : "",
+  "useDiceRoller" : true,
+  "tagPrefix" : "ttrpg-cli",
+  "images" : {
+    "copyRemote" : false,
+    "checkRemote" : false
+  },
   "full-source" : {
     "book" : [
       "crb",
       "gmg"
-    ],
-    "adventure" : [ ]
+    ]
   }
 }

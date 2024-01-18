@@ -20,12 +20,10 @@ import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 public class Pf2eMarkdown implements MarkdownConverter {
     final Pf2eIndex index;
     final MarkdownWriter writer;
-    final Map<String, String> fallbackPaths;
 
-    public Pf2eMarkdown(Pf2eIndex index, MarkdownWriter writer, Map<String, String> imageFallbackPaths) {
+    public Pf2eMarkdown(Pf2eIndex index, MarkdownWriter writer) {
         this.index = index;
         this.writer = writer;
-        this.fallbackPaths = imageFallbackPaths;
     }
 
     @Override
@@ -36,7 +34,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
     @Override
     public Pf2eMarkdown writeImages() {
-        index.tui().copyImages(Pf2eSources.getImages(), fallbackPaths);
+        index.tui().copyImages(Pf2eSources.getImages());
         return this;
     }
 

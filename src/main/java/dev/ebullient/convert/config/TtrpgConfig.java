@@ -45,28 +45,28 @@ public class TtrpgConfig {
         return userConfig.computeIfAbsent(datasource, (k) -> new CompendiumConfig(datasource, tui));
     }
 
-    private static DatasourceConfig activeConfig() {
+    private static DatasourceConfig activeDSConfig() {
         return globalConfig.computeIfAbsent(datasource, (k) -> new DatasourceConfig());
     }
 
     public static List<Fix> getFixes(String filepath) {
-        return activeConfig().findFixesFor(filepath.replace('\\', '/'));
+        return activeDSConfig().findFixesFor(filepath.replace('\\', '/'));
     }
 
     public static String sourceToLongName(String src) {
-        return activeConfig().abvToName.getOrDefault(sourceToAbbreviation(src).toLowerCase(), src);
+        return activeDSConfig().abvToName.getOrDefault(sourceToAbbreviation(src).toLowerCase(), src);
     }
 
     public static String sourceToAbbreviation(String src) {
-        return activeConfig().longToAbv.getOrDefault(src.toLowerCase(), src);
+        return activeDSConfig().longToAbv.getOrDefault(src.toLowerCase(), src);
     }
 
     public static Collection<String> getTemplateKeys() {
-        return activeConfig().templateKeys;
+        return activeDSConfig().templateKeys;
     }
 
     public static boolean addHomebrewSource(String name, String abv, String longAbv) {
-        return activeConfig().addSource(name, abv, longAbv);
+        return activeDSConfig().addSource(name, abv, longAbv);
     }
 
     public static void includeBookAdventureSource(String src) {
@@ -74,12 +74,20 @@ public class TtrpgConfig {
         config.setSources(List.of(src));
     }
 
+    public static String remoteImageRoot() {
+        String remoteImageRoot = getConfig().imageOptions().relativeRemoteRoot;
+        if (remoteImageRoot != null) {
+            remoteImageRoot = activeDSConfig().constants.get("remoteImageRoot");
+        }
+        return remoteImageRoot;
+    }
+
     public static Map<String, String> imageFallbackPaths() {
-        return activeConfig().fallbackImagePaths;
+        return activeDSConfig().fallbackImagePaths;
     }
 
     public static JsonNode readIndex(String key) {
-        String file = activeConfig().indexes.get(key);
+        String file = activeDSConfig().indexes.get(key);
         Optional<Path> root = file == null ? Optional.empty() : tui.resolvePath(Path.of(file));
         if (root.isEmpty()) {
             return NullNode.getInstance();
@@ -94,11 +102,11 @@ public class TtrpgConfig {
     }
 
     public static JsonNode activeGlobalConfig(String key) {
-        return activeConfig().data.get(key);
+        return activeDSConfig().data.get(key);
     }
 
     public static void checkKnown(Collection<String> bookSources) {
-        DatasourceConfig activeConfig = activeConfig();
+        DatasourceConfig activeConfig = activeDSConfig();
         bookSources.forEach(s -> {
             String check = s.toLowerCase();
             if (activeConfig.abvToName.containsKey(check)) {
@@ -115,17 +123,17 @@ public class TtrpgConfig {
     }
 
     public static Collection<String> getMarkerFiles() {
-        DatasourceConfig activeConfig = activeConfig();
+        DatasourceConfig activeConfig = activeDSConfig();
         return Collections.unmodifiableSet(activeConfig.markerFiles);
     }
 
     public static Collection<String> getFileSources() {
-        DatasourceConfig activeConfig = activeConfig();
+        DatasourceConfig activeConfig = activeDSConfig();
         return Collections.unmodifiableSet(activeConfig.sources);
     }
 
     public static void addDefaultAliases(Map<String, String> aliases) {
-        DatasourceConfig activeConfig = activeConfig();
+        DatasourceConfig activeConfig = activeDSConfig();
         activeConfig.aliases.forEach((k, v) -> aliases.putIfAbsent(k, v));
     }
 
@@ -148,6 +156,7 @@ public class TtrpgConfig {
                 if (srdEntries != null) {
                     config.data.put(ConfigKeys.srdEntries.name(), srdEntries);
                 }
+                config.constants.putAll(ConfigKeys.constants.getAsMap(config5e));
                 config.aliases.putAll(ConfigKeys.aliases.getAsMap(config5e));
                 config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(config5e));
                 config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(config5e));
@@ -184,6 +193,7 @@ public class TtrpgConfig {
 
     static class DatasourceConfig {
         final Map<String, JsonNode> data = new HashMap<>();
+        final Map<String, String> constants = new HashMap<>();
         final Map<String, String> aliases = new HashMap<>();
         final Map<String, String> abvToName = new HashMap<>();
         final Map<String, String> longToAbv = new HashMap<>();
@@ -239,7 +249,9 @@ public class TtrpgConfig {
         abvToName,
         config5e,
         configPf2e,
+        constants,
         fallbackImage,
+        remoteImageRoot,
         fixes,
         indexes,
         longToAbv,
