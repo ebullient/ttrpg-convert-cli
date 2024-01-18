@@ -23,14 +23,22 @@
   "template" : {
     "background" : "examples/templates/tools5e/images-background2md.txt"
   },
-  "useDiceRoller" : false,
-  "tagPrefix" : "",
+  "useDiceRoller" : true,
+  "tagPrefix" : "ttrpg-cli",
+  "images" : {
+    "relativeRemoteRoot" : "alternate/path/for/remote/images",
+    "copyRemote" : false,
+    "checkRemote" : false
+  },
   "full-source" : {
+    "adventure" : [
+      "LMoP"
+    ],
     "book" : [
       "PHB"
     ],
-    "adventure" : [
-      "LMoP"
+    "homebrew" : [
+      "homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json"
     ]
   }
 }

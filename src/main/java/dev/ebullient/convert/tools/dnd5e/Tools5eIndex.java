@@ -1090,8 +1090,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     @Override
-    public MarkdownConverter markdownConverter(MarkdownWriter writer, Map<String, String> imageFallbackPaths) {
-        return new Tools5eMarkdownConverter(this, writer, imageFallbackPaths);
+    public MarkdownConverter markdownConverter(MarkdownWriter writer) {
+        return new Tools5eMarkdownConverter(this, writer);
     }
 
     @Override

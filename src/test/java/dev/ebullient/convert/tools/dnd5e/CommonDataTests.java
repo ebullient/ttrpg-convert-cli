@@ -118,7 +118,7 @@ public class CommonDataTests {
             Path backgroundDir = deleteDir(Tools5eIndexType.background, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.background)
                     .writeNotesAndTables()
                     .writeImages();
@@ -134,7 +134,7 @@ public class CommonDataTests {
             Path classDir = deleteDir(Tools5eIndexType.classtype, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.classtype)
                     .writeImages();
 
@@ -167,7 +167,7 @@ public class CommonDataTests {
             Path outDir = deleteDir(Tools5eIndexType.deck, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.deck)
                     .writeImages();
 
@@ -191,7 +191,7 @@ public class CommonDataTests {
             Path outDir = deleteDir(Tools5eIndexType.deity, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.deity)
                     .writeImages();
 
@@ -216,7 +216,7 @@ public class CommonDataTests {
             Path featDir = deleteDir(Tools5eIndexType.feat, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.feat)
                     .writeImages();
 
@@ -231,7 +231,7 @@ public class CommonDataTests {
             Path itemDir = deleteDir(Tools5eIndexType.item, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.item, Tools5eIndexType.itemGroup))
                     .writeImages();
 
@@ -247,7 +247,7 @@ public class CommonDataTests {
             Path bestiaryDir = deleteDir(Tools5eIndexType.monster, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup))
                     .writeImages();
 
@@ -284,7 +284,7 @@ public class CommonDataTests {
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
         }
     }
@@ -300,7 +300,7 @@ public class CommonDataTests {
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
@@ -357,7 +357,7 @@ public class CommonDataTests {
             templates.setCustomTemplates(testConfig);
 
             MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
@@ -409,7 +409,7 @@ public class CommonDataTests {
             Path outDir = deleteDir(Tools5eIndexType.object, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(
                             Tools5eIndexType.object))
                     .writeImages();
@@ -433,7 +433,7 @@ public class CommonDataTests {
             Path ofDir = deleteDir(Tools5eIndexType.optionalFeatureTypes, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(
                             Tools5eIndexType.optionalFeatureTypes,
                             Tools5eIndexType.optionalfeature))
@@ -450,7 +450,7 @@ public class CommonDataTests {
             Path outDir = deleteDir(Tools5eIndexType.psionic, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.psionic)
                     .writeImages();
 
@@ -465,7 +465,7 @@ public class CommonDataTests {
             Path raceDir = deleteDir(Tools5eIndexType.race, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.race)
                     .writeImages();
 
@@ -480,7 +480,7 @@ public class CommonDataTests {
             Path rewardDir = deleteDir(Tools5eIndexType.reward, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.reward)
                     .writeImages();
 
@@ -502,7 +502,7 @@ public class CommonDataTests {
             TestUtils.deleteDir(index.rulesFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeNotesAndTables()
                     .writeImages();
 
@@ -517,7 +517,7 @@ public class CommonDataTests {
             Path spellDir = deleteDir(Tools5eIndexType.spell, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(Tools5eIndexType.spell)
                     .writeImages();
 
@@ -532,7 +532,7 @@ public class CommonDataTests {
             Path trapsDir = deleteDir(Tools5eIndexType.trap, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.trap, Tools5eIndexType.hazard))
                     .writeImages();
 
@@ -547,7 +547,7 @@ public class CommonDataTests {
             Path outDir = deleteDir(Tools5eIndexType.vehicle, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.vehicle))
                     .writeImages();
 

@@ -121,7 +121,7 @@ public class CommonDataTests {
 
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeNotesAndTables()
                     .writeImages();
 
@@ -149,7 +149,7 @@ public class CommonDataTests {
             paths.forEach(p -> TestUtils.deleteDir(p));
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer, TtrpgConfig.imageFallbackPaths())
+            index.markdownConverter(writer)
                     .writeFiles(types);
 
             paths.forEach(p -> TestUtils.assertDirectoryContents(p, tui));

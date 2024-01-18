@@ -16,8 +16,16 @@ excludePattern:
 - "race|.*|dmg"
 template:
   background: "examples/templates/tools5e/images-background2md.txt"
+useDiceRoller: true
+tagPrefix: "ttrpg-cli"
+images:
+  relativeRemoteRoot: "alternate/path/for/remote/images"
+  copyRemote: false
+  checkRemote: false
 full-source:
-  book:
-  - "PHB"
   adventure:
   - "LMoP"
+  book:
+  - "PHB"
+  homebrew:
+  - "homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json"
