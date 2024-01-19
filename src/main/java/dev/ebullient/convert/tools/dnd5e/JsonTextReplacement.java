@@ -584,6 +584,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // {@classFeature Rage|Barbarian||1||optional display text}.
         String[] parts = match.split("\\|");
         String linkText = parts[0];
+        if (parts.length < 4) {
+            tui().errorf("Bad Class Feature Link {@classFeature %s} in %s", match, getSources());
+            return linkText;
+        }
         String className = parts[1];
         String classSource = parts[2].isBlank() ? "phb" : parts[2];
         String level = parts[3];
@@ -642,9 +646,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // Class source is assumed to be PHB.
         // Subclass source is assumed to be PHB.
         // Subclass feature source is assumed to be the same as subclass source.",
-
         String[] parts = match.split("\\|");
         String linkText = parts[0];
+        if (parts.length < 6) {
+            tui().errorf("Bad Subclass Feature Link {@subclassFeature %s} in %s", match, getSources());
+            return linkText;
+        }
         String className = parts[1];
         String classSource = parts[2].isBlank() ? "phb" : parts[2];
         String subclass = parts[3];

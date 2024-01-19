@@ -198,12 +198,20 @@ public class Json2QuteClass extends Json2QuteCommon {
                 ArrayNode rows = table.withArray("rows");
                 for (int i = 0; i < rows.size(); i++) {
                     int level = i + 1;
+                    if (level >= row_levels.size()) {
+                        tui().errorf("Badly formed class-progression table in %s: %s", sources, table.toString());
+                        break;
+                    }
                     rows.get(i).forEach(c -> row_levels.get(level).add(columnValue(c)));
                 }
             } else if (table.has("rowsSpellProgression")) {
                 ArrayNode rows = table.withArray("rowsSpellProgression");
                 for (int i = 0; i < rows.size(); i++) {
                     int level = i + 1;
+                    if (level >= row_levels.size()) {
+                        tui().errorf("Badly formed spell-progression table in %s: %s", sources, table.toString());
+                        break;
+                    }
                     rows.get(i).forEach(c -> row_levels.get(level).add(columnValue(c)));
                 }
             }
