@@ -1213,6 +1213,7 @@ public interface JsonSource extends JsonTextReplacement {
         cr,
         data, // statblock, statblockInline
         dataType, // statblockInline
+        entriesTemplate,
         featureType,
         fluff,
         group,

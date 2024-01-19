@@ -77,7 +77,8 @@
               "page": 267,
               "source": "DMG",
               "entries": [
-                "The ammunition of a firearm is destroyed upon use. Renaissance and modern firearms use bullets. Futuristic firearms are powered by a special type of ammunition called energy cells. An energy cell contains enough power for all the shots its firearm can make."
+                "You can use a weapon that has the ammunition property to make a ranged attack only if you have ammunition to fire from the weapon. Each time you attack with the weapon, you expend one piece of ammunition. Drawing the ammunition from a quiver, case, or other container is part of the attack. Loading a one-handed weapon requires a free hand. The ammunition of a firearm is destroyed upon use.",
+                "If you use a weapon that has the ammunition property to make a melee attack, you treat the weapon as an improvised weapon. A sling must be loaded to deal any damage when used in this way."
               ]
             },
             {
@@ -87,7 +88,7 @@
               "page": 267,
               "source": "DMG",
               "entries": [
-                "A weapon that has the burst fire property can make a normal single-target attack, or it can spray a 10-foot-cube area within normal range with shots. Each creature in the area must succeed on a DC 15 Dexterity saving throw or take the weapon's normal damage. This action uses ten pieces of ammunition."
+                "A weapon that has the burst fire property can make a single-target attack, or it can spray a 10-foot-cube area within normal range with shots. Each creature in the area must succeed on a DC 15 Dexterity saving throw or take the weapon's normal damage. This action uses ten pieces of ammunition."
               ]
             },
             {
@@ -196,7 +197,6 @@
             {
               "type": "entries",
               "name": "Range",
-              "abbreviation": "R",
               "source": "PHB",
               "page": 146,
               "itemType": "R",
@@ -215,17 +215,7 @@
               "srd": true,
               "basicRules": true,
               "entries": [
-                "This weapon adds 5 feet to your reach when you attack with it. This property also determines your reach for {@action opportunity attack|PHB|opportunity attacks} with a reach weapon.",
-                {
-                  "type": "entries",
-                  "name": "Extended Reach",
-                  "abbreviation": "ER",
-                  "source": "TDCSR",
-                  "page": 195,
-                  "entries": [
-                    "This weapon adds additional (more than 5) feet to your reach when you attack with it. This property also determines your reach for {@action opportunity attack|PHB|opportunity attacks} with an Extended Reach weapon."
-                  ]
-                }
+                "This weapon adds 5 feet to your reach when you attack with it. This property also determines your reach for opportunity attacks with a reach weapon."
               ]
             },
             {

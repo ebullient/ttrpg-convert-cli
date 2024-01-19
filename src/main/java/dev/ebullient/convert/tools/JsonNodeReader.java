@@ -268,6 +268,9 @@ public interface JsonNodeReader {
     }
 
     default boolean valueEquals(JsonNode previous, JsonNode next) {
+        if (previous == null || next == null) {
+            return true;
+        }
         JsonNode prevValue = previous.get(this.nodeName());
         JsonNode nextValue = next.get(this.nodeName());
         return (prevValue == null && nextValue == null)

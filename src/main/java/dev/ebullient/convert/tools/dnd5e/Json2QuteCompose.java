@@ -2,13 +2,12 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.tools.JsonNodeReader;
@@ -112,13 +111,25 @@ public class Json2QuteCompose extends Json2QuteCommon {
     }
 
     private void flatten(JsonNode entry) {
-        if (!entry.has("name") && entry.has("entries")) {
-            JsonNode nested = entry.get("entries").get(0);
-            if (nested.has("name")) {
-                ((ObjectNode) entry).set("name", nested.get("name"));
-                ((ObjectNode) entry).set("entries", nested.get("entries"));
-            }
+        if (SourceField.name.existsIn(entry) && SourceField.entries.existsIn(entry)) {
+            return;
         }
+        JsonNode next = SourceField.entries.existsIn(entry)
+                ? SourceField.entries.getFrom(entry)
+                : Tools5eFields.entriesTemplate.getFrom(entry);
+        if (SourceField.name.existsIn(entry) && !SourceField.entries.existsIn(entry)) {
+            // entries did not exist (probably because it was a template instead)
+            SourceField.entries.copy(next, entry);
+            return;
+        }
+        JsonNode content = next == null ? null : next.get(0);
+        if (SourceField.name.existsIn(content) && SourceField.entries.existsIn(content)) {
+            SourceField.name.copy(content, entry);
+            SourceField.entries.copy(content, entry);
+            return;
+        }
+        tui().warnf("Unable to flatten entry from %s. Content may be missing. %s",
+                Tools5eSources.findSources(entry), entry);
     }
 
     private void appendTable(String name, JsonNode entry, List<String> text) {
@@ -197,7 +208,6 @@ public class Json2QuteCompose extends Json2QuteCommon {
             maybeAddBlankLine(text);
             text.add("This action is an optional addition to the game, from the optional/variant rule "
                     + linkifyVariant(fromVariant) + ".");
-
         }
     }
 
@@ -233,28 +243,27 @@ public class Json2QuteCompose extends Json2QuteCommon {
                 text.add("");
 
                 if (name.equals("Weapon Properties")) {
+
+                    Map<String, JsonNode> properties = new HashMap<>();
                     ArrayNode propertyEntries = srdEntry.withArray("entries");
-                    Set<String> abbreviations = new HashSet<>();
-                    List<JsonNode> properties = new ArrayList<>();
                     for (JsonNode x : iterableElements(propertyEntries)) {
-                        String abbr = Tools5eFields.abbreviation.getTextOrDefault(x, SourceField.name.getTextOrEmpty(x))
-                                .toLowerCase();
-                        if (propertyIncluded(x, abbr)) {
-                            properties.add(x);
-                            abbreviations.add(abbr);
-                        }
+                        properties.put(toAbbv(x), x);
                     }
-                    for (JsonNode x : nodes) {
-                        String abbr = Tools5eFields.abbreviation.getTextOrDefault(x, SourceField.name.getTextOrEmpty(x))
-                                .toLowerCase();
-                        if (propertyIncluded(x, abbr) && !abbreviations.contains(abbr)) {
-                            properties.add(x);
+
+                    // All registered item properties. There could be overlaps
+                    mergeEntries(properties, nodes);
+
+                    List<JsonNode> sorted = new ArrayList<>(properties.values());
+                    sorted.sort(Comparator.comparing(SourceField.name::getTextOrEmpty));
+
+                    for (JsonNode property : sorted) {
+                        maybeAddBlankLine(text);
+                        text.add("### " + SourceField.name.getTextOrEmpty(property));
+                        if (!property.has("srd")) {
+                            text.add(getLabeledSource(property));
                         }
+                        appendToText(text, property, null);
                     }
-                    properties.sort(Comparator.comparing(SourceField.name::getTextOrEmpty));
-                    propertyEntries.removeAll();
-                    propertyEntries.addAll(properties);
-                    appendToText(text, propertyEntries, "###");
                 } else {
                     appendToText(text, srdEntry.get("entries"), "###");
                 }
@@ -264,7 +273,27 @@ public class Json2QuteCompose extends Json2QuteCommon {
         }
     }
 
-    private boolean propertyIncluded(JsonNode x, String abbr) {
+    private String toAbbv(JsonNode x) {
+        return Tools5eFields.abbreviation.getTextOrDefault(x,
+                SourceField.name.getTextOrEmpty(x)).toLowerCase();
+    }
+
+    private void mergeEntries(Map<String, JsonNode> properties, Iterable<JsonNode> iterable) {
+        for (JsonNode x : iterable) {
+            if (propertyIncluded(x)) {
+                String abbv = toAbbv(x);
+                JsonNode old = properties.putIfAbsent(abbv, x);
+                if (old != null && SourceField.entries.existsIn(x) && !SourceField.entries.valueEquals(old, x)) {
+                    tui().warnf("Duplicate item property with abbreviation %s from %s and %s",
+                            abbv, SourceField.source.getTextOrEmpty(old), SourceField.source.getTextOrEmpty(x));
+                    tui().debugf("Old: %s", old.toString());
+                    tui().debugf("New: %s", x.toString());
+                }
+            }
+        }
+    }
+
+    private boolean propertyIncluded(JsonNode x) {
         String source = SourceField.source.getTextOrEmpty(x);
         return booleanOrDefault(x, "srd", false)
                 || (!source.isEmpty() && index.sourceIncluded(source));
