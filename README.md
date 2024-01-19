@@ -19,6 +19,7 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This project parses json sources for materials that I own from the 5etools mirror to create linked and formatted markdown that I can reference in my notes.
 
 > [!TIP]
+>
 > - 🚜 [**Review the changelog**](CHANGELOG.md) for new capabilities (✨) and breaking changes (🔥💥).
 > - 🔮 Check out [**Conventions**](#conventions) and  [**Recommendations**](#recommendations-for-using-the-cli)
 
@@ -126,7 +127,7 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
     - File names for resources outside of the core books (PHB, MM, and DMG) have the abbreviated source name appended to the end to avoid file collisions.
     - All files have an `aliases` attribute that contains the original name of the resource.
 
-- **Organization.** Files are generated in two roots: `compendium` and `rules`. The location of these roots is [configurable](docs/configuration.md#specify-target-paths-with-the-paths-key). These directories will be populated depending on the sources you have enabled.
+- **Organization.** Files are generated in two roots: `compendium` and `rules`. The location of these roots is [configurable](docs/configuration.md#specify-target-paths-paths-key). These directories will be populated depending on the sources you have enabled.
 
     - `compendium` contains files for items, spells, monsters, etc.
     The `compendium` directory is further organized into subdirectories for each type of content. For example, all items are in the `compendium/items` directory.  
@@ -146,6 +147,10 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
 
 ## Convert 5eTools JSON data
 
+> [!NOTE]
+> Instructions here use backslashes to wrap lines for readability (a common practice for linux-based command shells).
+> *If you are using Windows*, you will need to remove the backslashes and put the command on a single line. You may also need to append `.exe` to the command name (though it should work without).
+
 1. Create a shallow clone of the 5eTools mirror repo (which can/should be deleted afterwards):
 
     ```shell
@@ -161,37 +166,53 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
       5etools-mirror-1.github.io/data
     ```
 
-    - `--index` Create `all-index.json` containing all of the touched artifact ids, and `src-index.json` that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
+    - `--index` generates two index files: `all-index.json` and `src-index.json`.
+        > [!TIP]
+        > - Use `all-index.json` to see the reference keys for all discovered content. This can confirm that an included source was actually read.
+        > - Use `src-index.json` to see the reference keys for content that was included in the generated output. This can confirm that your source selection is working as expected.
     - `-o dm` The target output directory (`dm` in this case). Files will be created in this directory.
 
     The rest of the command-line specifies input files:
 
     - `5etools-mirror-1.github.io/data` Path to the 5etools `data` directory (from a clone or release of the repo)
 
-    This should produce a set of markdown files in the `dm` directory.
+    This should produce a set of markdown files in the `dm` directory that contains only SRD content.
 
-3. Invoke the command again, this time including source files and custom items:
+3. Invoke the command again and include additional sources:
 
     ```shell
     ttrpg-convert \
         --index \
         -o dm \
-        -c dm-sources.json \
-        5etools-mirror-1.github.io/data \
-        5etools-mirror-1.github.io/data/adventure/adventure-lox.json \
-        5etools-mirror-1.github.io/data/book/book-aag.json \
-        my-items.json
+        -s PHB,DMG,SCAG \
+        5etools-mirror-1.github.io/data
     ```
 
-    - `-s PHB,DMG,SCAG` Will include content from the Player's Handbook, the Dungeon Master's Guide, and the Sword Coast Adventurer's Guide (all sources I own).
-    - `5etools-mirror-1.github.io/data` Path to the 5etools `data` directory (from a clone or release of the repo)
-    - `/adventure/adventure-lox.json` is an adventure to include (full-text)
-    - `/book/book-aag.json` is a book to include (full-text)
-    - `my-items.json` defines custom items for my campaign in [5etools JSON][] format.
+    - `-s PHB,DMG,SCAG` will include reference material from the *Player's Handbook*, the *Dungeon Master's Guide*, and the *Sword Coast Adventurer's Guide*.
+
+        > 🚀 Note: Only include content you own. Find the identifier for your sources in the [Source Map](./docs/sourceMap.md#source-name-mapping-for-5etools).
+
+We now know that the CLI is working!
+
+Specifying sources on the command line with the `-s` option gets messy in a hurry. Configuration beyond this basic example should use a configuration file, specified with the `-c` option, like this:
+
+```shell
+ttrpg-convert \
+    --index \
+    -o dm \
+    -c my-config.json \
+    5etools-mirror-1.github.io/data
+```
+
+Next step: Create your own [configuration file](docs/configuration.md).
 
 ## Convert Pf2eTools JSON data
 
 🚜 🚧 🚜 🚧 🚜 🚧 🚜 🚧
+
+> [!NOTE]
+> Instructions here use backslashes to wrap lines for readability (a common practice for linux-based command shells).
+> *If you are using Windows*, you will need to remove the backslashes and put the command on a single line. You may also need to append `.exe` to the command name (though it should work without).
 
 1. Download a release of the Pf2eTools mirror, or create a shallow clone of the repo (which can/should be deleted afterwards):
 
@@ -199,7 +220,7 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
     git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
     ```
 
-2. Invoke the CLI. In this first example, let's generate indexes and use only SRD content (using the alias set up when [installing the cli](#install-the-ttrpg-convert-cli):
+2. Invoke the CLI. In this first example, let's generate indexes and markdown for default content:
 
     ```shell
     ttrpg-convert \
@@ -210,12 +231,45 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
     ```
 
     - `-g p2fe` The game system! Pathfinder 2e!
-    - `--index` Create `all-index.json` containing all of the touched artifact ids, and `src-index.json` that shows the filtered/allowed artifact ids. These files are useful when tweaking exclude rules (as shown below).
+    - `--index` generates two index files: `all-index.json` and `src-index.json`.
+        > [!TIP]
+        > - Use `all-index.json` to see the reference keys for all discovered content. This can confirm that an included source was actually read.
+        > - Use `src-index.json` to see the reference keys for content that was included in the generated output. This can confirm that your source selection is working as expected.
     - `-o dm` The target output directory. Files will be created in this directory.
 
     The rest of the command-line specifies input files:
 
     - `Pf2eTools/data` Path to the Pf2eTools `data` directory (from a clone or release of the repo)
+
+3. Invoke the command again and include additional sources:
+
+    ```shell
+    ttrpg-convert \
+        -g pf2e \
+        --index \
+        -o dm \
+        -s AV1,GMG \
+        Pf2eTools/data
+    ```
+
+    - `-s AV1,GMG` will include reference material from the *Abomination Vaults #1: Ruins of Gauntlight*, and the *Gamemastery Guide*.
+
+        > 🚀 Note: Only include content you own. Find the identifier for your sources in the [Source Map](./docs/sourceMap.md#source-name-mapping-for-pf2etools).
+
+We now know that the CLI is working!
+
+Specifying sources on the command line with the `-s` option gets messy in a hurry. Configuration beyond this basic example should use a configuration file, specified with the `-c` option, like this:
+
+```shell
+ttrpg-convert \
+    -g pf2e \
+    --index \
+    -o dm \
+    -c my-config.json \
+    Pf2eTools/data
+```
+
+Next step: Create your own [configuration file](docs/configuration.md).
 
 ## Convert Homebrew JSON data
 
@@ -228,43 +282,50 @@ Perhaps the simplest thing to do to import homebrew is to use already existing h
 >
 > Homebrew data is different from the 5etools data. Each homebrew file is a complete reference. If you compare it to cooking: the 5etools mirror repo is organized by ingredient (all of the carrots, all of the onions, ... ); homebrew data is organized by prepared meal / complete receipe.
 
-So, for example, if you wanted to use Benjamin Huffman's popular homebrewed [Pugilist class](https://www.dmsguild.com/product/184921/The-Pugilist-Class) (and if so please make sure you have supported Benjamin by purchasing the content!)
+Adding homebrew content is easiest if you use a [configuration file](./docs/configuration.md), we will assume a file named `my-config.json` for the example below, but you can use any name you like.
 
-1. Download a copy of the [Pugilist json file](https://github.com/TheGiddyLimit/homebrew/blob/master/class/Benjamin%20Huffman%3B%20Pugilist.json)
-2. Run the command like so:
+> [!IMPORTANT]
+> 🚀 Respect copyrights and support content creators; use only the sources you own.
+
+For example, if you wanted to use Benjamin Huffman's popular homebrewed [Pugilist class](https://www.dmsguild.com/product/184921/The-Pugilist-Class):
+
+1. Download a copy of the [Pugilist json file](https://github.com/TheGiddyLimit/homebrew/blob/master/class/Benjamin%20Huffman%3B%20Pugilist.json).
+
+    Save this file to a well-known location on your computer. It is probably easiest if it sits next your 5eTools or Pf2eTools directory.
+
+2. Update your [configuration file](docs/configuration.md) to add a `homebrew` section under `full-source`:
+
+    ```json
+    {
+      "full-source": {
+        "homebrew": [
+            "path/to/Benjamin Huffman; Pugilist.json"
+        ]
+      }
+    }
+    ```
+
+    - `path/to/` is a placeholder. There are a few ways to figure out the path to a file.
+        - You may be able to drag and drop the file into the terminal window.
+        - You may have the ability to right-click on the file and select "Copy Path".
+        - *Windows users*: When pasting the path into a text editor, use find/replace to replace all `\` with `/`.
+
+3. Run the command like so (for 5e homebrew):
 
     ``` shell
-    ttrpg-convert  --index -s 'SterlingVermin' -o hb-compendium "path/to/Benjamin Huffman; Pugilist.json"
+    ttrpg-convert \
+        --index \
+        -o hb-compendium \
+        -c my-config.json
+        5etools-mirror-1.github.io/data
     ```
 
     - `-o hb-compendium` is the output directory for generated content.
-    - `-s 'SterlingVermin'`  *identifier* (see below) command line option for [`from`](docs/configuration.md#select-data-sources-with-the-from-key). You need to provide the  for the homebrew you are importing.
-    - `"path/to/Benjamin Huffman; Pugilist.json"` is the path to the downloaded json file.
+    - `-c my-config.json'` is the name and/or path to your configuration file.
 
-If you use the CLI tool with a config, then you would (staying with our example from above) put `SterlingVermin` in the `from` field of the config and add the path to the pugilist json file to your build command.
+See [configuration](docs/configuration.md) for more details on how to configure the CLI.
 
 The process is similar for other homebrew, including your own, so long as it is broadly compatible with the [5e-tools json spec](https://wiki.tercept.net/en/Homebrew/FromZeroToHero).
-
-### Homebrew identifier or abbreviation
-
-The 5eTools website has a homebrew view, and it will display an "abbreviation", but we need to use the `json` source identifier.
-
-If we look inside the Pugilist class:
-
-```json
-"_meta": {
-    "sources": [
-        {
-            "json": "SterlingVermin",
-            "abbreviation": "SVM",
-            "full": "The Pugilist Class",
-            "authors": [
-                "Benjamin Huffman"
-            ],
-```
-
-- `SVM` is the abbreviation that will be shown in the 5eTools web interface
-- The *identifier* is `SterlingVermin` (`_meta` -> `sources` -> `json`)
 
 ## Where to find help
 
