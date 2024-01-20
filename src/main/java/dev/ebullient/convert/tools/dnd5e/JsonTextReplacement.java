@@ -278,6 +278,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@comicH4 ([^}]+?)}", "$1")
                         .replaceAll("\\{@comicNote ([^}]+?)}", "$1")
                         .replaceAll("\\{@highlight ([^}]+?)}", "==$1==")
+                        .replaceAll("\\{@code ([^}]+?)}", "`$1`")
                         .replaceAll("\\{@kbd ([^}]+?)}", "`$1`")
                         .replaceAll("\\{@b}", " ")
                         .replaceAll("\\{@i}", " ");
