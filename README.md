@@ -8,8 +8,10 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 <td>Jump</td>
 <td><a href="#install-the-ttrpg-convert-cli">⬇ Download</a></td>
 <td><a href="docs/configuration.md">⚙️ Configuration</a></td>
+<td><a href="docs/sourceMap.md">🗺️ Source Map</a></td>
 <td><a href="examples/templates">🎨 Templates</a></td>
 </tr><tr>
+<td></td>
 <td><a href="CHANGELOG.md">🚜 Changelog</a></td>
 <td><a href="#convert-5etools-json-data">📖 5eTools</a></td>
 <td><a href="#convert-pf2etools-json-data">📖 Pf2eTools</a></td>
