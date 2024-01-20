@@ -45,7 +45,8 @@ public interface JsonTextConverter<T extends IndexType> {
             return mapper().readTree(sourceNode.toString());
         } catch (JsonProcessingException ex) {
             tui().errorf(ex, "Unable to copy %s", sourceNode.toString());
-            throw new IllegalStateException("JsonProcessingException processing " + sourceNode);
+            System.exit(5);
+            return null;
         }
     }
 
@@ -54,7 +55,8 @@ public interface JsonTextConverter<T extends IndexType> {
             return mapper().readTree(source);
         } catch (JsonProcessingException ex) {
             tui().errorf(ex, "Unable to create node from %s", source);
-            throw new IllegalStateException("JsonProcessingException processing " + source);
+            System.exit(5);
+            return null;
         }
     }
 

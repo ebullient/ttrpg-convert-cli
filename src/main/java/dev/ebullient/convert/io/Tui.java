@@ -530,7 +530,8 @@ public class Tui {
         try {
             return Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream(resource));
         } catch (IOException | IllegalArgumentException e) {
-            throw new IllegalStateException("Unable to read or parse required resource (" + resource + "): " + e, e);
+            Tui.instance.errorf(e, "Unable to read or parse required resource (%s): %s", resource, e.toString());
+            return null;
         }
     }
 }

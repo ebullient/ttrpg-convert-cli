@@ -50,6 +50,12 @@ public interface ItemProperty {
             this.tag = "property/" + Tui.slugify(abbreviation);
         }
 
+        public CustomItemProperty(String abbreviation) {
+            this.name = abbreviation;
+            this.tag = "property/" + Tui.slugify(abbreviation);
+            this.abbreviation = abbreviation;
+        }
+
         @Override
         public String getMarkdownLink(Tools5eIndex index) {
             return propertyToLink.computeIfAbsent(this, p -> {

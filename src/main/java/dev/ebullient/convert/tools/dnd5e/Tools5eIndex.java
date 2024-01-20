@@ -214,6 +214,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             tui().errorf("Source does not define json id: %s", sources.get(0));
             return false;
         }
+        TtrpgConfig.includeBookAdventureSource(json);
 
         HomebrewMetaTypes metaTypes = new HomebrewMetaTypes(json, filename, node);
         for (JsonNode source : iterableElements(sources)) {
@@ -761,7 +762,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
         if (prop == null) {
             tui().errorf("Unknown property %s for %s", abbreviation, sources);
-            throw new IllegalStateException("Unknown item property: " + abbreviation);
+            return new CustomItemProperty(abbreviation);
         }
         return prop;
     }
@@ -777,7 +778,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
         if (itemType == null) {
             tui().errorf("Unknown item type %s for %s", abbreviation, getSources());
-            throw new IllegalStateException("Unknown item type: " + abbreviation);
+            return new CustomItemType(abbreviation);
         }
         return itemType;
     }
@@ -797,7 +798,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
         if (skill == null) {
             tui().errorf("Unknown skill or ability %s in %s", key, sources);
-            throw new IllegalStateException("Unknown skill: " + key);
+            return new CustomSkillOrAbility(key);
         }
         return skill;
     }
@@ -813,7 +814,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
         if (school == null) {
             tui().errorf("Unknown spell school %s in %s", abbreviation, sources);
-            throw new IllegalStateException("Unknown spell school: " + abbreviation);
+            return new CustomSpellSchool(abbreviation);
         }
         return school;
     }

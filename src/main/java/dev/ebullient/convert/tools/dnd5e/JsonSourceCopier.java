@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonCopyException;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
@@ -101,7 +102,7 @@ public class JsonSourceCopier implements JsonSource {
             copyFrom = handleCopy(type, copyFrom);
             try {
                 copyTo = mergeNodes(type, copyToKey, copyFrom, copyTo);
-            } catch (IllegalStateException | StackOverflowError | UnsupportedOperationException e) {
+            } catch (JsonCopyException | StackOverflowError | UnsupportedOperationException e) {
                 tui().errorf(e, "Error (%s): Unable to merge nodes. CopyTo: %s, CopyFrom: %s", copyToKey, copyTo, copyFrom);
             }
         }
@@ -712,7 +713,7 @@ public class JsonSourceCopier implements JsonSource {
         ObjectNode spellcasting = (ObjectNode) MonsterFields.spellcasting.getFirstFromArray(target);
         if (spellcasting == null) {
             tui().errorf("Error (%s): Can't add spells to a monster without spellcasting", originKey);
-            throw new IllegalStateException("Can't add spells to a monster without spellcasting; copy/merge of " + originKey);
+            throw new JsonCopyException("Can't add spells to a monster without spellcasting; copy/merge of " + originKey);
         }
 
         if (MonsterFields.spells.existsIn(modInfo)) {
@@ -744,7 +745,7 @@ public class JsonSourceCopier implements JsonSource {
                     } else if (tgtSpellList.isObject()) {
                         // throw. Not supported
                         tui().errorf("Error (%s): Object at key %s, not an array", originKey, prop);
-                        throw new IllegalStateException("Badly formed spell list in " + originKey
+                        throw new JsonCopyException("Badly formed spell list in " + originKey
                                 + "; found JSON Object instead of an array for " + prop);
                     } else {
                         // overwrite
@@ -789,7 +790,7 @@ public class JsonSourceCopier implements JsonSource {
         ObjectNode spellcasting = (ObjectNode) MonsterFields.spellcasting.getFirstFromArray(target);
         if (spellcasting == null) {
             tui().errorf("Error (%s): Can't replace spells for a monster without spellcasting", originKey);
-            throw new IllegalStateException(
+            throw new JsonCopyException(
                     "Can't replace spells for a monster without spellcasting; copy/merge of " + originKey);
         }
 
@@ -849,7 +850,7 @@ public class JsonSourceCopier implements JsonSource {
         ObjectNode spellcasting = (ObjectNode) MonsterFields.spellcasting.getFirstFromArray(target);
         if (spellcasting == null) {
             tui().errorf("Error (%s): Can't remove spells from a monster without spellcasting", originKey);
-            throw new IllegalStateException(
+            throw new JsonCopyException(
                     "Can't remove spells from a monster without spellcasting; copy/merge of " + originKey);
         }
 

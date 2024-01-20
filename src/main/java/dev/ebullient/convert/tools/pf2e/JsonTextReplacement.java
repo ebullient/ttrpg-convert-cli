@@ -256,7 +256,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     default String linkify(MatchResult match) {
         Pf2eIndexType targetType = Pf2eIndexType.fromText(match.group(1));
         if (targetType == null) {
-            throw new IllegalStateException("Unknown type to linkify (how?)" + match.group(0));
+            tui().errorf("Unknown type to linkify: %s", match.group(0));
+            return match.group(0);
         }
         return linkify(targetType, match.group(2));
     }

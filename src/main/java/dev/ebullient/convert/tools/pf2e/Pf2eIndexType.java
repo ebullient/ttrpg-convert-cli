@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
@@ -246,7 +247,10 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
             case organization -> DefaultSource.locg;
             case event -> DefaultSource.lotg;
             case eidolon -> DefaultSource.som;
-            default -> throw new IllegalStateException("How did we get here? Switch is missing " + this);
+            default -> {
+                Tui.instance().errorf("Can not find defaultSource for type %s; assuming crb", this);
+                yield DefaultSource.crb;
+            }
         };
     }
 }

@@ -18,10 +18,18 @@ public interface ItemType {
     class CustomItemType implements ItemType {
         final String name;
         final String lower;
+        final boolean error;
 
         public CustomItemType(JsonNode typeNode) {
             this.name = typeNode.get("name").asText();
             this.lower = name.toLowerCase(Locale.ROOT);
+            this.error = false;
+        }
+
+        public CustomItemType(String name) {
+            this.name = name;
+            this.lower = name.toLowerCase(Locale.ROOT);
+            this.error = true;
         }
 
         @Override

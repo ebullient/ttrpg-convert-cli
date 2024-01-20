@@ -2,6 +2,7 @@ package dev.ebullient.convert.qute;
 
 import java.nio.file.Path;
 
+import dev.ebullient.convert.io.Tui;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -194,7 +195,8 @@ public class ImageRef {
                 return new ImageRef(url, null, null, title, null, width);
             }
             if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
-                throw new IllegalStateException("Set paths first (source, relative, vaultRoot, fileRoot) first");
+                Tui.instance().errorf("ImageRef build called before paths (source, relative, vaultRoot, fileRoot) were set");
+                return null;
             }
             Path targetFilePath = rootFilePath.resolve(relativeTarget);
             String vaultPath = String.format("%s%s", vaultRoot,
