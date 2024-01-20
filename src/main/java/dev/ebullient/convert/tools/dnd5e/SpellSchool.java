@@ -32,7 +32,15 @@ public interface SpellSchool {
             case "I" -> SchoolEnum.Illusion;
             case "N" -> SchoolEnum.Necromancy;
             case "T" -> SchoolEnum.Transmutation;
-            default -> null;
+            default -> {
+                String tolower = v.toLowerCase();
+                for (SpellSchool s : SchoolEnum.values()) {
+                    if (s.name().toLowerCase().equals(tolower)) {
+                        yield s;
+                    }
+                }
+                yield null;
+            }
         };
     }
 }

@@ -28,7 +28,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     protected Tools5eQuteBase buildQuteResource() {
         boolean ritual = spellIsRitual();
         SpellSchool school = getSchool();
-        String level = rootNode.get("level").asText();
+        String level = SpellFields.level.getTextOrEmpty(rootNode);
 
         Tags tags = new Tags(getSources());
 
@@ -43,9 +43,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
         List<String> text = new ArrayList<>();
         appendToText(text, rootNode, "##");
-        if (rootNode.has("entriesHigherLevel")) {
+        if (SpellFields.entriesHigherLevel.existsIn(rootNode)) {
             maybeAddBlankLine(text);
-            appendToText(text, rootNode.get("entriesHigherLevel"),
+            appendToText(text, SpellFields.entriesHigherLevel.getFrom(rootNode),
                     textContains(text, "## ") ? "##" : null);
         }
 
@@ -66,15 +66,15 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     SpellSchool getSchool() {
-        String code = rootNode.get("school").asText();
+        String code = SpellFields.school.getTextOrEmpty(rootNode);
         return index().findSpellSchool(code, getSources());
     }
 
     boolean spellIsRitual() {
         boolean ritual = false;
-        JsonNode meta = rootNode.get("meta");
+        JsonNode meta = SpellFields.meta.getFrom(rootNode);
         if (meta != null) {
-            ritual = booleanOrDefault(meta, "ritual", false);
+            ritual = SpellFields.ritual.booleanOrDefault(meta, false);
         }
         return ritual;
     }
@@ -92,7 +92,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 case "s" -> list.add("S");
                 case "m" -> {
                     if (f.getValue().isObject()) {
-                        list.add(replaceText(f.getValue().get("text").asText()));
+                        list.add(replaceText(SpellFields.text.getTextOrEmpty(f.getValue())));
                     } else {
                         list.add(replaceText(f.getValue().asText()));
                     }
@@ -104,17 +104,18 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
     String spellDuration() {
         StringBuilder result = new StringBuilder();
-        JsonNode durations = rootNode.withArray("duration");
+        JsonNode durations = SpellFields.duration.ensureArrayIn(rootNode);
         if (durations.size() > 0) {
             addDuration(durations.get(0), result);
         }
         if (durations.size() > 1) {
+            JsonNode ends = durations.get(1);
             result.append(", ");
-            String type = getTextOrEmpty(durations.get(1), "type");
+            String type = getTextOrEmpty(ends, "type");
             if ("timed".equals(type)) {
                 result.append(" up to ");
             }
-            addDuration(durations.get(1), result);
+            addDuration(ends, result);
         }
         return result.toString();
     }
@@ -135,9 +136,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
                     result.append("Concentration, up to ");
                 }
                 JsonNode duration = element.get("duration");
-                result.append(duration.get("amount").asText())
+                result.append(SpellFields.amount.getTextOrEmpty(duration))
                         .append(" ")
-                        .append(duration.get("type").asText());
+                        .append(SpellFields.type.getTextOrEmpty(duration));
             }
             default -> tui().errorf("What is this? %s", element.toPrettyString());
         }
@@ -145,26 +146,28 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
     String spellRange() {
         StringBuilder result = new StringBuilder();
-        JsonNode range = rootNode.get("range");
+        JsonNode range = SpellFields.range.getFrom(rootNode);
         if (range != null) {
-            String type = getTextOrEmpty(range, "type");
-            JsonNode distance = range.get("distance");
+            String type = SpellFields.type.getTextOrEmpty(range);
+            JsonNode distance = SpellFields.distance.getFrom(range);
+            String distanceType = SpellFields.type.getTextOrEmpty(distance);
+            String amount = SpellFields.amount.getTextOrEmpty(distance);
+
             switch (type) {
                 case "cube", "cone", "hemisphere", "line", "radius", "sphere" -> // Self (xx-foot yy)
                     result.append("Self (")
-                            .append(distance.get("amount").asText())
+                            .append(amount)
                             .append("-")
-                            .append(distance.get("type").asText())
+                            .append(distanceType)
                             .append(" ")
                             .append(type)
                             .append(")");
                 case "point" -> {
-                    String distanceType = distance.get("type").asText();
                     switch (distanceType) {
                         case "self", "sight", "touch", "unlimited" ->
                             result.append(distanceType.substring(0, 1).toUpperCase())
                                     .append(distanceType.substring(1));
-                        default -> result.append(distance.get("amount").asText())
+                        default -> result.append(amount)
                                 .append(" ")
                                 .append(distanceType);
                     }
@@ -178,8 +181,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
     String spellCastingTime() {
         JsonNode time = rootNode.withArray("time").get(0);
         return String.format("%s %s",
-                time.get("number").asText(),
-                time.get("unit").asText());
+                SpellFields.number.getTextOrEmpty(time),
+                SpellFields.unit.getTextOrEmpty(time));
     }
 
     Set<String> indexedSpellClasses(Tags tags) {
@@ -197,8 +200,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
                     if (type == Tools5eIndexType.subclass) {
                         JsonNode subclassNode = index().getOrigin(k);
                         String subclassName = sources.getName();
-                        String className = subclassNode.get("className").asText().trim();
-                        String classSource = subclassNode.get("classSource").asText().trim();
+                        String className = SpellFields.className.getTextOrEmpty(subclassNode).trim();
+                        String classSource = SpellFields.classSource.getTextOrEmpty(subclassNode).trim();
                         return getSubclass(tags, className, classSource, subclassName, sources.primarySource(), k);
                     }
                     String className = sources.getName();
@@ -208,23 +211,23 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     Set<String> spellClasses(SpellSchool school, Tags tags) {
-        JsonNode classesNode = rootNode.get("classes");
+        JsonNode classesNode = SpellFields.classes.getFrom(rootNode);
         if (classesNode == null || classesNode.isNull()) {
             return Set.of();
         }
         Set<String> classes = new TreeSet<>();
         classesNode.withArray("fromClassList").forEach(c -> {
-            String className = c.get("name").asText();
-            String classSource = c.get("source").asText();
+            String className = SourceField.name.getTextOrEmpty(c);
+            String classSource = SourceField.source.getTextOrEmpty(c);
             String finalKey = Tools5eIndexType.classtype.createKey(className, classSource);
             if (index().isIncluded(finalKey)) {
                 classes.add(getClass(tags, className, classSource, finalKey));
             }
         });
         classesNode.withArray("fromClassListVariant").forEach(c -> {
-            String definedInSource = c.get("definedInSource").asText();
-            String className = c.get("name").asText();
-            String classSource = c.get("source").asText();
+            String definedInSource = SpellFields.definedInSource.getTextOrEmpty(c);
+            String className = SourceField.name.getTextOrEmpty(c);
+            String classSource = SourceField.source.getTextOrEmpty(c);
             String finalKey = Tools5eIndexType.classtype.createKey(className, classSource);
             if (index.sourceIncluded(definedInSource) && index().isIncluded(finalKey)) {
                 classes.add(getClass(tags, className, classSource, finalKey));
@@ -278,6 +281,28 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     enum SpellFields implements JsonNodeReader {
-        components
+        amount,
+        className,
+        classSource,
+        classes,
+        components,
+        distance,
+        duration,
+        entriesHigherLevel,
+        level,
+        meta,
+        number,
+        range,
+        ritual,
+        school,
+        self,
+        sight,
+        special,
+        text,
+        touch,
+        type,
+        unit,
+        unlimited,
+        definedInSource,
     }
 }
