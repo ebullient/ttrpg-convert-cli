@@ -176,6 +176,49 @@ In the above example, `path/to/` is a placeholder. There are a few ways to figur
 - You may have the ability to right-click on the file and select "Copy Path".
 - **Windows users**: When pasting the path into your config file, use find/replace to replace all `\` with `/`.
 
+### Additional notes about homebrew
+
+Homebrew json files are not rigorously validated. There may be errors when importing.
+I've done what I can to make the errors clear, or to highlight the suspect json, but I can't catch everything.
+
+Here are some examples of what you may see, and how to fix them:
+
+- `Unable to find image 'img/bestiary/MM/Green Hag.jpg'` (or similar)  
+    Images have, by and large, been converted to webp format. This is usually a case of finding the right image (either in the cloned mirror, or using a remote link to the image) and updating the json to point to it.  
+    - If you can fix the link yourself, please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
+    - If you can't find the image that should be used instead, please [ask for CLI help](../README.md#where-to-find-help) and I'll help you find the right one.
+- `Unknown spell school Curse in sources[spell|ventus|wandsnwizards]`; similar for item types, item properties, conditions, skills, abilities, etc.  
+    This kind of error could be caused by a missing companion file (check dependencies at the top), or a missing definition in the homebrew file.  
+    - If you find the missing definition (or it is already present in the homebrew file), and the error persists, please [ask for CLI help first](../README.md#where-to-find-help) so I can make sure there isn't a bug in the CLI preventing it from being read.  
+    - If the data really is missing, please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
+- You may see messages about missing fields or badly formed tables.
+    - If you can fix the error by fixing the json content, please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
+    - If you can't fix the error yourself, please [ask for CLI help first](../README.md#where-to-find-help) so I can make sure there isn't a bug in the CLI.
+
+### Reporting content errors to 5eTools
+
+If you can fix the error by fixing the json content, please report the error in the 5eTools discord channel.
+
+1. Identify the homebrew source that contains the error in the [homebrew manager](https://wiki.tercept.net/en/5eTools/HelpPages/managebrew).
+2. Click the "View Converters" button on the right to find the converter(s).
+3. Tag them in the [#⁠brew-conversion](https://discord.com/channels/363680385336606740/493154206115430400) channel, describing what you fixed. If you can't find the right user to tag, or if no one is listed as a converter, post the report anyway but make sure you mention this!
+
+Use the following form for your report.
+
+```
+**Brew:**   Write the name of the homebrew source here  
+**Converter:**   @converter's-discord-ID   
+**Issue:**   Describe the issue here in clear, concise terms (e.g. "the Red-Spotted Gurgler is listed as having AC 15, when it should be 16")  
+**Steps for reproduction:**   If you have to do something specific to make the error appear, describe them here. 
+> I go to X and click on Y 
+> I expected Z, but instead ...
+```
+
+> [!WARNING]
+> Do not report errors related to the CLI and its behavior in the 5eTools discord channel. 
+> The folks over there don't know (and shouldn't need to know) what the CLI is doing.
+> Only report errors related to the content itself.
+
 ## Include reference data with the `from` key
 
 The `from` key allows you to choose which sources to use. List the [identifiers](#source-identifiers) for your chosen sources here.
