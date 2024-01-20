@@ -649,24 +649,40 @@ public class Json2QuteClass extends Json2QuteCommon {
             return cfSources.getName();
         }
 
-        void appendText(JsonSource converter, List<String> text, String pageSource) {
+        void appendLink(JsonSource converter, List<String> text, String pageSource) {
             converter.maybeAddBlankLine(text);
-            text.add("### " + converter.decoratedFeatureTypeName(cfSources, cfNode) + " (Level " + level + ")");
-            if (!cfSources.primarySource().equalsIgnoreCase(pageSource)) {
-                text.add(converter.getLabeledSource(cfSources));
+            String x = converter.decoratedFeatureTypeName(cfSources, cfNode);
+            text.add(String.format("[%s](#%s)", x, converter.toAnchorTag(x + " (Level " + level + ")")));
+        }
+
+        void appendText(JsonSource converter, List<String> text, String pageSource) {
+            boolean pushed = converter.parseState().pushFeatureType();
+            try {
+                converter.maybeAddBlankLine(text);
+                text.add("### " + converter.decoratedFeatureTypeName(cfSources, cfNode) + " (Level " + level + ")");
+                if (!cfSources.primarySource().equalsIgnoreCase(pageSource)) {
+                    text.add(converter.getLabeledSource(cfSources));
+                }
+                text.add("");
+                converter.appendToText(text, cfNode.get("entries"), "####");
+            } finally {
+                converter.parseState().pop(pushed);
             }
-            text.add("");
-            converter.appendToText(text, cfNode.get("entries"), "####");
         }
 
         public void appendListItemText(JsonSource converter, List<String> text, String pageSource) {
-            text.add("**" + converter.decoratedFeatureTypeName(cfSources, cfNode) + "**");
-            if (!cfSources.primarySource().equalsIgnoreCase(pageSource)) {
-                text.add(converter.getLabeledSource(cfSources));
+            boolean pushed = converter.parseState().pushFeatureType();
+            try {
+                text.add("**" + converter.decoratedFeatureTypeName(cfSources, cfNode) + "**");
+                if (!cfSources.primarySource().equalsIgnoreCase(pageSource)) {
+                    text.add(converter.getLabeledSource(cfSources));
+                }
+                text.add("");
+                converter.appendToText(text, cfNode.get("entries"), null);
+                text.add("");
+            } finally {
+                converter.parseState().pop(pushed);
             }
-            text.add("");
-            converter.appendToText(text, cfNode.get("entries"), null);
-            text.add("");
         }
     }
 

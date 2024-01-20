@@ -64,8 +64,9 @@ public interface JsonSource extends JsonTextReplacement {
     default int intOrThrow(JsonNode source, String key) {
         JsonNode result = source.get(key);
         if (result == null || !result.canConvertToInt()) {
-            throw new IllegalStateException(
-                    "Missing required field, or field is not a number. Key: " + key + "; value: " + result);
+            tui().errorf("Missing required field, or field is not a number. Key: %s; value: %s; from %s: %s",
+                    key, result, getSources(), source);
+            return -999;
         }
         return result.asInt();
     }
@@ -273,7 +274,11 @@ public interface JsonSource extends JsonTextReplacement {
         if (cf == null) {
             return; // skipped or not found
         }
-        if (parseState().inList()) {
+        if (parseState().featureTypeDepth() > 2) {
+            tui().errorf("Cycle in class or subclass features found in %s", cf.cfSources);
+            // this is within an existing feature description. Emit as a link
+            cf.appendLink(this, text, parseState().getSource(featureType));
+        } else if (parseState().inList()) {
             // emit within an existing list item
             cf.appendListItemText(this, text, parseState().getSource(featureType));
         } else {

@@ -26,6 +26,7 @@ public class ParseState {
         boolean inHtmlTable;
         boolean inMarkdownTable;
         boolean inList;
+        int inFeatureType;
         final String listIndent;
         final String src;
         final int page;
@@ -68,6 +69,20 @@ public class ParseState {
             return this;
         }
 
+        private ParseStateInfo setInFeatureType(int inFeatureType) {
+            this.inFeatureType = inFeatureType;
+            return this;
+        }
+
+        private ParseStateInfo setTheRest(ParseStateInfo prev) {
+            this.setInFootnotes(prev.inFootnotes)
+                    .setInHtmlTable(prev.inHtmlTable)
+                    .setInMarkdownTable(prev.inMarkdownTable)
+                    .setInList(prev.inList)
+                    .setInFeatureType(prev.inFeatureType);
+            return this;
+        }
+
         private static ParseStateInfo srcAndPage(ParseStateInfo prev, String src, int page) {
             if (prev == null) {
                 return new ParseState.ParseStateInfo(src, page);
@@ -76,21 +91,16 @@ public class ParseState {
                     src == null ? prev.src : src,
                     page,
                     prev.listIndent)
-                    .setInFootnotes(prev.inFootnotes)
-                    .setInHtmlTable(prev.inHtmlTable)
-                    .setInMarkdownTable(prev.inMarkdownTable)
-                    .setInList(prev.inList);
+                    .setTheRest(prev);
         }
 
         private static ParseStateInfo changePage(ParseStateInfo prev, int page) {
             if (prev == null) {
-                throw new IllegalStateException("Page without source first?");
+                Tui.instance().errorf("Change Page called without someone setting the source first? %s");
+                return null;
             }
             return new ParseStateInfo(prev.src, page, prev.listIndent)
-                    .setInFootnotes(prev.inFootnotes)
-                    .setInHtmlTable(prev.inHtmlTable)
-                    .setInMarkdownTable(prev.inMarkdownTable)
-                    .setInList(prev.inList);
+                    .setTheRest(prev);
         }
 
         private static ParseStateInfo inFootnotes(ParseStateInfo prev, boolean inFootnotes) {
@@ -98,10 +108,8 @@ public class ParseState {
                 return new ParseStateInfo().setInFootnotes(inFootnotes);
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
-                    .setInFootnotes(inFootnotes)
-                    .setInHtmlTable(prev.inHtmlTable)
-                    .setInMarkdownTable(prev.inMarkdownTable)
-                    .setInList(prev.inList);
+                    .setTheRest(prev)
+                    .setInFootnotes(inFootnotes);
         }
 
         private static ParseStateInfo inHtmlTable(ParseStateInfo prev, boolean inHtmlTable) {
@@ -110,10 +118,8 @@ public class ParseState {
 
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
-                    .setInFootnotes(prev.inFootnotes)
-                    .setInHtmlTable(inHtmlTable)
-                    .setInMarkdownTable(prev.inMarkdownTable)
-                    .setInList(prev.inList);
+                    .setTheRest(prev)
+                    .setInHtmlTable(inHtmlTable);
         }
 
         private static ParseStateInfo inMarkdownTable(ParseStateInfo prev, boolean inMarkdownTable) {
@@ -122,10 +128,8 @@ public class ParseState {
 
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
-                    .setInFootnotes(prev.inFootnotes)
-                    .setInHtmlTable(prev.inHtmlTable)
-                    .setInMarkdownTable(inMarkdownTable)
-                    .setInList(prev.inList);
+                    .setTheRest(prev)
+                    .setInMarkdownTable(inMarkdownTable);
         }
 
         private static ParseStateInfo indentList(ParseStateInfo prev) {
@@ -133,9 +137,7 @@ public class ParseState {
                 return new ParseStateInfo().setInList(true);
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent + "    ")
-                    .setInFootnotes(prev.inFootnotes)
-                    .setInHtmlTable(prev.inHtmlTable)
-                    .setInMarkdownTable(prev.inMarkdownTable)
+                    .setTheRest(prev)
                     .setInList(true);
         }
 
@@ -144,10 +146,17 @@ public class ParseState {
                 return new ParseStateInfo().setInList(true);
             }
             return new ParseState.ParseStateInfo(prev.src, prev.page, value)
-                    .setInFootnotes(prev.inFootnotes)
-                    .setInHtmlTable(prev.inHtmlTable)
-                    .setInMarkdownTable(prev.inMarkdownTable)
+                    .setTheRest(prev)
                     .setInList(true);
+        }
+
+        private static ParseStateInfo pushFeatureType(ParseStateInfo prev) {
+            if (prev == null) {
+                return new ParseStateInfo().setInFeatureType(0);
+            }
+            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
+                    .setTheRest(prev)
+                    .setInFeatureType(prev.inFeatureType + 1);
         }
     }
 
@@ -221,6 +230,11 @@ public class ParseState {
         return true;
     }
 
+    public boolean pushFeatureType() {
+        stack.addFirst(ParseStateInfo.pushFeatureType(stack.peek()));
+        return true;
+    }
+
     public void pop(boolean pushed) {
         if (pushed) {
             String source = sourcePageString();
@@ -260,6 +274,11 @@ public class ParseState {
     public boolean inTable() {
         ParseState.ParseStateInfo current = stack.peek();
         return current != null && (current.inHtmlTable || current.inMarkdownTable);
+    }
+
+    public int featureTypeDepth() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current == null ? 0 : current.inFeatureType;
     }
 
     public String sourcePageString() {
