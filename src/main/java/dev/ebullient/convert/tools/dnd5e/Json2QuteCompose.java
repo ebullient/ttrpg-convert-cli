@@ -262,10 +262,10 @@ public class Json2QuteCompose extends Json2QuteCommon {
                         if (!property.has("srd")) {
                             text.add(getLabeledSource(property));
                         }
-                        appendToText(text, property, null);
+                        appendToText(text, SourceField.entries.getFrom(property), null);
                     }
                 } else {
-                    appendToText(text, srdEntry.get("entries"), "###");
+                    appendToText(text, SourceField.entries.getFrom(srdEntry), "###");
                 }
             } finally {
                 parseState().pop(p2);

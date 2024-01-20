@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
+import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 import io.quarkus.qute.TemplateData;
 
 public interface ItemProperty {
@@ -34,15 +36,21 @@ public interface ItemProperty {
         public CustomItemProperty(JsonNode property) {
             abbreviation = property.get("abbreviation").asText();
 
-            String name = abbreviation;
-            JsonNode entries = property.has("entries")
-                    ? property.get("entries")
-                    : property.get("entriesTemplate");
+            String name = SourceField.name.getTextOrNull(property);
+            if (name == null) {
+                JsonNode entries = SourceField.entries.existsIn(property)
+                        ? SourceField.entries.getFrom(property)
+                        : Tools5eFields.entriesTemplate.getFrom(property);
 
-            if (entries != null && entries.size() > 0) {
-                JsonNode firstEntry = entries.get(0);
-                if (firstEntry.has("name")) {
-                    name = firstEntry.get("name").asText();
+                if (entries != null && entries.size() > 0) {
+                    JsonNode firstEntry = entries.get(0);
+                    if (firstEntry.has("name")) {
+                        name = firstEntry.get("name").asText();
+                    }
+                }
+
+                if (name == null) {
+                    name = abbreviation;
                 }
             }
 
