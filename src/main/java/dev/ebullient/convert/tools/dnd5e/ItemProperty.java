@@ -197,7 +197,8 @@ public interface ItemProperty {
                     return p;
                 }
             }
-            throw new IllegalArgumentException("Invalid/Unknown property " + v);
+            Tui.instance().errorf("Invalid/Unknown property %s", v);
+            return null;
         }
 
         public static PropertyEnum fromEncodedType(String v) {
@@ -205,7 +206,7 @@ public interface ItemProperty {
                 return null;
             }
             for (PropertyEnum p : PropertyEnum.values()) {
-                if (p.encodedValue.equals(v)) {
+                if (p.encodedValue.equals(v) || p.longName.toLowerCase().equals(v.toLowerCase())) {
                     return p;
                 }
             }

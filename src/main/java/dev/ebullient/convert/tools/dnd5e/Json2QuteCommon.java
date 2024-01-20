@@ -299,7 +299,7 @@ public class Json2QuteCommon implements JsonSource {
             if (type != null) {
                 types.add(type.getSpecializedType());
             } else {
-                tui().errorf("Unknown item type %s", p);
+                tui().errorf("Unknown item type %s from %s", p, itemTypePrereq);
             }
         }
         return joinConjunct(" and ", types);
@@ -662,7 +662,8 @@ public class Json2QuteCommon implements JsonSource {
 
     void findHp(AcHp acHp) {
         JsonNode health = MonsterFields.hp.getFrom(rootNode);
-        if (health.isNumber()) {
+
+        if (health != null && health.isNumber()) {
             acHp.hp = health.asInt();
         } else if (MonsterFields.special.existsIn(health)) {
             String special = MonsterFields.special.replaceTextFrom(health, this);
@@ -684,8 +685,9 @@ public class Json2QuteCommon implements JsonSource {
         }
 
         if (acHp.hpText == null && acHp.hitDice == null && acHp.hp == null) {
-            tui().errorf("Unknown hp from %s: %s", getSources(), health.toPrettyString());
-            throw new IllegalArgumentException("Unknown hp from " + getSources());
+            tui().errorf("Unknown hp from %s: %s", getSources(), rootNode);
+            acHp.hp = 0;
+            acHp.hpText = "Unknown";
         }
     }
 

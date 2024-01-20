@@ -462,7 +462,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
 
         maybeAddBlankLine(text);
-        if (insetText.get(0).startsWith("> ")) {
+        if (!insetText.isEmpty() && insetText.get(0).startsWith("> ")) {
             // do not wrap empty or already inset content in another inset
             text.addAll(insetText);
         } else {
@@ -992,19 +992,18 @@ public interface JsonSource extends JsonTextReplacement {
 
     default String getSize(JsonNode value) {
         JsonNode size = Tools5eFields.size.getFrom(value);
-        if (size == null) {
-            throw new IllegalArgumentException("Missing size attribute from " + getSources());
-        }
-        try {
-            if (size.isTextual()) {
-                return sizeToString(size.asText());
-            } else if (size.isArray()) {
-                String merged = streamOf(size).map(JsonNode::asText).collect(Collectors.joining());
-                return sizeToString(merged);
+        if (size != null) {
+            try {
+                if (size.isTextual()) {
+                    return sizeToString(size.asText());
+                } else if (size.isArray()) {
+                    String merged = streamOf(size).map(JsonNode::asText).collect(Collectors.joining());
+                    return sizeToString(merged);
+                }
+            } catch (IllegalArgumentException ignored) {
             }
-        } catch (IllegalArgumentException ignored) {
         }
-        tui().errorf("Unable to parse size for %s from %s", getSources(), size.toPrettyString());
+        tui().errorf("Unable to parse size for %s from %s", getSources(), size);
         return "Unknown";
     }
 
@@ -1267,7 +1266,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         static String getFirstRow(JsonNode tableNode) {
             JsonNode rowData = rows.getFrom(tableNode);
-            if (rowData == null) {
+            if (rowData == null || rowData.isNull() || rowData.size() == 0) {
                 return "";
             }
             return rowData.get(0).toString();

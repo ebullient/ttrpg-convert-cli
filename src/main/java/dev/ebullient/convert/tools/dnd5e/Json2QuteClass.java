@@ -293,7 +293,9 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         maybeAddBlankLine(startMulticlass);
         JsonNode requirements = multiclassing.get("requirements");
-        if (requirements.has("or")) {
+        if (requirements == null) {
+            tui().warnf("No requirements specified to multiclass %s: %s", getSources().getKey(), multiclassing);
+        } else if (requirements.has("or")) {
             List<String> options = new ArrayList<>();
             requirements.get("or").get(0).fields().forEachRemaining(ability -> options.add(String.format("%s %s",
                     SkillOrAbility.format(ability.getKey(), index(), getSources()), ability.getValue().asText())));
@@ -356,7 +358,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         String lookup = cf.isTextual() ? cf.asText() : cf.get(fieldName).asText();
 
         String finalKey = type.fromRawKey(lookup);
-        JsonNode featureJson = converter.index().resolveClassFeatureNode(finalKey);
+        JsonNode featureJson = finalKey == null ? null : converter.index().resolveClassFeatureNode(finalKey);
 
         if (featureJson == null) {
             return null; // skipped or not found

@@ -193,6 +193,10 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                 }
                 case optionalFeatureTypes -> {
                     OptionalFeatureType oft = index.getOptionalFeatureType(node);
+                    if (oft == null) {
+                        index.tui().errorf("Unable to find optional feature type for %s", key);
+                        continue;
+                    }
                     QuteNote converted = new Json2QuteOptionalFeatureType(index, node, oft).buildNote();
                     if (converted != null) {
                         compendium.add(converted);

@@ -464,7 +464,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             case classfeature -> linkifyClassFeature(s);
             case subclassFeature -> linkifySubclassFeature(s);
             case variantrule -> linkifyVariant(s);
-            default -> throw new IllegalArgumentException("Unknown type to linkify: " + type);
+            default -> {
+                tui().errorf("Unknown type to linkify: %s from %s", type, s);
+                yield s;
+            }
         };
     }
 
@@ -598,7 +601,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             match = match.substring(0, pos);
         }
         String classFeatureKey = index().getAliasOrDefault(Tools5eIndexType.classfeature.fromRawKey(match));
-        if (index().isExcluded(classFeatureKey)) {
+        if (classFeatureKey == null || index().isExcluded(classFeatureKey)) {
             return linkText;
         }
 
@@ -666,7 +669,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
 
         String classFeatureKey = index().getAliasOrDefault(Tools5eIndexType.subclassFeature.fromRawKey(match));
-        if (index().isExcluded(classFeatureKey)) {
+        if (classFeatureKey == null || index().isExcluded(classFeatureKey)) {
             return linkText;
         }
 

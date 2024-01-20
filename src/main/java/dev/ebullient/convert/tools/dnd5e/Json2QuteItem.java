@@ -166,7 +166,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     void insertItemRefText(List<String> text, String input) {
         String finalKey = Tools5eIndexType.itemEntry.fromRawKey(input.replaceAll("\\{#itemEntry (.*)}", "$1"));
-        if (index.isExcluded(finalKey)) {
+        if (finalKey == null || index.isExcluded(finalKey)) {
             return;
         }
         JsonNode ref = index.getNode(finalKey);
@@ -256,13 +256,19 @@ public class Json2QuteItem extends Json2QuteCommon {
     String itemDetail(Collection<ItemProperty> itemProperties) {
         String tier = getTextOrDefault(rootNode, "tier", "");
         if (!tier.isEmpty()) {
-            itemProperties.add(PropertyEnum.fromValue(tier));
+            ItemProperty p = index.findItemProperty(tier, getSources());
+            if (p != null) {
+                itemProperties.add(p);
+            }
         }
         String rarity = rootNode.has("rarity")
                 ? rootNode.get("rarity").asText()
                 : "";
         if (!rarity.isEmpty() && !"none".equals(rarity)) {
-            itemProperties.add(PropertyEnum.fromValue(rarity));
+            ItemProperty p = index.findItemProperty(rarity, getSources());
+            if (p != null) {
+                itemProperties.add(p);
+            }
         }
         String attunement = getTextOrDefault(rootNode, "reqAttune", "");
         String detail = createDetail(attunement, itemProperties);

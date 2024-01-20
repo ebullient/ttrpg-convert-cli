@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
@@ -262,6 +263,11 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             // 4    "phb".equalsIgnoreCase(scSource) ? "" : scSource,
             // 5    IndexFields.level.getTextOrEmpty(x),
             // 6    source.equalsIgnoreCase(scSource) ? "" : "|" + source)
+            if (parts.length < 6) {
+                Tui.instance().errorf("Badly formed Subclass Feature key (not enough segments): %s", crossRef);
+                return null;
+            }
+
             String featureSource = parts.length > 6 ? parts[6] : parts[4];
             return getSubclassFeatureKey(parts[0], featureSource, parts[1], parts[2], parts[3], parts[4],
                     parts[5]);
@@ -273,6 +279,10 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             // 2    "phb".equalsIgnoreCase(classSource) ? "" : classSource,
             // 3    IndexFields.level.getTextOrEmpty(x),
             // 4    source.equalsIgnoreCase(classSource) ? "" : "|" + source)
+            if (parts.length < 4) {
+                Tui.instance().errorf("Badly formed Class Feature key (not enough segments): %s", crossRef);
+                return null;
+            }
             String featureSource = parts.length > 4 ? parts[4] : parts[2];
             return getClassFeatureKey(parts[0], featureSource, parts[1], parts[2], parts[3]);
         }

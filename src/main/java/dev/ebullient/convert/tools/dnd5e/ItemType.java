@@ -6,6 +6,7 @@ import java.util.Locale;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 
 public interface ItemType {
 
@@ -21,7 +22,7 @@ public interface ItemType {
         final boolean error;
 
         public CustomItemType(JsonNode typeNode) {
-            this.name = typeNode.get("name").asText();
+            this.name = SourceField.name.getTextOrEmpty(typeNode);
             this.lower = name.toLowerCase(Locale.ROOT);
             this.error = false;
         }

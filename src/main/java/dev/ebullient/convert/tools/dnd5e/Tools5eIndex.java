@@ -302,7 +302,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         } else if (type == Tools5eIndexType.itemType && homebrew != null) {
             // lookup by abbreviation
             String[] parts = key.split("\\|");
-            homebrew.itemTypes.put(parts[1].toLowerCase(), new CustomItemType(node));
+            if (SourceField.name.existsIn(node)) {
+                homebrew.itemTypes.put(parts[1].toLowerCase(), new CustomItemType(node));
+            } else {
+                tui().errorf("Item type %s does not specify name: %s", key, node);
+            }
         } else if (type == Tools5eIndexType.optionalfeature) {
             String lookup = null;
             for (String ft : toListOfStrings(node.get("featureType"))) {
@@ -777,7 +781,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             itemType = meta.getItemType(abbreviation);
         }
         if (itemType == null) {
-            tui().errorf("Unknown item type %s for %s", abbreviation, getSources());
+            tui().errorf("Unknown item type %s", abbreviation);
             return new CustomItemType(abbreviation);
         }
         return itemType;

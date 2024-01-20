@@ -118,7 +118,7 @@ Sources in 5eTools and Pf2eTools are referenced by unique identifiers. Find the 
 
 Some are split into multiple files, in which case, you will need to specify each identifier separately. For example, *Tales from the Yawning Portal* is split into seven files. Content appears using any one of the seven (`TftYP-*`), in addition to `TftYP` for common content. If you want to include all of them, you will need to specify each identifier separately.
 
-If you're expecting to see content from a book or adventure and it's not showing up, run the CLI with the `--index` option, and check the `allIndex.json` file to see which source identifier you should be using.
+If you're expecting to see content from a book or adventure and it's not showing up, run the CLI with the `--index` option, and check the `all-index.json` file to see which source identifier you should be using.
 
 ## Include complete text with `full-source`
 
@@ -225,8 +225,8 @@ Just as source material has an identifier, so does each piece of data. The *Mons
 
 The CLI `--index` option compiles two lists of data keys:
 
-- `allIndex.json`: Lists all discovered data keys.
-- `allSourceIndex.json`: Lists the data keys after filters (`full-source`, `from`, and the config options below) have been applied.
+- `all-index.json`: Lists all discovered data keys.
+- `src-index.json`: Lists the data keys after filters (`full-source`, `from`, and the config options below) have been applied.
 
 ### Excluding content matching an `excludePattern`
 
