@@ -169,9 +169,11 @@ See [Other ways to run the CLI](docs/alternateRun.md) for more options to downlo
     ```
 
     - `--index` generates two index files: `all-index.json` and `src-index.json`.
-        > [!TIP]
+
+        > 🚀 TIP:
         > - Use `all-index.json` to see the reference keys for all discovered content. This can confirm that an included source was actually read.
         > - Use `src-index.json` to see the reference keys for content that was included in the generated output. This can confirm that your source selection is working as expected.
+
     - `-o dm` The target output directory (`dm` in this case). Files will be created in this directory.
 
     The rest of the command-line specifies input files:
@@ -234,9 +236,11 @@ Next step: Create your own [configuration file](docs/configuration.md).
 
     - `-g p2fe` The game system! Pathfinder 2e!
     - `--index` generates two index files: `all-index.json` and `src-index.json`.
-        > [!TIP]
-        > - Use `all-index.json` to see the reference keys for all discovered content. This can confirm that an included source was actually read.
-        > - Use `src-index.json` to see the reference keys for content that was included in the generated output. This can confirm that your source selection is working as expected.
+
+      > 🚀 TIP:
+      > - Use `all-index.json` to see the reference keys for all discovered content. This can confirm that an included source was actually read.
+      > - Use `src-index.json` to see the reference keys for content that was included in the generated output. This can confirm that your source selection is working as expected.
+
     - `-o dm` The target output directory. Files will be created in this directory.
 
     The rest of the command-line specifies input files:
