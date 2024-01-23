@@ -902,6 +902,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "CECN" -> "Chaotic Evil or Chaotic Neutral";
             case "CGNYE" -> "Any Chaotic alignment";
             case "CN" -> "Chaotic Neutral";
+            case "CENE", "NECE" -> "Chaotic Evil or Neutral Evil";
             case "L" -> "Lawful";
             case "LE" -> "Lawful Evil";
             case "LG" -> "Lawful Good";
@@ -921,6 +922,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "LGNYE" -> "Any Non-Chaotic alignment";
             case "LNXCNYE" -> "Any Non-Good alignment";
             case "NXCGNYE" -> "Any Non-Lawful alignment";
+            case "NXLGNYE" -> "Any Non-Chaotic alignment";
             case "LNXCNYG", "LNYNXCG" -> "Any Non-Evil alignment";
             case "U" -> "Unaligned";
             default -> {
