@@ -1,5 +1,8 @@
 {
   "full-source": {
+    "book": [
+      "PSA"
+    ],
     "homebrew": [
       "src/test/resources/psion.json",
       "src/test/resources/ermis-bg.json",

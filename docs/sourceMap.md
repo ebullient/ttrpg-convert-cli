@@ -250,6 +250,12 @@ You may see these abbreviations referenced in source material, this is how they 
 | ALElementalEvil | ALEE |
 | ALRageOfDemons | ALRoD |
 | HEROES_FEAST | HF |
+| PS-A | PSA |
+| PS-D | PSD |
+| PS-I | PSI |
+| PS-K | PSK |
+| PS-X | PSX |
+| PS-Z | PSZ |
 | Screen | SCREEN |
 | ScreenDungeonKit | SCREEN_DUNGEON_KIT |
 | ScreenSpelljammer | SRC_SCREEN_SPELLJAMMER |

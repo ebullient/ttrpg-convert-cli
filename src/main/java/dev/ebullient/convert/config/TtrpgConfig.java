@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -69,9 +70,22 @@ public class TtrpgConfig {
         return activeDSConfig().addSource(name, abv, longAbv);
     }
 
-    public static void includeBookAdventureSource(String src) {
+    public static void sourceToIdMapping(String id, String src) {
         Configurator config = new Configurator(getConfig());
-        config.setSources(List.of(src));
+        config.setSourceIdAlias(id, src);
+    }
+
+    public static void includeAdditionalSource(String src) {
+        CompendiumConfig config = getConfig();
+        config.addSource(src);
+        // Books and Adventures use an id in the file name that may not
+        // match the source abbreviation. When we add a source this way,
+        // see if that mapping exists, and allow both.
+        for (Entry<String, String> entry : config.sourceIdAlias.entrySet()) {
+            if (entry.getValue().equals(src)) {
+                config.addSource(entry.getKey());
+            }
+        }
     }
 
     public static String remoteImageRoot() {

@@ -165,10 +165,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');
             String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
-            String source = basename.replace("book-", "").replace("adventure-", "");
-            TtrpgConfig.includeBookAdventureSource(source);
-
-            ((ObjectNode) node).put("id", source);
+            String id = basename.replace("book-", "").replace("adventure-", "");
+            TtrpgConfig.includeAdditionalSource(id);
+            ((ObjectNode) node).put("id", id);
             addToIndex(basename.startsWith("book") ? Tools5eIndexType.bookData : Tools5eIndexType.adventureData,
                     node);
         }
@@ -214,7 +213,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             tui().errorf("Source does not define json id: %s", sources.get(0));
             return false;
         }
-        TtrpgConfig.includeBookAdventureSource(json);
+        TtrpgConfig.includeAdditionalSource(json);
 
         HomebrewMetaTypes metaTypes = new HomebrewMetaTypes(json, filename, node);
         for (JsonNode source : iterableElements(sources)) {
@@ -337,6 +336,12 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             tableIndex.computeIfAbsent(sp, k -> new ArrayList<>()).add(node);
         } else if (type == Tools5eIndexType.language && HomebrewFields.fonts.existsIn(node)) {
             Tools5eSources.addFonts(node, HomebrewFields.fonts);
+        } else if (type == Tools5eIndexType.book || type == Tools5eIndexType.adventure) {
+            String id = SourceField.id.getTextOrEmpty(node);
+            String source = SourceField.source.getTextOrEmpty(node);
+            if (!id.equals(source)) {
+                TtrpgConfig.sourceToIdMapping(source, id);
+            }
         }
 
         if (node.has("srd")) {

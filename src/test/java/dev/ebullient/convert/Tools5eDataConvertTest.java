@@ -131,6 +131,17 @@ public class Tools5eDataConvertTest {
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
+            assertThat(target.resolve("compendium/adventures/a-diamond-in-the-rough")).isDirectory();
+            assertThat(target.resolve("compendium/adventures/book-of-lairs")).isDirectory();
+            assertThat(target.resolve("compendium/adventures/call-from-the-deep")).isDirectory();
+            assertThat(target.resolve("compendium/adventures/tavern-of-the-lost")).isDirectory();
+            assertThat(target.resolve("compendium/books/arkadia")).isDirectory();
+            assertThat(target.resolve("compendium/books/hamunds-herbalism-handbook")).isDirectory();
+            assertThat(target.resolve("compendium/books/plane-shift-amonkhet")).isDirectory();
+
+            assertThat(target.resolve("compendium/backgrounds/cook-variant-dndwiki-bestbackgrounds.md")).isRegularFile();
+            assertThat(target.resolve("compendium/classes/alchemist-dynamo-engineer-vss.md")).isRegularFile();
+
             TestUtils.assertDirectoryContents(target, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {

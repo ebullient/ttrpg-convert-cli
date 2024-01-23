@@ -63,7 +63,7 @@ public class CommonDataTests {
                     configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("sources.json"));
                     break;
                 case all:
-                    configurator.setSources(List.of("*"));
+                    configurator.addSources(List.of("*"));
                     // use default: / and rules/
                     configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("paths.json"));
                     break;

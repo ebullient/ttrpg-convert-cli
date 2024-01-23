@@ -50,6 +50,7 @@ public class CompendiumConfig {
     final Set<String> adventures = new HashSet<>();
     final Set<String> books = new HashSet<>();
     final Map<String, Path> customTemplates = new HashMap<>();
+    final Map<String, String> sourceIdAlias = new HashMap<>();
 
     CompendiumConfig(Datasource src, Tui tui) {
         this.tui = tui;
@@ -163,7 +164,10 @@ public class CompendiumConfig {
                     if (b.endsWith(".json")) {
                         return b;
                     }
-                    return "book/book-" + b.toLowerCase() + ".json";
+                    String bl = b.toLowerCase();
+                    String id = sourceIdAlias.getOrDefault(bl, bl);
+                    addSources(List.of(id, bl));
+                    return "book/book-" + id + ".json";
                 })
                 .toList();
     }
@@ -175,7 +179,10 @@ public class CompendiumConfig {
                     if (a.endsWith(".json")) {
                         return a;
                     }
-                    return "adventure/adventure-" + a.toLowerCase() + ".json";
+                    String al = a.toLowerCase();
+                    String id = sourceIdAlias.getOrDefault(al, al);
+                    addSources(List.of(id, al));
+                    return "adventure/adventure-" + id + ".json";
                 })
                 .toList();
     }
@@ -195,7 +202,13 @@ public class CompendiumConfig {
         }
     }
 
-    private void addSources(List<String> sources) {
+    /** Package private: add source */
+    void addSource(String source) {
+        addSources(List.of(source));
+    }
+
+    /** Package private: add sources */
+    void addSources(List<String> sources) {
         if (sources == null || sources.isEmpty()) {
             return;
         }
@@ -247,8 +260,13 @@ public class CompendiumConfig {
             this(compendiumConfig.tui);
         }
 
+        public void setSourceIdAlias(String src, String id) {
+            CompendiumConfig cfg = TtrpgConfig.getConfig();
+            cfg.sourceIdAlias.put(src.toLowerCase(), id.toLowerCase());
+        }
+
         /** 1.x sources from command line */
-        public void setSources(List<String> source) {
+        public void addSources(List<String> source) {
             CompendiumConfig cfg = TtrpgConfig.getConfig();
             cfg.addSources(source);
         }

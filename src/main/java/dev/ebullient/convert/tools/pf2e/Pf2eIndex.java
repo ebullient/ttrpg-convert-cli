@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.MarkdownConverter;
@@ -100,6 +101,14 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
             String name = SourceField.name.getTextOrEmpty(node);
             name += " (" + hash + ")";
             key = replaceName(type, name, key, node, false);
+        }
+
+        if (type == Pf2eIndexType.book || type == Pf2eIndexType.adventure) {
+            String id = SourceField.id.getTextOrEmpty(node);
+            String source = SourceField.source.getTextOrEmpty(node);
+            if (!id.equals(source)) {
+                TtrpgConfig.sourceToIdMapping(source, id);
+            }
         }
 
         // Add the node + key to the index, and store the key in the node

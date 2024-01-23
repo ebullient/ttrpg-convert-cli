@@ -59,7 +59,7 @@ public class CommonDataTests {
         if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
             switch (variant) {
                 case all:
-                    configurator.setSources(List.of("*"));
+                    configurator.addSources(List.of("*"));
                     break;
                 case partial:
                     configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("pf2e.json"));

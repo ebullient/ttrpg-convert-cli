@@ -160,7 +160,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         if (source.contains("ALL")) {
             source = List.of("*");
         }
-        configurator.setSources(source);
+        configurator.addSources(source);
         configurator.setTemplatePaths(templatePaths);
 
         if (configPath != null) {
