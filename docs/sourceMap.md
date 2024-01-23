@@ -103,12 +103,12 @@ _Support content creators. Only use or include sources that you own._
 | OoW | The Orrery of the Wanderer |
 | OotA | Out of the Abyss |
 | PHB | Player's Handbook |
-| PSA | Plane Shift: Amonkhet |
-| PSD | Plane Shift: Dominaria |
-| PSI | Plane Shift: Innistrad |
-| PSK | Plane Shift: Kaladesh |
-| PSX | Plane Shift: Ixalan |
-| PSZ | Plane Shift: Zendikar |
+| PS-A | Plane Shift: Amonkhet |
+| PS-D | Plane Shift: Dominaria |
+| PS-I | Plane Shift: Innistrad |
+| PS-K | Plane Shift: Kaladesh |
+| PS-X | Plane Shift: Ixalan |
+| PS-Z | Plane Shift: Zendikar |
 | PaBTSO | Phandelver and Below: The Shattered Obelisk |
 | PiP | Peril in Pinegrove |
 | PotA | Princes of the Apocalypse |
