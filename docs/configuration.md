@@ -13,12 +13,16 @@ This guide introduces you to configuring data transformations using the Command 
 - [Source identifiers](#source-identifiers)
 - [Include complete text with `full-source`](#include-complete-text-with-full-source)
     - [Homebrew](#homebrew)
+    - [Additional notes about homebrew](#additional-notes-about-homebrew)
+    - [Reporting content errors to 5eTools](#reporting-content-errors-to-5etools)
 - [Include reference data with the `from` key](#include-reference-data-with-the-from-key)
 - [Specify target paths( `paths` key)](#specify-target-paths-paths-key)
 - [Refine content choices](#refine-content-choices)
     - [Excluding content matching an `excludePattern`](#excluding-content-matching-an-excludepattern)
     - [Excluding specific content with `exclude`](#excluding-specific-content-with-exclude)
     - [Including specific content with `include`](#including-specific-content-with-include)
+- [Use the dice roller plugin](#use-the-dice-roller-plugin)
+- [Tag prefix](#tag-prefix)
 
 ## Overview
 
