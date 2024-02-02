@@ -8,11 +8,12 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 <td>Jump</td>
 <td><a href="#install-the-ttrpg-convert-cli">⬇ Download</a></td>
 <td><a href="docs/configuration.md">⚙️ Configuration</a></td>
-<td><a href="docs/sourceMap.md">🗺️ Source Map</a></td>
+<td><a href="examples/">🎨 Examples</a></td>
 <td><a href="examples/templates">🎨 Templates</a></td>
 </tr><tr>
 <td></td>
 <td><a href="CHANGELOG.md">🚜 Changelog</a></td>
+<td><a href="docs/sourceMap.md">🗺️ Source Map</a></td>
 <td><a href="#convert-5etools-json-data">📖 5eTools</a></td>
 <td><a href="#convert-pf2etools-json-data">📖 Pf2eTools</a></td>
 <td><a href="#convert-homebrew-json-data">📖 Homebrew</a></td>
@@ -48,7 +49,24 @@ If you don't have a favorite method already, or you don't know what those words 
 
 ## Install the TTRPG Convert CLI
 
-There are several options for running `ttrpg-convert`. Choose whichever you are the most comfortable with:
+There are several options for running `ttrpg-convert`.
+
+- How familiar are you with using the command line?
+
+|                | Unfamiliar | Familiar     |
+| -------------- | ---------- | ------------ | 
+|  Linux         |  |  |
+|  Mac (Arm)     |  | [homebrew][] |
+|  Mac (Intel)   |  | [homebrew][] |
+|  Windows (Old) |  |  |
+|  Windows       |  |  |
+|  Windows (WSL) |  |  |
+
+[jbang]
+[homebrew]:
+[pre-built binary]: 
+
+ Choose whichever you are the most comfortable with:
 
 - [Use a pre-built platform binary](#use-pre-built-platform-binary) (no Java required)
 - [Use JBang](docs/alternateRun.md#use-jbang) (hides Java invocation; sets up command aliases)

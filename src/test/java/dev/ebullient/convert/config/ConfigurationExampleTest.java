@@ -76,6 +76,9 @@ public class ConfigurationExampleTest {
         CompendiumConfig.InputConfig tools5Config = new CompendiumConfig.InputConfig();
 
         tools5Config.from.add("PHB");
+        tools5Config.fullSource.book.add("PHB");
+        tools5Config.fullSource.adventure.add("LMoP");
+        tools5Config.fullSource.homebrew.add("homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json");
         tools5Config.paths.compendium = "/compendium/";
         tools5Config.paths.rules = "/compendium/rules/";
         tools5Config.excludePattern.add("race|.*|dmg");
@@ -86,9 +89,6 @@ public class ConfigurationExampleTest {
         tools5Config.include.add("race|changeling|mpmm");
         tools5Config.includeGroup.add("familiars");
         tools5Config.template.put("background", "examples/templates/tools5e/images-background2md.txt");
-        tools5Config.fullSource.book.add("PHB");
-        tools5Config.fullSource.adventure.add("LMoP");
-        tools5Config.fullSource.homebrew.add("homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json");
         tools5Config.images.checkRemote = false;
         tools5Config.images.copyRemote = false;
         tools5Config.images.relativeRemoteRoot = "alternate/path/for/remote/images";
@@ -101,6 +101,8 @@ public class ConfigurationExampleTest {
         CompendiumConfig.InputConfig pf2eConfig = new CompendiumConfig.InputConfig();
         pf2eConfig.from.add("CRB");
         pf2eConfig.from.add("GMG");
+        pf2eConfig.fullSource.book.add("crb");
+        pf2eConfig.fullSource.book.add("gmg");
 
         pf2eConfig.paths.compendium = "compendium/";
         pf2eConfig.paths.rules = "compendium/rules/";
@@ -110,8 +112,6 @@ public class ConfigurationExampleTest {
         pf2eConfig.excludePattern.add("background|.*|lowg");
         pf2eConfig.template.put("ability", "../path/to/ability2md.txt");
 
-        pf2eConfig.fullSource.book.add("crb");
-        pf2eConfig.fullSource.book.add("gmg");
         pf2eConfig.tagPrefix = "ttrpg-cli";
         pf2eConfig.useDiceRoller = true;
 
