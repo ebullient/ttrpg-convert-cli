@@ -1,23 +1,25 @@
 # Documentation
 
-- [Other ways to run the CLI](alternateRun.md)
-- [Create a config file](configuration.md)
+- [Other ways to run the CLI](./alternateRun.md)
+- [Create a config file](./configuration.md)
     - [Configuration Examples][ex-config]
-- [Template Reference](templates/README.md)
+- [Template Reference][templates]
     - [Default templates][def-templates]
     - [Example templates][ex-templates]
-- [Source Map](sourceMap.md)
+- [Source Map][]
 
 [ex-ad]: ../examples/admonitions
 [ex-config]: ../examples/config
 [ex-templates]: ../examples/templates
 [def-templates]: ../src/main/resources/templates
+[templates]: ./templates/README.md
+[Source Map]: ./sourceMap.md
 
 ## Recommended Obsidian plugin configuration
 
 ### Admonitions
 
-The Admonition plugin ([git](https://github.com/javalent/admonitions)/[obsidian](obsidian://show-plugin?id=obsidian-admonition)) provides additional support for codeblock-style admonitions in addition to callouts.
+The [Admonition plugin](https://github.com/javalent/admonitions) provides additional support for codeblock-style admonitions in addition to callouts.
 
 Import one or more admonition json files in [examples/admonitions][ex-ad] to create the custom admonition types used for converted content:
 
@@ -36,7 +38,7 @@ Ensure the plugin has the following options enabled (for the most consistent and
 
 ## Fantasy Statblocks
 
-Fantasy Statblocks ([git](https://github.com/javalent/fantasy-statblocks)/[obsidian](obsidian://show-plugin?id=obsidian-5e-statblocks)) maintains a bestiary of monsters. It has its own (handlebars-based) templates for monster statblocks.
+[Fantasy Statblocks](https://github.com/javalent/fantasy-statblocks) maintains a bestiary of monsters. It has its own (handlebars-based) templates for monster statblocks.
 
 To populate *Fantasy Statblocks* from your notes, use the following settings:
 
@@ -50,7 +52,7 @@ You also need to generate content using [templates][5eTools templates] that will
 
 ## Initiative Tracker
 
-The Initiative Tracker ([git](https://github.com/javalent/initiative-tracker)/[obsidian](obsidian://show-plugin?id=initiative-tracker)) plugin for Obsidian allows you to keep track of initiative and turn order during combat encounters in tabletop role-playing games.
+The [Initiative Tracker](https://github.com/javalent/initiative-tracker) plugin for Obsidian allows you to keep track of initiative and turn order during combat encounters in tabletop role-playing games.
 
 - Basic Settings
     - *Optional*: Embed statblock-link content in the creature view.  
