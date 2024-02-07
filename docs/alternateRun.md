@@ -4,17 +4,6 @@
 [_unreleased snapshot_]: #using-unreleased-snapshots
 [java_install]: https://adoptium.net/installation/
 
-## Using unreleased snapshots
-
-Folks picking up early snapshots is really helpful for me, but _using an unreleased snapshot may be unstable_.
-
-- 🚧 Do not run an unstable CLI directly against notes in your Obsidian vault
-- 👷‍♀️ Be prepared to report issues if you find them.
-    - Be as specific as you can about the configuration and sources that are not working.
-    - `ttrpg-convert --version` will tell you the version you are running, including the commit! Please include that information in your report.
-
-I recommend staying with official releases unless you are willing to help me debug issues (and your help is very much appreciated!).
-
 ## Use JBang
 
 JBang is a tool designed to simplify Java application execution. By eliminating the need for traditional build tools and app servers, JBang enables quick and easy running of Java apps, scripts, and more.
@@ -67,6 +56,31 @@ Not to be confused with Homebrew adventures, Homebrew is a package manager for M
     ```shell
     ttrpg-convert --help
     ```
+
+Continue to notes about [Conventions][].
+
+### Use pre-built platform binary
+
+> [!NOTE]
+> 📝 *Where do these binaries come from?*
+>
+> They are built on GitHub managed CI runners using the workflow defined [here](https://github.com/ebullient/ttrpg-convert-cli/blob/main/.github/workflows/release.yml), which compiles a Quarkus application (Java) into a platform-native binary using [GraalVM](https://www.graalvm.org/). I build and upload the mac arm64 binary myself (not supported by GH CI) using [this script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/.github/augment-release.sh).
+
+[Download the latest release](https://github.com/ebullient/ttrpg-convert-cli/releases/latest) of the zip or tgz for your platform. Extract the archive. A `ttrpg-convert` binary executable will be in the extracted bin directory.
+
+In a terminal or command shell, navigate to the directory where you extracted the archive and run the command in the `bin` directory:
+
+```shell
+ttrpg-convert --help
+```
+
+Notes:
+
+- Windows users: the `.exe` extension is optional. You can run `ttrpg-convert.exe` or `ttrpg-convert` interchangeably.
+- Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
+- *MacOS permission checking* (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
+
+Continue to notes about [Conventions][].
 
 ## Use Java to run the jar
 
@@ -124,3 +138,14 @@ To run commands, either:
     > 🔹 Use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands accordingly.
 
 Continue to notes about [Conventions][].
+
+## Using unreleased snapshots
+
+Folks picking up early snapshots is really helpful for me, but _using an unreleased snapshot may be unstable_.
+
+- 🚧 Do not run an unstable CLI directly against notes in your Obsidian vault
+- 👷‍♀️ Be prepared to report issues if you find them.
+    - Be as specific as you can about the configuration and sources that are not working.
+    - `ttrpg-convert --version` will tell you the version you are running, including the commit! Please include that information in your report.
+
+I recommend staying with official releases unless you are willing to help me debug issues (and your help is very much appreciated!).

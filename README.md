@@ -49,61 +49,30 @@ If you don't have a favorite method already, or you don't know what those words 
 
 ## Install the TTRPG Convert CLI
 
-There are several options for running `ttrpg-convert`.
+There are several (many!) options for running `ttrpg-convert`.
+Choose whichever you are the most comfortable with:
 
-- How familiar are you with using the command line?
+- **Using Windows?** See the [Windows README](README-WINDOWS.md)
+- `jbang`: [Use JBang!][jbang] (hides Java invocation; sets up command aliases)
+- `brew`: [Use Homebrew (MacOS or Linux)][brew] (no Java required)
+- `bin`: [Use a pre-built platform binary][bin] (no Java required)
+- `jar`: [Use Java to run the jar][jar]
+- `src`: [Build from source][src]
 
-|                | Unfamiliar | Familiar     |
-| -------------- | ---------- | ------------ | 
-|  Linux         |  |  |
-|  Mac (Arm)     |  | [homebrew][] |
-|  Mac (Intel)   |  | [homebrew][] |
-|  Windows (Old) |  |  |
-|  Windows       |  |  |
-|  Windows (WSL) |  |  |
+| Platform       | Options  |
+|----------------|----------|
+|  Linux         | [jbang][], [brew][], [bin][], [jar][], [src][] |
+|  Mac (Arm)     | [jbang][], [brew][], [bin][], [jar][], [src][] |
+|  Mac (Intel)   | [jbang][], [brew][], [bin][], [jar][], [src][] |
+|  Windows       | [📝](README-WINDOWS.md), [jbang][], [bin][], [jar][], [src][]  |
+|  Windows (Old) | [📝](README-WINDOWS.md), [jbang][], [jar][], [src][]  |
+|  Windows (WSL) | [jbang][], [brew][], [jar][], [src][] |
 
-[jbang]
-[homebrew]:
-[pre-built binary]: 
-
- Choose whichever you are the most comfortable with:
-
-- [Use a pre-built platform binary](#use-pre-built-platform-binary) (no Java required)
-- [Use JBang](docs/alternateRun.md#use-jbang) (hides Java invocation; sets up command aliases)
-- [Use Java to run the jar](docs/alternateRun.md#use-java-to-run-the-jar)
-- [Build from source](docs/alternateRun.md#build-and-run-from-source)
-- **Using Windows?**
-    - See the [Windows README](README-WINDOWS.md)
-    - Obsidian TTRPG Tutorials: [TTRPG-Convert-CLI 5e][] or [TTRPG-Convert-CLI PF2e][]
-
-[TTRPG-Convert-CLI 5e]: https://obsidianttrpgtutorials.com/Obsidian+TTRPG+Tutorials/Plugin+Tutorials/TTRPG-Convert-CLI/TTRPG-Convert-CLI+5e
-[TTRPG-Convert-CLI PF2e]: https://obsidianttrpgtutorials.com/Obsidian+TTRPG+Tutorials/Plugin+Tutorials/TTRPG-Convert-CLI/TTRPG-Convert-CLI+PF2e
-
-### Use pre-built platform binary
-
-> [!NOTE]
-> 📝 *Where do these binaries come from?*
->
-> They are built on GitHub managed CI runners using the workflow defined [here](https://github.com/ebullient/ttrpg-convert-cli/blob/main/.github/workflows/release.yml), which compiles a Quarkus application (Java) into a platform-native binary using [GraalVM](https://www.graalvm.org/). I build and upload the mac arm64 binary myself (not supported by GH CI) using [this script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/.github/augment-release.sh).
-
-[Download the latest release](https://github.com/ebullient/ttrpg-convert-cli/releases/latest) of the zip or tgz for your platform. Extract the archive. A `ttrpg-convert` binary executable will be in the extracted bin directory.
-
-In a terminal or command shell, navigate to the directory where you extracted the archive and run the command:
-
-```shell
-ttrpg-convert --help
-```
-
-We'll use this command in the instructions below.
-
-Notes:
-
-- Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
-- *MacOS permission checking* (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
-
-**Looking for a different method?**
-
-See [Other ways to run the CLI](docs/alternateRun.md) for more options to download and run the CLI.
+[jbang]: ./docs/alternateRun.md#use-jbang
+[brew]: ./docs/alternateRun.md#use-homebrew
+[bin]: ./docs/alternateRun.md#use-pre-built-platform-binary
+[jar]: ./docs/alternateRun.md#use-java-to-run-the-jar
+[src]: ./docs/alternateRun.md#build-and-run-from-source
 
 ## Recommendations for using the CLI
 
