@@ -26,11 +26,11 @@ Make sure to run `./mvnw package` or `./mvnw process-sources` before you commit,
 This project also has a `.editorconfig` file that defines expected behavior for whitespace and line endings.
 Most IDEs have an editorconfig plugin that will automatically format your code to match these settings.
 
-### IDE Config and Code Style
+## IDE Config and Code Style
 
 If you want your IDE to format your code for you, use the files in the `src/ide-config` directory.
 
-#### Eclipse Setup
+### Eclipse Setup
 
 Open the *Preferences* window, and then navigate to _Java_ -> _Code Style_ -> _Formatter_. 
 
