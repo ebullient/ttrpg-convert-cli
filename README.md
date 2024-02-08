@@ -53,8 +53,8 @@ There are several (many!) options for running `ttrpg-convert`.
 Choose whichever you are the most comfortable with:
 
 - **Using Windows?** See the [Windows README](README-WINDOWS.md)
-- `jbang`: [Use JBang!][jbang] (hides Java invocation; sets up command aliases)
-- `brew`: [Use Homebrew (MacOS or Linux)][brew] (no Java required)
+- `jbang`: [Use JBang!][jbang] (hides Java; sets up command aliases)
+- `brew`: [Use Homebrew (MacOS or Linux)][brew] (hides Java; sets up command aliases)
 - `bin`: [Use a pre-built platform binary][bin] (no Java required)
 - `jar`: [Use Java to run the jar][jar]
 - `src`: [Build from source][src]
