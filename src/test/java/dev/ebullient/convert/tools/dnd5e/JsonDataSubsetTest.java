@@ -23,7 +23,7 @@ public class JsonDataSubsetTest {
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
         // This uses test/resources/sources.json to constrain sources
-        commonTests = new CommonDataTests(TestInput.subset);
+        commonTests = new CommonDataTests(TestInput.subset, TestUtils.PATH_5E_TOOLS_DATA);
     }
 
     @AfterEach

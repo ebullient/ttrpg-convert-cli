@@ -149,8 +149,8 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         boolean allOk = true;
         tui.setTemplates(tpl);
         tui.setOutputPath(output);
-        TtrpgConfig.init(tui, game);
 
+        TtrpgConfig.init(tui, game);
         Configurator configurator = new Configurator(tui);
 
         if (source.size() == 1 && source.get(0).contains(",")) {
@@ -185,10 +185,13 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         ToolsIndex index = ToolsIndex.createIndex();
         Path toolsPath = null;
 
+        // Read provided input files
+        // Note: could test for selected game system and read paths differently
+        // ATM, both 5e and pf2e use the same general structure.
+        // Marker files are in configData
         for (Path inputPath : input) {
             tui.printlnf("⏱️ Reading %s", inputPath);
             Path input = inputPath.toAbsolutePath();
-
             if (input.toFile().isDirectory()) {
                 boolean isTools = tui.readToolsDir(input, index::importTree);
                 if (isTools) { // we found the tools directory
@@ -202,6 +205,9 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             }
         }
 
+        TtrpgConfig.setToolsPath(toolsPath);
+
+        // Include extra books and adventures from config (relative to toolsPath)
         if (allOk && toolsPath != null) {
             for (String adventure : config.getAdventures()) {
                 allOk &= tui.readFile(toolsPath.resolve(adventure), TtrpgConfig.getFixes(adventure), index::importTree);
@@ -210,6 +216,8 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                 allOk &= tui.readFile(toolsPath.resolve(book), TtrpgConfig.getFixes(book), index::importTree);
             }
         }
+
+        // Include additional standalone files from config (relative to current directory)
         for (String brew : config.getHomebrew()) {
             allOk &= tui.readFile(Path.of(brew), TtrpgConfig.getFixes(brew), index::importTree);
         }

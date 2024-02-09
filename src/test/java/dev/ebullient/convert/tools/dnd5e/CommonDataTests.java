@@ -29,6 +29,11 @@ public class CommonDataTests {
     protected final Tui tui;
     protected final Configurator configurator;
     protected final Templates templates;
+    protected final Path toolsData;
+    protected final boolean dataPresent;
+    protected final boolean mirror1;
+    protected final String tokenExt;
+
     protected Tools5eIndex index;
     protected TestInput variant;
 
@@ -38,7 +43,9 @@ public class CommonDataTests {
         none;
     }
 
-    public CommonDataTests(TestInput variant) throws Exception {
+    public CommonDataTests(TestInput variant, Path toolsData) throws Exception {
+        this.toolsData = toolsData;
+        dataPresent = toolsData.toFile().exists();
         this.variant = variant;
 
         tui = Arc.container().instance(Tui.class).get();
@@ -48,10 +55,15 @@ public class CommonDataTests {
         tui.setTemplates(templates);
 
         TtrpgConfig.init(tui, Datasource.tools5e);
+        // mirror1 or mirror2
+        mirror1 = TtrpgConfig.remoteImageRoot().startsWith("mirror1");
+        tokenExt = mirror1 ? ".png" : ".webp";
+
         configurator = new Configurator(tui);
         index = new Tools5eIndex(TtrpgConfig.getConfig());
+        TtrpgConfig.setToolsPath(toolsData);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             templates.setCustomTemplates(TtrpgConfig.getConfig());
 
             switch (variant) {
@@ -76,9 +88,9 @@ public class CommonDataTests {
             }
 
             for (String x : additional) {
-                tui.readFile(TestUtils.PATH_5E_TOOLS_DATA.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
+                tui.readFile(toolsData.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
             }
-            tui.readToolsDir(TestUtils.PATH_5E_TOOLS_DATA, index::importTree);
+            tui.readToolsDir(toolsData, index::importTree);
             index.prepare();
         }
     }
@@ -91,7 +103,7 @@ public class CommonDataTests {
 
     public void testKeyIndex(Path outputPath) throws Exception {
         tui.setOutputPath(outputPath);
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path p1Full = outputPath.resolve("allIndex.json");
             index.writeFullIndex(p1Full);
 
@@ -114,7 +126,7 @@ public class CommonDataTests {
 
     public void testBackgroundList(Path outputPath) {
         tui.setOutputPath(outputPath);
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path backgroundDir = deleteDir(Tools5eIndexType.background, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -130,7 +142,7 @@ public class CommonDataTests {
     public void testClassList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path classDir = deleteDir(Tools5eIndexType.classtype, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -163,7 +175,7 @@ public class CommonDataTests {
     public void testDeckList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path outDir = deleteDir(Tools5eIndexType.deck, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -187,7 +199,7 @@ public class CommonDataTests {
     public void testDeityList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path outDir = deleteDir(Tools5eIndexType.deity, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -212,7 +224,7 @@ public class CommonDataTests {
 
     public void testFeatList(Path outputPath) {
         tui.setOutputPath(outputPath);
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path featDir = deleteDir(Tools5eIndexType.feat, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -227,7 +239,7 @@ public class CommonDataTests {
     public void testItemList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path itemDir = deleteDir(Tools5eIndexType.item, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -243,7 +255,7 @@ public class CommonDataTests {
         tui.setOutputPath(outputPath);
         configurator.setAlwaysUseDiceRoller(true);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path bestiaryDir = deleteDir(Tools5eIndexType.monster, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -274,7 +286,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterAlternateScores(Path outputPath) {
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path out = outputPath.resolve("alt-scores");
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
@@ -290,7 +302,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlHeader(Path outputPath) {
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path out = outputPath.resolve("yaml-header");
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
@@ -347,7 +359,7 @@ public class CommonDataTests {
     }
 
     public void testMonsterYamlBody(Path outputPath) {
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path out = outputPath.resolve("yaml-body");
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
@@ -405,7 +417,7 @@ public class CommonDataTests {
     public void testObjectList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path outDir = deleteDir(Tools5eIndexType.object, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -429,7 +441,7 @@ public class CommonDataTests {
     public void testOptionalFeatureList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path ofDir = deleteDir(Tools5eIndexType.optionalFeatureTypes, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -446,7 +458,7 @@ public class CommonDataTests {
     public void testPsionicList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path outDir = deleteDir(Tools5eIndexType.psionic, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -461,7 +473,7 @@ public class CommonDataTests {
     public void testRaceList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path raceDir = deleteDir(Tools5eIndexType.race, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -476,7 +488,7 @@ public class CommonDataTests {
     public void testRewardList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path rewardDir = deleteDir(Tools5eIndexType.reward, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -495,7 +507,7 @@ public class CommonDataTests {
     public void testRules(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             deleteDir(Tools5eIndexType.adventureData, outputPath, index.compendiumFilePath());
             deleteDir(Tools5eIndexType.bookData, outputPath, index.compendiumFilePath());
             deleteDir(Tools5eIndexType.table, outputPath, index.compendiumFilePath());
@@ -513,7 +525,7 @@ public class CommonDataTests {
     public void testSpellList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path spellDir = deleteDir(Tools5eIndexType.spell, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -528,7 +540,7 @@ public class CommonDataTests {
     public void testTrapsHazardsList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path trapsDir = deleteDir(Tools5eIndexType.trap, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
@@ -543,7 +555,7 @@ public class CommonDataTests {
     public void testVehicleList(Path outputPath) {
         tui.setOutputPath(outputPath);
 
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+        if (dataPresent) {
             Path outDir = deleteDir(Tools5eIndexType.vehicle, outputPath, index.compendiumFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);

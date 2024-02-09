@@ -454,8 +454,14 @@ public class Tui {
         Collection<String> markers = TtrpgConfig.getMarkerFiles();
 
         if (!markers.stream().allMatch(f -> toolsBase.resolve(f).toFile().exists())) {
-            debugf("Unable to find tools data in %s", toolsBase.toString());
-            return false;
+            // Common mistake is to point to the tools directory instead of the data directory
+            Path data = toolsBase.resolve("data");
+            if (data.toFile().isDirectory()) {
+                return readToolsDir(data, callback);
+            } else {
+                debugf("Unable to find tools data in %s", toolsBase.toString());
+                return false;
+            }
         }
 
         inputRoot.add(toolsBase.getParent());

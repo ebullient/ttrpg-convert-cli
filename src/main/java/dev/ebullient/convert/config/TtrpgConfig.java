@@ -88,9 +88,20 @@ public class TtrpgConfig {
         }
     }
 
+    public static void setToolsPath(Path toolsPath) {
+        if (toolsPath != null && datasource == Datasource.tools5e) {
+            Path img = toolsPath.toAbsolutePath().resolveSibling("img");
+            if (img.toFile().isDirectory()) {
+                // If the img directory exists, images are in the reposoitory next to data
+                // otherwise, we're in the 5eTools2 mirror, which pulls them from a remote location
+                getConfig().imageOptions().relativeRemoteRoot = "mirror1:img/";
+            }
+        }
+    }
+
     public static String remoteImageRoot() {
         String remoteImageRoot = getConfig().imageOptions().relativeRemoteRoot;
-        if (remoteImageRoot != null) {
+        if (remoteImageRoot == null) {
             remoteImageRoot = activeDSConfig().constants.get("remoteImageRoot");
         }
         return remoteImageRoot;
@@ -310,5 +321,4 @@ public class TtrpgConfig {
                     : Tui.MAPPER.convertValue(list, Tui.LIST_STRING);
         }
     }
-
 }

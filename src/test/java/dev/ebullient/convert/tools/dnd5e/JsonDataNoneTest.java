@@ -20,7 +20,7 @@ public class JsonDataNoneTest {
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
         // This uses test/resources/sources.json to constrain sources
-        commonTests = new CommonDataTests(TestInput.none);
+        commonTests = new CommonDataTests(TestInput.none, TestUtils.PATH_5E_TOOLS_DATA);
     }
 
     @AfterEach

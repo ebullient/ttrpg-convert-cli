@@ -23,7 +23,7 @@ public class JsonDataTest {
     @BeforeAll
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
-        commonTests = new CommonDataTests(TestInput.all);
+        commonTests = new CommonDataTests(TestInput.all, TestUtils.PATH_5E_TOOLS_DATA);
     }
 
     @AfterEach
