@@ -78,9 +78,9 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     Path getTokenSourcePath(String filename) {
-        return Path.of("img",
+        return Path.of("img", "bestiary", "tokens",
                 getSources().mapPrimarySource(),
-                filename + ".png");
+                filename + ".webp");
     }
 
     public String getText(String heading) {
@@ -710,7 +710,7 @@ public class Json2QuteCommon implements JsonSource {
 
             Path target = Path.of(getImagePath(),
                     "token",
-                    slugify(filename) + ".png");
+                    slugify(filename) + ".webp");
 
             return buildImageRef(sourcePath, target);
         } else if (tokenString != null) {

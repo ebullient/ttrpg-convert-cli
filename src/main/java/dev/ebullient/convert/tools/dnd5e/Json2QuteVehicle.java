@@ -60,7 +60,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
     Path getTokenSourcePath(String filename) {
         return Path.of("img", "vehicles", "tokens",
                 getSources().mapPrimarySource(),
-                filename + ".png");
+                filename + ".webp");
     }
 
     String vehicleSize(Tags tags) {

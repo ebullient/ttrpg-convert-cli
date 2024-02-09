@@ -64,7 +64,7 @@ public class Json2QuteObject extends Json2QuteMonster {
     Path getTokenSourcePath(String filename) {
         return Path.of("img", "objects", "tokens",
                 getSources().mapPrimarySource(),
-                filename + ".png");
+                filename + ".webp");
     }
 
     enum ObjectFields implements JsonNodeReader {
