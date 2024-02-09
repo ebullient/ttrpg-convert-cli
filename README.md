@@ -143,16 +143,22 @@ Choose whichever you are the most comfortable with:
 1. Create a shallow clone of the 5eTools mirror repo (which can/should be deleted afterwards):
 
     ```shell
-    git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
+    git clone --depth 1 https://github.com/5etools-mirror-2/5etools-mirror-2.github.io.git
     ```
 
-2. Invoke the CLI. In this first example, let's generate indexes and markdown for SRD content:
+2. For images, create a shallow clone of the 5eTools-img repo into an /img directory of the 5etools-mirror-2.github.io folder you just created
+
+    ```shell
+    git clone -depth 1 https://github.com/5etools-mirror-2/5etools-img.git 5etools-mirror-2.github.io/img
+    ```
+
+3. Invoke the CLI. In this first example, let's generate indexes and markdown for SRD content:
 
     ```shell
     ttrpg-convert \
       --index \
       -o dm \
-      5etools-mirror-1.github.io/data
+      5etools-mirror-2.github.io/data
     ```
 
     - `--index` generates two index files: `all-index.json` and `src-index.json`.
@@ -165,18 +171,18 @@ Choose whichever you are the most comfortable with:
 
     The rest of the command-line specifies input files:
 
-    - `5etools-mirror-1.github.io/data` Path to the 5etools `data` directory (from a clone or release of the repo)
+    - `5etools-mirror-2.github.io/data` Path to the 5etools `data` directory (from a clone or release of the repo)
 
     This should produce a set of markdown files in the `dm` directory that contains only SRD content.
 
-3. Invoke the command again and include additional sources:
+4. Invoke the command again and include additional sources:
 
     ```shell
     ttrpg-convert \
         --index \
         -o dm \
         -s PHB,DMG,SCAG \
-        5etools-mirror-1.github.io/data
+        5etools-mirror-2.github.io/data
     ```
 
     - `-s PHB,DMG,SCAG` will include reference material from the *Player's Handbook*, the *Dungeon Master's Guide*, and the *Sword Coast Adventurer's Guide*.
@@ -192,7 +198,7 @@ ttrpg-convert \
     --index \
     -o dm \
     -c my-config.json \
-    5etools-mirror-1.github.io/data
+    5etools-mirror-2.github.io/data
 ```
 
 Next step: Create your own [configuration file](docs/configuration.md).
@@ -310,7 +316,7 @@ For example, if you wanted to use Benjamin Huffman's popular homebrewed [Pugilis
         --index \
         -o hb-compendium \
         -c my-config.json
-        5etools-mirror-1.github.io/data
+        5etools-mirror-2.github.io/data
     ```
 
     - `-o hb-compendium` is the output directory for generated content.
