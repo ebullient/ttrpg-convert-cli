@@ -40,6 +40,7 @@ public class ConfiguratorTest {
             assertThat(config.compendiumFilePath()).isEqualTo(CompendiumConfig.CWD);
             assertThat(config.rulesVaultRoot()).isEqualTo("rules/");
             assertThat(config.rulesFilePath()).isEqualTo(Path.of("rules/"));
+            assertThat(config.images.copyRemote()).isTrue();
         });
     }
 
@@ -142,4 +143,18 @@ public class ConfiguratorTest {
         });
     }
 
+    @Test
+    public void testSourcesNoImages() throws Exception {
+        TtrpgConfig.init(tui, Datasource.tools5e);
+        Configurator test = new Configurator(tui);
+
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("images-remote.json"), List.of(), (f, node) -> {
+            test.readConfigIfPresent(node);
+            CompendiumConfig config = TtrpgConfig.getConfig();
+
+            assertThat(config).isNotNull();
+            assertThat(config.imageOptions()).isNotNull();
+            assertThat(config.imageOptions().copyRemote()).isFalse();
+        });
+    }
 }

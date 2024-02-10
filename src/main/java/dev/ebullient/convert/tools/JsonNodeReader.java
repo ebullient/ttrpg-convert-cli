@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Tui;
 
@@ -328,7 +327,12 @@ public interface JsonNodeReader {
 
     /** Destructive! */
     default void setIn(JsonNode target, String value) {
-        ((ObjectNode) target).set(this.nodeName(), new TextNode(value));
+        ((ObjectNode) target).put(this.nodeName(), value);
+    }
+
+    /** Destructive! */
+    default void setIn(JsonNode target, boolean b) {
+        ((ObjectNode) target).put(this.nodeName(), b);
     }
 
     /** Destructive! */

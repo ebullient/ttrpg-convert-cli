@@ -75,8 +75,8 @@ public class Pf2eSources extends CompendiumSources {
                 .setTitle(index.replaceText(title))
                 .setRootFilepath(index.rulesFilePath())
                 .setVaultRoot(index.rulesVaultRoot())
-                .build();
-        imageSourceToRef.put(imageRef.sourcePath().toString(), imageRef);
+                .build(imageSourceToRef.get(sourcePath));
+        imageSourceToRef.putIfAbsent(sourcePath, imageRef);
         return imageRef;
     }
 
@@ -86,14 +86,15 @@ public class Pf2eSources extends CompendiumSources {
 
     public static ImageRef buildImageRef(Pf2eIndexType type, Pf2eIndex index, Path sourcePath, Path relativeTarget,
             String title) {
+        String key = sourcePath.toString();
         ImageRef imageRef = new ImageRef.Builder()
                 .setSourcePath(sourcePath)
                 .setRelativePath(Path.of("assets").resolve(relativeTarget))
                 .setRootFilepath(type.getFilePath(index))
                 .setVaultRoot(type.getVaultRoot(index))
                 .setTitle(index.replaceText(title))
-                .build();
-        imageSourceToRef.put(imageRef.sourcePath().toString(), imageRef);
+                .build(imageSourceToRef.get(key));
+        imageSourceToRef.putIfAbsent(key, imageRef);
         return imageRef;
     }
 

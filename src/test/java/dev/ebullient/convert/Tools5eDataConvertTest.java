@@ -39,7 +39,9 @@ public class Tools5eDataConvertTest {
             TestUtils.deleteDir(srd_index);
 
             LaunchResult result = launcher.launch("--index",
-                    "-o", srd_index.toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
+                    "-o", srd_index.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -66,6 +68,7 @@ public class Tools5eDataConvertTest {
             List<String> args = new ArrayList<>(List.of("--index", "--debug",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-images.yaml").toString(),
                     "-o", allIndex.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString()));
 
             args.addAll(TestUtils.getFilesFrom(TestUtils.PATH_5E_TOOLS_DATA.resolve("adventure")));
@@ -97,7 +100,9 @@ public class Tools5eDataConvertTest {
 
             // No basics
             LaunchResult result = launcher.launch("-s", "ERLW", "--debug",
-                    "-o", target.toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
+                    "-o", target.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -125,6 +130,7 @@ public class Tools5eDataConvertTest {
             LaunchResult result = launcher.launch("--debug", "--index",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-homebrew.json").toString(),
                     "-o", target.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())
@@ -162,6 +168,7 @@ public class Tools5eDataConvertTest {
             LaunchResult result = launcher.launch("--debug", "--index",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-ua.json").toString(),
                     "-o", target.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString(),
                     TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana - Downtime.json").toString(),
                     TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana - Encounter Building.json").toString(),
@@ -204,6 +211,7 @@ public class Tools5eDataConvertTest {
 
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString(),
                     TestUtils.TEST_RESOURCES.resolve("sources-book-adventure.json").toString());
 
@@ -251,6 +259,7 @@ public class Tools5eDataConvertTest {
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-no-phb.yaml").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())

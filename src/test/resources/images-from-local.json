@@ -1,0 +1,5 @@
+{
+  "images": {
+    "internalRoot" : "local/path/for/remote/images"
+  }
+}

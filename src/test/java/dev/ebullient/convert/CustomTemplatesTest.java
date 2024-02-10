@@ -59,6 +59,7 @@ public class CustomTemplatesTest {
             LaunchResult result = launcher.launch("--index",
                     "--background=garbage.txt",
                     "-o", target.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())
@@ -75,6 +76,7 @@ public class CustomTemplatesTest {
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.TEST_RESOURCES.resolve("sources-bad-template.json").toString());
 
             assertThat(result.exitCode())
@@ -100,7 +102,9 @@ public class CustomTemplatesTest {
                     "--race", TestUtils.TEST_RESOURCES.resolve("other/race.txt").toString(),
                     "--spell", TestUtils.TEST_RESOURCES.resolve("other/spell.txt").toString(),
                     "--subclass", TestUtils.TEST_RESOURCES.resolve("other/subclass.txt").toString(),
-                    "-o", target.toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
+                    "-o", target.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
@@ -152,7 +156,9 @@ public class CustomTemplatesTest {
 
             LaunchResult result = launcher.launch("--debug", "--index",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-templates.json").toString(),
-                    "-o", target.toString(), TestUtils.PATH_5E_TOOLS_DATA.toString());
+                    "-o", target.toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))

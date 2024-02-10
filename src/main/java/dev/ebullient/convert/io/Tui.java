@@ -2,10 +2,14 @@ package dev.ebullient.convert.io;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -251,7 +255,7 @@ public class Tui {
     }
 
     public void warn(String output) {
-        out.println(ansi.new Text("🔸 " + output));
+        out.println(ansi.new Text("[🔸 WARN] " + output));
     }
 
     public void donef(String format, Object... params) {
@@ -259,7 +263,7 @@ public class Tui {
     }
 
     public void done(String output) {
-        out.println(ansi.new Text("✅ " + output));
+        out.println(ansi.new Text("[ ✅  OK] " + output));
     }
 
     public void printlnf(String format, Object... args) {
@@ -289,7 +293,7 @@ public class Tui {
     }
 
     public void error(Throwable ex, String errorMsg) {
-        err.println(colors.errorText("🛑 " + errorMsg));
+        err.println(colors.errorText("[ 🛑 ERR] " + errorMsg));
         if (ex != null && isDebug()) {
             ex.printStackTrace(err);
         }
@@ -343,8 +347,15 @@ public class Tui {
 
     public void copyImages(Collection<ImageRef> images) {
         for (ImageRef image : images) {
-            Path targetPath = output.resolve(image.targetFilePath());
-            if (targetPath.toFile().exists()) {
+            Path targetPath = image.targetFilePath() == null
+                    ? null
+                    : output.resolve(image.targetFilePath());
+            if (targetPath == null || targetPath.toFile().exists()) {
+                // remote resources we are not copying, or a target path that already exists
+                continue;
+            }
+            if (image.sourcePath() == null) {
+                copyRemoteImage(image);
                 continue;
             }
             if (image.sourcePath().toString().startsWith("stream/")) {
@@ -397,6 +408,30 @@ public class Tui {
             Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             errorf(e, "Unable to copy resource from %s to %s", sourcePath, image.targetFilePath());
+        }
+    }
+
+    private void copyRemoteImage(ImageRef image) {
+        Path targetPath = output.resolve(image.targetFilePath());
+        targetPath.getParent().toFile().mkdirs();
+
+        String url = image.url();
+        if (url == null) {
+            errorf("ImageRef %s has no URL", image.targetFilePath());
+            return;
+        }
+        if (!url.startsWith("http")) {
+            errorf("ImageRef %s has invalid URL %s", image.targetFilePath(), url);
+            return;
+        }
+
+        try {
+            ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
+            try (FileOutputStream fileOutputStream = new FileOutputStream(targetPath.toFile())) {
+                fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+            }
+        } catch (IOException e) {
+            errorf(e, "Unable to copy remote image from %s to %s", url, image.targetFilePath());
         }
     }
 

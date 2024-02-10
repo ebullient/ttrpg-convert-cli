@@ -77,12 +77,6 @@ public class Json2QuteCommon implements JsonSource {
         return JsonSource.super.getImagePath();
     }
 
-    Path getTokenSourcePath(String filename) {
-        return Path.of("img",
-                getSources().mapPrimarySource(),
-                filename + ".png");
-    }
-
     public String getText(String heading) {
         List<String> text = new ArrayList<>();
         appendToText(text, SourceField.entries.getFrom(rootNode), heading);
@@ -552,7 +546,7 @@ public class Json2QuteCommon implements JsonSource {
                 && !rootNode.has("int")
                 && !rootNode.has("wis")
                 && !rootNode.has("cha")) {
-            return null;
+            return AbilityScores.DEFAULT;
         }
         return new AbilityScores(
                 intOrDefault(rootNode, "str", 10),
@@ -685,38 +679,74 @@ public class Json2QuteCommon implements JsonSource {
         }
 
         if (acHp.hpText == null && acHp.hitDice == null && acHp.hp == null) {
-            tui().errorf("Unknown hp from %s: %s", getSources(), rootNode);
-            acHp.hp = 0;
-            acHp.hpText = "Unknown";
+            acHp.hp = null;
+            acHp.hpText = "—";
         }
     }
 
     ImageRef getToken() {
-        String tokenString = Tools5eFields.tokenUrl.getTextOrNull(rootNode);
-        if (Tools5eFields.hasToken.booleanOrDefault(rootNode, false)) {
-            // const imgLink = Renderer.monster.getTokenUrl(mon);
-            // return mon.tokenUrl || UrlUtil.link(`${Renderer.get().baseMediaUrls["img"] || Renderer.get().baseUrl}img/${Parser.sourceJsonToAbv(mon.source)}/${Parser.nameToTokenName(mon.name)}.png`);
-            // nameToTokenName = function (name) { return name.toAscii().replace(/"/g, ""); }
+        // 5eTools mirror 1 - png; differences in path construction
+        //
+        // static getTokenUrl (obj) {
+        //     return obj.tokenUrl
+        //       || UrlUtil.link(`${Renderer.get().baseMediaUrls["img"]
+        //       || Renderer.get().baseUrl}img/objects/tokens/${Parser.sourceJsonToAbv(obj.source)}/${Parser.nameToTokenName(obj.name)}.png`);
+        // }
+        //          Renderer.get().baseUrl}img/${Parser.sourceJsonToAbv(mon.source)}/${Parser.nameToTokenName(mon.name)}.png`);
+        //          Renderer.get().baseUrl}img/vehicles/tokens/${Parser.sourceJsonToAbv(veh.source)}/${Parser.nameToTokenName(veh.name)}.png`);
+        //
+        // nameToTokenName = function (name) { return name.toAscii().replace(/"/g, ""); }
+        //
+        // 5eTools mirror 2 - webp
+        //
+        // Notice injection of base path (img) into rendered URL
+        // static getTokenUrl (mon) {
+        //     if (mon.tokenUrl) return mon.tokenUrl;
+        //     return Renderer.get().getMediaUrl("img",
+        //          `bestiary/tokens/${Parser.sourceJsonToAbv(mon.source)}/${Parser.nameToTokenName(mon.name)}.webp`);
+        // }
+        //          `objects/tokens/${Parser.sourceJsonToAbv(obj.source)}/${Parser.nameToTokenName(obj.name)}.webp`
+        //          `vehicles/tokens/${Parser.sourceJsonToAbv(veh.source)}/${Parser.nameToTokenName(veh.name)}.webp`
+        // this.getMediaUrl = function (mediaDir, path) {
+        //      if (Renderer.get().baseMediaUrls[mediaDir])
+        //          return `${Renderer.get().baseMediaUrls[mediaDir]}${path}`;
+        //      return `${Renderer.get().baseUrl}${mediaDir}/${path}`;
+        // };
+        String targetDir = getImagePath() + "/token/";
 
-            // origin is set by conjured monster variant (below)
-            String name = getTextOrDefault(rootNode, "original", getName());
-            String filename = Normalizer.normalize(name, Form.NFD)
-                    .replaceAll("\\p{M}", "")
-                    .replace("Æ", "AE")
-                    .replace("æ", "ae")
-                    .replace("\"", "");
+        // "original" is set by conjured monster variant
+        String name = getTextOrDefault(rootNode, "original", getName());
+        String filename = Normalizer.normalize(name, Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .replace("Æ", "AE")
+                .replace("æ", "ae")
+                .replace("\"", "");
 
-            Path sourcePath = getTokenSourcePath(filename);
+        final String ext = ".webp";
+        Path targetFile = Path.of(targetDir,
+                Tools5eQuteBase.fixFileName(slugify(filename), getSources()) + ext);
 
-            Path target = Path.of(getImagePath(),
-                    "token",
-                    slugify(filename) + ".png");
+        String sourcePath = Tools5eFields.tokenUrl.getTextOrNull(rootNode);
+        if (sourcePath == null && Tools5eFields.hasToken.booleanOrDefault(rootNode, false)) {
+            // Construct the source path
+            List<String> paths = new ArrayList<>();
+            switch (type) {
+                case monster -> paths.add("bestiary/tokens");
+                case object -> paths.add("objects/tokens");
+                case vehicle -> paths.add("vehicles/tokens");
+                default -> throw new IllegalArgumentException("Unknown type looking for token path: " + type);
+            }
+            paths.add(getSources().mapPrimarySource());
+            paths.add(filename + ext);
 
-            return buildImageRef(sourcePath, target);
-        } else if (tokenString != null) {
-            return getSources().buildImageRef(null, tokenString);
+            sourcePath = (String.join("/", paths)).replace("//", "/");
         }
-        return null;
+
+        if (sourcePath == null) {
+            return null;
+        }
+
+        return getSources().buildTokenImageRef(index, Path.of(sourcePath), targetFile, true);
     }
 
     String collectImmunities(JsonNode fromNode, VulnerabilityFields field) {

@@ -19,9 +19,8 @@ template:
 useDiceRoller: true
 tagPrefix: "ttrpg-cli"
 images:
-  relativeRemoteRoot: "alternate/path/for/remote/images"
+  internalRoot: "local/path/for/remote/images"
   copyRemote: false
-  checkRemote: false
 full-source:
   adventure:
   - "LMoP"

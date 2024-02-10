@@ -339,6 +339,7 @@ public class CompendiumConfig {
             config.adventures.addAll(input.fullSource.adventure);
             config.homebrew.addAll(input.fullSource.homebrew);
 
+            config.images = new ImageOptions(config.images, input.images);
             config.paths = new PathAttributes(config.paths, input.paths);
 
             if (input.tagPrefix != null && !input.tagPrefix.isEmpty()) {
@@ -419,6 +420,7 @@ public class CompendiumConfig {
         excludePattern,
         from,
         fullSource(List.of("convert", "full-source")),
+        images,
         include,
         includeGroups,
         paths,
@@ -480,9 +482,30 @@ public class CompendiumConfig {
     @RegisterForReflection
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     static class ImageOptions {
-        String relativeRemoteRoot;
-        boolean copyRemote;
-        boolean checkRemote;
+        String internalRoot;
+        Boolean copyRemote;
+
+        public ImageOptions() {
+        }
+
+        public ImageOptions(ImageOptions images, ImageOptions images2) {
+            if (images != null) {
+                internalRoot = images.internalRoot;
+                copyRemote = images.copyRemote;
+            }
+            if (images2 != null) {
+                internalRoot = images2.internalRoot == null
+                        ? internalRoot
+                        : images2.internalRoot;
+                copyRemote = images2.copyRemote == null
+                        ? copyRemote
+                        : images2.copyRemote;
+            }
+        }
+
+        public boolean copyRemote() {
+            return copyRemote == null || copyRemote;
+        }
     }
 
     @RegisterForReflection

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -30,9 +31,9 @@ public class CommonDataTests {
     protected final Configurator configurator;
     protected final Templates templates;
     protected final Path toolsData;
+
     protected final boolean dataPresent;
-    protected final boolean mirror1;
-    protected final String tokenExt;
+    protected final boolean imgPresent;
 
     protected Tools5eIndex index;
     protected TestInput variant;
@@ -46,6 +47,10 @@ public class CommonDataTests {
     public CommonDataTests(TestInput variant, Path toolsData) throws Exception {
         this.toolsData = toolsData;
         dataPresent = toolsData.toFile().exists();
+        imgPresent = toolsData.toString().contains("mirror-2")
+                ? TestUtils.PATH_5E_TOOLS_IMAGES.toFile().exists()
+                : false;
+
         this.variant = variant;
 
         tui = Arc.container().instance(Tui.class).get();
@@ -55,11 +60,17 @@ public class CommonDataTests {
         tui.setTemplates(templates);
 
         TtrpgConfig.init(tui, Datasource.tools5e);
-        // mirror1 or mirror2
-        mirror1 = TtrpgConfig.remoteImageRoot().startsWith("mirror1");
-        tokenExt = mirror1 ? ".png" : ".webp";
 
         configurator = new Configurator(tui);
+        if (imgPresent) {
+            ObjectNode images = Tui.MAPPER.createObjectNode()
+                    .put("copyRemote", true)
+                    .put("internalRoot", TestUtils.PATH_5E_TOOLS_IMAGES.toString());
+            configurator.readConfigIfPresent(Tui.MAPPER.createObjectNode().set("images", images));
+        } else {
+            configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("images-remote.json"));
+        }
+
         index = new Tools5eIndex(TtrpgConfig.getConfig());
         TtrpgConfig.setToolsPath(toolsData);
 

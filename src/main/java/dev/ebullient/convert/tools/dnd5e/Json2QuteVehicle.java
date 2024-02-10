@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,13 +53,6 @@ public class Json2QuteVehicle extends Json2QuteCommon {
                 getToken(), fluffImages,
                 String.join("\n", text),
                 tags);
-    }
-
-    @Override
-    Path getTokenSourcePath(String filename) {
-        return Path.of("img", "vehicles", "tokens",
-                getSources().mapPrimarySource(),
-                filename + ".png");
     }
 
     String vehicleSize(Tags tags) {

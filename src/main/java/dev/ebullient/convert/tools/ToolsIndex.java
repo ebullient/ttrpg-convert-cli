@@ -18,7 +18,8 @@ public interface ToolsIndex {
     enum TtrpgValue implements JsonNodeReader {
         indexKey,
         indexInputType,
-        indexBaseItem;
+        indexBaseItem,
+        isHomebrew;
     }
 
     static ToolsIndex createIndex() {
