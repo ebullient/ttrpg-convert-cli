@@ -20,7 +20,7 @@ useDiceRoller: true
 tagPrefix: "ttrpg-cli"
 images:
   internalRoot: "local/path/for/remote/images"
-  copyInternal: false
+  copyInternal: true
   copyExternal: false
 full-source:
   adventure:

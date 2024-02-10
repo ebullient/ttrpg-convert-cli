@@ -89,8 +89,8 @@ public class ConfigurationExampleTest {
         tools5Config.include.add("race|changeling|mpmm");
         tools5Config.includeGroup.add("familiars");
         tools5Config.template.put("background", "examples/templates/tools5e/images-background2md.txt");
-        tools5Config.images.copyExternal = false;
-        tools5Config.images.copyInternal = false;
+        tools5Config.images.copyExternal = Boolean.TRUE;
+        tools5Config.images.copyInternal = Boolean.TRUE;
         tools5Config.images.internalRoot = "local/path/for/remote/images";
         tools5Config.useDiceRoller = true;
         tools5Config.tagPrefix = "ttrpg-cli";
