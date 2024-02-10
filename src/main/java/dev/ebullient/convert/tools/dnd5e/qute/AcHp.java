@@ -68,7 +68,8 @@ public class AcHp implements QuteUtil {
             out.add("- **Armor Class** " + (isPresent(ac) ? ac + " " : "") + (isPresent(acText) ? " (" + acText + ")" : ""));
         }
         if (isPresent(hp)) {
-            out.add("- **Hit Points** " + (isPresent(hp) ? hp + " " : "")
+            out.add("- **Hit Points** "
+                    + (isPresent(hp) ? hp + " " : "")
                     + (isPresent(hitDice) ? "(`" + hitDice + "`)" : "")
                     + (isPresent(hpText) ? " (" + hpText + ")" : ""));
         }

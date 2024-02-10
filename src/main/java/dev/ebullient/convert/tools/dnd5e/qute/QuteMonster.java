@@ -113,7 +113,9 @@ public class QuteMonster extends Tools5eQuteBase {
         this.alignment = alignment;
         this.acHp = acHp;
         this.speed = speed;
-        this.scores = scores;
+        this.scores = scores == null
+                ? AbilityScores.DEFAULT
+                : scores;
         this.savesSkills = savesSkills;
         this.senses = senses;
         this.passive = passive;

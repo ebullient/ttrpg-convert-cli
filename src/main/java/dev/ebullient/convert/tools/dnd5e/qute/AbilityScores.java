@@ -15,6 +15,8 @@ import io.quarkus.qute.TemplateData;
  */
 @TemplateData
 public class AbilityScores {
+    public static final AbilityScores DEFAULT = new AbilityScores(10, 10, 10, 10, 10, 10);
+
     final int strength;
     final int dexterity;
     final int constitution;
