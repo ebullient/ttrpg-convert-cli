@@ -64,7 +64,7 @@ public class CommonDataTests {
         configurator = new Configurator(tui);
         if (imgPresent) {
             ObjectNode images = Tui.MAPPER.createObjectNode()
-                    .put("copyRemote", true)
+                    .put("copyInternal", true)
                     .put("internalRoot", TestUtils.PATH_5E_TOOLS_IMAGES.toString());
             configurator.readConfigIfPresent(Tui.MAPPER.createObjectNode().set("images", images));
         } else {

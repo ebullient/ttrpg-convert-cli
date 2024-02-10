@@ -93,12 +93,15 @@ public class TtrpgConfig {
 
     public static class ImageRoot {
         final String internalImageRoot;
-        final boolean copyRemote;
+        final boolean copyInternal;
+        final boolean copyExternal;
 
         private ImageRoot(String cfgRoot, ImageOptions options) {
+            this.copyExternal = options.copyExternal();
+
             if (cfgRoot == null) {
                 this.internalImageRoot = "";
-                this.copyRemote = false;
+                this.copyInternal = false;
             } else {
                 if (cfgRoot.startsWith("http") || !cfgRoot.startsWith("file:")) {
                     this.internalImageRoot = endWithSlash(cfgRoot);
@@ -107,14 +110,14 @@ public class TtrpgConfig {
                     if (!imgPath.toFile().exists()) {
                         tui.errorf("Image root %s does not exist", imgPath);
                         this.internalImageRoot = "";
-                        this.copyRemote = false;
+                        this.copyInternal = false;
                         return;
                     }
                     this.internalImageRoot = endWithSlash(imgPath.toString());
                 }
-                this.copyRemote = options.copyRemote();
-                Tui.instance().printlnf("🖼️ Using %s as the source for remote images (copyRemote=%s)",
-                        this.internalImageRoot, this.copyRemote);
+                this.copyInternal = options.copyInternal();
+                Tui.instance().printlnf("🖼️ Using %s as the source for remote images (copyInternal=%s)",
+                        this.internalImageRoot, this.copyInternal);
             }
         }
 
@@ -122,8 +125,12 @@ public class TtrpgConfig {
             return internalImageRoot;
         }
 
-        public boolean copyToVault() {
-            return copyRemote;
+        public boolean copyInternalToVault() {
+            return copyInternal;
+        }
+
+        public boolean copyExternalToVault() {
+            return copyExternal;
         }
 
         private String endWithSlash(String path) {

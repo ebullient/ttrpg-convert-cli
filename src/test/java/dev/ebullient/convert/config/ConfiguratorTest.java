@@ -40,7 +40,7 @@ public class ConfiguratorTest {
             assertThat(config.compendiumFilePath()).isEqualTo(CompendiumConfig.CWD);
             assertThat(config.rulesVaultRoot()).isEqualTo("rules/");
             assertThat(config.rulesFilePath()).isEqualTo(Path.of("rules/"));
-            assertThat(config.images.copyRemote()).isFalse();
+            assertThat(config.images.copyInternal()).isFalse();
         });
     }
 
@@ -154,7 +154,7 @@ public class ConfiguratorTest {
 
             assertThat(config).isNotNull();
             assertThat(config.imageOptions()).isNotNull();
-            assertThat(config.imageOptions().copyRemote()).isFalse();
+            assertThat(config.imageOptions().copyInternal()).isFalse();
         });
     }
 }

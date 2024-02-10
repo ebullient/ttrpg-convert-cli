@@ -346,4 +346,4 @@ This project is a derivative of [fc5-convert-cli](https://github.com/ebullient/f
 
 <a href="https://www.buymeacoffee.com/ebullient" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-[^1]: Description of relative vs absolute file paths: <https://stackoverflow.com/a/10288252>
+[^1]: Description of relative vs absolute file paths: <https://stackoverflow.com/a/10288252> . If you use a relative path, it will be resolved relative to the current working directory, as described here: <https://en.wikipedia.org/wiki/Working_directory>.
