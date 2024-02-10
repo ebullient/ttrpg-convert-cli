@@ -258,7 +258,7 @@ public class MagicVariant implements JsonSource {
                     };
                 }
             }
-            return match.group(1);
+            return value;
         });
     }
 
