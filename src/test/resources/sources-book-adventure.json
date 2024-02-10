@@ -3,9 +3,19 @@
     "rules": "/ru les/",
     "compendium": "/compend ium/"
   },
+  "convert": {
+    "adventure": [
+      "WBtW",
+      "MOT-NSS"
+    ],
+    "book": [
+      "PHB",
+      "MOT"
+    ]
+  },
   "from": [
-    "DMG", 
-    "XGE", 
+    "DMG",
+    "XGE",
     "TCE"
   ],
   "include": [
@@ -18,13 +28,5 @@
   ],
   "excludePattern": [
     "race|.*|dmg"
-  ],
-  "convert": {
-    "adventure": [
-      "WBtW"
-    ],
-    "book": [
-      "PHB"
-    ]
-  }
+  ]
 }

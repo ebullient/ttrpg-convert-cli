@@ -340,7 +340,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         } else if (type == Tools5eIndexType.book || type == Tools5eIndexType.adventure) {
             String id = SourceField.id.getTextOrEmpty(node);
             String source = SourceField.source.getTextOrEmpty(node);
-            if (!id.equals(source)) {
+            if (!id.equals(source) && type == Tools5eIndexType.book) {
+                // adventures can be subdivided from books. Don't map source/id for those
                 TtrpgConfig.sourceToIdMapping(source, id);
             }
         }
