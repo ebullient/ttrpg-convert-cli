@@ -72,7 +72,6 @@ public class CommonDataTests {
         }
 
         index = new Tools5eIndex(TtrpgConfig.getConfig());
-        TtrpgConfig.setToolsPath(toolsData);
 
         if (dataPresent) {
             templates.setCustomTemplates(TtrpgConfig.getConfig());

@@ -40,7 +40,7 @@ public class ConfiguratorTest {
             assertThat(config.compendiumFilePath()).isEqualTo(CompendiumConfig.CWD);
             assertThat(config.rulesVaultRoot()).isEqualTo("rules/");
             assertThat(config.rulesFilePath()).isEqualTo(Path.of("rules/"));
-            assertThat(config.images.copyRemote()).isTrue();
+            assertThat(config.images.copyRemote()).isFalse();
         });
     }
 

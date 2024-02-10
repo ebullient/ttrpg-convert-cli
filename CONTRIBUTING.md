@@ -32,9 +32,12 @@ Using the GitHub CLI:
 ```shell
 mkdir -p sources
 # 5eTools
-gh repo clone 5etools-mirror-1/5etools-mirror-1.github.io sources/5etools-mirror-1.github.io -- --depth=1
+gh repo clone 5etools-mirror-2/5etools-mirror-2.github.io sources/5etools-mirror-2.github.io -- --depth=1
 gh repo clone TheGiddyLimit/homebrew sources/5e-homebrew -- --depth=1
 gh repo clone TheGiddyLimit/unearthed-arcana sources/5e-unearthed-arcana -- --depth=1
+# Optional: 5eTools images; requires an extra config step
+gh repo clone 5etools-mirror-2/5etools-img sources/5etools-img -- --depth=1
+
 # PF2eTools
 gh repo clone Pf2eToolsOrg/Pf2eTools sources/Pf2eTools -- --depth=1
 ```

@@ -1,5 +1,6 @@
 {
   "images": {
-    "internalRoot" : "local/path/for/remote/images"
+    "copyRemote": true,
+    "internalRoot" : "sources/5etools-img"
   }
 }

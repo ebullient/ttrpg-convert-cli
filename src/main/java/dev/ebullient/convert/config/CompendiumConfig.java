@@ -504,7 +504,7 @@ public class CompendiumConfig {
         }
 
         public boolean copyRemote() {
-            return copyRemote == null || copyRemote;
+            return copyRemote != null && copyRemote;
         }
     }
 

@@ -5,6 +5,7 @@
 
 This guide introduces you to configuring data transformations using the Command Line Interface (CLI). Whether you're new to command line tools or an experienced user, you'll find helpful information on utilizing configuration files to tailor your experience.
 
+<!-- markdownlint-disable-next-line no-emphasis-as-heading -->
 **Table of Contents**
 
 - [Overview](#overview)
@@ -184,7 +185,7 @@ For example, if you wanted to use Benjamin Huffman's popular homebrewed [Pugilis
     }
     ```
 
-In the above example, `path/to/` is a placeholder. There are a few ways to figure out the path to a file:
+In the above example, `path/to/` is a placeholder to an absolute or relative path to the file.[^1] There are a few ways to figure out the path to a file:
 
 - You may be able to drag and drop the file into the terminal window.
 - You may have the ability to right-click on the file and select "Copy Path".
@@ -199,19 +200,29 @@ I've done what I can to make the errors clear, or to highlight the suspect json,
 
 Here are some examples of what you may see, and how to fix them:
 
-- `Unable to find image 'img/bestiary/MM/Green Hag.jpg'` (or similar)  
-    Images have, by and large, been converted to webp format. This is usually a case of finding the right image (either in the cloned mirror, or using a remote link to the image) and updating the json to point to it.  
-    - If you can fix the link yourself, please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
-    - If you can't find the image that should be used instead, please [ask for CLI help](../README.md#where-to-find-help) and I'll help you find the right one.
-- `Unknown spell school Curse in sources[spell|ventus|wandsnwizards]`; similar for item types, item properties, conditions, skills, abilities, etc.  
-    This kind of error could be caused by a missing companion file (check dependencies at the top), or a missing definition in the homebrew file.  
-    - If you find the missing definition (or it is already present in the homebrew file), and the error persists, please [ask for CLI help first](../README.md#where-to-find-help) so I can make sure there isn't a bug in the CLI preventing it from being read.  
-    - If the data really is missing, please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
+- `Unable to find image 'img/bestiary/MM/Green Hag.jpg'` (or similar)
+
+    This kind of path refers to an "internal" (meaning part of the base 5e corpus of stuff) image. These paths are computed relative to a known base. With mirror2, the base has changed (to a different repository structure, see [Copying "internal" images](#copying-internal-images)), and images have, by and large, been converted from `.jpg` or `.png` to `.webp`. Fixing this kind of error is usually a case of fixing the path.
+
+    - If you can fix the link yourself (change to `.webp`, mirror1 path to revised mirror2 path by removing `img/`), please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
+    - If you can't find the image that should be used instead, please [ask for CLI help](../README.md#where-to-find-help)and we'll help you find the right one.
+
+- `Unknown spell school Curse in sources[spell|ventus|wandsnwizards]`; similar for item types, item properties, conditions, skills, abilities, etc.
+
+    This kind of error could be caused by a missing companion file (check dependencies listed in the `meta` information at the top of the homebrew file) or a missing definition.
+
+    - If you find the missing definition (or it is already present in the homebrew file), and the error persists, please [ask for CLI help first](../README.md#where-to-find-help) so I can make sure there isn't a bug in the CLI preventing it from being read.
+    - If the data really is missing from the homebrew json, please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
+
 - You may see messages about missing fields or badly formed tables.
+
     - If you can fix the error by fixing the json content, please [report it in 5eTools #brew-conversion](#reporting-content-errors-to-5etools).
     - If you can't fix the error yourself, please [ask for CLI help first](../README.md#where-to-find-help) so I can make sure there isn't a bug in the CLI.
 
 ### Reporting content errors to 5eTools
+
+> [!NOTE]
+> The lovely folks at 5eTools don't understand the CLI, and they don't need to. If you report an issue, keep the details focused on the JSON content (typo, missed definition, etc.). If you aren't sure, [ask for CLI help first](../README.md#where-to-find-help).
 
 If you can fix the error by fixing the json content, please report the error in the 5eTools discord channel.
 
@@ -221,7 +232,7 @@ If you can fix the error by fixing the json content, please report the error in 
 
 Use the following form for your report.
 
-```
+```text
 **Brew:**   Write the name of the homebrew source here  
 **Converter:**   @converter's-discord-ID   
 **Issue:**   Describe the issue here in clear, concise terms (e.g. "the Red-Spotted Gurgler is listed as having AC 15, when it should be 16")  
@@ -230,10 +241,7 @@ Use the following form for your report.
 > I expected Z, but instead ...
 ```
 
-> [!WARNING]
-> Do not report errors related to the CLI and its behavior in the 5eTools discord channel.
-> The folks over there don't know (and shouldn't need to know) what the CLI is doing.
-> Only report errors related to the content itself.
+For that last part, you may need to do some digging. Do not report the error using CLI exception messages. Stick to the observed missing links or errors in the data.
 
 ## Include reference data with the `from` key
 
@@ -324,7 +332,7 @@ This approach is ideal for content acquired in parts, like individual items from
 
 The CLI can generate notes that include inline dice rolls. To enable this feature, set the `useDiceRoller` key to `true`.
 
-If you render dice rolls, set `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice }`, and `{@damage }` strings. 
+If you render dice rolls, set `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice }`, and `{@damage }` strings.
 
 Please note that if you are using a custom template and fantasy statblocks, you do **not** need to set the dice roller in your config. Fantasy statblocks will take care of the rendering itself.
 
@@ -333,3 +341,40 @@ Please note that if you are using a custom template and fantasy statblocks, you 
 The `tagPrefix` key sets the prefix for tags generated by the CLI. This is useful if you want to distinguish between tags generated by the CLI and tags you've created yourself.
 
 For example, the CLI generates tags like `compendium/src/phb` and `spell/level/1`. If you set `tagPrefix` to `5e-cli`, the tags will be `5e-cli/compendium/src/phb` and `5e-cli/spell/level/1`.
+
+## Copying "internal" images
+
+With mirror-2, 5eTools moved "internal" images, those associated with core  source content and referenced either by computed path (like tokens) or by media references marked as "internal".
+
+The following configuration options allow you to change how the CLI treats these image references.
+
+By default, no files are downloaded. Links will remain in their remote location, and you will need to be online to view the images.
+
+Downloads can take some time, and the images repository is quite large. If you want to download the images, you have a few options:
+
+- Set `images.copyRemote` to `true` (as shown below) in your configuration file to instruct the CLI to copy "internal" images into your vault. This will make your vault larger, but you will not need to be online to view the images.
+
+    ```json
+    "images": {
+        "copyRemote": true,
+    }
+    ```
+
+    With just this setting, the CLI will download all "internal" images from the image reository via https (if it hasn't seen the file before). This will work, but it will be a little slower, and may be subject to network/throttling issues.
+
+- Create a shallow clone of the images repository, and set `images.internalRoot` in your configuration file to tell the CLI where it can locally find "internal" images.
+
+    ```shell
+    git clone -depth 1 https://github.com/5etools-mirror-2/5etools-img.git
+    ```
+
+    ```json
+    "images": {
+        "copyRemote": true,
+        "internalRoot": "5etools-img"
+    }
+    ```
+
+    With this setting, the CLI will look for "internal" images in the local directory, which will speed things up (at the cost of a few extra steps). If you use a relative path, it will be from the directory where you run the CLI. An absolute path will also work. You will get an error message if that directory doesn't exist (and it will tell you the directory it tried to find).[^1]
+
+[^1]: Example/explanation of absolute vs. relative path: <https://stackoverflow.com/a/10288252>

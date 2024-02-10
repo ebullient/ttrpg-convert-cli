@@ -1,6 +1,10 @@
 # Other ways to run the CLI
 
-[Conventions]: ../README.md#conventions
+[conventions]: ../README.md#conventions
+[5etools-data]: ../README.md#convert-5etools-json-data
+[pf2e-data]: ../README.md#convert-pf2etools-json-data
+[homebrew]: ../README.md#convert-homebrew-json-data
+[config]: ./configuration.md
 [_unreleased snapshot_]: #using-unreleased-snapshots
 [java_install]: https://adoptium.net/installation/
 
@@ -32,7 +36,15 @@ JBang is a tool designed to simplify Java application execution. By eliminating 
     ttrpg-convert --help
     ```
 
-Continue to notes about [Conventions][].
+    Notice there is no leading `./` or `.\`. JBang installs the command in a location that is on your PATH[^1].
+
+Next steps:
+
+- Understand [CLI plugin and usage conventions][conventions].
+- [Convert 5eTools JSON data][5etools-data]
+- [Convert PF2eTools JSON data][pf2e-data]
+- [Convert Homebrew JSON data][homebrew]
+- Create your own [configuration file][config].
 
 ## Use Homebrew
 
@@ -51,13 +63,21 @@ Not to be confused with Homebrew adventures, Homebrew is a package manager for M
     brew install ttrpg-convert-cli
     ```
 
-4. Verify the install by running the command:
+4. Verify the install by running the command (from anywhere):
 
     ```shell
     ttrpg-convert --help
     ```
 
-Continue to notes about [Conventions][].
+    Notice there is no leading `./` or `.\`. Homebrew installs the command in a location that is on your PATH[^1].
+
+Next steps:
+
+- Understand [CLI plugin and usage conventions][conventions].
+- [Convert 5eTools JSON data][5etools-data]
+- [Convert PF2eTools JSON data][pf2e-data]
+- [Convert Homebrew JSON data][homebrew]
+- Create your own [configuration file][config].
 
 ### Use pre-built platform binary
 
@@ -71,16 +91,26 @@ Continue to notes about [Conventions][].
 In a terminal or command shell, navigate to the directory where you extracted the archive and run the command in the `bin` directory:
 
 ```shell
-ttrpg-convert --help
+# Linux or MacOS (use the leading ./ because the current directory is not in the PATH[^1])
+./ttrpg-convert --help
+
+# Windows (the .exe extension is optional)
+ttrpg-convert.exe --help
 ```
 
 Notes:
 
 - Windows users: the `.exe` extension is optional. You can run `ttrpg-convert.exe` or `ttrpg-convert` interchangeably.
 - Folks familar with command line tools can add the `bin` directory to their path to make the command available from anywhere.
-- *MacOS permission checking* (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
+- _MacOS permission checking_ (unverified executable): `xattr -r -d com.apple.quarantine <path/to>/ttrpg-convert`
 
-Continue to notes about [Conventions][].
+Next steps:
+
+- Understand [CLI plugin and usage conventions][conventions].
+- [Convert 5eTools JSON data][5etools-data]
+- [Convert PF2eTools JSON data][pf2e-data]
+- [Convert Homebrew JSON data][homebrew]
+- Create your own [configuration file][config].
 
 ## Use Java to run the jar
 
@@ -107,7 +137,13 @@ To run the CLI, you will need to have **Java 17** installed on your system.
 
 To run commands, replace `ttrpg-convert` with `java -jar ttrpg-convert-cli-...`
 
-Continue to notes about [Conventions][].
+Next steps:
+
+- Understand [CLI plugin and usage conventions][conventions].
+- [Convert 5eTools JSON data][5etools-data]
+- [Convert PF2eTools JSON data][pf2e-data]
+- [Convert Homebrew JSON data][homebrew]
+- Create your own [configuration file][config].
 
 ## Build and run from source
 
@@ -137,7 +173,13 @@ To run commands, either:
 
     > 🔹 Use an alternate alias by replacing the value specified as the name: `--name ttrpg-convert`, and adjust the commands accordingly.
 
-Continue to notes about [Conventions][].
+Next steps:
+
+- Understand [CLI plugin and usage conventions][conventions].
+- [Convert 5eTools JSON data][5etools-data]
+- [Convert PF2eTools JSON data][pf2e-data]
+- [Convert Homebrew JSON data][homebrew]
+- Create your own [configuration file][config].
 
 ## Using unreleased snapshots
 
@@ -149,3 +191,5 @@ Folks picking up early snapshots is really helpful for me, but _using an unrelea
     - `ttrpg-convert --version` will tell you the version you are running, including the commit! Please include that information in your report.
 
 I recommend staying with official releases unless you are willing to help me debug issues (and your help is very much appreciated!).
+
+[^1]: A PATH is a list of directories that the operating system searches for executables. When you type a command in a terminal, the system looks in each directory in the path for an executable with the name you typed. If it finds one, it runs it. If it doesn't, it reports an error. See [Wikipedia](https://en.wikipedia.org/wiki/PATH_(variable)) for a rough overview and more links.

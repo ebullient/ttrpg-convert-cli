@@ -68,7 +68,7 @@ public class Tools5eDataConvertTest {
             List<String> args = new ArrayList<>(List.of("--index", "--debug",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-images.yaml").toString(),
                     "-o", allIndex.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("images-from-local.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString()));
 
             args.addAll(TestUtils.getFilesFrom(TestUtils.PATH_5E_TOOLS_DATA.resolve("adventure")));

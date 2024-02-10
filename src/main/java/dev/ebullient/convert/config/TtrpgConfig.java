@@ -91,10 +91,6 @@ public class TtrpgConfig {
         }
     }
 
-    public static void setToolsPath(Path toolsPath) {
-
-    }
-
     public static class ImageRoot {
         final String internalImageRoot;
         final boolean copyRemote;
@@ -104,8 +100,21 @@ public class TtrpgConfig {
                 this.internalImageRoot = "";
                 this.copyRemote = false;
             } else {
-                this.internalImageRoot = endWithSlash(cfgRoot);
+                if (cfgRoot.startsWith("http") || !cfgRoot.startsWith("file:")) {
+                    this.internalImageRoot = endWithSlash(cfgRoot);
+                } else {
+                    Path imgPath = Path.of("").resolve(cfgRoot).normalize().toAbsolutePath();
+                    if (!imgPath.toFile().exists()) {
+                        tui.errorf("Image root %s does not exist", imgPath);
+                        this.internalImageRoot = "";
+                        this.copyRemote = false;
+                        return;
+                    }
+                    this.internalImageRoot = endWithSlash(imgPath.toString());
+                }
                 this.copyRemote = options.copyRemote();
+                Tui.instance().printlnf("🖼️ Using %s as the source for remote images (copyRemote=%s)",
+                        this.internalImageRoot, this.copyRemote);
             }
         }
 
