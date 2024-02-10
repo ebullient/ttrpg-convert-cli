@@ -4,6 +4,7 @@
 
 A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eTools into crosslinked, tagged, and formatted markdown optimized for [Obsidian.md](https://obsidian.md).
 
+<!-- markdownlint-disable no-inline-html -->
 <table><tr>
 <td>Jump</td>
 <td><a href="#install-the-ttrpg-convert-cli">⬇ Download</a></td>
@@ -143,7 +144,7 @@ Choose whichever you are the most comfortable with:
 1. Create a shallow clone of the 5eTools mirror repo (which can/should be deleted afterwards):
 
     ```shell
-    git clone --depth 1 https://github.com/5etools-mirror-1/5etools-mirror-1.github.io.git
+    git clone --depth 1 https://github.com/5etools-mirror-2/5etools-mirror-2.github.io.git
     ```
 
 2. Invoke the CLI. In this first example, let's generate indexes and markdown for SRD content:
@@ -152,7 +153,7 @@ Choose whichever you are the most comfortable with:
     ttrpg-convert \
       --index \
       -o dm \
-      5etools-mirror-1.github.io/data
+      5etools-mirror-2.github.io/data
     ```
 
     - `--index` generates two index files: `all-index.json` and `src-index.json`.
@@ -165,7 +166,7 @@ Choose whichever you are the most comfortable with:
 
     The rest of the command-line specifies input files:
 
-    - `5etools-mirror-1.github.io/data` Path to the 5etools `data` directory (from a clone or release of the repo)
+    - `5etools-mirror-2.github.io/data` Path to the 5etools `data` directory (from a clone or release of the repo)
 
     This should produce a set of markdown files in the `dm` directory that contains only SRD content.
 
@@ -176,7 +177,7 @@ Choose whichever you are the most comfortable with:
         --index \
         -o dm \
         -s PHB,DMG,SCAG \
-        5etools-mirror-1.github.io/data
+        5etools-mirror-2.github.io/data
     ```
 
     - `-s PHB,DMG,SCAG` will include reference material from the *Player's Handbook*, the *Dungeon Master's Guide*, and the *Sword Coast Adventurer's Guide*.
@@ -192,10 +193,12 @@ ttrpg-convert \
     --index \
     -o dm \
     -c my-config.json \
-    5etools-mirror-1.github.io/data
+    5etools-mirror-2.github.io/data
 ```
 
-Next step: Create your own [configuration file](docs/configuration.md).
+Next step:
+
+- Create your own [configuration file](docs/configuration.md).
 
 ## Convert Pf2eTools JSON data
 
@@ -262,7 +265,9 @@ ttrpg-convert \
     Pf2eTools/data
 ```
 
-Next step: Create your own [configuration file](docs/configuration.md).
+Next step:
+
+- Create your own [configuration file](docs/configuration.md).
 
 ## Convert Homebrew JSON data
 
@@ -298,7 +303,7 @@ For example, if you wanted to use Benjamin Huffman's popular homebrewed [Pugilis
     }
     ```
 
-    - `path/to/` is a placeholder. There are a few ways to figure out the path to a file.
+    - `path/to/` is a placeholder for a relative or absolute path to the file[^1]. There are a few ways to figure out the path to a file.
         - You may be able to drag and drop the file into the terminal window.
         - You may have the ability to right-click on the file and select "Copy Path".
         - *Windows users*: When pasting the path into a text editor, use find/replace to replace all `\` with `/`.
@@ -310,7 +315,7 @@ For example, if you wanted to use Benjamin Huffman's popular homebrewed [Pugilis
         --index \
         -o hb-compendium \
         -c my-config.json
-        5etools-mirror-1.github.io/data
+        5etools-mirror-2.github.io/data
     ```
 
     - `-o hb-compendium` is the output directory for generated content.
@@ -340,3 +345,5 @@ This project is a derivative of [fc5-convert-cli](https://github.com/ebullient/f
 [5etools JSON]: https://wiki.tercept.net/en/Homebrew/FromZeroToHero
 
 <a href="https://www.buymeacoffee.com/ebullient" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+[^1]: Description of relative vs absolute file paths: <https://stackoverflow.com/a/10288252>

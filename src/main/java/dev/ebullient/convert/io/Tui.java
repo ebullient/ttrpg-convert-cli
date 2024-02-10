@@ -363,37 +363,13 @@ public class Tui {
                 continue;
             }
 
-            // find the right source root (there could be several)
-            Optional<Path> sourceRoot = resolvePath(image.sourcePath());
-
-            // adjust basePath for relocated image
-            Path relativeImagePath = image.sourcePath();
-            if (sourceRoot.isEmpty()) {
-                String adjustedPath = TtrpgConfig.imageFallbackPaths().get(image.sourcePath().toString());
-                if (adjustedPath != null) {
-                    sourceRoot = inputRoot.stream()
-                            .filter(x -> x.resolve(adjustedPath).toFile().exists())
-                            .findFirst();
-                    relativeImagePath = Path.of(adjustedPath);
-                }
-
-                // If the file is still not found, bail..
-                if (sourceRoot.isEmpty()) {
-                    errorf("Unable to find image '%s'", image.sourcePath());
-                    continue;
-                }
-            }
-
-            // Resolve the image path from data against the correct parent path
-            Path sourcePath = sourceRoot.get().resolve(relativeImagePath);
-
             // target path must be pre-resolved to compendium or rules root
             // so just make sure the image dir exists
             targetPath.getParent().toFile().mkdirs();
             try {
-                Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(image.sourcePath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                errorf(e, "Unable to copy image from %s to %s", image.sourcePath(), image.targetFilePath());
+                errorf(e, "Unable to copy image from %s to %s (%s)", image.sourcePath(), image.targetFilePath(), e);
             }
         }
     }

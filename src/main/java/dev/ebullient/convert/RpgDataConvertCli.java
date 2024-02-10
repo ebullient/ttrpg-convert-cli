@@ -205,8 +205,6 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             }
         }
 
-        TtrpgConfig.setToolsPath(toolsPath);
-
         // Include extra books and adventures from config (relative to toolsPath)
         if (allOk && toolsPath != null) {
             for (String adventure : config.getAdventures()) {

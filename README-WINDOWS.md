@@ -40,7 +40,7 @@ This is one example with specific steps. If you know more about running commands
 
     For this example, you'll be working from within the bin folder, which contains the file `ttrpg-convert.exe`.
 
-    1. Move the other two folders you extracted (`5etools-mirror-1.github.io-master` and `ttrpg-convert-cli-2.2.17-examples`) inside of the bin directory.
+    1. Move the other two folders you extracted (`5etools-mirror-2.github.io-master` and `ttrpg-convert-cli-2.2.17-examples`) inside of the bin directory.
 
     2. If you leave the extracted `ttrpg-convert-cli-2.2.17` folder in the Downloads directory, the following commands should work:
 
@@ -58,7 +58,7 @@ This is one example with specific steps. If you know more about running commands
             dir
             ```
 
-        3. Make the `bin` active. When you list the folders, it should include `5etools-mirror-1.github.io-master` and `ttrpg-convert-cli-2.2.17-examples`.
+        3. Make the `bin` active. When you list the folders, it should include `5etools-mirror-2.github.io-master` and `ttrpg-convert-cli-2.2.17-examples`.
 
             ```console
             cd bin
@@ -78,7 +78,7 @@ This is one example with specific steps. If you know more about running commands
         Then go back to Command Prompt, type `cd` and paste the path you just copied, and hit `Enter`.
         The prompt on the left should now look like this: `<path to the folder you moved ttrpg-convert-cli into>\ttrpg-convert-cli-2.2.17\bin`
 
-3. Type `ttrpg-convert.exe --index -o dm 5etools-mirror-1.github.io-master/data` and hit `Enter`.
+3. Type `ttrpg-convert.exe --index -o dm 5etools-mirror-2.github.io-master/data` and hit `Enter`.
 
     A new folder called `dm` should have been created containing the entire D&D5e SRD. If that's all you need, you're done.
 
@@ -87,7 +87,7 @@ This is one example with specific steps. If you know more about running commands
     - Use this command to use your custom configuration (assuming a file called `dm-sources.json`):
 
         ```console
-        ttrpg-convert.exe --index -o dm -c dm-sources.json 5etools-mirror-1.github.io-master/data
+        ttrpg-convert.exe --index -o dm -c dm-sources.json 5etools-mirror-2.github.io-master/data
         ```
 
 [3]: docs/configuration.md
