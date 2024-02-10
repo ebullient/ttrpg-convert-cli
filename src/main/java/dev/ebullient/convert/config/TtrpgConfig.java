@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
+import dev.ebullient.convert.config.CompendiumConfig.ImageOptions;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -30,9 +31,11 @@ public class TtrpgConfig {
 
     private static Datasource datasource = Datasource.tools5e;
     private static Tui tui;
+    private static ImageRoot internalImageRoot;
 
     public static void init(Tui tui, Datasource datasource) {
         userConfig.clear();
+        internalImageRoot = null;
         TtrpgConfig.tui = tui;
         TtrpgConfig.datasource = datasource;
         readSystemConfig();
@@ -89,22 +92,50 @@ public class TtrpgConfig {
     }
 
     public static void setToolsPath(Path toolsPath) {
-        if (toolsPath != null && datasource == Datasource.tools5e) {
-            Path img = toolsPath.toAbsolutePath().resolveSibling("img");
-            if (img.toFile().isDirectory()) {
-                // If the img directory exists, images are in the reposoitory next to data
-                // otherwise, we're in the 5eTools2 mirror, which pulls them from a remote location
-                getConfig().imageOptions().relativeRemoteRoot = "mirror1:img/";
+
+    }
+
+    public static class ImageRoot {
+        final String internalImageRoot;
+        final boolean copyRemote;
+
+        private ImageRoot(String cfgRoot, ImageOptions options) {
+            if (cfgRoot == null) {
+                this.internalImageRoot = "";
+                this.copyRemote = false;
+            } else {
+                this.internalImageRoot = endWithSlash(cfgRoot);
+                this.copyRemote = options.copyRemote();
             }
+        }
+
+        public String getRootPath() {
+            return internalImageRoot;
+        }
+
+        public boolean copyToVault() {
+            return copyRemote;
+        }
+
+        private String endWithSlash(String path) {
+            if (path == null) {
+                return "";
+            }
+            return path.endsWith("/") ? path : path + "/";
         }
     }
 
-    public static String remoteImageRoot() {
-        String remoteImageRoot = getConfig().imageOptions().relativeRemoteRoot;
-        if (remoteImageRoot == null) {
-            remoteImageRoot = activeDSConfig().constants.get("remoteImageRoot");
+    public static ImageRoot internalImageRoot() {
+        ImageRoot root = internalImageRoot;
+        if (root == null) {
+            ImageOptions options = getConfig().imageOptions();
+            String cfg = options.internalRoot;
+            if (cfg == null) {
+                cfg = activeDSConfig().constants.get("internalImageRoot");
+            }
+            internalImageRoot = root = new ImageRoot(cfg, options);
         }
-        return remoteImageRoot;
+        return root;
     }
 
     public static Map<String, String> imageFallbackPaths() {
@@ -276,7 +307,7 @@ public class TtrpgConfig {
         configPf2e,
         constants,
         fallbackImage,
-        remoteImageRoot,
+        internalImageRoot,
         fixes,
         indexes,
         longToAbv,

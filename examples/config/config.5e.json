@@ -26,9 +26,8 @@
   "useDiceRoller" : true,
   "tagPrefix" : "ttrpg-cli",
   "images" : {
-    "relativeRemoteRoot" : "alternate/path/for/remote/images",
-    "copyRemote" : false,
-    "checkRemote" : false
+    "internalRoot" : "local/path/for/remote/images",
+    "copyRemote" : false
   },
   "full-source" : {
     "adventure" : [

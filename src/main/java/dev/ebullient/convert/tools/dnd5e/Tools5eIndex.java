@@ -286,6 +286,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         nodeIndex.put(key, node);
         TtrpgValue.indexInputType.setIn(node, type.name());
         TtrpgValue.indexKey.setIn(node, key);
+        TtrpgValue.isHomebrew.setIn(node, homebrew != null);
 
         if (type == Tools5eIndexType.classtype
                 && !booleanOrDefault(node, "isReprinted", false)) {

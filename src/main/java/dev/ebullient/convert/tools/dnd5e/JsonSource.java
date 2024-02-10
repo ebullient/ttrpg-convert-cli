@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static java.util.Map.entry;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,10 +88,6 @@ public interface JsonSource extends JsonTextReplacement {
 
     default String getLabeledSource(Tools5eSources currentSource) {
         return "_Source: " + getSourceText(currentSource) + "_";
-    }
-
-    default ImageRef buildImageRef(Path sourcePath, Path target) {
-        return getSources().buildImageRef(index(), sourcePath, target, useCompendium());
     }
 
     default ImageRef buildImageRef(JsonMediaHref mediaHref, String imageBasePath) {
@@ -565,16 +560,11 @@ public interface JsonSource extends JsonTextReplacement {
 
         Tools5eQuteBase qs = null;
         switch (type) {
-            case item ->
-                qs = new Json2QuteItem(index(), type, data).build();
-            case monster ->
-                qs = new Json2QuteMonster(index(), type, data).build();
-            case object ->
-                qs = new Json2QuteObject(index(), type, data).build();
-            case spell ->
-                qs = new Json2QuteSpell(index(), type, data).build();
-            default ->
-                tui().errorf("Not ready for statblock dataType in %s", entry);
+            case item -> qs = new Json2QuteItem(index(), type, data).build();
+            case monster -> qs = new Json2QuteMonster(index(), type, data).build();
+            case object -> qs = new Json2QuteObject(index(), type, data).build();
+            case spell -> qs = new Json2QuteSpell(index(), type, data).build();
+            default -> tui().errorf("Not ready for statblock dataType in %s", entry);
         }
         if (qs != null) {
             if (type == Tools5eIndexType.monster) {
@@ -690,17 +680,18 @@ public interface JsonSource extends JsonTextReplacement {
                         cells = r;
                     }
 
-                    String row = "| " + streamOf(cells).map(x -> {
-                        JsonNode roll = RollFields.roll.getFrom(x);
-                        if (roll != null) {
-                            if (RollFields.exact.existsIn(roll)) {
-                                return RollFields.exact.getFrom(roll);
-                            }
-                            return new TextNode(
-                                    RollFields.min.getTextOrEmpty(roll) + "-" + RollFields.max.getTextOrEmpty(roll));
-                        }
-                        return x;
-                    })
+                    String row = "| " + streamOf(cells)
+                            .map(x -> {
+                                JsonNode roll = RollFields.roll.getFrom(x);
+                                if (roll != null) {
+                                    if (RollFields.exact.existsIn(roll)) {
+                                        return RollFields.exact.getFrom(roll);
+                                    }
+                                    return new TextNode(
+                                            RollFields.min.getTextOrEmpty(roll) + "-" + RollFields.max.getTextOrEmpty(roll));
+                                }
+                                return x;
+                            })
                             .map(x -> flattenToString(x).replace("\n", "<br />"))
                             .collect(Collectors.joining(" | ")) + " |";
                     table.add(row);

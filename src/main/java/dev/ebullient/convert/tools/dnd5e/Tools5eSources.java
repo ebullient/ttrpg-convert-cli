@@ -30,7 +30,7 @@ import io.quarkus.qute.TemplateData;
 public class Tools5eSources extends CompendiumSources {
 
     private static final Map<String, Tools5eSources> keyToSources = new HashMap<>();
-    private static final Map<Path, ImageRef> imageSourceToRef = new HashMap<>();
+    private static final Map<String, ImageRef> imageSourceToRef = new HashMap<>();
     private static final Map<String, FontRef> fontSourceToRef = new HashMap<>();
     private static final Map<String, List<QuteBase>> keyToInlineNotes = new HashMap<>();
 
@@ -218,21 +218,15 @@ public class Tools5eSources extends CompendiumSources {
         return source.map(TtrpgConfig::sourceToAbbreviation);
     }
 
-    public ImageRef buildImageRef(String title, String hrefString) {
-        return new ImageRef.Builder()
-                .setTitle(title)
-                .setUrl(hrefString)
-                .build();
-    }
-
-    public ImageRef buildImageRef(Tools5eIndex index, Path sourcePath, Path target, boolean useCompendium) {
+    public ImageRef buildTokenImageRef(Tools5eIndex index, Path sourcePath, Path target, boolean useCompendium) {
+        String key = sourcePath.toString();
         ImageRef imageRef = new ImageRef.Builder()
                 .setRelativePath(target)
                 .setSourcePath(sourcePath)
                 .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
                 .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
-                .build(imageSourceToRef.get(sourcePath));
-        imageSourceToRef.putIfAbsent(sourcePath, imageRef);
+                .build(imageSourceToRef.get(key));
+        imageSourceToRef.putIfAbsent(key, imageRef);
         return imageRef;
     }
 
@@ -241,39 +235,42 @@ public class Tools5eSources extends CompendiumSources {
         String altText = mediaHref.altText == null ? title : mediaHref.altText;
 
         if ("external".equals(mediaHref.href.type)) {
-            return new ImageRef.Builder()
+            String key = mediaHref.href.url;
+            ImageRef imageRef = new ImageRef.Builder()
                     .setTitle(index.replaceText(altText))
                     .setUrl(mediaHref.href.url)
                     .setWidth(mediaHref.width)
-                    .build();
-        }
-        if (mediaHref.href.path != null) {
-            Path sourcePath = Path.of("img",
-                    mediaHref.href.path.replace("%20", " "));
-
-            String fileName = sourcePath.getFileName().toString();
-            if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
-                fileName = primarySource() + "-" + fileName;
-            }
-
-            int x = fileName.lastIndexOf('.');
-            Path target = Path.of(imageBasePath, "img",
-                    index.slugify(fileName.substring(0, x)) + fileName.substring(x));
-
-            ImageRef imageRef = new ImageRef.Builder()
-                    .setWidth(mediaHref.width)
-                    .setTitle(index.replaceText(title))
-                    .setRelativePath(target)
-                    .setSourcePath(sourcePath)
-                    .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
-                    .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
-                    .build(imageSourceToRef.get(sourcePath));
-
-            imageSourceToRef.putIfAbsent(sourcePath, imageRef);
+                    .build(imageSourceToRef.get(key));
+            imageSourceToRef.putIfAbsent(key, imageRef);
             return imageRef;
-        } else {
+        }
+
+        if (mediaHref.href.path == null) {
             throw new IllegalArgumentException("We have an ImageRef with no path");
         }
+
+        Path sourcePath = Path.of(mediaHref.href.path);
+
+        String fileName = sourcePath.getFileName().toString();
+        if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
+            fileName = primarySource() + "-" + fileName;
+        }
+
+        int x = fileName.lastIndexOf('.');
+        Path target = Path.of(imageBasePath, "img",
+                index.slugify(fileName.substring(0, x)) + fileName.substring(x));
+
+        String key = sourcePath.toString();
+        ImageRef imageRef = new ImageRef.Builder()
+                .setWidth(mediaHref.width)
+                .setTitle(index.replaceText(title))
+                .setRelativePath(target)
+                .setSourcePath(sourcePath)
+                .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
+                .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
+                .build(imageSourceToRef.get(key));
+        imageSourceToRef.putIfAbsent(key, imageRef);
+        return imageRef;
     }
 
     /** Amend optionalfeaturetype with sources of related optional features */

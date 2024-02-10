@@ -2,6 +2,8 @@ package dev.ebullient.convert.qute;
 
 import java.nio.file.Path;
 
+import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.config.TtrpgConfig.ImageRoot;
 import dev.ebullient.convert.io.Tui;
 import io.quarkus.qute.TemplateData;
 
@@ -56,6 +58,10 @@ public class ImageRef {
         }
         this.vaultPath = vaultPath;
         this.width = width;
+
+        if (url == null && vaultPath == null) {
+            Tui.instance().errorf("ImageRef (target=%s) has no url or vaultPath", targetFilePath);
+        }
     }
 
     String escape(String s) {
@@ -81,7 +87,7 @@ public class ImageRef {
     public String getEmbeddedLink(String anchor) {
         return String.format("![%s](%s%s%s)",
                 getShortTitle(),
-                url == null ? vaultPath : url,
+                vaultPath == null ? url : vaultPath,
                 anchor.length() > 0 ? "#" + anchor : "",
                 titleAttribute());
     }
@@ -109,7 +115,7 @@ public class ImageRef {
         // }
         return String.format("![%s](%s#%s%s)",
                 getShortTitle(),
-                url == null ? vaultPath : url,
+                vaultPath == null ? url : vaultPath,
                 anchor,
                 titleAttribute());
     }
@@ -137,6 +143,11 @@ public class ImageRef {
     /** Not available in templates */
     public Path targetFilePath() {
         return targetFilePath;
+    }
+
+    /** Not available in templates */
+    public String url() {
+        return url;
     }
 
     public static class Builder {
@@ -191,23 +202,45 @@ public class ImageRef {
         }
 
         public ImageRef build() {
+            final ImageRoot imageRoot = TtrpgConfig.internalImageRoot();
             if (url != null) {
+                // external images
                 return new ImageRef(url, null, null, title, null, width);
             }
+
+            // internal images
             if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
                 Tui.instance().errorf("ImageRef build called before paths (source, relative, vaultRoot, fileRoot) were set");
                 return null;
             }
+
             Path targetFilePath = rootFilePath.resolve(relativeTarget);
             String vaultPath = String.format("%s%s", vaultRoot,
                     relativeTarget.toString().replace('\\', '/'));
 
-            return new ImageRef(null, sourcePath, targetFilePath, title, vaultPath, width);
+            String remoteUrl = sourcePath.toString();
+            if (remoteUrl.startsWith("http")) {
+                remoteUrl = remoteUrl.replaceAll("^(https?):/+", "$1://");
+            } else if (!remoteUrl.startsWith("file:/")) {
+                remoteUrl = imageRoot.getRootPath() + remoteUrl;
+            }
+
+            if (imageRoot.copyToVault()) {
+                // remote images to be copied into the vault
+                if (remoteUrl.startsWith("http") || remoteUrl.startsWith("file")) {
+                    return new ImageRef(remoteUrl, null, targetFilePath, title, vaultPath, width);
+                }
+                return new ImageRef(null, Path.of(remoteUrl), targetFilePath, title, vaultPath, width);
+            }
+
+            // remote images are not copied to the vault --> url image ref
+            return new ImageRef(remoteUrl,
+                    null, null, title, null, width);
         }
 
         public ImageRef build(ImageRef previous) {
             if (previous != null) {
-                return new ImageRef(null,
+                return new ImageRef(previous.url,
                         previous.sourcePath,
                         previous.targetFilePath,
                         title,

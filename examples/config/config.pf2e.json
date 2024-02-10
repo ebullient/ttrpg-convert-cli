@@ -21,10 +21,7 @@
   },
   "useDiceRoller" : true,
   "tagPrefix" : "ttrpg-cli",
-  "images" : {
-    "copyRemote" : false,
-    "checkRemote" : false
-  },
+  "images" : { },
   "full-source" : {
     "book" : [
       "crb",

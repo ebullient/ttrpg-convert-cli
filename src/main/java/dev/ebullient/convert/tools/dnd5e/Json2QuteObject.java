@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,13 +57,6 @@ public class Json2QuteObject extends Json2QuteMonster {
             case "U" -> "Unknown";
             default -> type;
         };
-    }
-
-    @Override
-    Path getTokenSourcePath(String filename) {
-        return Path.of("img", "objects", "tokens",
-                getSources().mapPrimarySource(),
-                filename + ".png");
     }
 
     enum ObjectFields implements JsonNodeReader {
