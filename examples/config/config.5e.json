@@ -28,7 +28,7 @@
   "images" : {
     "internalRoot" : "local/path/for/remote/images",
     "copyInternal" : true,
-    "copyExternal" : false
+    "copyExternal" : true
   },
   "full-source" : {
     "adventure" : [
