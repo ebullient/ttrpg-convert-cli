@@ -483,28 +483,37 @@ public class CompendiumConfig {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     static class ImageOptions {
         String internalRoot;
-        Boolean copyRemote;
+        Boolean copyInternal;
+        Boolean copyExternal;
 
         public ImageOptions() {
         }
 
         public ImageOptions(ImageOptions images, ImageOptions images2) {
             if (images != null) {
+                copyExternal = images.copyExternal;
+                copyInternal = images.copyInternal;
                 internalRoot = images.internalRoot;
-                copyRemote = images.copyRemote;
             }
             if (images2 != null) {
+                copyExternal = images2.copyExternal == null
+                        ? copyExternal
+                        : images2.copyExternal;
+                copyInternal = images2.copyInternal == null
+                        ? copyInternal
+                        : images2.copyInternal;
                 internalRoot = images2.internalRoot == null
                         ? internalRoot
                         : images2.internalRoot;
-                copyRemote = images2.copyRemote == null
-                        ? copyRemote
-                        : images2.copyRemote;
             }
         }
 
-        public boolean copyRemote() {
-            return copyRemote != null && copyRemote;
+        public boolean copyExternal() {
+            return copyExternal != null && copyExternal;
+        }
+
+        public boolean copyInternal() {
+            return copyInternal != null && copyInternal;
         }
     }
 

@@ -1,6 +1,6 @@
 {
   "images": {
-    "copyRemote": true,
+    "copyInternal": true,
     "internalRoot" : "sources/5etools-img"
   }
 }

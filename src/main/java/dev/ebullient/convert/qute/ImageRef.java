@@ -203,14 +203,17 @@ public class ImageRef {
 
         public ImageRef build() {
             final ImageRoot imageRoot = TtrpgConfig.internalImageRoot();
-            if (url != null) {
-                // external images
+
+            if (url != null && !imageRoot.copyExternalToVault()) {
+                // leave external images alone (referenced as url)
                 return new ImageRef(url, null, null, title, null, width);
+            } else if (url == null && sourcePath == null) {
+                Tui.instance().errorf("ImageRef build for internal image called without url or sourcePath set");
+                return null;
             }
 
-            // internal images
-            if (sourcePath == null || relativeTarget == null || vaultRoot == null || rootFilePath == null) {
-                Tui.instance().errorf("ImageRef build called before paths (source, relative, vaultRoot, fileRoot) were set");
+            if (relativeTarget == null || vaultRoot == null || rootFilePath == null) {
+                Tui.instance().errorf("ImageRef build called without target paths set");
                 return null;
             }
 
@@ -218,14 +221,16 @@ public class ImageRef {
             String vaultPath = String.format("%s%s", vaultRoot,
                     relativeTarget.toString().replace('\\', '/'));
 
-            String remoteUrl = sourcePath.toString();
+            String remoteUrl = url == null
+                    ? sourcePath.toString()
+                    : url;
             if (remoteUrl.startsWith("http")) {
                 remoteUrl = remoteUrl.replaceAll("^(https?):/+", "$1://");
             } else if (!remoteUrl.startsWith("file:/")) {
                 remoteUrl = imageRoot.getRootPath() + remoteUrl;
             }
 
-            if (imageRoot.copyToVault()) {
+            if (imageRoot.copyInternalToVault() || imageRoot.copyExternalToVault()) {
                 // remote images to be copied into the vault
                 if (remoteUrl.startsWith("http") || remoteUrl.startsWith("file")) {
                     return new ImageRef(remoteUrl, null, targetFilePath, title, vaultPath, width);

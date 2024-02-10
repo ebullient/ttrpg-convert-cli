@@ -355,11 +355,11 @@ public class Tui {
                 continue;
             }
             if (image.sourcePath() == null) {
-                copyRemoteImage(image);
+                copyRemoteImage(image, targetPath);
                 continue;
             }
             if (image.sourcePath().toString().startsWith("stream/")) {
-                copyImageResource(image);
+                copyImageResource(image, targetPath);
                 continue;
             }
 
@@ -374,21 +374,19 @@ public class Tui {
         }
     }
 
-    private void copyImageResource(ImageRef image) {
+    private void copyImageResource(ImageRef image, Path targetPath) {
         String sourcePath = image.sourcePath().toString().replace("stream", "");
-        Path targetPath = output.resolve(image.targetFilePath());
         targetPath.getParent().toFile().mkdirs();
 
         try {
             InputStream in = TtrpgConfig.class.getResourceAsStream(sourcePath);
             Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            errorf(e, "Unable to copy resource from %s to %s", sourcePath, image.targetFilePath());
+            errorf(e, "Unable to copy resource from %s to %s (%s)", sourcePath, image.targetFilePath(), e);
         }
     }
 
-    private void copyRemoteImage(ImageRef image) {
-        Path targetPath = output.resolve(image.targetFilePath());
+    private void copyRemoteImage(ImageRef image, Path targetPath) {
         targetPath.getParent().toFile().mkdirs();
 
         String url = image.url();
@@ -396,18 +394,19 @@ public class Tui {
             errorf("ImageRef %s has no URL", image.targetFilePath());
             return;
         }
-        if (!url.startsWith("http")) {
+        if (!url.startsWith("http") && !url.startsWith("file")) {
             errorf("ImageRef %s has invalid URL %s", image.targetFilePath(), url);
             return;
         }
 
+        Tui.instance().debugf("copy image %s %n   to %s", url, targetPath);
         try {
             ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
             try (FileOutputStream fileOutputStream = new FileOutputStream(targetPath.toFile())) {
                 fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             }
         } catch (IOException e) {
-            errorf(e, "Unable to copy remote image from %s to %s", url, image.targetFilePath());
+            errorf(e, "Unable to copy remote image from %s to %s (%s)", url, image.targetFilePath(), e);
         }
     }
 

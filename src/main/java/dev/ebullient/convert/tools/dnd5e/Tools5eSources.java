@@ -231,44 +231,49 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     public ImageRef buildImageRef(Tools5eIndex index, JsonMediaHref mediaHref, String imageBasePath, boolean useCompendium) {
-        String title = mediaHref.title == null ? "" : mediaHref.title;
-        String altText = mediaHref.altText == null ? title : mediaHref.altText;
+        final String title = mediaHref.title == null ? "" : mediaHref.title;
+        final String altText = mediaHref.altText == null ? title : mediaHref.altText;
+        final boolean external = "external".equals(mediaHref.href.type);
+        final String key = external
+                ? mediaHref.href.url
+                : mediaHref.href.path;
 
-        if ("external".equals(mediaHref.href.type)) {
-            String key = mediaHref.href.url;
+        if (!external && mediaHref.href.path == null) {
+            Tui.instance().errorf("We have an internal ImageRef (%s) with no path", mediaHref);
             ImageRef imageRef = new ImageRef.Builder()
                     .setTitle(index.replaceText(altText))
-                    .setUrl(mediaHref.href.url)
-                    .setWidth(mediaHref.width)
-                    .build(imageSourceToRef.get(key));
-            imageSourceToRef.putIfAbsent(key, imageRef);
+                    .build();
             return imageRef;
         }
 
-        if (mediaHref.href.path == null) {
-            throw new IllegalArgumentException("We have an ImageRef with no path");
-        }
+        String fileName = external
+                ? Path.of(mediaHref.href.url).getFileName().toString()
+                : Path.of(mediaHref.href.path).getFileName().toString();
 
-        Path sourcePath = Path.of(mediaHref.href.path);
-
-        String fileName = sourcePath.getFileName().toString();
         if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
             fileName = primarySource() + "-" + fileName;
         }
 
         int x = fileName.lastIndexOf('.');
-        Path target = Path.of(imageBasePath, "img",
-                index.slugify(fileName.substring(0, x)) + fileName.substring(x));
+        fileName = x < 0
+                ? fileName
+                : index.slugify(fileName.substring(0, x)) + fileName.substring(x);
+        Path target = Path.of(imageBasePath, "img", fileName);
 
-        String key = sourcePath.toString();
-        ImageRef imageRef = new ImageRef.Builder()
+        ImageRef.Builder builder = new ImageRef.Builder()
                 .setWidth(mediaHref.width)
-                .setTitle(index.replaceText(title))
+                .setTitle(index.replaceText(altText))
                 .setRelativePath(target)
-                .setSourcePath(sourcePath)
                 .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
-                .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
-                .build(imageSourceToRef.get(key));
+                .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot());
+
+        if (external) {
+            builder.setUrl(mediaHref.href.url);
+        } else {
+            builder.setSourcePath(Path.of(mediaHref.href.path));
+        }
+
+        ImageRef imageRef = builder.build(imageSourceToRef.get(key));
         imageSourceToRef.putIfAbsent(key, imageRef);
         return imageRef;
     }
