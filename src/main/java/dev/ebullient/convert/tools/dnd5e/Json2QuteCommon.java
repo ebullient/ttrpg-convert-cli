@@ -55,7 +55,7 @@ public class Json2QuteCommon implements JsonSource {
         return this;
     }
 
-    String getName() {
+    public String getName() {
         return this.sources.getName();
     }
 

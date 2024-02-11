@@ -21,6 +21,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
@@ -31,6 +32,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public interface JsonSource extends JsonTextReplacement {
     int CR_UNKNOWN = 100001;
     int CR_CUSTOM = 100000;
+
+    default String getName() {
+        return getSources() == null ? null : getSources().getName();
+    }
 
     default boolean textContains(List<String> haystack, String needle) {
         return haystack.stream().anyMatch(x -> x.contains(needle));
@@ -636,8 +641,10 @@ public interface JsonSource extends JsonTextReplacement {
             List<String> table = new ArrayList<>();
 
             String header;
-            String blockid = "";
             String caption = TableFields.caption.getTextOrEmpty(tableNode);
+            String blockid = caption.isBlank()
+                    ? ""
+                    : "^" + slugify(caption);
 
             String known = findTable(Tools5eIndexType.table, tableNode);
             if (known != null) {
@@ -651,16 +658,18 @@ public interface JsonSource extends JsonTextReplacement {
                 if (TableFields.colLabels.existsIn(tableNode)) {
                     List<String> labels = TableFields.colLabels.getListOfStrings(tableNode, tui());
                     header = String.join(" | ", labels.stream()
-                            // undo overly ambitious dice formatting in the column header
-                            .map(x -> x.replaceAll("\\{@dice ([^}|]+)\\|?[^}]*}", "$1"))
-                            // replace anything else
-                            .map(x -> replaceText(x))
+                            .map(x -> tableHeader(x))
                             .toList());
 
-                    blockid = slugify(header.replaceAll("d\\d+", "")
-                            .replace("|", "")
-                            .replaceAll("\\s+", " ")
-                            .trim());
+                    if (blockid.isEmpty()) {
+                        blockid = "^" + slugify(header
+                                .replaceAll("dice: ", "")
+                                .replaceAll("d\\d+", "")
+                                .replaceAll("</?span.*?>", "")
+                                .replace("|", "")
+                                .replaceAll("\\s+", " ")
+                                .trim());
+                    }
                 } else if (TableFields.colStyles.existsIn(tableNode)) {
                     header = TableFields.colStyles.getListOfStrings(tableNode, tui()).stream()
                             .map(x -> "  ")
@@ -697,17 +706,22 @@ public interface JsonSource extends JsonTextReplacement {
                     table.add(row);
                 }
 
-                header = "| " + header.replaceAll("^(d\\d+.*)", "dice: $1") + " |";
+                header = "| " + header + " |";
                 table.add(0, header.replaceAll("[^|]", "-"));
                 table.add(0, header);
 
+                if (!blockid.isBlank()) {
+                    table.add(blockid);
+                }
+                if (header.matches(JsonTextConverter.DICE_TABLE_HEADER) && !blockid.isBlank()) {
+                    // prepend a dice roller
+                    String targetFile = Tools5eQuteBase.fixFileName(getName(), getSources());
+                    table.add(0, String.format("`dice: [](%s.md#%s)`", targetFile, blockid));
+                    table.add(1, "");
+                }
                 if (!caption.isBlank()) {
                     table.add(0, "");
                     table.add(0, "**" + caption + "**");
-                    blockid = slugify(caption);
-                }
-                if (!blockid.isBlank()) {
-                    table.add("^" + blockid);
                 }
             } finally {
                 parseState().pop(pushTable);
