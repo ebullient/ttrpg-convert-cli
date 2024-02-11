@@ -385,7 +385,7 @@ The following configuration options allow you to change how the CLI treats these
 
 External images are images that are not part of the 5eTools or Pf2eTools corpus of content. They are referenced by media references marked as "external", and usually begin with "http://" or "https://". Some homebrew content may use a "file://" URL[^3] to reference a local file.
 
-**By default, no external images are not downloaded.** Links will reference the remote location, and you will need to be online to view the images. This is a safe, fast, and relatively well-behaving option given that downloads can be quite slow, and you may change your mind about where you want content to be generated.
+**By default, external images are not downloaded.** Links will reference the remote location, and you will need to be online to view the images. This is a safe, fast, and relatively well-behaving option given that downloads can be quite slow, and you may change your mind about where you want content to be generated.
 
 To download remote images, set `images.copyExternal` to `true` (as shown below) in your configuration file to instruct the CLI to copy "external" images into your vault. This will make your vault larger, but you will not need to be online to view the images.
 
