@@ -40,20 +40,8 @@ public class Json2QuteTable extends Json2QuteCommon {
         } else if (type == Tools5eIndexType.tableGroup) {
             appendToText(text, Tools5eFields.tables.getFrom(rootNode), "##");
         } else {
-            appendTable(text, rootNode);
-
-            String blockid = "^table";
-            String lastLine = text.get(text.size() - 1);
-            if (lastLine.startsWith("^")) {
-                blockid = lastLine;
-            } else {
-                text.add("^table");
-            }
-
-            // prepend a dice roller
             targetFile = Tools5eQuteBase.fixFileName(getName(), getSources());
-            text.add(0, String.format("`dice: [](%s.md#%s)`", targetFile, blockid));
-            text.add(1, "");
+            appendTable(text, rootNode);
         }
 
         return new Tools5eQuteNote(getName(), getSourceText(sources), text, tags)

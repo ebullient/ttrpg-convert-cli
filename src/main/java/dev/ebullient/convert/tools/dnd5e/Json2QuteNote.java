@@ -22,7 +22,7 @@ public class Json2QuteNote extends Json2QuteCommon {
     }
 
     @Override
-    String getName() {
+    public String getName() {
         return title;
     }
 

@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonTextConverter;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
@@ -231,6 +232,14 @@ public class TestUtils {
         }
         if (l.contains("%% ERROR")) {
             errors.add(String.format("Found template error in %s: %s", p, l));
+        }
+        if (l.startsWith("| dice: ")) {
+            // some dice rolls are d100 + MOD or something. Those are fine.
+            // but some have prompts, and we should catch/replace those, e.g.:
+            // dice: d6 + #$prompt_number:title=Enter a Modifier$#
+            if (!l.matches(JsonTextConverter.DICE_TABLE_HEADER) && l.contains("#$")) {
+                errors.add(String.format("Found invalid dice roll in %s: %s", p, l));
+            }
         }
     }
 

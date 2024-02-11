@@ -14,6 +14,7 @@ public class Json2QuteBook extends Json2QuteCommon {
     final String bookRelativePath;
     final JsonNode dataNode;
     final String title;
+    String fileName;
 
     public Json2QuteBook(Tools5eIndex index, Tools5eIndexType type, JsonNode rootNode, JsonNode dataNode) {
         super(index, type, rootNode);
@@ -32,7 +33,10 @@ public class Json2QuteBook extends Json2QuteCommon {
     }
 
     @Override
-    String getName() {
+    public String getName() {
+        if (fileName != null) {
+            return fileName;
+        }
         return title;
     }
 
@@ -58,6 +62,11 @@ public class Json2QuteBook extends Json2QuteCommon {
             for (JsonNode x : iterableElements(data)) {
                 boolean p2 = parseState().push(x); // inner node
                 try {
+                    String name = replaceText(SourceField.name.getTextOrEmpty(x));
+                    fileName = String.format("%s-%s",
+                            String.format(pFormat, prefix.get()),
+                            slugify(name));
+
                     List<String> text = new ArrayList<>();
                     appendToText(text, SourceField.entries.getFrom(x), "##");
 
@@ -69,12 +78,9 @@ public class Json2QuteBook extends Json2QuteCommon {
                             String page = x.get("page").asText();
                             titlePage = title + ", p. " + page;
                         }
-                        String name = replaceText(SourceField.name.getTextOrEmpty(x));
                         Tools5eQuteNote note = new Tools5eQuteNote(name, titlePage, content, tags)
                                 .withTargetPath(imagePath)
-                                .withTargetFile(String.format("%s-%s",
-                                        String.format(pFormat, prefix.get()),
-                                        slugify(name)));
+                                .withTargetFile(fileName);
                         pages.add(note);
                         prefix.incrementAndGet();
                     }

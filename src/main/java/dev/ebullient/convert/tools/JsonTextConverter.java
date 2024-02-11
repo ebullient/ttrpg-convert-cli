@@ -24,6 +24,7 @@ import dev.ebullient.convert.qute.QuteBase;
 
 public interface JsonTextConverter<T extends IndexType> {
     public static String DICE_FORMULA = "[ +d\\d-‒]+";
+    public static String DICE_TABLE_HEADER = "\\| dice: \\d*d\\d+ \\|.*";
     Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
 
     void appendToText(List<String> inner, JsonNode target, String heading);

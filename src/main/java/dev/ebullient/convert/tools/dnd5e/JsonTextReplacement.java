@@ -41,6 +41,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
     static final Pattern featureSourcePattern = Pattern.compile("source=([^|}]+)");
     static final Pattern superscriptCitationPattern = Pattern.compile("\\{@(sup|cite) ([^}]+)}");
+    static final Pattern promptPattern = Pattern.compile("#\\$prompt_number(?::(.*?))?\\$#");
 
     Tools5eIndex index();
 
@@ -110,22 +111,63 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         return replaceTokens(input, (s, b) -> this._replaceTokenText(s, b));
     }
 
+    default String tableHeader(String x) {
+        if (x.contains("dice")) {
+            // don't do the usual dice formatting in a column header
+            x = replacePromptStrings(x);
+            x = x.replaceAll("\\{@dice ([^}|]+)\\|?[^}]*}", "$1");
+            x = replaceText(x);
+        } else {
+            x = replaceText(x);
+        }
+        if (x.matches("^\\d*d\\d+$")) {
+            return "dice: " + x;
+        }
+        return x;
+    }
+
+    default String replacePromptStrings(String s) {
+        return promptPattern.matcher(s).replaceAll((match) -> {
+            List<String> prompts = new ArrayList<>();
+            String title = null;
+            String[] parts = match.group(1).split(",");
+            for (String t : parts) {
+                if (t.startsWith("title=")) {
+                    title = t.substring(6)
+                            .replaceAll("^Enter ?(a|your|the)? ", "")
+                            .replace("!", "")
+                            .trim();
+                } else {
+                    prompts.add(t);
+                }
+            }
+            if (title == null) {
+                for (String x : prompts) {
+                    if (x.startsWith("default=")) {
+                        title = x.substring(8);
+                        prompts.remove(x);
+                        break;
+                    }
+                }
+            }
+            prompts.sort(String::compareToIgnoreCase);
+            return String.format("<span%s>[%s]</span>",
+                    prompts.isEmpty() ? "" : " title='" + String.join(", ", prompts) + "'",
+                    title);
+        });
+    }
+
     default String _replaceTokenText(String input, boolean nested) {
         String result = input;
 
         try {
-            result = result
-                    .replace("#$prompt_number:title=Enter Alert Level$#", "Alert Level")
-                    .replace("#$prompt_number:title=Enter Charisma Modifier$#", "Charisma modifier")
-                    .replace("#$prompt_number:title=Enter Lifestyle Modifier$#", "Charisma modifier")
-                    .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
-                    .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
-                    .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1");
+            result = replacePromptStrings(result);
 
             // Dice roller tags; {@dice 1d2-2+2d3+5} for regular dice rolls
             // - {@dice 1d6;2d6} for multiple options;
             // - {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
             // - {@dice 1d20+2|display text} and {@dice 1d20+2|display text|rolled by name}
+
             if (cfg().alwaysUseDiceRoller()) {
                 result = replaceWithDiceRoller(result);
             }
