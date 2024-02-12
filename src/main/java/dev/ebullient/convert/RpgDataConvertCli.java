@@ -93,6 +93,10 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
     @Option(names = { "-v", "--verbose" }, description = "Verbose output", defaultValue = "false", scope = ScopeType.INHERIT)
     boolean verbose;
 
+    @Option(names = { "-l",
+            "--log" }, description = "Capture output in a log file", defaultValue = "false", scope = ScopeType.INHERIT)
+    boolean log;
+
     Datasource game;
 
     @Option(names = { "-g",
@@ -264,7 +268,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
 
     private int executionStrategy(ParseResult parseResult) {
         try {
-            tui.init(spec, debug, verbose);
+            tui.init(spec, debug, verbose, log);
             return new CommandLine.RunLast().execute(parseResult);
         } finally {
             tui.close();
