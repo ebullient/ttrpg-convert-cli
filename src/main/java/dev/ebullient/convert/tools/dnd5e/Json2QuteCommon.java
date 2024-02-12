@@ -746,7 +746,7 @@ public class Json2QuteCommon implements JsonSource {
             return null;
         }
 
-        return getSources().buildTokenImageRef(index, Path.of(sourcePath), targetFile, true);
+        return getSources().buildTokenImageRef(index, sourcePath, targetFile, true);
     }
 
     String collectImmunities(JsonNode fromNode, VulnerabilityFields field) {

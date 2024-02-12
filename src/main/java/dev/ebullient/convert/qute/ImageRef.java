@@ -151,7 +151,7 @@ public class ImageRef {
     }
 
     public static class Builder {
-        private Path sourcePath;
+        private String sourcePath;
         private Path relativeTarget;
         private String title = "";
         private Integer width;
@@ -162,12 +162,17 @@ public class ImageRef {
         private String url;
 
         public Builder setSourcePath(Path sourcePath) {
+            this.sourcePath = sourcePath.toString();
+            return this;
+        }
+
+        public Builder setInternalPath(String sourcePath) {
             this.sourcePath = sourcePath;
             return this;
         }
 
         public Builder setStreamSource(String glyph) {
-            this.sourcePath = Path.of("stream", glyph);
+            this.sourcePath = "stream/" + glyph;
             return this;
         }
 
@@ -207,11 +212,12 @@ public class ImageRef {
             if (url != null && !imageRoot.copyExternalToVault()) {
                 // leave external images alone (referenced as url)
                 return new ImageRef(url, null, null, title, null, width);
-            } else if (url == null && sourcePath == null) {
+            }
+
+            if (url == null && sourcePath == null) {
                 Tui.instance().errorf("ImageRef build for internal image called without url or sourcePath set");
                 return null;
             }
-
             if (relativeTarget == null || vaultRoot == null || rootFilePath == null) {
                 Tui.instance().errorf("ImageRef build called without target paths set");
                 return null;

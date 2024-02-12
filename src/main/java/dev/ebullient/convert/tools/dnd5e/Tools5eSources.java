@@ -218,11 +218,11 @@ public class Tools5eSources extends CompendiumSources {
         return source.map(TtrpgConfig::sourceToAbbreviation);
     }
 
-    public ImageRef buildTokenImageRef(Tools5eIndex index, Path sourcePath, Path target, boolean useCompendium) {
+    public ImageRef buildTokenImageRef(Tools5eIndex index, String sourcePath, Path target, boolean useCompendium) {
         String key = sourcePath.toString();
         ImageRef imageRef = new ImageRef.Builder()
                 .setRelativePath(target)
-                .setSourcePath(sourcePath)
+                .setInternalPath(sourcePath)
                 .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
                 .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot())
                 .build(imageSourceToRef.get(key));
@@ -246,9 +246,11 @@ public class Tools5eSources extends CompendiumSources {
             return imageRef;
         }
 
-        String fileName = external
-                ? Path.of(mediaHref.href.url).getFileName().toString()
-                : Path.of(mediaHref.href.path).getFileName().toString();
+        String fullPath = external
+                ? mediaHref.href.url
+                : mediaHref.href.path.replace("\\", "/");
+        int pos = fullPath.lastIndexOf('/');
+        String fileName = fullPath.substring(pos + 1);
 
         if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
             fileName = primarySource() + "-" + fileName;
@@ -256,7 +258,7 @@ public class Tools5eSources extends CompendiumSources {
 
         int x = fileName.lastIndexOf('.');
         fileName = x < 0
-                ? fileName
+                ? index.slugify(fileName)
                 : index.slugify(fileName.substring(0, x)) + fileName.substring(x);
         Path target = Path.of(imageBasePath, "img", fileName);
 
@@ -270,7 +272,7 @@ public class Tools5eSources extends CompendiumSources {
         if (external) {
             builder.setUrl(mediaHref.href.url);
         } else {
-            builder.setSourcePath(Path.of(mediaHref.href.path));
+            builder.setInternalPath(mediaHref.href.path);
         }
 
         ImageRef imageRef = builder.build(imageSourceToRef.get(key));
