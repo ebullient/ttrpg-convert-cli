@@ -26,6 +26,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
@@ -52,6 +53,7 @@ import dev.ebullient.convert.config.TtrpgConfig.Fix;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
+import io.quarkus.runtime.ShutdownEvent;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
@@ -170,6 +172,7 @@ public class Tui {
     Ansi ansi;
     ColorScheme colors;
 
+    PrintWriter log;
     PrintWriter out;
     PrintWriter err;
 
@@ -193,6 +196,10 @@ public class Tui {
     }
 
     public void init(CommandSpec spec, boolean debug, boolean verbose) {
+        init(spec, debug, verbose, false);
+    }
+
+    public void init(CommandSpec spec, boolean debug, boolean verbose, boolean log) {
         if (spec != null) {
             this.ansi = spec.commandLine().getHelp().ansi();
             this.colors = spec.commandLine().getHelp().colorScheme();
@@ -203,6 +210,18 @@ public class Tui {
 
         this.debug = debug;
         this.verbose = verbose;
+        if (log) {
+            Path p = Path.of("ttrpg-convert.out");
+            try {
+                this.log = new PrintWriter(Files.newOutputStream(p));
+            } catch (IOException e) {
+                errorf(e, "Unable to open log file %s: %s", p.toAbsolutePath(), e.toString());
+            }
+        }
+    }
+
+    void onShutdown(@Observes ShutdownEvent event) {
+        this.close();
     }
 
     public void setOutputPath(Path output) {
@@ -214,8 +233,32 @@ public class Tui {
     }
 
     public void close() {
+        flush();
+        if (this.log != null) {
+            log.close();
+        }
+    }
+
+    public void flush() {
         out.flush();
         err.flush();
+        if (log != null) {
+            log.flush();
+        }
+    }
+
+    private void outLine(Object line) {
+        out.println(line);
+        if (log != null) {
+            log.println(line);
+        }
+    }
+
+    private void errLine(Object line) {
+        err.println(line);
+        if (log != null) {
+            log.println(line);
+        }
     }
 
     public boolean isDebug() {
@@ -230,7 +273,7 @@ public class Tui {
 
     public void debug(String output) {
         if (isDebug()) {
-            out.println(ansi.new Text("@|faint 🔧 " + output + "|@", colors));
+            outLine(ansi.new Text("@|faint 🔧 " + output + "|@", colors));
         }
     }
 
@@ -246,7 +289,7 @@ public class Tui {
 
     public void verbose(String output) {
         if (isVerbose()) {
-            out.println(ansi.new Text("@|faint 🔹 " + output + "|@", colors));
+            outLine(ansi.new Text("@|faint 🔹 " + output + "|@", colors));
         }
     }
 
@@ -255,7 +298,7 @@ public class Tui {
     }
 
     public void warn(String output) {
-        out.println(ansi.new Text("[🔸 WARN] " + output));
+        outLine(ansi.new Text("[🔸 WARN] " + output));
     }
 
     public void donef(String format, Object... params) {
@@ -263,7 +306,7 @@ public class Tui {
     }
 
     public void done(String output) {
-        out.println(ansi.new Text("[ ✅  OK] " + output));
+        outLine(ansi.new Text("[ ✅  OK] " + output));
     }
 
     public void printlnf(String format, Object... args) {
@@ -271,13 +314,13 @@ public class Tui {
     }
 
     public void println(String output) {
-        out.println(ansi.new Text(output, colors));
-        out.flush();
+        outLine(ansi.new Text(output, colors));
+        flush();
     }
 
     public void println(String... output) {
-        Arrays.stream(output).forEach(l -> out.println(ansi.new Text(l, colors)));
-        out.flush();
+        Arrays.stream(output).forEach(l -> outLine(ansi.new Text(l, colors)));
+        flush();
     }
 
     public void errorf(String format, Object... args) {
@@ -293,11 +336,14 @@ public class Tui {
     }
 
     public void error(Throwable ex, String errorMsg) {
-        err.println(colors.errorText("[ 🛑 ERR] " + errorMsg));
+        errLine(colors.errorText("[ 🛑 ERR] " + errorMsg));
         if (ex != null && isDebug()) {
             ex.printStackTrace(err);
+            if (log != null) {
+                ex.printStackTrace(log);
+            }
         }
-        err.flush();
+        flush();
     }
 
     public void throwInvalidArgumentException(String message) {

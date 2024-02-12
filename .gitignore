@@ -66,3 +66,4 @@ native-image-macOS-logs
 /javadoc.*
 /options
 /packages
+ttrpg-convert.out

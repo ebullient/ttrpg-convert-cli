@@ -127,7 +127,7 @@ public class Tools5eDataConvertTest {
             Path target = testOutput.resolve("homebrew");
             TestUtils.deleteDir(target);
 
-            LaunchResult result = launcher.launch("--debug", "--index",
+            LaunchResult result = launcher.launch("--debug", "--index", "--log",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-homebrew.json").toString(),
                     "-o", target.toString(),
                     TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
