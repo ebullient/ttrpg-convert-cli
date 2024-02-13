@@ -13,6 +13,16 @@
 > 
 > To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
 
+## 🔖 ✨ 2.3.0: 5eTools moving to mirror2
+
+[5eTools Mirror1](https://github.com/5etools-mirror-1/5etools-mirror-1.github.io) has been deprecated in favor of [5eTools Mirror2](https://github.com/5etools-mirror-2/5etools-mirror-2.github.io), which uses a separate repository for [images](https://github.com/5etools-mirror-2/5etools-img).
+
+When you run `ttrpg-convert` against mirror2 content, no images will be copied into your vault by default.
+
+See [Copying "internal" images](./docs/configuration.md#copying-internal-images) for options on how to copy tokens and other item/spell/monster fluff images into your notes.
+
+See [Copying "external" images](./docs/configuration.md#copying-external-images) to copy additional images referenced in general text into your notes.
+
 ## 🔖 ✨ 2.2.12: 5e support for generic and magic item variants
 
 Items may have variants, which are defined as a list in the `variants` attribute.
