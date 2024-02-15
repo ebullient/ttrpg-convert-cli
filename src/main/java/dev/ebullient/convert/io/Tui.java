@@ -208,7 +208,7 @@ public class Tui {
             this.commandLine = spec.commandLine();
         }
 
-        this.debug = debug;
+        this.debug = debug || log;
         this.verbose = verbose;
         if (log) {
             Path p = Path.of("ttrpg-convert.out");
