@@ -130,7 +130,11 @@ public interface ItemType {
         SPELLJAMMER("Vehicle", "SPC", "Spelljammer, Vehicle (space)"),
         VEHICLE("Vehicle", "VEH", "Vehicle (land)"),
 
+        ART("Treasure", "$A", "Art object"),
+        COINAGE("Treasure", "$C", "Coinage"),
+        GEMSTONE("Treasure", "$G", "Gemstone"),
         WEALTH("Treasure", "$", ""),
+
         UNKNOWN("Unknown", "", "");
 
         private final String genericType;
@@ -181,7 +185,8 @@ public interface ItemType {
         }
 
         public boolean isMoney() {
-            return this == WEALTH;
+            int x = this.ordinal();
+            return x >= ART.ordinal() && x <= WEALTH.ordinal();
         }
 
         public boolean isVehicle() {
@@ -240,6 +245,9 @@ public interface ItemType {
                 }
             } else if (isMoney()) {
                 tag.append("wealth");
+                if (specializedType.length() > 0) {
+                    tag.append("/").append(Tui.slugify(this.specializedType));
+                }
             }
             return tag.toString();
         }
