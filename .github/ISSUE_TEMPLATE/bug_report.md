@@ -26,3 +26,5 @@ A clear and concise description of what actually happened. A text snippet is hel
 **Sources**:
 - enabled sources
 - custom templates (attach if possible)
+
+<!-- Run with the `--log` option and attach the generated log file -->
