@@ -224,7 +224,7 @@ Next step:
       Pf2eTools/data
     ```
 
-    - `-g p2fe` The game system! Pathfinder 2e!
+    - `-g pf2e` The game system! Pathfinder 2e!
     - `--index` generates two index files: `all-index.json` and `src-index.json`.
 
       > 🚀 TIP:
