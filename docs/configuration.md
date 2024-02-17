@@ -356,11 +356,11 @@ Internal images are part of the 5eTools or Pf2e tools corpus of content. They ar
 
 The following configuration options allow you to change how the CLI treats these internal image references.
 
-- Set `images.copyRemote` to `true` (as shown below) in your configuration file to instruct the CLI to copy "internal" images into your vault. This will make your vault larger, but you will not need to be online to view the images.
+- Set `images.copyInternal` to `true` (as shown below) in your configuration file to instruct the CLI to copy "internal" images into your vault. This will make your vault larger, but you will not need to be online to view the images.
 
     ```json
     "images": {
-        "copyRemote": true,
+        "copyInternal": true,
     }
     ```
 
@@ -374,7 +374,7 @@ The following configuration options allow you to change how the CLI treats these
 
     ```json
     "images": {
-        "copyRemote": true,
+        "copyInternal": true,
         "internalRoot": "5etools-img"
     }
     ```
