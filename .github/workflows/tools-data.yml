@@ -38,7 +38,7 @@ jobs:
         id: test-data-check
         uses: actions/cache@v4.0.0
         with:
-          path: sources/5etools-mirror-2.github.io
+          path: sources
           key: ${{ steps.test-data-key.outputs.cache_key }}
           lookup-only: true
           enableCrossOsArchive: true
@@ -86,7 +86,7 @@ jobs:
       - uses: actions/cache/restore@v4.0.0
         id: cache
         with:
-          path: sources/5etools-mirror-2.github.io
+          path: sources
           key: ${{ needs.cache-setup.outputs.cache_key }}
           fail-on-cache-miss: true
 
@@ -100,6 +100,7 @@ jobs:
       - name: Build with Maven
         id: mvn-build
         run: |
+          ls -al sources
           ./mvnw -B -ntp -DskipFormat verify
 
   native-test-with-data:

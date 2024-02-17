@@ -103,7 +103,7 @@ public class TtrpgConfig {
                 this.internalImageRoot = "";
                 this.copyInternal = false;
             } else {
-                if (cfgRoot.startsWith("http") || !cfgRoot.startsWith("file:")) {
+                if (cfgRoot.startsWith("http") || cfgRoot.startsWith("file:")) {
                     this.internalImageRoot = endWithSlash(cfgRoot);
                 } else {
                     Path imgPath = Path.of("").resolve(cfgRoot).normalize().toAbsolutePath();

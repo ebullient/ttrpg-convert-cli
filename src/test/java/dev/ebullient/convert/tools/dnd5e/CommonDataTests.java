@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -63,10 +62,7 @@ public class CommonDataTests {
 
         configurator = new Configurator(tui);
         if (imgPresent) {
-            ObjectNode images = Tui.MAPPER.createObjectNode()
-                    .put("copyInternal", true)
-                    .put("internalRoot", TestUtils.PATH_5E_TOOLS_IMAGES.toString());
-            configurator.readConfigIfPresent(Tui.MAPPER.createObjectNode().set("images", images));
+            configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("images-from-local.json"));
         } else {
             configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("images-remote.json"));
         }
@@ -194,8 +190,10 @@ public class CommonDataTests {
                     .writeImages();
 
             TestUtils.assertDirectoryContents(outDir, tui);
-            Path imageDir = outDir.resolve("img");
-            assertThat(imageDir).isDirectory();
+            if (imgPresent) {
+                Path imageDir = outDir.resolve("img");
+                assertThat(imageDir).isDirectory();
+            }
 
             List<Path> srd = List.of(outDir.resolve("deck-of-illusions.md"), outDir.resolve("deck-of-many-things.md"));
             List<Path> some = List.of(outDir.resolve("roleplaying-cards-wbtw.md"));
@@ -222,11 +220,13 @@ public class CommonDataTests {
             List<Path> all = List.of(outDir.resolve("exandria-lolth.md"));
             testVariants(srd, some, all);
 
-            Path imageDir = outDir.resolve("img");
-            if (variant == TestInput.none) {
-                assertThat(imageDir).doesNotExist();
-            } else {
-                assertThat(imageDir).isDirectory();
+            if (imgPresent) {
+                Path imageDir = outDir.resolve("img");
+                if (variant == TestInput.none) {
+                    assertThat(imageDir).doesNotExist();
+                } else {
+                    assertThat(imageDir).isDirectory();
+                }
             }
             TestUtils.assertDirectoryContents(outDir, tui);
         }
@@ -273,8 +273,10 @@ public class CommonDataTests {
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup))
                     .writeImages();
 
-            Path tokenDir = bestiaryDir.resolve("undead/token");
-            assertThat(tokenDir.toFile()).exists();
+            if (imgPresent) {
+                Path tokenDir = bestiaryDir.resolve("undead/token");
+                assertThat(tokenDir.toFile()).exists();
+            }
 
             Path lgDir = bestiaryDir.resolve("legendary-group");
             if (variant == TestInput.none) {
@@ -436,8 +438,10 @@ public class CommonDataTests {
                             Tools5eIndexType.object))
                     .writeImages();
 
-            Path imageDir = outDir.resolve("token");
-            assertThat(imageDir).exists();
+            if (imgPresent) {
+                Path imageDir = outDir.resolve("token");
+                assertThat(imageDir).exists();
+            }
 
             List<Path> srd = List.of(outDir.resolve("generic-object.md"));
             List<Path> some = List.of(outDir.resolve("ballista.md"));

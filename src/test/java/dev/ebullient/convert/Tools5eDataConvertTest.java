@@ -22,6 +22,16 @@ public class Tools5eDataConvertTest {
     @BeforeAll
     public static void setupDir() {
         setupDir("Tools5eDataConvertTest");
+
+        tui.printlnf("5eTools sources (%s): %s",
+                TestUtils.PATH_5E_TOOLS_DATA.toFile().exists(),
+                TestUtils.PATH_5E_TOOLS_DATA);
+        tui.printlnf("5eTools images (%s): %s",
+                TestUtils.PATH_5E_TOOLS_IMAGES.toFile().exists(),
+                TestUtils.PATH_5E_TOOLS_IMAGES);
+        tui.printlnf("5eTools homebrew (%s): %s",
+                TestUtils.PATH_5E_HOMEBREW.toFile().exists(),
+                TestUtils.PATH_5E_HOMEBREW);
     }
 
     public static void setupDir(String root) {
@@ -68,8 +78,13 @@ public class Tools5eDataConvertTest {
             List<String> args = new ArrayList<>(List.of("--index", "--debug",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-images.yaml").toString(),
                     "-o", allIndex.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("images-from-local.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString()));
+
+            if (TestUtils.PATH_5E_TOOLS_IMAGES.toFile().exists()) {
+                args.add(TestUtils.TEST_RESOURCES.resolve("images-from-local.json").toString());
+            } else {
+                args.add(TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString());
+            }
 
             args.addAll(TestUtils.getFilesFrom(TestUtils.PATH_5E_TOOLS_DATA.resolve("adventure")));
             args.addAll(TestUtils.getFilesFrom(TestUtils.PATH_5E_TOOLS_DATA.resolve("book")));
@@ -127,12 +142,18 @@ public class Tools5eDataConvertTest {
             Path target = testOutput.resolve("homebrew");
             TestUtils.deleteDir(target);
 
-            LaunchResult result = launcher.launch("--debug", "--index", "--log",
+            List<String> args = new ArrayList<>(List.of("--debug", "--index", "--log",
                     "-c", TestUtils.TEST_RESOURCES.resolve("sources-homebrew.json").toString(),
                     "-o", target.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
-                    TestUtils.PATH_5E_TOOLS_DATA.toString());
+                    TestUtils.PATH_5E_TOOLS_DATA.toString()));
 
+            if (TestUtils.PATH_5E_TOOLS_IMAGES.toFile().exists()) {
+                args.add(TestUtils.TEST_RESOURCES.resolve("images-from-local.json").toString());
+            } else {
+                args.add(TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString());
+            }
+
+            LaunchResult result = launcher.launch(args.toArray(new String[0]));
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
