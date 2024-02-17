@@ -35,7 +35,10 @@ public class Tools5eQuteBase extends QuteBase {
     }
 
     public static String fixFileName(String name, String source, Tools5eIndexType type) {
-        if (type == Tools5eIndexType.adventureData || type == Tools5eIndexType.bookData) {
+        if (type == Tools5eIndexType.adventureData
+                || type == Tools5eIndexType.adventure
+                || type == Tools5eIndexType.book
+                || type == Tools5eIndexType.bookData) {
             return name; // file name is based on chapter, etc.
         }
         name = Tui.slugify(name.replaceAll(" \\(\\*\\)", "-gv"));
