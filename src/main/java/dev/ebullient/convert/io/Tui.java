@@ -47,6 +47,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
 import com.github.slugify.Slugify;
 
+import dev.ebullient.convert.VersionProvider;
 import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.config.TtrpgConfig.Fix;
@@ -57,6 +58,7 @@ import io.quarkus.runtime.ShutdownEvent;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine.Help.Ansi.Text;
 import picocli.CommandLine.Help.ColorScheme;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.ParameterException;
@@ -214,6 +216,8 @@ public class Tui {
             Path p = Path.of("ttrpg-convert.out");
             try {
                 this.log = new PrintWriter(Files.newOutputStream(p));
+                VersionProvider vp = new VersionProvider();
+                List.of(vp.getVersion()).forEach(this.log::println);
             } catch (IOException e) {
                 errorf(e, "Unable to open log file %s: %s", p.toAbsolutePath(), e.toString());
             }
@@ -247,17 +251,17 @@ public class Tui {
         }
     }
 
-    private void outLine(Object line) {
+    private void outLine(Text line) {
         out.println(line);
         if (log != null) {
-            log.println(line);
+            log.println(line.plainString());
         }
     }
 
-    private void errLine(Object line) {
+    private void errLine(Text line) {
         err.println(line);
         if (log != null) {
-            log.println(line);
+            log.println(line.plainString());
         }
     }
 
