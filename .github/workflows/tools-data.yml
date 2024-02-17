@@ -58,10 +58,10 @@ jobs:
           ROOT="5etools-mirror-2.github.io-$VER"
 
           curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
-          tar xzf 5etools.tar.gz ${ROOT}/data ${ROOT}/img
+          tar xzf 5etools.tar.gz ${ROOT}/data
           mv ${ROOT} sources/5etools-mirror-2.github.io
 
-          gh repo clone 5etools-mirror-2/5etools-img -- --depth=1
+          gh repo clone 5etools-mirror-2/5etools-img sources/5etools-img -- --depth=1
           gh repo clone TheGiddyLimit/unearthed-arcana sources/5e-unearthed-arcana -- --depth=1
           gh repo clone TheGiddyLimit/homebrew sources/5e-homebrew -- --depth=1
 
