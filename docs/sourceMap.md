@@ -40,6 +40,7 @@ _Support content creators. Only use or include sources that you own._
 | DD | Dangerous Designs |
 | DIP | Dragon of Icespire Peak |
 | DMG | Dungeon Master's Guide |
+| DMTCRG | The Deck of Many Things: Card Reference Guide |
 | DSotDQ | Dragonlance: Shadow of the Dragon Queen |
 | DoD | Domains of Delight |
 | DoDk | Dungeons of Drakkenheim |
@@ -65,6 +66,8 @@ _Support content creators. Only use or include sources that you own._
 | HF | Heroes' Feast |
 | HFFotM | Heroes' Feast Flavors of the Multiverse |
 | HFStCM | Heroes' Feast: Saving the Children's Menu |
+| HWAitW | Humblewood: Adventure in the Wood |
+| HWCS | Humblewood Campaign Setting |
 | HftT | Hunt for the Thessalhydra |
 | HoL | The House of Lament |
 | HotDQ | Hoard of the Dragon Queen |
