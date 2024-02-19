@@ -915,7 +915,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "LNCE" -> "Lawful Neutral or Chaotic Evil";
             case "LELG" -> "Lawful Evil or Lawful Good";
             case "LELN", "LNLE" -> "Lawful Evil or Lawful Neutral";
-            case "N", "NXNY", "NNXNYN" -> "Neutral";
+            case "N", "NXNY", "NXNYN", "NNXNYN" -> "Neutral";
             case "NX" -> "Neutral (law/chaos axis)";
             case "NY" -> "Neutral (good/evil axis)";
             case "NE" -> "Neutral Evil";
