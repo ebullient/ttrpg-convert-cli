@@ -43,10 +43,13 @@ public class ImageRef {
     final String titleAttr;
 
     private ImageRef(String url, Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
-        this.url = url == null ? null : url.replace(" ", "%20");
+        this.url = url == null
+                ? null
+                : url.replace(" ", "%20");
         this.sourcePath = sourcePath;
         this.targetFilePath = targetFilePath;
-        title = title == null ? ""
+        title = title == null
+                ? ""
                 : title.replaceAll("\\[(.+?)]\\(.+?\\)", "$1");
 
         if (title.length() > 50) {
@@ -81,13 +84,13 @@ public class ImageRef {
 
     /** Path of the image in the vault or url for external images. */
     public String getVaultPath() {
-        return url == null ? vaultPath : url;
+        return vaultPath == null ? url : vaultPath;
     }
 
     public String getEmbeddedLink(String anchor) {
         return String.format("![%s](%s%s%s)",
                 getShortTitle(),
-                vaultPath == null ? url : vaultPath,
+                getVaultPath(),
                 anchor.length() > 0 ? "#" + anchor : "",
                 titleAttribute());
     }
@@ -115,7 +118,7 @@ public class ImageRef {
         // }
         return String.format("![%s](%s#%s%s)",
                 getShortTitle(),
-                vaultPath == null ? url : vaultPath,
+                getVaultPath(),
                 anchor,
                 titleAttribute());
     }
