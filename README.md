@@ -12,7 +12,6 @@ A Command-Line Interface designed to convert TTRPG data from 5eTools and Pf2eToo
 <td><a href="examples/">🎨 Examples</a></td>
 <td><a href="examples/templates">🎨 Templates</a></td>
 </tr><tr>
-<td></td>
 <td><a href="CHANGELOG.md">🚜 Changelog</a></td>
 <td><a href="docs/sourceMap.md">🗺️ Source Map</a></td>
 <td><a href="#convert-5etools-json-data">📖 5eTools</a></td>
