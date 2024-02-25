@@ -51,7 +51,7 @@
           ]
         },
         {
-          "name": "Weapon Properties",
+          "name": "General and Weapon Properties",
           "srd": true,
           "basicRules": true,
           "entries": [
