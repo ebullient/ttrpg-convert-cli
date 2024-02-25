@@ -1232,6 +1232,7 @@ public interface JsonSource extends JsonTextReplacement {
         hasFluffImages,
         hasToken,
         id,
+        images,
         lairActions, // legendary group
         level,
         number, // speed

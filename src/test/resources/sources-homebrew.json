@@ -53,6 +53,7 @@
     "race|.*|dmg"
   ],
   "template": {
-    "monster": "src/test/resources/other/monster-all.txt"
+    "monster": "src/test/resources/other/monster-all.txt",
+    "item": "examples/templates/tools5e/images-item2md.txt"
   }
 }

@@ -233,20 +233,19 @@ public class Tools5eSources extends CompendiumSources {
     public ImageRef buildImageRef(Tools5eIndex index, JsonMediaHref mediaHref, String imageBasePath, boolean useCompendium) {
         final String title = mediaHref.title == null ? "" : mediaHref.title;
         final String altText = mediaHref.altText == null ? title : mediaHref.altText;
-        final boolean external = "external".equals(mediaHref.href.type);
-        final String key = external
+        final String key = mediaHref.href.path == null
                 ? mediaHref.href.url
                 : mediaHref.href.path;
 
-        if (!external && mediaHref.href.path == null) {
-            Tui.instance().errorf("We have an internal ImageRef (%s) with no path", mediaHref);
+        if (mediaHref.href.url == null && mediaHref.href.path == null) {
+            Tui.instance().errorf("We have an ImageRef (%s) with no path", mediaHref);
             ImageRef imageRef = new ImageRef.Builder()
                     .setTitle(index.replaceText(altText))
                     .build();
             return imageRef;
         }
 
-        String fullPath = external
+        String fullPath = mediaHref.href.path == null
                 ? mediaHref.href.url
                 : mediaHref.href.path.replace("\\", "/");
         int pos = fullPath.lastIndexOf('/');
@@ -269,7 +268,7 @@ public class Tools5eSources extends CompendiumSources {
                 .setRootFilepath(useCompendium ? index.compendiumFilePath() : index.rulesFilePath())
                 .setVaultRoot(useCompendium ? index.compendiumVaultRoot() : index.rulesVaultRoot());
 
-        if (external) {
+        if (mediaHref.href.path == null) {
             builder.setUrl(mediaHref.href.url);
         } else {
             builder.setInternalPath(mediaHref.href.path);
