@@ -242,7 +242,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
                 }
                 text.add("");
 
-                if (name.equals("Weapon Properties")) {
+                if (name.equals("General and Weapon Properties")) {
 
                     Map<String, JsonNode> properties = new HashMap<>();
                     ArrayNode propertyEntries = srdEntry.withArray("entries");
