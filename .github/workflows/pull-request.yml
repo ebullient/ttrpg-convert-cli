@@ -8,7 +8,8 @@ on:
       - "src/**"
       - "ide-config"
 
-permissions: read-all
+permissions:
+  contents: read
 
 env:
   JAVA_VERSION: 17

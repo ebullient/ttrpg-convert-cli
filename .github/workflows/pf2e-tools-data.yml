@@ -12,6 +12,8 @@ env:
   JAVA_DISTRO: temurin
   FAIL_ISSUE: 141
 
+permissions: read-all
+
 jobs:
   cache-setup:
     runs-on: ubuntu-latest
@@ -62,7 +64,7 @@ jobs:
           mv ${ROOT} sources/Pf2eTools
 
   test-with-data:
-  
+
     name: Test with data
     needs: cache-setup
     runs-on: ubuntu-latest
@@ -90,7 +92,7 @@ jobs:
           ./mvnw -B -ntp -DskipFormat verify
 
   native-test-with-data:
-  
+
     name: Test on ${{ matrix.os }}
     needs: [cache-setup, test-with-data]
     runs-on: ${{ matrix.os }}
