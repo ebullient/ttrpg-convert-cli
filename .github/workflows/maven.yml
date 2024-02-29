@@ -20,6 +20,9 @@ env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
 
+permissions:
+  contents: read
+
 jobs:
   main-root:
     runs-on: ubuntu-latest
@@ -35,6 +38,8 @@ jobs:
   build:
     uses: ebullient/workflows/.github/workflows/java-snap-build.yml@main
     needs: [metadata]
+    permissions:
+      contents: write
     with:
       artifact: ${{ needs.metadata.outputs.artifact }}
       snapshot: ${{ needs.metadata.outputs.snapshot }}
@@ -49,6 +54,8 @@ jobs:
   snap-release:
     needs: [main-root, metadata, build, native-build]
     uses: ebullient/workflows/.github/workflows/java-snapshot.yml@main
+    permissions:
+      contents: write
     with:
       artifact: ${{ needs.metadata.outputs.artifact }}
       snapshot: ${{ needs.metadata.outputs.snapshot }}

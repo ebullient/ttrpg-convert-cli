@@ -12,6 +12,8 @@ env:
   JAVA_DISTRO: temurin
   FAIL_ISSUE: 140
 
+permissions: read-all
+
 jobs:
   cache-setup:
     runs-on: ubuntu-latest
