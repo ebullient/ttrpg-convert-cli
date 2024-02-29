@@ -19,7 +19,7 @@ jobs:
       cache_key: ${{ steps.test-data-key.outputs.cache_key }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 1
 
@@ -36,7 +36,7 @@ jobs:
 
       - name: Check Cache Data
         id: test-data-check
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         with:
           path: sources
           key: ${{ steps.test-data-key.outputs.cache_key }}
@@ -79,11 +79,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 1
 
-      - uses: actions/cache/restore@v4.0.0
+      - uses: actions/cache/restore@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         id: cache
         with:
           path: sources
@@ -91,7 +91,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@9704b39bf258b59bc04b50fa2dd55e9ed76b47a8 # v4.1.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRO }}
@@ -116,11 +116,11 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 1
 
-      - uses: actions/cache/restore@v4.0.0
+      - uses: actions/cache/restore@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         id: cache
         with:
           path: sources/5etools-mirror-2.github.io
@@ -128,7 +128,7 @@ jobs:
           fail-on-cache-miss: true
           enableCrossOsArchive: true
 
-      - uses: graalvm/setup-graalvm@v1
+      - uses: graalvm/setup-graalvm@5393c3d80982e8a7fa61005137824ef53731ff9a # v1.1.8.1
         with:
           distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
@@ -164,7 +164,7 @@ jobs:
     needs: [test-with-data, native-test-with-data]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 1
 

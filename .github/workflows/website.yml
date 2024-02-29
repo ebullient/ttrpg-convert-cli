@@ -8,6 +8,9 @@ on:
     paths:
       - "**.md"
 
+permissions:
+  contents: read
+
 jobs:
   bump:
     runs-on: ubuntu-latest
