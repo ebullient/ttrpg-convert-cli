@@ -21,6 +21,7 @@ env:
   GH_BOT_NAME: "GitHub Action"
 
 permissions: read-all
+
 jobs:
   main-root:
     runs-on: ubuntu-latest
@@ -47,6 +48,8 @@ jobs:
 
   native-build:
     needs: [build]
+    permissions:
+      contents: read
     uses: ebullient/workflows/.github/workflows/java-snap-native.yml@main
     secrets: inherit
 

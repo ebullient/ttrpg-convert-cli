@@ -105,6 +105,9 @@ jobs:
           ls -al sources
           ./mvnw -B -ntp -DskipFormat verify
 
+      - name: Delete snapshots artifacts from cache
+        run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +
+
   native-test-with-data:
 
     name: Test on ${{ matrix.os }}
@@ -157,6 +160,9 @@ jobs:
           MAVEN_OPTS: "-Xmx1g"
         run: |
           ./mvnw -B -ntp -Dnative -DskipTests  -DskipFormat verify
+
+      - name: Delete snapshots artifacts from cache
+        run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +
 
   report-native-build:
 

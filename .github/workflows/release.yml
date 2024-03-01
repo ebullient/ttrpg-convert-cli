@@ -27,6 +27,8 @@ env:
   GH_BOT_NAME: "GitHub Action"
   CI: true
 
+permissions: read-all
+
 jobs:
   main-root:
     runs-on: ubuntu-latest
@@ -44,6 +46,9 @@ jobs:
       snapshot: ${{ steps.git-commit-tag.outputs.snapshot }}
       version: ${{ steps.git-commit-tag.outputs.next }}
       current: ${{ steps.git-commit-tag.outputs.current }}
+    permissions:
+      contents: write
+      actions: write
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
@@ -75,7 +80,7 @@ jobs:
           ## Check and update version, build, and create tag
           ## outputs: CURRENT SNAPSHOT ARTIFACT NEXT
           . ./shared-workflows/version-build-tag.sh
-          
+
           cp -R src/main/resources/templates default
           zip -r target/${ARTIFACT}-${NEXT}-examples.zip docs examples default
 
@@ -92,10 +97,13 @@ jobs:
         with:
           name: artifacts-examples
           path: target/${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-examples.zip
-  
+
   native-binaries:
     needs: build_tag
     uses: ebullient/workflows/.github/workflows/java-release-native-binaries.yml@main
+    permissions:
+      contents: read
+      actions: write
     with:
       version: ${{ needs.build_tag.outputs.version }}
     secrets: inherit
@@ -103,6 +111,9 @@ jobs:
   release:
     needs: [build_tag, native-binaries]
     uses: ebullient/workflows/.github/workflows/jreleaser-release.yml@main
+    permissions:
+      contents: write
+      actions: write
     with:
       dry_run: ${{ inputs.dry_run }}
       extras: "${{ needs.build_tag.outputs.artifact }}-${{ needs.build_tag.outputs.version }}-examples.zip"
@@ -112,6 +123,8 @@ jobs:
   release-prep-next:
     needs: [build_tag, release]
     uses: ebullient/workflows/.github/workflows/java-release-prep-next.yml@main
+    permissions:
+      contents: write
     with:
       dry_run: ${{ inputs.dry_run }}
       snapshot: ${{ needs.build_tag.outputs.snapshot }}
