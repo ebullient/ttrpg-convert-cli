@@ -38,7 +38,7 @@ jobs:
 
       - name: Check Cache Data
         id: test-data-check
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         with:
           path: sources
           key: ${{ steps.test-data-key.outputs.cache_key }}
@@ -85,7 +85,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: actions/cache/restore@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+      - uses: actions/cache/restore@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         id: cache
         with:
           path: sources
@@ -122,7 +122,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: actions/cache/restore@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+      - uses: actions/cache/restore@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
         id: cache
         with:
           path: sources/5etools-mirror-2.github.io
