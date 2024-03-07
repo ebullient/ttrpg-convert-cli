@@ -129,10 +129,6 @@ _Support content creators. Only use or include sources that you own._
 | SCC-CK | Campus Kerfuffle |
 | SCC-HfMT | Hunt for Mage Tower |
 | SCC-TMM | The Magister's Masquerade |
-| SCC_ARiR | A Reckoning in Ruins |
-| SCC_CK | Campus Kerfuffle |
-| SCC_HfMT | Hunt for Mage Tower |
-| SCC_TMM | The Magister's Masquerade |
 | SCREEN | Dungeon Master's Screen |
 | SCREEN_DUNGEON_KIT | Dungeon Master's Screen: Dungeon Kit |
 | SCREEN_WILDERNESS_KIT | Dungeon Master's Screen: Wilderness Kit |
