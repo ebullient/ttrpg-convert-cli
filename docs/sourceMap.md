@@ -255,6 +255,10 @@ You may see these abbreviations referenced in source material, this is how they 
 | PS-K | PSK |
 | PS-X | PSX |
 | PS-Z | PSZ |
+| SCC_ARiR | SCC-ARir |
+| SCC_CK | SCC-CK |
+| SCC_HfMT | SCC-HfMT |
+| SCC_TMM | SCC-TMM |
 | Screen | SCREEN |
 | ScreenDungeonKit | SCREEN_DUNGEON_KIT |
 | ScreenSpelljammer | SRC_SCREEN_SPELLJAMMER |
