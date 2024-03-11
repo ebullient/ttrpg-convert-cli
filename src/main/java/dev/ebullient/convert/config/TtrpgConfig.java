@@ -116,7 +116,7 @@ public class TtrpgConfig {
                     this.internalImageRoot = endWithSlash(imgPath.toString());
                 }
                 this.copyInternal = options.copyInternal();
-                Tui.instance().printlnf("🖼️ Using %s as the source for remote images (copyInternal=%s)",
+                Tui.instance().printlnf("[ 🖼️  OK] Using %s as the source for remote images (copyInternal=%s)",
                         this.internalImageRoot, this.copyInternal);
             }
         }
