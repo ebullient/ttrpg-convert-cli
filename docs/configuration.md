@@ -141,7 +141,7 @@ If you're expecting to see content from a book or adventure and it's not showing
 
 By default, the CLI generates notes for reference items like backgrounds, monsters (bestiary), classes, decks (and cards), deities, feats, items, and so on.
 
-Use the `full-source` key if you want to generate notes for the text of the source you own. Any [source identifer](#source-identifiers) specified in `full-source` will be included in the generated vault. In other words, if a source identifier is present in `full-source`, `from` is implied.
+Use the `full-source` key to generate notes for the text of the source you own as well as the reference data. Any [source identifer](#source-identifiers) specified in `full-source` will be included in the generated vault. In other words, if a source identifier is present in `full-source`, `from` is implied.
 
 Here is an example that will create notes for the *Player's Handbook* (a book, PHB) and *The Wild Beyond the Witchlight* (an adventure, WBtW):
 
@@ -249,7 +249,7 @@ For that last part, you may need to do some digging. Do not report the error usi
 
 ## Include reference data with the `from` key
 
-The `from` key allows you to choose which sources to use. List the [identifiers](#source-identifiers) for your chosen sources here.
+Use the `from` key to generate reference data (and only reference data) for listed sources. Use [identifiers](#source-identifiers) to specify sources you own. You do not need to include a source in this list if it is already in the `full-source` list.
 
 **Example:**
 
