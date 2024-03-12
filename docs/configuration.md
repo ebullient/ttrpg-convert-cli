@@ -12,11 +12,11 @@ This guide introduces you to configuring data transformations using the Command 
     - [Basic configuration example](#basic-configuration-example)
     - [Advanced configuration example](#advanced-configuration-example)
 - [Source identifiers](#source-identifiers)
+- [Include reference data with the `from` key](#include-reference-data-with-the-from-key)
 - [Include complete text with `full-source`](#include-complete-text-with-full-source)
     - [Homebrew](#homebrew)
     - [Additional notes about homebrew](#additional-notes-about-homebrew)
     - [Reporting content errors to 5eTools](#reporting-content-errors-to-5etools)
-- [Include reference data with the `from` key](#include-reference-data-with-the-from-key)
 - [Specify target paths( `paths` key)](#specify-target-paths-paths-key)
 - [Refine content choices](#refine-content-choices)
     - [Excluding content matching an `excludePattern`](#excluding-content-matching-an-excludepattern)
@@ -24,8 +24,8 @@ This guide introduces you to configuring data transformations using the Command 
     - [Including specific content with `include`](#including-specific-content-with-include)
 - [Use the dice roller plugin](#use-the-dice-roller-plugin)
 - [Tag prefix](#tag-prefix)
-- [Copying "internal" images](#copying-internal-images)
-- [Copying "external" images](#copying-external-images)
+- [Copying internal images](#copying-internal-images)
+- [Copying external images](#copying-external-images)
 
 ## Overview
 
@@ -137,11 +137,28 @@ Some are split into multiple files, in which case, you will need to specify each
 
 If you're expecting to see content from a book or adventure and it's not showing up, run the CLI with the `--index` option, and check the `all-index.json` file to see which source identifier you should be using.
 
+## Include reference data with the `from` key
+
+The CLI creates notes for reference items like backgrounds, monsters, classes, and more.
+
+To generate reference notes for your own sources, add their [identifiers](#source-identifiers) to the `from` key.
+
+Here is an example that will create reference notes (spells, classes, etc. but not the full text) for the *Player's Handbook* (PHB) and *Acquisitions Incorporated* (AI):
+
+```json
+  "from": [
+    "AI",
+    "PHB",
+    ...
+  ]
+```
+
 ## Include complete text with `full-source`
 
-By default, the CLI generates notes for reference items like backgrounds, monsters (bestiary), classes, decks (and cards), deities, feats, items, and so on.
+> [!TIP]
+> You only need to list your source once. Either in `from` or in `full-source`, but not both.
 
-Use the `full-source` key to generate notes for the text of the source you own as well as the reference data. Any [source identifer](#source-identifiers) specified in `full-source` will be included in the generated vault. In other words, if a source identifier is present in `full-source`, `from` is implied.
+Use the `full-source` key to create notes for all content and reference data from your sources. Add the [source identifiers](#source-identifiers) to `full-source` to include them in the vault.
 
 Here is an example that will create notes for the *Player's Handbook* (a book, PHB) and *The Wild Beyond the Witchlight* (an adventure, WBtW):
 
@@ -246,20 +263,6 @@ Use the following form for your report.
 ```
 
 For that last part, you may need to do some digging. Do not report the error using CLI exception messages. Stick to the observed missing links or errors in the data.
-
-## Include reference data with the `from` key
-
-Use the `from` key to generate reference data (and only reference data) for listed sources. Use [identifiers](#source-identifiers) to specify sources you own. You do not need to include a source in this list if it is already in the `full-source` list.
-
-**Example:**
-
-```json
-  "from": [
-    "AI",
-    "PHB",
-    ...
-  ]
-```
 
 ## Specify target paths( `paths` key)
 
