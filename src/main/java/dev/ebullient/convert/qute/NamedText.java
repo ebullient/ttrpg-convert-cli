@@ -2,6 +2,7 @@ package dev.ebullient.convert.qute;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -23,12 +24,15 @@ public class NamedText {
 
     /** Name */
     public final String name;
-    /** Pre-formatted text description */
+    /** Pre-formatted text description including all nested items */
     public final String desc;
+    /** List of child elements (mostly for YAML) */
+    public final transient Collection<NamedText> nested;
 
     public NamedText(String name, String desc) {
         this.name = name;
         this.desc = desc;
+        this.nested = List.of();
     }
 
     public NamedText(String name, Collection<String> text) {
@@ -38,6 +42,17 @@ public class NamedText {
             body = "\n" + body;
         }
         this.desc = body;
+        this.nested = List.of();
+    }
+
+    public NamedText(String name, Collection<String> text, Collection<NamedText> nested) {
+        this.name = name == null ? "" : name;
+        String body = text == null ? "" : String.join("\n", text);
+        if (body.startsWith(">")) {
+            body = "\n" + body;
+        }
+        this.desc = body;
+        this.nested = nested;
     }
 
     public boolean hasContent() {

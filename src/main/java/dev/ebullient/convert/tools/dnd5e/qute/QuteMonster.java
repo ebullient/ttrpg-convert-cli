@@ -24,6 +24,11 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  */
 @TemplateData
 public class QuteMonster extends Tools5eQuteBase {
+    private static final Map<String, String> group_map = Map.of(
+        "lair actions", "lair_actions",
+        "regional effects", "regional_effects",
+        "mythic encounter", "mythic_encounter"
+    );
 
     /** True if this is an NPC */
     public final boolean isNpc;
@@ -296,6 +301,18 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "bonus_actions", bonusAction);
         addUnlessEmpty(map, "reactions", reaction);
         addUnlessEmpty(map, "legendary_actions", legendary);
+
+        if (legendaryGroup != null) {
+            for(NamedText group : legendaryGroup) {
+                String key = group_map.get(group.getKey().toLowerCase());
+                if (key != null && group.nested.isEmpty()) {
+                    map.put(key, group.getValue());
+                } else if (key != null) {
+                    map.put(key, group.nested);
+                }
+            }
+        }
+
         addUnlessEmpty(map, "source", getBooks());
         if (token != null) {
             map.put("image", token.getVaultPath());
