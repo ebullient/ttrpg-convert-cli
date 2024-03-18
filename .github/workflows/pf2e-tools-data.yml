@@ -119,7 +119,7 @@ jobs:
           fail-on-cache-miss: true
           enableCrossOsArchive: true
 
-      - uses: graalvm/setup-graalvm@5393c3d80982e8a7fa61005137824ef53731ff9a # v1.1.8.1
+      - uses: graalvm/setup-graalvm@d3f9e14fc3771c0f5aaccb754e441b946b6703f9 # v1.1.8.2
         with:
           distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
