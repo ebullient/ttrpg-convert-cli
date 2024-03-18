@@ -830,6 +830,7 @@ public class Json2QuteCommon implements JsonSource {
 
     void addNamedTrait(Collection<NamedText> traits, String name, JsonNode node) {
         List<String> text = new ArrayList<>();
+        List<NamedText> nested = List.of();
         if (node.isObject()) {
             if (!SourceField.name.existsIn(node)) {
                 appendToText(text, node, null);
@@ -837,10 +838,15 @@ public class Json2QuteCommon implements JsonSource {
                 appendToText(text, SourceField.entry.getFrom(node), null);
                 appendToText(text, SourceField.entries.getFrom(node), null);
             }
+        } else if (node.isArray()) {
+            // preformat text, but also collect nodes
+            appendToText(text, node, null);
+            nested = new ArrayList<>();
+            collectTraits(nested, node);
         } else {
             appendToText(text, node, null);
         }
-        NamedText nt = new NamedText(name, text);
+        NamedText nt = new NamedText(name, text, nested);
         if (nt.hasContent()) {
             traits.add(nt);
         }
