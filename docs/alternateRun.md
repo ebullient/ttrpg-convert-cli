@@ -1,5 +1,12 @@
 # Other ways to run the CLI
 
+- [Use JBang](#use-jbang)
+- [Use Homebrew](#use-homebrew)
+    - [Use pre-built platform binary](#use-pre-built-platform-binary)
+- [Use Java to run the jar](#use-java-to-run-the-jar)
+- [Build and run from source](#build-and-run-from-source)
+- [Using unreleased snapshots](#using-unreleased-snapshots)
+
 [conventions]: ../README.md#conventions
 [5etools-data]: ../README.md#convert-5etools-json-data
 [pf2e-data]: ../README.md#convert-pf2etools-json-data
@@ -184,6 +191,9 @@ Next steps:
 ## Using unreleased snapshots
 
 Folks picking up early snapshots is really helpful for me, but _using an unreleased snapshot may be unstable_.
+
+- [Build from source](#build-and-run-from-source)
+- [Use JBang to install the snapshot](#use-jbang)
 
 - 🚧 Do not run an unstable CLI directly against notes in your Obsidian vault
 - 👷‍♀️ Be prepared to report issues if you find them.
