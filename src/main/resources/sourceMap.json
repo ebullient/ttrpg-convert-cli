@@ -130,6 +130,7 @@
       "SKT": "Storm King's Thunder",
       "SLW": "Storm Lord's Wrath",
       "TCE": "Tasha's Cauldron of Everything",
+      "TD": "Tarot Deck",
       "TDCSR": "Tal'Dorei Campaign Setting Reborn",
       "TLK": "The Lost Kenku",
       "ToA": "Tomb of Annihilation",
@@ -350,6 +351,7 @@
   },
   "configPf2e": {
     "abvToName": {
+      "7DfS0": "Seven Dooms for Sandpoint Player's Guide",
       "AAWS": "Azarketi Ancestry Web Supplement",
       "AFoF": "A Fistful of Flowers",
       "AoA0": "Age of Ashes Player's Guide",

@@ -140,6 +140,7 @@ _Support content creators. Only use or include sources that you own._
 | SatO | Sigil and the Outlands |
 | SjA | Spelljammer Academy |
 | TCE | Tasha's Cauldron of Everything |
+| TD | Tarot Deck |
 | TDCSR | Tal'Dorei Campaign Setting Reborn |
 | TLK | The Lost Kenku |
 | TTP | The Tortle Package |
@@ -371,6 +372,7 @@ You may see these abbreviations referenced in source material, this is how they 
 
 | Abbreviation | Long name |
 |--------------|-----------|
+| 7DfS0 | Seven Dooms for Sandpoint Player's Guide |
 | AAWS | Azarketi Ancestry Web Supplement |
 | AFoF | A Fistful of Flowers |
 | APG | Advanced Player's Guide |
