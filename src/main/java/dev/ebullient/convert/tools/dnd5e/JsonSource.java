@@ -1102,14 +1102,15 @@ public interface JsonSource extends JsonTextReplacement {
             case 80 -> "eighty";
             case 90 -> "ninety";
             default -> {
-                tui().errorf("Unable to convert %d to text", value);
-                yield "unknown";
+                yield null;
             }
         };
 
-        return String.format("%s%s",
-                value < 0 ? "negative " : "",
-                strValue);
+        return strValue == null
+                ? String.valueOf(value)
+                : String.format("%s%s",
+                        value < 0 ? "negative " : "",
+                        strValue);
     }
 
     default String damageTypeToFull(String dmgType) {
