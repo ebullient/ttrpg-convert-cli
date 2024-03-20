@@ -44,7 +44,7 @@ public class Pf2eQuteNote extends QuteNote {
         this.type = type;
     }
 
-    public Pf2eIndexType type() {
+    public Pf2eIndexType indexType() {
         return type;
     }
 

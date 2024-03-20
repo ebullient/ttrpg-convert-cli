@@ -77,7 +77,7 @@ public class Json2QuteHazard extends Json2QuteBase {
         }
 
         return inlineThings.stream()
-                .map(x -> render(x, x.type()))
+                .map(x -> render(x, x.indexType()))
                 .collect(Collectors.toList());
     }
 

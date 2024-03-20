@@ -93,7 +93,7 @@ public class QuteBase implements QuteUtil {
         return ".";
     }
 
-    public IndexType type() {
+    public IndexType indexType() {
         return sources.getType();
     }
 
@@ -106,7 +106,7 @@ public class QuteBase implements QuteUtil {
     }
 
     public String template() {
-        IndexType type = type();
+        IndexType type = indexType();
         return String.format("%s2md.txt", type.templateName());
     }
 

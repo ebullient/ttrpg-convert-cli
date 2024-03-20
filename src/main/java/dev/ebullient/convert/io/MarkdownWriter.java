@@ -100,7 +100,7 @@ public class MarkdownWriter {
         try {
             qs.vaultPath(fileMap.dir + "/" + fileMap.fileName);
             writeFile(fileMap, templates.render(qs));
-            counts.compute(qs.type().name(), (k, v) -> (v == null) ? 1 : v + 1);
+            counts.compute(qs.indexType().name(), (k, v) -> (v == null) ? 1 : v + 1);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

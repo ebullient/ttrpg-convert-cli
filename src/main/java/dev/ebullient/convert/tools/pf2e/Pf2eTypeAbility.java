@@ -54,7 +54,7 @@ public enum Pf2eTypeAbility implements JsonNodeReader {
                     embedded) {
                 @Override
                 public String targetFile() {
-                    if (!type().defaultSource().sameSource(abilitySrc)) {
+                    if (!indexType().defaultSource().sameSource(abilitySrc)) {
                         return getName() + "-" + abilitySrc;
                     }
                     return getName();
