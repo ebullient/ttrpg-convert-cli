@@ -66,3 +66,17 @@ The [Initiative Tracker](https://github.com/javalent/initiative-tracker) plugin 
         - Make sure you're using compatible [templates][5eTools templates] for your monsters.
 
 [5eTools templates]: ../examples/templates/tools5e/README.md#5etools-alternate-monster-templates
+
+### Working with Dataview
+
+Notes use lower-kebab-case for filenames. While that works very well for data portability and avoiding
+filename collisions, it doesn't look very pretty.
+
+Dataview queries can create entries in tables that use the file's alias instead of the filename, like this:
+
+```md
+~~~dataview
+TABLE without ID link(file.name, aliases) from "compendium/classes"
+FLATTEN aliases
+~~~
+```
