@@ -67,7 +67,7 @@ Formatted text with subsections describing racial traits
 
 ### type
 
-race or subrace
+type of race or subrace (humanoid, ooze, undead, etc.)
 
 ### vaultPath
 

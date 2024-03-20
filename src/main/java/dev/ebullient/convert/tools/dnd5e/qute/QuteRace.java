@@ -18,7 +18,7 @@ public class QuteRace extends Tools5eQuteBase {
 
     /** Ability scores associated with this race (comma-separated list of scores or choices) */
     public final String ability;
-    /** race or subrace */
+    /** type of race or subrace (humanoid, ooze, undead, etc.) */
     public final String type;
     /** Size: Small or Medium */
     public final String size;
