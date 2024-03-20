@@ -43,9 +43,11 @@ public class ImageRef {
     final String titleAttr;
 
     private ImageRef(String url, Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
+        // some things are already escaped in the source (so escaping again would be wrong)
         this.url = url == null
                 ? null
-                : url.replace(" ", "%20");
+                : url.replace(" ", "%20")
+                        .replace("é", "%C3%A9");
         this.sourcePath = sourcePath;
         this.targetFilePath = targetFilePath;
         title = title == null
