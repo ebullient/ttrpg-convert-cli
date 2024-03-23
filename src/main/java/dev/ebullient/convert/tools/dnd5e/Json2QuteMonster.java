@@ -135,7 +135,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
         JsonNode typeNode = type == Tools5eIndexType.monster
                 ? SourceField.type.getFrom(rootNode)
                 : MonsterFields.creatureType.getFrom(rootNode);
-        rootNode.get("type");
         if (typeNode == null) {
             if (type == Tools5eIndexType.monster) {
                 tui().warn("Empty type for " + getSources());
@@ -296,7 +295,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     List<Spellcasting> monsterSpellcasting() {
-        JsonNode array = rootNode.get("spellcasting");
+        JsonNode array = MonsterFields.spellcasting.readArrayFrom(rootNode);
         if (array == null || array.isNull()) {
             return null;
         } else if (array.isObject()) {
@@ -305,42 +304,46 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         List<Spellcasting> casting = new ArrayList<>();
-        array.forEach(scNode -> {
+        for (JsonNode scNode : iterableElements(array)) {
             Spellcasting spellcasting = new Spellcasting();
             spellcasting.name = SourceField.name.replaceTextFrom(scNode, this);
 
             spellcasting.headerEntries = new ArrayList<>();
-            appendToText(spellcasting.headerEntries, scNode.get("headerEntries"), null);
+            appendToText(spellcasting.headerEntries,
+                    MonsterFields.headerEntries.getFrom(scNode), null);
 
             spellcasting.footerEntries = new ArrayList<>();
-            appendToText(spellcasting.footerEntries, scNode.get("footerEntries"), null);
+            appendToText(spellcasting.footerEntries,
+                    MonsterFields.footerEntries.getFrom(scNode), null);
 
-            if (scNode.has("will")) {
-                spellcasting.will = getSpells(scNode.get("will"));
+            if (MonsterFields.will.existsIn(scNode)) {
+                spellcasting.will = getSpells(MonsterFields.will.getFrom(scNode));
             }
-            if (scNode.has("daily")) {
+            if (MonsterFields.daily.existsIn(scNode)) {
                 spellcasting.daily = new TreeMap<>();
-                scNode.get("daily").fields()
-                        .forEachRemaining(f -> spellcasting.daily.put(f.getKey(), getSpells(f.getValue())));
+                for (Entry<String, JsonNode> f : iterableFields(MonsterFields.daily.getFrom(scNode))) {
+                    spellcasting.daily.put(f.getKey(), getSpells(f.getValue()));
+                }
             }
-            if (scNode.has("spells")) {
+            if (MonsterFields.spells.existsIn(scNode)) {
                 spellcasting.spells = new TreeMap<>();
-                scNode.get("spells").fields().forEachRemaining(f -> {
+                for (Entry<String, JsonNode> f : iterableFields(MonsterFields.spells.getFrom(scNode))) {
                     JsonNode spellNode = f.getValue();
                     Spells spells = new Spells();
                     if (spellNode.isArray()) {
                         spells.spells = getSpells(spellNode);
                     } else {
-                        spells.slots = intOrDefault(spellNode, "slots", 0);
-                        spells.lowerBound = intOrDefault(spellNode, "lower", 0);
-                        spells.spells = getSpells(spellNode.get("spells"));
+                        spells.slots = MonsterFields.slots.intOrDefault(spellNode, 0);
+                        spells.lowerBound = MonsterFields.lower.intOrDefault(spellNode, 0);
+                        spells.spells = getSpells(MonsterFields.spells.getFrom(spellNode));
                     }
                     spellcasting.spells.put(f.getKey(), spells);
-                });
+                }
             }
             parseState().popCitations(spellcasting.footerEntries);
             casting.add(spellcasting);
-        });
+        }
+
         return casting;
     }
 
@@ -378,12 +381,54 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return Tools5eQuteBase.monsterPath(isNpc, creatureType);
     }
 
+    public static List<Tuple> findMonsterVariants(Tools5eIndex index, Tools5eIndexType type,
+            String key, JsonNode jsonSource) {
+        if (MonsterFields.summonedBySpellLevel.existsIn(jsonSource)) {
+            return findConjuredMonsterVariants(index, type, key, jsonSource);
+        } else if (MonsterFields.type.existsIn(jsonSource)
+                && MonsterFields.type.existsIn(MonsterFields.type.getFrom(jsonSource))
+                && MonsterFields.type.getFrom(MonsterFields.type.getFrom(jsonSource)).has("choose")) {
+
+            List<Tuple> variants = new ArrayList<>();
+
+            // Produce a variant for each type
+            // "type": {
+            //   "type": {
+            //     "choose": [
+            //       "celestial",
+            //       "fiend"
+            //     ]
+            //   }
+            // },
+
+            JsonNode choose = MonsterFields.choose.getFrom(
+                    MonsterFields.type.getFrom(
+                            MonsterFields.type.getFrom(jsonSource)));
+
+            String name = SourceField.name.getTextOrEmpty(jsonSource);
+            for (JsonNode typeChoice : index.iterableElements(choose)) {
+                String variantName = String.format("%s (%s)", name, typeChoice.asText());
+                ObjectNode adjustedSource = (ObjectNode) index.copyNode(jsonSource);
+
+                adjustedSource.set("original", adjustedSource.get("name"));
+                adjustedSource.set("originalType", adjustedSource.get("type"));
+                adjustedSource.put("name", variantName);
+                adjustedSource.set("type", typeChoice);
+
+                String newKey = type.createKey(adjustedSource);
+                variants.add(new Tuple(newKey, adjustedSource));
+            }
+            return variants;
+        }
+        return List.of(new Tuple(key, jsonSource));
+    }
+
     public static List<Tuple> findConjuredMonsterVariants(Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
         final Pattern variantPattern = Pattern.compile("(\\d+) \\((.*?)\\)");
-        int startLevel = jsonSource.get("summonedBySpellLevel").asInt();
+        int startLevel = MonsterFields.summonedBySpellLevel.intOrDefault(jsonSource, 0);
 
-        String name = jsonSource.get("name").asText();
+        String name = SourceField.name.getTextOrEmpty(jsonSource);
         String hpString = jsonSource.get("hp").get("special").asText();
         String acString = jsonSource.get("ac").get(0).get("special").asText();
 
@@ -569,21 +614,29 @@ public class Json2QuteMonster extends Json2QuteCommon {
         alignment,
         alignmentPrefix,
         average,
+        cr,
         creatureType, // object -- alternate to monster type
         daily,
+        footerEntries,
         formula,
         from,
+        headerEntries,
         hp,
+        isNamedCreature,
         legendaryGroup,
+        lower,
         original,
         save,
         senses,
+        shortName,
         skill,
+        slots,
         special,
         spellcasting,
         spells,
-        isNamedCreature,
-        shortName,
-        cr,
+        summonedBySpellLevel,
+        type,
+        will,
+        choose,
     }
 }
