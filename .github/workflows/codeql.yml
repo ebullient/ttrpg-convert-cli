@@ -77,6 +77,3 @@ jobs:
       uses: github/codeql-action/analyze@3ab4101902695724f9365a384f86c1074d94e18c # v3.24.7
       with:
         category: "/language:${{matrix.language}}"
-
-    - name: Delete snapshots artifacts from cache
-      run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +
