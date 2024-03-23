@@ -584,8 +584,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return Json2QuteItem.findGroupVariant(instance, type, key, jsonSource, copier);
         } else if (type == Tools5eIndexType.magicvariant) {
             return MagicVariant.INSTANCE.findSpecificVariants(this, type, key, jsonSource, copier);
-        } else if (type == Tools5eIndexType.monster && jsonSource.has("summonedBySpellLevel")) {
-            return Json2QuteMonster.findConjuredMonsterVariants(this, type, key, jsonSource);
+        } else if (type == Tools5eIndexType.monster) {
+            return Json2QuteMonster.findMonsterVariants(this, type, key, jsonSource);
         } else if (key.contains("splugoth the returned") || key.contains("prophetess dran")) {
             // Fix.
             ObjectNode copy = (ObjectNode) copier.copyNode(jsonSource);
