@@ -52,8 +52,8 @@ public class Tools5eQuteBase extends QuteBase {
                 || type == Tools5eIndexType.tableGroup) {
             return Tui.slugify(name); // file name is based on chapter, etc.
         }
-        name = Tui.slugify(name.replaceAll(" \\(\\*\\)", "-gv"));
-        return name + sourceIfNotDefault(source, type);
+        return Tui.slugify(name.replaceAll(" \\(\\*\\)", "-gv")
+                + sourceIfNotDefault(source, type));
     }
 
     private static String sourceIfNotDefault(String source, Tools5eIndexType type) {
