@@ -32,6 +32,8 @@ public class Json2QuteClass extends Json2QuteCommon {
     final String subclassTitle;
     final String decoratedClassName;
 
+    String filename = null;
+
     Json2QuteClass(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         boolean pushed = parseState().push(getSources(), rootNode); // store state
@@ -52,6 +54,13 @@ public class Json2QuteClass extends Json2QuteCommon {
         } finally {
             parseState().pop(pushed); // restore state
         }
+    }
+
+    @Override
+    public String getFileName() {
+        return filename == null
+                ? super.getFileName()
+                : filename;
     }
 
     @Override
@@ -91,6 +100,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         for (Subclass sc : subclasses) {
             boolean pushed = parseState().push(sc.sources);
+            filename = Tools5eQuteBase.fixFileName(sc.getName(), sc.sources);
             try {
                 Tags tags = new Tags(sc.sources);
                 tags.add("subclass", getName(), sc.shortName);
@@ -124,6 +134,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         tags));
             } finally {
                 parseState().pop(pushed);
+                filename = null;
             }
         }
 

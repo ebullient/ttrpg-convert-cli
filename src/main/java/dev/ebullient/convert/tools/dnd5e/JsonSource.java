@@ -99,6 +99,10 @@ public interface JsonSource extends JsonTextReplacement {
         return getSources().buildImageRef(index(), mediaHref, imageBasePath, useCompendium());
     }
 
+    default String getFileName() {
+        return Tools5eQuteBase.fixFileName(getName(), getSources());
+    }
+
     /**
      * External (and recursive) entry point for content parsing.
      * Parse attributes of the given node and add resulting lines
@@ -715,7 +719,7 @@ public interface JsonSource extends JsonTextReplacement {
                 }
                 if (header.matches(JsonTextConverter.DICE_TABLE_HEADER) && !blockid.isBlank()) {
                     // prepend a dice roller
-                    String targetFile = Tools5eQuteBase.fixFileName(getName(), getSources());
+                    String targetFile = getFileName();
                     table.add(0, String.format("`dice: [](%s.md#%s)`", targetFile, blockid));
                     table.add(1, "");
                 }

@@ -3,6 +3,8 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
@@ -31,15 +33,24 @@ public class Tools5eQuteBase extends QuteBase {
     }
 
     public static String fixFileName(String name, Tools5eSources sources) {
-        return fixFileName(name, sources.primarySource(), sources.getType());
+        Tools5eIndexType type = sources.getType();
+        JsonNode node = sources.findNode();
+        String primarySource = sources.primarySource();
+        return switch (type) {
+            case background -> fixFileName(type.decoratedName(node), primarySource, type);
+            case deity -> Tui.slugify(getDeityResourceName(name, primarySource, node.get("pantheon").asText()));
+            case subclass -> getSubclassResource(name, node.get("className").asText(), primarySource);
+            default -> fixFileName(name, primarySource, type);
+        };
     }
 
     public static String fixFileName(String name, String source, Tools5eIndexType type) {
         if (type == Tools5eIndexType.adventureData
                 || type == Tools5eIndexType.adventure
                 || type == Tools5eIndexType.book
-                || type == Tools5eIndexType.bookData) {
-            return name; // file name is based on chapter, etc.
+                || type == Tools5eIndexType.bookData
+                || type == Tools5eIndexType.tableGroup) {
+            return Tui.slugify(name); // file name is based on chapter, etc.
         }
         name = Tui.slugify(name.replaceAll(" \\(\\*\\)", "-gv"));
         return name + sourceIfNotDefault(source, type);

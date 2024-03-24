@@ -759,7 +759,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return linkText;
         }
         boolean isNpc = Json2QuteMonster.isNpc(jsonSource);
-        return linkOrText(linkText, key, Tools5eQuteBase.monsterPath(isNpc, creatureType),
+        return linkOrText(linkText, key,
+                Tools5eQuteBase.monsterPath(isNpc, creatureType),
                 Tools5eQuteBase.fixFileName(resourceName, sources));
     }
 

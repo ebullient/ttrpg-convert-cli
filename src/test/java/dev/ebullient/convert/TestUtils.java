@@ -55,7 +55,7 @@ public class TestUtils {
     // - title is optional
     final static String nextLink = "(?!\\]\\()"; // negative lookahead for ](
     final static String linkTitle = "( \".+?\")?"; // optional link title
-    final static String linkText = "(" + nextLink + ".)+"; // any sequence of characters except ](
+    final static String linkText = "(" + nextLink + ".)*?"; // any sequence of characters except ](
     final static String vaultPath = "(" + nextLink + "[^ ])+"; // any sequence of characters except ]( or space
     final static Pattern markdownLinkPattern = Pattern
             .compile("\\[" + linkText + "\\]\\((" + vaultPath + ")" + linkTitle + "\\)");
