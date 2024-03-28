@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.tools.pf2e.CommonDataTests.TestInput;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -70,7 +71,7 @@ public class Pf2eJsonDataSubsetTest {
 
     @Test
     public void testItem_p2fe() throws Exception {
-        commonTests.configurator.setAlwaysUseDiceRoller(true);
+        commonTests.configurator.setUseDiceRoller(DiceRoller.enabled);
         commonTests.generateNotesForType(Pf2eIndexType.item);
     }
 

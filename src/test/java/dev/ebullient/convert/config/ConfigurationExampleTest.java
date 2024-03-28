@@ -93,6 +93,7 @@ public class ConfigurationExampleTest {
         tools5Config.images.copyInternal = Boolean.TRUE;
         tools5Config.images.internalRoot = "local/path/for/remote/images";
         tools5Config.useDiceRoller = true;
+        tools5Config.yamlStatblocks = true;
         tools5Config.tagPrefix = "ttrpg-cli";
 
         tui.writeJsonFile(Path.of("examples/config/config.5e.json"), tools5Config);

@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 
@@ -89,23 +90,80 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String formatDice(String diceRoll) {
+        DiceRoller roller = cfg().useDiceRoller();
+        boolean suppressInYaml = parseState().inTrait() && roller.useFantasyStatblocks();
+
         // needs to be escaped: \\ to escape the \\ so it is preserved in the output
-        String avg = parseState().inMarkdownTable() ? "\\\\|avg" : "|avg";
+        String avg = parseState().inMarkdownTable() ? "\\\\|avg|noform" : "|avg|noform";
         int pos = diceRoll.indexOf(";");
         if (pos >= 0) {
             diceRoll = diceRoll.substring(0, pos);
         }
-        return cfg().alwaysUseDiceRoller() && diceRoll.matches(JsonTextConverter.DICE_FORMULA)
+        if (roller == DiceRoller.disabled) {
+            return '`' + diceRoll + '`';
+        } else if (suppressInYaml) {
+            return diceRoll;
+        }
+        return diceRoll.matches(JsonTextConverter.DICE_FORMULA)
                 ? "`dice: " + diceRoll + avg + "` (`" + diceRoll + "`)"
                 : '`' + diceRoll + '`';
     }
 
     default String replaceWithDiceRoller(String text) {
+        DiceRoller roller = cfg().useDiceRoller();
+        boolean suppressInYaml = parseState().inTrait() && roller.useFantasyStatblocks();
+
+        String posGroup = "\\+? ?(\\d+)";
+        String negGroup = "(-\\d+)";
+
+        String hitPos = "\\{@(hit|h) " + posGroup + "}";
+        String hitNeg = "\\{@(hit|h) " + negGroup + "}";
+        String d20Pos = "\\{@d20 " + posGroup + "}";
+        String d20Neg = "\\{@d20 " + negGroup + "}";
+        String modScorePos = "\\{@d20 " + posGroup + "\\|([^|}]+)}";
+        String modScoreNeg = "\\{@d20 " + negGroup + "\\|([^|}]+)}";
+        String altScorePos = "\\{@d20 " + posGroup + "\\|[^}|]*?\\|([^}]+)}";
+        String altScoreNeg = "\\{@d20 " + negGroup + "\\|[^}|]*?\\|([^}]+)}";
+        String altText = "\\{@hit ([^}|]+)\\|([^}]+)}";
+        String nonFormula = "\\{@hit ([^}]+)}";
+
+        if (roller == DiceRoller.disabled) {
+            return text
+                    .replaceAll(hitPos, "`+$2`")
+                    .replaceAll(hitNeg, "`$2`")
+                    .replaceAll(altScorePos, "$2 (`+$1`)")
+                    .replaceAll(altScoreNeg, "$2 (`$1`)")
+                    .replaceAll(modScorePos, "`+$1` (`$2`)")
+                    .replaceAll(modScoreNeg, "`$1` (`$2`)")
+                    .replaceAll(d20Pos, "`+$1`")
+                    .replaceAll(d20Neg, "`$1`")
+                    .replaceAll(altText, "$2")
+                    .replaceAll(nonFormula, "`$1`");
+        } else if (suppressInYaml) {
+            // No backticks or formatting. Fantasy Statblocks will render
+            return text
+                    .replaceAll(hitPos, "+$2")
+                    .replaceAll(hitNeg, "$2")
+                    .replaceAll(d20Pos, "+$1")
+                    .replaceAll(d20Neg, "$1")
+                    .replaceAll(altScorePos, "$2 (+$1)")
+                    .replaceAll(altScoreNeg, "$2 ($1)")
+                    .replaceAll(modScorePos, "+$1 ($2)")
+                    .replaceAll(modScoreNeg, "$1 ($2)")
+                    .replaceAll(altText, "$2")
+                    .replaceAll(nonFormula, "$1");
+        }
         return text
-                .replaceAll("\\{@hit (\\d+)}", "`dice: d20+$1` (+$1)")
-                .replaceAll("\\{@hit (-\\d+)}", "`dice: d20-$1` (-$1)")
-                .replaceAll("\\{@d20 (\\d+?)}", "`dice: d20+$1` (+$1)")
-                .replaceAll("\\{@d20 (-\\d+?)}", "`dice: d20-$1` (-$1)");
+                .replaceAll(hitPos, "`dice: d20+$2` (`+$2`)")
+                .replaceAll(hitNeg, "`dice: d20$2` (`$2`)")
+                .replaceAll(d20Pos, "`dice: d20+$1` (`+$1`)")
+                .replaceAll(d20Neg, "`dice: d20$1` (`$1`)")
+                .replaceAll(altScorePos, "$2 (`dice: d20+$1|nodice|text(+$1)`)")
+                .replaceAll(altScoreNeg, "$2 (`dice: d20$1|nodice|text($1)`)")
+                .replaceAll(modScorePos, "`+$1` (`$2`)")
+                .replaceAll(modScoreNeg, "`$1` (`$2`)")
+                .replaceAll(altText, "$2")
+                .replaceAll(nonFormula, "`$1`");
     }
 
     default String simplifyFormattedDiceText(String text) {

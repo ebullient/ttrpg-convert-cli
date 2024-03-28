@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter;
@@ -163,16 +164,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         try {
             result = replacePromptStrings(result);
 
-            // Dice roller tags; {@dice 1d2-2+2d3+5} for regular dice rolls
+            // {@hit ..} and {@d20 ..}
+            result = replaceWithDiceRoller(result);
+
+            // Dice roller tags; {@dice 1d2-2+2d3+5} or {@damage ..} for regular dice rolls
             // - {@dice 1d6;2d6} for multiple options;
             // - {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
             // - {@dice 1d20+2|display text} and {@dice 1d20+2|display text|rolled by name}
-
-            if (cfg().alwaysUseDiceRoller()) {
-                result = replaceWithDiceRoller(result);
-            }
-
-            // @dice or @damage
             result = dicePattern.matcher(result).replaceAll((match) -> {
                 String[] parts = match.group(2).split("\\|");
                 if (parts.length > 1) {
@@ -260,12 +258,11 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@area ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@vehupgrade ([^|}]+)\\|?[^}]*}", "$1") // TODO: vehicle upgrade type
                         .replaceAll("\\{@dc ([^}]+)}", "DC $1")
-                        .replaceAll("\\{@d20 ([^}]+?)}", "$1") // when not using dice roller
                         .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
                         .replaceAll("\\{@recharge}", "(Recharge 6)")
                         .replaceAll("\\{@coinflip ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@coinflip}", "flip a coin")
-                        .replaceAll("\\{@(scaledice|scaledamage) [^|]+\\|[^|]+\\|([^|}]+)[^}]*}", "$2")
+                        .replaceAll("\\{@(scaledice|scaledamage) [^|]+\\|[^|]+\\|([^|}]+)[^}]*}", "`$2`")
                         .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@boon ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                         .replaceAll("\\{@boon ([^|}]+)\\|[^}]*}", "$1")
@@ -281,8 +278,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@cult ([^|}]+)}", "$1")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
-                        .replaceAll("\\{@(hit|h) ([+-][^}<]+)}", "$2")
-                        .replaceAll("\\{@(hit|h) ([^}<]+)}", "+$2")
                         .replaceAll("\\{@h}", "*Hit:* ")
                         .replaceAll("\\{@m}", "*Miss:* ")
                         .replaceAll("\\{@atk a}", "*Area Attack:*")
@@ -374,17 +369,28 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         //      or {@savingThrow str 5|Display Text|Roll Name Text}
         String[] parts = match.group(2).split("\\|");
         String[] score = parts[0].split(" ");
-        SkillOrAbility ability = index().findSkillOrAbility(score[0], getSources());
+
         boolean abilityCheck = match.group(1).equals("ability");
         String text = parts.length > 1 && !parts[1].isBlank() ? parts[1] : null;
 
-        if (!abilityCheck && !score[1].matches("\\d+")) { // saving throw: +PB
-            return text == null ? ability.value() + " " + score[1] : text;
+        SkillOrAbility ability = index().findSkillOrAbility(score[0], getSources());
+
+        if (!abilityCheck && !score[1].matches("\\+?\\d+")) { // saving throw with text, like +PB
+            return text == null
+                    ? ability.value() + " " + score[1]
+                    : text;
         } else {
             int value = Integer.parseInt(score[1]);
             String mod = abilityCheck
                     ? "" + AbilityScores.getModifier(value)
                     : (value >= 0 ? "+" : "") + value;
+
+            DiceRoller roller = cfg().useDiceRoller();
+            boolean notSuppressed = roller == DiceRoller.enabledUsingFS && !parseState().inTrait();
+            if (!abilityCheck && (roller == DiceRoller.enabled || notSuppressed)) {
+                mod = "`dice: d20" + mod + "|nodice|text(" + mod + ")`";
+            }
+
             return String.format("%s (%s)", text == null ? ability.value() : text, mod);
         }
     }
@@ -404,6 +410,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             int value = Integer.parseInt(score[1]);
             dice = (value >= 0 ? "+" : "") + value;
         }
+
+        DiceRoller roller = cfg().useDiceRoller();
+        boolean notSuppressed = roller.useFantasyStatblocks() && !parseState().inTrait();
+        if (roller == DiceRoller.enabled || notSuppressed) {
+            dice = "`dice: d20" + dice + "|nodice|text(" + dice + ")`";
+        }
+
         return String.format("%s (%s)", text, dice);
     }
 

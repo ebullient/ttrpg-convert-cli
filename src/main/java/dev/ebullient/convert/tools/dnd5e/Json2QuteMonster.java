@@ -127,8 +127,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 environment,
                 getToken(),
                 fluffImages,
-                tags,
-                cfg().alwaysUseDiceRoller());
+                tags);
     }
 
     void findCreatureType() {

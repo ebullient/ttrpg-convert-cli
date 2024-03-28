@@ -24,6 +24,7 @@
     "background" : "examples/templates/tools5e/images-background2md.txt"
   },
   "useDiceRoller" : true,
+  "yamlStatblocks" : true,
   "tagPrefix" : "ttrpg-cli",
   "images" : {
     "internalRoot" : "local/path/for/remote/images",

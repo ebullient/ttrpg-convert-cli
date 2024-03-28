@@ -30,6 +30,30 @@ import dev.ebullient.convert.tools.ParseState;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class CompendiumConfig {
+    public enum DiceRoller {
+        disabled,
+        disabledUsingFS,
+        enabled,
+        enabledUsingFS;
+
+        public boolean enabled() {
+            return this == enabled || this == enabledUsingFS;
+        }
+
+        public boolean useFantasyStatblocks() {
+            return this == enabledUsingFS || this == disabledUsingFS;
+        }
+
+        static DiceRoller fromAttributes(Boolean useDiceRoller, Boolean yamlStatblocks) {
+            yamlStatblocks = yamlStatblocks == null ? false : yamlStatblocks;
+
+            if (useDiceRoller == null || useDiceRoller) {
+                return yamlStatblocks ? disabledUsingFS : disabled;
+            }
+            return yamlStatblocks ? enabledUsingFS : enabled;
+        }
+    }
+
     final static Path CWD = Path.of(".");
 
     final Tui tui;
@@ -40,7 +64,7 @@ public class CompendiumConfig {
     PathAttributes paths;
     ImageOptions images;
     boolean allSources = false;
-    boolean useDiceRoller = false;
+    DiceRoller useDiceRoller = DiceRoller.disabled;
     final Set<String> allowedSources = new HashSet<>();
     final Set<String> includedKeys = new HashSet<>();
     final Set<String> includedGroups = new HashSet<>();
@@ -69,7 +93,7 @@ public class CompendiumConfig {
         return datasource;
     }
 
-    public boolean alwaysUseDiceRoller() {
+    public DiceRoller useDiceRoller() {
         return useDiceRoller;
     }
 
@@ -277,7 +301,7 @@ public class CompendiumConfig {
             cfg.customTemplates.putAll(templatePaths.customTemplates);
         }
 
-        public void setAlwaysUseDiceRoller(boolean useDiceRoller) {
+        public void setUseDiceRoller(DiceRoller useDiceRoller) {
             CompendiumConfig cfg = TtrpgConfig.getConfig();
             cfg.useDiceRoller = useDiceRoller;
         }
@@ -328,7 +352,9 @@ public class CompendiumConfig {
             InputConfig input = Tui.MAPPER.convertValue(node, InputConfig.class);
 
             config.addSources(input.from);
-            config.useDiceRoller |= input.useDiceRoller;
+            if (input.useDiceRoller != null || input.yamlStatblocks != null) {
+                config.useDiceRoller = DiceRoller.fromAttributes(input.useDiceRoller, input.yamlStatblocks);
+            }
 
             input.include.forEach(s -> config.includedKeys.add(s.toLowerCase()));
             input.includeGroup.forEach(s -> config.includedGroups.add(s.toLowerCase()));
@@ -472,7 +498,8 @@ public class CompendiumConfig {
 
         Map<String, String> template = new HashMap<>();
 
-        boolean useDiceRoller = false;
+        Boolean useDiceRoller = null;
+        Boolean yamlStatblocks = null;
 
         String tagPrefix = "";
 

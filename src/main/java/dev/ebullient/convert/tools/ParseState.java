@@ -26,6 +26,7 @@ public class ParseState {
         boolean inHtmlTable;
         boolean inMarkdownTable;
         boolean inList;
+        boolean inTrait;
         int inFeatureType;
         final String listIndent;
         final String src;
@@ -74,12 +75,18 @@ public class ParseState {
             return this;
         }
 
+        private ParseStateInfo setInTrait(boolean inTrait) {
+            this.inTrait = inTrait;
+            return this;
+        }
+
         private ParseStateInfo setTheRest(ParseStateInfo prev) {
             this.setInFootnotes(prev.inFootnotes)
                     .setInHtmlTable(prev.inHtmlTable)
                     .setInMarkdownTable(prev.inMarkdownTable)
                     .setInList(prev.inList)
-                    .setInFeatureType(prev.inFeatureType);
+                    .setInFeatureType(prev.inFeatureType)
+                    .setInTrait(prev.inTrait);
             return this;
         }
 
@@ -158,6 +165,15 @@ public class ParseState {
                     .setTheRest(prev)
                     .setInFeatureType(prev.inFeatureType + 1);
         }
+
+        private static ParseStateInfo pushTrait(ParseStateInfo prev) {
+            if (prev == null) {
+                return new ParseStateInfo().setInTrait(true);
+            }
+            return new ParseState.ParseStateInfo(prev.src, prev.page, prev.listIndent)
+                    .setTheRest(prev)
+                    .setInTrait(true);
+        }
     }
 
     private final Deque<ParseState.ParseStateInfo> stack = new ArrayDeque<>();
@@ -235,6 +251,11 @@ public class ParseState {
         return true;
     }
 
+    public boolean pushTrait() {
+        stack.addFirst(ParseStateInfo.pushTrait(stack.peek()));
+        return true;
+    }
+
     public void pop(boolean pushed) {
         if (pushed) {
             String source = sourcePageString();
@@ -274,6 +295,11 @@ public class ParseState {
     public boolean inTable() {
         ParseState.ParseStateInfo current = stack.peek();
         return current != null && (current.inHtmlTable || current.inMarkdownTable);
+    }
+
+    public boolean inTrait() {
+        ParseState.ParseStateInfo current = stack.peek();
+        return current != null && current.inTrait;
     }
 
     public int featureTypeDepth() {

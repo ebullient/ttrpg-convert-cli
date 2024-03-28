@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
+import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.config.ConfiguratorUtil;
 import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
@@ -103,7 +104,7 @@ public class CommonDataTests {
 
     public void cleanup() {
         tui.close();
-        configurator.setAlwaysUseDiceRoller(false);
+        configurator.setUseDiceRoller(DiceRoller.disabled);
         templates.setCustomTemplates(TtrpgConfig.getConfig());
     }
 
@@ -263,7 +264,7 @@ public class CommonDataTests {
 
     public void testMonsterList(Path outputPath) {
         tui.setOutputPath(outputPath);
-        configurator.setAlwaysUseDiceRoller(true);
+        configurator.setUseDiceRoller(DiceRoller.disabled);
 
         if (dataPresent) {
             Path bestiaryDir = deleteDir(Tools5eIndexType.monster, outputPath, index.compendiumFilePath());
@@ -318,6 +319,7 @@ public class CommonDataTests {
             Path out = outputPath.resolve("yaml-header");
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
+            configurator.setUseDiceRoller(DiceRoller.enabled);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("examples/templates/tools5e/monster2md-yamlStatblock-header.txt"));
@@ -375,6 +377,7 @@ public class CommonDataTests {
             Path out = outputPath.resolve("yaml-body");
             TestUtils.deleteDir(out);
             tui.setOutputPath(out);
+            configurator.setUseDiceRoller(DiceRoller.enabledUsingFS);
 
             CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
                     TestUtils.PROJECT_PATH.resolve("examples/templates/tools5e/monster2md-yamlStatblock-body.txt"));
