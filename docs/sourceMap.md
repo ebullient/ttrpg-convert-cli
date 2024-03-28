@@ -153,6 +153,7 @@ _Support content creators. Only use or include sources that you own._
 | TftYP-ToH | Tales from the Yawning Portal: Tomb of Horrors |
 | TftYP-WPM | Tales from the Yawning Portal: White Plume Mountain |
 | ToA | Tomb of Annihilation |
+| ToB1-2023 | Tome of Beasts 1 (2023 Edition) |
 | ToD | Tyranny of Dragons |
 | ToFW | Turn of Fortune's Wheel |
 | ToR | Tide of Retribution |
