@@ -23,11 +23,11 @@ Hit dice formula string: 7d10 + 14 (for creatures)
 
 ### hp
 
-Hit points (number)
+Hit points (number or —)
 
 ### hpDiceRoller
 
-Hit points as a dice roll formula.
+Hit points as a dice roller formula: "`dice: 1d20+7|nodice|text(37)` (`1d20+7`)"
 
 ### hpText
 
