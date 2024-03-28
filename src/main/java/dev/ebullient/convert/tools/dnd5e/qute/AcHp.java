@@ -22,6 +22,7 @@ public class AcHp implements QuteUtil {
     public String acText;
     /** Hit points */
     public Integer hp;
+
     /**
      * Additional hit point text.
      * In the case of summoned creatures, this will contain notes for how hit points
@@ -52,16 +53,17 @@ public class AcHp implements QuteUtil {
     }
 
     /**
-     * Hit points as a dice roll formula.
+     * Hit points as a dice roller formula:
+     * "`dice: 1d20+7|nodice|text(37)` (`1d20+7`)"
      */
     public String getHpDiceRoller() {
         return hitDice == null
                 ? getHp()
-                : "`dice: " + hitDice + "|nodice|text(" + hp + ")`" + "` (`" + hitDice + "`)";
+                : "`dice: " + hitDice + "|nodice|text(" + hp + ")` (`" + hitDice + "`)";
     }
 
     /**
-     * Hit points (number)
+     * Hit points (number or —)
      */
     public String getHp() {
         return hp == null ? hpText : hp.toString();
