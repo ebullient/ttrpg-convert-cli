@@ -54,7 +54,7 @@ public class AcHp implements QuteUtil {
 
     /**
      * Hit points as a dice roller formula:
-     * "`dice: 1d20+7|nodice|text(37)` (`1d20+7`)"
+     * \`dice: 1d20+7|nodice|text(37)\` (\`1d20+7\`)
      */
     public String getHpDiceRoller() {
         return hitDice == null
