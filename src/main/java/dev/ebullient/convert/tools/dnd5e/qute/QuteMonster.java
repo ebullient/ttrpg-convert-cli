@@ -106,7 +106,7 @@ public class QuteMonster extends Tools5eQuteBase {
             Collection<NamedText> legendary,
             Collection<NamedText> legendaryGroup, String legendaryGroupLink,
             List<Spellcasting> spellcasting, String description, String environment,
-            ImageRef tokenImage, List<ImageRef> fluffImages, Tags tags, boolean useDiceRoller) {
+            ImageRef tokenImage, List<ImageRef> fluffImages, Tags tags) {
 
         super(sources, name, source, description, tags);
 
@@ -270,6 +270,7 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "alignment", alignment);
 
         addIntegerUnlessEmpty(map, "ac", acHp.ac);
+        addUnlessEmpty(map, "ac_class", acHp.acText);
         addIntegerUnlessEmpty(map, "hp", acHp.hp);
         addUnlessEmpty(map, "hit_dice", acHp.hitDice);
 

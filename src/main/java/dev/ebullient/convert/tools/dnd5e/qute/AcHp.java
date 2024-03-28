@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
 
@@ -29,7 +28,8 @@ public class AcHp implements QuteUtil {
      * should be calculated relative to the player's modifiers.
      */
     public String hpText;
-    /** Hit dice formula as formatted string: `7d10 + 14` (creatures) */
+
+    /** Hit dice formula string: 7d10 + 14 (for creatures) */
     public String hitDice;
 
     public AcHp() {
@@ -52,14 +52,19 @@ public class AcHp implements QuteUtil {
     }
 
     /**
-     * Hit points. If using the dice roller plugin is enabled,
-     * this will be a dice roll formula.
+     * Hit points as a dice roll formula.
+     */
+    public String getHpDiceRoller() {
+        return hitDice == null
+                ? getHp()
+                : "`dice: " + hitDice + "|nodice|text(" + hp + ")`" + "` (`" + hitDice + "`)";
+    }
+
+    /**
+     * Hit points (number)
      */
     public String getHp() {
-        if (TtrpgConfig.getConfig().alwaysUseDiceRoller() && isPresent(hitDice)) {
-            return "`dice: " + hitDice + "|text(" + hp + ")`";
-        }
-        return "" + hp;
+        return hp == null ? hpText : hp.toString();
     }
 
     public String toString() {

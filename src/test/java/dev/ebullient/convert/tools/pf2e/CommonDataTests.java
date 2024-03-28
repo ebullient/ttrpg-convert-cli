@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
+import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
@@ -82,7 +83,7 @@ public class CommonDataTests {
     public void cleanup() {
         tui.close();
         tui.setOutputPath(outputPath);
-        configurator.setAlwaysUseDiceRoller(false);
+        configurator.setUseDiceRoller(DiceRoller.disabled);
         templates.setCustomTemplates(TtrpgConfig.getConfig());
     }
 

@@ -1,6 +1,5 @@
 # Changelog
 
-[README.md]: https://github.com/ebullient/ttrpg-convert-cli
 [examples/config]: examples/config
 [ex-snippets]: examples/css-snippets
 [ex-templates]: examples/templates
@@ -9,8 +8,8 @@
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
 > [!NOTE]
-> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault. 
-> 
+> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+>
 > To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
 
 ## 🔖 ✨ 2.3.0: 5eTools moving to mirror2
@@ -39,9 +38,9 @@ See the following examples:
 ## 🔖 ✨ 2.2.5: New templates for decks (and cards), legendary groups, and psionics
 
 - **New templates**: `deck2md.txt`, `legendaryGroup2md.txt`, `psionic2md.txt`
-  - Decks, when present, will be generated under `compendium/decks`. Cards are part of decks.
-  - Legendary groups, when present, will be generated under `bestiary/legendary-groups`
-  - Psionics, when present, will be generated under `compendium/psionics`.
+    - Decks, when present, will be generated under `compendium/decks`. Cards are part of decks.
+    - Legendary groups, when present, will be generated under `bestiary/legendary-groups`
+    - Psionics, when present, will be generated under `compendium/psionics`.
 - `feat2md.txt` is now also used for optional features.
 - The default `monster2md.txt` template has been updated to embed the legendary group.
 - CSS snippets have been updated to support legendary groups embedded in statblocks.
@@ -57,17 +56,17 @@ See the following examples:
 
 ✨ **New template documentation** is available in [docs](docs). Content is generated from javadoc in the various *.qute packages (for template-accessible fields and methods). It may not be complete.. PRs to improve it are welcome.
 
-## 🔖 🔥 2.0.0: File name and path changes, and styles!
+## 🔖 🔥 2.0.0: File name and path changes, and styles
 
-1. 🔥 **A leading slash (`/`) is no longer used at the beginning of compendium and root paths**. This should allow you to move these two directories around more easily. 
+1. 🔥 **A leading slash (`/`) is no longer used at the beginning of compendium and root paths**. This should allow you to move these two directories around more easily.
     - I recommend that you keep the compendium and rules sections together as big balls of mud.
     - If you do want to further move files around, do so from within obsidian, so obsidian can update its links.
 
 2. 🔥 **D&D 5e subclasses now use the source of the subclass in the file name**.
 
-   > ***If you use the Templater plugin***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-2.0.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
+    > ***If you use the Templater plugin***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-2.0.0.md) to rename files in your vault before merging with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
 
-3. 🎨 CSS styles for D&D 5e and Pathfinder are now available in `examples/css-snippets`. 
+3. 🎨 CSS styles for D&D 5e and Pathfinder are now available in `examples/css-snippets`.
 
 4. 📝 Admonitions are also available for import:
     - 🎨 [admonitions-5e.json](examples/admonitions/admonitions-5e.json)
@@ -81,7 +80,9 @@ See the following examples:
 If you are using the default templates and want to render dice rolls, set
 `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice
 }`, and `{@damage }` strings. This can be set differently for either "5e" or
-"pf2e" configurations. Please note that if you are using a custom template and fantasy statblocks, you do **not** need to set the dice roller in your config. Fantasy statblocks will take care of the rendering itself. 
+"pf2e" configurations. Please note that if you are using a custom template
+and fantasy statblocks, you do **not** need to set the dice roller in your
+config. Fantasy statblocks will take care of the rendering itself.
 
 See [examples/config][] for the general structure of config.
 
@@ -89,28 +90,27 @@ See [examples/config][] for the general structure of config.
 
 The conversion tool downloads fluff images into `img` directories within each type, e.g. `backgrounds/img` or `bestiary/aberration/img`. These images are unordered, and are not referenced in entry text. Templates must be modified to include them.
 
-To display all images, you can do something like this: 
+To display all images, you can do something like this:
 
-```
+```md
 {#each resource.fluffImages}![{it.caption}]({it.path})  
 {/each}
 ```
 
 Note that the line above ends with two spaces, which serves as a line break when you have strict line endings enabled. You may need something a little different to get things to wrap the way you want in the case that there are multiple images (which is infrequent for these types).
 
-You can also use two separate blocks, such that the first image is used at the top of the document, and any others are included later: 
+You can also use two separate blocks, such that the first image is used at the top of the document, and any others are included later:
 
-```
+```md
 {#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
 ![{first.title}]({first.vaultPath}#right)  
 {/let}{/if}
 ...
-
 {#each resource.fluffImages}{#if it_index != 0}![{it.caption}]({it.path}#center)  
 {/if}{/each}
 ```
 
-Notice the `#right` and `#center` anchor tags in the example above. The following CSS snippet defines formatting for two anchor tags: `#right` (which will float the image to the right) and `#center` (which will display the image as a centered block). 
+Notice the `#right` and `#center` anchor tags in the example above. The following CSS snippet defines formatting for two anchor tags: `#right` (which will float the image to the right) and `#center` (which will display the image as a centered block).
 
 ```css
 .json5e-background div[src$="#center"],
@@ -142,7 +142,6 @@ Notice the `#right` and `#center` anchor tags in the example above. The followin
 .json5e-spell div[src$="#right"] img {
   height: 300px;
 }
-
 .rendered-widget .admonition-statblock-parent,
 .markdown-rendered .admonition-statblock-parent,
 .markdown-preview-section .admonition-statblock-parent {
@@ -150,17 +149,16 @@ Notice the `#right` and `#center` anchor tags in the example above. The followin
 }
 ```
 
-Notes: 
+Notes:
 
-- I recommend constraining the image height (rather than the width) in your CSS snippet for images. 
+- I recommend constraining the image height (rather than the width) in your CSS snippet for images.
 - The above snippet also adds a `clear` setting to the admonition parent. Some text descriptions are shorter than the constrained image height. Setting `clear: both` on `admonition-parent` ensures that images floated to the right do not impact the `statblock` display.
 - This configuration is in the [compendium.css snippet][ex-snippets].
 - There is an example for each type in the [example templates directory][ex-templates] directory. Relevant file names start with `images-`.
 
+## 🔖  1.0.18: You can put more things in json input now
 
-## 🔖  1.0.18: You can put more things in json input now!
-
-Use `convert` to import source text for books and adventures that you own: 
+Use `convert` to import source text for books and adventures that you own:
 
 ```json
   "convert": {
@@ -181,9 +179,9 @@ Specify templates in json:
   }
 ```
 
-Be careful of paths here. Relative paths will be resolved depending on where the command is run from. Absolute paths will be machine specific (most likely). Use forward slashes for path segments, even if you're working on windows. 
+Be careful of paths here. Relative paths will be resolved depending on where the command is run from. Absolute paths will be machine specific (most likely). Use forward slashes for path segments, even if you're working on windows.
 
-You can place this configuration one file or several, your choice. 
+You can place this configuration one file or several, your choice.
 
 ## 🔖  1.0.16: Sections in Spell text
 
@@ -204,9 +202,9 @@ The [default spell template (spell2md.txt)][def-templates] will test for section
 
 ## 🔖  1.0.14: Ability Scores
 
-As shown in [monster2md-scores.txt][ex-templates], you can now access ability scores directly to achieve alternate layouts in templates, for example: 
+As shown in [monster2md-scores.txt][ex-templates], you can now access ability scores directly to achieve alternate layouts in templates, for example:
 
-```
+```md
 - STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
 - DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}`
 - CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}`
@@ -233,14 +231,14 @@ Symbols and tokens have changed in structure. Custom templates will need a bit o
 
 For bestiary tokens:
 
-```
+```md
 {#if resource.token}
 ![{resource.token.caption}]({resource.token.path}#token){/if}
 ```
 
 For deities:
 
-```
+```md
 {#if resource.image}
 ![{resource.image.caption}]({resource.image.path}#symbol){/if}
 ```

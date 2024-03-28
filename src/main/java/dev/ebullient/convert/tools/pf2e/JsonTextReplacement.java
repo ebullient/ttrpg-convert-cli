@@ -95,11 +95,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
                 result = result.replaceAll("\\{@sup ([^}]+)}", "[$1]: ");
             }
 
-            // TODO: review against Pf2e formatting patterns
-            if (cfg().alwaysUseDiceRoller()) {
-                result = replaceWithDiceRoller(result);
-            }
-
+            result = replaceWithDiceRoller(result); // {@hit ..} and {@d20 ..}
             result = dicePattern.matcher(result)
                     .replaceAll((match) -> {
                         String[] parts = match.group(2).split("\\|");

@@ -194,7 +194,6 @@ public class Json2QuteCommon implements JsonSource {
                 }
 
                 boolean isMulti = groups.values().stream().anyMatch(x -> x.size() > 1);
-                ;
                 multiMultipleInner |= isMulti;
                 multipleInner |= isMulti;
 
@@ -792,25 +791,33 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     Collection<NamedText> collectSortedTraits(JsonNode array) {
-        // gather traits into a sorted array
-        ArrayNode sorted = Tui.MAPPER.createArrayNode();
-        sorted.addAll(sortedTraits(array));
+        boolean pushed = parseState().pushTrait();
+        try {
+            // gather traits into a sorted array
+            ArrayNode sorted = Tui.MAPPER.createArrayNode();
+            sorted.addAll(sortedTraits(array));
 
-        List<NamedText> namedText = new ArrayList<>();
-        collectTraits(namedText, sorted);
-        return namedText;
+            List<NamedText> namedText = new ArrayList<>();
+            collectTraits(namedText, sorted);
+            return namedText;
+        } finally {
+            parseState().pop(pushed);
+        }
     }
 
     Collection<NamedText> collectTraits(String field) {
-        List<NamedText> traits = new ArrayList<>();
-
-        JsonNode header = rootNode.get(field + "Header");
-        if (header != null) {
-            addNamedTrait(traits, "", header);
+        boolean pushed = parseState().pushTrait();
+        try {
+            List<NamedText> traits = new ArrayList<>();
+            JsonNode header = rootNode.get(field + "Header");
+            if (header != null) {
+                addNamedTrait(traits, "", header);
+            }
+            collectTraits(traits, rootNode.get(field));
+            return traits;
+        } finally {
+            parseState().pop(pushed);
         }
-
-        collectTraits(traits, rootNode.get(field));
-        return traits;
     }
 
     void collectTraits(List<NamedText> traits, JsonNode array) {
@@ -820,7 +827,6 @@ public class Json2QuteCommon implements JsonSource {
             tui().errorf("Unknown %s for %s: %s", array, sources.getKey(), array.toPrettyString());
             throw new IllegalArgumentException("Unknown field: " + getSources());
         }
-
         for (JsonNode e : iterableElements(array)) {
             String name = SourceField.name.replaceTextFrom(e, this)
                     .replaceAll(":$", "");

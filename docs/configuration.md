@@ -23,6 +23,7 @@ This guide introduces you to configuring data transformations using the Command 
     - [Excluding specific content with `exclude`](#excluding-specific-content-with-exclude)
     - [Including specific content with `include`](#including-specific-content-with-include)
 - [Use the dice roller plugin](#use-the-dice-roller-plugin)
+- [Render with Fantasy Statblocks](#render-with-fantasy-statblocks)
 - [Tag prefix](#tag-prefix)
 - [Copying internal images](#copying-internal-images)
 - [Copying external images](#copying-external-images)
@@ -337,11 +338,13 @@ This approach is ideal for content acquired in parts, like individual items from
 
 ## Use the dice roller plugin
 
-The CLI can generate notes that include inline dice rolls. To enable this feature, set the `useDiceRoller` key to `true`.
+The CLI can generate notes that include inline dice rolls. To enable this feature, set the `useDiceRoller` attribute to `true`.
 
-If you render dice rolls, set `useDiceRoller` to true to use dice roller strings when replacing dice `{@dice }`, and `{@damage }` strings.
+## Render with Fantasy Statblocks
 
-Please note that if you are using a custom template and fantasy statblocks, you do **not** need to set the dice roller in your config. Fantasy statblocks will take care of the rendering itself.
+If you are using the Fantasy Statblocks plugin to render your statblocks, set `yamlStatblocks` to `true`.
+
+This will avoid adding backticks or other formatting related to dice rolls in statblock text (which will make Fantasy Statblocks happier), whether you have dice roller plugin enabled or not.
 
 ## Tag prefix
 

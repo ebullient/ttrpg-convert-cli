@@ -6,7 +6,7 @@ This data object provides a default mechanism for creating a marked up string ba
 
 ## Attributes
 
-[ac](#ac), [acText](#actext), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext)
+[ac](#ac), [acText](#actext), [hitDice](#hitdice), [hp](#hp), [hpDiceRoller](#hpdiceroller), [hpText](#hptext)
 
 
 ### ac
@@ -19,11 +19,15 @@ Additional armor class text. May link to related items
 
 ### hitDice
 
-Hit dice formula as formatted string: `7d10 + 14` (creatures)
+Hit dice formula string: 7d10 + 14 (for creatures)
 
 ### hp
 
-Hit points. If using the dice roller plugin is enabled, this will be a dice roll formula.
+Hit points (number)
+
+### hpDiceRoller
+
+Hit points as a dice roll formula.
 
 ### hpText
 
