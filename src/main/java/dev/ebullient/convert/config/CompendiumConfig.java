@@ -47,7 +47,7 @@ public class CompendiumConfig {
         static DiceRoller fromAttributes(Boolean useDiceRoller, Boolean yamlStatblocks) {
             yamlStatblocks = yamlStatblocks == null ? false : yamlStatblocks;
 
-            if (useDiceRoller == null || useDiceRoller) {
+            if (useDiceRoller == null || !useDiceRoller) {
                 return yamlStatblocks ? disabledUsingFS : disabled;
             }
             return yamlStatblocks ? enabledUsingFS : enabled;
@@ -450,6 +450,7 @@ public class CompendiumConfig {
         include,
         includeGroups,
         paths,
+        yamlStatblocks,
         tagPrefix,
         template,
         ttrpg;

@@ -122,7 +122,8 @@ public class RegexTest implements JsonSource {
                 "with an Intelligence of {@d20 3|16}, a Wisdom of {@d20 0|10}, and a Charisma of {@d20 4|18}",
                 "{@hit 3 plus PB} to hit;  {@h}7 ({@damage 1d6 + 4}) piercing damage plus 7 ({@damage 2d6}) poison damage.",
                 "{@d20 2|10|Perception} {@d20 -2|8|Perception}",
-                "{@hit +3|+3 to hit}");
+                "{@hit +3|+3 to hit}",
+                "{@atk mw} {@hit 9} to hit, reach 5 ft., one target. {@h}9 ({@damage 1d8 + 5}) piercing damage plus 7 ({@damage 2d6}) necrotic damage.");
 
         List<String> disabled = List.of(
                 "Spells cast from the spell gem have a save DC of 15 and an attack bonus of `+9`.",
@@ -137,7 +138,8 @@ public class RegexTest implements JsonSource {
                 "with an Intelligence of `+3` (`16`), a Wisdom of `+0` (`10`), and a Charisma of `+4` (`18`)",
                 "`3 plus PB` to hit;  *Hit:* 7 (`1d6 + 4`) piercing damage plus 7 (`2d6`) poison damage.",
                 "Perception (`+2`) Perception (`-2`)",
-                "+3 to hit");
+                "+3 to hit",
+                "*Melee Weapon Attack:* `+9` to hit, reach 5 ft., one target. *Hit:* 9 (`1d8 + 5`) piercing damage plus 7 (`2d6`) necrotic damage.");
 
         configurator.setUseDiceRoller(DiceRoller.disabled);
         for (int i = 0; i < example.size(); i++) {
@@ -147,18 +149,19 @@ public class RegexTest implements JsonSource {
 
         List<String> enabled = List.of(
                 "Spells cast from the spell gem have a save DC of 15 and an attack bonus of `dice: d20+9` (`+9`).",
-                "It has a Strength of 26 (`dice: d20+8` (`+8`)) and a Dexterity of 10 (`dice: d20+0` (`+0`))",
+                "It has a Strength of `dice:+8|text(26)` (`+8`) and a Dexterity of `dice:+0|text(10)` (`+0`)",
                 "`dice: 1d2-2+2d3+5|avg|noform` (`1d2-2+2d3+5`) for regular dice rolls, `dice: 1d6|avg|noform` (`1d6`) for multiple options;",
                 "`1d6 + <span title='default=123, min=1'>[Number]</span>` for input prompts)",
                 "with extended display text and display text",
                 "a special 'hit' version which assumes a d20 is to be rolled `dice: d20+7` (`+7`)",
                 "There's also `dice: 1d12+3|avg|noform` (`1d12+3`) and `dice: d20-4` (`-4`)",
                 "`1d6` `1d6`",
-                "Strength (5), Strength (`dice: d20+5|nodice|text(+5)`), and [Animal Handling](rules/skills.md#Animal%20Handling) (`dice: d20+5|nodice|text(+5)`)",
+                "Strength (5), Strength (`dice: d20+5|text(+5)`), and [Animal Handling](rules/skills.md#Animal%20Handling) (`dice: d20+5|text(+5)`)",
                 "with an Intelligence of `+3` (`16`), a Wisdom of `+0` (`10`), and a Charisma of `+4` (`18`)",
-                "`3 plus PB` to hit;  *Hit:* 7 (`dice: 1d6 + 4|avg|noform` (`1d6 + 4`)) piercing damage plus 7 (`dice: 2d6|avg|noform` (`2d6`)) poison damage.",
-                "Perception (`dice: d20+2|nodice|text(+2)`) Perception (`dice: d20-2|nodice|text(-2)`)",
-                "+3 to hit");
+                "`3 plus PB` to hit;  *Hit:* `dice:1d6 + 4|text(7)` (`1d6 + 4`) piercing damage plus `dice:2d6|text(7)` (`2d6`) poison damage.",
+                "Perception (`dice: d20+2|text(+2)`) Perception (`dice: d20-2|text(-2)`)",
+                "+3 to hit",
+                "*Melee Weapon Attack:* `dice: d20+9` (`+9`) to hit, reach 5 ft., one target. *Hit:* `dice:1d8 + 5|text(9)` (`1d8 + 5`) piercing damage plus `dice:2d6|text(7)` (`2d6`) necrotic damage.");
 
         configurator.setUseDiceRoller(DiceRoller.enabled);
         for (int i = 0; i < example.size(); i++) {
@@ -186,7 +189,8 @@ public class RegexTest implements JsonSource {
                 "with an Intelligence of +3 (16), a Wisdom of +0 (10), and a Charisma of +4 (18)",
                 "3 plus PB to hit;  *Hit:* 7 (1d6 + 4) piercing damage plus 7 (2d6) poison damage.",
                 "Perception (+2) Perception (-2)",
-                "+3 to hit");
+                "+3 to hit",
+                "*Melee Weapon Attack:* +9 to hit, reach 5 ft., one target. *Hit:* 9 (1d8 + 5) piercing damage plus 7 (2d6) necrotic damage.");
 
         // Now we'll indicate that we're within a trait (for a statblock)
         parseState().pushTrait();
@@ -201,6 +205,13 @@ public class RegexTest implements JsonSource {
             String result = this.replaceText(example.get(i));
             assertThat(result).isEqualTo(traits.get(i));
         }
+    }
+
+    @Test
+    void testSimplify() {
+        String example = " 7 (`dice: 2d6|avg|noform` (`2d6`))";
+        String result = this.simplifyFormattedDiceText(example);
+        assertThat(result).isEqualTo(" `dice:2d6|text(7)` (`2d6`)");
     }
 
     @Override

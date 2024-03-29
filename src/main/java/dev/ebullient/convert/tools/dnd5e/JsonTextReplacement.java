@@ -388,7 +388,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             DiceRoller roller = cfg().useDiceRoller();
             boolean notSuppressed = roller == DiceRoller.enabledUsingFS && !parseState().inTrait();
             if (!abilityCheck && (roller == DiceRoller.enabled || notSuppressed)) {
-                mod = "`dice: d20" + mod + "|nodice|text(" + mod + ")`";
+                mod = "`dice: d20" + mod + "|text(" + mod + ")`";
             }
 
             return String.format("%s (%s)", text == null ? ability.value() : text, mod);
@@ -414,7 +414,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         DiceRoller roller = cfg().useDiceRoller();
         boolean notSuppressed = roller.useFantasyStatblocks() && !parseState().inTrait();
         if (roller == DiceRoller.enabled || notSuppressed) {
-            dice = "`dice: d20" + dice + "|nodice|text(" + dice + ")`";
+            dice = "`dice: d20" + dice + "|text(" + dice + ")`";
         }
 
         return String.format("%s (%s)", text, dice);
