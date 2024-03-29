@@ -51,6 +51,7 @@ public class Tools5eDataConvertTest {
             LaunchResult result = launcher.launch("--index",
                     "-o", srd_index.toString(),
                     TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("dice-roller.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))

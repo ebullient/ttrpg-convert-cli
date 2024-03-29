@@ -54,12 +54,12 @@ public class AcHp implements QuteUtil {
 
     /**
      * Hit points as a dice roller formula:
-     * \`dice: 1d20+7|nodice|text(37)\` (\`1d20+7\`)
+     * \`dice: 1d20+7|text(37)\` (\`1d20+7\`)
      */
     public String getHpDiceRoller() {
         return hitDice == null
                 ? getHp()
-                : "`dice: " + hitDice + "|nodice|text(" + hp + ")` (`" + hitDice + "`)";
+                : "`dice: " + hitDice + "|text(" + hp + ")` (`" + hitDice + "`)";
     }
 
     /**
@@ -72,13 +72,32 @@ public class AcHp implements QuteUtil {
     public String toString() {
         List<String> out = new ArrayList<>();
         if (isPresent(ac)) {
-            out.add("- **Armor Class** " + (isPresent(ac) ? ac + " " : "") + (isPresent(acText) ? " (" + acText + ")" : ""));
+            List<String> acOut = new ArrayList<>();
+            acOut.add("**Armor Class**");
+            if (isPresent(ac)) {
+                acOut.add(ac.toString());
+            }
+            if (isPresent(acText)) {
+                acOut.add("(" + acText + ")");
+            }
+            out.add("- " + String.join(" ", acOut));
         }
         if (isPresent(hp)) {
-            out.add("- **Hit Points** "
-                    + (isPresent(hp) ? hp + " " : "")
-                    + (isPresent(hitDice) ? "(`" + hitDice + "`)" : "")
-                    + (isPresent(hpText) ? " (" + hpText + ")" : ""));
+            List<String> hpOut = new ArrayList<>();
+            hpOut.add("**Hit Points**");
+            if (isPresent(hp)) {
+                hpOut.add(hp.toString());
+                if (isPresent(hitDice)) {
+                    hpOut.add("(`" + hitDice + "`)");
+                }
+                if (isPresent(hpText)) {
+                    hpOut.add("(" + hpText + ")");
+                }
+            } else {
+                hpOut.add(isPresent(hpText) ? hpText : "—");
+            }
+
+            out.add("- " + String.join(" ", hpOut));
         }
         return String.join("\n", out);
     }

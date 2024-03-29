@@ -158,8 +158,8 @@ public interface JsonTextConverter<T extends IndexType> {
                 .replaceAll(hitNeg, "`dice: d20$2` (`$2`)")
                 .replaceAll(d20Pos, "`dice: d20+$1` (`+$1`)")
                 .replaceAll(d20Neg, "`dice: d20$1` (`$1`)")
-                .replaceAll(altScorePos, "$2 (`dice: d20+$1|nodice|text(+$1)`)")
-                .replaceAll(altScoreNeg, "$2 (`dice: d20$1|nodice|text($1)`)")
+                .replaceAll(altScorePos, "$2 (`dice: d20+$1|text(+$1)`)")
+                .replaceAll(altScoreNeg, "$2 (`dice: d20$1|text($1)`)")
                 .replaceAll(modScorePos, "`+$1` (`$2`)")
                 .replaceAll(modScoreNeg, "`$1` (`$2`)")
                 .replaceAll(altText, "$2")
@@ -167,10 +167,11 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String simplifyFormattedDiceText(String text) {
+        // 7 (`dice: 2d6|avg|noform` (`2d6`)) --> `dice: 2d6|text(7)` (`2d6`)
         return text
-                .replaceAll("` \\((" + JsonTextConverter.DICE_FORMULA + ")\\) to hit", "` ($1 to hit)")
-                .replaceAll(" \\d+ \\((`dice:" + JsonTextConverter.DICE_FORMULA + "\\|avg` \\(`"
-                        + JsonTextConverter.DICE_FORMULA + "`\\))\\)", " $1");
+                .replaceAll("` \\((" + DICE_FORMULA + ")\\) to hit", "` ($1 to hit)")
+                .replaceAll(" (\\d+) \\(`dice:[^`]+` \\(`([^`]+)`\\)\\)",
+                        " `dice:$2|text($1)` (`$2`)");
     }
 
     /** Tokenizer: use a stack of StringBuilders to deal with nested tags */
