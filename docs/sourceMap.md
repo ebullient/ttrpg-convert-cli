@@ -42,6 +42,7 @@ _Support content creators. Only use or include sources that you own._
 | DMG | Dungeon Master's Guide |
 | DMTCRG | The Deck of Many Things: Card Reference Guide |
 | DSotDQ | Dragonlance: Shadow of the Dragon Queen |
+| DitLCoT | Descent into the Lost Caverns of Tsojcanth |
 | DoD | Domains of Delight |
 | DoDk | Dungeons of Drakkenheim |
 | DoSI | Dragons of Stormwreck Isle |
@@ -115,6 +116,7 @@ _Support content creators. Only use or include sources that you own._
 | PaBTSO | Phandelver and Below: The Shattered Obelisk |
 | PiP | Peril in Pinegrove |
 | PotA | Princes of the Apocalypse |
+| QftIS | Quests from the Infinite Staircase |
 | RMBRE | The Lost Dungeon of Rickedness: Big Rick Energy |
 | RMR | Dungeons & Dragons vs. Rick and Morty: Basic Rules |
 | RoT | The Rise of Tiamat |
