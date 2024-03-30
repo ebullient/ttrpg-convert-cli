@@ -44,10 +44,7 @@ public class ImageRef {
 
     private ImageRef(String url, Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
         // some things are already escaped in the source (so escaping again would be wrong)
-        this.url = url == null
-                ? null
-                : url.replace(" ", "%20")
-                        .replace("é", "%C3%A9");
+        this.url = url;
         this.sourcePath = sourcePath;
         this.targetFilePath = targetFilePath;
         title = title == null
@@ -238,6 +235,17 @@ public class ImageRef {
             if (remoteUrl.startsWith("http")) {
                 remoteUrl = remoteUrl.replaceAll("^(https?):/+", "$1://");
             } else if (!remoteUrl.startsWith("file:/")) {
+                Tui.instance().debugf("ImageRef: %s", remoteUrl);
+                remoteUrl = remoteUrl.replace(" ", "%20");
+                String filename = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
+                if (!filename.contains("%")) {
+                    try {
+                        String encoded = java.net.URLEncoder.encode(filename, "UTF-8");
+                        remoteUrl = remoteUrl.replace(filename, encoded);
+                    } catch (java.io.UnsupportedEncodingException e) {
+                        Tui.instance().errorf("Failed to encode filename: %s", filename);
+                    }
+                }
                 remoteUrl = imageRoot.getRootPath() + remoteUrl;
             }
 
