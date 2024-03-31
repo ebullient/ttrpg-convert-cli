@@ -235,23 +235,22 @@ public class ImageRef {
             if (remoteUrl.startsWith("http")) {
                 remoteUrl = remoteUrl.replaceAll("^(https?):/+", "$1://");
             } else if (!remoteUrl.startsWith("file:/")) {
-                Tui.instance().debugf("ImageRef: %s", remoteUrl);
-                remoteUrl = remoteUrl.replace(" ", "%20");
-                String filename = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
-                if (!filename.contains("%")) {
-                    try {
-                        String encoded = java.net.URLEncoder.encode(filename, "UTF-8");
-                        remoteUrl = remoteUrl.replace(filename, encoded);
-                    } catch (java.io.UnsupportedEncodingException e) {
-                        Tui.instance().errorf("Failed to encode filename: %s", filename);
-                    }
-                }
                 remoteUrl = imageRoot.getRootPath() + remoteUrl;
             }
 
             if (imageRoot.copyInternalToVault() || imageRoot.copyExternalToVault()) {
                 // remote images to be copied into the vault
                 if (remoteUrl.startsWith("http") || remoteUrl.startsWith("file")) {
+                    remoteUrl = remoteUrl.replace(" ", "%20");
+                    String filename = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
+                    if (!filename.contains("%")) {
+                        try {
+                            String encoded = java.net.URLEncoder.encode(filename, "UTF-8");
+                            remoteUrl = remoteUrl.replace(filename, encoded);
+                        } catch (java.io.UnsupportedEncodingException e) {
+                            Tui.instance().errorf("Failed to encode filename: %s", filename);
+                        }
+                    }
                     return new ImageRef(remoteUrl, null, targetFilePath, title, vaultPath, width);
                 }
                 return new ImageRef(null, Path.of(remoteUrl), targetFilePath, title, vaultPath, width);
