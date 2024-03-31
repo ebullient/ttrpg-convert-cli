@@ -126,17 +126,6 @@ public class CompendiumConfig {
         return source.includedBy(allowedSources);
     }
 
-    public boolean excludeItem(JsonNode sourceNode, boolean allowWhenEmpty) {
-        if (allSources) {
-            return false;
-        }
-        if (allowedSources.isEmpty() || sourceNode == null || !sourceNode.isTextual()) {
-            return !allowWhenEmpty;
-        }
-        // skip item if the source isn't in allowed sources
-        return !allowedSources.contains(sourceNode.asText().toLowerCase());
-    }
-
     public Optional<Boolean> keyIsIncluded(String key) {
         if (includedKeys.contains(key)) {
             return Optional.of(true);

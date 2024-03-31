@@ -959,10 +959,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return config.sourceIncluded(source);
     }
 
-    public boolean excludeItem(JsonNode itemSource, boolean isSRD) {
-        return config.excludeItem(itemSource, isSRD);
-    }
-
     private boolean keyIsIncluded(String key, JsonNode node) {
 
         // Check against include/exclude rules (config: included/excluded/all)
@@ -987,7 +983,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
 
         Tools5eSources sources = Tools5eSources.findSources(key);
-        return cfg().sourceIncluded(sources);
+        return cfg().sourceIncluded(sources) || srdKeys.contains(key);
     }
 
     boolean isIncluded(String key) {
