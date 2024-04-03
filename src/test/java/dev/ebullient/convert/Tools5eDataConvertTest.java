@@ -148,11 +148,11 @@ public class Tools5eDataConvertTest {
                     "-o", target.toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString()));
 
-            // if (TestUtils.PATH_5E_TOOLS_IMAGES.toFile().exists()) {
-            //     args.add(TestUtils.TEST_RESOURCES.resolve("images-from-local.json").toString());
-            // } else {
-            args.add(TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString());
-            // }
+            if (TestUtils.PATH_5E_TOOLS_IMAGES.toFile().exists()) {
+                args.add(TestUtils.TEST_RESOURCES.resolve("images-from-local.json").toString());
+            } else {
+                args.add(TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString());
+            }
 
             LaunchResult result = launcher.launch(args.toArray(new String[0]));
             assertThat(result.exitCode())

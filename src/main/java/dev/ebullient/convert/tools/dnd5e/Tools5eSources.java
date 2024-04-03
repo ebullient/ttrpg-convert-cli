@@ -251,6 +251,11 @@ public class Tools5eSources extends CompendiumSources {
         int pos = fullPath.lastIndexOf('/');
         String fileName = fullPath.substring(pos + 1);
 
+        int query = fileName.lastIndexOf('?');
+        if (query >= 0) {
+            fileName = fileName.substring(0, query);
+        }
+
         if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
             fileName = primarySource() + "-" + fileName;
         }
