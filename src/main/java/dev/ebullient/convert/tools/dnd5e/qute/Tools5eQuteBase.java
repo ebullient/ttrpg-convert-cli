@@ -66,7 +66,7 @@ public class Tools5eQuteBase extends QuteBase {
                 if (type != null && source.equalsIgnoreCase(type.defaultSourceString())) {
                     return "";
                 }
-                return "-" + source.toLowerCase();
+                return "-" + Tui.slugify(source);
         }
     }
 
@@ -90,7 +90,7 @@ public class Tools5eQuteBase extends QuteBase {
         switch (pantheon.toLowerCase()) {
             case "exandria" -> {
                 if (!source.equalsIgnoreCase("egw")) {
-                    suffix = "-" + source.toLowerCase();
+                    suffix = "-" + Tui.slugify(source);
                 }
             }
         }
