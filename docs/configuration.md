@@ -25,6 +25,8 @@ This guide introduces you to configuring data transformations using the Command 
 - [Use the dice roller plugin](#use-the-dice-roller-plugin)
 - [Render with Fantasy Statblocks](#render-with-fantasy-statblocks)
 - [Tag prefix](#tag-prefix)
+- [Templates](#templates)
+    - [Customizing templates](#customizing-templates)
 - [Copying internal images](#copying-internal-images)
 - [Copying external images](#copying-external-images)
 
