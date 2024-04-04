@@ -47,10 +47,13 @@ jobs:
     secrets: inherit
 
   native-build:
-    needs: [build]
+    needs: [metadata, build]
+    uses: ebullient/workflows/.github/workflows/java-release-native-binaries.yml@main
     permissions:
       contents: read
-    uses: ebullient/workflows/.github/workflows/java-snap-native.yml@main
+      actions: write
+    with:
+      version: ${{ needs.metadata.outputs.snapshot }}
     secrets: inherit
 
   snap-release:
