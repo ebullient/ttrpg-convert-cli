@@ -249,7 +249,8 @@ public class Tools5eSources extends CompendiumSources {
                 ? mediaHref.href.url
                 : mediaHref.href.path.replace("\\", "/");
         int pos = fullPath.lastIndexOf('/');
-        String fileName = fullPath.substring(pos + 1);
+        // Replace %20 with space ahead of slugify if it is present
+        String fileName = fullPath.substring(pos + 1).replace("%20", " ");
 
         int query = fileName.lastIndexOf('?');
         if (query >= 0) {

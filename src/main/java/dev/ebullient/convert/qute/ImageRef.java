@@ -229,8 +229,10 @@ public class ImageRef {
             String vaultPath = String.format("%s%s", vaultRoot,
                     relativeTarget.toString().replace('\\', '/'));
 
+            // Escaping spaces is a mess. Remove here (local file paths won't want it)
+            // It is changed back (from space to %20) if in URL form (file or http)
             String remoteUrl = url == null
-                    ? sourcePath.toString()
+                    ? sourcePath.toString().replace("%20", " ")
                     : url;
             if (remoteUrl.startsWith("http")) {
                 remoteUrl = remoteUrl.replaceAll("^(https?):/+", "$1://");
@@ -241,11 +243,11 @@ public class ImageRef {
             if (imageRoot.copyInternalToVault() || imageRoot.copyExternalToVault()) {
                 // remote images to be copied into the vault
                 if (remoteUrl.startsWith("http") || remoteUrl.startsWith("file")) {
-                    remoteUrl = remoteUrl.replace(" ", "%20");
                     String filename = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
                     if (!filename.contains("%")) {
                         try {
-                            String encoded = java.net.URLEncoder.encode(filename, "UTF-8");
+                            String encoded = java.net.URLEncoder.encode(filename, "UTF-8")
+                                    .replace("+", "%20");
                             remoteUrl = remoteUrl.replace(filename, encoded);
                         } catch (java.io.UnsupportedEncodingException e) {
                             Tui.instance().errorf("Failed to encode filename: %s", filename);
