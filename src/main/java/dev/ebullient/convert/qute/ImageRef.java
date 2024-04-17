@@ -43,8 +43,7 @@ public class ImageRef {
     final String titleAttr;
 
     private ImageRef(String url, Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
-        // some things are already escaped in the source (so escaping again would be wrong)
-        this.url = url;
+        this.url = url == null ? null : url.replace(" ", "%20"); // catch any remaining spaces
         this.sourcePath = sourcePath;
         this.targetFilePath = targetFilePath;
         title = title == null
@@ -253,7 +252,9 @@ public class ImageRef {
                             Tui.instance().errorf("Failed to encode filename: %s", filename);
                         }
                     }
-                    return new ImageRef(remoteUrl, null, targetFilePath, title, vaultPath, width);
+                    // also replace any remaining spaces in the path
+                    return new ImageRef(remoteUrl,
+                            null, targetFilePath, title, vaultPath, width);
                 }
                 return new ImageRef(null, Path.of(remoteUrl), targetFilePath, title, vaultPath, width);
             }
