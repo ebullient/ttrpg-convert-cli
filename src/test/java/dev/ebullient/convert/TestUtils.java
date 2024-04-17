@@ -283,6 +283,7 @@ public class TestUtils {
     public static void assertDirectoryContents(Path directory, Tui tui, BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = checkDirectoryContents(directory, tui, checker);
         assertThat(errors).isEmpty();
+        System.out.println("Done.");
     }
 
     public static void assertMarkdownLinks(Path filePath, Tui tui) {
@@ -330,7 +331,7 @@ public class TestUtils {
         try (Stream<Path> walk = Files.list(directory)) {
             walk.forEach(p -> {
                 if (p.toFile().isDirectory()) {
-                    System.out.println("📁 Checking directory: " + p);
+                    System.out.println("📁 Checking directory: " + p.toString().replace(PROJECT_PATH.toString(), ""));
                     errors.addAll(checkDirectoryContents(p, tui, checker));
                     return;
                 }
@@ -358,7 +359,6 @@ public class TestUtils {
             e.printStackTrace();
             errors.add(String.format("Unable to parse files in directory %s: %s", directory, e));
         }
-
         return errors;
     }
 
