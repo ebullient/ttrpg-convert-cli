@@ -330,6 +330,7 @@ public class TestUtils {
         try (Stream<Path> walk = Files.list(directory)) {
             walk.forEach(p -> {
                 if (p.toFile().isDirectory()) {
+                    System.out.println("📁 Checking directory: " + p);
                     errors.addAll(checkDirectoryContents(p, tui, checker));
                     return;
                 }
