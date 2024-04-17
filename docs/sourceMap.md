@@ -81,6 +81,7 @@ _Support content creators. Only use or include sources that you own._
 | LLK | Lost Laboratory of Kwalish |
 | LMoP | Lost Mine of Phandelver |
 | LR | Locathah Rising |
+| LRDT | Red Dragon's Tale: A LEGO Adventure |
 | LoX | Light of Xaryxis |
 | MCV1SC | Monstrous Compendium Volume 1: Spelljammer Creatures |
 | MCV2DC | Monstrous Compendium Volume 2: Dragonlance Creatures |
@@ -235,7 +236,9 @@ _Support content creators. Only use or include sources that you own._
 | UAWR | Unearthed Arcana: Wizard Revisited |
 | US | Unwelcome Spirits |
 | VD | Vecna Dossier |
+| VEoR | Vecna: Eve of Ruin |
 | VGM | Volo's Guide to Monsters |
+| VNotEE | Vecna: Nest of the Eldritch Eye |
 | VRGR | Van Richten's Guide to Ravenloft |
 | WBtW | The Wild Beyond the Witchlight |
 | WDH | Waterdeep: Dragon Heist |
