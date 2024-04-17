@@ -340,15 +340,8 @@ public class QuteMonster extends Tools5eQuteBase {
             return List.of();
         }
         return spellcasting.stream()
-                .map(s -> new NamedText(spellcastingToTraitName(s.name), s.getDesc()))
+                .map(s -> new NamedText(s.name, s.getDesc()))
                 .collect(Collectors.toList());
-    }
-
-    String spellcastingToTraitName(String name) {
-        if (name.contains("Innate")) {
-            return "innate";
-        }
-        return "spells";
     }
 
     /**
