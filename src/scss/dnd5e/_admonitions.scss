@@ -45,6 +45,11 @@ body {
   --callout-color: var(--admonition-flowchart);
   --callout-border-width: 0.10rem;
 }
+.callout[data-callout^="embed-"] {
+  --embed-border-left: none;
+  --embed-border-right: none;
+  --embed-padding: 0;
+}
 .json5e-background,
 .json5e-class,
 .json5e-deck,
@@ -62,7 +67,7 @@ body {
 .json5e-vehicle  {
   div:has(> .callout[data-callout="flowchart"]):has(+ div > .callout[data-callout="flowchart"]) {
     position: relative;
-  
+
     &:after {
       content: '\2193';
       color: var(--admonition-flowchart);
@@ -85,11 +90,11 @@ body {
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-  
+
       p {
         display: none;
       }
-  
+
       div[src$="#gallery"] {
         max-width: 49%;
         img {

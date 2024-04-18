@@ -55,6 +55,12 @@ body {
   --callout-border-width: 0.10rem;
 }
 
+.callout[data-callout^=embed-] {
+  --embed-border-left: none;
+  --embed-border-right: none;
+  --embed-padding: 0;
+}
+
 .json5e-background div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-class div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-deck div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
