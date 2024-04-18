@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +33,11 @@ public class Tools5eDataConvertTest {
         tui.printlnf("5eTools homebrew (%s): %s",
                 TestUtils.PATH_5E_HOMEBREW.toFile().exists(),
                 TestUtils.PATH_5E_HOMEBREW);
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        System.out.println("Done.");
     }
 
     public static void setupDir(String root) {

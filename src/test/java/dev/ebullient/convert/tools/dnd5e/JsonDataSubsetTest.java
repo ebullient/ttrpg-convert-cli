@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,11 @@ public class JsonDataSubsetTest {
         outputPath.toFile().mkdirs();
         // This uses test/resources/sources.json to constrain sources
         commonTests = new CommonDataTests(TestInput.subset, TestUtils.PATH_5E_TOOLS_DATA);
+    }
+
+    @AfterAll
+    public static void done() {
+        System.out.println("Done.");
     }
 
     @AfterEach

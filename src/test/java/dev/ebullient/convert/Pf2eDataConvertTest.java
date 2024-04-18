@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,11 @@ public class Pf2eDataConvertTest {
     @BeforeAll
     public static void setupDir() {
         setupDir("Pf2eDataConvertTest");
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        System.out.println("Done.");
     }
 
     public static void setupDir(String root) {

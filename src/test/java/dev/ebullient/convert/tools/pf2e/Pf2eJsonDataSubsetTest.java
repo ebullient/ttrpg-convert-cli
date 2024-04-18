@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +18,11 @@ public class Pf2eJsonDataSubsetTest {
     @BeforeAll
     public static void setupDir() throws Exception {
         commonTests = new CommonDataTests(TestInput.partial);
+    }
+
+    @AfterAll
+    public static void done() {
+        System.out.println("Done.");
     }
 
     @Test
