@@ -821,40 +821,50 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     void collectTraits(List<NamedText> traits, JsonNode array) {
-        if (array == null || array.isNull()) {
-            return;
-        } else if (array.isObject()) {
-            tui().errorf("Unknown %s for %s: %s", array, sources.getKey(), array.toPrettyString());
-            throw new IllegalArgumentException("Unknown field: " + getSources());
-        }
-        for (JsonNode e : iterableElements(array)) {
-            String name = SourceField.name.replaceTextFrom(e, this)
-                    .replaceAll(":$", "");
-            addNamedTrait(traits, name, e);
+        boolean pushed = parseState().pushTrait();
+        try {
+            if (array == null || array.isNull()) {
+                return;
+            } else if (array.isObject()) {
+                tui().errorf("Unknown %s for %s: %s", array, sources.getKey(), array.toPrettyString());
+                throw new IllegalArgumentException("Unknown field: " + getSources());
+            }
+            for (JsonNode e : iterableElements(array)) {
+                String name = SourceField.name.replaceTextFrom(e, this)
+                .replaceAll(":$", "");
+                addNamedTrait(traits, name, e);
+            }
+        } finally {
+            parseState().pop(pushed);
         }
     }
 
     void addNamedTrait(Collection<NamedText> traits, String name, JsonNode node) {
-        List<String> text = new ArrayList<>();
-        List<NamedText> nested = List.of();
-        if (node.isObject()) {
-            if (!SourceField.name.existsIn(node)) {
+        boolean pushed = parseState().pushTrait();
+        try {
+            List<String> text = new ArrayList<>();
+            List<NamedText> nested = List.of();
+            if (node.isObject()) {
+                if (!SourceField.name.existsIn(node)) {
+                    appendToText(text, node, null);
+                } else {
+                    appendToText(text, SourceField.entry.getFrom(node), null);
+                    appendToText(text, SourceField.entries.getFrom(node), null);
+                }
+            } else if (node.isArray()) {
+                // preformat text, but also collect nodes
                 appendToText(text, node, null);
+                nested = new ArrayList<>();
+                collectTraits(nested, node);
             } else {
-                appendToText(text, SourceField.entry.getFrom(node), null);
-                appendToText(text, SourceField.entries.getFrom(node), null);
+                appendToText(text, node, null);
             }
-        } else if (node.isArray()) {
-            // preformat text, but also collect nodes
-            appendToText(text, node, null);
-            nested = new ArrayList<>();
-            collectTraits(nested, node);
-        } else {
-            appendToText(text, node, null);
-        }
-        NamedText nt = new NamedText(name, text, nested);
-        if (nt.hasContent()) {
-            traits.add(nt);
+            NamedText nt = new NamedText(name, text, nested);
+            if (nt.hasContent()) {
+                traits.add(nt);
+            }
+        } finally {
+            parseState().pop(pushed);
         }
     }
 
@@ -866,51 +876,56 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     Collection<JsonNode> sortedTraits(JsonNode arrayNode) {
-        if (arrayNode == null || arrayNode.isNull()) {
-            return List.of();
-        } else if (arrayNode.isObject()) {
-            tui().errorf("Can't sort an object: %s", arrayNode);
-            throw new IllegalArgumentException("Object passed to sortedTraits: " + getSources());
+        boolean pushed = parseState().pushTrait();
+        try {
+            if (arrayNode == null || arrayNode.isNull()) {
+                return List.of();
+            } else if (arrayNode.isObject()) {
+                tui().errorf("Can't sort an object: %s", arrayNode);
+                throw new IllegalArgumentException("Object passed to sortedTraits: " + getSources());
+            }
+
+            return streamOf(arrayNode).sorted((a, b) -> {
+                Optional<Integer> aSort = Tools5eFields.sort.getIntFrom(a);
+                Optional<Integer> bSort = Tools5eFields.sort.getIntFrom(b);
+
+                if (aSort.isPresent() && bSort.isPresent()) {
+                    return aSort.get().compareTo(bSort.get());
+                } else if (aSort.isPresent() && bSort.isEmpty()) {
+                    return -1;
+                } else if (aSort.isEmpty() && bSort.isPresent()) {
+                    return 1;
+                }
+
+                String aName = SourceField.name.replaceTextFrom(a, this).toLowerCase();
+                String bName = SourceField.name.replaceTextFrom(b, this).toLowerCase();
+                if (aName.isEmpty() && bName.isEmpty()) {
+                    return 0;
+                }
+
+                boolean isOnlyA = aName.endsWith(" only)");
+                boolean isOnlyB = bName.endsWith(" only)");
+                if (!isOnlyA && isOnlyB) {
+                    return -1;
+                } else if (isOnlyA && !isOnlyB) {
+                    return 1;
+                }
+
+                int specialA = specialTraits.indexOf(aName);
+                int specialB = specialTraits.indexOf(bName);
+                if (specialA > -1 && specialB > -1) {
+                    return specialA - specialB;
+                } else if (specialA > -1 && specialB == -1) {
+                    return -1;
+                } else if (specialA == -1 && specialB > -1) {
+                    return 1;
+                }
+
+                return aName.compareTo(bName);
+            }).toList();
+        } finally {
+            parseState().pop(pushed);
         }
-
-        return streamOf(arrayNode).sorted((a, b) -> {
-            Optional<Integer> aSort = Tools5eFields.sort.getIntFrom(a);
-            Optional<Integer> bSort = Tools5eFields.sort.getIntFrom(b);
-
-            if (aSort.isPresent() && bSort.isPresent()) {
-                return aSort.get().compareTo(bSort.get());
-            } else if (aSort.isPresent() && bSort.isEmpty()) {
-                return -1;
-            } else if (aSort.isEmpty() && bSort.isPresent()) {
-                return 1;
-            }
-
-            String aName = SourceField.name.replaceTextFrom(a, this).toLowerCase();
-            String bName = SourceField.name.replaceTextFrom(b, this).toLowerCase();
-            if (aName.isEmpty() && bName.isEmpty()) {
-                return 0;
-            }
-
-            boolean isOnlyA = aName.endsWith(" only)");
-            boolean isOnlyB = bName.endsWith(" only)");
-            if (!isOnlyA && isOnlyB) {
-                return -1;
-            } else if (isOnlyA && !isOnlyB) {
-                return 1;
-            }
-
-            int specialA = specialTraits.indexOf(aName);
-            int specialB = specialTraits.indexOf(bName);
-            if (specialA > -1 && specialB > -1) {
-                return specialA - specialB;
-            } else if (specialA > -1 && specialB == -1) {
-                return -1;
-            } else if (specialA == -1 && specialB > -1) {
-                return 1;
-            }
-
-            return aName.compareTo(bName);
-        }).toList();
     }
 
     public final Tools5eQuteBase build() {

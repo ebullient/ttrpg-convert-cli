@@ -294,56 +294,60 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     List<Spellcasting> monsterSpellcasting() {
-        JsonNode array = MonsterFields.spellcasting.readArrayFrom(rootNode);
-        if (array == null || array.isNull()) {
-            return null;
-        } else if (array.isObject()) {
-            tui().errorf("Unknown spellcasting for %s: %s", sources.getKey(), array.toPrettyString());
-            throw new IllegalArgumentException("Unknown spellcasting: " + getSources());
-        }
-
-        List<Spellcasting> casting = new ArrayList<>();
-        for (JsonNode scNode : iterableElements(array)) {
-            Spellcasting spellcasting = new Spellcasting();
-            spellcasting.name = SourceField.name.replaceTextFrom(scNode, this);
-
-            spellcasting.headerEntries = new ArrayList<>();
-            appendToText(spellcasting.headerEntries,
-                    MonsterFields.headerEntries.getFrom(scNode), null);
-
-            spellcasting.footerEntries = new ArrayList<>();
-            appendToText(spellcasting.footerEntries,
-                    MonsterFields.footerEntries.getFrom(scNode), null);
-
-            if (MonsterFields.will.existsIn(scNode)) {
-                spellcasting.will = getSpells(MonsterFields.will.getFrom(scNode));
+        boolean pushed = parseState().pushTrait();
+        try {
+            JsonNode array = MonsterFields.spellcasting.readArrayFrom(rootNode);
+            if (array == null || array.isNull()) {
+                return null;
+            } else if (array.isObject()) {
+                tui().errorf("Unknown spellcasting for %s: %s", sources.getKey(), array.toPrettyString());
+                throw new IllegalArgumentException("Unknown spellcasting: " + getSources());
             }
-            if (MonsterFields.daily.existsIn(scNode)) {
-                spellcasting.daily = new TreeMap<>();
-                for (Entry<String, JsonNode> f : iterableFields(MonsterFields.daily.getFrom(scNode))) {
-                    spellcasting.daily.put(f.getKey(), getSpells(f.getValue()));
+
+            List<Spellcasting> casting = new ArrayList<>();
+            for (JsonNode scNode : iterableElements(array)) {
+                Spellcasting spellcasting = new Spellcasting();
+                spellcasting.name = SourceField.name.replaceTextFrom(scNode, this);
+
+                spellcasting.headerEntries = new ArrayList<>();
+                appendToText(spellcasting.headerEntries,
+                        MonsterFields.headerEntries.getFrom(scNode), null);
+
+                spellcasting.footerEntries = new ArrayList<>();
+                appendToText(spellcasting.footerEntries,
+                        MonsterFields.footerEntries.getFrom(scNode), null);
+
+                if (MonsterFields.will.existsIn(scNode)) {
+                    spellcasting.will = getSpells(MonsterFields.will.getFrom(scNode));
                 }
-            }
-            if (MonsterFields.spells.existsIn(scNode)) {
-                spellcasting.spells = new TreeMap<>();
-                for (Entry<String, JsonNode> f : iterableFields(MonsterFields.spells.getFrom(scNode))) {
-                    JsonNode spellNode = f.getValue();
-                    Spells spells = new Spells();
-                    if (spellNode.isArray()) {
-                        spells.spells = getSpells(spellNode);
-                    } else {
-                        spells.slots = MonsterFields.slots.intOrDefault(spellNode, 0);
-                        spells.lowerBound = MonsterFields.lower.intOrDefault(spellNode, 0);
-                        spells.spells = getSpells(MonsterFields.spells.getFrom(spellNode));
+                if (MonsterFields.daily.existsIn(scNode)) {
+                    spellcasting.daily = new TreeMap<>();
+                    for (Entry<String, JsonNode> f : iterableFields(MonsterFields.daily.getFrom(scNode))) {
+                        spellcasting.daily.put(f.getKey(), getSpells(f.getValue()));
                     }
-                    spellcasting.spells.put(f.getKey(), spells);
                 }
+                if (MonsterFields.spells.existsIn(scNode)) {
+                    spellcasting.spells = new TreeMap<>();
+                    for (Entry<String, JsonNode> f : iterableFields(MonsterFields.spells.getFrom(scNode))) {
+                        JsonNode spellNode = f.getValue();
+                        Spells spells = new Spells();
+                        if (spellNode.isArray()) {
+                            spells.spells = getSpells(spellNode);
+                        } else {
+                            spells.slots = MonsterFields.slots.intOrDefault(spellNode, 0);
+                            spells.lowerBound = MonsterFields.lower.intOrDefault(spellNode, 0);
+                            spells.spells = getSpells(MonsterFields.spells.getFrom(spellNode));
+                        }
+                        spellcasting.spells.put(f.getKey(), spells);
+                    }
+                }
+                parseState().popCitations(spellcasting.footerEntries);
+                casting.add(spellcasting);
             }
-            parseState().popCitations(spellcasting.footerEntries);
-            casting.add(spellcasting);
+            return casting;
+        } finally {
+            parseState().pop(pushed);
         }
-
-        return casting;
     }
 
     List<String> getSpells(JsonNode source) {
