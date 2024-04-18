@@ -685,6 +685,7 @@ public interface JsonSource extends JsonTextReplacement {
                     header = "|" + String.join(" | ", array) + " |";
                 }
 
+                final boolean cards = header.contains("Card | ");
                 for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
                     JsonNode cells;
                     if ("row".equals(TableFields.type.getTextOrNull(r))) {
@@ -697,11 +698,17 @@ public interface JsonSource extends JsonTextReplacement {
                             .map(x -> {
                                 JsonNode roll = RollFields.roll.getFrom(x);
                                 if (roll != null) {
+                                    String result = "";
                                     if (RollFields.exact.existsIn(roll)) {
-                                        return RollFields.exact.getFrom(roll);
+                                        result = RollFields.exact.getFrom(roll).asText();
+                                    } else {
+                                        result = RollFields.min.getTextOrEmpty(roll) + "-"
+                                                + RollFields.max.getTextOrEmpty(roll);
                                     }
-                                    return new TextNode(
-                                            RollFields.min.getTextOrEmpty(roll) + "-" + RollFields.max.getTextOrEmpty(roll));
+                                    if (cards) {
+                                        result += " | " + SourceField.entry.getTextOrEmpty(x);
+                                    }
+                                    return new TextNode(result);
                                 }
                                 return x;
                             })

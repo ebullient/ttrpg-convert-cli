@@ -259,6 +259,9 @@ public class Tools5eSources extends CompendiumSources {
 
         if (type == Tools5eIndexType.deity || type == Tools5eIndexType.note || type == Tools5eIndexType.variantrule) {
             fileName = primarySource() + "-" + fileName;
+        } else if (type == Tools5eIndexType.deck && !fullPath.contains("generic")) {
+            int pos2 = fullPath.substring(0, pos).lastIndexOf('/');
+            fileName = fullPath.substring(pos2 + 1, pos) + "-" + fileName;
         }
 
         int x = fileName.lastIndexOf('.');

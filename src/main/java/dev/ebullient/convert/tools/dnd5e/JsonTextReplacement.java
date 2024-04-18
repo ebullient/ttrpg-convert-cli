@@ -116,12 +116,16 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         if (x.contains("dice")) {
             // don't do the usual dice formatting in a column header
             x = replacePromptStrings(x);
-            x = x.replaceAll("\\{@dice ([^}|]+)\\|?[^}]*}", "$1");
+            if (x.endsWith("Card}")) {
+                x = x.replaceAll("\\{@dice ([^}|]+)\\|?([^}]*)}", "$1 | $2");
+            } else {
+                x = x.replaceAll("\\{@dice ([^}|]+)\\|?[^}]*}", "$1");
+            }
             x = replaceText(x);
         } else {
             x = replaceText(x);
         }
-        if (x.matches("^\\d*d\\d+$")) {
+        if (x.matches("^\\d*d\\d+( \\|.*)?$")) {
             return "dice: " + x;
         }
         return x;
