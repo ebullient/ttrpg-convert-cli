@@ -93,8 +93,6 @@ public interface JsonTextConverter<T extends IndexType> {
         DiceRoller roller = cfg().useDiceRoller();
         boolean suppressInYaml = parseState().inTrait() && roller.useFantasyStatblocks();
 
-        // needs to be escaped: \\ to escape the \\ so it is preserved in the output
-        String avg = parseState().inMarkdownTable() ? "\\\\|avg|noform" : "|avg|noform";
         int pos = diceRoll.indexOf(";");
         if (pos >= 0) {
             diceRoll = diceRoll.substring(0, pos);
@@ -104,6 +102,9 @@ public interface JsonTextConverter<T extends IndexType> {
         } else if (suppressInYaml) {
             return diceRoll;
         }
+
+        // needs to be escaped: \\ to escape the \\ so it is preserved in the output
+        String avg = parseState().inMarkdownTable() ? "\\\\|avg\\\\|noform" : "|avg|noform";
         return diceRoll.matches(JsonTextConverter.DICE_FORMULA)
                 ? "`dice: " + diceRoll + avg + "` (`" + diceRoll + "`)"
                 : '`' + diceRoll + '`';
@@ -153,13 +154,16 @@ public interface JsonTextConverter<T extends IndexType> {
                     .replaceAll(altText, "$2")
                     .replaceAll(nonFormula, "$1");
         }
+
+        String dtxt = parseState().inMarkdownTable() ? "\\\\|text(" : "|text(";
+
         return text
                 .replaceAll(hitPos, "`dice: d20+$2` (`+$2`)")
                 .replaceAll(hitNeg, "`dice: d20$2` (`$2`)")
                 .replaceAll(d20Pos, "`dice: d20+$1` (`+$1`)")
                 .replaceAll(d20Neg, "`dice: d20$1` (`$1`)")
-                .replaceAll(altScorePos, "$2 (`dice: d20+$1|text(+$1)`)")
-                .replaceAll(altScoreNeg, "$2 (`dice: d20$1|text($1)`)")
+                .replaceAll(altScorePos, "$2 (`dice: d20+$1" + dtxt + "+$1)`)")
+                .replaceAll(altScoreNeg, "$2 (`dice: d20$1" + dtxt + "$1)`)")
                 .replaceAll(modScorePos, "`+$1` (`$2`)")
                 .replaceAll(modScoreNeg, "`$1` (`$2`)")
                 .replaceAll(altText, "$2")
@@ -168,10 +172,11 @@ public interface JsonTextConverter<T extends IndexType> {
 
     default String simplifyFormattedDiceText(String text) {
         // 7 (`dice: 2d6|avg|noform` (`2d6`)) --> `dice: 2d6|text(7)` (`2d6`)
+        String dtxt = parseState().inMarkdownTable() ? "\\\\|text(" : "|text(";
         return text
                 .replaceAll("` \\((" + DICE_FORMULA + ")\\) to hit", "` ($1 to hit)")
                 .replaceAll(" (\\d+) \\(`dice:[^`]+` \\(`([^`]+)`\\)\\)",
-                        " `dice:$2|text($1)` (`$2`)");
+                        " `dice:$2" + dtxt + "$1)` (`$2`)");
     }
 
     /** Tokenizer: use a stack of StringBuilders to deal with nested tags */
