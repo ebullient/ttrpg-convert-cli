@@ -283,7 +283,6 @@ public class TestUtils {
     public static void assertDirectoryContents(Path directory, Tui tui, BiFunction<Path, List<String>, List<String>> checker) {
         List<String> errors = checkDirectoryContents(directory, tui, checker);
         assertThat(errors).isEmpty();
-        System.out.println("Done.");
     }
 
     public static void assertMarkdownLinks(Path filePath, Tui tui) {

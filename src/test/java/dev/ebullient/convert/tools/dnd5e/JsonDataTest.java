@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,11 @@ public class JsonDataTest {
     public static void setupDir() throws Exception {
         outputPath.toFile().mkdirs();
         commonTests = new CommonDataTests(TestInput.all, TestUtils.PATH_5E_TOOLS_DATA);
+    }
+
+    @AfterAll
+    public static void done() {
+        System.out.println("Done.");
     }
 
     @AfterEach
