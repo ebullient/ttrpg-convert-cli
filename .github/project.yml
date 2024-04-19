@@ -1,7 +1,7 @@
 name: TTRPG Convert CLI
 release:
-  current-version: 2.3.8
-  next-version: 2.3.8
+  current-version: 2.3.9
+  next-version: 2.3.9
   snapshot-version: 299-SNAPSHOT
 build:
   artifact: ttrpg-convert-cli
