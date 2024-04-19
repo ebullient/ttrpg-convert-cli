@@ -8,6 +8,7 @@ on:
 
 env:
   JAVA_VERSION: 17
+  NATIVE_VERSION: 22.3.2
   GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
   FAIL_ISSUE: 140
@@ -134,9 +135,9 @@ jobs:
         with:
           distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
-          components: "native-image"
-          cache: 'maven'
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ env.NATIVE_VERSION }}
+          cache: 'maven'
 
       - name: Build and run
         id: mvn-build
