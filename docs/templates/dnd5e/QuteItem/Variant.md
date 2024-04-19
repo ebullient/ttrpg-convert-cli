@@ -36,7 +36,7 @@ Formatted text listing other prerequisite conditions (optional)
 
 ### properties
 
-List of item's properties (with links to rules if the source is present)
+Formatted string listing item's properties (with links to rules if the source is present)
 
 ### range
 

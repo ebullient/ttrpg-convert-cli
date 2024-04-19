@@ -31,7 +31,7 @@ Two-handed Damage string, if applicable. Contains dice formula and damage type
 
 ### detail
 
-Item details: tier, rarity, category, attunement
+Formatted string of item details. Will include some combination of tier, rarity, category, and attunement
 
 ### fluffImages
 
@@ -55,7 +55,7 @@ Formatted text listing other prerequisite conditions (optional)
 
 ### properties
 
-List of item's properties (with links to rules if the source is present)
+Formatted string listing item's properties (with links to rules if the source is present)
 
 ### range
 
