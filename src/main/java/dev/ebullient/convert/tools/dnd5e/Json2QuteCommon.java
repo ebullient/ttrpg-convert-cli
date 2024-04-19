@@ -721,11 +721,12 @@ public class Json2QuteCommon implements JsonSource {
                 .replace("æ", "ae")
                 .replace("\"", "");
 
-        final String ext = ".webp";
-        Path targetFile = Path.of(targetDir,
-                Tools5eQuteBase.fixFileName(slugify(filename), getSources()) + ext);
-
         String sourcePath = Tools5eFields.tokenUrl.getTextOrNull(rootNode);
+
+        final String ext = sourcePath == null
+                ? ".webp"
+                : sourcePath.substring(sourcePath.lastIndexOf('.'));
+
         if (sourcePath == null && Tools5eFields.hasToken.booleanOrDefault(rootNode, false)) {
             // Construct the source path
             List<String> paths = new ArrayList<>();
@@ -744,6 +745,9 @@ public class Json2QuteCommon implements JsonSource {
         if (sourcePath == null) {
             return null;
         }
+
+        Path targetFile = Path.of(targetDir,
+                Tools5eQuteBase.fixFileName(slugify(filename), getSources()) + ext);
 
         return getSources().buildTokenImageRef(index, sourcePath, targetFile, true);
     }
