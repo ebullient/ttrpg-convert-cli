@@ -19,7 +19,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @TemplateData
 public class QuteItem extends Tools5eQuteBase {
 
-    /** Item details: tier, rarity, category, attunement */
+    /** Formatted string of item details. Will include some combination of tier, rarity, category, and attunement */
     public final String detail;
     /** Changes to armor class provided by the item, if applicable */
     public final String armorClass;
@@ -29,7 +29,7 @@ public class QuteItem extends Tools5eQuteBase {
     public final String damage2h;
     /** Item's range, if applicable */
     public final String range;
-    /** List of item's properties (with links to rules if the source is present) */
+    /** Formatted string listing item's properties (with links to rules if the source is present) */
     public final String properties;
     /** Strength requirement as a numerical value, if applicable */
     public final Integer strengthRequirement;
@@ -110,7 +110,7 @@ public class QuteItem extends Tools5eQuteBase {
         public final String damage2h;
         /** Item's range, if applicable */
         public final String range;
-        /** List of item's properties (with links to rules if the source is present) */
+        /** Formatted string listing item's properties (with links to rules if the source is present) */
         public final String properties;
         /** Strength requirement as a numerical value, if applicable */
         public final Integer strengthRequirement;
