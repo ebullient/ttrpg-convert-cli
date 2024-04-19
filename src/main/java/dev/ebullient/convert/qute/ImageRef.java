@@ -234,7 +234,9 @@ public class ImageRef {
                     ? sourcePath.toString().replace("%20", " ")
                     : url;
             if (remoteUrl.startsWith("http")) {
-                remoteUrl = remoteUrl.replaceAll("^(https?):/+", "$1://");
+                remoteUrl = remoteUrl
+                        .replaceAll("^(https?):/+", "$1://")
+                        .replace("/imgur.com", "/i.imgur.com");
             } else if (!remoteUrl.startsWith("file:/")) {
                 remoteUrl = imageRoot.getRootPath() + remoteUrl;
             }
