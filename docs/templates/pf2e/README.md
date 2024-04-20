@@ -10,7 +10,7 @@
 - [QuteAffliction](QuteAffliction.md): Pf2eTools Affliction attributes for standalone notes (`affliction2md.txt`)
 - [QuteArchetype](QuteArchetype.md): Pf2eTools Archetype attributes (`archetype2md.txt`)
 - [QuteBackground](QuteBackground.md): Pf2eTools Background attributes (`background2md.txt`)
-- [QuteBook](QuteBook.md): Pf2eTools Book attributes (`book2md.txt`)
+- [QuteBook](QuteBook/README.md): Pf2eTools Book attributes (`book2md.txt`)
 - [QuteCreature](QuteCreature.md): Pf2eTools Creature attributes (`creature2md.txt`)
 - [QuteDataActivity](QuteDataActivity.md): Pf2eTools activity attributes
 - [QuteDataArmorClass](QuteDataArmorClass.md): Pf2eTools armor class attributes

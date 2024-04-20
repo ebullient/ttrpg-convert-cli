@@ -173,6 +173,8 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
                 return new Json2QuteSpell(index, node).build();
             case trait:
                 return new Json2QuteTrait(index, node).build();
+            case creature:
+                return new Json2QuteCreature(index, node).build();
             default:
                 return null;
         }
