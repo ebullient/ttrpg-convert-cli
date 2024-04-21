@@ -338,6 +338,7 @@ public class TestUtils {
                     if (!p.toString().endsWith(".png")
                             && !p.toString().endsWith(".txt")
                             && !p.toString().endsWith(".jpg")
+                            && !p.toString().endsWith(".jpeg")
                             && !p.toString().endsWith(".css")
                             && !p.toString().endsWith(".svg")
                             && !p.toString().endsWith(".webp")
