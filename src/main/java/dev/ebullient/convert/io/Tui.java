@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -213,7 +215,7 @@ public class Tui {
         this.debug = debug || log;
         this.verbose = verbose;
         if (log) {
-            Path p = Path.of("ttrpg-convert.out");
+            Path p = Path.of("ttrpg-convert.out.txt");
             try {
                 this.log = new PrintWriter(Files.newOutputStream(p));
                 VersionProvider vp = new VersionProvider();
@@ -436,6 +438,28 @@ public class Tui {
         }
     }
 
+    private final static String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~/";
+
+    String escapeUrlImagePath(String url) throws MalformedURLException, UnsupportedEncodingException {
+        URL urlObject = new URL(url);
+        String path = urlObject.getPath();
+
+        StringBuilder encodedPath = new StringBuilder();
+        for (char ch : path.toCharArray()) {
+            if (allowedCharacters.indexOf(ch) == -1) {
+                byte[] bytes = String.valueOf(ch).getBytes("UTF-8");
+                for (byte b : bytes) {
+                    encodedPath.append(String.format("%%%02X", b));
+                }
+            } else {
+                encodedPath.append(ch);
+            }
+        }
+
+        return url.replace(path, encodedPath.toString())
+                .replace("/imgur.com", "/i.imgur.com");
+    }
+
     private void copyRemoteImage(ImageRef image, Path targetPath) {
         targetPath.getParent().toFile().mkdirs();
 
@@ -445,12 +469,14 @@ public class Tui {
             return;
         }
         if (!url.startsWith("http") && !url.startsWith("file")) {
-            errorf("ImageRef %s has invalid URL %s", image.targetFilePath(), url);
+            errorf("Remote ImageRef %s has invalid URL %s", image.targetFilePath(), url);
             return;
         }
 
-        Tui.instance().debugf("copy image %s %n   to %s", url, targetPath);
         try {
+            url = escapeUrlImagePath(url);
+            Tui.instance().debugf("copy image %s", url);
+
             ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
             try (FileOutputStream fileOutputStream = new FileOutputStream(targetPath.toFile())) {
                 fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);

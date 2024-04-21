@@ -433,6 +433,7 @@ public class CompendiumConfig {
         useDiceRoller,
         exclude,
         excludePattern,
+        fallbackPaths(List.of("fallback-paths")),
         from,
         fullSource(List.of("convert", "full-source")),
         images,
@@ -502,6 +503,7 @@ public class CompendiumConfig {
         String internalRoot;
         Boolean copyInternal;
         Boolean copyExternal;
+        final Map<String, String> fallbackPaths = new HashMap<>();
 
         public ImageOptions() {
         }
@@ -511,6 +513,7 @@ public class CompendiumConfig {
                 copyExternal = images.copyExternal;
                 copyInternal = images.copyInternal;
                 internalRoot = images.internalRoot;
+                fallbackPaths.putAll(images.fallbackPaths);
             }
             if (images2 != null) {
                 copyExternal = images2.copyExternal == null
@@ -522,6 +525,7 @@ public class CompendiumConfig {
                 internalRoot = images2.internalRoot == null
                         ? internalRoot
                         : images2.internalRoot;
+                fallbackPaths.putAll(images2.fallbackPaths);
             }
         }
 
@@ -531,6 +535,10 @@ public class CompendiumConfig {
 
         public boolean copyInternal() {
             return copyInternal != null && copyInternal;
+        }
+
+        public Map<String, String> fallbackPaths() {
+            return Collections.unmodifiableMap(fallbackPaths);
         }
     }
 

@@ -1,5 +1,7 @@
 package dev.ebullient.convert.qute;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import dev.ebullient.convert.config.TtrpgConfig;
@@ -43,7 +45,7 @@ public class ImageRef {
     final String titleAttr;
 
     private ImageRef(String url, Path sourcePath, Path targetFilePath, String title, String vaultPath, Integer width) {
-        this.url = url == null ? null : url.replace(" ", "%20"); // catch any remaining spaces
+        this.url = url;
         this.sourcePath = sourcePath;
         this.targetFilePath = targetFilePath;
         title = title == null
@@ -59,10 +61,6 @@ public class ImageRef {
         }
         this.vaultPath = vaultPath;
         this.width = width;
-
-        if (url == null && vaultPath == null) {
-            Tui.instance().errorf("ImageRef (target=%s) has no url or vaultPath", targetFilePath);
-        }
     }
 
     String escape(String s) {
@@ -208,61 +206,52 @@ public class ImageRef {
         }
 
         public ImageRef build() {
-            final ImageRoot imageRoot = TtrpgConfig.internalImageRoot();
-
-            if (url != null && !imageRoot.copyExternalToVault()) {
-                // leave external images alone (referenced as url)
-                return new ImageRef(url, null, null, title, null, width);
-            }
-
             if (url == null && sourcePath == null) {
                 Tui.instance().errorf("ImageRef build for internal image called without url or sourcePath set");
                 return null;
             }
-            if (relativeTarget == null || vaultRoot == null || rootFilePath == null) {
-                Tui.instance().errorf("ImageRef build called without target paths set");
-                return null;
+
+            final ImageRoot imageRoot = TtrpgConfig.internalImageRoot();
+            String sourceUrl = url == null ? sourcePath.toString() : url;
+
+            // Check for any URL replacements (to replace a not-found-image with a local one, e.g.)
+            // replace backslashes with forward slashes
+            sourceUrl = imageRoot.getFallbackPath(sourceUrl)
+                    .replace('\\', '/');
+
+            try {
+                // Remove escaped characters here (local file paths won't want it)
+                sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8.name());
+            } catch (UnsupportedEncodingException e) {
+                Tui.instance().errorf("Error decoding image URL: %s", e.getMessage());
             }
 
-            Path targetFilePath = rootFilePath.resolve(relativeTarget);
-            String vaultPath = String.format("%s%s", vaultRoot,
-                    relativeTarget.toString().replace('\\', '/'));
+            boolean copyToVault = false;
 
-            // Escaping spaces is a mess. Remove here (local file paths won't want it)
-            // It is changed back (from space to %20) if in URL form (file or http)
-            String remoteUrl = url == null
-                    ? sourcePath.toString().replace("%20", " ")
-                    : url;
-            if (remoteUrl.startsWith("http")) {
-                remoteUrl = remoteUrl
-                        .replaceAll("^(https?):/+", "$1://")
-                        .replace("/imgur.com", "/i.imgur.com");
-            } else if (!remoteUrl.startsWith("file:/")) {
-                remoteUrl = imageRoot.getRootPath() + remoteUrl;
+            if (sourceUrl.startsWith("http") || sourceUrl.startsWith("file")) {
+                sourceUrl = sourceUrl.replaceAll("^(https?):/+", "$1://");
+                copyToVault = imageRoot.copyExternalToVault();
+            } else if (!sourceUrl.startsWith("file:/")) {
+                sourceUrl = imageRoot.getRootPath() + sourceUrl;
+                copyToVault = imageRoot.copyInternalToVault();
             }
 
-            if (imageRoot.copyInternalToVault() || imageRoot.copyExternalToVault()) {
+            boolean localTargetSet = relativeTarget != null && vaultRoot != null && rootFilePath != null;
+            if (localTargetSet && copyToVault) {
+                Path targetFilePath = rootFilePath.resolve(relativeTarget);
+                String vaultPath = String.format("%s%s", vaultRoot,
+                        relativeTarget.toString().replace('\\', '/'));
+
                 // remote images to be copied into the vault
-                if (remoteUrl.startsWith("http") || remoteUrl.startsWith("file")) {
-                    String filename = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
-                    if (!filename.contains("%")) {
-                        try {
-                            String encoded = java.net.URLEncoder.encode(filename, "UTF-8")
-                                    .replace("+", "%20");
-                            remoteUrl = remoteUrl.replace(filename, encoded);
-                        } catch (java.io.UnsupportedEncodingException e) {
-                            Tui.instance().errorf("Failed to encode filename: %s", filename);
-                        }
-                    }
-                    // also replace any remaining spaces in the path
-                    return new ImageRef(remoteUrl,
-                            null, targetFilePath, title, vaultPath, width);
+                if (sourceUrl.startsWith("http") || sourceUrl.startsWith("file")) {
+                    return new ImageRef(sourceUrl, null, targetFilePath, title, vaultPath, width);
                 }
-                return new ImageRef(null, Path.of(remoteUrl), targetFilePath, title, vaultPath, width);
+                // local image to be copied into the vault
+                return new ImageRef(null, Path.of(sourceUrl), targetFilePath, title, vaultPath, width);
             }
 
-            // remote images are not copied to the vault --> url image ref
-            return new ImageRef(remoteUrl,
+            // remote images that are not copied to the vault --> url image ref, no target
+            return new ImageRef(sourceUrl,
                     null, null, title, null, width);
         }
 

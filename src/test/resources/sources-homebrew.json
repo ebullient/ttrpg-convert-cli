@@ -3,6 +3,9 @@
     "book": [
       "PSA"
     ],
+    "adventure": [
+      "LMOP"
+    ],
     "homebrew": [
       "src/test/resources/psion.json",
       "src/test/resources/ermis-bg.json",
@@ -27,8 +30,10 @@
       "sources/5e-homebrew/collection/Kobold Press; Deep Magic.json",
       "sources/5e-homebrew/collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json",
       "sources/5e-homebrew/collection/Mage Hand Press; Valda's Spire of Secrets.json",
+      "sources/5e-homebrew/creature/Dragonix; Monster Manual Expanded III.json",
       "sources/5e-homebrew/creature/Kobold Press; Creature Codex.json",
       "sources/5e-homebrew/creature/Kobold Press; Tome of Beasts.json",
+      "sources/5e-homebrew/creature/Kobold Press; Tome of Beasts 2.json",
       "sources/5e-homebrew/creature/MCDM Productions; Flee, Mortals! preview.json",
       "sources/5e-homebrew/creature/MCDM Productions; Flee, Mortals!.json",
       "sources/5e-homebrew/creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json",
@@ -61,5 +66,7 @@
     "race": "examples/templates/tools5e/images-race2md.txt",
     "spell": "examples/templates/tools5e/images-spell2md.txt",
     "vehicle": "examples/templates/tools5e/images-vehicle2md.txt"
-  }
+  },
+  "useDiceRoller": true,
+  "yamlStatblocks": true
 }

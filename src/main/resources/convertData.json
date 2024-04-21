@@ -332,14 +332,6 @@
     "constants": {
       "internalImageRoot": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/"
     },
-    "fallbackImage": {
-      "img/PSZ/Archon of Redemption.png": "img/PSZ/Archon Of Redemption.png",
-      "img/bestiary/ERLW/Inspired.png": "img/bestiary/ERLW/Inspired.webp",
-      "img/bestiary/MTF/Merrenoloth.jpg": "img/bestiary/MTF/Merrenoloth.webp",
-      "img/bestiary/SDW/Lhammaruntosz.jpg": "img/SDW/Lhammaruntosz.png",
-      "img/bestiary/VGM/Deep Scion.jpg": "img/bestiary/VGM/Deep Scion.webp",
-      "img/items/CRCotN/Medal of the Maze.jpg": "img/items/CRCotN/Medal of the Maze.webp"
-    },
     "markerFiles": [
       "bestiary/bestiary-mm.json",
       "cultsboons.json",

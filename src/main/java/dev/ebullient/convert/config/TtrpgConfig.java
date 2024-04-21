@@ -95,9 +95,11 @@ public class TtrpgConfig {
         final String internalImageRoot;
         final boolean copyInternal;
         final boolean copyExternal;
+        final Map<String, String> fallbackPaths;
 
         private ImageRoot(String cfgRoot, ImageOptions options) {
             this.copyExternal = options.copyExternal();
+            this.fallbackPaths = options.fallbackPaths();
 
             if (cfgRoot == null) {
                 this.internalImageRoot = "";
@@ -139,6 +141,10 @@ public class TtrpgConfig {
             }
             return path.endsWith("/") ? path : path + "/";
         }
+
+        public String getFallbackPath(String key) {
+            return fallbackPaths.getOrDefault(key, key);
+        }
     }
 
     public static ImageRoot internalImageRoot() {
@@ -152,10 +158,6 @@ public class TtrpgConfig {
             internalImageRoot = root = new ImageRoot(cfg, options);
         }
         return root;
-    }
-
-    public static Map<String, String> imageFallbackPaths() {
-        return activeDSConfig().fallbackImagePaths;
     }
 
     public static JsonNode readIndex(String key) {
