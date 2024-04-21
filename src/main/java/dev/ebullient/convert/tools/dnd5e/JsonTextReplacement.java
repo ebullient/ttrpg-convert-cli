@@ -292,6 +292,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@atk mw}", "*Melee Weapon Attack:*")
                         .replaceAll("\\{@atk rw}", "*Ranged Weapon Attack:*")
                         .replaceAll("\\{@atk m, ?r}", "*Melee or Ranged Attack:*")
+                        .replaceAll("\\{@atk mw\\|rw}", "*Melee or Ranged Weapon Attack:*")
                         .replaceAll("\\{@atk mw, ?rw}", "*Melee or Ranged Weapon Attack:*")
                         .replaceAll("\\{@atk mp}", "*Melee Power Attack:*")
                         .replaceAll("\\{@atk rp}", "*Ranged Power Attack:*")
