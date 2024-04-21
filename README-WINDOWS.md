@@ -29,22 +29,22 @@ This is one example with specific steps. If you know more about running commands
 
 1. From the [latest release][1], download the following files:
 
-    - `ttrpg-convert-cli-2.3.9-windows-x86_64.zip`
-    - `ttrpg-convert-cli-2.3.9-examples.zip`
+    - `ttrpg-convert-cli-2.3.10-windows-x86_64.zip`
+    - `ttrpg-convert-cli-2.3.10-examples.zip`
 
 2. Unzip the downloaded files and make sure the folder structure doesn't contain duplicated/nested folders
 
-    You want `ttrpg-convert-cli-2.3.9` to contain bin, LICENSE, and README.md, not another folder called `ttrpg-convert-cli-2.3.9`.
+    You want `ttrpg-convert-cli-2.3.10` to contain bin, LICENSE, and README.md, not another folder called `ttrpg-convert-cli-2.3.10`.
 
-3. Put the `ttrpg-convert-cli-2.3.9` folder in any place you like.
+3. Put the `ttrpg-convert-cli-2.3.10` folder in any place you like.
 
     For this example, you'll be working from within the bin folder, which contains the file `ttrpg-convert.exe`.
 
-    1. Move the other two folders you extracted (`5etools-mirror-2.github.io-master` and `ttrpg-convert-cli-2.3.9-examples`) inside of the bin directory.
+    1. Move the other two folders you extracted (`5etools-mirror-2.github.io-master` and `ttrpg-convert-cli-2.3.10-examples`) inside of the bin directory.
 
-    2. If you leave the extracted `ttrpg-convert-cli-2.3.9` folder in the Downloads directory, the following commands should work:
+    2. If you leave the extracted `ttrpg-convert-cli-2.3.10` folder in the Downloads directory, the following commands should work:
 
-        1. Make the `Downloads` directory active. When you list the folders, it should include `ttrpg-convert-cli-2.3.9`.
+        1. Make the `Downloads` directory active. When you list the folders, it should include `ttrpg-convert-cli-2.3.10`.
 
             ```console
             cd C:\Users\Xanathar\Downloads
@@ -54,11 +54,11 @@ This is one example with specific steps. If you know more about running commands
         2. Make the `ttrpg-convert-cli` active. When you list the folders, it should include `bin`.
 
             ```console
-            cd ttrpg-convert-cli-2.3.9
+            cd ttrpg-convert-cli-2.3.10
             dir
             ```
 
-        3. Make the `bin` active. When you list the folders, it should include `5etools-mirror-2.github.io-master` and `ttrpg-convert-cli-2.3.9-examples`.
+        3. Make the `bin` active. When you list the folders, it should include `5etools-mirror-2.github.io-master` and `ttrpg-convert-cli-2.3.10-examples`.
 
             ```console
             cd bin
@@ -73,10 +73,10 @@ This is one example with specific steps. If you know more about running commands
 
 2. Navigate to the bin folder.
 
-    - If you followed the example above, you can do: `cd C:\Users\Xanathar\Downloads\ttrpg-convert-cli-2.3.9\bin`
-    - Alternately, navigate to the `ttrpg-convert-cli-2.3.9` folder in File Explorer and copy the path from the address bar.
+    - If you followed the example above, you can do: `cd C:\Users\Xanathar\Downloads\ttrpg-convert-cli-2.3.10\bin`
+    - Alternately, navigate to the `ttrpg-convert-cli-2.3.10` folder in File Explorer and copy the path from the address bar.
         Then go back to Command Prompt, type `cd` and paste the path you just copied, and hit `Enter`.
-        The prompt on the left should now look like this: `<path to the folder you moved ttrpg-convert-cli into>\ttrpg-convert-cli-2.3.9\bin`
+        The prompt on the left should now look like this: `<path to the folder you moved ttrpg-convert-cli into>\ttrpg-convert-cli-2.3.10\bin`
 
 3. Type `ttrpg-convert.exe --index -o dm 5etools-mirror-2.github.io-master/data` and hit `Enter`.
 
