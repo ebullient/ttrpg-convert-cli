@@ -8,7 +8,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [perception](#perception), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -17,7 +17,7 @@ Aliases for this note (optional)
 
 ### defenses
 
-Creature defenses ([QuteDataDefenses](QuteDataDefenses.md), optional)
+Defenses (AC, saves, etc) as [QuteDataDefenses](QuteDataDefenses.md)
 
 ### description
 
@@ -38,6 +38,10 @@ Creature level (number, optional)
 ### name
 
 Note name
+
+### perception
+
+Creature perception (number, optional)
 
 ### source
 

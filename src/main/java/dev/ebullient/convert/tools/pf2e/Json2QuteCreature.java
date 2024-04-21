@@ -36,7 +36,19 @@ public class Json2QuteCreature extends Json2QuteBase {
                 Field.alias.replaceTextFromList(rootNode, this),
                 Pf2eCreature.description.replaceTextFrom(rootNode, this),
                 level.orElse(null),
+                getPerception(),
                 buildDefenses());
+    }
+
+    // "perception": {
+    //     "std": 6
+    // }
+    private Integer getPerception() {
+        JsonNode perceptionNode = Pf2eCreature.perception.getFrom(rootNode);
+        if (perceptionNode == null) {
+            return null;
+        }
+        return perceptionNode.get("std").asInt();
     }
 
     private QuteDataDefenses buildDefenses() {
