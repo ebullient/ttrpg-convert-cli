@@ -28,15 +28,18 @@ public class QuteCreature extends Pf2eQuteBase {
     public final String description;
     /** Creature level (number, optional) */
     public final Integer level;
+    /** Creature defenses ({@link dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses QuteDataDefenses}, optional) */
+    public final QuteDataDefenses defenses;
 
     public QuteCreature(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases,
-            String description, Integer level) {
+            String description, Integer level, QuteDataDefenses defenses) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
         this.description = description;
         this.level = level;
+        this.defenses = defenses;
     }
 
 }

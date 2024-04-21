@@ -8,12 +8,16 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [description](#description), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
 
 Aliases for this note (optional)
+
+### defenses
+
+Creature defenses ([QuteDataDefenses](QuteDataDefenses.md), optional)
 
 ### description
 

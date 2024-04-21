@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 
 public class Json2QuteCreature extends Json2QuteBase {
 
@@ -30,18 +31,20 @@ public class Json2QuteCreature extends Json2QuteBase {
         }
         Optional<Integer> level = Pf2eCreature.level.getIntFrom(rootNode);
 
-        return new QuteCreature(sources,
-                text,
-                tags,
+        return new QuteCreature(sources, text, tags,
                 traits,
                 Field.alias.replaceTextFromList(rootNode, this),
                 Pf2eCreature.description.replaceTextFrom(rootNode, this),
-                //getPerception(),
-                level.orElse(null));
+                level.orElse(null),
+                buildDefenses());
     }
 
-    private String getPerception() {
-        return null;
+    private QuteDataDefenses buildDefenses() {
+        JsonNode defenseNode = Pf2eCreature.defenses.getFrom(rootNode);
+        if (defenseNode == null) {
+            return null;
+        }
+        return Pf2eDefenses.createInlineDefenses(defenseNode, this);
     }
 
     enum Pf2eCreature implements JsonNodeReader {
