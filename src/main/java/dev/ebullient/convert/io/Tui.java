@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -438,28 +436,6 @@ public class Tui {
         }
     }
 
-    private final static String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~/";
-
-    String escapeUrlImagePath(String url) throws MalformedURLException, UnsupportedEncodingException {
-        URL urlObject = new URL(url);
-        String path = urlObject.getPath();
-
-        StringBuilder encodedPath = new StringBuilder();
-        for (char ch : path.toCharArray()) {
-            if (allowedCharacters.indexOf(ch) == -1) {
-                byte[] bytes = String.valueOf(ch).getBytes("UTF-8");
-                for (byte b : bytes) {
-                    encodedPath.append(String.format("%%%02X", b));
-                }
-            } else {
-                encodedPath.append(ch);
-            }
-        }
-
-        return url.replace(path, encodedPath.toString())
-                .replace("/imgur.com", "/i.imgur.com");
-    }
-
     private void copyRemoteImage(ImageRef image, Path targetPath) {
         targetPath.getParent().toFile().mkdirs();
 
@@ -474,7 +450,6 @@ public class Tui {
         }
 
         try {
-            url = escapeUrlImagePath(url);
             Tui.instance().debugf("copy image %s", url);
 
             ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());

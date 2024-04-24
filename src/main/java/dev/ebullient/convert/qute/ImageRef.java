@@ -1,6 +1,8 @@
 package dev.ebullient.convert.qute;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
@@ -220,7 +222,7 @@ public class ImageRef {
                     .replace('\\', '/');
 
             try {
-                // Remove escaped characters here (local file paths won't want it)
+                // Remove escaped characters here (inconsistent escaping in the source URL)
                 sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 Tui.instance().errorf("Error decoding image URL: %s", e.getMessage());
@@ -244,14 +246,15 @@ public class ImageRef {
 
                 // remote images to be copied into the vault
                 if (sourceUrl.startsWith("http") || sourceUrl.startsWith("file")) {
-                    return new ImageRef(sourceUrl, null, targetFilePath, title, vaultPath, width);
+                    return new ImageRef(escapeUrlImagePath(sourceUrl),
+                            null, targetFilePath, title, vaultPath, width);
                 }
                 // local image to be copied into the vault
                 return new ImageRef(null, Path.of(sourceUrl), targetFilePath, title, vaultPath, width);
             }
 
             // remote images that are not copied to the vault --> url image ref, no target
-            return new ImageRef(sourceUrl,
+            return new ImageRef(escapeUrlImagePath(sourceUrl),
                     null, null, title, null, width);
         }
 
@@ -265,6 +268,32 @@ public class ImageRef {
                         width);
             } else {
                 return build();
+            }
+        }
+
+        private final static String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~/";
+
+        public static String escapeUrlImagePath(String url) {
+            try {
+                URL urlObject = new URL(url);
+                String path = urlObject.getPath();
+
+                StringBuilder encodedPath = new StringBuilder();
+                for (char ch : path.toCharArray()) {
+                    if (allowedCharacters.indexOf(ch) == -1) {
+                        byte[] bytes = String.valueOf(ch).getBytes("UTF-8");
+                        for (byte b : bytes) {
+                            encodedPath.append(String.format("%%%02X", b));
+                        }
+                    } else {
+                        encodedPath.append(ch);
+                    }
+                }
+                return url.replace(path, encodedPath.toString())
+                        .replace("/imgur.com", "/i.imgur.com");
+            } catch (IOException e) {
+                Tui.instance().errorf(e, "Unable to escape URL path %s (%s)", url, e);
+                return url;
             }
         }
     }
