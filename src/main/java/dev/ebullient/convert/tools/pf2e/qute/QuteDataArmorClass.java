@@ -13,12 +13,17 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteDataArmorClass implements QuteUtil {
     public Collection<NamedText> armorClass;
-    public String note;
     public String abilities;
+
+    /** Notes associated with the armor class, e.g. "with mage armor". */
+    public Collection<String> notes;
+
+    /** Any notes associated with the armor class. This contains the same data as {@link #notes}, but as a single semicolon-delimited string. */
+    public String note;
 
     public String toString() {
         return armorClass.stream()
-                .map(e -> e.toString())
+                .map(NamedText::toString)
                 .collect(Collectors.joining("; "))
                 + (isPresent(note) ? " " + note.trim() : "")
                 + (isPresent(abilities) ? "; " + abilities : "");

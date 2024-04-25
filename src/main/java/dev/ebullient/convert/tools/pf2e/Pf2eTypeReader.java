@@ -246,16 +246,27 @@ public interface Pf2eTypeReader extends JsonSource {
             QuteDataArmorClass ac = new QuteDataArmorClass();
             NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
             for (Entry<String, JsonNode> e : convert.iterableFields(acNode)) {
-                if (e.getKey().equals(note.name()) || e.getKey().equals(abilities.name())) {
-                    continue; // skip these two
+                if (e.getKey().equals(note.name()) ||
+                    e.getKey().equals(abilities.name()) ||
+                    e.getKey().equals(notes.name())) {
+                        continue; // skip these three
                 }
                 namedText.add(
-                        (e.getKey().equals("std") ? "AC" : e.getKey() + " AC"),
-                        "" + e.getValue());
+                    (e.getKey().equals("std") ? "AC" : e.getKey() + " AC"),
+                    "" + e.getValue());
             }
             ac.armorClass = namedText.build();
-            ac.note = convert.replaceText(note.getTextOrEmpty(acNode));
             ac.abilities = convert.replaceText(abilities.getTextOrEmpty(acNode));
+
+            // Consolidate "note" and "notes" into different representations of the same data
+            List<String> acNotes = notes.getListOfStrings(acNode, convert.tui());
+            ac.notes = Stream.concat(acNotes.stream(), Stream.of(note.getTextOrEmpty(acNode)))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(convert::replaceText)
+                .toList();
+            ac.note = String.join("; ", ac.notes);
+
             return ac;
         }
 
