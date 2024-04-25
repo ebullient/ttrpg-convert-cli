@@ -1,0 +1,34 @@
+---
+obsidianUIMode: preview
+cssclasses: pf2e,pf2e-creature
+{#if resource.tags}
+tags:
+{#each resource.tags}
+- {it}
+{/each}
+{/if}
+{#if resource.aliases}
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+{/if}
+---
+# {resource.name} *Creature {resource.level}*
+{#if resource.traits}{#each resource.traits}{it}  {/each}{/if}
+
+- **Perception** {resource.perception}
+{#if resource.defenses}
+
+{resource.defenses}
+{/if}
+{#if resource.hasSections}
+
+## Summary
+{/if}
+{#if resource.description}
+
+{resource.description}
+
+{/if}
+*Source: {resource.source}*
