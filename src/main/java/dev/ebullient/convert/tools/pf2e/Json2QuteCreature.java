@@ -1,12 +1,12 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
@@ -37,12 +37,17 @@ public class Json2QuteCreature extends Json2QuteBase {
                 Pf2eCreature.description.replaceTextFrom(rootNode, this),
                 level.orElse(null),
                 getPerception(),
-                buildDefenses());
+                buildDefenses(),
+                Pf2eCreatureLanguages.createCreatureLanguages(Pf2eCreature.languages.getFrom(rootNode), this));
     }
 
-    // "perception": {
-    //     "std": 6
-    // }
+    /**
+     * <pre>
+     *     "perception": {
+     *         "std": 6
+     *     }
+     * </pre>
+     */
     private Integer getPerception() {
         JsonNode perceptionNode = Pf2eCreature.perception.getFrom(rootNode);
         if (perceptionNode == null) {
@@ -51,12 +56,66 @@ public class Json2QuteCreature extends Json2QuteBase {
         return Pf2eCreature.std.getIntOrThrow(perceptionNode);
     }
 
+    /**
+     * <pre>
+     *     "defenses": { ... }
+     * </pre>
+     */
     private QuteDataDefenses buildDefenses() {
         JsonNode defenseNode = Pf2eCreature.defenses.getFrom(rootNode);
         if (defenseNode == null) {
             return null;
         }
         return Pf2eDefenses.createInlineDefenses(defenseNode, this);
+    }
+
+    /**
+     * <pre>
+     *     "languages": {
+     *         "languages": ["Common", "Sylvan"],
+     *         "abilities": ["{&#64;ability telepathy} 100 feet"],
+     *         "notes": ["some other notes"],
+     *     }
+     * </pre>
+     */
+    enum Pf2eCreatureLanguages implements JsonNodeReader {
+        languages,
+        abilities,
+        notes;
+
+        static CreatureLanguages createCreatureLanguages(JsonNode node, Pf2eTypeReader convert) {
+            if (node == null) {
+                return null;
+            }
+            return new CreatureLanguages(
+                Pf2eCreatureLanguages.languages.getListOfStrings(node, convert.tui()),
+                Pf2eCreatureLanguages.abilities.getListOfStrings(node, convert.tui()).stream()
+                    .map(convert::replaceText).toList(),
+                Pf2eCreatureLanguages.notes.getListOfStrings(node, convert.tui()).stream()
+                    .map(convert::replaceText).toList());
+        }
+    }
+
+    /**
+     * @param languages The languages known (optional)
+     * @param notes     Language-related notes (optional)
+     * @param abilities Language-related abilities (optional)
+     */
+    public record CreatureLanguages(
+        List<String> languages,
+        List<String> notes,
+        List<String> abilities) implements QuteUtil {
+
+        @Override
+        public String toString() {
+            return Stream.of(
+                    languages != null ? List.of(String.join(", ", languages)) : List.<String>of(),
+                    abilities, notes)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .dropWhile(String::isEmpty)
+                .collect(Collectors.joining("; "));
+        }
     }
 
     enum Pf2eCreature implements JsonNodeReader {

@@ -18,10 +18,10 @@ aliases:
 {#if resource.traits}{#each resource.traits}{it}  {/each}{/if}
 
 - **Perception** {resource.perception}
-{#if resource.defenses}
-
-{resource.defenses}
+{#if resource.languages}
+- **Languages** {resource.languages}
 {/if}
+{#if resource.defenses}{resource.defenses}{/if}
 {#if resource.hasSections}
 
 ## Summary
@@ -31,4 +31,5 @@ aliases:
 {resource.description}
 
 {/if}
+
 *Source: {resource.source}*
