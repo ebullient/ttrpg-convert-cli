@@ -48,7 +48,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         if (perceptionNode == null) {
             return null;
         }
-        return perceptionNode.get("std").asInt();
+        return Pf2eCreature.std.getIntOrThrow(perceptionNode);
     }
 
     private QuteDataDefenses buildDefenses() {
@@ -80,6 +80,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         skills,
         speed,
         spellcasting,
+        std,
         traits,
     }
 }
