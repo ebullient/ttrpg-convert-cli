@@ -1,17 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
@@ -23,6 +12,10 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardness;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 public interface Pf2eTypeReader extends JsonSource {
 
@@ -249,7 +242,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 if (e.getKey().equals(note.name()) ||
                     e.getKey().equals(abilities.name()) ||
                     e.getKey().equals(notes.name())) {
-                        continue; // skip these three
+                    continue; // skip these three
                 }
                 namedText.add(
                     (e.getKey().equals("std") ? "AC" : e.getKey() + " AC"),

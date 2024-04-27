@@ -1,16 +1,15 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
-import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class Json2QuteCreature extends Json2QuteBase {
 
@@ -83,38 +82,14 @@ public class Json2QuteCreature extends Json2QuteBase {
         abilities,
         notes;
 
-        static CreatureLanguages createCreatureLanguages(JsonNode node, Pf2eTypeReader convert) {
+        static QuteCreature.CreatureLanguages createCreatureLanguages(JsonNode node, Pf2eTypeReader convert) {
             if (node == null) {
                 return null;
             }
-            return new CreatureLanguages(
-                Pf2eCreatureLanguages.languages.getListOfStrings(node, convert.tui()),
-                Pf2eCreatureLanguages.abilities.getListOfStrings(node, convert.tui()).stream()
-                    .map(convert::replaceText).toList(),
-                Pf2eCreatureLanguages.notes.getListOfStrings(node, convert.tui()).stream()
-                    .map(convert::replaceText).toList());
-        }
-    }
-
-    /**
-     * @param languages The languages known (optional)
-     * @param notes     Language-related notes (optional)
-     * @param abilities Language-related abilities (optional)
-     */
-    public record CreatureLanguages(
-        List<String> languages,
-        List<String> notes,
-        List<String> abilities) implements QuteUtil {
-
-        @Override
-        public String toString() {
-            return Stream.of(
-                    languages != null ? List.of(String.join(", ", languages)) : List.<String>of(),
-                    abilities, notes)
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .dropWhile(String::isEmpty)
-                .collect(Collectors.joining("; "));
+            return new QuteCreature.CreatureLanguages(
+                languages.getListOfStrings(node, convert.tui()),
+                abilities.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList(),
+                notes.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList());
         }
     }
 
