@@ -18,16 +18,16 @@ aliases:
 {#if resource.traits}{#each resource.traits}{it}  {/each}{/if}
 
 {#if resource.perception != null}
-
 - **Perception** {#if resource.perception >= 0}+{#else}-{/if}{resource.perception}
-  {/if}
-{#if resource.languages}
+{/if}{#if resource.languages}
 - **Languages** {resource.languages}
-{/if}
-  {#if resource.skills}
+{/if}{#if resource.skills}
 - **Skills** {resource.skills}
-  {/if}
-{#if resource.defenses}{resource.defenses}{/if}
+{/if}{#if resource.defenses}
+{resource.defenses}
+{/if}
+^statblock
+
 {#if resource.hasSections}
 
 ## Summary
