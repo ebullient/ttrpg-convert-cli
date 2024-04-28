@@ -49,6 +49,10 @@ public class TtrpgConfig {
         return userConfig.computeIfAbsent(datasource, (k) -> new CompendiumConfig(datasource, tui));
     }
 
+    public static String getConstant(String key) {
+        return activeDSConfig().constants.get(key);
+    }
+
     private static DatasourceConfig activeDSConfig() {
         return globalConfig.computeIfAbsent(datasource, (k) -> new DatasourceConfig());
     }
@@ -153,7 +157,7 @@ public class TtrpgConfig {
             ImageOptions options = getConfig().imageOptions();
             String cfg = options.internalRoot;
             if (cfg == null) {
-                cfg = activeDSConfig().constants.get("internalImageRoot");
+                cfg = activeDSConfig().constants.get("5etools-img");
             }
             internalImageRoot = root = new ImageRoot(cfg, options);
         }
