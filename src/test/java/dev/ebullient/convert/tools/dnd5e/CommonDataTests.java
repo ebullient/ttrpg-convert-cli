@@ -60,6 +60,7 @@ public class CommonDataTests {
         tui.setTemplates(templates);
 
         TtrpgConfig.init(tui, Datasource.tools5e);
+        TtrpgConfig.setToolsPath(TestUtils.PATH_5E_TOOLS_DATA);
 
         configurator = new Configurator(tui);
         if (imgPresent) {

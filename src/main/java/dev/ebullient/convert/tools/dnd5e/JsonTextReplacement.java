@@ -250,7 +250,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 }
 
                 String[] parts = match.group(1).split("\\|");
-                String imgRepo = TtrpgConfig.getConstant("5etools-img");
+                String imgRepo = TtrpgConfig.getConstant(TtrpgConfig.DEFAULT_IMG_ROOT);
                 String url = ImageRef.Builder.fixUrl(imgRepo + (imgRepo.endsWith("/") ? "" : "/") + parts[1]);
 
                 return String.format("[%s](%s)", parts[0], url);

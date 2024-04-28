@@ -39,7 +39,7 @@ public class Pf2eDataConvertTest {
 
     @Test
     void testLiveData_Pf2eAllSources(QuarkusMainLauncher launcher) {
-        if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
+        if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             // All, I mean it. Really for real.. ALL.
             final Path allIndex = testOutput.resolve("all-index");
             TestUtils.deleteDir(allIndex);
@@ -48,13 +48,13 @@ public class Pf2eDataConvertTest {
                     "-s", "ALL",
                     "-o", allIndex.toString(),
                     "-g", "pf2e",
-                    TestUtils.TOOLS_PATH_PF2E.toString()));
+                    TestUtils.PATH_PF2E_TOOLS_DATA.toString()));
 
-            args.addAll(TestUtils.getFilesFrom(TestUtils.TOOLS_PATH_PF2E.resolve("adventure"))
+            args.addAll(TestUtils.getFilesFrom(TestUtils.PATH_PF2E_TOOLS_DATA.resolve("adventure"))
                     .stream()
                     .filter(x -> !x.endsWith("-id.json"))
                     .toList());
-            args.addAll(TestUtils.getFilesFrom(TestUtils.TOOLS_PATH_PF2E.resolve("book")));
+            args.addAll(TestUtils.getFilesFrom(TestUtils.PATH_PF2E_TOOLS_DATA.resolve("book")));
 
             LaunchResult result = launcher.launch(args.toArray(new String[0]));
             assertThat(result.exitCode())

@@ -200,6 +200,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                 boolean isTools = tui.readToolsDir(input, index::importTree);
                 if (isTools) { // we found the tools directory
                     toolsPath = input;
+                    TtrpgConfig.setToolsPath(toolsPath);
                 } else {
                     // this is some other directory full of json
                     allOk &= tui.readDirectory("", input, index::importTree);
