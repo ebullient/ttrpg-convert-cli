@@ -17,10 +17,16 @@ aliases:
 # {resource.name} *Creature {resource.level}*
 {#if resource.traits}{#each resource.traits}{it}  {/each}{/if}
 
-- **Perception** {resource.perception}
+{#if resource.perception != null}
+
+- **Perception** {#if resource.perception >= 0}+{#else}-{/if}{resource.perception}
+  {/if}
 {#if resource.languages}
 - **Languages** {resource.languages}
 {/if}
+  {#if resource.skills}
+- **Skills** {resource.skills}
+  {/if}
 {#if resource.defenses}{resource.defenses}{/if}
 {#if resource.hasSections}
 

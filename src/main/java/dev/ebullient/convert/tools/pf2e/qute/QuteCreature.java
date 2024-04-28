@@ -1,15 +1,15 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import dev.ebullient.convert.qute.QuteUtil;
-import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.Pf2eSources;
-import io.quarkus.qute.TemplateData;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import dev.ebullient.convert.qute.QuteUtil;
+import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.pf2e.Pf2eSources;
+import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Creature attributes ({@code creature2md.txt})
@@ -40,11 +40,15 @@ public class QuteCreature extends Pf2eQuteBase {
     public final CreatureLanguages languages;
     /** Defenses (AC, saves, etc) as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses QuteDataDefenses} */
     public final QuteDataDefenses defenses;
+    /**
+     * Skill bonuses as {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureSkills CreatureSkills}
+     */
+    public final CreatureSkills skills;
 
     public QuteCreature(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases,
             String description, Integer level, Integer perception,
-            QuteDataDefenses defenses, CreatureLanguages languages) {
+            QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -53,6 +57,7 @@ public class QuteCreature extends Pf2eQuteBase {
         this.perception = perception;
         this.languages = languages;
         this.defenses = defenses;
+        this.skills = skills;
     }
 
     /**
@@ -69,19 +74,43 @@ public class QuteCreature extends Pf2eQuteBase {
      */
     @TemplateData
     public record CreatureLanguages(
-        List<String> languages,
-        List<String> notes,
-        List<String> abilities) implements QuteUtil {
+            List<String> languages,
+            List<String> notes,
+            List<String> abilities) implements QuteUtil {
 
         @Override
         public String toString() {
             return Stream.of(
-                    languages != null ? List.of(String.join(", ", languages)) : List.<String>of(),
+                    languages != null ? List.of(String.join(", ", languages)) : List.<String> of(),
                     abilities, notes)
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .dropWhile(String::isEmpty)
-                .collect(Collectors.joining("; "));
+                    .filter(Objects::nonNull)
+                    .flatMap(Collection::stream)
+                    .dropWhile(String::isEmpty)
+                    .collect(Collectors.joining("; "));
+        }
+    }
+
+    /**
+     * A creature's skill information.
+     *
+     * <p>
+     * Referencing this object directly provides a default markup which includes all data. Example:
+     * {@code "Athletics +10, Cult Lore +10 (lore on their cult), Stealth +10 (+12 in forests); Some skill note" }
+     * </p>
+     *
+     * @param skills Skill bonuses for the creature, as a list of
+     *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus QuteDataSkillBonus}
+     * @param notes Notes for the creature's skills (list of strings, optional)
+     */
+    @TemplateData
+    public record CreatureSkills(
+            List<QuteDataSkillBonus> skills,
+            List<String> notes) {
+
+        @Override
+        public String toString() {
+            return skills.stream().map(QuteDataSkillBonus::toString).collect(Collectors.joining(", ")) +
+                    (notes == null ? "" : " " + String.join("; ", notes));
         }
     }
 }

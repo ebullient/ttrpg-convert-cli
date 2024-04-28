@@ -1,15 +1,16 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 
 public class Json2QuteCreature extends Json2QuteBase {
 
@@ -37,10 +38,13 @@ public class Json2QuteCreature extends Json2QuteBase {
                 level.orElse(null),
                 getPerception(),
                 buildDefenses(),
-                Pf2eCreatureLanguages.createCreatureLanguages(Pf2eCreature.languages.getFrom(rootNode), this));
+                Pf2eCreatureLanguages.createCreatureLanguages(Pf2eCreature.languages.getFrom(rootNode), this),
+                buildSkills());
     }
 
     /**
+     * Example JSON input:
+     *
      * <pre>
      *     "perception": {
      *         "std": 6
@@ -49,26 +53,60 @@ public class Json2QuteCreature extends Json2QuteBase {
      */
     private Integer getPerception() {
         JsonNode perceptionNode = Pf2eCreature.perception.getFrom(rootNode);
-        if (perceptionNode == null) {
+        if (perceptionNode == null || !perceptionNode.isObject()) {
             return null;
         }
         return Pf2eCreature.std.getIntOrThrow(perceptionNode);
     }
 
     /**
+     * Example JSON input:
+     *
      * <pre>
      *     "defenses": { ... }
      * </pre>
      */
     private QuteDataDefenses buildDefenses() {
         JsonNode defenseNode = Pf2eCreature.defenses.getFrom(rootNode);
-        if (defenseNode == null) {
+        if (defenseNode == null || !defenseNode.isObject()) {
             return null;
         }
         return Pf2eDefenses.createInlineDefenses(defenseNode, this);
     }
 
     /**
+     * Example JSON input:
+     *
+     * <pre>
+     *     "skills": {
+     *         "athletics": 30,
+     *         "stealth": {
+     *             "std": 36,
+     *             "in forests": 42,
+     *             "note": "additional note"
+     *         },
+     *         "notes": [
+     *             "some note"
+     *         ]
+     *     }
+     * </pre>
+     */
+    private QuteCreature.CreatureSkills buildSkills() {
+        JsonNode skillsNode = Pf2eCreature.skills.getFrom(rootNode);
+        if (skillsNode == null || !skillsNode.isObject()) {
+            return null;
+        }
+        return new QuteCreature.CreatureSkills(
+                skillsNode.properties().stream()
+                        .filter(e -> !e.getKey().equals(Pf2eCreature.notes.name()))
+                        .map(e -> Pf2eTypeReader.Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), this))
+                        .toList(),
+                Pf2eCreature.notes.replaceTextFromList(rootNode, this));
+    }
+
+    /**
+     * Example JSON input:
+     *
      * <pre>
      *     "languages": {
      *         "languages": ["Common", "Sylvan"],
@@ -87,9 +125,9 @@ public class Json2QuteCreature extends Json2QuteBase {
                 return null;
             }
             return new QuteCreature.CreatureLanguages(
-                languages.getListOfStrings(node, convert.tui()),
-                abilities.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList(),
-                notes.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList());
+                    languages.getListOfStrings(node, convert.tui()),
+                    abilities.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList(),
+                    notes.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList());
         }
     }
 
@@ -106,6 +144,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         items,
         languages,
         level,
+        notes,
         perception,
         rarity,
         rituals,
