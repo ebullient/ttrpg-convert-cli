@@ -835,15 +835,6 @@ public interface JsonSource extends JsonTextReplacement {
         return null;
     }
 
-    default boolean useCompendium() {
-        return getSources().getType().useCompendiumBase();
-    }
-
-    default String getImagePath() {
-        Tools5eIndexType type = getSources().getType();
-        return type.getRelativePath();
-    }
-
     default String asAbilityEnum(JsonNode textNode) {
         return SkillOrAbility.format(textNode.asText(), index(), getSources());
     }

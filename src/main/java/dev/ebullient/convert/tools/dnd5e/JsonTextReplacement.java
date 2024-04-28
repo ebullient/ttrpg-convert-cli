@@ -16,6 +16,7 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType.IndexFields;
@@ -33,6 +34,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     static final Pattern fontPattern = Pattern.compile("\\{@font ([^}]+)}");
     static final Pattern homebrewPattern = Pattern.compile("\\{@homebrew ([^}]+)}");
+    static final Pattern linkTo5eImgRepo = Pattern.compile("\\{@5etoolsImg ([^}]+)}");
     static final Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     static final Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
@@ -54,6 +56,15 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
     default CompendiumConfig cfg() {
         return index().cfg();
+    }
+
+    default boolean useCompendium() {
+        return getSources().getType().useCompendiumBase();
+    }
+
+    default String getImagePath() {
+        Tools5eIndexType type = getSources().getType();
+        return type.getRelativePath();
     }
 
     default List<String> findAndReplace(JsonNode jsonSource, String field) {
@@ -220,6 +231,29 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 String newText = s.substring(pos + 1);
 
                 return newText + " ^[This is a homebrew addition, replacing the following: " + oldText + "]";
+            });
+
+            result = linkTo5eImgRepo.matcher(result).replaceAll((match) -> {
+                // External links to materials in the 5eTools image repo (usually pdf):
+                // {@5etoolsImg Players Handbook Cover|covers/PHB.webp}
+                // const fauxEntry = {
+                //     type: "link",
+                //     href: {
+                //         type: "external",
+                //         url: UrlUtil.link(this.getMediaUrl("img", page)),
+                //     },
+                //     text: displayText,
+                // };
+                String orig = match.group(0);
+                if (!orig.contains("|")) {
+                    return orig;
+                }
+
+                String[] parts = match.group(1).split("\\|");
+                String imgRepo = TtrpgConfig.getConstant("5etools-img");
+                String url = ImageRef.Builder.fixUrl(imgRepo + (imgRepo.endsWith("/") ? "" : "/") + parts[1]);
+
+                return String.format("[%s](%s)", parts[0], url);
             });
 
             result = linkifyPattern.matcher(result)

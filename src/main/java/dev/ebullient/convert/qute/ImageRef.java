@@ -225,7 +225,7 @@ public class ImageRef {
                 // Remove escaped characters here (inconsistent escaping in the source URL)
                 sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
-                Tui.instance().errorf("Error decoding image URL: %s", e.getMessage());
+                Tui.instance().errorf("Error decoding image URL %s: %s", sourceUrl, e.getMessage());
             }
 
             boolean copyToVault = false;
@@ -294,6 +294,17 @@ public class ImageRef {
             } catch (IOException e) {
                 Tui.instance().errorf(e, "Unable to escape URL path %s (%s)", url, e);
                 return url;
+            }
+        }
+
+        public static final String fixUrl(String sourceUrl) {
+            try {
+                // Remove escaped characters here (inconsistent escaping in the source URL)
+                sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8.name());
+                return escapeUrlImagePath(sourceUrl);
+            } catch (UnsupportedEncodingException e) {
+                Tui.instance().errorf("Error fixing URL %s: %s", sourceUrl, e.getMessage());
+                return sourceUrl;
             }
         }
     }
