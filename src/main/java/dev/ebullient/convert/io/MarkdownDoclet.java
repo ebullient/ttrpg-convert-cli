@@ -1,10 +1,20 @@
 package dev.ebullient.convert.io;
 
-import com.sun.source.doctree.*;
-import com.sun.source.util.DocTrees;
-import jdk.javadoc.doclet.Doclet;
-import jdk.javadoc.doclet.DocletEnvironment;
-import jdk.javadoc.doclet.Reporter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
@@ -15,13 +25,18 @@ import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import javax.tools.DocumentationTool;
 import javax.tools.ToolProvider;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import com.sun.source.doctree.DocCommentTree;
+import com.sun.source.doctree.DocTree;
+import com.sun.source.doctree.LinkTree;
+import com.sun.source.doctree.LiteralTree;
+import com.sun.source.doctree.ParamTree;
+import com.sun.source.doctree.TextTree;
+import com.sun.source.util.DocTrees;
+
+import jdk.javadoc.doclet.Doclet;
+import jdk.javadoc.doclet.DocletEnvironment;
+import jdk.javadoc.doclet.Reporter;
 
 public class MarkdownDoclet implements Doclet {
     Reporter reporter;
@@ -180,13 +195,13 @@ public class MarkdownDoclet implements Doclet {
                 // If it's a record, then we can't retrieve the attributes as Elements, so we have to parse them from
                 // the comment tree instead.
                 docTrees.getDocCommentTree(t)
-                    .getBlockTags().stream()
-                    .filter(e -> e.getKind() == DocTree.Kind.PARAM)
-                    .map(param -> (ParamTree) param)
-                    .forEach(param -> {
-                        aggregator.add("\n\n### " + param.getName() + "\n\n");
-                        aggregator.addAll(param.getDescription());
-                    });
+                        .getBlockTags().stream()
+                        .filter(e -> e.getKind() == DocTree.Kind.PARAM)
+                        .map(param -> (ParamTree) param)
+                        .forEach(param -> {
+                            aggregator.add("\n\n### " + param.getName() + "\n\n");
+                            aggregator.addAll(param.getDescription());
+                        });
             } else {
                 for (Map.Entry<String, Element> entry : members.entrySet()) {
                     aggregator.add("\n\n### " + entry.getKey() + "\n\n");
@@ -402,7 +417,7 @@ public class MarkdownDoclet implements Doclet {
 
         void add(String text) {
             if (htmlEntity.isEmpty()) {
-                content.add(text);
+                content.add(text.replaceAll(" +", " "));
             } else {
                 htmlEntity.peek().add(text);
             }
