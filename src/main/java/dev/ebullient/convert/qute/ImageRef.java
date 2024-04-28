@@ -233,6 +233,8 @@ public class ImageRef {
             if (sourceUrl.startsWith("http") || sourceUrl.startsWith("file")) {
                 sourceUrl = sourceUrl.replaceAll("^(https?):/+", "$1://");
                 copyToVault = imageRoot.copyExternalToVault();
+            } else if (sourceUrl.startsWith("stream/")) {
+                copyToVault = true;
             } else if (!sourceUrl.startsWith("file:/")) {
                 sourceUrl = imageRoot.getRootPath() + sourceUrl;
                 copyToVault = imageRoot.copyInternalToVault();

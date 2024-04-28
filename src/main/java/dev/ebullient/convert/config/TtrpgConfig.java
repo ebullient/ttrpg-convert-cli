@@ -25,6 +25,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class TtrpgConfig {
 
+    public static final String DEFAULT_IMG_ROOT = "imgRoot";
+
     static final Map<Datasource, DatasourceConfig> globalConfig = new HashMap<>();
     static final Map<Datasource, CompendiumConfig> userConfig = new HashMap<>();
     static final Set<String> missingSourceName = new HashSet<>();
@@ -32,12 +34,14 @@ public class TtrpgConfig {
     private static Datasource datasource = Datasource.tools5e;
     private static Tui tui;
     private static ImageRoot internalImageRoot;
+    private static Path toolsPath;
 
     public static void init(Tui tui, Datasource datasource) {
         userConfig.clear();
-        internalImageRoot = null;
         TtrpgConfig.tui = tui;
         TtrpgConfig.datasource = datasource;
+        TtrpgConfig.internalImageRoot = null;
+        TtrpgConfig.toolsPath = null;
         readSystemConfig();
     }
 
@@ -51,6 +55,10 @@ public class TtrpgConfig {
 
     public static String getConstant(String key) {
         return activeDSConfig().constants.get(key);
+    }
+
+    public static void setToolsPath(Path toolsPath) {
+        TtrpgConfig.toolsPath = toolsPath;
     }
 
     private static DatasourceConfig activeDSConfig() {
@@ -111,6 +119,7 @@ public class TtrpgConfig {
             } else {
                 if (cfgRoot.startsWith("http") || cfgRoot.startsWith("file:")) {
                     this.internalImageRoot = endWithSlash(cfgRoot);
+                    this.copyInternal = options.copyInternal();
                 } else {
                     Path imgPath = Path.of("").resolve(cfgRoot).normalize().toAbsolutePath();
                     if (!imgPath.toFile().exists()) {
@@ -120,8 +129,8 @@ public class TtrpgConfig {
                         return;
                     }
                     this.internalImageRoot = endWithSlash(imgPath.toString());
+                    this.copyInternal = true;
                 }
-                this.copyInternal = options.copyInternal();
                 Tui.instance().printlnf("[ 🖼️  OK] Using %s as the source for remote images (copyInternal=%s)",
                         this.internalImageRoot, this.copyInternal);
             }
@@ -139,13 +148,6 @@ public class TtrpgConfig {
             return copyExternal;
         }
 
-        private String endWithSlash(String path) {
-            if (path == null) {
-                return "";
-            }
-            return path.endsWith("/") ? path : path + "/";
-        }
-
         public String getFallbackPath(String key) {
             return fallbackPaths.getOrDefault(key, key);
         }
@@ -157,11 +159,25 @@ public class TtrpgConfig {
             ImageOptions options = getConfig().imageOptions();
             String cfg = options.internalRoot;
             if (cfg == null) {
-                cfg = activeDSConfig().constants.get("5etools-img");
+                String imgRoot = activeDSConfig().constants.get(DEFAULT_IMG_ROOT);
+                if (imgRoot == null && toolsPath != null && datasource == Datasource.toolsPf2e) {
+                    cfg = toolsPath.resolve("..").normalize().toString();
+                } else if (imgRoot == null) {
+                    cfg = "";
+                } else {
+                    cfg = imgRoot;
+                }
             }
             internalImageRoot = root = new ImageRoot(cfg, options);
         }
         return root;
+    }
+
+    private static String endWithSlash(String path) {
+        if (path == null) {
+            return "";
+        }
+        return path.endsWith("/") ? path : path + "/";
     }
 
     public static JsonNode readIndex(String key) {

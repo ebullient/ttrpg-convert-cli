@@ -41,7 +41,7 @@ public class TestUtils {
 
     public final static Path PATH_5E_HOMEBREW = PROJECT_PATH.resolve("sources/5e-homebrew");
     public final static Path PATH_5E_UA = PROJECT_PATH.resolve("sources/5e-unearthed-arcana");
-    public final static Path TOOLS_PATH_PF2E = PROJECT_PATH.resolve("sources/Pf2eTools/data");
+    public final static Path PATH_PF2E_TOOLS_DATA = PROJECT_PATH.resolve("sources/Pf2eTools/data");
 
     static String GENERATED_DOCS = PROJECT_PATH.resolve("docs/templates").normalize().toAbsolutePath().toString();
 

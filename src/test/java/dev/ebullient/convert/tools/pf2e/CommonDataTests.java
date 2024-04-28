@@ -52,12 +52,14 @@ public class CommonDataTests {
         outputPath.toFile().mkdirs();
 
         TtrpgConfig.init(tui, Datasource.toolsPf2e);
+        TtrpgConfig.setToolsPath(TestUtils.PATH_PF2E_TOOLS_DATA);
+
         configurator = new Configurator(tui);
 
         index = new Pf2eIndex(TtrpgConfig.getConfig());
         templates.setCustomTemplates(TtrpgConfig.getConfig());
 
-        if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
+        if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             switch (variant) {
                 case all:
                     configurator.addSources(List.of("*"));
@@ -72,9 +74,9 @@ public class CommonDataTests {
 
             for (String x : List.of("books.json",
                     "book/book-crb.json", "book/book-gmg.json")) {
-                tui.readFile(TestUtils.TOOLS_PATH_PF2E.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
+                tui.readFile(TestUtils.PATH_PF2E_TOOLS_DATA.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
             }
-            tui.readToolsDir(TestUtils.TOOLS_PATH_PF2E, index::importTree);
+            tui.readToolsDir(TestUtils.PATH_PF2E_TOOLS_DATA, index::importTree);
             index.prepare();
         }
     }
@@ -88,7 +90,7 @@ public class CommonDataTests {
     }
 
     public void testDataIndex_pf2e() throws Exception {
-        if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
+        if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             Path full = outputPath.resolve("allIndex.json");
             index.writeFullIndex(full);
 
@@ -120,7 +122,7 @@ public class CommonDataTests {
         Path rulesDir = outputPath.resolve(index.rulesFilePath());
         Path compendiumDir = outputPath.resolve(index.compendiumFilePath());
 
-        if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
+        if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
                     .writeNotesAndTables()
@@ -146,7 +148,7 @@ public class CommonDataTests {
             paths.add(p);
         });
 
-        if (TestUtils.TOOLS_PATH_PF2E.toFile().exists()) {
+        if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             paths.forEach(p -> TestUtils.deleteDir(p));
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
