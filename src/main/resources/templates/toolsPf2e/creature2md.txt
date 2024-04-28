@@ -17,6 +17,7 @@ aliases:
 # {resource.name} *Creature {resource.level}*
 {#if resource.traits}{#each resource.traits}{it}  {/each}{/if}
 
+```ad-statblock
 {#if resource.perception != null}
 - **Perception** {#if resource.perception >= 0}+{#else}-{/if}{resource.perception}
 {/if}{#if resource.languages}
@@ -26,8 +27,8 @@ aliases:
 {/if}{#if resource.defenses}
 {resource.defenses}
 {/if}
+```
 ^statblock
-
 {#if resource.hasSections}
 
 ## Summary
