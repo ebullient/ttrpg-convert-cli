@@ -17,13 +17,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.NestingKind;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.QualifiedNameable;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -36,6 +30,7 @@ import com.sun.source.doctree.DocCommentTree;
 import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.LinkTree;
 import com.sun.source.doctree.LiteralTree;
+import com.sun.source.doctree.ParamTree;
 import com.sun.source.doctree.TextTree;
 import com.sun.source.util.DocTrees;
 
@@ -196,11 +191,24 @@ public class MarkdownDoclet implements Doclet {
                     .collect(Collectors.joining(", ")));
             aggregator.add("\n\n");
 
-            for (Map.Entry<String, Element> entry : members.entrySet()) {
-                aggregator.add("\n\n### " + entry.getKey() + "\n\n");
-                aggregator.addFullBody(docTrees.getDocCommentTree(entry.getValue()));
+            if (t.getKind() == ElementKind.RECORD) {
+                // If it's a record, then we can't retrieve the attributes as Elements, so we have to parse them from
+                // the comment tree instead.
+                docTrees.getDocCommentTree(t)
+                        .getBlockTags().stream()
+                        .filter(e -> e.getKind() == DocTree.Kind.PARAM)
+                        .map(param -> (ParamTree) param)
+                        .forEach(param -> {
+                            aggregator.add("\n\n### " + param.getName() + "\n\n");
+                            aggregator.addAll(param.getDescription());
+                        });
+            } else {
+                for (Map.Entry<String, Element> entry : members.entrySet()) {
+                    aggregator.add("\n\n### " + entry.getKey() + "\n\n");
+                    aggregator.addFullBody(docTrees.getDocCommentTree(entry.getValue()));
+                }
             }
-            out.println(aggregator.toString());
+            out.println(aggregator);
         }
     }
 
@@ -218,11 +226,11 @@ public class MarkdownDoclet implements Doclet {
             if (e.getAnnotation(Deprecated.class) != null) {
                 return;
             }
-        } else if (!kind.isField()) {
+        } else if (!kind.isField() && kind != ElementKind.RECORD_COMPONENT) {
             return;
         }
 
-        if (e.getKind() == ElementKind.METHOD) {
+        if (kind == ElementKind.METHOD) {
             name = name.replaceFirst("(get|is)", "");
             name = name.substring(0, 1).toLowerCase() + name.substring(1);
         }
@@ -409,7 +417,7 @@ public class MarkdownDoclet implements Doclet {
 
         void add(String text) {
             if (htmlEntity.isEmpty()) {
-                content.add(text);
+                content.add(text.replaceAll(" +", " "));
             } else {
                 htmlEntity.peek().add(text);
             }

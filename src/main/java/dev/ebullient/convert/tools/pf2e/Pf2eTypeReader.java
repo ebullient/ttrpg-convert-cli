@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,6 +23,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardness;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -246,16 +249,27 @@ public interface Pf2eTypeReader extends JsonSource {
             QuteDataArmorClass ac = new QuteDataArmorClass();
             NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
             for (Entry<String, JsonNode> e : convert.iterableFields(acNode)) {
-                if (e.getKey().equals(note.name()) || e.getKey().equals(abilities.name())) {
-                    continue; // skip these two
+                if (e.getKey().equals(note.name()) ||
+                        e.getKey().equals(abilities.name()) ||
+                        e.getKey().equals(notes.name())) {
+                    continue; // skip these three
                 }
                 namedText.add(
                         (e.getKey().equals("std") ? "AC" : e.getKey() + " AC"),
                         "" + e.getValue());
             }
             ac.armorClass = namedText.build();
-            ac.note = convert.replaceText(note.getTextOrEmpty(acNode));
             ac.abilities = convert.replaceText(abilities.getTextOrEmpty(acNode));
+
+            // Consolidate "note" and "notes" into different representations of the same data
+            List<String> acNotes = notes.getListOfStrings(acNode, convert.tui());
+            ac.notes = Stream.concat(acNotes.stream(), Stream.of(note.getTextOrEmpty(acNode)))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(convert::replaceText)
+                    .toList();
+            ac.note = String.join("; ", ac.notes);
+
             return ac;
         }
 
@@ -417,6 +431,46 @@ public interface Pf2eTypeReader extends JsonSource {
             return Stream.of(Pf2eSpellComponent.values())
                     .filter((t) -> t.matches(value))
                     .findFirst().orElse(null);
+        }
+    }
+
+    enum Pf2eSkillBonus implements JsonNodeReader {
+        std,
+        note;
+
+        /**
+         * Example JSON object input:
+         *
+         * <pre>
+         * {
+         *     "std": 10,
+         *     "in woods": 12,
+         *     "note": "some note"
+         * }
+         * </pre>
+         *
+         * @param skillName The name of the skill
+         * @param source Either a single integer bonus, or an object (see above example)
+         */
+        public static QuteDataSkillBonus createSkillBonus(
+                String skillName, JsonNode source, Pf2eTypeReader convert) {
+            String displayName = Arrays.stream(skillName.split(" "))
+                    .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1))
+                    .collect(Collectors.joining(" "));
+
+            if (source.isInt()) {
+                return new QuteDataSkillBonus(displayName, source.asInt());
+            }
+
+            return new QuteDataSkillBonus(
+                    displayName,
+                    std.getIntOrThrow(source),
+                    source.properties().stream()
+                            .filter(e -> !e.getKey().equals(std.name()) && !e.getKey().equals(note.name())) // skip these
+                            .collect(
+                                    Collectors.toUnmodifiableMap(
+                                            e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
+                    convert.replaceText(note.getTextOrNull(source)));
         }
     }
 

@@ -199,12 +199,6 @@ public class Json2QuteDeity extends Json2QuteBase {
         return replaceText(rangeString);
     }
 
-    private List<String> toAlignments(JsonNode alignNode, Pf2eDeity alignmentField) {
-        return alignmentField.getListOfStrings(alignNode, tui()).stream()
-                .map(a -> a.length() > 2 ? a : linkify(Pf2eIndexType.trait, a.toUpperCase()))
-                .collect(Collectors.toList());
-    }
-
     String commandmentToString(List<String> edictOrAnathema) {
         if (edictOrAnathema.stream().anyMatch(x -> x.contains(","))) {
             return String.join("; ", edictOrAnathema);
