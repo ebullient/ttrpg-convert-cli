@@ -61,7 +61,7 @@ checksum:
   individual: true
 
 distributions:
-  ttrpg-convert:
+  uber-jar:
     type: SINGLE_JAR
     artifacts:
       - path: '{{uberJarDir}}/{{projectName}}-{{projectVersion}}-runner.jar'
@@ -70,6 +70,7 @@ distributions:
     type: NATIVE_IMAGE
     executable:
       name: ttrpg-convert
+      windowsExtension: exe
     artifacts:
       - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-linux-x86_64.zip'
         platform: linux-x86_64

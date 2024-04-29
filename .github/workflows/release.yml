@@ -114,6 +114,7 @@ jobs:
     permissions:
       contents: write
       actions: write
+      discussions: write
     with:
       dry_run: ${{ inputs.dry_run }}
       extras: "${{ needs.build_tag.outputs.artifact }}-${{ needs.build_tag.outputs.version }}-examples.zip"
