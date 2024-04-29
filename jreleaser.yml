@@ -7,11 +7,11 @@ project:
   name: ttrpg-convert-cli
   description: Utility to convert 5eTools and Pf2eTools JSON data into Markdown
   longDescription: |
-    This utility works with json sources and materials from the 5etools mirror to create 
-    linked and formatted markdown. The resulting markdown will include backgrounds, 
-    classes, deities, feats, items, monsters, races, and spells from a filtered list 
+    This utility works with json sources and materials from the 5etools mirror to create
+    linked and formatted markdown. The resulting markdown will include backgrounds,
+    classes, deities, feats, items, monsters, races, and spells from a filtered list
     of sources (constrained to those you specify == those you own). Books and adventures
-    can also be explicitly included. Generated content contains Obsidian-specific 
+    can also be explicitly included. Generated content contains Obsidian-specific
     formatting for some plugins (admonitions, dice roller, TTRPG Statblocks, etc.),
     and is cross-linked and aliased for ease of reference.
   links:
@@ -25,7 +25,7 @@ project:
   stereotype: CLI
   java:
     groupId: dev.ebullient
-    version: 17
+    version: 21
     multiProject: false
   tags:
     - "quarkus"
@@ -65,20 +65,13 @@ distributions:
     type: SINGLE_JAR
     artifacts:
       - path: '{{uberJarDir}}/{{projectName}}-{{projectVersion}}-runner.jar'
-    brew:
-      active: ALWAYS
-      continueOnError: true
-      formulaName: 'ttrpg-convert-cli'
-      templateDirectory: .github/jreleaser/brew
-      skipTemplates:
-        - README.md.tpl
-      repository:
-        commitMessage: '🔖  {{tagName}} {{projectName}}'
 
   native-archive:
     type: NATIVE_IMAGE
+    executable:
+      name: ttrpg-convert
     artifacts:
-      - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-linux-x86_64.tgz'
+      - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-linux-x86_64.zip'
         platform: linux-x86_64
       - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-windows-x86_64.zip'
         platform: windows-x86_64
@@ -86,6 +79,15 @@ distributions:
         platform: osx-x86_64
       - path: '{{nativeImageDir}}/{{projectName}}-{{projectVersion}}-osx-aarch_64.zip'
         platform: osx-aarch_64
+    brew:
+      active: ALWAYS
+      continueOnError: true
+      formulaName: 'ttrpg-convert-cli'
+      multiPlatform: true
+      skipTemplates:
+        - README.md.tpl
+      repository:
+        commitMessage: '🔖  {{tagName}} {{projectName}}'
 
 release:
   github:
