@@ -8,7 +8,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [perception](#perception), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -31,6 +31,10 @@ True if the content (text) contains sections
 
 Formatted string describing the content's source(s): `_Source: <sources>_`
 
+### languages
+
+Languages as [CreatureLanguages](QuteCreature/CreatureLanguages.md)
+
 ### level
 
 Creature level (number, optional)
@@ -42,6 +46,10 @@ Note name
 ### perception
 
 Creature perception (number, optional)
+
+### skills
+
+Skill bonuses as [CreatureSkills](QuteCreature/CreatureSkills.md)
 
 ### source
 
