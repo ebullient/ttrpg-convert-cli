@@ -1,11 +1,11 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Pf2eTools armor class attributes
