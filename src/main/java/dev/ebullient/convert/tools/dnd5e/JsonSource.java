@@ -835,6 +835,15 @@ public interface JsonSource extends JsonTextReplacement {
         return null;
     }
 
+    default JsonHref readHref(JsonNode href) {
+        try {
+            return mapper().treeToValue(href, JsonHref.class);
+        } catch (JsonProcessingException | IllegalArgumentException e) {
+            tui().errorf(e, "Unable to read href from %s: %s", href, e.toString());
+        }
+        return null;
+    }
+
     default String asAbilityEnum(JsonNode textNode) {
         return SkillOrAbility.format(textNode.asText(), index(), getSources());
     }
@@ -1254,6 +1263,7 @@ public interface JsonSource extends JsonTextReplacement {
         tables, // for optfeature types
         tag, // statblock
         text,
+        tokenHref,
         tokenUrl,
         traitTags,
         typeLookup,

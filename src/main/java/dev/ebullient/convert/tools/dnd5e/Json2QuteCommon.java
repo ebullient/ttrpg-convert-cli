@@ -92,7 +92,7 @@ public class Json2QuteCommon implements JsonSource {
         List<String> text = new ArrayList<>();
         JsonNode fluffNode = null;
         if (Tools5eFields.fluff.existsIn(rootNode)) {
-            fluffNode = rootNode.get("fluff");
+            fluffNode = Tools5eFields.fluff.getFrom(rootNode);
             JsonNode monsterFluff = Tools5eFields._monsterFluff.getFrom(fluffNode);
             if (monsterFluff != null) {
                 String fluffKey = fluffType.createKey(monsterFluff);
@@ -124,16 +124,24 @@ public class Json2QuteCommon implements JsonSource {
             parseState().pop(pushed);
         }
 
-        getImages(fluffNode.get("images"), images);
+        if (Tools5eFields.images.existsIn(fluffNode)) {
+            getImages(Tools5eFields.images.getFrom(fluffNode), images);
+        } else if (Tools5eFields.hasFluffImages.booleanOrDefault(fluffNode, false)) {
+            String fluffKey = fluffType.createKey(fluffNode);
+            fluffNode = index.getNode(fluffKey);
+            if (fluffNode != null) {
+                getImages(Tools5eFields.images.getFrom(fluffNode), images);
+            }
+        }
     }
 
     public List<ImageRef> getFluffImages(Tools5eIndexType fluffType) {
         List<ImageRef> images = new ArrayList<>();
-        if (booleanOrDefault(rootNode, "hasFluffImages", false)) {
+        if (Tools5eFields.hasFluffImages.booleanOrDefault(rootNode, false)) {
             String fluffKey = fluffType.createKey(rootNode);
             JsonNode fluffNode = index.getNode(fluffKey);
             if (fluffNode != null) {
-                getImages(fluffNode.get("images"), images);
+                getImages(Tools5eFields.images.getFrom(fluffNode), images);
             }
         }
         return images;
@@ -721,7 +729,13 @@ public class Json2QuteCommon implements JsonSource {
                 .replace("æ", "ae")
                 .replace("\"", "");
 
-        String sourcePath = Tools5eFields.tokenUrl.getTextOrNull(rootNode);
+        String sourcePath;
+        if (Tools5eFields.tokenHref.existsIn(rootNode)) {
+            JsonHref href = readHref(Tools5eFields.tokenHref.getFrom(rootNode));
+            sourcePath = href.url == null ? href.path : href.url;
+        } else {
+            sourcePath = Tools5eFields.tokenUrl.getTextOrNull(rootNode);
+        }
 
         final String ext = sourcePath == null
                 ? ".webp"
