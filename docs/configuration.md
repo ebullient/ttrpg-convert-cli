@@ -27,8 +27,10 @@ This guide introduces you to configuring data transformations using the Command 
 - [Tag prefix](#tag-prefix)
 - [Templates](#templates)
     - [Customizing templates](#customizing-templates)
-- [Copying internal images](#copying-internal-images)
-- [Copying external images](#copying-external-images)
+- [Images](#images)
+    - [Copying internal images](#copying-internal-images)
+    - [Copying external images](#copying-external-images)
+    - [Fallback paths](#fallback-paths)
 
 ## Overview
 
@@ -384,9 +386,14 @@ Documentation is generated for [**template attributes**](./templates/).
 
 Not everything is customizable. Some indenting, organizing, formatting, and linking is easier to do consistently while rendering big blobs of text.
 
-## Copying internal images
+## Images
 
-Internal images are part of the 5eTools or Pf2e tools corpus of content. They are referenced by computed path (like tokens) or by media references marked as "internal".
+The CLI can copy images referenced in the content to your vault. This is useful if you want to use the content offline or if you want to ensure that images are available in your vault.
+
+- Internal images are part of the 5eTools or Pf2e tools corpus of content. They are referenced by computed path (like tokens) or by media references marked as "internal".
+- "External" images are usually marked in the Json source as "external" and are referenced by a URL.
+
+### Copying internal images
 
 5eTools mirror-2 moved internal images into a separate repository. Downloads can take some time, and the images repository is quite large.
 
@@ -394,7 +401,7 @@ Internal images are part of the 5eTools or Pf2e tools corpus of content. They ar
 
 The following configuration options allow you to change how the CLI treats these internal image references.
 
-- Set `images.copyInternal` to `true` (as shown below) in your configuration file to instruct the CLI to copy "internal" images into your vault. This will make your vault larger, but you will not need to be online to view the images.
+- Set `images.copyInternal` to `true` (as shown below) in your configuration file to instruct the CLI to copy these images into your vault. This will make your vault larger, but you will not need to be online to view the images.
 
     ```json
     "images": {
@@ -417,11 +424,13 @@ The following configuration options allow you to change how the CLI treats these
     }
     ```
 
-    With this setting, the CLI will look for "internal" images in the local directory, which will speed things up (at the cost of a few extra steps). If you use a relative path, it will be resolved relative to the current working directory[^1]. An absolute path[^2] will also work. You will get an error message if that directory doesn't exist (and it will tell you the directory it tried to find).
+    With this setting, the CLI will look for "internal" images in the local directory, which will speed things up (at the cost of a few extra steps).
 
-## Copying external images
+    If you use a relative path, it will be resolved relative to the current working directory[^1]. An absolute path[^2] will also work. You will get an error message if that directory doesn't exist (and it will tell you the directory it tried to use, which should help you figure out where the problem is).
 
-External images are images that are not part of the 5eTools or Pf2eTools corpus of content. They are referenced by media references marked as "external", and usually begin with "http://" or "https://". Some homebrew content may use a "file://" URL[^3] to reference a local file.
+### Copying external images
+
+External images are referenced by media references marked as "external", and usually begin with "http://" or "https://". Some homebrew content may use a "file://" URL[^3] to reference a local file.
 
 **By default, external images are not downloaded.** Links will reference the remote location, and you will need to be online to view the images. This is a safe, fast, and relatively well-behaving option given that downloads can be quite slow, and you may change your mind about where you want content to be generated.
 
@@ -435,6 +444,27 @@ To download remote images, set `images.copyExternal` to `true` (as shown below) 
 
 With this setting, the CLI will copy all "external" images it hasn't seen before into your compendium.
 
+### Fallback paths
+
+🧪 This config has not been fully tested, so if it goes wrong, raise an issue so we can sort it out properly.
+
+In the event you have a bad image reference and the copy fails, you can set a fallback path to replace the failing path with something that should be used instead.
+
+```json
+"images": {
+    "fallbackPaths": {
+        "img/bestiary/MM/Green Hag.jpg": "img/bestiary/MM/Green Hag.webp"
+    },
+}
+```
+
+The hard part will be knowing what the original lookup path was. For "external" and homebrew images, you can usually find the broken image reference in the json source material. Missing internal images may be a bit harder to track down.
+
+Note:
+
+- The key (original path) must match what the Json source is specifying.
+- The value (replacement path) should be either: a valid path to a local file[^2] or a valid URL to a remote file[^3].
+
 [^1]: The working directory is the directory you were in (in the terminal) when you launched the CLI. See <https://en.wikipedia.org/wiki/Working_directory> for more information
-[^2]: Example/explanation of absolute vs. relative path: <https://stackoverflow.com/a/10288252>.
+[^2]: Example/explanation of absolute vs. relative path: <https://stackoverflow.com/a/10288252>. If you're using relative paths with the CLI, they should be relative to the working directory (see [^1]).
 [^3]: A URL is a uniform resource locator, more information at <https://en.wikipedia.org/wiki/URL>.

@@ -1,5 +1,6 @@
 package dev.ebullient.convert.config;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -9,6 +10,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.victools.jsonschema.generator.OptionPreset;
+import com.github.victools.jsonschema.generator.SchemaGenerator;
+import com.github.victools.jsonschema.generator.SchemaGeneratorConfig;
+import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
+import com.github.victools.jsonschema.generator.SchemaVersion;
 
 import dev.ebullient.convert.config.TtrpgConfig.ConfigKeys;
 import dev.ebullient.convert.io.Tui;
@@ -118,5 +124,16 @@ public class ConfigurationExampleTest {
 
         tui.writeJsonFile(Path.of("examples/config/config.pf2e.json"), pf2eConfig);
         tui.writeYamlFile(Path.of("examples/config/config.pf2e.yaml"), pf2eConfig);
+    }
+
+    @Test
+    public void exportSchema() throws IOException {
+        SchemaGeneratorConfig config = new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON)
+                .build();
+
+        SchemaGenerator generator = new SchemaGenerator(config);
+        JsonNode jsonSchema = generator.generateSchema(CompendiumConfig.InputConfig.class);
+
+        Files.writeString(Path.of("examples/config/config.schema.json"), jsonSchema.toPrettyString());
     }
 }
