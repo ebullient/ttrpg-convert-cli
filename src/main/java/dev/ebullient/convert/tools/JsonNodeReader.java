@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -254,6 +255,15 @@ public interface JsonNodeReader {
             return Stream.of(result);
         }
         return StreamSupport.stream(result.spliterator(), false);
+    }
+
+    default Stream<Entry<String, JsonNode>> streamPropsExcluding(JsonNode source, JsonNodeReader... excludingKeys) {
+        JsonNode result = getFrom(source);
+        if (result == null || !result.isObject()) {
+            return Stream.of();
+        }
+        return result.properties().stream()
+                .filter(e -> Arrays.stream(excludingKeys).noneMatch(s -> e.getKey().equalsIgnoreCase(s.name())));
     }
 
     default String transformTextFrom(JsonNode source, String join, JsonTextConverter<?> replacer) {

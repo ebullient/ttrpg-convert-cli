@@ -109,16 +109,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         return String.join(", ", list);
     }
 
-    default String replaceText(JsonNode input) {
-        if (input == null) {
-            return null;
-        }
-        if (input.isObject() || input.isArray()) {
-            throw new IllegalArgumentException("Can only replace text for textual nodes: " + input);
-        }
-        return replaceText(input.asText());
-    }
-
     default String replaceText(String input) {
         return replaceTokens(input, (s, b) -> this._replaceTokenText(s, b));
     }
