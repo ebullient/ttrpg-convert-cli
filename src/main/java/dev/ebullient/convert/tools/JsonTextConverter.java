@@ -479,6 +479,16 @@ public interface JsonTextConverter<T extends IndexType> {
 
     String replaceText(String s);
 
+    default String replaceText(JsonNode input) {
+        if (input == null) {
+            return null;
+        }
+        if (input.isObject() || input.isArray()) {
+            throw new IllegalArgumentException("Can only replace text for textual nodes: " + input);
+        }
+        return replaceText(input.asText());
+    }
+
     default String slugify(String s) {
         return Tui.slugify(s);
     }
@@ -518,6 +528,14 @@ public interface JsonTextConverter<T extends IndexType> {
             return Stream.of();
         }
         return StreamSupport.stream(iterableFieldNames(source).spliterator(), false);
+    }
+
+    default Stream<Entry<String, JsonNode>> streamPropsExcluding(JsonNode source, JsonNodeReader... excludingKeys) {
+        if (source == null || !source.isObject()) {
+            return Stream.of();
+        }
+        return source.properties().stream()
+                .filter(e -> Arrays.stream(excludingKeys).noneMatch(s -> e.getKey().equalsIgnoreCase(s.name())));
     }
 
     default String toAnchorTag(String x) {
