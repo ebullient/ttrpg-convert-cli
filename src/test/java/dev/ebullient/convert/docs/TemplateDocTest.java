@@ -1,5 +1,6 @@
 package dev.ebullient.convert.docs;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
@@ -16,6 +17,11 @@ public class TemplateDocTest {
     public static void prepare() {
         tui = new Tui();
         tui.init(null, true, false);
+    }
+
+    @AfterEach
+    public void clear() {
+        TestUtils.cleanupReferences();
     }
 
     // Use this test in IDEs

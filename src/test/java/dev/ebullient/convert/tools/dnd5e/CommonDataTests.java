@@ -109,6 +109,10 @@ public class CommonDataTests {
         templates.setCustomTemplates(TtrpgConfig.getConfig());
     }
 
+    public void done() {
+        index.cleanup();
+    }
+
     public void testKeyIndex(Path outputPath) throws Exception {
         tui.setOutputPath(outputPath);
         if (dataPresent) {

@@ -1117,6 +1117,24 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return null;
     }
 
+    public void cleanup() {
+        if (instance == this) {
+            instance = null;
+        }
+        this.aliases.clear();
+        this.classRoot.clear();
+        this.familiarKeys.clear();
+        this.filteredIndex.clear();
+        this.nodeIndex.clear();
+        this.homebrewMetaTypes.clear();
+        this.optFeatureIndex.clear();
+        this.srdKeys.clear();
+        this.spellClassIndex.clear();
+        this.subraceIndex.clear();
+        this.tableIndex.clear();
+        this.variantIndex.clear();
+    }
+
     static class Tuple {
         final String key;
         final JsonNode node;

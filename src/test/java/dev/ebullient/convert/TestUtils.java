@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.io.UncheckedIOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,27 +61,9 @@ public class TestUtils {
     final static Map<Path, List<String>> pathHeadings = new HashMap<>();
     final static Map<Path, List<String>> pathBlockReferences = new HashMap<>();
 
-    static void assertContents(Path path1, Path path2, boolean areEqual) throws IOException {
-        try (RandomAccessFile randomAccessFile1 = new RandomAccessFile(path1.toFile(), "r");
-                RandomAccessFile randomAccessFile2 = new RandomAccessFile(path2.toFile(), "r")) {
-
-            FileChannel ch1 = randomAccessFile1.getChannel();
-            FileChannel ch2 = randomAccessFile2.getChannel();
-            if (areEqual) {
-                assertThat(ch1.size()).isEqualTo(ch2.size());
-            } else {
-                assertThat(ch1.size()).isNotEqualTo(ch2.size());
-            }
-
-            MappedByteBuffer m1 = ch1.map(FileChannel.MapMode.READ_ONLY, 0L, ch1.size());
-            MappedByteBuffer m2 = ch2.map(FileChannel.MapMode.READ_ONLY, 0L, ch2.size());
-
-            if (areEqual) {
-                assertThat(m1).isEqualTo(m2);
-            } else {
-                assertThat(m1).isNotEqualTo(m2);
-            }
-        }
+    public static void cleanupReferences() {
+        TestUtils.pathHeadings.clear();
+        TestUtils.pathBlockReferences.clear();
     }
 
     public static void checkMarkdownLink(String baseDir, Path p, String line, List<String> errors) {

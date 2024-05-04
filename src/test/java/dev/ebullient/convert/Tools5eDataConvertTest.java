@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,11 @@ public class Tools5eDataConvertTest {
         tui.init(null, false, false);
         testOutput = TestUtils.OUTPUT_ROOT_5E.resolve(root).resolve("test-cli");
         testOutput.toFile().mkdirs();
+    }
+
+    @AfterEach
+    public void clear() {
+        TestUtils.cleanupReferences();
     }
 
     @Test

@@ -141,10 +141,8 @@ jobs:
 
       - name: Build and run
         id: mvn-build
-        env:
-          MAVEN_OPTS: "-Xmx1g"
         run: |
-          ./mvnw -B -ntp -DskipFormat verify
+          ./mvnw -B -ntp -DskipFormat -DargLine="-Xmx6g" verify
 
       - if: runner.os == 'Windows'
         name: clean before native build
@@ -154,10 +152,8 @@ jobs:
 
       - name: Build and run in native mode
         id: mvn-native-build
-        env:
-          MAVEN_OPTS: "-Xmx1g"
         run: |
-          ./mvnw -B -ntp -Dnative -DskipTests  -DskipFormat verify
+          ./mvnw -B -ntp -Dnative -DskipTests -DskipFormat verify
 
   report-native-build:
 

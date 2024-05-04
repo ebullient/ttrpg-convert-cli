@@ -27,6 +27,7 @@ public class JsonDataNoneTest {
     @AfterAll
     public static void done() {
         System.out.println("Done.");
+        commonTests.done();
     }
 
     @AfterEach
