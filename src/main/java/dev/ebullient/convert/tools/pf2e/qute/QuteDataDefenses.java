@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,43 +12,61 @@ import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
 
 /**
- * Pf2eTools Armor class, Saving Throws, and other attributes describing defenses
+ * Pf2eTools Armor class, Saving Throws, and other attributes describing defenses of a creature or hazard. Example:
+ * <ul>
+ * <li><b>AC</b> 23 (33 with mage armor); <b>Fort</b> +15, <b>Ref</b> +12, <b>Will</b> +10</li>
+ * <li>
+ * <b>Floor Hardness</b> 18, <b>Floor HP</b> 72 (BT 36);
+ * <b>Channel Hardness</b> 12, <b>Channel HP</b> 48 (BT24 ) to destroy a channel gate;
+ * <b>Resistances</b> precision damage;
+ * <b>Immunities</b> critical hits;
+ * <b>Weaknesses</b> bludgeoning damage
+ * </li>
+ * </ul>
+ *
+ * @param ac The armor class as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass QuteDataArmorClass}
+ * @param savingThrows The saving throws, as
+ *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows QuteSavingThrows}
+ * @param hpHardnessBt HP, hardness, and broken threshold stored in a
+ *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt QuteDataHpHardnessBt}
+ * @param additionalHpHardnessBt Additional HP, hardness, or broken thresholds for other HP components as a map of
+ *        names to {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt QuteDataHpHardnessBt}
+ * @param immunities List of strings, optional
+ * @param resistances List of strings, optional
+ * @param weaknesses List of strings, optional
  */
 @TemplateData
-public class QuteDataDefenses implements QuteUtil {
+public record QuteDataDefenses(
+        QuteDataArmorClass ac,
+        QuteSavingThrows savingThrows,
+        QuteDataHpHardnessBt hpHardnessBt,
+        Map<String, QuteDataHpHardnessBt> additionalHpHardnessBt,
+        List<String> immunities,
+        List<String> resistances,
+        List<String> weaknesses) implements QuteUtil {
 
-    public final QuteDataArmorClass ac;
-    public final QuteSavingThrows savingThrows;
-    public final List<QuteDataHpHardness> hpHardness;
-    public final List<String> immunities;
-    public final List<String> resistances;
-    public final List<String> weaknesses;
-
-    public QuteDataDefenses(List<String> text, QuteDataArmorClass ac, QuteSavingThrows savingThrows,
-            List<QuteDataHpHardness> hpHardness, List<String> immunities,
-            List<String> resistances, List<String> weaknesses) {
-        this.ac = ac;
-        this.savingThrows = savingThrows;
-        this.hpHardness = hpHardness;
-        this.immunities = immunities;
-        this.resistances = resistances;
-        this.weaknesses = weaknesses;
-    }
-
+    @Override
     public String toString() {
         String first = Stream.of(ac, savingThrows)
-                .filter(Objects::nonNull).map(Objects::toString).filter(s -> !s.isEmpty())
+                .filter(this::isPresent).map(Objects::toString)
                 .collect(Collectors.joining("; "));
-        String second = Stream.of(
-                hpHardness == null ? null
-                        : hpHardness.stream()
-                                .map(QuteDataHpHardness::toString)
-                                .collect(Collectors.joining("; ")),
-                isPresent(immunities) ? "**Immunities** " + String.join("; ", immunities) : null,
-                isPresent(resistances) ? "**Resistances** " + String.join("; ", resistances) : null,
-                isPresent(weaknesses) ? "**Weaknesses** " + String.join("; ", weaknesses) : null)
-                .filter(Objects::nonNull).collect(Collectors.joining("; "));
-        return Stream.of(first, second).map(s -> "- " + s).collect(Collectors.joining("\n"));
+
+        StringJoiner secondLine = new StringJoiner("; ");
+
+        if (hpHardnessBt != null) {
+            secondLine.add(hpHardnessBt.toString());
+        }
+        additionalHpHardnessBt.entrySet().stream()
+                .map(e -> e.getValue().toStringWithName(e.getKey()))
+                .forEachOrdered(secondLine::add);
+
+        Map.of("Immunities", immunities, "Resistances", resistances, "Weaknesses", weaknesses)
+                .entrySet().stream()
+                .filter(e -> isPresent(e.getValue()))
+                .map(e -> String.format("**%s** %s", e.getKey(), String.join(", ", e.getValue())))
+                .forEachOrdered(secondLine::add);
+
+        return Stream.of(first, secondLine.toString()).map(s -> "- " + s).collect(Collectors.joining("\n"));
     }
 
     /**
