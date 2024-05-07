@@ -14,7 +14,7 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardness;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemActivate;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemArmorData;
@@ -78,28 +78,36 @@ public class Json2QuteItem extends Json2QuteBase {
         return "";
     }
 
+    /**
+     * Example input JSON:
+     *
+     * <pre>
+     *     "sheldData": {
+     *         "ac": 2,
+     *         "ac2": 3,
+     *         "hardness": 5,
+     *         "hp": 20,
+     *         "bt": 10,
+     *         "speedPen": 10
+     *     }
+     * </pre>
+     *
+     * <p>
+     * `speedPen` is optional.
+     * </p>
+     */
     private QuteItemShieldData getShieldData() {
-        JsonNode shieldDataNode = Pf2eItem.shieldData.getFrom(rootNode);
-        if (shieldDataNode == null) {
-            return null;
-        }
-        QuteItemShieldData shieldData = new QuteItemShieldData();
-
-        Pf2eItem.ac.getIntFrom(shieldDataNode).ifPresent(ac -> shieldData.ac = new QuteDataArmorClass(
-                ac, Pf2eItem.ac2.getIntFrom(shieldDataNode).orElse(null)));
-
-        QuteDataHpHardness hpHardness = new QuteDataHpHardness();
-        hpHardness.hpValue = Pf2eItem.hp.getTextOrEmpty(shieldDataNode);
-        hpHardness.brokenThreshold = Pf2eItem.bt.getTextOrEmpty(shieldDataNode);
-        hpHardness.hardnessValue = Pf2eItem.hardness.getTextOrEmpty(shieldDataNode);
-        if (hpHardness.hpValue != null || hpHardness.hardnessValue != null || hpHardness.brokenThreshold != null) {
-            shieldData.hpHardness = hpHardness;
-        }
-
-        String speedPen = Pf2eItem.speedPen.getTextOrEmpty(shieldDataNode);
-        shieldData.speedPenalty = penalty(speedPen, " ft.");
-
-        return shieldData;
+        JsonNode shieldNode = Pf2eItem.shieldData.getFrom(rootNode);
+        return shieldNode == null ? null
+                : new QuteItemShieldData(
+                        new QuteDataArmorClass(
+                                Pf2eItem.ac.getIntOrThrow(shieldNode),
+                                Pf2eItem.ac2.getIntFrom(shieldNode).orElse(null)),
+                        new QuteDataHpHardnessBt(
+                                new QuteDataHpHardnessBt.HpStat(Pf2eItem.hp.getIntOrThrow(shieldNode)),
+                                new Pf2eSimpleStat(Pf2eItem.hardness.getIntOrThrow(shieldNode)),
+                                Pf2eItem.bt.getIntOrThrow(shieldNode)),
+                        penalty(Pf2eItem.speedPen.getTextOrEmpty(shieldNode), " ft."));
     }
 
     private QuteItemArmorData getArmorData() {
@@ -242,9 +250,9 @@ public class Json2QuteItem extends Json2QuteBase {
         return subcategory;
     }
 
-    String penalty(String input, String suffix) {
+    private String penalty(String input, String suffix) {
         if (input == null || input.isBlank() || "0".equals(input)) {
-            return "\u2014";
+            return "—";
         }
         return (input.startsWith("-") ? input : ("-" + input)) + suffix;
     }

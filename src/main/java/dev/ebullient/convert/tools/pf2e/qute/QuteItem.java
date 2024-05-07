@@ -140,35 +140,28 @@ public class QuteItem extends Pf2eQuteBase {
     }
 
     /**
-     * Pf2eTools item shield attributes
-     *
+     * Pf2eTools item shield attributes. When referenced directly, provides a default formatting, e.g.
      * <p>
-     * This data object provides a default mechanism for creating
-     * a marked up string based on the attributes that are present.
-     * To use it, reference it directly: `{resource.shield}`.
+     * <b>AC Bonus</b> +2; <b>Speed Penalty</b> —; <b>Hardness</b> 3; <b>HP (BT)</b> 12 (6)
      * </p>
+     *
+     * @param ac AC bonus for the shield, as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass QuteDataArmorClass}
+     *        (required)
+     * @param hpHardnessBt HP, hardness, and broken threshold of the shield, as
+     *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt QuteDataHpHardnessBt}
+     *        (required)
+     * @param speedPenalty Speed penalty for the shield, as a formatted string (string, required)
      */
     @TemplateData
-    public static class QuteItemShieldData implements QuteUtil {
-        /** {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass Shield armor class details} */
-        public QuteDataArmorClass ac;
-        /** {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardness Shield hardness details} */
-        public QuteDataHpHardness hpHardness;
-        /** Formatted string. Speed penalty */
-        public String speedPenalty;
+    public record QuteItemShieldData(
+            QuteDataArmorClass ac,
+            QuteDataHpHardnessBt hpHardnessBt,
+            String speedPenalty) implements QuteUtil {
 
+        @Override
         public String toString() {
-            List<String> parts = new ArrayList<>();
-            if (ac != null) {
-                parts.add("**AC Bonus** " + ac.bonus());
-            }
-            if (hpHardness != null) {
-                parts.add(hpHardness.toString());
-            }
-            if (isPresent(speedPenalty)) {
-                parts.add("**Speed Penalty** " + speedPenalty);
-            }
-            return "- " + String.join("; ", parts);
+            return String.join("; ",
+                    "**AC Bonus** " + ac.bonus(), "**Speed Penalty** " + speedPenalty, hpHardnessBt.toString());
         }
     }
 
