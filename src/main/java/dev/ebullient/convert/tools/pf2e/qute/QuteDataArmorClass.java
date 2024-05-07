@@ -11,10 +11,13 @@ import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
 import io.quarkus.qute.TemplateData;
 
 /**
- * Pf2eTools armor class attributes
+ * Pf2eTools armor class attributes. Default representation example:
+ * <p>
+ * <b>AC</b> 15 (10 with mage armor) note ability
+ * </p>
  *
  * @param value The AC value
- * @param alternateValues Alternate AC values as a map of (AC, condition)
+ * @param alternateValues Alternate AC values as a map of (condition, AC value)
  * @param notes Any notes associated with the AC e.g. "with mage armor"
  * @param abilities Any AC related abilities
  */
@@ -23,8 +26,7 @@ public record QuteDataArmorClass(
         Integer value,
         Map<String, Integer> alternateValues,
         List<String> notes,
-        List<String> abilities
-    ) implements Pf2eStat {
+        List<String> abilities) implements Pf2eStat {
 
     public QuteDataArmorClass(Integer value) {
         this(value, Map.of(), List.of(), List.of());
@@ -40,8 +42,10 @@ public record QuteDataArmorClass(
      */
     private String formattedAlternates(boolean asBonus) {
         return alternateValues.entrySet().stream()
-            .map(e -> String.format(asBonus ? "(%+d%s)" : "(%d%s)", e.getValue(), e.getKey().isEmpty() ? "" : " " + e.getKey()))
-            .collect(Collectors.joining(" "));
+                .map(e -> String.format(
+                        asBonus ? "(%+d%s)" : "(%d%s)", e.getValue(),
+                        e.getKey().isEmpty() ? "" : " " + e.getKey()))
+                .collect(Collectors.joining(" "));
     }
 
     @Override
@@ -53,8 +57,9 @@ public record QuteDataArmorClass(
     @Override
     public String toString() {
         return Stream.of(List.of("**AC**", value, formattedAlternates(false)), notes, abilities)
-            .flatMap(Collection::stream)
-            .map(Objects::toString)
-            .collect(Collectors.joining(" "));
+                .flatMap(Collection::stream)
+                .map(Objects::toString)
+                .filter(this::isPresent)
+                .collect(Collectors.joining(" "));
     }
 }
