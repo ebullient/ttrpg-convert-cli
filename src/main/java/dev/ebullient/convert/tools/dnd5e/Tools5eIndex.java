@@ -1121,18 +1121,30 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (instance == this) {
             instance = null;
         }
-        this.aliases.clear();
-        this.classRoot.clear();
-        this.familiarKeys.clear();
-        this.filteredIndex.clear();
-        this.nodeIndex.clear();
-        this.homebrewMetaTypes.clear();
-        this.optFeatureIndex.clear();
-        this.srdKeys.clear();
-        this.spellClassIndex.clear();
-        this.subraceIndex.clear();
-        this.tableIndex.clear();
-        this.variantIndex.clear();
+        clearCollection(this.familiarKeys);
+        clearCollection(this.srdKeys);
+        clearMap(this.aliases);
+        clearMap(this.classRoot);
+        clearMap(this.filteredIndex);
+        clearMap(this.homebrewMetaTypes);
+        clearMap(this.nodeIndex);
+        clearMap(this.optFeatureIndex);
+        clearMap(this.spellClassIndex);
+        clearMap(this.subraceIndex);
+        clearMap(this.tableIndex);
+        clearMap(this.variantIndex);
+    }
+
+    private void clearCollection(Collection<?> collection) {
+        if (collection != null) {
+            collection.clear();
+        }
+    }
+
+    private void clearMap(Map<?, ?> map) {
+        if (map != null) {
+            map.clear();
+        }
     }
 
     static class Tuple {
