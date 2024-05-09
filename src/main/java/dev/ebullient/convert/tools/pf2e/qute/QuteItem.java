@@ -160,7 +160,7 @@ public class QuteItem extends Pf2eQuteBase {
         public String toString() {
             List<String> parts = new ArrayList<>();
             if (ac != null) {
-                parts.add(ac.toString());
+                parts.add("**AC Bonus** " + ac.bonus());
             }
             if (hpHardness != null) {
                 parts.add(hpHardness.toString());
@@ -185,6 +185,8 @@ public class QuteItem extends Pf2eQuteBase {
     public static class QuteItemArmorData implements QuteUtil {
         /** {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass Item armor class details} */
         public QuteDataArmorClass ac;
+        /** Formatted string. Dex cap */
+        public String dexCap;
         /** Formatted string. Armor strength */
         public String strength;
         /** Formatted string. Check penalty */
@@ -194,6 +196,10 @@ public class QuteItem extends Pf2eQuteBase {
 
         public String toString() {
             List<String> parts = new ArrayList<>();
+            parts.add("**AC Bonus** " + ac.bonus());
+            if (isPresent(dexCap)) {
+                parts.add("**Dex Cap** " + dexCap);
+            }
             if (isPresent(strength)) {
                 parts.add("**Strength** " + strength);
             }
@@ -203,8 +209,7 @@ public class QuteItem extends Pf2eQuteBase {
             if (isPresent(speedPenalty)) {
                 parts.add("**Speed Penalty** " + speedPenalty);
             }
-            return "- " + ac.toString()
-                    + "\n- " + String.join("; ", parts);
+            return "- " + String.join("; ", parts);
         }
     }
 
