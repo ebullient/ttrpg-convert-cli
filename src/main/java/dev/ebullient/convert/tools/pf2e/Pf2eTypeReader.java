@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
+import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
@@ -180,7 +181,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 convert.tui().warnf("Defenses has notes: %s", source.toString());
             }
             return new QuteDataDefenses(List.of(),
-                    getAcString(source, convert),
+                    getArmorClass(source, convert),
                     getSavingThrowString(source, convert),
                     getHpHardness(source, convert), // hp hardness
                     immunities.linkifyListFrom(source, Pf2eIndexType.trait, convert), // immunities
@@ -237,40 +238,17 @@ public interface Pf2eTypeReader extends JsonSource {
                 NameAmountNote nmn = convert.tui().readJsonValue(wr, NameAmountNote.class);
                 items.add(nmn.flatten(convert));
             }
-            ;
             return items;
         }
 
-        public static QuteDataArmorClass getAcString(JsonNode source, Pf2eTypeReader convert) {
+        public static QuteDataArmorClass getArmorClass(JsonNode source, Pf2eTypeReader convert) {
             JsonNode acNode = ac.getFrom(source);
-            if (acNode == null) {
-                return null;
-            }
-            QuteDataArmorClass ac = new QuteDataArmorClass();
-            NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
-            for (Entry<String, JsonNode> e : convert.iterableFields(acNode)) {
-                if (e.getKey().equals(note.name()) ||
-                        e.getKey().equals(abilities.name()) ||
-                        e.getKey().equals(notes.name())) {
-                    continue; // skip these three
-                }
-                namedText.add(
-                        (e.getKey().equals("std") ? "AC" : e.getKey() + " AC"),
-                        "" + e.getValue());
-            }
-            ac.armorClass = namedText.build();
-            ac.abilities = convert.replaceText(abilities.getTextOrEmpty(acNode));
-
-            // Consolidate "note" and "notes" into different representations of the same data
-            List<String> acNotes = notes.getListOfStrings(acNode, convert.tui());
-            ac.notes = Stream.concat(acNotes.stream(), Stream.of(note.getTextOrEmpty(acNode)))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .map(convert::replaceText)
-                    .toList();
-            ac.note = String.join("; ", ac.notes);
-
-            return ac;
+            return acNode == null ? null : new QuteDataArmorClass(
+                std.getIntOrThrow(acNode),
+                ac.streamPropsExcluding(source, note, abilities, notes, std)
+                    .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().asInt())),
+                (note.existsIn(acNode) ? note : notes).replaceTextFromList(acNode, convert),
+                abilities.replaceTextFromList(acNode, convert));
         }
 
         /**
@@ -731,4 +709,15 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
+    /** A generic container for a PF2e stat value which may have an attached note. */
+    interface Pf2eStat extends QuteUtil {
+        /** Returns the value of the stat. */
+        Integer value();
+        /** Returns any notes associated with this value. */
+        List<String> notes();
+        /** Return the value formatted with a leading +/-. */
+        default String bonus() {
+            return String.format("%+d", value());
+        }
+    }
 }
