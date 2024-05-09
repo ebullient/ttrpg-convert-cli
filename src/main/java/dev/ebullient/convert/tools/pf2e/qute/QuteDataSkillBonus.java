@@ -1,13 +1,11 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import dev.ebullient.convert.qute.QuteUtil;
+import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -19,30 +17,33 @@ import io.quarkus.qute.TemplateData;
  * </p>
  *
  * @param name The name of the skill
- * @param standardBonus The standard bonus associated with this skill
+ * @param value The standard bonus associated with this skill
  * @param otherBonuses Any additional bonuses, as a map of descriptions to bonuses. Iterate over all map entries to
  *        display the values: {@code {#each resource.skills.otherBonuses}{it.key}: {it.value}{/each}}
- * @param note Any note associated with this skill bonus
+ * @param notes Any notes associated with this skill bonus
  */
 @TemplateData
 public record QuteDataSkillBonus(
         String name,
-        Integer standardBonus,
+        Integer value,
         Map<String, Integer> otherBonuses,
-        String note) implements QuteUtil {
+        List<String> notes) implements Pf2eTypeReader.Pf2eStat {
 
     public QuteDataSkillBonus(String name, Integer standardBonus) {
-        this(name, standardBonus, null, null);
+        this(name, standardBonus, Map.of(), List.of());
+    }
+
+    /** Return the standard bonus and any other conditional bonuses. */
+    @Override
+    public String bonus() {
+        return Stream.concat(
+                Stream.of(Pf2eTypeReader.Pf2eStat.super.bonus()),
+                otherBonuses.entrySet().stream().map(e -> String.format("(%+d %s)", e.getValue(), e.getKey())))
+                .collect(Collectors.joining(" "));
     }
 
     @Override
     public String toString() {
-        return Stream.of(
-                List.of(String.format("%s %+d", name, standardBonus)),
-                otherBonuses.entrySet().stream().map(e -> String.format("(%+d %s)", e.getValue(), e.getKey())).toList(),
-                note == null ? List.<String> of() : List.of("(" + note + ")"))
-                .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining(" "));
+        return String.join(" ", name, bonus(), formattedNotes()).trim();
     }
 }
