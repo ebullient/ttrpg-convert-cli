@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e.qute;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,11 +45,14 @@ public class QuteCreature extends Pf2eQuteBase {
      * Skill bonuses as {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureSkills CreatureSkills}
      */
     public final CreatureSkills skills;
+    /** Senses as a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureSense CreatureSense} */
+    public final List<CreatureSense> senses;
 
     public QuteCreature(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases,
             String description, Integer level, Integer perception,
-            QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills) {
+            QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
+            List<CreatureSense> senses) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -58,6 +62,7 @@ public class QuteCreature extends Pf2eQuteBase {
         this.languages = languages;
         this.defenses = defenses;
         this.skills = skills;
+        this.senses = senses;
     }
 
     /**
@@ -111,6 +116,33 @@ public class QuteCreature extends Pf2eQuteBase {
         public String toString() {
             return skills.stream().map(QuteDataSkillBonus::toString).collect(Collectors.joining(", ")) +
                     (notes == null ? "" : " " + String.join("; ", notes));
+        }
+    }
+
+    /**
+     * A creature's senses.
+     *
+     * @param name The name of the sense (required, string)
+     * @param type The type of the sense - e.g. precise, imprecise (optional, string)
+     * @param range The range of the sense (optional, integer)
+     */
+    @TemplateData
+    public record CreatureSense(String name, String type, Integer range) implements QuteUtil {
+
+        public CreatureSense(String name) {
+            this(name, null, null);
+        }
+
+        @Override
+        public String toString() {
+            StringJoiner s = new StringJoiner(" ").add(name);
+            if (type != null) {
+                s.add(String.format("(%s)", type));
+            }
+            if (range != null) {
+                s.add(range.toString());
+            }
+            return s.toString();
         }
     }
 }
