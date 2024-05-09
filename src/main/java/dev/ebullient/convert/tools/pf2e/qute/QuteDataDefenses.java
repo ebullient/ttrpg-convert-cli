@@ -1,10 +1,11 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
@@ -34,32 +35,19 @@ public class QuteDataDefenses implements QuteUtil {
     }
 
     public String toString() {
-        List<String> lines = new ArrayList<>();
-        List<String> first = new ArrayList<>();
-        if (ac != null) {
-            first.add(ac.toString());
-        }
-        if (savingThrows != null) {
-            first.add(savingThrows.toString());
-        }
-        if (!first.isEmpty()) {
-            lines.add("- " + String.join(", ", first));
-        }
-        if (hpHardness != null) {
-            lines.add("- " + hpHardness.stream()
-                    .map(hp -> hp.toString())
-                    .collect(Collectors.joining("; ")));
-        }
-        if (isPresent(immunities)) {
-            lines.add("- **Immunities** " + String.join("; ", immunities));
-        }
-        if (isPresent(resistances)) {
-            lines.add("- **Resistances** " + String.join("; ", resistances));
-        }
-        if (isPresent(weaknesses)) {
-            lines.add("- **Weaknesses** " + String.join("; ", weaknesses));
-        }
-        return String.join("\n", lines);
+        String first = Stream.of(ac, savingThrows)
+                .filter(Objects::nonNull).map(Objects::toString).filter(s -> !s.isEmpty())
+                .collect(Collectors.joining("; "));
+        String second = Stream.of(
+                hpHardness == null ? null
+                        : hpHardness.stream()
+                                .map(QuteDataHpHardness::toString)
+                                .collect(Collectors.joining("; ")),
+                isPresent(immunities) ? "**Immunities** " + String.join("; ", immunities) : null,
+                isPresent(resistances) ? "**Resistances** " + String.join("; ", resistances) : null,
+                isPresent(weaknesses) ? "**Weaknesses** " + String.join("; ", weaknesses) : null)
+                .filter(Objects::nonNull).collect(Collectors.joining("; "));
+        return Stream.of(first, second).map(s -> "- " + s).collect(Collectors.joining("\n"));
     }
 
     /**

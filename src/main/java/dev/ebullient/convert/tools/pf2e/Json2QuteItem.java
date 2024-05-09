@@ -85,18 +85,8 @@ public class Json2QuteItem extends Json2QuteBase {
         }
         QuteItemShieldData shieldData = new QuteItemShieldData();
 
-        String ac = Pf2eItem.ac.bonusOrNull(shieldDataNode);
-        String ac2 = Pf2eItem.ac.bonusOrNull(shieldDataNode);
-        String dexCap = Pf2eItem.dexCap.bonusOrNull(shieldDataNode);
-        if (ac != null || dexCap != null) {
-            shieldData.ac = new QuteDataArmorClass();
-            NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
-            namedText.add("AC Bonus", ac + (ac2 == null ? "" : ("/" + ac2)));
-            if (dexCap != null) {
-                namedText.add("Dex Cap", dexCap);
-            }
-            shieldData.ac.armorClass = namedText.build();
-        }
+        Pf2eItem.ac.getIntFrom(shieldDataNode).ifPresent(ac -> shieldData.ac = new QuteDataArmorClass(
+                ac, Pf2eItem.ac2.getIntFrom(shieldDataNode).orElse(null)));
 
         QuteDataHpHardness hpHardness = new QuteDataHpHardness();
         hpHardness.hpValue = Pf2eItem.hp.getTextOrEmpty(shieldDataNode);
@@ -119,19 +109,10 @@ public class Json2QuteItem extends Json2QuteBase {
         }
 
         QuteItemArmorData armorData = new QuteItemArmorData();
-        String ac = Pf2eItem.ac.bonusOrNull(armorDataNode);
-        String dexCap = Pf2eItem.dexCap.bonusOrNull(armorDataNode);
-        if (ac != null || dexCap != null) {
-            armorData.ac = new QuteDataArmorClass();
-            NamedText.SortedBuilder namedText = new NamedText.SortedBuilder();
-            namedText.add("AC Bonus", ac);
-            if (dexCap != null) {
-                namedText.add("Dex Cap", dexCap);
-            }
-            armorData.ac.armorClass = namedText.build();
-        }
+        Pf2eItem.ac.getIntFrom(armorDataNode).ifPresent(ac -> armorData.ac = new QuteDataArmorClass(ac));
+        armorData.dexCap = Pf2eItem.dexCap.bonusOrNull(armorDataNode);
 
-        armorData.strength = Pf2eItem.str.getTextOrDefault(armorDataNode, "\u2014");
+        armorData.strength = Pf2eItem.str.getTextOrDefault(armorDataNode, "—");
 
         String checkPen = Pf2eItem.checkPen.getTextOrDefault(armorDataNode, null);
         armorData.checkPenalty = penalty(checkPen, "");
