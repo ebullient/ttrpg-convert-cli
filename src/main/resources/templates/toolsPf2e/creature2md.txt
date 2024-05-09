@@ -19,7 +19,7 @@ aliases:
 
 ```ad-statblock
 {#if resource.perception != null}
-- **Perception** {#if resource.perception >= 0}+{#else}-{/if}{resource.perception}
+- **Perception** {#if resource.perception >= 0}+{#else}-{/if}{resource.perception}; {#each resource.senses}{it}{#if it_hasNext}, {/if}{/each}
 {/if}{#if resource.languages}
 - **Languages** {resource.languages}
 {/if}{#if resource.skills}

@@ -29,17 +29,17 @@ public class Json2QuteCreature extends Json2QuteBase {
         if (Pf2eCreature.alignment.existsIn(rootNode)) {
             traits.addAll(toAlignments(rootNode, Pf2eCreature.alignment));
         }
-        Optional<Integer> level = Pf2eCreature.level.getIntFrom(rootNode);
 
         return new QuteCreature(sources, text, tags,
                 traits,
                 Field.alias.replaceTextFromList(rootNode, this),
                 Pf2eCreature.description.replaceTextFrom(rootNode, this),
-                level.orElse(null),
+                Pf2eCreature.level.getIntFrom(rootNode).orElse(null),
                 getPerception(),
                 buildDefenses(),
-                Pf2eCreatureLanguages.createCreatureLanguages(Pf2eCreature.languages.getFrom(rootNode), this),
-                buildSkills());
+                Pf2eCreatureLanguages.create(Pf2eCreature.languages.getFrom(rootNode), this),
+                buildSkills(),
+                Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList());
     }
 
     /**
@@ -52,11 +52,9 @@ public class Json2QuteCreature extends Json2QuteBase {
      * </pre>
      */
     private Integer getPerception() {
-        JsonNode perceptionNode = Pf2eCreature.perception.getFrom(rootNode);
-        if (perceptionNode == null || !perceptionNode.isObject()) {
-            return null;
-        }
-        return Pf2eCreature.std.getIntOrThrow(perceptionNode);
+        return Pf2eCreature.perception.isObjectIn(rootNode)
+                ? Pf2eCreature.std.getIntOrThrow(Pf2eCreature.perception.getFrom(rootNode))
+                : null;
     }
 
     /**
@@ -120,14 +118,37 @@ public class Json2QuteCreature extends Json2QuteBase {
         abilities,
         notes;
 
-        static QuteCreature.CreatureLanguages createCreatureLanguages(JsonNode node, Pf2eTypeReader convert) {
-            if (node == null) {
-                return null;
-            }
-            return new QuteCreature.CreatureLanguages(
-                    languages.getListOfStrings(node, convert.tui()),
-                    abilities.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList(),
-                    notes.getListOfStrings(node, convert.tui()).stream().map(convert::replaceText).toList());
+        static QuteCreature.CreatureLanguages create(JsonNode node, Pf2eTypeReader convert) {
+            return node == null ? null
+                    : new QuteCreature.CreatureLanguages(
+                            languages.getListOfStrings(node, convert.tui()),
+                            abilities.replaceTextFromList(node, convert),
+                            notes.replaceTextFromList(node, convert));
+        }
+    }
+
+    /**
+     * Example JSON input:
+     *
+     * <pre>
+     *     {
+     *         "name": "scent",
+     *         "type": "imprecise",
+     *         "range": 60,
+     *     }
+     * </pre>
+     */
+    enum Pf2eCreatureSense implements JsonNodeReader {
+        name,
+        type,
+        range;
+
+        static QuteCreature.CreatureSense create(JsonNode node, Pf2eTypeReader convert) {
+            return node == null ? null
+                    : new QuteCreature.CreatureSense(
+                            name.getTextFrom(node).map(convert::replaceText).orElseThrow(),
+                            type.getTextFrom(node).map(convert::replaceText).orElse(null),
+                            range.getIntFrom(node).orElse(null));
         }
     }
 
