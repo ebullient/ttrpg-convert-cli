@@ -204,6 +204,13 @@ public interface JsonNodeReader {
         return text;
     }
 
+    default Optional<String> getTextFrom(JsonNode x) {
+        if (x != null && x.isTextual()) {
+            return Optional.of(x.asText());
+        }
+        return Optional.empty();
+    }
+
     default int intOrDefault(JsonNode source, int value) {
         JsonNode result = getFrom(source);
         return result == null || result.isNull() ? value : result.asInt();
