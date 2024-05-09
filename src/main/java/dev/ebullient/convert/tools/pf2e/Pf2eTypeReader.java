@@ -541,7 +541,9 @@ public interface Pf2eTypeReader extends JsonSource {
                             .collect(
                                     Collectors.toUnmodifiableMap(
                                             e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
-                    convert.replaceText(note.getTextOrNull(source)));
+                    Optional.ofNullable(note.getTextOrNull(source))
+                            .map(s -> List.of(convert.replaceText(s)))
+                            .orElse(List.of()));
         }
     }
 
