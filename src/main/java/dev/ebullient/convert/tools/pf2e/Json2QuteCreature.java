@@ -28,7 +28,7 @@ public class Json2QuteCreature extends Json2QuteBase {
 
         Collection<String> traits = collectTraitsFrom(rootNode, tags);
         if (Pf2eCreature.alignment.existsIn(rootNode)) {
-            traits.addAll(toAlignments(rootNode, Pf2eCreature.alignment));
+            traits.addAll(getAlignments(Pf2eCreature.alignment.getFrom(rootNode)));
         }
 
         return new QuteCreature(sources, text, tags,
