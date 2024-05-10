@@ -24,6 +24,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -547,35 +548,11 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    @RegisterForReflection
-    class Speed {
-        public Integer walk;
-        public Integer climb;
-        public Integer fly;
-        public Integer burrow;
-        public Integer swim;
-        public Integer dimensional;
-        public String speedNote;
-
-        public String speedToString(Pf2eTypeReader convert) {
-            List<String> parts = new ArrayList<>();
-            if (climb != null) {
-                parts.add("climb " + climb + " feet");
-            }
-            if (fly != null) {
-                parts.add("fly " + fly + " feet");
-            }
-            if (burrow != null) {
-                parts.add("burrow " + burrow + " feet");
-            }
-            if (swim != null) {
-                parts.add("swim " + swim + " feet");
-            }
-            return String.format("%s%s%s",
-                    walk == null ? "no land Speed" : "Speed " + walk + " feet",
-                    (walk == null || parts.isEmpty()) ? "" : ", ",
-                    convert.join(", ", parts));
-        }
+    default List<String> getAlignments(JsonNode alignNode) {
+        return streamOf(alignNode)
+                .map(JsonNode::asText)
+                .map(a -> a.length() > 2 ? a : linkifyTrait(a.toUpperCase()))
+                .collect(Collectors.toList());
     }
 
     static QuteDataActivity getQuteActivity(JsonNode source, JsonNodeReader field, JsonSource convert) {
@@ -660,11 +637,36 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    default List<String> getAlignments(JsonNode alignNode) {
-        return streamOf(alignNode)
-            .map(JsonNode::asText)
-            .map(a -> a.length() > 2 ? a : linkifyTrait(a.toUpperCase()))
-            .collect(Collectors.toList());
+    enum Pf2eSpeed implements JsonNodeReader {
+        walk,
+        speedNote,
+        abilities;
+
+        /**
+         * Example JSON input:
+         *
+         * <pre>
+         *     {
+         *         "walk": 10,
+         *         "fly": 20,
+         *         "speedNote": "(with fly spell)",
+         *         "abilities": "air walk"
+         *     }
+         * </pre>
+         */
+        static QuteDataSpeed getSpeed(JsonNode source, JsonTextConverter<?> convert) {
+            return source == null || !source.isObject() ? null
+                    : new QuteDataSpeed(
+                            walk.getIntFrom(source).orElse(null),
+                            convert.streamPropsExcluding(source, speedNote, abilities)
+                                    .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().asInt())),
+                            speedNote.getTextFrom(source)
+                                    .map(convert::replaceText)
+                                    .map(s -> s.replaceFirst("^\\((%s)\\)$", "\1")) // Remove parens around the note
+                                    .map(List::of).orElse(List.of()),
+                            // Specifically make this mutable because we later need to add additional abilities for deities
+                            new ArrayList<>(abilities.getListOfStrings(source, convert.tui())));
+        }
     }
 
     default String getOrdinalForm(String level) {
