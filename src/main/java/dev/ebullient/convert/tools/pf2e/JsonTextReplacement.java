@@ -360,6 +360,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             String title;
             if (categories.contains("Alignment")) {
                 title = "Alignment";
+                linkText = linkText.toUpperCase();
             } else if (categories.contains("Rarity")) {
                 title = "Rarity";
             } else if (categories.contains("Size")) {
