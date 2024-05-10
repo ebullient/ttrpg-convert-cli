@@ -35,8 +35,8 @@ public class Json2QuteDeity extends Json2QuteBase {
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         JsonNode alignNode = Pf2eDeity.alignment.getFrom(rootNode);
-        String alignment = join(", ", toAlignments(alignNode, Pf2eDeity.alignment));
-        String followerAlignment = join(", ", toAlignments(alignNode, Pf2eDeity.followerAlignment));
+        String alignment = join(", ", getAlignments(Pf2eDeity.alignment.getFrom(alignNode)));
+        String followerAlignment = join(", ", getAlignments(Pf2eDeity.followerAlignment.getFrom(alignNode)));
 
         return new QuteDeity(sources, text, tags,
                 Field.alias.replaceTextFromList(rootNode, this),

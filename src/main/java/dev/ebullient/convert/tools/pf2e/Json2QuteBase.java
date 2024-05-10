@@ -36,12 +36,6 @@ public abstract class Json2QuteBase implements Pf2eTypeReader {
         return sources;
     }
 
-    List<String> toAlignments(JsonNode alignNode, JsonNodeReader alignmentField) {
-        return alignmentField.getListOfStrings(alignNode, tui()).stream()
-                .map(a -> a.length() > 2 ? a : linkify(Pf2eIndexType.trait, a.toUpperCase()))
-                .collect(Collectors.toList());
-    }
-
     public Pf2eQuteBase build() {
         boolean pushed = parseState().push(getSources(), rootNode);
         try {
