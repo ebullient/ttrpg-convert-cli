@@ -114,6 +114,14 @@ public interface JsonNodeReader {
         return source.get(this.nodeName());
     }
 
+    /**
+     * Return an optional of the object at this key in the node, or an empty optional if the key does not exist or is not an
+     * object.
+     */
+    default Optional<JsonNode> getObjectFrom(JsonNode source) {
+        return this.isObjectIn(source) ? Optional.of(this.getFrom(source)) : Optional.empty();
+    }
+
     default JsonNode getFromOrEmptyObjectNode(JsonNode source) {
         if (source == null) {
             return Tui.MAPPER.createObjectNode();
@@ -205,8 +213,8 @@ public interface JsonNodeReader {
     }
 
     default Optional<String> getTextFrom(JsonNode x) {
-        if (x != null && x.isTextual()) {
-            return Optional.of(x.asText());
+        if (x != null && existsIn(x) && getFrom(x).isTextual()) {
+            return Optional.of(getFrom(x).asText());
         }
         return Optional.empty();
     }
