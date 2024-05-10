@@ -2,7 +2,9 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -38,7 +40,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                 Pf2eCreature.defenses(rootNode, this),
                 Pf2eCreatureLanguages.create(Pf2eCreature.languages.getFrom(rootNode), this),
                 Pf2eCreature.skills(rootNode, this),
-                Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList());
+                Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList(),
+                Pf2eCreature.abilityModifiers(rootNode));
     }
 
     /**
@@ -166,5 +169,25 @@ public class Json2QuteCreature extends Json2QuteBase {
                 notes.replaceTextFromList(source, convert));
         }
 
+        /**
+         * Example JSON input:
+         *
+         * <pre>
+         *     {
+         *         "str": 10,
+         *         "dex": 10,
+         *         "con": 10,
+         *         "int": 10,
+         *         "wis": 10,
+         *         "cha": 10
+         *     }
+         * </pre>
+         */
+        private static Map<String, Integer> abilityModifiers(JsonNode source) {
+            // Use a linked hash map to preserve insertion order
+            Map<String, Integer> mods = new LinkedHashMap<>();
+            abilityMods.streamPropsExcluding(source).forEachOrdered(e -> mods.put(e.getKey(), e.getValue().asInt()));
+            return mods;
+        }
     }
 }
