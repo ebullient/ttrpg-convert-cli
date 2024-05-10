@@ -27,9 +27,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         Collection<String> traits = collectTraitsFrom(rootNode, tags);
-        if (Pf2eCreature.alignment.existsIn(rootNode)) {
-            traits.addAll(getAlignments(Pf2eCreature.alignment.getFrom(rootNode)));
-        }
+        traits.addAll(getAlignments(Pf2eCreature.alignment.getFrom(rootNode)));
 
         return new QuteCreature(sources, text, tags,
                 traits,
@@ -42,7 +40,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                 Pf2eCreature.skills(rootNode, this),
                 Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList(),
                 Pf2eCreature.abilityModifiers(rootNode),
-                Pf2eCreature.items.replaceTextFromList(rootNode, this));
+                Pf2eCreature.items.replaceTextFromList(rootNode, this),
+                Pf2eTypeReader.Pf2eSpeed.getSpeed(Pf2eCreature.speed.getFrom(rootNode), this));
     }
 
     /**
@@ -120,7 +119,6 @@ public class Json2QuteCreature extends Json2QuteBase {
         std,
         traits;
 
-
         /**
          * Example JSON input:
          *
@@ -164,10 +162,10 @@ public class Json2QuteCreature extends Json2QuteBase {
          */
         private static QuteCreature.CreatureSkills skills(JsonNode source, Pf2eTypeReader convert) {
             return new QuteCreature.CreatureSkills(
-                skills.streamPropsExcluding(source, notes)
-                    .map(e -> Pf2eTypeReader.Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), convert))
-                    .toList(),
-                notes.replaceTextFromList(source, convert));
+                    skills.streamPropsExcluding(source, notes)
+                            .map(e -> Pf2eTypeReader.Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), convert))
+                            .toList(),
+                    notes.replaceTextFromList(source, convert));
         }
 
         /**
