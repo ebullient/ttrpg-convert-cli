@@ -114,33 +114,22 @@ public class Json2QuteDeity extends Json2QuteBase {
         avatar.preface = replaceText(Pf2eDeity.preface.getTextOrEmpty(avatarNode));
         avatar.name = linkify(Pf2eIndexType.spell, "avatar||Avatar") + " of " + sources.getName();
 
-        Speed speed = Pf2eDeity.speed.fieldFromTo(avatarNode, Speed.class, tui());
-        avatar.speed = speed.speedToString(this);
-
-        List<String> notes = new ArrayList<>();
+        avatar.speed = Pf2eTypeReader.Pf2eSpeed.getSpeed(Pf2eDeity.speed.getFrom(avatarNode), this);
         if (Pf2eDeity.airWalk.booleanOrDefault(avatarNode, false)) {
-            notes.add(linkify(Pf2eIndexType.spell, "air walk"));
+            avatar.speed.addAbility(linkify(Pf2eIndexType.spell, "air walk"));
         }
         String immunities = joinConjunct(" and ",
                 Pf2eDeity.immune.linkifyListFrom(avatarNode, Pf2eIndexType.condition, this));
         if (!immunities.isEmpty()) {
-            notes.add("immune to " + immunities);
+            avatar.speed.addAbility("immune to " + immunities);
         }
         if (Pf2eDeity.ignoreTerrain.booleanOrDefault(avatarNode, false)) {
-            notes.add(replaceText(
+            avatar.speed.addAbility(replaceText(
                     "ignore {@quickref difficult terrain||3|terrain} and {@quickref greater difficult terrain||3|terrain}"));
         }
-        if (speed.speedNote != null) {
-            notes.add(speed.speedNote);
-        }
-        if (!notes.isEmpty()) {
-            avatar.speed += ", " + join(", ", notes);
-        }
 
-        String shield = Pf2eDeity.shield.getTextOrEmpty(avatarNode);
-        if (shield != null) {
-            avatar.shield = "shield (" + shield + " Hardness, can't be damaged)";
-        }
+        avatar.shield = Pf2eDeity.shield.getIntFrom(avatarNode)
+                .map("shield (%d Hardness, can't be damaged)"::formatted).orElse(null);
 
         avatar.melee = Pf2eDeity.melee.streamFrom(avatarNode)
                 .map(n -> buildAvatarAction(n, tags))

@@ -9,8 +9,8 @@ tags:
 {/if}
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
-# {resource.name}{#if resource.aliases } ({#each resource.aliases}{it}{#if it_hasNext}, {/if}{/each}){/if} *({resource.alignment})*  
-*Source: {resource.source}*  
+# {resource.name}{#if resource.aliases } ({#each resource.aliases}{it}{#if it_hasNext}, {/if}{/each}){/if} *({resource.alignment})*
+*Source: {resource.source}*
 {#if resource.text }
 
 {resource.text}
@@ -33,9 +33,26 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ## Devotee benefits
 
 {resource.cleric}
-{/if}{#if resource.avatar }
+{/if}
+{#if resource.avatar}{#let avatar=resource.avatar}
+{#if avatar.preface}
+{avatar.preface}
 
-{resource.avatar}
+{/if}
+```ad-embed-avatar
+title: {avatar.name}
+
+{#if avatar.speed or avatar.shield}
+- {#if avatar.speed}Speed {avatar.speed}{#if avatar.shield}; {/if}{/if}{avatar.shield or ''}
+{/if}
+{#each avatar.melee}
+- {it}
+{/each}{#each avatar.ranged}
+- {it}
+{/each}{#each avatar.ability}
+- {it}
+{/each}
+```
 {/if}{#if resource.intercession }
 
 ## Divine intercession

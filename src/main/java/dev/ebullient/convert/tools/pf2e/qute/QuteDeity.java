@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.qute.QuteUtil;
@@ -128,33 +131,41 @@ public class QuteDeity extends Pf2eQuteBase {
     public static class QuteDivineAvatar implements QuteUtil {
         public String preface;
         public String name;
-        public String speed;
+        /** The avatar's speed, as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed QuteDataSpeed} */
+        public QuteDataSpeed speed;
+        public List<String> abilities;
         public String shield;
         public List<QuteDivineAvatarAction> melee;
         public List<QuteDivineAvatarAction> ranged;
         public Collection<NamedText> ability;
 
+        /**
+         * Example:
+         *
+         * <blockquote>
+         * <p>
+         * <b>Cee-el-aye</b> When casting the <i>avatar</i> spell, a worshipper of the Cee-el-aye typically begins reading
+         * entirely too much JSON, and gains the following additional abilities.
+         * </p>
+         * <p>
+         * Speed 50 feet, burrow 70 feet, immune to <u>petrified</u>;
+         * shield (15 Hardness, can't be damaged);
+         * <b>Melee</b> polytool (<u>reach 15 feet</u>), <b>Damage</b> 6d6+6 slashing;
+         * <b>Ranged</b> pull request (<u>nonlethal</u>, <u>reach 9358 miles</u>), <b>Damage</b> 3d6+3 mental plus commit
+         * history;
+         * <b>Commit History</b> A creature who reviews the pull request must spend the next 1d4 hours reading code.
+         * </blockquote>
+         */
+        @Override
         public String toString() {
-            List<String> lines = new ArrayList<>();
-            if (isPresent(preface)) {
-                lines.add(preface);
-                lines.add("");
-            }
-            lines.add("```ad-embed-avatar");
-            lines.add("title: " + name);
-            lines.add("");
-            if (isPresent(speed)) {
-                lines.add("- **Speed**: " + speed);
-            }
-            if (shield != null) {
-                lines.add("- **Shield**: " + shield);
-            }
-            melee.forEach(m -> lines.add("- " + m));
-            ranged.forEach(r -> lines.add("- " + r));
-            ability.forEach(a -> lines.add("- " + a));
-            lines.add("```");
-
-            return String.join("\n", lines);
+            String speedText = speed == null ? ""
+                    : "Speed %s%s".formatted(speed.formattedSpeeds(),
+                            speed.formattedNotes().isEmpty() ? "" : (", " + speed.formattedNotes()));
+            return "**" + name + "** " + Stream.of(List.of(speedText, shield), melee, ranged, ability)
+                    .flatMap(Collection::stream)
+                    .filter(this::isPresent)
+                    .map(Object::toString)
+                    .collect(Collectors.joining("; "));
         }
     }
 
@@ -168,7 +179,7 @@ public class QuteDeity extends Pf2eQuteBase {
      * </p>
      */
     @TemplateData
-    public static class QuteDivineAvatarAction {
+    public static class QuteDivineAvatarAction implements QuteUtil {
         public String actionType;
         public String name;
         public QuteDataActivity activityType;
@@ -178,17 +189,10 @@ public class QuteDeity extends Pf2eQuteBase {
         public String note;
 
         public String toString() {
-            List<String> parts = new ArrayList<>();
-            parts.add(String.format("**%s**: %s", actionType, activityType));
-            parts.add(name);
-            if (!traits.isEmpty()) {
-                parts.add("(" + String.join(", ", traits) + "),");
-            }
-            parts.add("**Damage** " + damage);
-            if (note != null) {
-                parts.add(note);
-            }
-            return String.join(" ", parts);
+            StringJoiner traitText = new StringJoiner(", ", " (", ")").setEmptyValue("");
+            traits.stream().filter(this::isPresent).forEach(traitText::add);
+            return "**%s**: %s %s%s, **Damage** %s %s".formatted(
+                    actionType, activityType, name, traitText, damage, Optional.ofNullable(note).orElse("")).trim();
         }
     }
 
