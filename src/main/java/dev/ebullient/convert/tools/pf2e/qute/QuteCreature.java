@@ -50,12 +50,15 @@ public class QuteCreature extends Pf2eQuteBase {
     public final List<CreatureSense> senses;
     /** Ability modifiers as a map of (name, modifier) */
     public final Map<String, Integer> abilityMods;
+    /** Items held by the creature as a list of strings */
+    public final List<String> items;
 
     public QuteCreature(Pf2eSources sources, List<String> text, Tags tags,
                         Collection<String> traits, List<String> aliases,
                         String description, Integer level, Integer perception,
                         QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
-                        List<CreatureSense> senses, Map<String, Integer> abilityMods) {
+                        List<CreatureSense> senses, Map<String, Integer> abilityMods,
+                        List<String> items) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -67,6 +70,7 @@ public class QuteCreature extends Pf2eQuteBase {
         this.skills = skills;
         this.senses = senses;
         this.abilityMods = abilityMods;
+        this.items = items;
     }
 
     /**
