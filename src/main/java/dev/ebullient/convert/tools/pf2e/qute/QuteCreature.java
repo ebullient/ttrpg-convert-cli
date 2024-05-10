@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.pf2e.qute;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -47,12 +48,14 @@ public class QuteCreature extends Pf2eQuteBase {
     public final CreatureSkills skills;
     /** Senses as a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureSense CreatureSense} */
     public final List<CreatureSense> senses;
+    /** Ability modifiers as a map of (name, modifier) */
+    public final Map<String, Integer> abilityMods;
 
     public QuteCreature(Pf2eSources sources, List<String> text, Tags tags,
-            Collection<String> traits, List<String> aliases,
-            String description, Integer level, Integer perception,
-            QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
-            List<CreatureSense> senses) {
+                        Collection<String> traits, List<String> aliases,
+                        String description, Integer level, Integer perception,
+                        QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
+                        List<CreatureSense> senses, Map<String, Integer> abilityMods) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -63,6 +66,7 @@ public class QuteCreature extends Pf2eQuteBase {
         this.defenses = defenses;
         this.skills = skills;
         this.senses = senses;
+        this.abilityMods = abilityMods;
     }
 
     /**
