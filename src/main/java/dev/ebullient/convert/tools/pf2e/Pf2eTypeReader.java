@@ -665,7 +665,7 @@ public interface Pf2eTypeReader extends JsonSource {
                                     .map(s -> s.replaceFirst("^\\((%s)\\)$", "\1")) // Remove parens around the note
                                     .map(List::of).orElse(List.of()),
                             // Specifically make this mutable because we later need to add additional abilities for deities
-                            new ArrayList<>(abilities.getListOfStrings(source, convert.tui())));
+                            new ArrayList<>(abilities.replaceTextFromList(source, convert)));
         }
     }
 
