@@ -41,7 +41,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                 Pf2eCreatureLanguages.create(Pf2eCreature.languages.getFrom(rootNode), this),
                 Pf2eCreature.skills(rootNode, this),
                 Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList(),
-                Pf2eCreature.abilityModifiers(rootNode));
+                Pf2eCreature.abilityModifiers(rootNode),
+                Pf2eCreature.items.replaceTextFromList(rootNode, this));
     }
 
     /**
