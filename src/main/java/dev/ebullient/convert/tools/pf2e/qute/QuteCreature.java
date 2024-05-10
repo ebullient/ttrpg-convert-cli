@@ -129,10 +129,6 @@ public class QuteCreature extends Pf2eQuteBase {
     @TemplateData
     public record CreatureSense(String name, String type, Integer range) implements QuteUtil {
 
-        public CreatureSense(String name) {
-            this(name, null, null);
-        }
-
         @Override
         public String toString() {
             StringJoiner s = new StringJoiner(" ").add(name);
