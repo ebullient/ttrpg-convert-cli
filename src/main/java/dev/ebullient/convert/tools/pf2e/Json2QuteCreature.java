@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.pf2e;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -35,71 +34,11 @@ public class Json2QuteCreature extends Json2QuteBase {
                 Field.alias.replaceTextFromList(rootNode, this),
                 Pf2eCreature.description.replaceTextFrom(rootNode, this),
                 Pf2eCreature.level.getIntFrom(rootNode).orElse(null),
-                getPerception(),
-                buildDefenses(),
+                Pf2eCreature.perception(rootNode),
+                Pf2eCreature.defenses(rootNode, this),
                 Pf2eCreatureLanguages.create(Pf2eCreature.languages.getFrom(rootNode), this),
-                buildSkills(),
+                Pf2eCreature.skills(rootNode, this),
                 Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList());
-    }
-
-    /**
-     * Example JSON input:
-     *
-     * <pre>
-     *     "perception": {
-     *         "std": 6
-     *     }
-     * </pre>
-     */
-    private Integer getPerception() {
-        return Pf2eCreature.perception.isObjectIn(rootNode)
-                ? Pf2eCreature.std.getIntOrThrow(Pf2eCreature.perception.getFrom(rootNode))
-                : null;
-    }
-
-    /**
-     * Example JSON input:
-     *
-     * <pre>
-     *     "defenses": { ... }
-     * </pre>
-     */
-    private QuteDataDefenses buildDefenses() {
-        JsonNode defenseNode = Pf2eCreature.defenses.getFrom(rootNode);
-        if (defenseNode == null || !defenseNode.isObject()) {
-            return null;
-        }
-        return Pf2eDefenses.createInlineDefenses(defenseNode, this);
-    }
-
-    /**
-     * Example JSON input:
-     *
-     * <pre>
-     *     "skills": {
-     *         "athletics": 30,
-     *         "stealth": {
-     *             "std": 36,
-     *             "in forests": 42,
-     *             "note": "additional note"
-     *         },
-     *         "notes": [
-     *             "some note"
-     *         ]
-     *     }
-     * </pre>
-     */
-    private QuteCreature.CreatureSkills buildSkills() {
-        JsonNode skillsNode = Pf2eCreature.skills.getFrom(rootNode);
-        if (skillsNode == null || !skillsNode.isObject()) {
-            return null;
-        }
-        return new QuteCreature.CreatureSkills(
-                skillsNode.properties().stream()
-                        .filter(e -> !e.getKey().equals(Pf2eCreature.notes.name()))
-                        .map(e -> Pf2eTypeReader.Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), this))
-                        .toList(),
-                Pf2eCreature.notes.replaceTextFromList(rootNode, this));
     }
 
     /**
@@ -175,6 +114,57 @@ public class Json2QuteCreature extends Json2QuteBase {
         speed,
         spellcasting,
         std,
-        traits,
+        traits;
+
+
+        /**
+         * Example JSON input:
+         *
+         * <pre>
+         *     "perception": {
+         *         "std": 6
+         *     }
+         * </pre>
+         */
+        private static Integer perception(JsonNode source) {
+            return perception.getObjectFrom(source).map(std::getIntOrThrow).orElse(null);
+        }
+
+        /**
+         * Example JSON input:
+         *
+         * <pre>
+         *     "defenses": { ... }
+         * </pre>
+         */
+        private static QuteDataDefenses defenses(JsonNode source, Pf2eTypeReader convert) {
+            return defenses.getObjectFrom(source).map(n -> Pf2eDefenses.createInlineDefenses(n, convert)).orElse(null);
+        }
+
+        /**
+         * Example JSON input:
+         *
+         * <pre>
+         *     "skills": {
+         *         "athletics": 30,
+         *         "stealth": {
+         *             "std": 36,
+         *             "in forests": 42,
+         *             "note": "additional note"
+         *         },
+         *         "notes": [
+         *             "some note"
+         *         ]
+         *     }
+         * </pre>
+         */
+        private static QuteCreature.CreatureSkills skills(JsonNode source, Pf2eTypeReader convert) {
+            return new QuteCreature.CreatureSkills(
+                skills.streamPropsExcluding(source, notes)
+                    .map(e -> Pf2eTypeReader.Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), convert))
+                    .toList(),
+                notes.replaceTextFromList(source, convert));
+        }
+
     }
 }
