@@ -9,8 +9,8 @@ tags:
 {/if}
 aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 ---
-# {resource.name}{#if resource.aliases } ({#each resource.aliases}{it}{#if it_hasNext}, {/if}{/each}){/if} *({resource.alignment})*
-*Source: {resource.source}*
+# {resource.name}{#if resource.aliases } ({#each resource.aliases}{it}{#if it_hasNext}, {/if}{/each}){/if} *({resource.alignment})*  
+*Source: {resource.source}*  
 {#if resource.text }
 
 {resource.text}
@@ -55,7 +55,7 @@ title: {avatar.name}
 ```
 {/if}{#if resource.intercession }
 
-## Divine intercession
+## Divine intercession  
 *Source: {resource.intercession.source}*
 
 {resource.intercession.flavor}
