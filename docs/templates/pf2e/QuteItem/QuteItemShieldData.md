@@ -1,22 +1,22 @@
 # QuteItemShieldData
 
-Pf2eTools item shield attributes
+Pf2eTools item shield attributes. When referenced directly, provides a default formatting, e.g.
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly: `{resource.shield}`.
+**AC Bonus** +2; **Speed Penalty** —; **Hardness** 3; **HP (BT)** 12 (6)
 
 ## Attributes
 
-[ac](#ac), [hpHardness](#hphardness), [speedPenalty](#speedpenalty)
+[ac](#ac), [hpHardnessBt](#hphardnessbt), [speedPenalty](#speedpenalty)
 
 
 ### ac
 
-[Shield armor class details](../QuteDataArmorClass.md)
+AC bonus for the shield, as [QuteDataArmorClass](../QuteDataArmorClass.md) (required)
 
-### hpHardness
+### hpHardnessBt
 
-[Shield hardness details](../QuteDataHpHardness.md)
+HP, hardness, and broken threshold of the shield, as [QuteDataHpHardnessBt](../QuteDataHpHardnessBt.md) (required)
 
 ### speedPenalty
 
-Formatted string. Speed penalty
+Speed penalty for the shield, as a formatted string (string, required)

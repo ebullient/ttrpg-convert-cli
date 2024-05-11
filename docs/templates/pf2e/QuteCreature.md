@@ -8,8 +8,12 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[abilityMods](#abilitymods), [aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
+
+### abilityMods
+
+Ability modifiers as a map of (name, modifier)
 
 ### aliases
 
@@ -26,6 +30,10 @@ Short creature description (optional)
 ### hasSections
 
 True if the content (text) contains sections
+
+### items
+
+Items held by the creature as a list of strings
 
 ### labeledSource
 
@@ -47,6 +55,10 @@ Note name
 
 Creature perception (number, optional)
 
+### senses
+
+Senses as a list of [CreatureSense](QuteCreature/CreatureSense.md)
+
 ### skills
 
 Skill bonuses as [CreatureSkills](QuteCreature/CreatureSkills.md)
@@ -58,6 +70,10 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../SourceAndPage.md)
+
+### speed
+
+The creature's speed, as an [QuteDataSpeed](QuteDataSpeed.md)
 
 ### tags
 

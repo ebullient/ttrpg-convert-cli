@@ -1,22 +1,26 @@
 # QuteDataArmorClass
 
-Pf2eTools armor class attributes
+Pf2eTools armor class attributes. Default representation example:
+
+**AC** 15 (10 with mage armor) note ability
 
 ## Attributes
 
-[abilities](#abilities), [armorClass](#armorclass), [note](#note), [notes](#notes)
+[abilities](#abilities), [alternateValues](#alternatevalues), [notes](#notes), [value](#value)
 
 
-### abilities
+### value
 
+The AC value
 
-### armorClass
+### alternateValues
 
-
-### note
-
-Any notes associated with the armor class. This contains the same data as [notes](QuteDataArmorClass.md#notes), but as a single semicolon-delimited string.
+Alternate AC values as a map of (condition, AC value)
 
 ### notes
 
-Notes associated with the armor class, e.g. "with mage armor".
+Any notes associated with the AC e.g. "with mage armor"
+
+### abilities
+
+Any AC related abilities
