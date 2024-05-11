@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+import dev.ebullient.convert.qute.QuteUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 
@@ -563,12 +564,8 @@ public class Tui {
         yamlMapper().writer().writeValue(outputFile.toFile(), obj);
     }
 
-    public String renderEmbedded(QuteBase resource) {
+    public String renderEmbedded(QuteUtil resource) {
         return templates.renderInlineEmbedded(resource);
-    }
-
-    public String renderEmbedded(QuteNote note) {
-        return templates.renderInlineEmbedded(note);
     }
 
     public <T> T readJsonValue(JsonNode node, TypeReference<T> targetRef) {

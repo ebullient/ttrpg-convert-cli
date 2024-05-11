@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Collection;
 
+import dev.ebullient.convert.qute.QuteUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -77,7 +78,7 @@ public class Templates {
         }
     }
 
-    public String renderInlineEmbedded(QuteBase resource) {
+    public String renderInlineEmbedded(QuteUtil resource) {
         Template tpl = customTemplateOrDefault(resource.template());
         try {
             return tpl

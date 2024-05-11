@@ -32,11 +32,14 @@ public interface JsonSource extends JsonTextReplacement {
     /**
      * Collect and linkify traits from the specified node.
      *
+     * @param tags The tags to populate while collecting traits. If null, then don't populate any tags.
+     *
      * @return an empty or sorted/linkified list of traits (never null)
      */
     default Set<String> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
         return Field.traits.getListOfStrings(sourceNode, tui()).stream()
-                .peek(t -> tags.add("trait", t))
+                .peek(tags == null ? t -> {
+                } : t -> tags.add("trait", t))
                 .sorted()
                 .map(s -> linkify(Pf2eIndexType.trait, s))
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -358,7 +361,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendAttack(List<String> text, JsonNode node) {
-        QuteInlineAttack inlineAttack = AttackField.createInlineAttack(node, this);
+        QuteInlineAttack inlineAttack = Pf2eTypeReader.Pf2eAttack.createInlineAttack(node, this);
         renderInlineTemplate(text, inlineAttack, "attack");
     }
 
@@ -690,32 +693,6 @@ public interface JsonSource extends JsonTextReplacement {
 
         public String nodeName() {
             return nodeName;
-        }
-    }
-
-    enum AttackField implements JsonNodeReader {
-        attack,
-        damage,
-        effects,
-        range,
-        types;
-
-        public static QuteInlineAttack createInlineAttack(JsonNode node, JsonSource convert) {
-            String name = toTitleCase(SourceField.name.replaceTextFrom(node, convert));
-
-            Tags tags = new Tags();
-            Collection<String> traits = convert.collectTraitsFrom(node, tags);
-
-            List<String> effects = new ArrayList<>();
-            convert.appendToText(effects, AttackField.effects.getFrom(node), null);
-
-            String meleeOrRanged = AttackField.range.getTextOrDefault(node, "Melee");
-            String attack = AttackField.attack.getTextOrNull(node);
-            String damage = AttackField.damage.replaceTextFrom(node, convert);
-
-            QuteDataActivity activity = Pf2eActivity.single.toQuteActivity(convert, null);
-            return new QuteInlineAttack(name, effects, tags, traits,
-                    meleeOrRanged, attack, damage, activity);
         }
     }
 

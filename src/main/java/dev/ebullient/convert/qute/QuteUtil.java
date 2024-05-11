@@ -1,9 +1,13 @@
 package dev.ebullient.convert.qute;
 
+import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public interface QuteUtil {
     default boolean isPresent(Map<?, ?> s) {
@@ -59,6 +63,24 @@ public interface QuteUtil {
     default void addUnlessEmpty(Map<String, Object> map, String key, List<?> value) {
         if (value != null && !value.isEmpty()) {
             map.put(key, value);
+        }
+    }
+
+    default String template() {
+        throw new UnsupportedOperationException("Tried to call template() on a class which does not have a template defined");
+    }
+
+    default IndexType indexType() {
+        return Pf2eIndexType.syntheticGroup;
+    }
+
+    /** A QuteUtil which can be rendered as an individual component. */
+    interface Renderable extends QuteUtil {
+        /** Return a function which converts a QuteUtil object into a rendered string representing that object */
+        Function<QuteUtil, String> _renderer();
+
+        default String render() {
+            return _renderer().apply(this);
         }
     }
 }
