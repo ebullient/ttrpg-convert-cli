@@ -6,7 +6,10 @@ This data object provides a default mechanism for creating a marked up string ba
 
 ## Attributes
 
-[ability](#ability), [melee](#melee), [name](#name), [preface](#preface), [ranged](#ranged), [shield](#shield), [speed](#speed)
+[abilities](#abilities), [ability](#ability), [melee](#melee), [name](#name), [preface](#preface), [ranged](#ranged), [shield](#shield), [speed](#speed)
+
+
+### abilities
 
 
 ### ability
@@ -28,3 +31,5 @@ This data object provides a default mechanism for creating a marked up string ba
 
 
 ### speed
+
+The avatar's speed, as a [QuteDataSpeed](../QuteDataSpeed.md)

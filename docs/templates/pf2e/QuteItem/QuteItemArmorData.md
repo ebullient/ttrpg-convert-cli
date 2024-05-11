@@ -6,7 +6,7 @@ This data object provides a default mechanism for creating a marked up string ba
 
 ## Attributes
 
-[ac](#ac), [checkPenalty](#checkpenalty), [speedPenalty](#speedpenalty), [strength](#strength)
+[ac](#ac), [checkPenalty](#checkpenalty), [dexCap](#dexcap), [speedPenalty](#speedpenalty), [strength](#strength)
 
 
 ### ac
@@ -16,6 +16,10 @@ This data object provides a default mechanism for creating a marked up string ba
 ### checkPenalty
 
 Formatted string. Check penalty
+
+### dexCap
+
+Formatted string. Dex cap
 
 ### speedPenalty
 

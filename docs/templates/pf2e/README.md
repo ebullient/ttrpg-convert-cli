@@ -13,9 +13,6 @@
 - [QuteBook](QuteBook/README.md): Pf2eTools Book attributes (`book2md.txt`)
 - [QuteCreature](QuteCreature.md): Pf2eTools Creature attributes (`creature2md.txt`)
 - [QuteDataActivity](QuteDataActivity.md): Pf2eTools activity attributes
-- [QuteDataArmorClass](QuteDataArmorClass.md): Pf2eTools armor class attributes
-- [QuteDataDefenses](QuteDataDefenses/README.md): Pf2eTools Armor class, Saving Throws, and other attributes describing defenses
-- [QuteDataHpHardness](QuteDataHpHardness.md): Pf2eTools Hit Points and Hardiness attributes
 - [QuteDeity](QuteDeity/README.md): Pf2eTools Deity attributes (`deity2md.txt`)
 - [QuteFeat](QuteFeat.md): Pf2eTools Feat attributes (`feat2md.txt`)
 - [QuteHazard](QuteHazard/README.md): Pf2eTools Hazard attributes (`hazard2md.txt`)

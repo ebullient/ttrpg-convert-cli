@@ -6,14 +6,14 @@ Using this directly provides a default representation, e.g. `Stealth +36 (+42 in
 
 ## Attributes
 
-[name](#name), [note](#note), [otherBonuses](#otherbonuses), [standardBonus](#standardbonus)
+[name](#name), [notes](#notes), [otherBonuses](#otherbonuses), [value](#value)
 
 
 ### name
 
 The name of the skill
 
-### standardBonus
+### value
 
 The standard bonus associated with this skill
 
@@ -21,6 +21,6 @@ The standard bonus associated with this skill
 
 Any additional bonuses, as a map of descriptions to bonuses. Iterate over all map entries to display the values: `{#each resource.skills.otherBonuses}{it.key}: {it.value}{/each}`
 
-### note
+### notes
 
-Any note associated with this skill bonus
+Any notes associated with this skill bonus

@@ -16,3 +16,4 @@ For more information about Qute, see the [Qute guide](https://quarkus.io/guides/
 - [QuteBase](QuteBase.md): Defines attributes inherited by other Qute templates.
 - [QuteNote](QuteNote.md): Common attributes for simple notes.
 - [SourceAndPage](SourceAndPage.md): A representation of a source and page number.
+- [TtrpgTemplateExtension](TtrpgTemplateExtension.md)
