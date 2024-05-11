@@ -1,9 +1,13 @@
-title: {resource.meleeOrRanged} {resource.activity} {resource.name}{#if resource.attack } ({resource.attack}){/if}{#if resource.traits } ({#each resource.traits}{it}{#if it_hasNext}, {/if}{/each}){/if}
-{#if resource.damage }
-**Damage** {resource.damage} 
- 
+{#let r=resource}
+{#if r.multilineEffect}
+```ad-inline-attack
+title: {r.rangeType} {r.activity} {r.name.capitalized}{r.bonus.prefixSpace}{r.formattedTraits.prefixSpace}
+{#if r.damage}
+**Damage** {r.damage}  
+{/if}{#if r.multilineEffect}
+**Effect** {r.multilineEffect}  
 {/if}
-**Effects** {resource.text}
-
-{#if resource.tags }
-%% {#each resource.tags}#{it} {/each}%%{/if}
+```
+{#else}
+- **{r.rangeType}** {r.activity} {r.name}{r.bonus.prefixSpace}{r.formattedTraits.prefixSpace}{#if r.damage}, **Damage** {r.damage}{/if}
+{/if}

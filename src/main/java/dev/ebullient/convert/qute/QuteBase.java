@@ -93,6 +93,7 @@ public class QuteBase implements QuteUtil {
         return ".";
     }
 
+    @Override
     public IndexType indexType() {
         return sources.getType();
     }

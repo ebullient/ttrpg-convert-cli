@@ -20,6 +20,7 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.qute.QuteUtil;
 
 public interface JsonTextConverter<T extends IndexType> {
     public static String DICE_FORMULA = "[ +d\\d-‒]+";
@@ -380,6 +381,18 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     /**
+     * Return the rendered contents of the specified resource
+     *
+     * @param resource QuteBase containing required template resource data
+     * @param admonition Type of embedded/encapsulating admonition
+     */
+    default String renderEmbeddedTemplate(QuteBase resource, String admonition) {
+        List<String> inner = new ArrayList<>();
+        renderEmbeddedTemplate(inner, resource, admonition, List.of());
+        return String.join("\n", inner);
+    }
+
+    /**
      * Embed rendered contents of the specified resource
      *
      * @param text List of text content should be added to
@@ -406,14 +419,26 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     /**
+     * Return the rendered contents of an (always) inline template.
+     *
+     * @param resource QuteUtil containing required template resource data
+     * @param admonition Type of inline admonition
+     */
+    default String renderInlineTemplate(QuteUtil resource, String admonition) {
+        List<String> inner = new ArrayList<>();
+        renderInlineTemplate(inner, resource, admonition);
+        return String.join("\n", inner);
+    }
+
+    /**
      * Add rendered contents of an (always) inline template
      * to collected text
      *
      * @param text List of text content should be added to
-     * @param resource QuteBase containing required template resource data
+     * @param resource QuteUtil containing required template resource data
      * @param admonition Type of inline admonition
      */
-    default void renderInlineTemplate(List<String> text, QuteBase resource, String admonition) {
+    default void renderInlineTemplate(List<String> text, QuteUtil resource, String admonition) {
         String rendered = tui().renderEmbedded(resource);
         List<String> inner = removePreamble(new ArrayList<>(List.of(rendered.split("\n"))));
 

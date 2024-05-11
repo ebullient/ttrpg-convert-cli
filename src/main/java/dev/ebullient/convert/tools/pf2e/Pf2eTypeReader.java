@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +30,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -548,6 +550,87 @@ public interface Pf2eTypeReader extends JsonSource {
     static QuteDataActivity getQuteActivity(JsonNode source, JsonNodeReader field, JsonSource convert) {
         NumberUnitEntry jsonActivity = field.fieldFromTo(source, NumberUnitEntry.class, convert.tui());
         return jsonActivity == null ? null : jsonActivity.toQuteActivity(convert);
+    }
+
+    /**
+     * Example JSON input for a creature:
+     *
+     * <pre>
+     *     "range": "Melee",
+     *     "name": "jaws",
+     *     "attack": 32,
+     *     "traits": ["evil", "magical", "reach 10 feet"],
+     *     "effects": ["essence drain", "Grab"],
+     *     "damage": "3d8+9 piercing plus 1d6 evil, essence drain, and Grab",
+     *     "types": ["evil", "piercing"]
+     * </pre>
+     *
+     * An example for a hazard with a complicated effect:
+     *
+     * <pre>
+     *     "type": "attack",
+     *     "range": "Ranged",
+     *     "name": "eye beam",
+     *     "attack": 20,
+     *     "traits": ["diving", "evocation", "range 120 feet"],
+     *     "effects": [
+     *         "The target is subjected to one of the effects summarized below.",
+     *         {
+     *             "type": "list",
+     *             "items": [{
+     *                 "type": "item",
+     *                 "name": "Green Eye Beam",
+     *                 "entries": ["(poison) 6d6 poison damage (DC24 basic Reflex save)"],
+     *             }, ...],
+     *         },
+     *     ],
+     *     "types": ["electricity", "fire", "poison", "acid"]
+     * </pre>
+     *
+     */
+    enum Pf2eAttack implements JsonNodeReader {
+        name,
+        type,
+        attack,
+        activity,
+        damage,
+        effects,
+        range,
+        types,
+        noMAP;
+
+        /** Returns true if the given source is an attack block. */
+        public static boolean isAttackBlock(JsonNode source) {
+            return type.getTextFrom(source).orElse("").equals("attack");
+        }
+
+        public static QuteInlineAttack createInlineAttack(JsonNode node, JsonSource convert) {
+            List<String> effects = new ArrayList<>();
+            convert.appendToText(effects, Pf2eAttack.effects.getFrom(node), null);
+
+            // Either the effects are a list of short descriptors which are also included in the damage, or they are a
+            // long multi-line description of a complicated effect.
+            String formattedDamage = damage.replaceTextFrom(node, convert);
+            String multilineEffect = null;
+            if (effects.stream().anyMatch(Predicate.not(formattedDamage::contains))) {
+                multilineEffect = String.join("\n", effects); // Preserve empty strings for line breaks
+                effects = List.of();
+            }
+
+            return new QuteInlineAttack(
+                    name.replaceTextFrom(node, convert),
+                    Optional.ofNullable(getQuteActivity(node, activity, convert))
+                        .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
+                    QuteInlineAttack.AttackRangeType.valueOf(range.getTextOrDefault(node, "Melee").toUpperCase()),
+                    attack.getIntFrom(node).orElse(null),
+                    formattedDamage,
+                    types.replaceTextFromList(node, convert),
+                    convert.collectTraitsFrom(node, null),
+                    effects,
+                    multilineEffect,
+                    noMAP.booleanOrDefault(node, false) ? List.of() : List.of("no multiple attack penalty"),
+                    attackData -> convert.renderInlineTemplate(attackData, null));
+        }
     }
 
     @RegisterForReflection
