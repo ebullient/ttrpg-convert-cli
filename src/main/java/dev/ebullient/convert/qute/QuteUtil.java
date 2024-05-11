@@ -61,12 +61,4 @@ public interface QuteUtil {
             map.put(key, value);
         }
     }
-
-    default String makePlural(String s, int howMany) {
-        return s + (howMany == 1 ? "" : "s");
-    }
-
-    default String makePlural(String s, String howMany) {
-        return s + (howMany.equals("1") ? "" : "s");
-    }
 }

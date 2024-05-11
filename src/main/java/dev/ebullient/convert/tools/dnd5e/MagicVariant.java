@@ -24,6 +24,8 @@ import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemFields;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public class MagicVariant implements JsonSource {
 
     static final List<String> IGNORE = List.of("entries", "rarity", "namePrefix", "nameSuffix");

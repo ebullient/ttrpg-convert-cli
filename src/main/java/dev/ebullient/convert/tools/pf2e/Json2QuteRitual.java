@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual;
@@ -122,7 +123,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
                 return convert.replaceText(entry);
             }
             return String.format("%s (%s%s)", skillsToString(convert), prof,
-                    mustBe == null ? "" : String.format("; you must be a %s", convert.joinConjunct(" or ", mustBe)));
+                    mustBe == null ? "" : String.format("; you must be a %s", StringUtil.joinConjunct(" or ", mustBe)));
         }
 
         public String buildSecondaryString(JsonSource convert) {
@@ -138,7 +139,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
             List<String> converted = skills.stream()
                     .map(s -> convert.linkify(Pf2eIndexType.skill, s))
                     .collect(Collectors.toList());
-            return convert.joinConjunct(" or ", converted);
+            return StringUtil.joinConjunct(" or ", converted);
         }
     }
 }

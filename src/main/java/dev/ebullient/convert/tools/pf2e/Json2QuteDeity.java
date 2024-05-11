@@ -8,12 +8,17 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteDeity extends Json2QuteBase {
 
@@ -206,8 +211,8 @@ public class Json2QuteDeity extends Json2QuteBase {
             if (entry != null) {
                 return convert.replaceText(entry);
             }
-            return convert.joinConjunct(" or ", abilities.stream()
-                    .map(convert::toTitleCase).collect(Collectors.toList()));
+            return joinConjunct(" or ", abilities.stream()
+                    .map(StringUtil::toTitleCase).collect(Collectors.toList()));
         }
 
         public String buildSkillString(JsonSource convert) {
@@ -215,7 +220,7 @@ public class Json2QuteDeity extends Json2QuteBase {
                 return convert.replaceText(entry);
             }
             return skills.stream()
-                    .map(s -> convert.linkify(Pf2eIndexType.spell, convert.toTitleCase(s)))
+                    .map(s -> convert.linkify(Pf2eIndexType.spell, toTitleCase(s)))
                     .collect(Collectors.joining(", "));
         }
 

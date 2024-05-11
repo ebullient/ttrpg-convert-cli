@@ -15,6 +15,8 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteDeck;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteDeck.Card;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public class Json2QuteDeck extends Json2QuteCommon {
 
     Json2QuteDeck(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {

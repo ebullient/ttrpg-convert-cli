@@ -12,6 +12,8 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
     enum Field implements JsonNodeReader {

@@ -28,6 +28,8 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public interface Pf2eTypeReader extends JsonSource {
 
     enum Pf2eAction implements JsonNodeReader {
@@ -314,11 +316,11 @@ public interface Pf2eTypeReader extends JsonSource {
                             continue;
                         }
                         int value = extra.getValue().asInt();
-                        svt.savingThrows.put(convert.toTitleCase(extra.getKey()),
+                        svt.savingThrows.put(toTitleCase(extra.getKey()),
                                 (value >= 0 ? "+" : "") + value);
                     }
                 }
-                svt.savingThrows.put(convert.toTitleCase(e.getKey()),
+                svt.savingThrows.put(toTitleCase(e.getKey()),
                         String.join(", ", svValue));
             }
             svt.abilities = convert.replaceText(abilities.getTextOrNull(stNode));

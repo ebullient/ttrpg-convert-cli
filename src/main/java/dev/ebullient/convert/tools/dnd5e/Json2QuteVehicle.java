@@ -18,6 +18,8 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteVehicle.ShipCrewCargoPace;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteVehicle.ShipSection;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public class Json2QuteVehicle extends Json2QuteCommon {
 
     final VehicleType vehicleType;

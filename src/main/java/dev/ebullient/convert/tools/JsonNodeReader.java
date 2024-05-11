@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
 
+import static dev.ebullient.convert.StringUtil.join;
+
 public interface JsonNodeReader {
 
     interface FieldValue {
@@ -288,7 +290,7 @@ public interface JsonNodeReader {
         }
         List<String> inner = new ArrayList<>();
         replacer.appendToText(inner, target, null);
-        return replacer.join(join, inner.stream().filter(x -> !x.isBlank()).toList());
+        return join(join, inner.stream().filter(x -> !x.isBlank()).toList());
     }
 
     default boolean valueEquals(JsonNode previous, JsonNode next) {

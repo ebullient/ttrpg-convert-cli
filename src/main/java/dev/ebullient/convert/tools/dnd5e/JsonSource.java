@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
 import static java.util.Map.entry;
 
 import java.util.ArrayList;
