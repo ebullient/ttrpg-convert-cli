@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAffliction;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public class Json2QuteAffliction extends Json2QuteBase {
 
     public Json2QuteAffliction(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {

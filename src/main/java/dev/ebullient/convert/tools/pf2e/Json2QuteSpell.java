@@ -18,6 +18,9 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSaveDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public class Json2QuteSpell extends Json2QuteBase {
     static final String SPELL_TAG = "spell";
 
@@ -121,7 +124,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         boolean hidden = Pf2eSpell.hidden.booleanOrDefault(savingThrow, false);
         String throwString = Pf2eSpell.type.getListOfStrings(savingThrow, tui())
                 .stream()
-                .map(t -> Pf2eSavingThrowType.valueFromEncoding(t))
+                .map(Pf2eSavingThrowType::valueFromEncoding)
                 .map(t -> toTitleCase(t.name()))
                 .collect(Collectors.joining(" or "));
         if (!hidden && !throwString.isEmpty()) {

@@ -29,6 +29,8 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public class JsonSourceCopier implements JsonSource {
     static final List<String> GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = List.of("caption", "type", "colLabels", "colLabelGroups",
             "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");

@@ -3,12 +3,10 @@ package dev.ebullient.convert.tools;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -83,10 +81,6 @@ public interface JsonTextConverter<T extends IndexType> {
             }
         }
         return x;
-    }
-
-    default boolean isPresent(String s) {
-        return s != null && !s.isBlank();
     }
 
     default String formatDice(String diceRoll) {
@@ -254,49 +248,6 @@ public interface JsonTextConverter<T extends IndexType> {
             return List.of();
         }
         return source::fieldNames;
-    }
-
-    default String join(String joiner, Collection<String> list) {
-        if (list == null || list.isEmpty()) {
-            return "";
-        }
-        return String.join(joiner, list).trim();
-    }
-
-    default String joinConjunct(String lastJoiner, List<String> list) {
-        return joinConjunct(list, ", ", lastJoiner, false);
-    }
-
-    default String joinConjunct(String joiner, String lastJoiner, List<String> list) {
-        return joinConjunct(list, joiner, lastJoiner, false);
-    }
-
-    default String joinConjunct(List<String> list, String joiner, String lastJoiner, boolean nonOxford) {
-        if (list == null || list.isEmpty()) {
-            return "";
-        }
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        if (list.size() == 2) {
-            return String.join(lastJoiner, list);
-        }
-
-        int pause = list.size() - 2;
-        StringBuilder out = new StringBuilder();
-        for (int i = 0; i < list.size(); ++i) {
-            out.append(list.get(i));
-
-            if (i < pause) {
-                out.append(joiner);
-            } else if (i == pause) {
-                if (!nonOxford) {
-                    out.append(joiner.trim());
-                }
-                out.append(lastJoiner);
-            }
-        }
-        return out.toString();
     }
 
     String linkify(T type, String s);
@@ -550,20 +501,6 @@ public interface JsonTextConverter<T extends IndexType> {
         }
         List<String> list = tui().readJsonValue(source, Tui.LIST_STRING);
         return list == null ? List.of() : list;
-    }
-
-    default String toTitleCase(String text) {
-        if (text == null || text.isEmpty()) {
-            return text;
-        }
-        return Arrays
-                .stream(text.split(" "))
-                .map(word -> word.isEmpty()
-                        ? word
-                        : Character.toTitleCase(word.charAt(0)) + word
-                                .substring(1)
-                                .toLowerCase())
-                .collect(Collectors.joining(" "));
     }
 
     enum SourceField implements JsonNodeReader {

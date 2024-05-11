@@ -21,6 +21,9 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemArmorData;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemShieldData;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public class Json2QuteItem extends Json2QuteBase {
     static final String ITEM_TAG = "item";
 
@@ -295,7 +298,7 @@ public class Json2QuteItem extends Json2QuteBase {
         weaponData;
 
         String properName(Pf2eTypeReader convert) {
-            return convert.toTitleCase(this.nodeName());
+            return toTitleCase(this.nodeName());
         }
     }
 

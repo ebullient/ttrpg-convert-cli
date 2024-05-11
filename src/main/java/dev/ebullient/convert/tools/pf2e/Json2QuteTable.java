@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
+import static dev.ebullient.convert.StringUtil.join;
+
 public class Json2QuteTable extends Json2QuteBase {
 
     public Json2QuteTable(Pf2eIndex index, JsonNode rootNode) {

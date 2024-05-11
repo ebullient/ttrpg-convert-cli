@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
@@ -29,6 +30,10 @@ import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
+
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteCommon implements JsonSource {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
@@ -227,7 +232,7 @@ public class Json2QuteCommon implements JsonSource {
 
         var isComplex = multipleInner || multiMultipleInner || allValuesEqual == null;
         String joined = joinConjunct(
-                multiMultipleInner ? " - " : multipleInner ? "; " : ", ",
+            multiMultipleInner ? " - " : multipleInner ? "; " : ", ",
                 isComplex ? " OR " : " or ",
                 abilityOptions);
 
@@ -518,7 +523,7 @@ public class Json2QuteCommon implements JsonSource {
             }
 
             // remove empty values
-            values = values.stream().filter(x -> isPresent(x)).toList();
+            values = values.stream().filter(StringUtil::isPresent).toList();
 
             hasNote |= isPresent(note);
             String prereqs = String.join(

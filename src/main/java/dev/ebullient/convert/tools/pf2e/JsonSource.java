@@ -24,6 +24,9 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 public interface JsonSource extends JsonTextReplacement {
 
     /**
@@ -698,7 +701,7 @@ public interface JsonSource extends JsonTextReplacement {
         types;
 
         public static QuteInlineAttack createInlineAttack(JsonNode node, JsonSource convert) {
-            String name = convert.toTitleCase(SourceField.name.replaceTextFrom(node, convert));
+            String name = toTitleCase(SourceField.name.replaceTextFrom(node, convert));
 
             Tags tags = new Tags();
             Collection<String> traits = convert.collectTraitsFrom(node, tags);
