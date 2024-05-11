@@ -14,7 +14,7 @@ aliases:
 {/each}
 {/if}
 ---
-# {resource.name} *Creature {resource.level}*
+# {resource.name} *Creature {resource.level}*  
 {#if resource.traits}{#each resource.traits}{it}  {/each}{/if}
 
 ```ad-statblock
