@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,9 +20,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellCasting;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSaveDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteSpell extends Json2QuteBase {
     static final String SPELL_TAG = "spell";

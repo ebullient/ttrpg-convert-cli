@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -23,9 +26,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public interface JsonSource extends JsonTextReplacement {
 

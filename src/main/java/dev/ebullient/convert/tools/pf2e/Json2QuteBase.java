@@ -1,11 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 

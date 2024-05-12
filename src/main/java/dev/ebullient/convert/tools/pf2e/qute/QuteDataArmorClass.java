@@ -1,11 +1,12 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.Collection;
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.formatMap;
+import static dev.ebullient.convert.StringUtil.parenthesize;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
 import io.quarkus.qute.TemplateData;
@@ -23,9 +24,7 @@ import io.quarkus.qute.TemplateData;
  */
 @TemplateData
 public record QuteDataArmorClass(
-        Integer value,
-        Map<String, Integer> alternateValues,
-        List<String> notes,
+        Integer value, Map<String, Integer> alternateValues, List<String> notes,
         List<String> abilities) implements Pf2eStat {
 
     public QuteDataArmorClass(Integer value) {
@@ -41,25 +40,18 @@ public record QuteDataArmorClass(
      * @return Alternate values formatted as e.g. {@code (30 with mage armor)}
      */
     private String formattedAlternates(boolean asBonus) {
-        return alternateValues.entrySet().stream()
-                .map(e -> String.format(
-                        asBonus ? "(%+d%s)" : "(%d%s)", e.getValue(),
-                        e.getKey().isEmpty() ? "" : " " + e.getKey()))
-                .collect(Collectors.joining(" "));
+        String valFormat = asBonus ? "%+d" : "%d";
+        return join(" ",
+                formatMap(alternateValues, (k, v) -> parenthesize(join(" ", valFormat.formatted(v), k))));
     }
 
     @Override
     public String bonus() {
-        String alternates = formattedAlternates(true);
-        return Pf2eStat.super.bonus() + (alternates.isEmpty() ? "" : " " + alternates);
+        return join(" ", Pf2eStat.super.bonus(), formattedAlternates(true));
     }
 
     @Override
     public String toString() {
-        return Stream.of(List.of("**AC**", value, formattedAlternates(false)), notes, abilities)
-                .flatMap(Collection::stream)
-                .map(Objects::toString)
-                .filter(this::isPresent)
-                .collect(Collectors.joining(" "));
+        return flatJoin(" ", List.of("**AC**", value, formattedAlternates(false)), notes, abilities);
     }
 }

@@ -1,12 +1,13 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinWithPrefix;
+import static dev.ebullient.convert.StringUtil.formatMap;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
@@ -47,26 +48,14 @@ public record QuteDataDefenses(
 
     @Override
     public String toString() {
-        String first = Stream.of(ac, savingThrows)
-                .filter(this::isPresent).map(Objects::toString)
-                .collect(Collectors.joining("; "));
-
-        StringJoiner secondLine = new StringJoiner("; ");
-
-        if (hpHardnessBt != null) {
-            secondLine.add(hpHardnessBt.toString());
-        }
-        additionalHpHardnessBt.entrySet().stream()
-                .map(e -> e.getValue().toStringWithName(e.getKey()))
-                .forEachOrdered(secondLine::add);
-
-        Map.of("Immunities", immunities, "Resistances", resistances, "Weaknesses", weaknesses)
-                .entrySet().stream()
-                .filter(e -> isPresent(e.getValue()))
-                .map(e -> String.format("**%s** %s", e.getKey(), String.join(", ", e.getValue())))
-                .forEachOrdered(secondLine::add);
-
-        return Stream.of(first, secondLine.toString()).map(s -> "- " + s).collect(Collectors.joining("\n"));
+        String first = "- " + join("; ", ac, savingThrows);
+        String second = "- " + join("; ",
+                hpHardnessBt,
+                join("; ", formatMap(additionalHpHardnessBt, (k, v) -> v.toStringWithName(k))),
+                joinWithPrefix(", ", immunities, "**Immunities** "),
+                joinWithPrefix(", ", resistances, "**Resistances** "),
+                joinWithPrefix(", ", weaknesses, "**Weaknesses** "));
+        return join("\n", first, second);
     }
 
     /**
@@ -88,11 +77,11 @@ public record QuteDataDefenses(
         public boolean hasThrowAbilities;
 
         public String toString() {
-            String join = hasThrowAbilities ? "; " : ", ";
-            return savingThrows.entrySet().stream()
-                    .map(e -> "**" + e.getKey() + "** " + e.getValue())
-                    .collect(Collectors.joining(join))
-                    + (isPresent(abilities) ? (join + abilities) : "");
+            return flatJoin(
+                    hasThrowAbilities ? "; " : ", ",
+                    formatMap(savingThrows, "**%s** %s"::formatted),
+                    // Passing null into List.of causes an exception at runtime
+                    List.of(abilities == null ? "" : abilities));
         }
     }
 }

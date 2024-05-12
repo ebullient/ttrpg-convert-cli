@@ -1,13 +1,15 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinWithPrefix;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.qute.QuteUtil;
@@ -159,13 +161,8 @@ public class QuteDeity extends Pf2eQuteBase {
         @Override
         public String toString() {
             String speedText = speed == null ? ""
-                    : "Speed %s%s".formatted(speed.formattedSpeeds(),
-                            speed.formattedNotes().isEmpty() ? "" : (", " + speed.formattedNotes()));
-            return "**" + name + "** " + Stream.of(List.of(speedText, shield), melee, ranged, ability)
-                    .flatMap(Collection::stream)
-                    .filter(this::isPresent)
-                    .map(Object::toString)
-                    .collect(Collectors.joining("; "));
+                    : join(", ", "Speed %s".formatted(speed.formattedSpeeds()), speed.formattedNotes());
+            return "**" + name + "** " + flatJoin("; ", List.of(speedText, shield), melee, ranged, ability);
         }
     }
 
@@ -189,10 +186,9 @@ public class QuteDeity extends Pf2eQuteBase {
         public String note;
 
         public String toString() {
-            StringJoiner traitText = new StringJoiner(", ", " (", ")").setEmptyValue("");
-            traits.stream().filter(this::isPresent).forEach(traitText::add);
             return "**%s**: %s %s%s, **Damage** %s %s".formatted(
-                    actionType, activityType, name, traitText, damage, Optional.ofNullable(note).orElse("")).trim();
+                    actionType, activityType, name, joinWithPrefix(", ", traits, " (", ")"),
+                    damage, Optional.ofNullable(note).orElse("")).trim();
         }
     }
 
@@ -211,7 +207,7 @@ public class QuteDeity extends Pf2eQuteBase {
         public String text;
 
         public String toString() {
-            return String.format("**%s**: %s", name, text);
+            return "**%s**: %s".formatted(name, text);
         }
     }
 

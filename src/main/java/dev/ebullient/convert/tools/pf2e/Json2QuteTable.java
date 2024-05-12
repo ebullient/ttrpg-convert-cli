@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.join;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +10,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
-
-import static dev.ebullient.convert.StringUtil.join;
 
 public class Json2QuteTable extends Json2QuteBase {
 

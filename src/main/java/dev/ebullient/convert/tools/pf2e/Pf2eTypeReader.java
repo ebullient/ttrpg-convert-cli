@@ -1,7 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
+import static dev.ebullient.convert.StringUtil.parenthesize;
+import static dev.ebullient.convert.StringUtil.pluralize;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +18,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.qute.QuteUtil;
@@ -28,8 +35,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import static dev.ebullient.convert.StringUtil.toTitleCase;
-
 public interface Pf2eTypeReader extends JsonSource {
 
     enum Pf2eAction implements JsonNodeReader {
@@ -39,6 +44,13 @@ public interface Pf2eTypeReader extends JsonSource {
         info,
         prerequisites,
         trigger
+    }
+
+    default List<String> getAlignments(JsonNode alignNode) {
+        return streamOf(alignNode)
+                .map(JsonNode::asText)
+                .map(a -> a.length() > 2 ? a : linkifyTrait(a.toUpperCase()))
+                .toList();
     }
 
     enum Pf2eAlignmentValue implements JsonNodeReader.FieldValue {
@@ -73,7 +85,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 return null;
             }
             return Stream.of(Pf2eAlignmentValue.values())
-                    .filter((t) -> t.matches(name))
+                    .filter(t -> t.matches(name))
                     .findFirst().orElse(null);
         }
     }
@@ -124,12 +136,12 @@ public interface Pf2eTypeReader extends JsonSource {
 
             String result = "";
             if (damage != null) {
-                result += convert.replaceText(String.format("{@damage %s} %s",
+                result += convert.replaceText("{@damage %s} %s".formatted(
                         damage,
                         Pf2eWeaponData.damageType.getTextOrEmpty(source)));
             }
             if (damage2 != null) {
-                result += convert.replaceText(String.format("%s{@damage %s} %s",
+                result += convert.replaceText("%s{@damage %s} %s".formatted(
                         damage == null ? "" : " and ",
                         damage2,
                         Pf2eWeaponData.damageType2.getTextOrEmpty(source)));
@@ -311,7 +323,7 @@ public interface Pf2eTypeReader extends JsonSource {
                         if ("abilities".equals(extra.getKey())) {
                             svt.hasThrowAbilities = true;
                             svValue.addAll(convert.streamOf(extra.getValue())
-                                    .map(x -> convert.replaceText(x))
+                                    .map(convert::replaceText)
                                     .toList());
                             continue;
                         }
@@ -320,12 +332,24 @@ public interface Pf2eTypeReader extends JsonSource {
                                 (value >= 0 ? "+" : "") + value);
                     }
                 }
-                svt.savingThrows.put(toTitleCase(e.getKey()),
-                        String.join(", ", svValue));
+                svt.savingThrows.put(toTitleCase(e.getKey()), String.join(", ", svValue));
             }
             svt.abilities = convert.replaceText(abilities.getTextOrNull(stNode));
             return svt;
         }
+    }
+
+    enum Pf2eFeat implements JsonNodeReader {
+        access,
+        activity,
+        archetype, // child of featType
+        cost,
+        featType,
+        leadsTo,
+        level,
+        prerequisites,
+        special,
+        trigger
     }
 
     enum Pf2eHpStat implements JsonNodeReader {
@@ -354,14 +378,9 @@ public interface Pf2eTypeReader extends JsonSource {
          */
         static Map<String, QuteDataHpHardnessBt.HpStat> mappedHpFromArray(JsonNode source, JsonTextConverter<?> convert) {
             return convert.streamOf(convert.ensureArray(source)).collect(Collectors.toMap(
-                    n -> {
-                        // Capitalize the names
-                        if (!Pf2eHpStat.name.existsIn(n)) {
-                            return Pf2eDefenses.std.name();
-                        }
-                        String name = Pf2eHpStat.name.getTextOrThrow(n);
-                        return name.substring(0, 1).toUpperCase() + name.substring(1);
-                    },
+                    n -> Pf2eHpStat.name.existsIn(n)
+                            ? toTitleCase(Pf2eHpStat.name.getTextOrThrow(n))
+                            : Pf2eDefenses.std.name(),
                     n -> new QuteDataHpHardnessBt.HpStat(
                             hp.getIntOrThrow(n),
                             notes.replaceTextFromList(n, convert),
@@ -390,44 +409,6 @@ public interface Pf2eTypeReader extends JsonSource {
                     e -> new QuteDataHpHardnessBt.HpStat(
                             e.getValue().asInt(),
                             notesNode.has(e.getKey()) ? convert.replaceText(notesNode.get(e.getKey())) : null)));
-        }
-    }
-
-    enum Pf2eFeat implements JsonNodeReader {
-        access,
-        activity,
-        archetype, // child of featType
-        cost,
-        featType,
-        leadsTo,
-        level,
-        prerequisites,
-        special,
-        trigger
-    }
-
-    enum Pf2eSavingThrowType implements JsonNodeReader.FieldValue {
-        fortitude,
-        reflex,
-        will;
-
-        @Override
-        public String value() {
-            return this.name();
-        }
-
-        @Override
-        public boolean matches(String value) {
-            return this.name().startsWith(value.toLowerCase());
-        }
-
-        static Pf2eSavingThrowType valueFromEncoding(String value) {
-            if (value == null || value.isBlank()) {
-                return null;
-            }
-            return Stream.of(Pf2eSavingThrowType.values())
-                    .filter((t) -> t.matches(value))
-                    .findFirst().orElse(null);
         }
     }
 
@@ -471,6 +452,31 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
+    enum Pf2eSavingThrowType implements JsonNodeReader.FieldValue {
+        fortitude,
+        reflex,
+        will;
+
+        @Override
+        public String value() {
+            return this.name();
+        }
+
+        @Override
+        public boolean matches(String value) {
+            return this.name().startsWith(value.toLowerCase());
+        }
+
+        static Pf2eSavingThrowType valueFromEncoding(String value) {
+            if (!isPresent(value)) {
+                return null;
+            }
+            return Stream.of(Pf2eSavingThrowType.values())
+                    .filter(t -> t.matches(value))
+                    .findFirst().orElse(null);
+        }
+    }
+
     enum Pf2eSpellComponent implements JsonNodeReader.FieldValue {
         focus("F"),
         material("M"),
@@ -493,18 +499,17 @@ public interface Pf2eTypeReader extends JsonSource {
             return this.encoding.equals(value) || this.name().equalsIgnoreCase(value);
         }
 
-        public String getRulesPath(String rulesRoot) {
-            return String.format("%sTODO.md#%s",
-                    rulesRoot, toAnchorTag(this.name()));
-        }
-
         static Pf2eSpellComponent valueFromEncoding(String value) {
-            if (value == null || value.isBlank()) {
+            if (!isPresent(value)) {
                 return null;
             }
             return Stream.of(Pf2eSpellComponent.values())
-                    .filter((t) -> t.matches(value))
+                    .filter(t -> t.matches(value))
                     .findFirst().orElse(null);
+        }
+
+        public String getRulesPath(String rulesRoot) {
+            return "%sTODO.md#%s".formatted(rulesRoot, toAnchorTag(this.name()));
         }
     }
 
@@ -528,9 +533,7 @@ public interface Pf2eTypeReader extends JsonSource {
          */
         public static QuteDataSkillBonus createSkillBonus(
                 String skillName, JsonNode source, Pf2eTypeReader convert) {
-            String displayName = Arrays.stream(skillName.split(" "))
-                    .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1))
-                    .collect(Collectors.joining(" "));
+            String displayName = toTitleCase(skillName);
 
             if (source.isInt()) {
                 return new QuteDataSkillBonus(displayName, source.asInt());
@@ -539,22 +542,10 @@ public interface Pf2eTypeReader extends JsonSource {
             return new QuteDataSkillBonus(
                     displayName,
                     std.getIntOrThrow(source),
-                    source.properties().stream()
-                            .filter(e -> !e.getKey().equals(std.name()) && !e.getKey().equals(note.name())) // skip these
-                            .collect(
-                                    Collectors.toUnmodifiableMap(
-                                            e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
-                    Optional.ofNullable(note.getTextOrNull(source))
-                            .map(s -> List.of(convert.replaceText(s)))
-                            .orElse(List.of()));
+                    convert.streamPropsExcluding(source, std, note)
+                            .collect(Collectors.toMap(e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
+                    note.getTextFrom(source).map(convert::replaceText).map(List::of).orElse(List.of()));
         }
-    }
-
-    default List<String> getAlignments(JsonNode alignNode) {
-        return streamOf(alignNode)
-                .map(JsonNode::asText)
-                .map(a -> a.length() > 2 ? a : linkifyTrait(a.toUpperCase()))
-                .collect(Collectors.toList());
     }
 
     static QuteDataActivity getQuteActivity(JsonNode source, JsonNodeReader field, JsonSource convert) {
@@ -562,60 +553,22 @@ public interface Pf2eTypeReader extends JsonSource {
         return jsonActivity == null ? null : jsonActivity.toQuteActivity(convert);
     }
 
-    @RegisterForReflection
-    class NumberUnitEntry {
-        public Integer number;
-        public String unit;
-        public String entry;
+    /** A generic container for a PF2e stat value which may have an attached note. */
+    interface Pf2eStat extends QuteUtil {
+        /** Returns the value of the stat. */
+        Integer value();
 
-        public String convertToDurationString(Pf2eTypeReader convert) {
-            if (entry != null) {
-                return convert.replaceText(entry);
-            }
-            Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
-            if (activity != null && activity != Pf2eActivity.timed) {
-                return activity.linkify(convert.cfg().rulesVaultRoot());
-            }
-            return String.format("%s %s%s", number, unit, number > 1 ? "s" : "");
+        /** Returns any notes associated with this value. */
+        List<String> notes();
+
+        /** Return the value formatted with a leading +/-. */
+        default String bonus() {
+            return "%+d".formatted(value());
         }
 
-        public String convertToRangeString(Pf2eTypeReader convert) {
-            if (entry != null) {
-                return convert.replaceText(entry);
-            }
-            if ("feet".equals(unit)) {
-                return String.format("%s %s", number, number > 1 ? "foot" : "feet");
-            } else if ("miles".equals(unit)) {
-                return String.format("%s %s", number, number > 1 ? "mile" : "miles");
-            }
-            return unit;
-        }
-
-        private QuteDataActivity toQuteActivity(JsonSource convert) {
-            String extra = entry == null || entry.toLowerCase().contains("varies")
-                    ? ""
-                    : " (" + convert.replaceText(entry) + ")";
-
-            switch (unit) {
-                case "single", "action", "free", "reaction" -> {
-                    Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
-                    if (activity == null) {
-                        throw new IllegalArgumentException("What is this? " + String.format("%s, %s, %s", number, unit, entry));
-                    }
-                    return activity.toQuteActivity(convert,
-                            extra.isBlank() ? null : String.format("%s%s", activity.getLongName(), extra));
-                }
-                case "varies" -> {
-                    return Pf2eActivity.varies.toQuteActivity(convert,
-                            extra.isBlank() ? null : String.format("%s%s", Pf2eActivity.varies.getLongName(), extra));
-                }
-                case "day", "minute", "hour", "round" -> {
-                    return Pf2eActivity.timed.toQuteActivity(convert,
-                            String.format("%s %s%s", number, unit, extra));
-                }
-                default -> throw new IllegalArgumentException(
-                        "What is this? " + String.format("%s, %s, %s", number, unit, entry));
-            }
+        /** Return notes formatted as space-delimited parenthesized strings. */
+        default String formattedNotes() {
+            return notes().stream().map(StringUtil::parenthesize).collect(joiningNonEmpty(" "));
         }
     }
 
@@ -815,22 +768,54 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    /** A generic container for a PF2e stat value which may have an attached note. */
-    interface Pf2eStat extends QuteUtil {
-        /** Returns the value of the stat. */
-        Integer value();
+    @RegisterForReflection
+    class NumberUnitEntry {
+        public Integer number;
+        public String unit;
+        public String entry;
 
-        /** Returns any notes associated with this value. */
-        List<String> notes();
-
-        /** Return the value formatted with a leading +/-. */
-        default String bonus() {
-            return String.format("%+d", value());
+        public String convertToDurationString(Pf2eTypeReader convert) {
+            if (entry != null) {
+                return convert.replaceText(entry);
+            }
+            Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
+            if (activity != null && activity != Pf2eActivity.timed) {
+                return activity.linkify(convert.cfg().rulesVaultRoot());
+            }
+            return "%s %s".formatted(number, pluralize(unit, number));
         }
 
-        /** Return notes formatted as space-delimited parenthesized strings. */
-        default String formattedNotes() {
-            return notes().stream().map(s -> String.format("(%s)", s)).collect(Collectors.joining(" "));
+        public String convertToRangeString(Pf2eTypeReader convert) {
+            if (entry != null) {
+                return convert.replaceText(entry);
+            }
+            if ("feet".equals(unit) || "miles".equals(unit)) {
+                return "%s %s".formatted(number, pluralize(unit, number));
+            }
+            return unit;
+        }
+
+        private QuteDataActivity toQuteActivity(JsonSource convert) {
+            String extra = entry == null || entry.toLowerCase().contains("varies")
+                    ? ""
+                    : " " + parenthesize(convert.replaceText(entry));
+
+            return switch (unit) {
+                case "single", "action", "free", "reaction" -> {
+                    Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
+                    if (activity == null) {
+                        throw new IllegalArgumentException("What is this? %s, %s, %s".formatted(number, unit, entry));
+                    }
+                    yield activity.toQuteActivity(convert,
+                            extra.isBlank() ? null : "%s%s".formatted(activity.getLongName(), extra));
+                }
+                case "varies" -> Pf2eActivity.varies.toQuteActivity(convert,
+                        extra.isBlank() ? null : "%s%s".formatted(Pf2eActivity.varies.getLongName(), extra));
+                case "day", "minute", "hour", "round" -> Pf2eActivity.timed.toQuteActivity(convert,
+                        "%s %s%s".formatted(number, unit, extra));
+                default -> throw new IllegalArgumentException(
+                        "What is this? %s, %s, %s".formatted(number, unit, entry));
+            };
         }
     }
 
@@ -851,7 +836,7 @@ public interface Pf2eTypeReader extends JsonSource {
 
         @Override
         public String toString() {
-            return value.toString() + (notes.isEmpty() ? "" : " " + formattedNotes());
+            return join(" ", value.toString(), formattedNotes());
         }
     }
 }

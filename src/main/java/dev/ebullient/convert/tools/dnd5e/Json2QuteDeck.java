@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +16,6 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteDeck;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteDeck.Card;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
-
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteDeck extends Json2QuteCommon {
 

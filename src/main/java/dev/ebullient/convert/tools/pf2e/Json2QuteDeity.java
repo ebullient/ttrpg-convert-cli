@@ -1,5 +1,10 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.joiningConjunct;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +20,6 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.joinConjunct;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteDeity extends Json2QuteBase {
 
@@ -194,10 +195,9 @@ public class Json2QuteDeity extends Json2QuteBase {
     }
 
     String commandmentToString(List<String> edictOrAnathema) {
-        if (edictOrAnathema.stream().anyMatch(x -> x.contains(","))) {
-            return String.join("; ", edictOrAnathema);
-        }
-        return String.join(", ", edictOrAnathema);
+        return String.join(
+                edictOrAnathema.stream().anyMatch(x -> x.contains(",")) ? "; " : ", ",
+                edictOrAnathema);
     }
 
     @RegisterForReflection
@@ -211,8 +211,7 @@ public class Json2QuteDeity extends Json2QuteBase {
             if (entry != null) {
                 return convert.replaceText(entry);
             }
-            return joinConjunct(" or ", abilities.stream()
-                    .map(StringUtil::toTitleCase).collect(Collectors.toList()));
+            return abilities.stream().map(StringUtil::toTitleCase).collect(joiningConjunct(" or "));
         }
 
         public String buildSkillString(JsonSource convert) {

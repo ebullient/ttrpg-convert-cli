@@ -1,5 +1,9 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,9 +24,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemActivate;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemArmorData;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemShieldData;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteItem extends Json2QuteBase {
     static final String ITEM_TAG = "item";
@@ -254,7 +255,7 @@ public class Json2QuteItem extends Json2QuteBase {
     }
 
     private String penalty(String input, String suffix) {
-        if (input == null || input.isBlank() || "0".equals(input)) {
+        if (!isPresent(input) || "0".equals(input)) {
             return "—";
         }
         return (input.startsWith("-") ? input : ("-" + input)) + suffix;
