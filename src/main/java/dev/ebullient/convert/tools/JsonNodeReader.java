@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools;
 
+import static dev.ebullient.convert.StringUtil.join;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +18,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Tui;
-
-import static dev.ebullient.convert.StringUtil.join;
 
 public interface JsonNodeReader {
 

@@ -1,17 +1,34 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinWithPrefix;
+
 import java.util.List;
 import java.util.StringJoiner;
 
+import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
 import io.quarkus.qute.TemplateData;
 
 /**
  * Hit Points, Hardness, and a broken threshold for hazards and shields. Used for creatures, hazards, and shields.
+ *
  * <p>
- * <b>Hardness</b> 10, <b>HP (BT)</b> 30 (15) to destroy a channel gate (some ability)
+ * Hazard example with a broken threshold and note:
  * </p>
+ * <blockquote><b>Hardness</b> 10, <b>HP (BT)</b> 30 (15) to destroy a channel gate</blockquote>
+ *
+ * <p>
+ * Hazard example with a name, broken threshold, and note:
+ * </p>
+ * <blockquote><b>Floor Hardness</b> 10, <b>Floor HP</b> 30 (BT 15) to destroy a channel gate</blockquote>
+ *
+ * <p>
+ * Creature example with a name and ability:
+ * </p>
+ * <blockquote><b>Head Hardness</b> 10, <b>Head HP</b> 30 (hydra regeneration)</blockquote>
  *
  * @param hp The HP as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt.HpStat HpStat} (optional)
  * @param hardness Hardness as a {@link dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat Pf2eStat} (optional)
@@ -30,25 +47,26 @@ public record QuteDataHpHardnessBt(HpStat hp, Pf2eStat hardness, Integer brokenT
         name = name.isEmpty() ? "" : name + " ";
         StringJoiner parts = new StringJoiner(", ");
         if (hardness != null) {
-            parts.add(String.format("**%sHardness** %s", name, hardness));
+            parts.add("**%sHardness** %s".formatted(name, hardness));
         }
         if (hp != null && hp.value != null) {
-            if (isPresent(brokenThreshold)) {
-                parts.add(String.format(
-                        name.isEmpty() ? "**%sHP (BT)** %d (%d) %s" : "**%sHP** %d (BT %d) %s",
-                        name, hp.value, brokenThreshold, hp.formattedNotes()));
-            } else {
-                parts.add(String.format("**%sHP** %s", name, hp));
-            }
+            // If we have a BT but no name, then put the BT label next to the HP label. Otherwise, the BT label goes
+            // next to the BT value.
+            boolean labelBtWithHp = isPresent(brokenThreshold) && name.isEmpty();
+            parts.add(join(" ",
+                    (labelBtWithHp ? "**%sHP (BT)**" : "**%sHP**").formatted(name),
+                    hp.value,
+                    isPresent(brokenThreshold) ? (labelBtWithHp ? "(%d)" : "(BT %d)").formatted(brokenThreshold) : null,
+                    hp.formattedNotes()));
         }
         return parts.toString();
     }
 
     /**
      * HP value and associated notes. Referencing this directly provides a default representation, e.g.
-     * <p>
+     * <blockquote>
      * 15 to destroy a head (head regrowth)
-     * </p>
+     * </blockquote>
      *
      * @param value The HP value itself
      * @param abilities Any abilities associated with the HP
@@ -66,21 +84,15 @@ public record QuteDataHpHardnessBt(HpStat hp, Pf2eStat hardness, Integer brokenT
 
         @Override
         public String toString() {
-            String formattedNotes = formattedNotes();
-            return value + (formattedNotes.isEmpty() ? "" : " " + formattedNotes);
+            return join(" ", value, formattedNotes());
         }
 
         /** Returns any notes and abilities formatted as a string. */
         @Override
         public String formattedNotes() {
-            StringJoiner formatted = new StringJoiner(" ");
-            if (isPresent(notes)) {
-                formatted.add(String.join(", ", notes));
-            }
-            if (isPresent(abilities)) {
-                abilities.stream().map(s -> String.format("(%s)", s)).forEachOrdered(formatted::add);
-            }
-            return formatted.toString();
+            return flatJoin(" ",
+                    List.of(join(", ", notes)),
+                    abilities.stream().map(StringUtil::parenthesize).toList());
         }
     }
 }

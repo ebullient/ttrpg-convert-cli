@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,8 +15,6 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteBook;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteBook extends Json2QuteBase {
 

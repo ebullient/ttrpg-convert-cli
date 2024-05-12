@@ -1,12 +1,12 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.parenthesize;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
@@ -96,13 +96,7 @@ public class QuteCreature extends Pf2eQuteBase {
 
         @Override
         public String toString() {
-            return Stream.of(
-                    languages != null ? List.of(String.join(", ", languages)) : List.<String> of(),
-                    abilities, notes)
-                    .filter(Objects::nonNull)
-                    .flatMap(Collection::stream)
-                    .dropWhile(String::isEmpty)
-                    .collect(Collectors.joining("; "));
+            return flatJoin("; ", List.of(join(", ", languages)), abilities, notes);
         }
     }
 
@@ -125,8 +119,7 @@ public class QuteCreature extends Pf2eQuteBase {
 
         @Override
         public String toString() {
-            return skills.stream().map(QuteDataSkillBonus::toString).collect(Collectors.joining(", ")) +
-                    (notes == null ? "" : " " + String.join("; ", notes));
+            return join(" ", join(", ", skills), join("; ", notes));
         }
     }
 
@@ -142,14 +135,7 @@ public class QuteCreature extends Pf2eQuteBase {
 
         @Override
         public String toString() {
-            StringJoiner s = new StringJoiner(" ").add(name);
-            if (type != null) {
-                s.add(String.format("(%s)", type));
-            }
-            if (range != null) {
-                s.add(range.toString());
-            }
-            return s.toString();
+            return join(" ", name, parenthesize(type), range);
         }
     }
 }

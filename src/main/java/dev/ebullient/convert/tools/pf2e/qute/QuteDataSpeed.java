@@ -1,13 +1,14 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader;
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.formatMap;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
 
 /**
  *
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
  */
 public record QuteDataSpeed(
         Integer value, Map<String, Integer> otherSpeeds, List<String> notes,
-        List<String> abilities) implements Pf2eTypeReader.Pf2eStat {
+        List<String> abilities) implements Pf2eStat {
 
     public void addAbility(String ability) {
         abilities.add(ability);
@@ -27,19 +28,14 @@ public record QuteDataSpeed(
     /** Return formatted notes and abilities. e.g. {@code (note) (another note); ability, another ability} */
     @Override
     public String formattedNotes() {
-        return Stream.of(Pf2eTypeReader.Pf2eStat.super.formattedNotes(), String.join(", ", abilities))
-                .filter(this::isPresent)
-                .collect(Collectors.joining("; "));
+        return join("; ", Pf2eStat.super.formattedNotes(), join(", ", abilities));
     }
 
     /** Return formatted speeds as a string, starting with land speed. e.g. {@code 10 feet, swim 20 feet} */
     public String formattedSpeeds() {
-        StringJoiner speeds = new StringJoiner(", ")
-                .add(Optional.ofNullable(value).map(n -> String.format("%d feet", value)).orElse("no land speed"));
-        otherSpeeds.entrySet().stream()
-                .map(e -> String.format("%s %d feet", e.getKey(), e.getValue()))
-                .forEach(speeds::add);
-        return speeds.toString();
+        return flatJoin(", ",
+                List.of(Optional.ofNullable(value).map("%d feet"::formatted).orElse("no land speed")),
+                formatMap(otherSpeeds, "%s %d feet"::formatted));
     }
 
     /**
@@ -54,7 +50,6 @@ public record QuteDataSpeed(
      */
     @Override
     public String toString() {
-        return Stream.of(formattedSpeeds(), formattedNotes())
-                .filter(this::isPresent).collect(Collectors.joining(notes.isEmpty() ? ", " : " "));
+        return join(notes.isEmpty() ? ", " : " ", formattedSpeeds(), formattedNotes());
     }
 }

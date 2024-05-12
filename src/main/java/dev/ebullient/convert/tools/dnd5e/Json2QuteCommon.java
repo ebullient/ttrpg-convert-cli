@@ -1,5 +1,9 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.nio.file.Path;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -30,10 +34,6 @@ import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
-
-import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.joinConjunct;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteCommon implements JsonSource {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
@@ -232,7 +232,7 @@ public class Json2QuteCommon implements JsonSource {
 
         var isComplex = multipleInner || multiMultipleInner || allValuesEqual == null;
         String joined = joinConjunct(
-            multiMultipleInner ? " - " : multipleInner ? "; " : ", ",
+                multiMultipleInner ? " - " : multipleInner ? "; " : ", ",
                 isComplex ? " OR " : " or ",
                 abilityOptions);
 

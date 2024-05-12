@@ -1,9 +1,11 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.formatMap;
+
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader;
 import io.quarkus.qute.TemplateData;
@@ -24,9 +26,7 @@ import io.quarkus.qute.TemplateData;
  */
 @TemplateData
 public record QuteDataSkillBonus(
-        String name,
-        Integer value,
-        Map<String, Integer> otherBonuses,
+        String name, Integer value, Map<String, Integer> otherBonuses,
         List<String> notes) implements Pf2eTypeReader.Pf2eStat {
 
     public QuteDataSkillBonus(String name, Integer standardBonus) {
@@ -36,14 +36,13 @@ public record QuteDataSkillBonus(
     /** Return the standard bonus and any other conditional bonuses. */
     @Override
     public String bonus() {
-        return Stream.concat(
-                Stream.of(Pf2eTypeReader.Pf2eStat.super.bonus()),
-                otherBonuses.entrySet().stream().map(e -> String.format("(%+d %s)", e.getValue(), e.getKey())))
-                .collect(Collectors.joining(" "));
+        return flatJoin(" ",
+                List.of(Pf2eTypeReader.Pf2eStat.super.bonus()),
+                formatMap(otherBonuses, (k, v) -> "(%+d %s)".formatted(v, k)));
     }
 
     @Override
     public String toString() {
-        return String.join(" ", name, bonus(), formattedNotes()).trim();
+        return join(" ", name, bonus(), formattedNotes());
     }
 }
