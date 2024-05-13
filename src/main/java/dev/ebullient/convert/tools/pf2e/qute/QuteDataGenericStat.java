@@ -27,7 +27,9 @@ public interface QuteDataGenericStat extends QuteUtil {
     }
 
     /**
-     * A basic {@link QuteDataGenericStat} which provides only a value and possibly a note. Default representation:
+     * A basic {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat QuteDataGenericStat} which provides
+     * only a value and possibly a note. Default representation:
+     *
      * <blockquote>
      * 10 (some note) (some other note)
      * </blockquote>
