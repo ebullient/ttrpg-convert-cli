@@ -8,7 +8,6 @@ import static dev.ebullient.convert.StringUtil.parenthesize;
 import java.util.List;
 import java.util.Map;
 
-import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -25,7 +24,7 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public record QuteDataArmorClass(
         Integer value, Map<String, Integer> alternateValues, List<String> notes,
-        List<String> abilities) implements Pf2eStat {
+        List<String> abilities) implements QuteDataGenericStat {
 
     public QuteDataArmorClass(Integer value) {
         this(value, Map.of(), List.of(), List.of());
@@ -47,7 +46,7 @@ public record QuteDataArmorClass(
 
     @Override
     public String bonus() {
-        return join(" ", Pf2eStat.super.bonus(), formattedAlternates(true));
+        return join(" ", QuteDataGenericStat.super.bonus(), formattedAlternates(true));
     }
 
     @Override

@@ -18,6 +18,7 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemActivate;
@@ -109,7 +110,7 @@ public class Json2QuteItem extends Json2QuteBase {
                                 Pf2eItem.ac2.getIntFrom(shieldNode).orElse(null)),
                         new QuteDataHpHardnessBt(
                                 new QuteDataHpHardnessBt.HpStat(Pf2eItem.hp.getIntOrThrow(shieldNode)),
-                                new Pf2eSimpleStat(Pf2eItem.hardness.getIntOrThrow(shieldNode)),
+                                new SimpleStat(Pf2eItem.hardness.getIntOrThrow(shieldNode)),
                                 Pf2eItem.bt.getIntOrThrow(shieldNode)),
                         penalty(Pf2eItem.speedPen.getTextOrEmpty(shieldNode), " ft."));
     }
