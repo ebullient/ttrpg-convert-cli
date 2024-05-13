@@ -1,8 +1,6 @@
 # HpStat
 
-HP value and associated notes. Referencing this directly provides a default representation, e.g.
-
-15 to destroy a head (head regrowth)
+HP value and associated notes. Referencing this directly provides a default representation, e.g. <blockquote> 15 to destroy a head (head regrowth) </blockquote>
 
 ## Attributes
 
