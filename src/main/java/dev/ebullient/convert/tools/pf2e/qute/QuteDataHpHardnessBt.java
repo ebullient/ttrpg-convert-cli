@@ -2,14 +2,13 @@ package dev.ebullient.convert.tools.pf2e.qute;
 
 import static dev.ebullient.convert.StringUtil.flatJoin;
 import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.joinWithPrefix;
 
 import java.util.List;
 import java.util.StringJoiner;
 
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.qute.QuteUtil;
-import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -31,11 +30,12 @@ import io.quarkus.qute.TemplateData;
  * <blockquote><b>Head Hardness</b> 10, <b>Head HP</b> 30 (hydra regeneration)</blockquote>
  *
  * @param hp The HP as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt.HpStat HpStat} (optional)
- * @param hardness Hardness as a {@link dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat Pf2eStat} (optional)
+ * @param hardness Hardness as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat SimpleStat}
+ *        (optional)
  * @param brokenThreshold Broken threshold as an integer (optional, not populated for creatures)
  */
 @TemplateData
-public record QuteDataHpHardnessBt(HpStat hp, Pf2eStat hardness, Integer brokenThreshold) implements QuteUtil {
+public record QuteDataHpHardnessBt(HpStat hp, SimpleStat hardness, Integer brokenThreshold) implements QuteUtil {
 
     @Override
     public String toString() {
@@ -73,7 +73,7 @@ public record QuteDataHpHardnessBt(HpStat hp, Pf2eStat hardness, Integer brokenT
      * @param notes Any notes associated with the HP.
      */
     @TemplateData
-    public record HpStat(Integer value, List<String> notes, List<String> abilities) implements Pf2eStat {
+    public record HpStat(Integer value, List<String> notes, List<String> abilities) implements QuteDataGenericStat {
         public HpStat(Integer value) {
             this(value, null);
         }

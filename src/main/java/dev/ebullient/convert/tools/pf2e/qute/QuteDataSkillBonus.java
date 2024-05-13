@@ -7,7 +7,6 @@ import static dev.ebullient.convert.StringUtil.formatMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -27,7 +26,7 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public record QuteDataSkillBonus(
         String name, Integer value, Map<String, Integer> otherBonuses,
-        List<String> notes) implements Pf2eTypeReader.Pf2eStat {
+        List<String> notes) implements QuteDataGenericStat {
 
     public QuteDataSkillBonus(String name, Integer standardBonus) {
         this(name, standardBonus, Map.of(), List.of());
@@ -37,7 +36,7 @@ public record QuteDataSkillBonus(
     @Override
     public String bonus() {
         return flatJoin(" ",
-                List.of(Pf2eTypeReader.Pf2eStat.super.bonus()),
+                List.of(QuteDataGenericStat.super.bonus()),
                 formatMap(otherBonuses, (k, v) -> "(%+d %s)".formatted(v, k)));
     }
 

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
-
 /**
  *
  * @param value The land speed in feet
@@ -19,7 +17,7 @@ import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eStat;
  */
 public record QuteDataSpeed(
         Integer value, Map<String, Integer> otherSpeeds, List<String> notes,
-        List<String> abilities) implements Pf2eStat {
+        List<String> abilities) implements QuteDataGenericStat {
 
     public void addAbility(String ability) {
         abilities.add(ability);
@@ -28,7 +26,7 @@ public record QuteDataSpeed(
     /** Return formatted notes and abilities. e.g. {@code (note) (another note); ability, another ability} */
     @Override
     public String formattedNotes() {
-        return join("; ", Pf2eStat.super.formattedNotes(), join(", ", abilities));
+        return join("; ", QuteDataGenericStat.super.formattedNotes(), join(", ", abilities));
     }
 
     /** Return formatted speeds as a string, starting with land speed. e.g. {@code 10 feet, swim 20 feet} */

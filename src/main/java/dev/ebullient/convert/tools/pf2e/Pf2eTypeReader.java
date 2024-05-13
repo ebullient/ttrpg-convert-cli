@@ -1,8 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
 import static dev.ebullient.convert.StringUtil.parenthesize;
 import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
@@ -18,10 +16,8 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
-import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
@@ -29,6 +25,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
@@ -268,7 +265,7 @@ public interface Pf2eTypeReader extends JsonSource {
                     k -> new QuteDataHpHardnessBt(
                             hpStats.getOrDefault(k, null),
                             hardnessNode.has(k)
-                                    ? new Pf2eSimpleStat(
+                                    ? new SimpleStat(
                                             hardnessNode.get(k).asInt(), convert.replaceText(hardnessNotes.get(k)))
                                     : null,
                             btNode.has(k) ? btNode.get(k).asInt() : null)));
@@ -553,25 +550,6 @@ public interface Pf2eTypeReader extends JsonSource {
         return jsonActivity == null ? null : jsonActivity.toQuteActivity(convert);
     }
 
-    /** A generic container for a PF2e stat value which may have an attached note. */
-    interface Pf2eStat extends QuteUtil {
-        /** Returns the value of the stat. */
-        Integer value();
-
-        /** Returns any notes associated with this value. */
-        List<String> notes();
-
-        /** Return the value formatted with a leading +/-. */
-        default String bonus() {
-            return "%+d".formatted(value());
-        }
-
-        /** Return notes formatted as space-delimited parenthesized strings. */
-        default String formattedNotes() {
-            return notes().stream().map(StringUtil::parenthesize).collect(joiningNonEmpty(" "));
-        }
-    }
-
     @RegisterForReflection
     class NameAmountNote {
         public String name;
@@ -819,24 +797,4 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    /**
-     * A basic {@link Pf2eStat} which provides only a value and possibly a note. Default representation:
-     * <p>
-     * 10 (some note) (some other note)
-     * </p>
-     */
-    record Pf2eSimpleStat(Integer value, List<String> notes) implements Pf2eStat {
-        Pf2eSimpleStat(Integer value) {
-            this(value, List.of());
-        }
-
-        Pf2eSimpleStat(Integer value, String note) {
-            this(value, note == null || note.isBlank() ? List.of() : List.of(note));
-        }
-
-        @Override
-        public String toString() {
-            return join(" ", value.toString(), formattedNotes());
-        }
-    }
 }
