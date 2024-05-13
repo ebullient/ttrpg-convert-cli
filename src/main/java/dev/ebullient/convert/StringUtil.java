@@ -213,11 +213,6 @@ public class StringUtil {
         return pluralize(s, howMany, false);
     }
 
-    /** @see #pluralize(String, int) */
-    public static String pluralize(String s, String howMany) {
-        return pluralize(s, Integer.parseInt(howMany));
-    }
-
     /**
      * Return the given string surrounded in parentheses. Return null if the input is null, or an empty string if
      * the input is empty.

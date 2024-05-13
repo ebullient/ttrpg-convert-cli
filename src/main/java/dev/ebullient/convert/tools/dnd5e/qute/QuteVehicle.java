@@ -176,7 +176,7 @@ public class QuteVehicle extends Tools5eQuteBase {
                 out.add("- **Hit Points** " + (isPresent(acHp.hp) ? acHp.hp : "\u2014"));
                 out.add("- **Damage Threshold** " + (isPresent(acHp.dt) ? acHp.dt : "\u2014"));
                 out.add("- **Speed** " + speedPace);
-                out.add("- **Cargo** " + (isPresent(cargo) ? cargo + pluralize(" ton", cargo) : "\u2014"));
+                out.add("- **Cargo** " + (isPresent(cargo) ? cargo + pluralize(" ton", cargo.equals("1") ? 1 : 2) : "\u2014"));
                 out.add("- **Crew** " + crewPresent);
                 out.add("- **Keel/Beam** " + (isPresent(keelBeam) ? keelBeam : "\u2014"));
                 out.add("- **Cost** " + (isPresent(acHp.cost) ? acHp.cost : "\u2014"));
@@ -187,7 +187,7 @@ public class QuteVehicle extends Tools5eQuteBase {
                         inner.add(crewPresent);
                     }
                     if (isPresent(passenger)) {
-                        inner.add(passenger + pluralize(" passenger", passenger));
+                        inner.add(passenger + pluralize(" passenger", passenger.equals("1") ? 1 : 2));
                     }
                     out.add("- **Creature Capacity** " + String.join(", ", inner));
                 }
