@@ -54,13 +54,15 @@ public class QuteCreature extends Pf2eQuteBase {
     public final List<String> items;
     /** The creature's speed, as an {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed QuteDataSpeed} */
     public final QuteDataSpeed speed;
+    /** The creature's attacks, as a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack QuteInlineAttack} */
+    public final List<QuteInlineAttack> attacks;
 
     public QuteCreature(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases,
             String description, Integer level, Integer perception,
             QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
             List<CreatureSense> senses, Map<String, Integer> abilityMods,
-            List<String> items, QuteDataSpeed speed) {
+            List<String> items, QuteDataSpeed speed, List<QuteInlineAttack> attacks) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -74,6 +76,7 @@ public class QuteCreature extends Pf2eQuteBase {
         this.abilityMods = abilityMods;
         this.items = items;
         this.speed = speed;
+        this.attacks = attacks;
     }
 
     /**

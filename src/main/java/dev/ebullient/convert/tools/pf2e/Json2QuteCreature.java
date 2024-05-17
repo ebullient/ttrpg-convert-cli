@@ -41,7 +41,10 @@ public class Json2QuteCreature extends Json2QuteBase {
                 Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList(),
                 Pf2eCreature.abilityModifiers(rootNode),
                 Pf2eCreature.items.replaceTextFromList(rootNode, this),
-                Pf2eTypeReader.Pf2eSpeed.getSpeed(Pf2eCreature.speed.getFrom(rootNode), this));
+                Pf2eTypeReader.Pf2eSpeed.getSpeed(Pf2eCreature.speed.getFrom(rootNode), this),
+                Pf2eCreature.attacks.streamFrom(rootNode)
+                        .map(n -> Pf2eAttack.createInlineAttack(n, this))
+                        .toList());
     }
 
     /**
