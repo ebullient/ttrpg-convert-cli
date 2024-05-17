@@ -31,7 +31,10 @@ aliases: ["{resource.name}"]
 {/each}{/if}{#if resource.defenses }
 
 {resource.defenses}
-{/if}{#if resource.actions }
+{/if}{#if resource.attacks}
+
+{#each resource.attacks}{it}  
+{/each}{/if}{#if resource.actions }
 
 {#each resource.actions}{it}
 {/each}{/if}{#if resource.routine }

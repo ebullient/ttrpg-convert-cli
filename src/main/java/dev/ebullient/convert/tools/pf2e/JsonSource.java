@@ -20,12 +20,12 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
 public interface JsonSource extends JsonTextReplacement {
 
@@ -305,7 +305,7 @@ public interface JsonSource extends JsonTextReplacement {
     /** Internal */
     default void appendAbility(List<String> text, JsonNode node) {
         renderEmbeddedTemplate(text,
-                Pf2eTypeAbility.createAbility(node, this, true),
+                Pf2eAbility.createEmbeddedAbility(node, this),
                 "ability", List.of());
     }
 
@@ -361,8 +361,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendAttack(List<String> text, JsonNode node) {
-        QuteInlineAttack inlineAttack = Pf2eTypeReader.Pf2eAttack.createInlineAttack(node, this);
-        renderInlineTemplate(text, inlineAttack, "attack");
+        text.add("\n" + Pf2eTypeReader.Pf2eAttack.createInlineAttack(node, this).render());
     }
 
     /** Internal */
