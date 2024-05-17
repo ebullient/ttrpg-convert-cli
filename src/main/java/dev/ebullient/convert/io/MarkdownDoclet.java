@@ -198,6 +198,7 @@ public class MarkdownDoclet implements Doclet {
                         .getBlockTags().stream()
                         .filter(e -> e.getKind() == DocTree.Kind.PARAM)
                         .map(param -> (ParamTree) param)
+                        .filter(p -> !p.getName().toString().startsWith("_")) // fields with "_" prefix are internal
                         .forEach(param -> {
                             aggregator.add("\n\n### " + param.getName() + "\n\n");
                             aggregator.addAll(param.getDescription());
