@@ -38,6 +38,11 @@ public class QuteHazard extends Pf2eQuteBase {
     public final String routine;
     public final QuteDataDefenses defenses;
 
+    /**
+     * The attacks available to the hazard, as a list of
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack QuteInlineAttack}
+     */
+    public final List<QuteInlineAttack> attacks;
     public final List<String> abilities;
     public final List<String> actions;
     public final QuteHazardAttributes stealth;
@@ -46,7 +51,7 @@ public class QuteHazard extends Pf2eQuteBase {
     public QuteHazard(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, String level, String disable,
             String reset, String routine, QuteDataDefenses defenses,
-            List<String> abilities, List<String> actions,
+            List<QuteInlineAttack> attacks, List<String> abilities, List<String> actions,
             QuteHazardAttributes stealth, QuteHazardAttributes perception) {
         super(sources, text, tags);
         this.traits = traits;
@@ -54,6 +59,7 @@ public class QuteHazard extends Pf2eQuteBase {
         this.reset = reset;
         this.routine = routine;
         this.disable = disable;
+        this.attacks = attacks;
         this.abilities = abilities;
         this.actions = actions;
         this.defenses = defenses;

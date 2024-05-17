@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
 
 public class Json2QuteHazard extends Json2QuteBase {
@@ -29,10 +30,13 @@ public class Json2QuteHazard extends Json2QuteBase {
                 Pf2eHazard.reset.transformTextFrom(rootNode, "\n", index),
                 Pf2eHazard.routine.transformTextFrom(rootNode, "\n", index),
                 Pf2eHazard.defenses.getObjectFrom(rootNode)
-                    .map(n -> Pf2eDefenses.createInlineDefenses(n, this))
-                    .orElse(null),
+                        .map(n -> Pf2eDefenses.createInlineDefenses(n, this))
+                        .orElse(null),
+                Pf2eHazard.attacks.streamFrom(rootNode)
+                        .map(n -> Pf2eAttack.createInlineAttack(n, this))
+                        .toList(),
                 renderAbilities(Pf2eHazard.abilities),
-                renderAbilities(Pf2eHazard.actions),  // TODO support actions which are afflictions
+                renderAbilities(Pf2eHazard.actions), // TODO handle afflictions
                 buildAttributes(Pf2eHazard.stealth),
                 buildAttributes(Pf2eHazard.perception));
     }
@@ -48,14 +52,15 @@ public class Json2QuteHazard extends Json2QuteBase {
 
     List<String> renderAbilities(Pf2eHazard field) {
         return field.streamFrom(rootNode)
-            .map(n -> Pf2eTypeAbility.createAbility(n, this, true))
-            .map(obj -> renderEmbeddedTemplate(obj, obj.indexType().name()))
-            .toList();
+                .map(n -> Pf2eAbility.createEmbeddedAbility(n, this))
+                .map(obj -> renderEmbeddedTemplate(obj, obj.indexType().name()))
+                .toList();
     }
 
     enum Pf2eHazard implements JsonNodeReader {
         abilities,
         actions,
+        attacks,
         defenses,
         description,
         disable,

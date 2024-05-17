@@ -620,7 +620,7 @@ public interface Pf2eTypeReader extends JsonSource {
             return new QuteInlineAttack(
                     name.replaceTextFrom(node, convert),
                     Optional.ofNullable(getQuteActivity(node, activity, convert))
-                        .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
+                            .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
                     QuteInlineAttack.AttackRangeType.valueOf(range.getTextOrDefault(node, "Melee").toUpperCase()),
                     attack.getIntFrom(node).orElse(null),
                     formattedDamage,
