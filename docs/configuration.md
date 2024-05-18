@@ -448,7 +448,7 @@ With this setting, the CLI will copy all "external" images it hasn't seen before
 
 🧪 This config has not been fully tested, so if it goes wrong, raise an issue so we can sort it out properly.
 
-In the event you have a bad image reference and the copy fails, you can set a fallback path to replace the failing path with something that should be used instead.
+In the event you have a bad image reference and the copy fails, you can set a fallback path for an image that should be used instead.
 
 ```json
 "images": {

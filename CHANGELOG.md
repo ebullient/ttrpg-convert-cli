@@ -12,6 +12,35 @@
 >
 > To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
 
+## 🔖 ✨ 2.3.14: Improvements to Pathfinder rendering
+
+@miscoined has made significant contributions to improve support for Pf2e creatures (the bestiary). 🙏🎉💖
+
+## 🔖 🐛 2.3.13: Fallback paths for images
+
+In the event you have a bad image reference and the copy fails, you can set a [fallback path](./docs/configuration.md#fallback-paths) for an image that should be used instead.
+
+```json
+"images": {
+    "fallbackPaths": {
+        "img/bestiary/MM/Green Hag.jpg": "img/bestiary/MM/Green Hag.webp"
+    },
+}
+```
+
+- The key (original path) must match what is used by the JSON Source.
+- The value (replacement path) should be either: a valid path to a local file or a valid URL to a remote file.
+
+## 🔖 🐛 2.3.11: Fixes for downloading images
+
+Downloading and/or copying [internal](./docs/configuration.md#copying-internal-images) or [external](./docs/configuration.md#copying-external-images) images has been a whack-a-mole exercise with path encodings across platforms and sources. Everything should finally be fixed now.
+
+## 🔖 ✨ 2.3.9: Fixes for Dice Roller and Statblock
+
+If you use the Dice Roller plugin, `useDiceRoller: true` will add dice rolls to tables and in text.
+
+If you are using the Fantasy Statblocks plugin to render your statblocks, you can now add `yamlStatblocks: true` to your configuration. This will strip backticks and other formatting related to dice rolls from statblock text (which will make Fantasy Statblocks happier), whether you have dice roller plugin enabled or not.
+
 ## 🔖 ✨ 2.3.0: 5eTools moving to mirror2
 
 [5eTools Mirror1](https://github.com/5etools-mirror-1/5etools-mirror-1.github.io) has been deprecated in favor of [5eTools Mirror2](https://github.com/5etools-mirror-2/5etools-mirror-2.github.io), which uses a separate repository for [images](https://github.com/5etools-mirror-2/5etools-img).
