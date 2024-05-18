@@ -21,6 +21,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
+import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
@@ -311,52 +312,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendAffliction(List<String> text, JsonNode node) {
-        String name = SourceField.name.getTextOrEmpty(node);
-        String level = null;
-
-        String savingThrow = toTitleCase(AfflictionField.savingThrow.getTextOrEmpty(node));
-        String dc = AfflictionField.DC.getTextOrNull(node);
-        String savingThrowString = replaceText((dc == null ? "" : "DC " + dc + " ") + savingThrow);
-
-        Tags tags = new Tags();
-        Collection<String> traits = collectTraitsFrom(node, tags);
-
-        JsonNode field = AfflictionField.level.getFrom(node);
-        if (field != null) {
-            level = "Level " + replaceText(field.asText());
-            tags.add("affliction", "level", level);
-        }
-
-        List<String> note = new ArrayList<>();
-        appendToText(note, AfflictionField.note.getFrom(node), null);
-
-        List<String> effect = new ArrayList<>();
-        appendToText(effect, SourceField.entries.getFrom(node), null);
-
-        Map<String, QuteAfflictionStage> stages = new LinkedHashMap<>();
-        AfflictionField.stages.readArrayFrom(node).forEach(stageNode -> {
-            String title = String.format("Stage %s",
-                    AfflictionField.stage.getTextOrDefault(stageNode, "1"));
-
-            List<String> stageInner = new ArrayList<>();
-            appendToText(stageInner, SourceField.entry.getFrom(stageNode), title);
-
-            QuteAfflictionStage stage = new QuteAfflictionStage();
-            stage.duration = replaceText(AfflictionField.duration.getTextOrEmpty(stageNode));
-            stage.text = join("\n", stageInner);
-
-            stages.put(title, stage);
-        });
-
-        QuteInlineAffliction inlineAffliction = new QuteInlineAffliction(
-                name, note, tags, traits, level,
-                replaceText(AfflictionField.maxDuration.getTextOrEmpty(node)),
-                replaceText(AfflictionField.onset.getTextOrEmpty(node)),
-                savingThrowString,
-                join("\n", effect),
-                stages);
-
-        renderInlineTemplate(text, inlineAffliction, "affliction");
+        renderInlineTemplate(text, Pf2eAffliction.createInlineAffliction(node, this), "affliction");
     }
 
     /** Internal */
@@ -693,20 +649,6 @@ public interface JsonSource extends JsonTextReplacement {
         public String nodeName() {
             return nodeName;
         }
-    }
-
-    enum AfflictionField implements JsonNodeReader {
-        DC,
-        duration,
-        level,
-        maxDuration,
-        note,
-        onset,
-        savingThrow,
-        stage,
-        stages,
-        temptedCurse,
-        type,
     }
 
     enum TableField implements JsonNodeReader {

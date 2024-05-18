@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
+import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 
 public class Json2QuteHazard extends Json2QuteBase {
 
@@ -36,7 +38,7 @@ public class Json2QuteHazard extends Json2QuteBase {
                         .map(n -> Pf2eAttack.createInlineAttack(n, this))
                         .toList(),
                 renderAbilities(Pf2eHazard.abilities),
-                renderAbilities(Pf2eHazard.actions), // TODO handle afflictions
+                renderAbilities(Pf2eHazard.actions),
                 buildAttributes(Pf2eHazard.stealth),
                 buildAttributes(Pf2eHazard.perception));
     }
@@ -52,8 +54,12 @@ public class Json2QuteHazard extends Json2QuteBase {
 
     List<String> renderAbilities(Pf2eHazard field) {
         return field.streamFrom(rootNode)
-                .map(n -> Pf2eAbility.createEmbeddedAbility(n, this))
-                .map(obj -> renderEmbeddedTemplate(obj, obj.indexType().name()))
+                .map(n -> Pf2eAffliction.isAfflictionBlock(n)
+                        ? Pf2eAffliction.createInlineAffliction(n, this)
+                        : Pf2eAbility.createEmbeddedAbility(n, this))
+                .map(obj -> obj instanceof QuteInlineAffliction
+                        ? renderInlineTemplate(obj, obj.indexType().name())
+                        : renderEmbeddedTemplate(obj, obj.indexType().name()))
                 .toList();
     }
 

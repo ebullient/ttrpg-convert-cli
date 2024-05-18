@@ -283,14 +283,33 @@ public interface JsonNodeReader {
                 .filter(e -> Arrays.stream(excludingKeys).noneMatch(s -> e.getKey().equalsIgnoreCase(s.name())));
     }
 
+    /**
+     * {@link #transformTextFrom(JsonNode, String, JsonTextConverter, String)} with a null heading.
+     *
+     * @see #transformTextFrom(JsonNode, String, JsonTextConverter)
+     */
     default String transformTextFrom(JsonNode source, String join, JsonTextConverter<?> replacer) {
+        return transformTextFrom(source, join, replacer, null);
+    }
+
+    /**
+     * Read the field in from the source as a potentially-nested array of entries. This calls
+     * {@link JsonTextConverter#appendToText(List, JsonNode, String)} on the input node and returns
+     * the parsed result joined according to the given delimiter.
+     *
+     * @param source The node to read from
+     * @param delimiter The delimiter to use when joining the entries into a single string
+     * @param replacer The {@link JsonTextConverter} to use for parsing entries.
+     * @param heading The heading to pass to {@link JsonTextConverter#appendToText(List, JsonNode, String)}
+     */
+    default String transformTextFrom(JsonNode source, String delimiter, JsonTextConverter<?> replacer, String heading) {
         JsonNode target = getFrom(source);
         if (target == null) {
             return null;
         }
         List<String> inner = new ArrayList<>();
-        replacer.appendToText(inner, target, null);
-        return join(join, inner.stream().filter(x -> !x.isBlank()).toList());
+        replacer.appendToText(inner, target, heading);
+        return join(delimiter, inner);
     }
 
     default boolean valueEquals(JsonNode previous, JsonNode next) {
