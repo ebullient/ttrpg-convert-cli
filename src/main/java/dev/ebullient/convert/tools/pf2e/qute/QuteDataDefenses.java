@@ -19,8 +19,8 @@ import io.quarkus.qute.TemplateData;
  * <li>
  * <b>Floor Hardness</b> 18, <b>Floor HP</b> 72 (BT 36);
  * <b>Channel Hardness</b> 12, <b>Channel HP</b> 48 (BT24 ) to destroy a channel gate;
- * <b>Resistances</b> precision damage;
  * <b>Immunities</b> critical hits;
+ * <b>Resistances</b> precision damage;
  * <b>Weaknesses</b> bludgeoning damage
  * </li>
  * </ul>
@@ -48,14 +48,16 @@ public record QuteDataDefenses(
 
     @Override
     public String toString() {
-        String first = "- " + join("; ", ac, savingThrows);
-        String second = "- " + join("; ",
-                hpHardnessBt,
-                join("; ", formatMap(additionalHpHardnessBt, (k, v) -> v.toStringWithName(k))),
-                joinWithPrefix(", ", immunities, "**Immunities** "),
-                joinWithPrefix(", ", resistances, "**Resistances** "),
-                joinWithPrefix(", ", weaknesses, "**Weaknesses** "));
-        return join("\n", first, second);
+        return join("\n",
+                // - **AC** 21; **Fort** +15, **Ref** +12, **Will** +10
+                joinWithPrefix("; ", "- ", ac, savingThrows),
+                // - **Hardness** 18, **HP (BT)** 10; **Immunities** critical hits; **Resistances** fire 5
+                joinWithPrefix("; ", "- ",
+                        hpHardnessBt,
+                        join("; ", formatMap(additionalHpHardnessBt, (k, v) -> v.toStringWithName(k))),
+                        joinWithPrefix(", ", "**Immunities** ", immunities),
+                        joinWithPrefix(", ", "**Resistances** ", resistances),
+                        joinWithPrefix(", ", "**Weaknesses** ", weaknesses)));
     }
 
     /**

@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e.qute;
 import static dev.ebullient.convert.StringUtil.flatJoin;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinWithPrefix;
+import static dev.ebullient.convert.StringUtil.parenthesize;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,7 +188,7 @@ public class QuteDeity extends Pf2eQuteBase {
 
         public String toString() {
             return "**%s**: %s %s%s, **Damage** %s %s".formatted(
-                    actionType, activityType, name, joinWithPrefix(", ", traits, " (", ")"),
+                    actionType, activityType, name, parenthesize(join(", ", traits)),
                     damage, Optional.ofNullable(note).orElse("")).trim();
         }
     }

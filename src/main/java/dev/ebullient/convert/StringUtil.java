@@ -57,30 +57,30 @@ public class StringUtil {
     }
 
     /**
-     * {@link #joinWithPrefix(String, Collection, String, String)} with an empty suffix.
+     * Like {@link #joinWithPrefix(String, String, Collection)} but accept vararg inputs. This is mostly to get around
+     * being unable to pass null values to {@code List.of}.
      *
-     * @see #joinWithPrefix(String, Collection, String)
+     * @see #joinWithPrefix(String, String, Collection)
+     * @see #join(String, Object, Object...)
      */
-    public static String joinWithPrefix(String joiner, Collection<?> list, String prefix) {
-        return joinWithPrefix(joiner, list, prefix, null);
+    public static String joinWithPrefix(String joiner, String prefix, Object o1, Object... rest) {
+        List<Object> args = new ArrayList<>();
+        args.add(o1);
+        args.addAll(Arrays.asList(rest));
+        return joinWithPrefix(joiner, prefix, args);
     }
 
     /**
-     * Like {@link #join(String, Collection)} but add a prefix (and optionally a suffix) to the resulting string if
-     * it's non-empty.
+     * Like {@link #join(String, Collection)} but add a prefix to the resulting string if it's non-empty.
+     *
+     * @see #join(String, Collection)
      */
-    public static String joinWithPrefix(String joiner, Collection<?> list, String prefix, String suffix) {
+    public static String joinWithPrefix(String joiner, String prefix, Collection<?> list) {
         String s = join(joiner, list);
         if (s.isEmpty()) {
             return "";
         }
-        if (isPresent(prefix)) {
-            s = prefix + s;
-        }
-        if (isPresent(suffix)) {
-            s += suffix;
-        }
-        return s;
+        return isPresent(prefix) ? prefix + s : s;
     }
 
     /**
