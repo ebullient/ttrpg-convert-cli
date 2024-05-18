@@ -629,7 +629,7 @@ public interface Pf2eTypeReader extends JsonSource {
                     effects,
                     multilineEffect,
                     noMAP.booleanOrDefault(node, false) ? List.of() : List.of("no multiple attack penalty"),
-                    attackData -> convert.renderInlineTemplate(attackData, null));
+                    convert);
         }
     }
 

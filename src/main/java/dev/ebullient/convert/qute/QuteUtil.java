@@ -74,13 +74,8 @@ public interface QuteUtil {
         return Pf2eIndexType.syntheticGroup;
     }
 
-    /** A QuteUtil which can be rendered as an individual component. */
-    interface Renderable extends QuteUtil {
-        /** Return a function which converts a QuteUtil object into a rendered string representing that object */
-        Function<QuteUtil, String> _renderer();
-
-        default String render() {
-            return _renderer().apply(this);
-        }
+    interface Renderable {
+        /** Return this object rendered using its template. */
+        String render();
     }
 }
