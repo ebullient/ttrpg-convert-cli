@@ -144,8 +144,8 @@ public class Json2QuteDeity extends Json2QuteBase {
         avatar.attacks = Stream.concat(
                 Pf2eDeity.melee.streamFrom(avatarNode).map(n -> Map.entry(n, AttackRangeType.MELEE)),
                 Pf2eDeity.ranged.streamFrom(avatarNode).map(n -> Map.entry(n, AttackRangeType.RANGED)))
-            .map(e -> buildAvatarAttack(e.getKey(), tags, e.getValue()))
-            .toList();
+                .map(e -> buildAvatarAttack(e.getKey(), tags, e.getValue()))
+                .toList();
         avatar.ability = Pf2eDeity.ability.streamFrom(avatarNode)
                 .map(this::buildAvatarAbility)
                 .collect(Collectors.toList());
@@ -165,17 +165,17 @@ public class Json2QuteDeity extends Json2QuteBase {
         Pf2eDeity.traitNote.getTextFrom(actionNode).ifPresent(traits::add);
 
         return new QuteInlineAttack(
-            Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),
-            Pf2eActivity.single.toQuteActivity(this, null),
-            rangeType,
-            Pf2eWeaponData.getDamageString(actionNode, this),
-            Stream.of(Pf2eWeaponData.damageType, Pf2eWeaponData.damageType2)
-                .map(field -> field.getTextOrEmpty(actionNode))
-                .filter(StringUtil::isPresent)
-                .toList(),
-            traits,
-            Pf2eDeity.note.replaceTextFrom(actionNode, this),
-            attackData -> renderInlineTemplate(attackData, null));
+                Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),
+                Pf2eActivity.single.toQuteActivity(this, null),
+                rangeType,
+                Pf2eWeaponData.getDamageString(actionNode, this),
+                Stream.of(Pf2eWeaponData.damageType, Pf2eWeaponData.damageType2)
+                        .map(field -> field.getTextOrEmpty(actionNode))
+                        .filter(StringUtil::isPresent)
+                        .toList(),
+                traits,
+                Pf2eDeity.note.replaceTextFrom(actionNode, this),
+                this);
     }
 
     String commandmentToString(List<String> edictOrAnathema) {

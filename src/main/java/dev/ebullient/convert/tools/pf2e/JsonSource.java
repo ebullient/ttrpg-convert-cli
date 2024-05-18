@@ -317,7 +317,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendAttack(List<String> text, JsonNode node) {
-        text.add("\n" + Pf2eTypeReader.Pf2eAttack.createInlineAttack(node, this).render());
+        text.add(Pf2eTypeReader.Pf2eAttack.createInlineAttack(node, this).toString());
     }
 
     /** Internal */
