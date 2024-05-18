@@ -54,7 +54,7 @@ Choose whichever you are the most comfortable with:
 
 - **Using Windows?** See the [Windows README](README-WINDOWS.md)
 - `jbang`: [Use JBang!][jbang] (hides Java; sets up command aliases)
-- `brew`: [Use Homebrew (MacOS or Linux)][brew] (hides Java; sets up command aliases)
+- `brew`: [Use Homebrew (MacOS or Linux)][brew] (uses platform binaries)
 - `bin`: [Use a pre-built platform binary][bin] (no Java required)
 - `jar`: [Use Java to run the jar][jar]
 - `src`: [Build from source][src]
@@ -62,11 +62,11 @@ Choose whichever you are the most comfortable with:
 | Platform       | Options  |
 |----------------|----------|
 |  Linux         | [jbang][], [brew][], [bin][], [jar][], [src][] |
-|  Mac (Arm)     | [jbang][], [brew][], [bin][], [jar][], [src][] |
-|  Mac (Intel)   | [jbang][], [brew][], [bin][], [jar][], [src][] |
+|  Mac (Arm)     | [brew][], [jbang][], [bin][], [jar][], [src][] |
+|  Mac (Intel)   | [brew][], [jbang][], [bin][], [jar][], [src][] |
 |  Windows       | [📝](README-WINDOWS.md), [jbang][], [bin][], [jar][], [src][]  |
 |  Windows (Old) | [📝](README-WINDOWS.md), [jbang][], [jar][], [src][]  |
-|  Windows (WSL) | [jbang][], [brew][], [jar][], [src][] |
+|  Windows (WSL) | [brew][], [jbang][], [jar][], [src][] |
 
 [jbang]: ./docs/alternateRun.md#use-jbang
 [brew]: ./docs/alternateRun.md#use-homebrew
