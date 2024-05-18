@@ -57,12 +57,11 @@ public class QuteInlineAffliction extends Pf2eQuteNote {
 
     /**
      * Pf2eTools affliction stage attributes.
+     *
+     * @param text Formatted text. Affliction stage
+     * @param duration Formatted text. Affliction duration
      */
     @TemplateData
-    public static class QuteAfflictionStage {
-        /** Formatted text. Affliction stage */
-        public String text;
-        /** Formatted text. Affliction duration */
-        public String duration;
+    public record QuteAfflictionStage(String duration, String text) {
     }
 }
