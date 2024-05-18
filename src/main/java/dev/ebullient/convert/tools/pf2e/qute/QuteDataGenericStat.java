@@ -18,7 +18,7 @@ public interface QuteDataGenericStat extends QuteUtil {
 
     /** Return the value formatted with a leading +/-. */
     default String bonus() {
-        return "%+d".formatted(value());
+        return value() == null ? "" : "%+d".formatted(value());
     }
 
     /** Return notes formatted as space-delimited parenthesized strings. */

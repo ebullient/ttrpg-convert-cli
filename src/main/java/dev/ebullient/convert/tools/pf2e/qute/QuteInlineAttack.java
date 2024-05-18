@@ -39,6 +39,17 @@ public record QuteInlineAttack(
         Collection<String> damageTypes, Collection<String> traits, List<String> effects, String multilineEffect,
         List<String> notes, Function<QuteUtil, String> _renderer) implements QuteDataGenericStat, QuteUtil.Renderable {
 
+    public QuteInlineAttack(
+        String name, QuteDataActivity activity, AttackRangeType rangeType, String damage,
+        Collection<String> damageTypes, Collection<String> traits, String note,
+        Function<QuteUtil, String> _renderer
+    ) {
+        this(
+            name, activity, rangeType, null,
+            damage, damageTypes, traits,
+            List.of(), null, note == null ? List.of() : List.of(note), _renderer);
+    }
+
     @Override
     public Integer value() {
         return attackBonus;
