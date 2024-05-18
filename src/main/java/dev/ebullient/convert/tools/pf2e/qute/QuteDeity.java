@@ -138,8 +138,7 @@ public class QuteDeity extends Pf2eQuteBase {
         public QuteDataSpeed speed;
         public List<String> abilities;
         public String shield;
-        public List<QuteDivineAvatarAction> melee;
-        public List<QuteDivineAvatarAction> ranged;
+        public List<QuteInlineAttack> attacks;
         public Collection<NamedText> ability;
 
         /**
@@ -161,54 +160,10 @@ public class QuteDeity extends Pf2eQuteBase {
          */
         @Override
         public String toString() {
-            String speedText = speed == null ? ""
+            String speedText = speed == null
+                    ? ""
                     : join(", ", "Speed %s".formatted(speed.formattedSpeeds()), speed.formattedNotes());
-            return "**" + name + "** " + flatJoin("; ", List.of(speedText, shield), melee, ranged, ability);
-        }
-    }
-
-    /**
-     * Pf2eTools Divine avatar action attributes
-     *
-     * <p>
-     * This data object provides a default mechanism for creating
-     * a marked up string based on the attributes that are present.
-     * To use it, reference it directly: `{resource.actionType}`.
-     * </p>
-     */
-    @TemplateData
-    public static class QuteDivineAvatarAction implements QuteUtil {
-        public String actionType;
-        public String name;
-        public QuteDataActivity activityType;
-        public Collection<String> traits;
-        public String range;
-        public String damage;
-        public String note;
-
-        public String toString() {
-            return "**%s**: %s %s%s, **Damage** %s %s".formatted(
-                    actionType, activityType, name, parenthesize(join(", ", traits)),
-                    damage, Optional.ofNullable(note).orElse("")).trim();
-        }
-    }
-
-    /**
-     * Pf2eTools divine avatar ability attributes
-     *
-     * <p>
-     * This data object provides a default mechanism for creating
-     * a marked up string based on the attributes that are present.
-     * To use it, reference it directly: `{resource.actionType}`.
-     * </p>
-     */
-    @TemplateData
-    public static class QuteDivineAvatarAbility {
-        public String name;
-        public String text;
-
-        public String toString() {
-            return "**%s**: %s".formatted(name, text);
+            return "**" + name + "** " + flatJoin("; ", List.of(speedText, shield), attacks, ability);
         }
     }
 

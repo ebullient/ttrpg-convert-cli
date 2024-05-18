@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -19,6 +21,8 @@ import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack.AttackRangeType;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteDeity extends Json2QuteBase {
@@ -137,12 +141,11 @@ public class Json2QuteDeity extends Json2QuteBase {
         avatar.shield = Pf2eDeity.shield.getIntFrom(avatarNode)
                 .map("shield (%d Hardness, can't be damaged)"::formatted).orElse(null);
 
-        avatar.melee = Pf2eDeity.melee.streamFrom(avatarNode)
-                .map(n -> buildAvatarAction(n, tags))
-                .collect(Collectors.toList());
-        avatar.ranged = Pf2eDeity.ranged.streamFrom(avatarNode)
-                .map(n -> buildAvatarAction(n, tags))
-                .collect(Collectors.toList());
+        avatar.attacks = Stream.concat(
+                Pf2eDeity.melee.streamFrom(avatarNode).map(n -> Map.entry(n, AttackRangeType.MELEE)),
+                Pf2eDeity.ranged.streamFrom(avatarNode).map(n -> Map.entry(n, AttackRangeType.RANGED)))
+            .map(e -> buildAvatarAttack(e.getKey(), tags, e.getValue()))
+            .toList();
         avatar.ability = Pf2eDeity.ability.streamFrom(avatarNode)
                 .map(this::buildAvatarAbility)
                 .collect(Collectors.toList());
@@ -156,42 +159,23 @@ public class Json2QuteDeity extends Json2QuteBase {
                 SourceField.entries.transformTextFrom(abilityNode, "; ", this));
     }
 
-    private QuteDeity.QuteDivineAvatarAction buildAvatarAction(JsonNode actionNode, Tags tags) {
-        QuteDeity.QuteDivineAvatarAction action = new QuteDeity.QuteDivineAvatarAction();
+    private QuteInlineAttack buildAvatarAttack(JsonNode actionNode, Tags tags, AttackRangeType rangeType) {
+        Collection<String> traits = collectTraitsFrom(actionNode, tags);
+        traits.addAll(Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()));
+        Pf2eDeity.traitNote.getTextFrom(actionNode).ifPresent(traits::add);
 
-        action.name = SourceField.name.getTextOrDefault(actionNode, "attack");
-
-        action.traits = collectTraitsFrom(actionNode, tags);
-        action.traits.addAll(Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()));
-        String traitNote = Pf2eDeity.traitNote.getTextOrEmpty(actionNode);
-        if (traitNote != null) {
-            action.traits.add(traitNote);
-        }
-        String ranged = findRange(actionNode);
-
-        action.actionType = ranged == null ? "Melee" : "Ranged";
-        action.activityType = Pf2eActivity.single.toQuteActivity(this, null);
-        action.damage = Pf2eWeaponData.getDamageString(actionNode, this);
-        action.note = replaceText(Pf2eDeity.note.getTextOrEmpty(actionNode));
-        return action;
-    }
-
-    private String findRange(JsonNode actionNode) {
-        int range = Pf2eDeity.range.intOrDefault(actionNode, 0);
-        int reload = Pf2eDeity.reload.intOrDefault(actionNode, 0);
-        boolean rangedIncrement = Pf2eDeity.rangedIncrement.booleanOrDefault(actionNode, false);
-        if (range == 0) {
-            return null;
-        }
-
-        String rangeString = String.format("{@trait range||range %s%s feet}",
-                (reload > 0 || rangedIncrement) ? "increment " : "",
-                range);
-
-        if (reload > 0) {
-            rangeString += String.format(", {@trait reload||reload %s", reload);
-        }
-        return replaceText(rangeString);
+        return new QuteInlineAttack(
+            Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),
+            Pf2eActivity.single.toQuteActivity(this, null),
+            rangeType,
+            Pf2eWeaponData.getDamageString(actionNode, this),
+            Stream.of(Pf2eWeaponData.damageType, Pf2eWeaponData.damageType2)
+                .map(field -> field.getTextOrEmpty(actionNode))
+                .filter(StringUtil::isPresent)
+                .toList(),
+            traits,
+            Pf2eDeity.note.replaceTextFrom(actionNode, this),
+            attackData -> renderInlineTemplate(attackData, null));
     }
 
     String commandmentToString(List<String> edictOrAnathema) {

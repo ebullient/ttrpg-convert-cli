@@ -45,9 +45,7 @@ title: {avatar.name}
 {#if avatar.speed or avatar.shield}
 - {#if avatar.speed}Speed {avatar.speed}{#if avatar.shield}; {/if}{/if}{avatar.shield or ''}
 {/if}
-{#each avatar.melee}
-- {it}
-{/each}{#each avatar.ranged}
+{#each avatar.attacks}
 - {it}
 {/each}{#each avatar.ability}
 - {it}
