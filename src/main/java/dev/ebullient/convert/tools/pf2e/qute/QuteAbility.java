@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
+import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -53,12 +54,12 @@ public class QuteAbility extends Pf2eQuteNote {
     /** Ability ({@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity activity/activation details}) */
     public final QuteDataActivity activity;
 
-    public QuteAbility(String name, List<String> text, Tags tags,
+    public QuteAbility(Pf2eSources sources, String name, List<String> text, Tags tags,
             Collection<String> traits, QuteDataActivity activity,
             String components, String requirements,
             String cost, String trigger, String frequency, String special, String note,
             boolean embedded) {
-        super(Pf2eIndexType.ability, name, null, text, tags);
+        super(Pf2eIndexType.ability, sources, name, text, tags);
 
         this.traits = traits;
         this.activity = activity;

@@ -17,10 +17,11 @@ public class Json2QuteAbility extends Json2QuteBase {
 
     @Override
     protected QuteAbility buildQuteNote() {
-        return Pf2eAbility.createAbility(rootNode, this, false);
+        return Pf2eAbility.createAbility(rootNode, this, sources);
     }
 
     public enum Pf2eAbility implements JsonNodeReader {
+        name,
         activity,
         components,
         cost,
@@ -30,53 +31,37 @@ public class Json2QuteAbility extends Json2QuteBase {
         range,
         requirements,
         trigger,
-        special;
+        special,
+        entries;
 
         public static QuteAbility createEmbeddedAbility(JsonNode node, JsonSource convert) {
-            return createAbility(node, convert, true);
+            return createAbility(node, convert, null);
         }
 
-        private static QuteAbility createAbility(JsonNode node, JsonSource convert, boolean embedded) {
-            boolean pushed = convert.parseState().push(node);
-            try {
-                String name = SourceField.name.getTextOrDefault(node, "Activate");
+        private static QuteAbility createAbility(JsonNode node, JsonSource convert, Pf2eSources sources) {
+            List<String> abilityText = new ArrayList<>();
+            convert.appendToText(abilityText, entries.getFrom(node), null);
 
-                List<String> abilityText = new ArrayList<>();
-                convert.appendToText(abilityText, SourceField.entries.getFrom(node), null);
-
-                range.debugIfExists(node, convert.tui());
-
-                final String abilitySrc = convert.parseState().getSource(Pf2eIndexType.ability);
-
-                // handle abilities in entries
-                String freq = convert.index().getFrequency(frequency.getFrom(node));
-                if (freq == null) {
-                    freq = convert.index().getFrequency(node);
-                }
-
-                Tags tags = new Tags();
-                return new QuteAbility(
-                        name, abilityText, tags, convert.collectTraitsFrom(node, tags),
-                        Pf2eTypeReader.getQuteActivity(node, Pf2eFeat.activity, convert),
-                        components.transformTextFrom(node, ", ", convert),
-                        requirements.replaceTextFrom(node, convert),
-                        cost.replaceTextFrom(node, convert),
-                        trigger.replaceTextFrom(node, convert),
-                        freq,
-                        special.replaceTextFrom(node, convert),
-                        note.replaceTextFrom(node, convert),
-                        embedded) {
-                    @Override
-                    public String targetFile() {
-                        if (!indexType().defaultSource().sameSource(abilitySrc)) {
-                            return getName() + "-" + abilitySrc;
-                        }
-                        return getName();
-                    }
-                };
-            } finally {
-                convert.parseState().pop(pushed);
+            // handle abilities in entries
+            String freq = convert.index().getFrequency(frequency.getFrom(node));
+            if (freq == null) {
+                freq = convert.index().getFrequency(node);
             }
+
+            Tags tags = new Tags();
+            return new QuteAbility(
+                    sources,
+                    name.getTextOrDefault(node, "Activate"),
+                    abilityText, tags, convert.collectTraitsFrom(node, tags),
+                    Pf2eTypeReader.getQuteActivity(node, Pf2eFeat.activity, convert),
+                    components.transformTextFrom(node, ", ", convert),
+                    requirements.replaceTextFrom(node, convert),
+                    cost.replaceTextFrom(node, convert),
+                    trigger.replaceTextFrom(node, convert),
+                    freq,
+                    special.replaceTextFrom(node, convert),
+                    note.replaceTextFrom(node, convert),
+                    sources == null);
         }
     }
 }
