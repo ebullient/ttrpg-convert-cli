@@ -27,8 +27,11 @@ public class QuteAction extends Pf2eQuteBase {
     public final String requirements;
     /** Prerequisite trait or characteristic for performing this action */
     public final String prerequisites;
-    /** How often this action can be used */
-    public final String frequency;
+    /**
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency QuteDataFrequency}.
+     * How often this action can be used/activated. Use directly to get a formatted string.
+     */
+    public final QuteDataFrequency frequency;
     /** The cost of using this action */
     public final String cost;
     /** Type of action (as {@link dev.ebullient.convert.tools.pf2e.qute.QuteAction.ActionType ActionType}) */
@@ -38,7 +41,7 @@ public class QuteAction extends Pf2eQuteBase {
 
     public QuteAction(Pf2eSources sources, List<String> text, Tags tags,
             String cost, String trigger, List<String> aliases, Collection<String> traits,
-            String prerequisites, String requirements, String frequency,
+            String prerequisites, String requirements, QuteDataFrequency frequency,
             QuteDataActivity activity, ActionType actionType) {
         super(sources, text, tags);
         this.trigger = trigger;

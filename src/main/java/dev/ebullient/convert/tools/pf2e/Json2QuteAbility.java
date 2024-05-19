@@ -42,12 +42,6 @@ public class Json2QuteAbility extends Json2QuteBase {
             List<String> abilityText = new ArrayList<>();
             convert.appendToText(abilityText, entries.getFrom(node), null);
 
-            // handle abilities in entries
-            String freq = convert.index().getFrequency(frequency.getFrom(node));
-            if (freq == null) {
-                freq = convert.index().getFrequency(node);
-            }
-
             Tags tags = new Tags();
             return new QuteAbility(
                     sources,
@@ -58,7 +52,7 @@ public class Json2QuteAbility extends Json2QuteBase {
                     requirements.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert),
                     trigger.replaceTextFrom(node, convert),
-                    freq,
+                    Pf2eFrequency.getFrequency(frequency.getFrom(node), convert),
                     special.replaceTextFrom(node, convert),
                     note.replaceTextFrom(node, convert),
                     sources == null);
