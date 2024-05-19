@@ -160,7 +160,7 @@ public interface JsonNodeReader {
 
     default Optional<Integer> getIntFrom(JsonNode source) {
         JsonNode result = getFrom(source);
-        return result == null ? Optional.empty() : Optional.of(result.asInt());
+        return result == null || !result.isInt() ? Optional.empty() : Optional.of(result.asInt());
     }
 
     default int getIntOrThrow(JsonNode x) {
