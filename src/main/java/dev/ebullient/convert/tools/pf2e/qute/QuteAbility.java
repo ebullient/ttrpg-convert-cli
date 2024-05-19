@@ -38,8 +38,11 @@ public class QuteAbility extends Pf2eQuteNote {
     public final String trigger;
     /** Formatted string. Requirements for activating this ability */
     public final String requirements;
-    /** How often this ability can be used/activated */
-    public final String frequency;
+    /**
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency QuteDataFrequency}.
+     * How often this ability can be used/activated. Use directly to get a formatted string.
+     */
+    public final QuteDataFrequency frequency;
     /** The cost of using this ability */
     public final String cost;
     /** Caveats related to using this ability (embedded/inline only) */
@@ -57,7 +60,7 @@ public class QuteAbility extends Pf2eQuteNote {
     public QuteAbility(Pf2eSources sources, String name, List<String> text, Tags tags,
             Collection<String> traits, QuteDataActivity activity,
             String components, String requirements,
-            String cost, String trigger, String frequency, String special, String note,
+            String cost, String trigger, QuteDataFrequency frequency, String special, String note,
             boolean embedded) {
         super(Pf2eIndexType.ability, sources, name, text, tags);
 

@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.numberAsWords;
 import static dev.ebullient.convert.StringUtil.parenthesize;
 import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
@@ -26,6 +27,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
@@ -40,6 +42,7 @@ public interface Pf2eTypeReader extends JsonSource {
         activity,
         actionType,
         cost,
+        frequency,
         info,
         prerequisites,
         trigger
@@ -344,6 +347,7 @@ public interface Pf2eTypeReader extends JsonSource {
         archetype, // child of featType
         cost,
         featType,
+        frequency,
         leadsTo,
         level,
         prerequisites,
@@ -590,7 +594,6 @@ public interface Pf2eTypeReader extends JsonSource {
      */
     enum Pf2eAttack implements JsonNodeReader {
         name,
-        type,
         attack,
         activity,
         damage,
@@ -598,11 +601,6 @@ public interface Pf2eTypeReader extends JsonSource {
         range,
         types,
         noMAP;
-
-        /** Returns true if the given source is an attack block. */
-        public static boolean isAttackBlock(JsonNode source) {
-            return type.getTextFrom(source).orElse("").equals("attack");
-        }
 
         public static QuteInlineAttack createInlineAttack(JsonNode node, JsonSource convert) {
             List<String> effects = new ArrayList<>();
@@ -694,138 +692,37 @@ public interface Pf2eTypeReader extends JsonSource {
         };
     }
 
-    default String getFrequency(JsonNode node) {
-        JsonNode frequency = Field.frequency.getFrom(node);
-        if (frequency == null) {
-            return null;
-        }
-        String special = Field.special.getTextOrNull(frequency);
-        if (special != null) {
-            return replaceText(special);
-        }
+    enum Pf2eFrequency implements JsonNodeReader {
+        special,
+        number,
+        recurs,
+        overcharge,
+        interval,
+        unit,
+        customUnit;
 
-        String number = numberToText(frequency, Field.number, true);
-        String unit = Field.unit.getTextOrEmpty(frequency);
-        String customUnit = Field.customUnit.getTextOrDefault(frequency, unit);
-        Optional<Integer> interval = Field.interval.getIntFrom(frequency);
-        boolean overcharge = Field.overcharge.booleanOrDefault(frequency, false);
-        boolean recurs = Field.recurs.booleanOrDefault(frequency, false);
-
-        return String.format("%s %s %s%s%s",
-                number,
-                recurs ? "every" : "per",
-                interval.map(integer -> integer + " ").orElse(""),
-                interval.isPresent() && interval.get() > 2 ? unit + "s" : customUnit,
-                overcharge ? ", plus overcharge" : "");
-    }
-
-    default String numberToText(JsonNode baseNode, Field field, boolean freq) {
-        JsonNode node = field.getFrom(baseNode);
-        if (node == null) {
-            throw new IllegalArgumentException("undefined or null object");
-        } else if (node.isTextual()) {
-            return node.asText();
-        }
-        int number = node.asInt();
-        String numString = intToString(number, freq);
-
-        return (number < 0 ? "negative " : "") + numString;
-    }
-
-    default String intToString(int number, boolean freq) {
-        int abs = Math.abs(number);
-        if (abs >= 100) {
-            return abs + "";
-        }
-        switch (abs) {
-            case 0 -> {
-                return "zero";
+        public static QuteDataFrequency getFrequency(JsonNode node, JsonTextConverter<?> convert) {
+            if (node == null) {
+                return null;
             }
-            case 1 -> {
-                return freq ? "once" : "one";
+            if (special.getTextFrom(node).isPresent()) {
+                return new QuteDataFrequency(special.replaceTextFrom(node, convert));
             }
-            case 2 -> {
-                return freq ? "twice" : "two";
-            }
-            case 3 -> {
-                return "three";
-            }
-            case 4 -> {
-                return "four";
-            }
-            case 5 -> {
-                return "five";
-            }
-            case 6 -> {
-                return "six";
-            }
-            case 7 -> {
-                return "seven";
-            }
-            case 8 -> {
-                return "eight";
-            }
-            case 9 -> {
-                return "nine";
-            }
-            case 10 -> {
-                return "ten";
-            }
-            case 11 -> {
-                return "eleven";
-            }
-            case 12 -> {
-                return "twelve";
-            }
-            case 13 -> {
-                return "thirteen";
-            }
-            case 14 -> {
-                return "fourteen";
-            }
-            case 15 -> {
-                return "fifteen";
-            }
-            case 16 -> {
-                return "sixteen";
-            }
-            case 17 -> {
-                return "seventeen";
-            }
-            case 18 -> {
-                return "eighteen";
-            }
-            case 19 -> {
-                return "nineteen";
-            }
-            case 20 -> {
-                return "twenty";
-            }
-            case 30 -> {
-                return "thirty";
-            }
-            case 40 -> {
-                return "forty";
-            }
-            case 50 -> {
-                return "fifty";
-            }
-            case 60 -> {
-                return "sixty";
-            }
-            case 70 -> {
-                return "seventy";
-            }
-            case 80 -> {
-                return "eighty";
-            }
-            case 90 -> {
-                return "ninety";
-            }
-            default -> {
-                int r = abs % 10;
-                return intToString(abs - r, freq) + "-" + intToString(r, freq);
-            }
+            Integer freqNumber = number.getIntFrom(node).orElseGet(() -> {
+                // Handle a data issue where some rules entries deviate from schema with words instead of integers.
+                String freqString = number.getTextOrThrow(node).trim();
+                if (freqString.equals("once")) {
+                    return 1;
+                }
+                convert.tui().errorf("Got unexpected frequency value \"%s\"", freqString);
+                return 0;
+            });
+            return new QuteDataFrequency(
+                    freqNumber,
+                    interval.getIntFrom(node).orElse(null),
+                    unit.getTextFrom(node).orElseGet(() -> customUnit.getTextOrThrow(node)),
+                    recurs.booleanOrDefault(node, false),
+                    overcharge.booleanOrDefault(node, false));
         }
     }
 

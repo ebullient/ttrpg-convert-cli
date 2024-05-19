@@ -113,8 +113,11 @@ public class QuteItem extends Pf2eQuteBase {
         public String components;
         /** Formatted string. Trigger to activate this item */
         public String trigger;
-        /** Formatted string. How often this item can be used/activated */
-        public String frequency;
+        /**
+         * {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency QuteDataFrequency}.
+         * How often this item can be used/activated. Use directly to get a formatted string.
+         */
+        public QuteDataFrequency frequency;
         /** Formatted string. Requirements for activating this item */
         public String requirements;
 

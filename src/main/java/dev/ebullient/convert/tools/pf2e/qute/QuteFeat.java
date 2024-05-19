@@ -32,7 +32,11 @@ public class QuteFeat extends Pf2eQuteBase {
 
     public final String level;
     public final String access;
-    public final String frequency;
+    /**
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency QuteDataFrequency}.
+     * How often this feat can be used/activated. Use directly to get a formatted string.
+     */
+    public final QuteDataFrequency frequency;
     /** Activity/Activation cost (as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity QuteDataActivity}) */
     public final QuteDataActivity activity;
     public final String trigger;
@@ -51,7 +55,7 @@ public class QuteFeat extends Pf2eQuteBase {
 
     public QuteFeat(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases,
-            String level, String access, String frequency, QuteDataActivity activity, String trigger,
+            String level, String access, QuteDataFrequency frequency, QuteDataActivity activity, String trigger,
             String cost, String requirements, String prerequisites, String special, String note,
             List<String> leadsTo, boolean embedded) {
         super(sources, text, tags);
