@@ -39,14 +39,13 @@ public class Json2QuteAbility extends Json2QuteBase {
         }
 
         private static QuteAbility createAbility(JsonNode node, JsonSource convert, Pf2eSources sources) {
-            List<String> abilityText = new ArrayList<>();
-            convert.appendToText(abilityText, entries.getFrom(node), null);
-
             Tags tags = new Tags();
             return new QuteAbility(
                     sources,
                     name.getTextOrDefault(node, "Activate"),
-                    abilityText, tags, convert.collectTraitsFrom(node, tags),
+                    entries.transformTextFrom(node, "\n", convert),
+                    tags,
+                    convert.collectTraitsFrom(node, tags),
                     Pf2eTypeReader.getQuteActivity(node, Pf2eFeat.activity, convert),
                     components.transformTextFrom(node, ", ", convert),
                     requirements.replaceTextFrom(node, convert),
@@ -55,7 +54,7 @@ public class Json2QuteAbility extends Json2QuteBase {
                     Pf2eFrequency.getFrequency(frequency.getFrom(node), convert),
                     special.replaceTextFrom(node, convert),
                     note.replaceTextFrom(node, convert),
-                    sources == null);
+                    sources == null, convert);
         }
     }
 }

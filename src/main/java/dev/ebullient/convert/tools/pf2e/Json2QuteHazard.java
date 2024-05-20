@@ -9,8 +9,8 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
+import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
 
 public class Json2QuteHazard extends Json2QuteBase {
 
@@ -57,9 +57,9 @@ public class Json2QuteHazard extends Json2QuteBase {
                 .map(n -> Pf2eAffliction.isAfflictionBlock(n)
                         ? Pf2eAffliction.createInlineAffliction(n, this)
                         : Pf2eAbility.createEmbeddedAbility(n, this))
-                .map(obj -> obj instanceof QuteInlineAffliction
-                        ? renderInlineTemplate(obj, obj.indexType().name())
-                        : renderEmbeddedTemplate(obj, obj.indexType().name()))
+                .map(obj -> obj instanceof QuteAbility
+                        ? ((QuteAbility) obj).render()
+                        : renderInlineTemplate(obj, obj.indexType().name()))
                 .toList();
     }
 
