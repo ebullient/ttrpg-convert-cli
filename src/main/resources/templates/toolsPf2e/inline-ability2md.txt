@@ -1,3 +1,4 @@
+```ad-embed-ability
 {#if resource.hasDetails }
 title: **{resource.name}** {#if resource.activity}{resource.activity}{/if}{#if resource.components} {resource.components}{/if}{#if resource.traits} ({resource.bareTraitList}){/if}
 {#if resource.note }
@@ -21,3 +22,4 @@ Source: {resource.source}*
 {#else}
 title: **{resource.name}** {resource.text}
 {/if}
+```

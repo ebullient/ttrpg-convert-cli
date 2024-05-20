@@ -29,6 +29,11 @@ public class Pf2eQuteNote extends QuteNote {
         this.type = type;
     }
 
+    public Pf2eQuteNote(Pf2eIndexType type, Pf2eSources sources, String name, String text, Tags tags) {
+        super(sources, name, sources != null ? sources.getSourceText() : null, text, tags);
+        this.type = type;
+    }
+
     public Pf2eQuteNote(Pf2eIndexType type, String name, String sourceText, String text, Tags tags) {
         super(name, sourceText, text, tags);
         this.type = type;

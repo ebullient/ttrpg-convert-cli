@@ -1,13 +1,10 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -18,15 +15,15 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
+import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eAttack;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAffliction.QuteAfflictionStage;
 
 public interface JsonSource extends JsonTextReplacement {
 
@@ -119,9 +116,9 @@ public interface JsonSource extends JsonTextReplacement {
                     case quote -> appendQuote(text, node);
 
                     // special inline types
-                    case ability -> appendAbility(text, node);
+                    case ability -> appendRenderable(text, Pf2eAbility.createEmbeddedAbility(node, this));
                     case affliction -> appendAffliction(text, node);
-                    case attack -> appendAttack(text, node);
+                    case attack -> appendRenderable(text, Pf2eAttack.createInlineAttack(node, this));
                     case data -> embedData(text, node);
                     case lvlEffect -> appendLevelEffect(text, node);
                     case successDegree -> appendSuccessDegree(text, node);
@@ -304,20 +301,13 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     /** Internal */
-    default void appendAbility(List<String> text, JsonNode node) {
-        renderEmbeddedTemplate(text,
-                Pf2eAbility.createEmbeddedAbility(node, this),
-                "ability", List.of());
-    }
-
-    /** Internal */
     default void appendAffliction(List<String> text, JsonNode node) {
-        renderInlineTemplate(text, Pf2eAffliction.createInlineAffliction(node, this), "affliction");
+        appendRenderable(text, Pf2eAffliction.createInlineAffliction(node, this));
     }
 
     /** Internal */
-    default void appendAttack(List<String> text, JsonNode node) {
-        text.add(Pf2eTypeReader.Pf2eAttack.createInlineAttack(node, this).toString());
+    private void appendRenderable(List<String> text, QuteUtil.Renderable renderable) {
+        text.addAll(List.of(renderable.render().split("\n")));
     }
 
     /** Internal */
@@ -540,11 +530,9 @@ public interface JsonSource extends JsonTextReplacement {
 
         if ("generic".equals(tag)) {
             List<String> inner = embedGenericData(tag, data);
-            String backticks = nestedEmbed(inner);
             maybeAddBlankLine(text);
-            text.add(backticks + "ad-pf2-note");
+            wrapAdmonition(inner, "pf2-note");
             text.addAll(inner);
-            text.add(backticks);
             return;
         } else if (dataType == null) {
             tui().errorf("Unknown data type %s from: %s", tag, dataNode.toString());
@@ -561,6 +549,11 @@ public interface JsonSource extends JsonTextReplacement {
             maybeAddBlankLine(text);
             text.add("!" + link);
             maybeAddBlankLine(text);
+            return;
+        }
+
+        if (dataType.templateName.equals("affliction")) {
+            appendAffliction(text, data);
         } else {
             Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
             if (converted != null) {

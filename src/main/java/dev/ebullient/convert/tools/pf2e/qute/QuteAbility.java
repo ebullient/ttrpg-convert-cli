@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dev.ebullient.convert.qute.QuteUtil;
+import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
@@ -25,7 +27,7 @@ import io.quarkus.qute.TemplateData;
  * </p>
  */
 @TemplateData
-public class QuteAbility extends Pf2eQuteNote {
+public class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderable {
 
     /**
      * Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection.
@@ -57,11 +59,14 @@ public class QuteAbility extends Pf2eQuteNote {
     /** Ability ({@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity activity/activation details}) */
     public final QuteDataActivity activity;
 
-    public QuteAbility(Pf2eSources sources, String name, List<String> text, Tags tags,
+    // Internal only.
+    public final JsonTextConverter<?> _converter;
+
+    public QuteAbility(Pf2eSources sources, String name, String text, Tags tags,
             Collection<String> traits, QuteDataActivity activity,
             String components, String requirements,
             String cost, String trigger, QuteDataFrequency frequency, String special, String note,
-            boolean embedded) {
+            boolean embedded, JsonTextConverter<?> converter) {
         super(Pf2eIndexType.ability, sources, name, text, tags);
 
         this.traits = traits;
@@ -74,6 +79,7 @@ public class QuteAbility extends Pf2eQuteNote {
         this.special = special;
         this.note = note;
         this.embedded = embedded;
+        this._converter = converter;
     }
 
     /** True if an activity (with text), components, or traits are present. */
@@ -114,11 +120,7 @@ public class QuteAbility extends Pf2eQuteNote {
 
     /** Return a comma-separated list of trait links */
     public String getTraitList() {
-        if (traits == null || traits.isEmpty()) {
-            return "";
-        }
-        return traits.stream()
-                .collect(Collectors.joining(", "));
+        return traits == null ? "" : String.join(", ", traits);
     }
 
     /** Return a comma-separated list of de-styled trait links (no title attributes) */
@@ -134,5 +136,15 @@ public class QuteAbility extends Pf2eQuteNote {
     @Override
     public String template() {
         return embedded ? "inline-ability2md.txt" : "ability2md.txt";
+    }
+
+    @Override
+    public String toString() {
+        return render();
+    }
+
+    @Override
+    public String render() {
+        return _converter.renderEmbeddedTemplate(this, null);
     }
 }

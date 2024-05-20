@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -16,11 +17,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteUtil;
+
+import static dev.ebullient.convert.StringUtil.isPresent;
 
 public interface JsonTextConverter<T extends IndexType> {
     public static String DICE_FORMULA = "[ +d\\d-‒]+";
@@ -282,15 +286,19 @@ public interface JsonTextConverter<T extends IndexType> {
      * @param text Text to analyze and maybe add a blank line to
      */
     default void maybeAddBlankLine(List<String> text) {
-        if (text.size() > 0 && !text.get(text.size() - 1).isBlank()) {
+        if (!text.isEmpty() && !text.get(text.size() - 1).isBlank()) {
             text.add("");
         }
     }
 
-    /** Internal / recursive parse */
+    /**
+     * Returns a string which contains the backticks required to create an
+     * admonition around the given {@code content}. Internal / recursive parse.
+     */
     default String nestedEmbed(List<String> content) {
         int embedDepth = content.stream()
-                .filter(s -> s.matches("^`+$"))
+                .map(String::trim)
+                .filter(s -> s.matches("`+"))
                 .map(String::length)
                 .max(Integer::compare).orElse(2);
         char[] ticks = new char[embedDepth + 1];
@@ -401,18 +409,19 @@ public interface JsonTextConverter<T extends IndexType> {
      * @param prepend Text to prepend at beginning of admonition (e.g. title)
      */
     default void renderEmbeddedTemplate(List<String> text, QuteBase resource, String admonition, List<String> prepend) {
-        prepend = prepend == null ? List.of() : prepend; // ensure non-null
         boolean pushed = parseState().push(resource.sources());
         try {
             String rendered = tui().renderEmbedded(resource);
-            List<String> inner = removePreamble(new ArrayList<>(List.of(rendered.split("\n"))));
+            List<String> inner = new ArrayList<>(prepend);
+            inner.addAll(removePreamble(new ArrayList<>(List.of(rendered.split("\n")))));
 
-            String backticks = nestedEmbed(inner);
             maybeAddBlankLine(text);
-            text.add(backticks + "ad-embed-" + admonition);
-            text.addAll(prepend);
+            if (admonition != null) {
+                wrapAdmonition(inner, "embed-" + admonition);
+            } else {
+                balanceBackticks(inner);
+            }
             text.addAll(inner);
-            text.add(backticks);
         } finally {
             parseState().pop(pushed);
         }
@@ -443,14 +452,57 @@ public interface JsonTextConverter<T extends IndexType> {
         List<String> inner = removePreamble(new ArrayList<>(List.of(rendered.split("\n"))));
 
         maybeAddBlankLine(text);
-        if (admonition == null) {
-            text.addAll(inner);
+        if (admonition != null) {
+            wrapAdmonition(inner, "inline-" + admonition);
         } else {
-            String backticks = nestedEmbed(inner);
-            text.add(backticks + "ad-inline-" + admonition);
-            text.addAll(inner);
-            text.add(backticks);
+            balanceBackticks(inner);
         }
+        text.addAll(inner);
+    }
+
+    /** Wrap {@code inner} in an admonition with the name {@code admonition}. */
+    default void wrapAdmonition(List<String> inner, String admonition) {
+        if (admonition == null || admonition.isEmpty() || inner == null || inner.isEmpty()) {
+            return;
+        }
+        String backticks = nestedEmbed(inner);
+        inner.add(0, backticks + "ad-" + admonition);
+        inner.add(inner.size(), backticks);
+    }
+
+    /**
+     * Add backticks to the outermost admonition in {@code inner} so that it
+     * correctly wraps the rest of the text. Has no effect if the first non-empty
+     * line of {@code inner} is not an admonition.
+     */
+    private void balanceBackticks(List<String> inner) {
+        int[] presentIndices = IntStream.range(0, inner.size())
+                .filter(idx -> isPresent(inner.get(idx)))
+                .toArray();
+        if (presentIndices.length < 2) {
+            // We need at least two non-empty lines to have one each for the opening and closing
+            // admonition lines.
+            return;
+        }
+        int firstLineIdx = presentIndices[0];
+        ;
+        String firstLine = inner.get(firstLineIdx);
+        if (!firstLine.matches("```+ad[\\s\\S]+")) {
+            return;
+        }
+        int lastLineIdx = presentIndices[presentIndices.length - 1];
+        String lastLine = inner.get(lastLineIdx);
+        if (!lastLine.matches("```+")) {
+            // we expect the last non-empty line to contain the closing set of backticks
+            tui().debugf("Expected line %d to close backticks but was instead '%s'", lastLineIdx, lastLine);
+            return;
+        }
+        // Must be done in this order so the indices don't change
+        inner.remove(lastLineIdx);
+        inner.remove(firstLineIdx);
+        String backticks = nestedEmbed(inner);
+        inner.add(firstLineIdx, backticks + firstLine.replaceFirst("^`+", ""));
+        inner.add(lastLineIdx, backticks);
     }
 
     String replaceText(String s);
