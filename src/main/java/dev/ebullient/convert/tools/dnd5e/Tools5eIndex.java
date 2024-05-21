@@ -345,7 +345,13 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 TtrpgConfig.sourceToIdMapping(source, id);
             }
         }
+        addSrdEntry(key, node);
+        if (node.has("familiar")) {
+            familiarKeys.add(key);
+        }
+    }
 
+    void addSrdEntry(String key, JsonNode node) {
         if (node.has("srd")) {
             JsonNode srd = node.get("srd");
             if (srd.isTextual()) {
@@ -356,9 +362,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             } else {
                 srdKeys.add(key);
             }
-        }
-        if (node.has("familiar")) {
-            familiarKeys.add(key);
         }
     }
 
@@ -507,6 +510,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 TtrpgValue.indexKey.setIn(sr, srKey);
 
                 nodeIndex.put(srKey, sr);
+                addSrdEntry(srKey, sr);
                 subraces.add(sr);
 
                 // Add expected alias:  {@race Aasimar (Fallen)|VGM}

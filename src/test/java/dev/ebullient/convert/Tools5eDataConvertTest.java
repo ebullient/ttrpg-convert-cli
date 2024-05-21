@@ -60,7 +60,7 @@ public class Tools5eDataConvertTest {
             final Path srd_index = testOutput.resolve("srd-index");
             TestUtils.deleteDir(srd_index);
 
-            LaunchResult result = launcher.launch("--index",
+            LaunchResult result = launcher.launch("--index", "--debug",
                     "-o", srd_index.toString(),
                     TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
                     TestUtils.TEST_RESOURCES.resolve("dice-roller.json").toString(),
