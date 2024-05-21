@@ -140,6 +140,9 @@ public class JsonSourceCopier implements JsonSource {
             }
             SourceField.name.removeFrom(copyFrom);
             SourceField.name.setIn(subraceOut, Json2QuteRace.getSubraceName(raceName, subraceName));
+        } else {
+            Tools5eFields.srd.copy(raceNode, subraceOut);
+            Tools5eFields.basicRules.copy(raceNode, subraceOut);
         }
 
         // merge abilities
@@ -148,7 +151,7 @@ public class JsonSourceCopier implements JsonSource {
             ArrayNode outAbility = (ArrayNode) RaceFields.ability.getFrom(subraceOut);
             // If the base race doesn't have any ability scores, make a set of empty records
             if (RaceFields.ability.existsIn(overwrite) || outAbility == null) {
-                subraceOut.set("ability", RaceFields.ability.getFrom(copyFrom));
+                RaceFields.ability.copy(copyFrom, subraceOut);
             } else if (cpySrAbility.size() != outAbility.size()) {
                 // if (cpy.ability.length !== cpySr.ability.length) throw new Error(`Race and subrace ability array lengths did not match!`);
                 tui().errorf("Error (%s): Unable to merge abilities (different lengths). CopyTo: %s, CopyFrom: %s", subraceOut,
