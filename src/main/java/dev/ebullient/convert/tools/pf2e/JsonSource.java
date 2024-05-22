@@ -552,17 +552,37 @@ public interface JsonSource extends JsonTextReplacement {
             return;
         }
 
-        if (dataType.templateName.equals("affliction")) {
-            appendAffliction(text, data);
-        } else {
-            Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
-            if (converted != null) {
-                renderEmbeddedTemplate(text, converted, tag,
-                        List.of(String.format("title: %s", converted.title()),
-                                "collapse: closed"));
-            } else {
-                tui().errorf("Unable to process data for %s: %s", tag, dataNode.toString());
+        // If this is a self-renderable type, then the admonition may be already included.
+        // (This might be the case anyway, but we know it probably is the case with these).
+        // So try to get the renderable embedded object first, and then add the collapsed
+        // tag to the outermost admonition.
+        QuteUtil.Renderable renderable = switch (dataType) {
+            case ability -> Pf2eAbility.createEmbeddedAbility(data, this);
+            case affliction, curse, disease -> Pf2eAffliction.createInlineAffliction(data, this);
+            default -> null;
+        };
+        if (renderable != null) {
+            List<String> renderedData = new ArrayList<>();
+            appendRenderable(renderedData, renderable);
+            // Make the outermost admonition collapsed, if there is one
+            int[] adIndices = outerAdmonitionIndices(renderedData);
+            if (adIndices != null) {
+                int adStartIdx = adIndices[0];
+                renderedData.add(adStartIdx + 1, "collapse: closed");
             }
+            text.addAll(renderedData);
+            return;
+        }
+
+        // Otherwise, if it's not a self-renderable type, then we fall back to renderEmbeddedTemplate
+        // and add the collapsible admonition ourselves
+        Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
+        if (converted != null) {
+            renderEmbeddedTemplate(text, converted, tag,
+                    List.of(String.format("title: %s", converted.title()),
+                            "collapse: closed"));
+        } else {
+            tui().errorf("Unable to process data for %s: %s", tag, dataNode.toString());
         }
     }
 

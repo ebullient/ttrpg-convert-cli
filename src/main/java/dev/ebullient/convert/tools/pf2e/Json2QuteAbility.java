@@ -6,9 +6,6 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Json2QuteAbility extends Json2QuteBase {
 
     public Json2QuteAbility(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {

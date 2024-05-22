@@ -144,40 +144,20 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
     }
 
     public Pf2eQuteBase convertJson2QuteBase(Pf2eIndex index, JsonNode node) {
-        Pf2eIndexType type = this;
-        switch (this) {
-            // Group: Affliction/Curse/Disease
-            case affliction:
-                type = Pf2eIndexType.fromText(SourceField.type.getTextOrDefault(node, "Disease"));
-            case curse:
-            case disease:
-                return new Json2QuteAffliction(index, type, node).build();
-            // Other type
-            case action:
-                return new Json2QuteAction(index, node).build();
-            case archetype:
-                return new Json2QuteArchetype(index, node).build();
-            case background:
-                return new Json2QuteBackground(index, node).build();
-            case deity:
-                return new Json2QuteDeity(index, node).build();
-            case feat:
-                return new Json2QuteFeat(index, node).build();
-            case hazard:
-                return new Json2QuteHazard(index, node).build();
-            case item:
-                return new Json2QuteItem(index, node).build();
-            case ritual:
-                return new Json2QuteRitual(index, node).build();
-            case spell:
-                return new Json2QuteSpell(index, node).build();
-            case trait:
-                return new Json2QuteTrait(index, node).build();
-            case creature:
-                return new Json2QuteCreature(index, node).build();
-            default:
-                return null;
-        }
+        return switch (this) {
+            case action -> new Json2QuteAction(index, node).build();
+            case archetype -> new Json2QuteArchetype(index, node).build();
+            case background -> new Json2QuteBackground(index, node).build();
+            case deity -> new Json2QuteDeity(index, node).build();
+            case feat -> new Json2QuteFeat(index, node).build();
+            case hazard -> new Json2QuteHazard(index, node).build();
+            case item -> new Json2QuteItem(index, node).build();
+            case ritual -> new Json2QuteRitual(index, node).build();
+            case spell -> new Json2QuteSpell(index, node).build();
+            case trait -> new Json2QuteTrait(index, node).build();
+            case creature -> new Json2QuteCreature(index, node).build();
+            default -> null;
+        };
     }
 
     public boolean alwaysInclude() {
@@ -196,7 +176,7 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
 
     public boolean useQuteNote() {
         return switch (this) {
-            case ability, condition, domain, skill, table -> true; // QuteNote-based
+            case ability, affliction, curse, disease, condition, domain, skill, table -> true; // QuteNote-based
             default -> false;
         };
     }
@@ -220,7 +200,7 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
             // Equipment
             case item, vehicle -> "equipment/" + this.name() + 's';
             // GM
-            case curse, disease -> "gm/afflictions";
+            case affliction, curse, disease -> "gm/afflictions";
             case creature, hazard -> "gm/" + this.name() + 's';
             case relicGift -> "gm/relics-gifts";
             // Setting
