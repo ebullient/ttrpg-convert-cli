@@ -42,7 +42,7 @@ public class Pf2eJsonDataTest {
 
     @Test
     public void testAffliction_p2fe() throws Exception {
-        commonTests.generateNotesForType(List.of(Pf2eIndexType.curse, Pf2eIndexType.disease));
+        commonTests.generateNotesForType(List.of(Pf2eIndexType.curse, Pf2eIndexType.disease, Pf2eIndexType.affliction));
     }
 
     @Test

@@ -476,33 +476,49 @@ public interface JsonTextConverter<T extends IndexType> {
      * line of {@code inner} is not an admonition.
      */
     private void balanceBackticks(List<String> inner) {
+        int[] indices = outerAdmonitionIndices(inner);
+        if (indices == null) {
+            // There was no outer admonition, so do nothing.
+            return;
+        }
+        int adEndIdx = indices[1];
+        int adStartIdx = indices[0];
+        String firstLine = inner.get(adStartIdx);
+        // Must be done in this order so the indices don't change
+        inner.remove(adEndIdx);
+        inner.remove(adStartIdx);
+        String backticks = nestedEmbed(inner);
+        inner.add(adStartIdx, backticks + firstLine.replaceFirst("^`+", ""));
+        inner.add(adEndIdx, backticks);
+    }
+
+    /**
+     * Return the indices of the start and end of the admonition which wraps {@code inner}, or null if there is no
+     * admonition.
+     */
+    default int[] outerAdmonitionIndices(List<String> inner) {
         int[] presentIndices = IntStream.range(0, inner.size())
                 .filter(idx -> isPresent(inner.get(idx)))
                 .toArray();
         if (presentIndices.length < 2) {
             // We need at least two non-empty lines to have one each for the opening and closing
             // admonition lines.
-            return;
+            return null;
         }
         int firstLineIdx = presentIndices[0];
-        ;
+
         String firstLine = inner.get(firstLineIdx);
         if (!firstLine.matches("```+ad[\\s\\S]+")) {
-            return;
+            return null;
         }
         int lastLineIdx = presentIndices[presentIndices.length - 1];
         String lastLine = inner.get(lastLineIdx);
         if (!lastLine.matches("```+")) {
             // we expect the last non-empty line to contain the closing set of backticks
             tui().debugf("Expected line %d to close backticks but was instead '%s'", lastLineIdx, lastLine);
-            return;
+            return null;
         }
-        // Must be done in this order so the indices don't change
-        inner.remove(lastLineIdx);
-        inner.remove(firstLineIdx);
-        String backticks = nestedEmbed(inner);
-        inner.add(firstLineIdx, backticks + firstLine.replaceFirst("^`+", ""));
-        inner.add(lastLineIdx, backticks);
+        return new int[] { firstLineIdx, lastLineIdx };
     }
 
     String replaceText(String s);

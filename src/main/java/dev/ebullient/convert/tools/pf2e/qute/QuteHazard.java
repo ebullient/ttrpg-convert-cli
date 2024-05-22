@@ -43,15 +43,44 @@ public class QuteHazard extends Pf2eQuteBase {
      * {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack QuteInlineAttack}
      */
     public final List<QuteInlineAttack> attacks;
-    public final List<String> abilities;
-    public final List<String> actions;
+
+    /**
+     * The hazard's abilities, as a list of
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbility QuteAbility}
+     */
+    public final List<QuteAbility> abilities;
+
+    /**
+     * The hazard's actions. A list, where each element is either a
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbility QuteAbility} or a
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAffliction QuteAffliction}.
+     *
+     * <p>
+     * Using the elements directly will give a default rendering, but if you want more
+     * control you can use {@code .type} to check whether it's an affliction or an
+     * ability. Example:
+     * </p>
+     *
+     * <pre>
+     * {#each resource.actions}
+     * {#when it.type}
+     * {#is affliction}
+     * **Affliction** {it}
+     * {#is ability}
+     * **Ability** {it}
+     * {/when}
+     * {/each}
+     * </pre>
+     */
+    public final List<? extends Pf2eQuteNote> actions;
+
     public final QuteHazardAttributes stealth;
     public final QuteHazardAttributes perception;
 
     public QuteHazard(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, String level, String disable,
             String reset, String routine, QuteDataDefenses defenses,
-            List<QuteInlineAttack> attacks, List<String> abilities, List<String> actions,
+            List<QuteInlineAttack> attacks, List<QuteAbility> abilities, List<? extends Pf2eQuteNote> actions,
             QuteHazardAttributes stealth, QuteHazardAttributes perception) {
         super(sources, text, tags);
         this.traits = traits;

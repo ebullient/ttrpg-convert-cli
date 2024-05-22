@@ -9,7 +9,6 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
-import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
 
 public class Json2QuteHazard extends Json2QuteBase {
@@ -37,8 +36,14 @@ public class Json2QuteHazard extends Json2QuteBase {
                 Pf2eHazard.attacks.streamFrom(rootNode)
                         .map(n -> Pf2eAttack.createInlineAttack(n, this))
                         .toList(),
-                renderAbilities(Pf2eHazard.abilities),
-                renderAbilities(Pf2eHazard.actions),
+                Pf2eHazard.abilities.streamFrom(rootNode)
+                        .map(n -> Pf2eAbility.createEmbeddedAbility(n, this))
+                        .toList(),
+                Pf2eHazard.actions.streamFrom(rootNode)
+                        .map(n -> Pf2eAffliction.isAfflictionBlock(n)
+                                ? Pf2eAffliction.createInlineAffliction(n, this)
+                                : Pf2eAbility.createEmbeddedAbility(n, this))
+                        .toList(),
                 buildAttributes(Pf2eHazard.stealth),
                 buildAttributes(Pf2eHazard.perception));
     }
@@ -50,17 +55,6 @@ public class Json2QuteHazard extends Json2QuteBase {
             attr.notes = replaceText(attr.notes);
         }
         return attr;
-    }
-
-    List<String> renderAbilities(Pf2eHazard field) {
-        return field.streamFrom(rootNode)
-                .map(n -> Pf2eAffliction.isAfflictionBlock(n)
-                        ? Pf2eAffliction.createInlineAffliction(n, this)
-                        : Pf2eAbility.createEmbeddedAbility(n, this))
-                .map(obj -> obj instanceof QuteAbility
-                        ? ((QuteAbility) obj).render()
-                        : renderInlineTemplate(obj, obj.indexType().name()))
-                .toList();
     }
 
     enum Pf2eHazard implements JsonNodeReader {
