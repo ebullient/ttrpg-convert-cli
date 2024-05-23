@@ -22,10 +22,9 @@ aliases: ["{resource.name}"]
 
 {#if resource.disable }
 - **Disable** {resource.disable}  
-{/if}{#if resource.perception }
-- **Perception** {resource.perception}  
-{/if}
-{#if resource.abilities }
+{/if}{#if resource.perception}
+- **Perception** {resource.perception.bonus}{#each resource.perception.notes} {it}{/each}
+{/if}{#if resource.abilities}
 
 {#each resource.abilities}{it}
 {/each}{/if}{#if resource.defenses }

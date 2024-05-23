@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.QuteUtil;
@@ -27,7 +26,7 @@ import io.quarkus.qute.TemplateData;
  * </p>
  */
 @TemplateData
-public class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderable {
+public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderable, QuteAbilityOrAffliction {
 
     /**
      * Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection.
@@ -99,13 +98,11 @@ public class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderable {
     }
 
     /**
-     * True if getHasAttributes is true or special is present.
-     * In other words, this is true if there is more than just a name and text.
-     *
+     * True if the ability is a short, one-line name and description.
      * Use this to test to choose between a detailed or simple rendering.
      */
     public boolean getHasDetails() {
-        return getHasAttributes() || isPresent(special);
+        return getHasAttributes() || isPresent(special) || text.contains("\n") || text.split(" ").length > 5;
     }
 
     @Deprecated

@@ -4,6 +4,7 @@ import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.qute.QuteUtil;
 
 import java.util.List;
+import java.util.Objects;
 
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
@@ -27,14 +28,22 @@ public interface QuteDataGenericStat extends QuteUtil {
     }
 
     /**
-     * A basic {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat QuteDataGenericStat} which provides
+     * A basic {@link QuteDataGenericStat QuteDataGenericStat} which provides
      * only a value and possibly a note. Default representation:
      *
      * <blockquote>
      * 10 (some note) (some other note)
      * </blockquote>
      */
-    record SimpleStat(Integer value, List<String> notes) implements QuteDataGenericStat {
+    class SimpleStat implements QuteDataGenericStat {
+        private final Integer value;
+        private final List<String> notes;
+
+        public SimpleStat(Integer value, List<String> notes) {
+            this.value = value;
+            this.notes = notes;
+        }
+
         public SimpleStat(Integer value) {
             this(value, List.of());
         }
@@ -46,6 +55,16 @@ public interface QuteDataGenericStat extends QuteUtil {
         @Override
         public String toString() {
             return join(" ", value.toString(), formattedNotes());
+        }
+
+        @Override
+        public Integer value() {
+            return value;
+        }
+
+        @Override
+        public List<String> notes() {
+            return notes;
         }
     }
 }
