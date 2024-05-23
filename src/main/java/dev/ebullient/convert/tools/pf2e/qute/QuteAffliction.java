@@ -11,7 +11,6 @@ import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
-import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
@@ -22,7 +21,7 @@ import static dev.ebullient.convert.StringUtil.toTitleCase;
  * </p>
  */
 @TemplateData
-public class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Renderable {
+public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Renderable, QuteAbilityOrAffliction {
 
     /** Collection of traits (decorated links) */
     public final Collection<String> traits;

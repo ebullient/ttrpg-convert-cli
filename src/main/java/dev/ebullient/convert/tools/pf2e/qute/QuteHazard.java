@@ -1,15 +1,15 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
-import io.quarkus.runtime.annotations.RegisterForReflection;
+
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.parenthesize;
 
 /**
  * Pf2eTools Hazard attributes ({@code hazard2md.txt})
@@ -51,37 +51,44 @@ public class QuteHazard extends Pf2eQuteBase {
     public final List<QuteAbility> abilities;
 
     /**
-     * The hazard's actions. A list, where each element is either a
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbility QuteAbility} or a
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAffliction QuteAffliction}.
+     * The hazard's actions, as a list of
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction QuteAbilityOrAffliction}.
      *
      * <p>
      * Using the elements directly will give a default rendering, but if you want more
-     * control you can use {@code .type} to check whether it's an affliction or an
+     * control you can use {@code isAffliction} and {@code isAbility} to check whether it's an affliction or an
      * ability. Example:
      * </p>
      *
      * <pre>
      * {#each resource.actions}
-     * {#when it.type}
-     * {#is affliction}
+     * {#if it.isAffliction}
      * **Affliction** {it}
-     * {#is ability}
+     * {#else if it.isAbility}
      * **Ability** {it}
-     * {/when}
+     * {/if}
      * {/each}
      * </pre>
      */
-    public final List<? extends Pf2eQuteNote> actions;
+    public final List<QuteAbilityOrAffliction> actions;
 
-    public final QuteHazardAttributes stealth;
-    public final QuteHazardAttributes perception;
+    /**
+     * The hazard's stealth, as a
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteHazard.QuteHazardStealth QuteHazardAttributes}
+     */
+    public final QuteHazardStealth stealth;
+
+    /**
+     * The hazard's perception, as a
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat QuteDataGenericStat}
+     */
+    public final QuteDataGenericStat perception;
 
     public QuteHazard(Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, String level, String disable,
             String reset, String routine, QuteDataDefenses defenses,
-            List<QuteInlineAttack> attacks, List<QuteAbility> abilities, List<? extends Pf2eQuteNote> actions,
-            QuteHazardAttributes stealth, QuteHazardAttributes perception) {
+            List<QuteInlineAttack> attacks, List<QuteAbility> abilities, List<QuteAbilityOrAffliction> actions,
+            QuteHazardStealth stealth, QuteDataGenericStat perception) {
         super(sources, text, tags);
         this.traits = traits;
         this.level = level;
@@ -129,33 +136,29 @@ public class QuteHazard extends Pf2eQuteBase {
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * </p>
+     *
+     * @param value The hazard's Stealth bonus
+     * @param minProf The minimum Perception proficiency required to be able to roll against the hazard's Stealth
+     * @param notes Any notes associated with the hazard's Stealth. Sometimes this includes other stats which may
+     *        be rolled against the hazard's Stealth.
+     * @param dc The DC which must be passed to see the hazard
      */
     @TemplateData
-    @RegisterForReflection
-    public static class QuteHazardAttributes implements QuteUtil {
-        /** Number. Difficulty class */
-        public Integer dc;
-        /** Number. Bonus */
-        public Integer bonus;
-        /** String. Minimum proficiency */
-        public String minProf;
-        /** Formatted string. Notes */
-        public String notes;
+    public record QuteHazardStealth(
+            Integer value, Integer dc, String minProf, List<String> notes) implements QuteDataGenericStat {
 
+        public QuteHazardStealth(Integer value, Integer dc, String minProf, String note) {
+            this(value, dc, minProf, note == null || note.isEmpty() ? List.of() : List.of(note));
+        }
+
+        @Override
+        public String formattedNotes() {
+            return join(" ", parenthesize(minProf), join(", ", notes));
+        }
+
+        @Override
         public String toString() {
-            List<String> pieces = new ArrayList<>();
-            if (dc != null) {
-                pieces.add("DC " + dc);
-            } else if (bonus != null) {
-                pieces.add((bonus >= 0 ? "+" : "") + bonus);
-            }
-            if (isPresent(minProf)) {
-                pieces.add(minProf);
-            }
-            if (isPresent(notes)) {
-                pieces.add(notes);
-            }
-            return String.join(" ", pieces);
+            return join(" ", bonus(), dc != null ? "DC " + dc : "", formattedNotes());
         }
     }
 }
