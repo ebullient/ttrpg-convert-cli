@@ -1,10 +1,10 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.join;
+
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
-
-import static dev.ebullient.convert.StringUtil.join;
 
 /**
  * Pf2eTools activity attributes. This attribute will render itself as a formatted link:

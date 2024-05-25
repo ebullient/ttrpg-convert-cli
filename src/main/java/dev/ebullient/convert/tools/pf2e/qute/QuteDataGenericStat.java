@@ -1,13 +1,12 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import dev.ebullient.convert.StringUtil;
-import dev.ebullient.convert.qute.QuteUtil;
-
-import java.util.List;
-import java.util.Objects;
-
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
+
+import java.util.List;
+
+import dev.ebullient.convert.StringUtil;
+import dev.ebullient.convert.qute.QuteUtil;
 
 /** A generic container for a PF2e stat value which may have an attached note. */
 public interface QuteDataGenericStat extends QuteUtil {
@@ -28,7 +27,7 @@ public interface QuteDataGenericStat extends QuteUtil {
     }
 
     /**
-     * A basic {@link QuteDataGenericStat QuteDataGenericStat} which provides
+     * A basic {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat QuteDataGenericStat} which provides
      * only a value and possibly a note. Default representation:
      *
      * <blockquote>

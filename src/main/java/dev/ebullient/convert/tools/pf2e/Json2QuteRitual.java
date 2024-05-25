@@ -1,12 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual;
@@ -14,8 +15,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteRitual.QuteRitualCasting;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual.QuteRitualChecks;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-
-import static dev.ebullient.convert.StringUtil.joinConjunct;
 
 public class Json2QuteRitual extends Json2QuteSpell {
     static final String RITUAL_TAG = "ritual";

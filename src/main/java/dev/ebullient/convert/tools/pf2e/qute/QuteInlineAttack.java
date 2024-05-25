@@ -1,15 +1,15 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.parenthesize;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.Collection;
 import java.util.List;
 
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import io.quarkus.qute.TemplateData;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.parenthesize;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 /**
  * Pf2eTools Attack attributes (inline/embedded, {@code inline-attack2md.txt})
@@ -24,10 +24,12 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
     /** The name of the attack e.g. "fist" (string) */
     public final String name;
 
-    /** Number/type of action cost ({@link QuteDataActivity QuteDataActivity}) */
+    /** Number/type of action cost ({@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity QuteDataActivity}) */
     public final QuteDataActivity activity;
 
-    /** The range of the attack ({@link AttackRangeType AttackType} enum) */
+    /**
+     * The range of the attack ({@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack.AttackRangeType AttackType} enum)
+     */
     public final AttackRangeType rangeType;
 
     /** The to-hit bonus for the attack (integer) */

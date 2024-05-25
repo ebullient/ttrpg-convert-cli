@@ -1,10 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -16,9 +19,6 @@ import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAffliction;
-
-import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 public class Json2QuteAffliction extends Json2QuteBase {
 

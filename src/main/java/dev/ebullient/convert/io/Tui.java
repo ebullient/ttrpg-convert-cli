@@ -25,7 +25,6 @@ import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
-import dev.ebullient.convert.qute.QuteUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 
@@ -53,8 +52,7 @@ import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.config.TtrpgConfig.Fix;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.qute.QuteBase;
-import dev.ebullient.convert.qute.QuteNote;
+import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.runtime.ShutdownEvent;
 import picocli.CommandLine;
 import picocli.CommandLine.Help;
