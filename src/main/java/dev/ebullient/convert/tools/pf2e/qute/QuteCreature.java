@@ -57,12 +57,19 @@ public class QuteCreature extends Pf2eQuteBase {
     /** The creature's attacks, as a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack QuteInlineAttack} */
     public final List<QuteInlineAttack> attacks;
 
-    public QuteCreature(Pf2eSources sources, List<String> text, Tags tags,
+    /**
+     * The creature's abilities, as a
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities CreatureAbilities}.
+     */
+    public final CreatureAbilities abilities;
+
+    public QuteCreature(Pf2eSources sources, String text, Tags tags,
             Collection<String> traits, List<String> aliases,
             String description, Integer level, Integer perception,
             QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
             List<CreatureSense> senses, Map<String, Integer> abilityMods,
-            List<String> items, QuteDataSpeed speed, List<QuteInlineAttack> attacks) {
+            List<String> items, QuteDataSpeed speed,
+            List<QuteInlineAttack> attacks, CreatureAbilities abilities) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -77,15 +84,15 @@ public class QuteCreature extends Pf2eQuteBase {
         this.items = items;
         this.speed = speed;
         this.attacks = attacks;
+        this.abilities = abilities;
     }
 
     /**
-     * The languages and language features known by a creature.
+     * The languages and language features known by a creature. Example default output:
      *
-     * <p>
-     * Referencing this object directly provides a default markup which includes all data. Example:
-     * {@code "Common, Sylvan; telepathy 100ft; knows any language the summoner does" }
-     * </p>
+     * <blockquote>
+     * Common, Sylvan; telepathy 100ft; knows any language the summoner does
+     * </blockquote>
      *
      * @param languages Languages known (optional)
      * @param notes Language-related notes (optional)
@@ -104,12 +111,11 @@ public class QuteCreature extends Pf2eQuteBase {
     }
 
     /**
-     * A creature's skill information.
+     * A creature's skill information. Example default output:
      *
-     * <p>
-     * Referencing this object directly provides a default markup which includes all data. Example:
-     * {@code "Athletics +10, Cult Lore +10 (lore on their cult), Stealth +10 (+12 in forests); Some skill note" }
-     * </p>
+     * <blockquote>
+     * Athletics +10, Cult Lore +10 (lore on their cult), Stealth +10 (+12 in forests); Some skill note
+     * </blockquote>
      *
      * @param skills Skill bonuses for the creature, as a list of
      *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus QuteDataSkillBonus}
@@ -127,7 +133,10 @@ public class QuteCreature extends Pf2eQuteBase {
     }
 
     /**
-     * A creature's senses.
+     * A creature's senses. Example default output:
+     * <blockquote>
+     * tremorsense (imprecise) 20ft
+     * </blockquote>
      *
      * @param name The name of the sense (required, string)
      * @param type The type of the sense - e.g. precise, imprecise (optional, string)
@@ -139,6 +148,46 @@ public class QuteCreature extends Pf2eQuteBase {
         @Override
         public String toString() {
             return join(" ", name, parenthesize(type), range);
+        }
+    }
+
+    /**
+     * A creature's abilities, split into the section of the statblock where they should be displayed. Each section is
+     * a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction QuteAbilityOrAffliction}. Use
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities#formattedTop() formattedTop},
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities#formattedTop() formattedMiddle}, and
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities#formattedTop() formattedBottom} to
+     * get pre-formatted abilities according to the templates defined for
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbility QuteAbility} or
+     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAffliction QuteAffliction}.
+     *
+     * @param top Abilities which should be displayed in the top section of the statblock
+     * @param middle Abilities which should be displayed in the middle section of the statblock
+     * @param bottom Abilities which should be displayed in the bottom section of the statblock
+     */
+    @TemplateData
+    public record CreatureAbilities(
+            List<QuteAbilityOrAffliction> top,
+            List<QuteAbilityOrAffliction> middle,
+            List<QuteAbilityOrAffliction> bottom) implements QuteUtil {
+
+        /** Returns the top-section abilities as a formatted string */
+        public String formattedTop() {
+            return formatted(top);
+        }
+
+        /** Returns the middle-section abilities as a formatted string. */
+        public String formattedMiddle() {
+            return formatted(middle);
+        }
+
+        /** Returns the bottom-section abilities as a formatted string. */
+        public String formattedBottom() {
+            return formatted(bottom);
+        }
+
+        private String formatted(List<QuteAbilityOrAffliction> abilities) {
+            return join("\n", abilities);
         }
     }
 }
