@@ -1,17 +1,19 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
+import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 
 public class Json2QuteCreature extends Json2QuteBase {
 
@@ -21,30 +23,48 @@ public class Json2QuteCreature extends Json2QuteBase {
 
     @Override
     protected QuteCreature buildQuteResource() {
-        List<String> text = new ArrayList<>();
-        Tags tags = new Tags(sources);
+        return Pf2eCreature.create(rootNode, this);
+    }
 
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
+    /**
+     * Example JSON input:
+     *
+     * <pre>
+     *     "top": [ { ... } ],
+     *     "mid": [ { ... } ],
+     *     "bot": [ { ... } ],
+     * </pre>
+     */
+    enum Pf2eCreatureAbilities implements JsonNodeReader {
+        top,
+        mid,
+        bot;
 
-        Collection<String> traits = collectTraitsFrom(rootNode, tags);
-        traits.addAll(getAlignments(Pf2eCreature.alignment.getFrom(rootNode)));
+        static QuteCreature.CreatureAbilities create(JsonNode node, Pf2eTypeReader convert) {
+            return new QuteCreature.CreatureAbilities(
+                    createAbilityList(top.ensureArrayIn(node), convert),
+                    createAbilityList(mid.ensureArrayIn(node), convert),
+                    createAbilityList(bot.ensureArrayIn(node), convert));
+        }
 
-        return new QuteCreature(sources, text, tags,
-                traits,
-                Field.alias.replaceTextFromList(rootNode, this),
-                Pf2eCreature.description.replaceTextFrom(rootNode, this),
-                Pf2eCreature.level.getIntFrom(rootNode).orElse(null),
-                Pf2eCreature.perception(rootNode),
-                Pf2eCreature.defenses(rootNode, this),
-                Pf2eCreatureLanguages.create(Pf2eCreature.languages.getFrom(rootNode), this),
-                Pf2eCreature.skills(rootNode, this),
-                Pf2eCreature.senses.streamFrom(rootNode).map(n -> Pf2eCreatureSense.create(n, this)).toList(),
-                Pf2eCreature.abilityModifiers(rootNode),
-                Pf2eCreature.items.replaceTextFromList(rootNode, this),
-                Pf2eTypeReader.Pf2eSpeed.getSpeed(Pf2eCreature.speed.getFrom(rootNode), this),
-                Pf2eCreature.attacks.streamFrom(rootNode)
-                        .map(n -> Pf2eAttack.createInlineAttack(n, this))
-                        .toList());
+        /**
+         * Example JSON input:
+         *
+         * <pre>
+         *     [
+         *       { &lt;ability data&gt; },
+         *       { "type": "affliction", &lt;affliction data&gt; }
+         *     ]
+         * </pre>
+         */
+        private static List<QuteAbilityOrAffliction> createAbilityList(JsonNode node, Pf2eTypeReader convert) {
+            // The Pf2e schema doesn't match the data here - afflictions are marked with "type": "affliction", but
+            // abilities are unmarked.
+            return convert.streamOf(node)
+                    .filter(Pf2eAffliction::isAfflictionBlock) // for now, we only want afflictions
+                    .map(n -> (QuteAbilityOrAffliction) Pf2eAffliction.createInlineAffliction(n, convert))
+                    .toList();
+        }
     }
 
     /**
@@ -64,11 +84,10 @@ public class Json2QuteCreature extends Json2QuteBase {
         notes;
 
         static QuteCreature.CreatureLanguages create(JsonNode node, Pf2eTypeReader convert) {
-            return node == null ? null
-                    : new QuteCreature.CreatureLanguages(
-                            languages.getListOfStrings(node, convert.tui()),
-                            abilities.replaceTextFromList(node, convert),
-                            notes.replaceTextFromList(node, convert));
+            return new QuteCreature.CreatureLanguages(
+                    languages.getListOfStrings(node, convert.tui()),
+                    abilities.replaceTextFromList(node, convert),
+                    notes.replaceTextFromList(node, convert));
         }
     }
 
@@ -89,21 +108,52 @@ public class Json2QuteCreature extends Json2QuteBase {
         range;
 
         static QuteCreature.CreatureSense create(JsonNode node, Pf2eTypeReader convert) {
-            return node == null ? null
-                    : new QuteCreature.CreatureSense(
-                            name.getTextFrom(node).map(convert::replaceText).orElseThrow(),
-                            type.getTextFrom(node).map(convert::replaceText).orElse(null),
-                            range.getIntFrom(node).orElse(null));
+            return new QuteCreature.CreatureSense(
+                    name.getTextFrom(node).map(convert::replaceText).orElseThrow(),
+                    type.getTextFrom(node).map(convert::replaceText).orElse(null),
+                    range.getIntFrom(node).orElse(null));
         }
     }
 
+    /**
+     * Example JSON input:
+     *
+     * <pre>
+     *     "perception": {"std": 6},
+     *     "defenses": { ... },
+     *     "skills": {
+     *         "athletics": 30,
+     *         "stealth": {
+     *             "std": 36,
+     *             "in forests": 42,
+     *             "note": "additional note"
+     *         },
+     *         "notes": [
+     *             "some note"
+     *         ]
+     *     },
+     *     "abilityMods": {
+     *         "str": 10,
+     *         "dex": 10,
+     *         "con": 10,
+     *         "int": 10,
+     *         "wis": 10,
+     *         "cha": 10
+     *     },
+     *     "languages": { ... },
+     *     "senses": [ { ... } ],
+     *     "attacks": [ { ... } ],
+     * </pre>
+     */
     enum Pf2eCreature implements JsonNodeReader {
         abilities,
         abilityMods,
         alignment,
+        alias,
         attacks,
         defenses,
         description,
+        entries,
         hasImages,
         inflicts,
         isNpc,
@@ -122,74 +172,41 @@ public class Json2QuteCreature extends Json2QuteBase {
         std,
         traits;
 
-        /**
-         * Example JSON input:
-         *
-         * <pre>
-         *     "perception": {
-         *         "std": 6
-         *     }
-         * </pre>
-         */
-        private static Integer perception(JsonNode source) {
-            return perception.getObjectFrom(source).map(std::getIntOrThrow).orElse(null);
-        }
+        private static QuteCreature create(JsonNode node, Pf2eTypeReader convert) {
+            Tags tags = new Tags(convert.getSources());
+            Collection<String> traits = convert.collectTraitsFrom(node, tags);
+            traits.addAll(convert.getAlignments(alignment.getFrom(node)));
 
-        /**
-         * Example JSON input:
-         *
-         * <pre>
-         *     "defenses": { ... }
-         * </pre>
-         */
-        private static QuteDataDefenses defenses(JsonNode source, Pf2eTypeReader convert) {
-            return defenses.getObjectFrom(source).map(n -> Pf2eDefenses.createInlineDefenses(n, convert)).orElse(null);
-        }
-
-        /**
-         * Example JSON input:
-         *
-         * <pre>
-         *     "skills": {
-         *         "athletics": 30,
-         *         "stealth": {
-         *             "std": 36,
-         *             "in forests": 42,
-         *             "note": "additional note"
-         *         },
-         *         "notes": [
-         *             "some note"
-         *         ]
-         *     }
-         * </pre>
-         */
-        private static QuteCreature.CreatureSkills skills(JsonNode source, Pf2eTypeReader convert) {
-            return new QuteCreature.CreatureSkills(
-                    skills.streamPropsExcluding(source, notes)
-                            .map(e -> Pf2eTypeReader.Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), convert))
+            return new QuteCreature(convert.getSources(),
+                    entries.transformTextFrom(node, "\n", convert, "##"),
+                    tags,
+                    traits,
+                    alias.replaceTextFromList(node, convert),
+                    description.replaceTextFrom(node, convert),
+                    level.getIntFrom(node).orElse(null),
+                    perception.getObjectFrom(node).map(std::getIntOrThrow).orElse(null),
+                    defenses.getObjectFrom(node).map(n -> Pf2eDefenses.createInlineDefenses(n, convert)).orElse(null),
+                    languages.getObjectFrom(node).map(n -> Pf2eCreatureLanguages.create(n, convert)).orElse(null),
+                    new QuteCreature.CreatureSkills(
+                            skills.streamPropsExcluding(node, notes)
+                                    .map(e -> Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), convert))
+                                    .toList(),
+                            notes.replaceTextFromList(node, convert)),
+                    senses.streamFrom(node)
+                            .map(n -> convert.isObjectNode(n) ? Pf2eCreatureSense.create(n, convert) : null)
+                            .filter(Objects::nonNull)
                             .toList(),
-                    notes.replaceTextFromList(source, convert));
-        }
-
-        /**
-         * Example JSON input:
-         *
-         * <pre>
-         *     {
-         *         "str": 10,
-         *         "dex": 10,
-         *         "con": 10,
-         *         "int": 10,
-         *         "wis": 10,
-         *         "cha": 10
-         *     }
-         * </pre>
-         */
-        private static Map<String, Integer> abilityModifiers(JsonNode source) {
-            // Use a linked hash map to preserve insertion order
-            Map<String, Integer> mods = new LinkedHashMap<>();
-            abilityMods.streamPropsExcluding(source).forEachOrdered(e -> mods.put(e.getKey(), e.getValue().asInt()));
-            return mods;
+                    // Use a linked hash map to preserve insertion order
+                    abilityMods.streamProps(node)
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey, e -> e.getValue().asInt(), (u, v) -> u, LinkedHashMap::new)),
+                    items.replaceTextFromList(node, convert),
+                    speed.getObjectFrom(node).map(n -> Pf2eSpeed.getSpeed(n, convert)).orElse(null),
+                    attacks.streamFrom(node)
+                            .map(n -> convert.isObjectNode(n) ? Pf2eAttack.createInlineAttack(n, convert) : null)
+                            .filter(Objects::nonNull)
+                            .toList(),
+                    Pf2eCreatureAbilities.create(abilities.getFromOrEmptyObjectNode(node), convert));
         }
     }
 }

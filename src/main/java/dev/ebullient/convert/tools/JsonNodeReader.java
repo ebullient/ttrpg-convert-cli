@@ -274,6 +274,12 @@ public interface JsonNodeReader {
         return StreamSupport.stream(result.spliterator(), false);
     }
 
+    /** Wrapper around {@link #streamPropsExcluding(JsonNode, JsonNodeReader...)} to make the naming less confusing */
+    default Stream<Entry<String, JsonNode>> streamProps(JsonNode source) {
+        return streamPropsExcluding(source);
+    }
+
+    /** Returns a stream of entries of (key, node) from the given node, excluding the given keys. */
     default Stream<Entry<String, JsonNode>> streamPropsExcluding(JsonNode source, JsonNodeReader... excludingKeys) {
         JsonNode result = getFrom(source);
         if (result == null || !result.isObject()) {

@@ -669,7 +669,7 @@ public interface Pf2eTypeReader extends JsonSource {
          * </pre>
          */
         static QuteDataSpeed getSpeed(JsonNode source, JsonTextConverter<?> convert) {
-            return source == null || !source.isObject() ? null
+            return !convert.isObjectNode(source) ? null
                     : new QuteDataSpeed(
                             walk.getIntFrom(source).orElse(null),
                             convert.streamPropsExcluding(source, speedNote, abilities)

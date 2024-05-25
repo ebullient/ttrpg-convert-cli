@@ -17,7 +17,7 @@ aliases:
 # {resource.name} *Creature {resource.level}*  
 {#if resource.traits}{#each resource.traits}{it}  {/each}{/if}
 
-```ad-statblock-pf2e
+``````ad-statblock-pf2e
 {#if resource.perception}
 - **Perception** {resource.perception.asBonus}; {#each resource.senses}{it}{#if it_hasNext}, {/if}{/each}
 {/if}{#if resource.languages}
@@ -29,16 +29,19 @@ aliases:
 {#if resource.items}
 - **Items** {#each resource.items}{it}{#if it_hasNext}, {/if}{/each}
 {/if}
-
+{resource.abilities.formattedTop}
+---
 {#if resource.defenses}
 {resource.defenses}
 {/if}
-
+{resource.abilities.formattedMiddle}
+---
 - **Speed** {resource.speed}
 {#each resource.attacks}
 {it}  
 {/each}
-```
+{resource.abilities.formattedBottom}
+``````
 ^statblock
 
 {#if resource.hasSections}
