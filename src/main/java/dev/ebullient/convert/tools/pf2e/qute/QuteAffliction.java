@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +13,6 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 /**
  * Pf2eTools Affliction attributes (inline/embedded, {@code inline-affliction2md.txt})

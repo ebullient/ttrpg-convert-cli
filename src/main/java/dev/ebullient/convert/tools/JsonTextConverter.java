@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,14 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteUtil;
-
-import static dev.ebullient.convert.StringUtil.isPresent;
 
 public interface JsonTextConverter<T extends IndexType> {
     public static String DICE_FORMULA = "[ +d\\d-‒]+";

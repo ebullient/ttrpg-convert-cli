@@ -1,9 +1,9 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
 import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.formatMap;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinWithPrefix;
-import static dev.ebullient.convert.StringUtil.formatMap;
 
 import java.util.LinkedHashMap;
 import java.util.List;

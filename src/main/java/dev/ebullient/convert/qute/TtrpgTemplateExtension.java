@@ -1,8 +1,8 @@
 package dev.ebullient.convert.qute;
 
-import io.quarkus.qute.TemplateExtension;
-
 import static dev.ebullient.convert.StringUtil.toTitleCase;
+
+import io.quarkus.qute.TemplateExtension;
 
 @TemplateExtension
 public class TtrpgTemplateExtension {

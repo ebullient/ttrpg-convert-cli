@@ -1,11 +1,10 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.List;
-import java.util.Optional;
-
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.numberAsWords;
 import static dev.ebullient.convert.StringUtil.pluralize;
+
+import java.util.List;
 
 /**
  * A description of a frequency e.g. "once", which may include an interval that this is repeated for. Examples:

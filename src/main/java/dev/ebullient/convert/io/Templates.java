@@ -7,13 +7,13 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Collection;
 
-import dev.ebullient.convert.qute.QuteUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.MarkdownWriter.FileMap;
 import dev.ebullient.convert.qute.QuteBase;
+import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.Engine;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateException;

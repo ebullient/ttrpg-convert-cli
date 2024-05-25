@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.parenthesize;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -7,9 +10,6 @@ import java.util.List;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.parenthesize;
 
 /**
  * Pf2eTools Hazard attributes ({@code hazard2md.txt})

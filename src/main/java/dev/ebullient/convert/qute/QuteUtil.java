@@ -1,13 +1,12 @@
 package dev.ebullient.convert.qute;
 
-import dev.ebullient.convert.tools.IndexType;
-import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+
+import dev.ebullient.convert.tools.IndexType;
+import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
 public interface QuteUtil {
     default boolean isPresent(Map<?, ?> s) {

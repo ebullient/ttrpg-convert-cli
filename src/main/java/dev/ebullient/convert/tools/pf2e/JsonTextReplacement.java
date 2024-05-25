@@ -4,7 +4,6 @@ import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;

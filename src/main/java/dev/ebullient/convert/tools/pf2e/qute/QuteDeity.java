@@ -2,14 +2,11 @@ package dev.ebullient.convert.tools.pf2e.qute;
 
 import static dev.ebullient.convert.StringUtil.flatJoin;
 import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.joinWithPrefix;
-import static dev.ebullient.convert.StringUtil.parenthesize;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.NamedText;
