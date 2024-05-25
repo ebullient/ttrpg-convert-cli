@@ -1,8 +1,10 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -331,22 +333,35 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         // {@trait agile||and optional link text added with another pipe}.",
 
         String[] parts = match.split("\\|");
-        String linkText = parts.length > 2 ? parts[2] : parts[0];
+        String traitName = parts[0];
+        String linkText = parts.length > 2 ? parts[2] : traitName;
 
         if (parts.length < 2 && linkText.contains("<")) {
-            String[] pieces = parts[0].split(" ");
-            parts[0] = pieces[0];
-        } else if (parts[0].startsWith("[")) {
+            traitName = traitName.split(" ")[0];
+            // Get rid of angle brackets in trait names, so they don't read as HTML tags
+            if (linkText.matches("versatile <.*>")) {
+                String damageType = linkText.split(" ")[1];
+                linkText = "versatile " + damageType.toUpperCase();
+            }
+            linkText = linkText.replaceAll("<(.*)>", "$1");
+        } else if (traitName.startsWith("[")) {
             // Do the same replacement we did when doing the initial import
             // [...] becomes "Any ..."
-            parts[0] = parts[0].replaceAll("\\[(.*)]", "Any $1");
-        } else if (parts[0].length() <= 2) {
-            Pf2eTypeReader.Pf2eAlignmentValue alignment = Pf2eTypeReader.Pf2eAlignmentValue.fromString(parts[0]);
-            parts[0] = alignment == null ? parts[0] : alignment.longName;
+            traitName = traitName.replaceAll("\\[(.*)]", "Any $1");
+        } else if (traitName.length() <= 2) {
+            Pf2eTypeReader.Pf2eAlignmentValue alignment = Pf2eTypeReader.Pf2eAlignmentValue.fromString(traitName);
+            if (alignment != null) {
+                traitName = alignment.longName;
+                // Uppercase alignment text if it's an abbreviation, e.g. "CE"
+                if (linkText.length() <= 2) {
+                    linkText = linkText.toUpperCase();
+                }
+            }
+            traitName = alignment == null ? traitName : alignment.longName;
         }
 
-        String source = parts.length > 1 ? parts[1] : index().traitToSource(parts[0]);
-        String key = Pf2eIndexType.trait.createKey(parts[0], source);
+        String source = parts.length > 1 ? parts[1] : index().traitToSource(traitName);
+        String key = Pf2eIndexType.trait.createKey(traitName, source);
         JsonNode traitNode = index().getIncludedNode(key);
         return linkifyTrait(traitNode, linkText);
     }
@@ -354,32 +369,32 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     default String linkifyTrait(JsonNode traitNode, String linkText) {
         if (traitNode != null) {
             String source = SourceField.source.getTextOrEmpty(traitNode);
-            List<String> categories = Field.categories.getListOfStrings(traitNode, tui())
-                    .stream()
-                    .filter(x -> !"_alignAbv".equals(x))
-                    .toList();
 
-            String title;
-            if (categories.contains("Alignment")) {
-                title = "Alignment";
-                linkText = linkText.toUpperCase();
-            } else if (categories.contains("Rarity")) {
-                title = "Rarity";
-            } else if (categories.contains("Size")) {
-                title = "Size";
-            } else {
-                title = categories.stream().sorted().findFirst().orElse("");
-            }
-            title = (SourceField.name.getTextOrEmpty(traitNode) + " " + title + " Trait").trim();
-
-            return String.format("[%s](%s/%s%s.md \"%s\")",
+            return "[%s](%s/%s%s.md \"%s\")".formatted(
                     linkText,
                     Pf2eIndexType.trait.relativeRepositoryRoot(index()),
                     slugify(linkText),
                     Pf2eIndexType.trait.isDefaultSource(source) ? "" : "-" + slugify(source),
-                    title.trim());
+                    join(" ", SourceField.name.getTextOrEmpty(traitNode), traitTitle(traitNode), "Trait"));
         }
         return linkText;
+    }
+
+    /** Return the title of the trait at the given node. */
+    private String traitTitle(JsonNode traitNode) {
+        List<String> categories = Field.categories.getListOfStrings(traitNode, tui())
+                .stream()
+                .filter(x -> !"_alignAbv".equals(x))
+                .toList();
+
+        if (categories.contains("Alignment")) {
+            return "Alignment";
+        } else if (categories.contains("Rarity")) {
+            return "Rarity";
+        } else if (categories.contains("Size")) {
+            return "Size";
+        }
+        return categories.stream().sorted().findFirst().orElse("");
     }
 
     default String linkifyRules(Pf2eIndexType type, String text, String rules, String anchor) {
