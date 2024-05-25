@@ -20,7 +20,7 @@ import io.quarkus.qute.TemplateData;
  * other leading content only appropriate to the standalone case).
  * </p>
  * <p>
- * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
+ * Extension of {@link Pf2eQuteBase Pf2eQuteBase}
  * </p>
  */
 @TemplateData
@@ -37,29 +37,29 @@ public class QuteCreature extends Pf2eQuteBase {
     /** Creature perception (number, optional) */
     public final Integer perception;
     /**
-     * Languages as {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureLanguages CreatureLanguages}
+     * Languages as {@link QuteCreature.CreatureLanguages CreatureLanguages}
      */
     public final CreatureLanguages languages;
-    /** Defenses (AC, saves, etc) as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses QuteDataDefenses} */
+    /** Defenses (AC, saves, etc) as {@link QuteDataDefenses QuteDataDefenses} */
     public final QuteDataDefenses defenses;
     /**
-     * Skill bonuses as {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureSkills CreatureSkills}
+     * Skill bonuses as {@link QuteCreature.CreatureSkills CreatureSkills}
      */
     public final CreatureSkills skills;
-    /** Senses as a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureSense CreatureSense} */
+    /** Senses as a list of {@link QuteCreature.CreatureSense CreatureSense} */
     public final List<CreatureSense> senses;
     /** Ability modifiers as a map of (name, modifier) */
     public final Map<String, Integer> abilityMods;
     /** Items held by the creature as a list of strings */
     public final List<String> items;
-    /** The creature's speed, as an {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed QuteDataSpeed} */
+    /** The creature's speed, as an {@link QuteDataSpeed QuteDataSpeed} */
     public final QuteDataSpeed speed;
-    /** The creature's attacks, as a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack QuteInlineAttack} */
+    /** The creature's attacks, as a list of {@link QuteInlineAttack QuteInlineAttack} */
     public final List<QuteInlineAttack> attacks;
 
     /**
      * The creature's abilities, as a
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities CreatureAbilities}.
+     * {@link QuteCreature.CreatureAbilities CreatureAbilities}.
      */
     public final CreatureAbilities abilities;
 
@@ -118,7 +118,7 @@ public class QuteCreature extends Pf2eQuteBase {
      * </blockquote>
      *
      * @param skills Skill bonuses for the creature, as a list of
-     *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus QuteDataSkillBonus}
+     *        {@link QuteDataSkillBonus QuteDataSkillBonus}
      * @param notes Notes for the creature's skills (list of strings, optional)
      */
     @TemplateData
@@ -153,13 +153,13 @@ public class QuteCreature extends Pf2eQuteBase {
 
     /**
      * A creature's abilities, split into the section of the statblock where they should be displayed. Each section is
-     * a list of {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction QuteAbilityOrAffliction}. Use
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities#formattedTop() formattedTop},
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities#formattedTop() formattedMiddle}, and
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteCreature.CreatureAbilities#formattedTop() formattedBottom} to
+     * a list of {@link QuteAbilityOrAffliction QuteAbilityOrAffliction}. Use
+     * {@link QuteCreature.CreatureAbilities#formattedTop() formattedTop},
+     * {@link QuteCreature.CreatureAbilities#formattedTop() formattedMiddle}, and
+     * {@link QuteCreature.CreatureAbilities#formattedTop() formattedBottom} to
      * get pre-formatted abilities according to the templates defined for
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbility QuteAbility} or
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAffliction QuteAffliction}.
+     * {@link QuteAbility QuteAbility} or
+     * {@link QuteAffliction QuteAffliction}.
      *
      * @param top Abilities which should be displayed in the top section of the statblock
      * @param middle Abilities which should be displayed in the middle section of the statblock
