@@ -24,11 +24,11 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
     /** The name of the attack e.g. "fist" (string) */
     public final String name;
 
-    /** Number/type of action cost ({@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity QuteDataActivity}) */
+    /** Number/type of action cost ({@link QuteDataActivity QuteDataActivity}) */
     public final QuteDataActivity activity;
 
     /**
-     * The range of the attack ({@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack.AttackRangeType AttackType} enum)
+     * The range of the attack ({@link QuteInlineAttack.AttackRangeType AttackRangeType} enum)
      */
     public final AttackRangeType rangeType;
 
@@ -43,8 +43,8 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     /**
      * The damage types caused by the attack. Will be included in either
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack#damage damage} or in
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack#multilineEffect multilineEffect}.
+     * {@link QuteInlineAttack#damage damage} or in
+     * {@link QuteInlineAttack#multilineEffect multilineEffect}.
      */
     public final Collection<String> damageTypes;
 
@@ -53,7 +53,7 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     /**
      * Any additional effects associated with the attack e.g. grab (list of strings). Effects listed here
-     * may be repeated in {@link dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack#damage damage}.
+     * may be repeated in {@link QuteInlineAttack#damage damage}.
      */
     public final List<String> effects;
 

@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.DocumentationTool;
 import javax.tools.ToolProvider;
@@ -43,7 +46,10 @@ public class MarkdownDoclet implements Doclet {
     DocletEnvironment environment;
     Path outputDirectory;
     Path currentResource;
+    Set<PackageElement> packages;
     Map<String, String> classNameMapping = new HashMap<>();
+    /** A map of unqualified class names to their qualified class name. */
+    Map<String, String> qualifiedClassNameMapping = new HashMap<>();
 
     MarkdownOption targetDir = new MarkdownOption() {
         String value;
@@ -145,7 +151,8 @@ public class MarkdownDoclet implements Doclet {
         }
 
         // Print package indexes (README.md)
-        for (PackageElement p : ElementFilter.packagesIn(elements)) {
+        packages = ElementFilter.packagesIn(elements);
+        for (PackageElement p : packages) {
             writeReadmeFile(docTrees, p);
         }
 
@@ -398,6 +405,7 @@ public class MarkdownDoclet implements Doclet {
                         reference = reference.substring(0, hash);
                     }
 
+                    reference = maybeGetQualifiedName(reference);
                     // resolve the class reference to a path (and then make that link relative)
                     reference = qualifiedNameToPath(reference);
                     if (!reference.startsWith("http")) {
@@ -414,6 +422,30 @@ public class MarkdownDoclet implements Doclet {
                     System.out.println("tree kind: " + docTree.getKind() + ", content: " + docTree);
                     break;
             }
+        }
+
+        /** Try to get a qualified name for the reference. If we can't, then return the reference unchanged. */
+        private String maybeGetQualifiedName(String reference) {
+            Elements elemUtil = environment.getElementUtils();
+            if (reference.startsWith("dev.ebullient.convert")) {
+                return reference;
+            }
+            // If we've already seen this before, then retrieve that name
+            if (qualifiedClassNameMapping.containsKey(reference)) {
+                return qualifiedClassNameMapping.get(reference);
+            }
+            // Try to get a unique qualified name from the reference
+            List<String> qualifiedNames = packages.stream()
+                    .map(pkg -> elemUtil.getTypeElement(pkg.getQualifiedName().toString() + "." + reference))
+                    .filter(Objects::nonNull)
+                    .map(e -> e.getQualifiedName().toString())
+                    .toList();
+            // If we can't get a single unique name, then end it here and just return the original reference
+            if (qualifiedNames.size() != 1) {
+                return reference;
+            }
+            qualifiedClassNameMapping.put(reference, qualifiedNames.get(0));
+            return qualifiedNames.get(0);
         }
 
         void add(String text) {
