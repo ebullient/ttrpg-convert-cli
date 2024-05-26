@@ -590,7 +590,7 @@ public interface JsonSource extends JsonTextReplacement {
         List<String> text = new ArrayList<>();
         boolean pushed = parseState().push(data);
         try {
-            QuteDataActivity activity = Pf2eTypeReader.getQuteActivity(data, Pf2eItem.activity, this);
+            QuteDataActivity activity = Pf2eItem.activity.getActivityFrom(data, this);
 
             String title = SourceField.name.getTextOrEmpty(data);
             if (activity != null) {

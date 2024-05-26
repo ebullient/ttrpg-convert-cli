@@ -1,7 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.parenthesize;
 import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
@@ -18,7 +17,6 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
@@ -308,11 +306,6 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    static QuteDataActivity getQuteActivity(JsonNode source, JsonNodeReader field, JsonSource convert) {
-        NumberUnitEntry jsonActivity = field.fieldFromTo(source, NumberUnitEntry.class, convert.tui());
-        return jsonActivity == null ? null : jsonActivity.toQuteActivity(convert);
-    }
-
     /**
      * Example JSON input for a creature:
      *
@@ -374,7 +367,7 @@ public interface Pf2eTypeReader extends JsonSource {
 
             return new QuteInlineAttack(
                     name.replaceTextFrom(node, convert),
-                    Optional.ofNullable(getQuteActivity(node, activity, convert))
+                    Optional.ofNullable(activity.getActivityFrom(node, convert))
                             .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
                     QuteInlineAttack.AttackRangeType.valueOf(range.getTextOrDefault(node, "Melee").toUpperCase()),
                     attack.getIntFrom(node).orElse(null),
@@ -442,29 +435,6 @@ public interface Pf2eTypeReader extends JsonSource {
                 return "%s %s".formatted(number, pluralize(unit, number));
             }
             return unit;
-        }
-
-        private QuteDataActivity toQuteActivity(JsonSource convert) {
-            String extra = entry == null || entry.toLowerCase().contains("varies")
-                    ? ""
-                    : " " + parenthesize(convert.replaceText(entry));
-
-            return switch (unit) {
-                case "single", "action", "free", "reaction" -> {
-                    Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
-                    if (activity == null) {
-                        throw new IllegalArgumentException("What is this? %s, %s, %s".formatted(number, unit, entry));
-                    }
-                    yield activity.toQuteActivity(convert,
-                            extra.isBlank() ? null : "%s%s".formatted(activity.getLongName(), extra));
-                }
-                case "varies" -> Pf2eActivity.varies.toQuteActivity(convert,
-                        extra.isBlank() ? null : "%s%s".formatted(Pf2eActivity.varies.getLongName(), extra));
-                case "day", "minute", "hour", "round" -> Pf2eActivity.timed.toQuteActivity(convert,
-                        "%s %s%s".formatted(number, unit, extra));
-                default -> throw new IllegalArgumentException(
-                        "What is this? %s, %s, %s".formatted(number, unit, entry));
-            };
         }
     }
 

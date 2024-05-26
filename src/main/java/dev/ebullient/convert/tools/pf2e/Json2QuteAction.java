@@ -42,7 +42,7 @@ public class Json2QuteAction extends Json2QuteBase {
                 Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", this),
                 Field.requirements.replaceTextFrom(rootNode, this),
                 Pf2eAction.frequency.getFrequencyFrom(rootNode, this),
-                Pf2eTypeReader.getQuteActivity(rootNode, Pf2eAction.activity, this),
+                Pf2eAction.activity.getActivityFrom(rootNode, this),
                 actionType == null ? null : actionType.build(this));
     }
 

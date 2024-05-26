@@ -5,6 +5,9 @@ import java.nio.file.Path;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.join;
+
 public enum Pf2eActivity {
     single("Single Action", ">", "single_action.svg"),
     two("Two-Action", ">>", "two_actions.svg"),
@@ -81,7 +84,7 @@ public enum Pf2eActivity {
     public QuteDataActivity toQuteActivity(JsonSource convert, String text) {
         Path relativeTarget = Path.of("img", targetFileName);
         return new QuteDataActivity(
-                text,
+                this != timed && isPresent(text) ? join(" ", getLongName(), text) : text,
                 Pf2eSources.buildStreamImageRef(convert.index(), glyph, relativeTarget, longName),
                 textGlyph,
                 this.getRulesPath(convert.index().rulesVaultRoot()));
