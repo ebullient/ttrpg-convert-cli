@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTrait;
@@ -53,7 +52,7 @@ public class Json2QuteTrait extends Json2QuteBase {
         return new QuteTraitIndex(sources, index.categoryTraitMap());
     }
 
-    enum TraitField implements JsonNodeReader {
+    enum TraitField implements Pf2eJsonNodeReader {
         implies,
     }
 }

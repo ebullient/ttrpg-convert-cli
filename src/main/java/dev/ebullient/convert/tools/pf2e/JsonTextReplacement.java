@@ -12,12 +12,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
-    enum Field implements JsonNodeReader {
+    enum Field implements Pf2eJsonNodeReader {
         alias,
         auto,
         by,

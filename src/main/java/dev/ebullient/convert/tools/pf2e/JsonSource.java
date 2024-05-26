@@ -638,7 +638,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     // Other context-constrained type values (not the big append loop)
-    enum FieldValue implements JsonNodeReader.FieldValue {
+    enum FieldValue implements Pf2eJsonNodeReader.FieldValue {
         multiRow;
 
         @Override
@@ -647,7 +647,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    enum SuccessDegree implements JsonNodeReader {
+    enum SuccessDegree implements Pf2eJsonNodeReader {
         criticalSuccess("Critical Success"),
         success("Success"),
         failure("Failure"),
@@ -664,7 +664,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
-    enum TableField implements JsonNodeReader {
+    enum TableField implements Pf2eJsonNodeReader {
         colStyles,
         intro,
         labelRowIdx,
@@ -673,7 +673,7 @@ public interface JsonSource extends JsonTextReplacement {
         spans,
     }
 
-    enum AppendTypeValue implements JsonNodeReader.FieldValue {
+    enum AppendTypeValue implements Pf2eJsonNodeReader.FieldValue {
         ability,
         affliction,
         attack,

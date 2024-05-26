@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
@@ -108,7 +107,7 @@ public class Json2QuteCompose extends Json2QuteBase {
                 .collect(Collectors.joining(", ")));
     }
 
-    enum ComposeFields implements JsonNodeReader {
+    enum ComposeFields implements Pf2eJsonNodeReader {
         alias
     }
 }
