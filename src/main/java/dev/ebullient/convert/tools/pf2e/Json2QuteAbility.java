@@ -47,7 +47,7 @@ public class Json2QuteAbility extends Json2QuteBase {
                     requirements.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert),
                     trigger.replaceTextFrom(node, convert),
-                    Pf2eFrequency.getFrequency(frequency.getFrom(node), convert),
+                    frequency.getFrequencyFrom(node, convert),
                     special.replaceTextFrom(node, convert),
                     note.replaceTextFrom(node, convert),
                     sources == null, convert);
