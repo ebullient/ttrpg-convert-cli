@@ -10,7 +10,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteBook;
@@ -126,7 +125,7 @@ public class Json2QuteBook extends Json2QuteBase {
         public Object identifier;
     }
 
-    enum Pf2eBook implements JsonNodeReader {
+    enum Pf2eBook implements Pf2eJsonNodeReader {
         author,
         contents,
         coverUrl,

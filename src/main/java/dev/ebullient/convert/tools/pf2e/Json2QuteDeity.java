@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
@@ -217,7 +216,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         }
     }
 
-    enum Pf2eDeity implements JsonNodeReader {
+    enum Pf2eDeity implements Pf2eJsonNodeReader {
         ability, // avatar
         airWalk, // avatar
         alignment,

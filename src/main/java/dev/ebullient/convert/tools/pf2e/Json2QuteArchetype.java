@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteArchetype;
 import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
@@ -129,7 +128,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
         return String.join("\n", inner);
     }
 
-    enum ArchetypeField implements JsonNodeReader {
+    enum ArchetypeField implements Pf2eJsonNodeReader {
         benefits,
         dedicationLevel,
         extraFeats,

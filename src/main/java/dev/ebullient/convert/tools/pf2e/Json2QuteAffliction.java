@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.StringUtil;
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAffliction;
 
@@ -31,7 +30,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
         return Pf2eAffliction.createAffliction(rootNode, this, getSources());
     }
 
-    public enum Pf2eAffliction implements JsonNodeReader {
+    public enum Pf2eAffliction implements Pf2eJsonNodeReader {
         name,
         DC,
         duration,

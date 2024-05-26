@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
@@ -53,7 +52,7 @@ public class Json2QuteHazard extends Json2QuteBase {
                         .map(n -> Pf2eHazardAttribute.buildPerception(n, this)).orElse(null));
     }
 
-    enum Pf2eHazard implements JsonNodeReader {
+    enum Pf2eHazard implements Pf2eJsonNodeReader {
         abilities,
         actions,
         attacks,
@@ -67,7 +66,7 @@ public class Json2QuteHazard extends Json2QuteBase {
         stealth,
     }
 
-    enum Pf2eHazardAttribute implements JsonNodeReader {
+    enum Pf2eHazardAttribute implements Pf2eJsonNodeReader {
         dc,
         bonus,
         minProf,

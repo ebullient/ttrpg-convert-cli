@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools.pf2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 
@@ -17,7 +16,7 @@ public class Json2QuteAbility extends Json2QuteBase {
         return Pf2eAbility.createAbility(rootNode, this, sources);
     }
 
-    public enum Pf2eAbility implements JsonNodeReader {
+    public enum Pf2eAbility implements Pf2eJsonNodeReader {
         name,
         activity,
         components,

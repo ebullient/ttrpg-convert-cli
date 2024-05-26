@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteBackground;
 
@@ -36,7 +35,7 @@ public class Json2QuteBackground extends Json2QuteBase {
         return new QuteBackground(sources, text, tags);
     }
 
-    enum Pf2eBackground implements JsonNodeReader {
+    enum Pf2eBackground implements Pf2eJsonNodeReader {
         boosts,
         skills,
         feat,

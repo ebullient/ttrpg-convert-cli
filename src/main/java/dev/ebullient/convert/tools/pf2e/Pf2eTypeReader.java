@@ -37,7 +37,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
 
-    enum Pf2eAction implements JsonNodeReader {
+    enum Pf2eAction implements Pf2eJsonNodeReader {
         activity,
         actionType,
         cost,
@@ -54,7 +54,7 @@ public interface Pf2eTypeReader extends JsonSource {
                 .toList();
     }
 
-    enum Pf2eAlignmentValue implements JsonNodeReader.FieldValue {
+    enum Pf2eAlignmentValue implements Pf2eJsonNodeReader.FieldValue {
         ce("Chaotic Evil"),
         cg("Chaotic Good"),
         cn("Chaotic Neutral"),
@@ -91,7 +91,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eWeaponData implements JsonNodeReader {
+    enum Pf2eWeaponData implements Pf2eJsonNodeReader {
         ammunition,
         damage,
         damageType,
@@ -176,7 +176,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eDefenses implements JsonNodeReader {
+    enum Pf2eDefenses implements Pf2eJsonNodeReader {
         abilities,
         ac,
         hardness,
@@ -340,7 +340,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eFeat implements JsonNodeReader {
+    enum Pf2eFeat implements Pf2eJsonNodeReader {
         access,
         activity,
         archetype, // child of featType
@@ -354,7 +354,7 @@ public interface Pf2eTypeReader extends JsonSource {
         trigger
     }
 
-    enum Pf2eHpStat implements JsonNodeReader {
+    enum Pf2eHpStat implements Pf2eJsonNodeReader {
         abilities,
         hp,
         name,
@@ -414,7 +414,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpell implements JsonNodeReader {
+    enum Pf2eSpell implements Pf2eJsonNodeReader {
         amp,
         area,
         basic,
@@ -454,7 +454,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSavingThrowType implements JsonNodeReader.FieldValue {
+    enum Pf2eSavingThrowType implements Pf2eJsonNodeReader.FieldValue {
         fortitude,
         reflex,
         will;
@@ -479,7 +479,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpellComponent implements JsonNodeReader.FieldValue {
+    enum Pf2eSpellComponent implements Pf2eJsonNodeReader.FieldValue {
         focus("F"),
         material("M"),
         somatic("S"),
@@ -515,7 +515,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSkillBonus implements JsonNodeReader {
+    enum Pf2eSkillBonus implements Pf2eJsonNodeReader {
         std,
         note;
 
@@ -591,7 +591,7 @@ public interface Pf2eTypeReader extends JsonSource {
      * </pre>
      *
      */
-    enum Pf2eAttack implements JsonNodeReader {
+    enum Pf2eAttack implements Pf2eJsonNodeReader {
         name,
         attack,
         activity,
@@ -650,7 +650,7 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpeed implements JsonNodeReader {
+    enum Pf2eSpeed implements Pf2eJsonNodeReader {
         walk,
         speedNote,
         abilities;
@@ -691,7 +691,7 @@ public interface Pf2eTypeReader extends JsonSource {
         };
     }
 
-    enum Pf2eFrequency implements JsonNodeReader {
+    enum Pf2eFrequency implements Pf2eJsonNodeReader {
         special,
         number,
         recurs,

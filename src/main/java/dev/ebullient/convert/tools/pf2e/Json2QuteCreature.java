@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
@@ -35,7 +34,7 @@ public class Json2QuteCreature extends Json2QuteBase {
      *     "bot": [ { ... } ],
      * </pre>
      */
-    enum Pf2eCreatureAbilities implements JsonNodeReader {
+    enum Pf2eCreatureAbilities implements Pf2eJsonNodeReader {
         top,
         mid,
         bot;
@@ -78,7 +77,7 @@ public class Json2QuteCreature extends Json2QuteBase {
      *     }
      * </pre>
      */
-    enum Pf2eCreatureLanguages implements JsonNodeReader {
+    enum Pf2eCreatureLanguages implements Pf2eJsonNodeReader {
         languages,
         abilities,
         notes;
@@ -102,7 +101,7 @@ public class Json2QuteCreature extends Json2QuteBase {
      *     }
      * </pre>
      */
-    enum Pf2eCreatureSense implements JsonNodeReader {
+    enum Pf2eCreatureSense implements Pf2eJsonNodeReader {
         name,
         type,
         range;
@@ -145,7 +144,7 @@ public class Json2QuteCreature extends Json2QuteBase {
      *     "attacks": [ { ... } ],
      * </pre>
      */
-    enum Pf2eCreature implements JsonNodeReader {
+    enum Pf2eCreature implements Pf2eJsonNodeReader {
         abilities,
         abilityMods,
         alignment,

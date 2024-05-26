@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.NamedText;
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
@@ -262,7 +261,7 @@ public class Json2QuteItem extends Json2QuteBase {
         return (input.startsWith("-") ? input : ("-" + input)) + suffix;
     }
 
-    enum Pf2eItem implements JsonNodeReader {
+    enum Pf2eItem implements Pf2eJsonNodeReader {
         ac, // shieldData
         ac2, // shieldData
         access,
@@ -304,7 +303,7 @@ public class Json2QuteItem extends Json2QuteBase {
         }
     }
 
-    enum Pf2eItemVariant implements JsonNodeReader {
+    enum Pf2eItemVariant implements Pf2eJsonNodeReader {
         level,
         price,
         entries,
