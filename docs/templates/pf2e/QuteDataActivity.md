@@ -1,28 +1,24 @@
 # QuteDataActivity
 
-Pf2eTools activity attributes
-
-This attribute will render itself as a formatted link: `[textGlyph](rulesPath "glyph.title")<optional text>`
+Pf2eTools activity attributes. This attribute will render itself as a formatted link: <pre> [textGlyph](rulesPath "glyph.title")<optional text> </pre>
 
 ## Attributes
 
-[glyph](#glyph), [rulesPath](#rulespath), [text](#text), [textGlyph](#textglyph), [verbose](#verbose)
+[glyph](#glyph), [rulesPath](#rulespath), [text](#text), [textGlyph](#textglyph)
 
+
+### text
+
+The text associated with the action - may be null.
 
 ### glyph
 
 icon/image representing this activity as a [ImageRef](../ImageRef.md)
 
-### rulesPath
-
-
-### text
-
-Return the text associated with the action
-
 ### textGlyph
 
+A textual representation of the glyph, used as the link text
 
-### verbose
+### rulesPath
 
-True if this is a descriptive activity (duration or condition)
+The path which leads to an explanation of this particular activity

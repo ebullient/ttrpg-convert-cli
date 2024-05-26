@@ -6,7 +6,7 @@ This data object provides a default mechanism for creating a marked up string ba
 
 ## Attributes
 
-[abilities](#abilities), [ability](#ability), [melee](#melee), [name](#name), [preface](#preface), [ranged](#ranged), [shield](#shield), [speed](#speed)
+[abilities](#abilities), [ability](#ability), [attacks](#attacks), [name](#name), [preface](#preface), [shield](#shield), [speed](#speed)
 
 
 ### abilities
@@ -15,16 +15,13 @@ This data object provides a default mechanism for creating a marked up string ba
 ### ability
 
 
-### melee
+### attacks
 
 
 ### name
 
 
 ### preface
-
-
-### ranged
 
 
 ### shield

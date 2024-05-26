@@ -1,8 +1,6 @@
 # CreatureLanguages
 
-The languages and language features known by a creature.
-
-Referencing this object directly provides a default markup which includes all data. Example: `"Common, Sylvan; telepathy 100ft; knows any language the summoner does" `
+The languages and language features known by a creature. Example default output: <blockquote> Common, Sylvan; telepathy 100ft; knows any language the summoner does </blockquote>
 
 ## Attributes
 

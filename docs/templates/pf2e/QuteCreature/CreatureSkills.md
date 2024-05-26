@@ -1,8 +1,6 @@
 # CreatureSkills
 
-A creature's skill information.
-
-Referencing this object directly provides a default markup which includes all data. Example: `"Athletics +10, Cult Lore +10 (lore on their cult), Stealth +10 (+12 in forests); Some skill note" `
+A creature's skill information. Example default output: <blockquote> Athletics +10, Cult Lore +10 (lore on their cult), Stealth +10 (+12 in forests); Some skill note </blockquote>
 
 ## Attributes
 

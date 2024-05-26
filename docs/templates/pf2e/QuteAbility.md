@@ -10,7 +10,10 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 ## Attributes
 
-[activity](#activity), [bareTraitList](#baretraitlist), [components](#components), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasActivity](#hasactivity), [hasAttributes](#hasattributes), [hasDetails](#hasdetails), [hasEffect](#haseffect), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [note](#note), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traitList](#traitlist), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[_converter](#_converter), [activity](#activity), [bareTraitList](#baretraitlist), [components](#components), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasActivity](#hasactivity), [hasAttributes](#hasattributes), [hasDetails](#hasdetails), [hasEffect](#haseffect), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [note](#note), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traitList](#traitlist), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+
+
+### _converter
 
 
 ### activity
@@ -35,7 +38,7 @@ True if this ability is embedded in another note (admonition block). When this i
 
 ### frequency
 
-How often this ability can be used/activated
+[QuteDataFrequency](QuteDataFrequency.md). How often this ability can be used/activated. Use directly to get a formatted string.
 
 ### hasActivity
 
@@ -47,7 +50,7 @@ True if hasActivity is true, hasEffect is true or cost is present. In other word
 
 ### hasDetails
 
-True if getHasAttributes is true or special is present. In other words, this is true if there is more than just a name and text. Use this to test to choose between a detailed or simple rendering.
+True if the ability is a short, one-line name and description. Use this to test to choose between a detailed or simple rendering.
 
 ### hasEffect
 

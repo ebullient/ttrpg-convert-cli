@@ -31,7 +31,7 @@ The cost of using this action
 
 ### frequency
 
-How often this action can be used
+[QuteDataFrequency](../QuteDataFrequency.md). How often this action can be used/activated. Use directly to get a formatted string.
 
 ### hasSections
 

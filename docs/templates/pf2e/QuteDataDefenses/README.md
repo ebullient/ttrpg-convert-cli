@@ -3,7 +3,7 @@
 Pf2eTools Armor class, Saving Throws, and other attributes describing defenses of a creature or hazard. Example:
 
 - **AC** 23 (33 with mage armor); **Fort** +15, **Ref** +12, **Will** +10
-- **Floor Hardness** 18, **Floor HP** 72 (BT 36); **Channel Hardness** 12, **Channel HP** 48 (BT24 ) to destroy a channel gate; **Resistances** precision damage; **Immunities** critical hits; **Weaknesses** bludgeoning damage
+- **Floor Hardness** 18, **Floor HP** 72 (BT 36); **Channel Hardness** 12, **Channel HP** 48 (BT24 ) to destroy a channel gate; **Immunities** critical hits; **Resistances** precision damage; **Weaknesses** bludgeoning damage
 
 ## Attributes
 

@@ -1,6 +1,6 @@
 # CreatureSense
 
-A creature's senses.
+A creature's senses. Example default output: <blockquote> tremorsense (imprecise) 20ft </blockquote>
 
 ## Attributes
 

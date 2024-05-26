@@ -34,6 +34,7 @@ True if this ability is embedded in another note (admonition block). The default
 
 ### frequency
 
+[QuteDataFrequency](QuteDataFrequency.md). How often this feat can be used/activated. Use directly to get a formatted string.
 
 ### hasSections
 

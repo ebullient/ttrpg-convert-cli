@@ -8,8 +8,12 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[abilityMods](#abilitymods), [aliases](#aliases), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[abilities](#abilities), [abilityMods](#abilitymods), [aliases](#aliases), [attacks](#attacks), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
+
+### abilities
+
+The creature's abilities, as a [CreatureAbilities](QuteCreature/CreatureAbilities.md).
 
 ### abilityMods
 
@@ -18,6 +22,10 @@ Ability modifiers as a map of (name, modifier)
 ### aliases
 
 Aliases for this note (optional)
+
+### attacks
+
+The creature's attacks, as a list of [QuteInlineAttack](QuteInlineAttack.md)
 
 ### defenses
 
