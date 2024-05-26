@@ -26,11 +26,9 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -650,40 +648,6 @@ public interface Pf2eTypeReader extends JsonSource {
             case "3" -> "3rd";
             default -> level + "th";
         };
-    }
-
-    enum Pf2eFrequency implements Pf2eJsonNodeReader {
-        special,
-        number,
-        recurs,
-        overcharge,
-        interval,
-        unit,
-        customUnit;
-
-        public static QuteDataFrequency getFrequency(JsonNode node, JsonTextConverter<?> convert) {
-            if (node == null) {
-                return null;
-            }
-            if (special.getTextFrom(node).isPresent()) {
-                return new QuteDataFrequency(special.replaceTextFrom(node, convert));
-            }
-            Integer freqNumber = number.getIntFrom(node).orElseGet(() -> {
-                // Handle a data issue where some rules entries deviate from schema with words instead of integers.
-                String freqString = number.getTextOrThrow(node).trim();
-                if (freqString.equals("once")) {
-                    return 1;
-                }
-                convert.tui().errorf("Got unexpected frequency value \"%s\"", freqString);
-                return 0;
-            });
-            return new QuteDataFrequency(
-                    freqNumber,
-                    interval.getIntFrom(node).orElse(null),
-                    unit.getTextFrom(node).orElseGet(() -> customUnit.getTextOrThrow(node)),
-                    recurs.booleanOrDefault(node, false),
-                    overcharge.booleanOrDefault(node, false));
-        }
     }
 
     @RegisterForReflection
