@@ -122,7 +122,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         avatar.preface = replaceText(Pf2eDeity.preface.getTextOrEmpty(avatarNode));
         avatar.name = linkify(Pf2eIndexType.spell, "avatar||Avatar") + " of " + sources.getName();
 
-        avatar.speed = Pf2eTypeReader.Pf2eSpeed.getSpeed(Pf2eDeity.speed.getFrom(avatarNode), this);
+        avatar.speed = Pf2eDeity.speed.getSpeedFrom(avatarNode, this);
         if (Pf2eDeity.airWalk.booleanOrDefault(avatarNode, false)) {
             avatar.speed.addAbility(linkify(Pf2eIndexType.spell, "air walk"));
         }

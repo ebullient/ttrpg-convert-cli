@@ -643,38 +643,6 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpeed implements Pf2eJsonNodeReader {
-        walk,
-        speedNote,
-        abilities;
-
-        /**
-         * Example JSON input:
-         *
-         * <pre>
-         *     {
-         *         "walk": 10,
-         *         "fly": 20,
-         *         "speedNote": "(with fly spell)",
-         *         "abilities": "air walk"
-         *     }
-         * </pre>
-         */
-        static QuteDataSpeed getSpeed(JsonNode source, JsonTextConverter<?> convert) {
-            return !convert.isObjectNode(source) ? null
-                    : new QuteDataSpeed(
-                            walk.getIntFrom(source).orElse(null),
-                            convert.streamPropsExcluding(source, speedNote, abilities)
-                                    .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().asInt())),
-                            speedNote.getTextFrom(source)
-                                    .map(convert::replaceText)
-                                    .map(s -> s.replaceFirst("^\\((%s)\\)$", "\1")) // Remove parens around the note
-                                    .map(List::of).orElse(List.of()),
-                            // Specifically make this mutable because we later need to add additional abilities for deities
-                            new ArrayList<>(abilities.replaceTextFromList(source, convert)));
-        }
-    }
-
     default String getOrdinalForm(String level) {
         return switch (level) {
             case "1" -> "1st";
