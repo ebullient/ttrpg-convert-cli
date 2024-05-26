@@ -47,13 +47,6 @@ public interface Pf2eTypeReader extends JsonSource {
         trigger
     }
 
-    default List<String> getAlignments(JsonNode alignNode) {
-        return streamOf(alignNode)
-                .map(JsonNode::asText)
-                .map(a -> a.length() > 2 ? a : linkifyTrait(a.toUpperCase()))
-                .toList();
-    }
-
     enum Pf2eAlignmentValue implements Pf2eJsonNodeReader.FieldValue {
         ce("Chaotic Evil"),
         cg("Chaotic Good"),
