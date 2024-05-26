@@ -184,7 +184,7 @@ public class Json2QuteCreature extends Json2QuteBase {
                     description.replaceTextFrom(node, convert),
                     level.getIntFrom(node).orElse(null),
                     perception.getObjectFrom(node).map(std::getIntOrThrow).orElse(null),
-                    defenses.getObjectFrom(node).map(n -> Pf2eDefenses.createInlineDefenses(n, convert)).orElse(null),
+                    defenses.getDefensesFrom(node, convert),
                     languages.getObjectFrom(node).map(n -> Pf2eCreatureLanguages.create(n, convert)).orElse(null),
                     new QuteCreature.CreatureSkills(
                             skills.streamPropsExcluding(node, notes)
