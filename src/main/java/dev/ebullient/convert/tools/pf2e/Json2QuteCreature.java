@@ -174,7 +174,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         private static QuteCreature create(JsonNode node, Pf2eTypeReader convert) {
             Tags tags = new Tags(convert.getSources());
             Collection<String> traits = convert.collectTraitsFrom(node, tags);
-            traits.addAll(convert.getAlignments(alignment.getFrom(node)));
+            traits.addAll(alignment.getAlignmentsFrom(node, convert));
 
             return new QuteCreature(convert.getSources(),
                     entries.transformTextFrom(node, "\n", convert, "##"),
