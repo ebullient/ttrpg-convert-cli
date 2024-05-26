@@ -200,7 +200,7 @@ public class Json2QuteCreature extends Json2QuteBase {
                             .collect(Collectors.toMap(
                                     Map.Entry::getKey, e -> e.getValue().asInt(), (u, v) -> u, LinkedHashMap::new)),
                     items.replaceTextFromList(node, convert),
-                    speed.getObjectFrom(node).map(n -> Pf2eSpeed.getSpeed(n, convert)).orElse(null),
+                    speed.getSpeedFrom(node, convert),
                     attacks.streamFrom(node)
                             .map(n -> convert.isObjectNode(n) ? Pf2eAttack.createInlineAttack(n, convert) : null)
                             .filter(Objects::nonNull)
