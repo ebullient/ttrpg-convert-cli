@@ -7,10 +7,7 @@ import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,14 +17,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
@@ -167,170 +158,6 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eDefenses implements Pf2eJsonNodeReader {
-        abilities,
-        ac,
-        hardness,
-        hp,
-        bt,
-        immunities,
-        note,
-        notes,
-        resistances,
-        savingThrows,
-        std,
-        weaknesses;
-
-        public static QuteDataDefenses createInlineDefenses(JsonNode source, Pf2eTypeReader convert) {
-            JsonNode notesNode = notes.getFrom(source);
-            if (notesNode != null) {
-                convert.tui().warnf("Defenses has notes: %s", source.toString());
-            }
-
-            Map<String, QuteDataHpHardnessBt> hpHardnessBt = getHpHardnessBt(source, convert);
-
-            return new QuteDataDefenses(
-                    getArmorClass(source, convert),
-                    getSavingThrowString(source, convert),
-                    hpHardnessBt.remove(std.name()),
-                    hpHardnessBt,
-                    immunities.linkifyListFrom(source, Pf2eIndexType.trait, convert), // immunities
-                    getWeakResist(resistances, source, convert), // resistances
-                    getWeakResist(weaknesses, source, convert));
-        }
-
-        /**
-         * Example input JSON for a hazard:
-         *
-         * <pre>
-         *     "hardness": {
-         *         "std": 13,
-         *         "Reflection ": 14,
-         *         "notes": {
-         *             "std": "per mirror"
-         *         }
-         *     },
-         *     "hp": {
-         *         "std": 54,
-         *         "Reflection ": 30,
-         *         "notes": {
-         *             "Reflection ": "some note"
-         *         }
-         *     },
-         *     "bt": {
-         *         "std": 27,
-         *         "Reflection ": 15
-         *     }
-         * </pre>
-         *
-         * Broken threshold is only valid for hazards. Example input JSON for a creature:
-         *
-         * <pre>
-         *     "hardness": {
-         *         "std": 13,
-         *     },
-         *     "hp": [
-         *         { "hp": 90, "name": "body", "abilities": [ "hydra regeneration" ] },
-         *         { "hp": 15, "name": "head", "abilities": [ "head regrowth" ] }
-         *     ],
-         * </pre>
-         */
-        public static Map<String, QuteDataHpHardnessBt> getHpHardnessBt(JsonNode source, Pf2eTypeReader convert) {
-            // We need to do HP mapping separately because creature and hazard HP are structured differently
-            Map<String, QuteDataHpHardnessBt.HpStat> hpStats = hp.isArrayIn(source)
-                    ? Pf2eHpStat.mappedHpFromArray(hp.ensureArrayIn(source), convert)
-                    : Pf2eHpStat.mappedHpFromObject(hp.getFromOrEmptyObjectNode(source), convert);
-
-            // Collect names from the field names of the stat objects
-            Set<String> names = Stream.of(bt, hardness)
-                    .filter(k -> k.isObjectIn(source))
-                    .flatMap(k -> k.streamPropsExcluding(source, Pf2eHpStat.values()))
-                    .map(Entry::getKey)
-                    .map(s -> s.equals("default") ? std.name() : s) // compensate for data irregularity
-                    .collect(Collectors.toSet());
-            names.addAll(hpStats.keySet());
-
-            JsonNode btNode = bt.getFromOrEmptyObjectNode(source);
-            JsonNode hardnessNode = hardness.getFromOrEmptyObjectNode(source);
-            Map<String, String> hardnessNotes = notes.getMapOfStrings(hardnessNode, convert.tui());
-
-            // Map each known name to the known stats for that name
-            return names.stream().collect(Collectors.toMap(
-                    String::trim,
-                    k -> new QuteDataHpHardnessBt(
-                            hpStats.getOrDefault(k, null),
-                            hardnessNode.has(k)
-                                    ? new SimpleStat(
-                                            hardnessNode.get(k).asInt(), convert.replaceText(hardnessNotes.get(k)))
-                                    : null,
-                            btNode.has(k) ? btNode.get(k).asInt() : null)));
-        }
-
-        public static List<String> getWeakResist(Pf2eDefenses field, JsonNode source, Pf2eTypeReader convert) {
-            List<String> items = new ArrayList<>();
-            for (JsonNode wr : field.iterateArrayFrom(source)) {
-                NameAmountNote nmn = convert.tui().readJsonValue(wr, NameAmountNote.class);
-                items.add(nmn.flatten(convert));
-            }
-            return items;
-        }
-
-        public static QuteDataArmorClass getArmorClass(JsonNode source, Pf2eTypeReader convert) {
-            JsonNode acNode = ac.getFrom(source);
-            return acNode == null ? null
-                    : new QuteDataArmorClass(
-                            std.getIntOrThrow(acNode),
-                            ac.streamPropsExcluding(source, note, abilities, notes, std)
-                                    .collect(Collectors.toMap(Entry::getKey, e -> e.getValue().asInt())),
-                            (note.existsIn(acNode) ? note : notes).replaceTextFromList(acNode, convert),
-                            abilities.replaceTextFromList(acNode, convert));
-        }
-
-        /**
-         * "savingThrows": {
-         * "fort": {
-         * "std": 12
-         * },
-         * "ref": {
-         * "std": 8
-         * }
-         * },
-         */
-        public static QuteSavingThrows getSavingThrowString(JsonNode source, Pf2eTypeReader convert) {
-            JsonNode stNode = savingThrows.getFrom(source);
-            if (stNode == null) {
-                return null;
-            }
-            QuteSavingThrows svt = new QuteSavingThrows();
-            for (Entry<String, JsonNode> e : convert.iterableFields(stNode)) {
-                int sv = std.intOrDefault(e.getValue(), 0);
-                List<String> svValue = new ArrayList<>();
-                svValue.add((sv >= 0 ? "+" : "") + sv);
-
-                if (e.getValue().size() > 1) {
-                    for (Entry<String, JsonNode> extra : convert.iterableFields(e.getValue())) {
-                        if ("std".equals(extra.getKey())) {
-                            continue;
-                        }
-                        if ("abilities".equals(extra.getKey())) {
-                            svt.hasThrowAbilities = true;
-                            svValue.addAll(convert.streamOf(extra.getValue())
-                                    .map(convert::replaceText)
-                                    .toList());
-                            continue;
-                        }
-                        int value = extra.getValue().asInt();
-                        svt.savingThrows.put(toTitleCase(extra.getKey()),
-                                (value >= 0 ? "+" : "") + value);
-                    }
-                }
-                svt.savingThrows.put(toTitleCase(e.getKey()), String.join(", ", svValue));
-            }
-            svt.abilities = convert.replaceText(abilities.getTextOrNull(stNode));
-            return svt;
-        }
-    }
-
     enum Pf2eFeat implements Pf2eJsonNodeReader {
         access,
         activity,
@@ -343,66 +170,6 @@ public interface Pf2eTypeReader extends JsonSource {
         prerequisites,
         special,
         trigger
-    }
-
-    enum Pf2eHpStat implements Pf2eJsonNodeReader {
-        abilities,
-        hp,
-        name,
-        notes;
-
-        /**
-         * Read HP stats mapped to names from a JSON array. Each entry in the array corresponds to a different HP
-         * component in a single creature - e.g. the heads and body on a hydra:
-         *
-         * <pre>
-         *     [
-         *       {"hp": 10, "name": "head", "abilities": ["head regrowth"]},
-         *       {"hp": 20, "name": "body", "notes": ["some note"]}
-         *     ]
-         * </pre>
-         *
-         * If there is only a single HP component, then {@code name} may be omitted. In this case, the key in the map
-         * will be {@code std}.
-         *
-         * <pre>
-         *     [{"hp": 10, "abilities": ["some ability"], "notes": ["some note"]}]
-         * </pre>
-         */
-        static Map<String, QuteDataHpHardnessBt.HpStat> mappedHpFromArray(JsonNode source, JsonTextConverter<?> convert) {
-            return convert.streamOf(convert.ensureArray(source)).collect(Collectors.toMap(
-                    n -> Pf2eHpStat.name.existsIn(n)
-                            ? toTitleCase(Pf2eHpStat.name.getTextOrThrow(n))
-                            : Pf2eDefenses.std.name(),
-                    n -> new QuteDataHpHardnessBt.HpStat(
-                            hp.getIntOrThrow(n),
-                            notes.replaceTextFromList(n, convert),
-                            abilities.replaceTextFromList(n, convert))));
-        }
-
-        /**
-         * Read HP stats mapped to names from a JSON object. Each resulting entry corresponds to a different HP
-         * component in a single hazard - e.g. the standard HP, and the reflection HP on a Clone Mirror hazard:
-         *
-         * <pre>
-         *     {
-         *         "std": 54,
-         *         "Reflection ": 30,
-         *         "notes": {
-         *             "std": "per mirror"
-         *         }
-         *     }
-         * </pre>
-         */
-        static Map<String, QuteDataHpHardnessBt.HpStat> mappedHpFromObject(
-                JsonNode source, JsonTextConverter<?> convert) {
-            JsonNode notesNode = notes.getFromOrEmptyObjectNode(source);
-            return convert.streamPropsExcluding(convert.ensureObjectNode(source), notes).collect(Collectors.toMap(
-                    Entry::getKey,
-                    e -> new QuteDataHpHardnessBt.HpStat(
-                            e.getValue().asInt(),
-                            notesNode.has(e.getKey()) ? convert.replaceText(notesNode.get(e.getKey())) : null)));
-        }
     }
 
     enum Pf2eSpell implements Pf2eJsonNodeReader {
