@@ -214,7 +214,7 @@ public class Json2QuteItem extends Json2QuteBase {
         }
 
         QuteItemActivate activate = new QuteItemActivate();
-        activate.activity = Pf2eTypeReader.getQuteActivity(rootNode, Pf2eItem.activity, this);
+        activate.activity = Pf2eItem.activity.getActivityFrom(rootNode, this);
         activate.components = Pf2eItem.components.transformTextFrom(activateNode, ", ", this);
         activate.requirements = Field.requirements.replaceTextFrom(activateNode, this);
         activate.frequency = Pf2eItem.frequency.getFrequencyFrom(activateNode, this);

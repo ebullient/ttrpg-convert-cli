@@ -42,7 +42,7 @@ public class Json2QuteAbility extends Json2QuteBase {
                     entries.transformTextFrom(node, "\n", convert),
                     tags,
                     convert.collectTraitsFrom(node, tags),
-                    Pf2eTypeReader.getQuteActivity(node, Pf2eFeat.activity, convert),
+                    activity.getActivityFrom(node, convert),
                     components.transformTextFrom(node, ", ", convert),
                     requirements.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert),

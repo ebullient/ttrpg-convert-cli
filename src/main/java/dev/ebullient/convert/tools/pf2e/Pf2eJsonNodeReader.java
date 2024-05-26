@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e;
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
@@ -18,9 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 /** A utility class which extends {@link JsonNodeReader} with PF2e-specific functionality. */
@@ -398,6 +401,59 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                 e -> new QuteDataHpHardnessBt.HpStat(
                     e.getValue().asInt(),
                     notesNode.has(e.getKey()) ? convert.replaceText(notesNode.get(e.getKey())) : null)));
+        }
+    }
+
+    /** Return a {@link QuteDataActivity} read from this field in {@code source}, or null */
+    default QuteDataActivity getActivityFrom(JsonNode source, JsonSource convert) {
+        return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.readActivity(n, convert)).orElse(null);
+    }
+
+    /**
+     * A {@link Pf2eJsonNodeReader} which reads JSON input structured like the following:
+     *
+     * <pre>
+     *     "number": 1,
+     *     "unit": "round",
+     *     "entry": "until the start of your next turn"
+     * </pre>
+     */
+    enum Pf2eNumberUnitEntry implements Pf2eJsonNodeReader {
+        number,
+        unit,
+        entry;
+
+        /**
+         * Return a {@link QuteDataActivity} read from {@code node}. Example JSON input:
+         * <pre>
+         *     {"number": 1, "unit": "action"}
+         * </pre>
+         * Or, for an activity with a custom entry:
+         * <pre>
+         *     {"number": 1, "unit": "varies", "entry": "{&#64;as 3} command,"}
+         * </pre>
+         */
+        private static QuteDataActivity readActivity(JsonNode node, JsonSource convert) {
+            String actionType = unit.getTextOrNull(node);
+            String extra = entry.getTextFrom(node)
+                .filter(s -> !s.toLowerCase().contains("varies"))
+                .filter(Predicate.not(String::isBlank))
+                .map(convert::replaceText).map(StringUtil::parenthesize)
+                .orElse("");
+
+            Pf2eActivity activity = switch (actionType) {
+                case "single", "action", "free", "reaction" ->
+                    Pf2eActivity.toActivity(actionType, number.getIntOrThrow(node));
+                case "varies" -> Pf2eActivity.varies;
+                case "day", "minute", "hour", "round" -> Pf2eActivity.timed;
+                default -> null;
+            };
+
+            if (activity == null) {
+                throw new IllegalArgumentException("Can't parse activity from: %s".formatted(node));
+            }
+            return activity.toQuteActivity(
+                convert, activity == Pf2eActivity.timed ? join(" ", number.getIntOrThrow(node), actionType, extra) : extra);
         }
     }
 }
