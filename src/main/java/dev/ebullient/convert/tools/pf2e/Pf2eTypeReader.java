@@ -381,26 +381,6 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    @RegisterForReflection
-    class NameAmountNote {
-        public String name;
-        public Integer amount;
-        public String note;
-
-        public NameAmountNote() {
-        }
-
-        public NameAmountNote(String value) {
-            note = value;
-        }
-
-        public String flatten(Pf2eTypeReader convert) {
-            return name
-                    + (amount == null ? "" : " " + amount)
-                    + (note == null ? "" : convert.replaceText(note));
-        }
-    }
-
     default String getOrdinalForm(String level) {
         return switch (level) {
             case "1" -> "1st";

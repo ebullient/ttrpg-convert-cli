@@ -4,10 +4,12 @@ import static dev.ebullient.convert.StringUtil.flatJoin;
 import static dev.ebullient.convert.StringUtil.formatMap;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinWithPrefix;
+import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
@@ -25,16 +27,14 @@ import io.quarkus.qute.TemplateData;
  * </li>
  * </ul>
  *
- * @param ac The armor class as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass QuteDataArmorClass}
- * @param savingThrows The saving throws, as
- *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses.QuteSavingThrows QuteSavingThrows}
- * @param hpHardnessBt HP, hardness, and broken threshold stored in a
- *        {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt QuteDataHpHardnessBt}
+ * @param ac The armor class as a {@link QuteDataArmorClass}
+ * @param savingThrows The saving throws, as {@link QuteSavingThrows}
+ * @param hpHardnessBt HP, hardness, and broken threshold stored in a {@link QuteDataHpHardnessBt}
  * @param additionalHpHardnessBt Additional HP, hardness, or broken thresholds for other HP components as a map of
- *        names to {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt QuteDataHpHardnessBt}
+ *        names to {@link QuteDataHpHardnessBt}
  * @param immunities List of strings, optional
- * @param resistances List of strings, optional
- * @param weaknesses List of strings, optional
+ * @param resistances Map of (name, {@link QuteDataGenericStat})
+ * @param weaknesses Map of (name, {@link QuteDataGenericStat})
  */
 @TemplateData
 public record QuteDataDefenses(
@@ -43,8 +43,8 @@ public record QuteDataDefenses(
         QuteDataHpHardnessBt hpHardnessBt,
         Map<String, QuteDataHpHardnessBt> additionalHpHardnessBt,
         List<String> immunities,
-        List<String> resistances,
-        List<String> weaknesses) implements QuteUtil {
+        Map<String, QuteDataGenericStat> resistances,
+        Map<String, QuteDataGenericStat> weaknesses) implements QuteUtil {
 
     @Override
     public String toString() {
@@ -56,8 +56,10 @@ public record QuteDataDefenses(
                         hpHardnessBt,
                         join("; ", formatMap(additionalHpHardnessBt, (k, v) -> v.toStringWithName(k))),
                         joinWithPrefix(", ", "**Immunities** ", immunities),
-                        joinWithPrefix(", ", "**Resistances** ", resistances),
-                        joinWithPrefix(", ", "**Weaknesses** ", weaknesses)));
+                        formatMap(resistances, (k, v) -> join(" ", k, v)).stream().sorted()
+                                .collect(joiningNonEmpty(", ", "**Resistances** ")),
+                        formatMap(weaknesses, (k, v) -> join(" ", k, v)).stream().sorted()
+                                .collect(joiningNonEmpty(", ", "**Weaknesses** "))));
     }
 
     /**

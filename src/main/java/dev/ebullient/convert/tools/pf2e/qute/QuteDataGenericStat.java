@@ -53,7 +53,7 @@ public interface QuteDataGenericStat extends QuteUtil {
 
         @Override
         public String toString() {
-            return join(" ", value.toString(), formattedNotes());
+            return join(" ", value, formattedNotes());
         }
 
         @Override
