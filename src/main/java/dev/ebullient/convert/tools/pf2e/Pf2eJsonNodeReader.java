@@ -8,8 +8,8 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
@@ -58,6 +58,19 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
     /** Return a {@link QuteDataActivity} read from this field in {@code source}, or null */
     default QuteDataActivity getActivityFrom(JsonNode source, JsonSource convert) {
         return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.getActivity(n, convert)).orElse(null);
+    }
+
+    /** Returns {@link QuteDataDefenses.QuteSavingThrows} read from this field in {@code source}, or null. */
+    default QuteDataDefenses.QuteSavingThrows getSavingThrowsFrom(JsonNode source, JsonSource convert) {
+        return getObjectFrom(source).map(n -> Pf2eSavingThrows.getSavingThrows(n, convert)).orElse(null);
+    }
+
+    /**
+     * Return a {@link QuteDataNamedBonus} from this field in {@code source} with a name of this field's name, or
+     * return null if this field is not present in {@code source}.
+     */
+    default QuteDataNamedBonus getNamedBonusFrom(JsonNode source, JsonSource convert) {
+        return existsIn(source) ? Pf2eNamedBonus.getNamedBonus(name(), getFrom(source), convert) : null;
     }
 
     /**
@@ -286,59 +299,6 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         }
 
         /**
-         * Return {@link QuteDataDefenses.QuteSavingThrows} read from this field in {@code source}, or null.
-         *
-         * <pre>
-         *     "fort": {
-         *         "std": 10,
-         *         "abilities": ["some fort ability"]
-         *     },
-         *     "ref": {
-         *         "std": 12,
-         *         "abilities": ["some ref ability"]
-         *     },
-         *     "will": {
-         *         "std": 14,
-         *         "abilities": ["some will ability"]
-         *     },
-         *     "abilities": ["some saving throw ability"]
-         * </pre>
-         */
-        private QuteDataDefenses.QuteSavingThrows getSavingThrowsFrom(JsonNode source, JsonSource convert) {
-            JsonNode stNode = getObjectFrom(source).orElse(null);
-            if (stNode == null) {
-                return null;
-            }
-            QuteDataDefenses.QuteSavingThrows svt = new QuteDataDefenses.QuteSavingThrows();
-            for (Map.Entry<String, JsonNode> e : convert.iterableFields(stNode)) {
-                int sv = std.intOrDefault(e.getValue(), 0);
-                List<String> svValue = new ArrayList<>();
-                svValue.add((sv >= 0 ? "+" : "") + sv);
-
-                if (e.getValue().size() > 1) {
-                    for (Map.Entry<String, JsonNode> extra : convert.iterableFields(e.getValue())) {
-                        if ("std".equals(extra.getKey())) {
-                            continue;
-                        }
-                        if ("abilities".equals(extra.getKey())) {
-                            svt.hasThrowAbilities = true;
-                            svValue.addAll(convert.streamOf(extra.getValue())
-                                    .map(convert::replaceText)
-                                    .toList());
-                            continue;
-                        }
-                        int value = extra.getValue().asInt();
-                        svt.savingThrows.put(toTitleCase(extra.getKey()),
-                                (value >= 0 ? "+" : "") + value);
-                    }
-                }
-                svt.savingThrows.put(toTitleCase(e.getKey()), String.join(", ", svValue));
-            }
-            svt.abilities = convert.replaceText(abilities.getTextOrNull(stNode));
-            return svt;
-        }
-
-        /**
          * Returns a map of names to {@link QuteDataHpHardnessBt.HpStat} from this field of {@code source}, or an empty
          * map.
          */
@@ -533,6 +493,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         types,
         noMAP;
 
+        /** Returns a {@link QuteInlineAttack} read from {@code node} */
         public static QuteInlineAttack createAttack(JsonNode node, JsonSource convert) {
             List<String> attackEffects = Pf2eAttack.effects.transformListFrom(node, convert);
             // Either the effects are a list of short descriptors which are also included in the damage, or they are a
@@ -557,7 +518,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
     }
 
     /**
-     * A {@link Pf2eJsonNodeReader} which parses JSON skill bonuses. Example:
+     * A {@link Pf2eJsonNodeReader} which parses JSON named bonuses. Example:
      *
      * <pre>
      *     "std": 10,
@@ -565,24 +526,71 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
      *     "note": "some note"
      * </pre>
      */
-    enum Pf2eSkillBonus implements Pf2eJsonNodeReader {
+    enum Pf2eNamedBonus implements Pf2eJsonNodeReader {
         std,
-        note;
+        note,
+        notes,
+        abilities;
 
-        public static QuteDataSkillBonus createSkillBonus(
-                String skillName, JsonNode source, Pf2eTypeReader convert) {
+        /**
+         * Return a {@link QuteDataNamedBonus} read from {@code source} with the given {@code skillName}. If
+         * {@code source} is an integer, then return a bonus of that amount. If {@code source} is null, then return a
+         * bonus of 0.
+         *
+         * <p>
+         * Reads either single note from {@code note}, or multiple notes from {@code abilities}.
+         * </p>
+         */
+        public static QuteDataNamedBonus getNamedBonus(
+                String skillName, JsonNode source, JsonSource convert) {
             String displayName = toTitleCase(skillName);
 
-            if (source.isInt()) {
-                return new QuteDataSkillBonus(displayName, source.asInt());
+            if (source == null) {
+                return new QuteDataNamedBonus(displayName, 0);
             }
 
-            return new QuteDataSkillBonus(
+            if (source.isInt()) {
+                return new QuteDataNamedBonus(displayName, source.asInt());
+            }
+
+            return new QuteDataNamedBonus(
                     displayName,
                     std.getIntOrThrow(source),
                     convert.streamPropsExcluding(source, std, note)
                             .collect(Collectors.toMap(e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
-                    note.getTextFrom(source).map(convert::replaceText).map(List::of).orElse(List.of()));
+                    note.getTextFrom(source).map(convert::replaceText).map(List::of)
+                            .orElse((abilities.existsIn(source) ? abilities : notes).replaceTextFromList(source, convert)));
+        }
+    }
+
+    /**
+     * A {@link Pf2eJsonNodeReader} which reads JSON saving throw data. Example:
+     *
+     * <pre>
+     *     "fort": {
+     *         "std": 6,
+     *         "vs. poisons": +8
+     *         "abilities": ["some fort ability"]
+     *     },
+     *     "ref": { ... },
+     *     "will": { ... },
+     *     "abilities": ["+1 status to all saves vs. positive"]
+     * </pre>
+     */
+    enum Pf2eSavingThrows implements Pf2eJsonNodeReader {
+        fort,
+        ref,
+        will,
+        abilities,
+        std;
+
+        /** Return {@link QuteDataDefenses.QuteSavingThrows} read from this field in {@code source}. */
+        private static QuteDataDefenses.QuteSavingThrows getSavingThrows(JsonNode source, JsonSource convert) {
+            return new QuteDataDefenses.QuteSavingThrows(
+                    fort.getNamedBonusFrom(source, convert),
+                    ref.getNamedBonusFrom(source, convert),
+                    will.getNamedBonusFrom(source, convert),
+                    abilities.replaceTextFromList(source, convert));
         }
     }
 }

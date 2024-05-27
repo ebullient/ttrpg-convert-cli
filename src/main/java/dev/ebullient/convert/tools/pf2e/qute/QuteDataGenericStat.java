@@ -1,12 +1,16 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.flatJoin;
+import static dev.ebullient.convert.StringUtil.formatMap;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
 
 import java.util.List;
+import java.util.Map;
 
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.qute.QuteUtil;
+import io.quarkus.qute.TemplateData;
 
 /** A generic container for a PF2e stat value which may have an attached note. */
 public interface QuteDataGenericStat extends QuteUtil {
@@ -64,6 +68,41 @@ public interface QuteDataGenericStat extends QuteUtil {
         @Override
         public List<String> notes() {
             return notes;
+        }
+    }
+
+    /**
+     * A Pathfinder 2e named bonus, potentially with other conditional bonuses. Example default representation:
+     * <blockquote>
+     * Stealth +36 (+42 in forests) (ignores tremorsense)
+     * </blockquote>
+     *
+     * @param name The name of the skill
+     * @param value The standard bonus associated with this skill
+     * @param otherBonuses Any additional bonuses, as a map of descriptions to bonuses. Iterate over all map entries to
+     *        display the values, e.g.: {@code {#each resource.skills.otherBonuses}{it.key}: {it.value}{/each}}
+     * @param notes Any notes associated with this skill bonus
+     */
+    @TemplateData
+    record QuteDataNamedBonus(
+            String name, Integer value, Map<String, Integer> otherBonuses,
+            List<String> notes) implements QuteDataGenericStat {
+
+        public QuteDataNamedBonus(String name, Integer standardBonus) {
+            this(name, standardBonus, Map.of(), List.of());
+        }
+
+        /** Return the standard bonus and any other conditional bonuses. */
+        @Override
+        public String bonus() {
+            return flatJoin(" ",
+                    List.of(QuteDataGenericStat.super.bonus()),
+                    formatMap(otherBonuses, (k, v) -> "(%+d %s)".formatted(v, k)));
+        }
+
+        @Override
+        public String toString() {
+            return join(" ", name, bonus(), formattedNotes());
         }
     }
 }
