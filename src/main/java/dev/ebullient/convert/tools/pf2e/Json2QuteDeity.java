@@ -167,8 +167,8 @@ public class Json2QuteDeity extends Json2QuteBase {
                 Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),
                 Pf2eActivity.single.toQuteActivity(this, null),
                 rangeType,
-                Pf2eWeaponData.getDamageString(actionNode, this),
-                Stream.of(Pf2eWeaponData.damageType, Pf2eWeaponData.damageType2)
+                Json2QuteItem.Pf2eWeaponData.getDamageString(actionNode, this),
+                Stream.of(Json2QuteItem.Pf2eWeaponData.damageType, Json2QuteItem.Pf2eWeaponData.damageType2)
                         .map(field -> field.getTextOrEmpty(actionNode))
                         .filter(StringUtil::isPresent)
                         .toList(),
