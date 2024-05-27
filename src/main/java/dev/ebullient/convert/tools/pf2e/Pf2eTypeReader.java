@@ -107,15 +107,6 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    default String getOrdinalForm(String level) {
-        return switch (level) {
-            case "1" -> "1st";
-            case "2" -> "2nd";
-            case "3" -> "3rd";
-            default -> level + "th";
-        };
-    }
-
     @RegisterForReflection
     class NumberUnitEntry {
         public Integer number;

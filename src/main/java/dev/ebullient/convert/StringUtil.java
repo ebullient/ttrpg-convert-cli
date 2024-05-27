@@ -334,6 +334,16 @@ public class StringUtil {
         };
     }
 
+    /** Return the given {@code level} as an ordinal, e.g. 1st, 2nd, 3rd. */
+    public static String toOrdinal(String level) {
+        return switch (level) {
+            case "1" -> "1st";
+            case "2" -> "2nd";
+            case "3" -> "3rd";
+            default -> level + "th";
+        };
+    }
+
     /**
      * A {@link java.util.stream.Collector} which converts the elements to strings, and joins the non-empty, non-null
      * strings into a single string. Allows providing an optional final delimiter that will be inserted before the

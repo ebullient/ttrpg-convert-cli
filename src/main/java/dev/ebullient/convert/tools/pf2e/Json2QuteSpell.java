@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
@@ -178,7 +179,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         if (X != null) {
             X.fields().forEachRemaining(x -> {
                 namedText.add(
-                        String.format("Heightened (%s)", getOrdinalForm(x.getKey())),
+                        String.format("Heightened (%s)", toOrdinal(x.getKey())),
                         getHeightenedValue(x.getValue()));
             });
         }
@@ -221,7 +222,7 @@ public class Json2QuteSpell extends Json2QuteBase {
             if (X != null) {
                 X.fields().forEachRemaining(x -> {
                     namedText.add(
-                            String.format("Amp Heightened (%s)", getOrdinalForm(x.getKey())),
+                            String.format("Amp Heightened (%s)", toOrdinal(x.getKey())),
                             getHeightenedValue(x.getValue()));
                 });
             }
