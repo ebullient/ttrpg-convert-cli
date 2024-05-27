@@ -18,16 +18,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
 
-    enum Pf2eAction implements Pf2eJsonNodeReader {
-        activity,
-        actionType,
-        cost,
-        frequency,
-        info,
-        prerequisites,
-        trigger
-    }
-
     enum Pf2eAlignmentValue implements Pf2eJsonNodeReader.FieldValue {
         ce("Chaotic Evil"),
         cg("Chaotic Good"),
