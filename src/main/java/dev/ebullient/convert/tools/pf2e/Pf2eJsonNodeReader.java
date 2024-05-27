@@ -9,6 +9,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
@@ -552,6 +553,36 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     hasMultilineEffect ? String.join("\n", attackEffects) : null,
                     noMAP.booleanOrDefault(node, false) ? List.of() : List.of("no multiple attack penalty"),
                     convert);
+        }
+    }
+
+    /**
+     * A {@link Pf2eJsonNodeReader} which parses JSON skill bonuses. Example:
+     *
+     * <pre>
+     *     "std": 10,
+     *     "in woods": 12,
+     *     "note": "some note"
+     * </pre>
+     */
+    enum Pf2eSkillBonus implements Pf2eJsonNodeReader {
+        std,
+        note;
+
+        public static QuteDataSkillBonus createSkillBonus(
+                String skillName, JsonNode source, Pf2eTypeReader convert) {
+            String displayName = toTitleCase(skillName);
+
+            if (source.isInt()) {
+                return new QuteDataSkillBonus(displayName, source.asInt());
+            }
+
+            return new QuteDataSkillBonus(
+                    displayName,
+                    std.getIntOrThrow(source),
+                    convert.streamPropsExcluding(source, std, note)
+                            .collect(Collectors.toMap(e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
+                    note.getTextFrom(source).map(convert::replaceText).map(List::of).orElse(List.of()));
         }
     }
 }
