@@ -12,13 +12,8 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -44,7 +39,22 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
 
     /** Return a {@link QuteDataSpeed} read from this field of the {@code source} node, or null. */
     default QuteDataSpeed getSpeedFrom(JsonNode source, JsonSource convert) {
-        return getObjectFrom(source).map(n -> Pf2eSpeed.read(n, convert)).orElse(null);
+        return getObjectFrom(source).map(n -> Pf2eSpeed.getSpeed(n, convert)).orElse(null);
+    }
+
+    /** Return a {@link QuteDataFrequency} read from {@code source}, or null. */
+    default QuteDataFrequency getFrequencyFrom(JsonNode source, JsonSource convert) {
+        return getObjectFrom(source).map(n -> Pf2eFrequency.getFrequency(n, convert)).orElse(null);
+    }
+
+    /** Return a {@link QuteDataDefenses} read from this field in {@code source}, or null. */
+    default QuteDataDefenses getDefensesFrom(JsonNode source, Pf2eTypeReader convert) {
+        return getObjectFrom(source).map(n -> Pf2eDefenses.getDefenses(n, convert)).orElse(null);
+    }
+
+    /** Return a {@link QuteDataActivity} read from this field in {@code source}, or null */
+    default QuteDataActivity getActivityFrom(JsonNode source, JsonSource convert) {
+        return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.getActivity(n, convert)).orElse(null);
     }
 
     /**
@@ -65,7 +75,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         abilities;
 
         /** Read a {@link QuteDataSpeed} from the {@code source} node. */
-        private static QuteDataSpeed read(JsonNode source, JsonSource convert) {
+        private static QuteDataSpeed getSpeed(JsonNode source, JsonSource convert) {
             return new QuteDataSpeed(
                     walk.getIntFrom(source).orElse(null),
                     convert.streamPropsExcluding(source, speedNote, abilities)
@@ -78,16 +88,6 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     // Specifically make this mutable because we later need to add additional abilities for deities
                     new ArrayList<>(abilities.replaceTextFromList(source, convert)));
         }
-    }
-
-    /** Return a {@link QuteDataFrequency} read from {@code source}, or null. */
-    default QuteDataFrequency getFrequencyFrom(JsonNode source, JsonSource convert) {
-        return getObjectFrom(source).map(n -> Pf2eFrequency.read(n, convert)).orElse(null);
-    }
-
-    /** Return a {@link QuteDataDefenses} read from this field in {@code source}, or null. */
-    default QuteDataDefenses getDefensesFrom(JsonNode source, Pf2eTypeReader convert) {
-        return getObjectFrom(source).map(n -> Pf2eDefenses.readDefenses(n, convert)).orElse(null);
     }
 
     /**
@@ -131,7 +131,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         customUnit;
 
         /** Return a {@link QuteDataFrequency} read from {@code node}. */
-        private static QuteDataFrequency read(JsonNode node, JsonSource convert) {
+        private static QuteDataFrequency getFrequency(JsonNode node, JsonSource convert) {
             if (special.getTextFrom(node).isPresent()) {
                 return new QuteDataFrequency(special.replaceTextFrom(node, convert));
             }
@@ -191,12 +191,12 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          *     "notes": { "some key": "some value" }
          * </pre>
          */
-        private static QuteDataDefenses readDefenses(JsonNode source, Pf2eTypeReader convert) {
+        private static QuteDataDefenses getDefenses(JsonNode source, JsonSource convert) {
             if (notes.existsIn(source)) {
                 convert.tui().warnf("Defenses has notes: %s", source.toString());
             }
 
-            Map<String, QuteDataHpHardnessBt> hpHardnessBt = readHpHardnessBt(source, convert);
+            Map<String, QuteDataHpHardnessBt> hpHardnessBt = getHpHardnessBt(source, convert);
 
             return new QuteDataDefenses(
                     ac.getObjectFrom(source)
@@ -258,29 +258,28 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          *     ],
          * </pre>
          */
-        private static Map<String, QuteDataHpHardnessBt> readHpHardnessBt(JsonNode source, Pf2eTypeReader convert) {
+        private static Map<String, QuteDataHpHardnessBt> getHpHardnessBt(JsonNode source, JsonSource convert) {
             Map<String, QuteDataHpHardnessBt.HpStat> hpStats = hp.getHpFrom(source, convert);
             JsonNode btNode = bt.getFromOrEmptyObjectNode(source);
             JsonNode hardnessNode = hardness.getFromOrEmptyObjectNode(source);
             Map<String, String> hardnessNotes = notes.getMapOfStrings(hardnessNode, convert.tui());
-
             // Collect distinct names from the field names of the stat objects
-            return Stream.of(
+            Stream<String> names = Stream.of(
                     hpStats.keySet().stream(),
                     bt.streamPropsExcluding(source, abilities, notes).map(Map.Entry::getKey),
                     hardness.streamPropsExcluding(source, abilities, notes).map(Map.Entry::getKey))
                     .flatMap(Function.identity())
-                    .distinct()
-                    // Map each known name to the known stats for that name
-                    .collect(Collectors.toMap(
-                            String::trim,
-                            k -> new QuteDataHpHardnessBt(
-                                    hpStats.getOrDefault(k, null),
-                                    hardnessNode.has(k)
-                                            ? new QuteDataGenericStat.SimpleStat(
-                                                    hardnessNode.get(k).asInt(), convert.replaceText(hardnessNotes.get(k)))
-                                            : null,
-                                    btNode.has(k) ? btNode.get(k).asInt() : null)));
+                    .distinct();
+            // Map each known name to the known stats for that name
+            return names.collect(Collectors.toMap(
+                    String::trim,
+                    k -> new QuteDataHpHardnessBt(
+                            hpStats.getOrDefault(k, null),
+                            hardnessNode.has(k)
+                                    ? new QuteDataGenericStat.SimpleStat(
+                                            hardnessNode.get(k).asInt(), convert.replaceText(hardnessNotes.get(k)))
+                                    : null,
+                            btNode.has(k) ? btNode.get(k).asInt() : null)));
         }
 
         /**
@@ -302,7 +301,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          *     "abilities": ["some saving throw ability"]
          * </pre>
          */
-        private QuteDataDefenses.QuteSavingThrows getSavingThrowsFrom(JsonNode source, Pf2eTypeReader convert) {
+        private QuteDataDefenses.QuteSavingThrows getSavingThrowsFrom(JsonNode source, JsonSource convert) {
             JsonNode stNode = getObjectFrom(source).orElse(null);
             if (stNode == null) {
                 return null;
@@ -340,11 +339,11 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          * Returns a map of names to {@link QuteDataHpHardnessBt.HpStat} from this field of {@code source}, or an empty
          * map.
          */
-        private Map<String, QuteDataHpHardnessBt.HpStat> getHpFrom(JsonNode source, Pf2eTypeReader convert) {
+        private Map<String, QuteDataHpHardnessBt.HpStat> getHpFrom(JsonNode source, JsonSource convert) {
             // We need to do HP mapping separately because creature and hazard HP are structured differently
             return isArrayIn(source)
-                    ? Pf2eHpStat.readFromArray(ensureArrayIn(source), convert)
-                    : Pf2eHpStat.readFromObject(getFromOrEmptyObjectNode(source), convert);
+                    ? Pf2eHpStat.getHpMapFromArray(ensureArrayIn(source), convert)
+                    : Pf2eHpStat.getHpMapFromObject(getFromOrEmptyObjectNode(source), convert);
         }
 
     }
@@ -375,8 +374,8 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          *     [{"hp": 10, "abilities": ["some ability"], "notes": ["some note"]}]
          * </pre>
          */
-        private static Map<String, QuteDataHpHardnessBt.HpStat> readFromArray(
-                JsonNode source, Pf2eTypeReader convert) {
+        private static Map<String, QuteDataHpHardnessBt.HpStat> getHpMapFromArray(
+                JsonNode source, JsonSource convert) {
             return convert.streamOf(convert.ensureArray(source)).collect(Collectors.toMap(
                     n -> Pf2eHpStat.name.getTextFrom(n).map(StringUtil::toTitleCase).orElse(std.name()),
                     n -> new QuteDataHpHardnessBt.HpStat(
@@ -397,17 +396,26 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          *     }
          * </pre>
          */
-        private static Map<String, QuteDataHpHardnessBt.HpStat> readFromObject(
-                JsonNode source, Pf2eTypeReader convert) {
-            JsonNode notesNode = notes.getFromOrEmptyObjectNode(source);
+        private static Map<String, QuteDataHpHardnessBt.HpStat> getHpMapFromObject(
+                JsonNode source, JsonSource convert) {
+            Map<String, String> noteMap = notes.getMapOfStrings(source, convert.tui());
             return convert.streamPropsExcluding(convert.ensureObjectNode(source), notes).collect(Collectors.toMap(
                     Map.Entry::getKey,
                     e -> new QuteDataHpHardnessBt.HpStat(
                             e.getValue().asInt(),
-                            notesNode.has(e.getKey()) ? convert.replaceText(notesNode.get(e.getKey())) : null)));
+                            convert.replaceText(noteMap.get(e.getKey())))));
         }
     }
 
+    /**
+     * A {@link Pf2eJsonNodeReader} which reads JSON structured like the following:
+     *
+     * <pre>
+     *     "name": "physical",
+     *     "amount": 5,
+     *     "note": "except bludgeoning"
+     * </pre>
+     */
     enum Pf2eNameAmountNote implements Pf2eJsonNodeReader {
         name,
         amount,
@@ -422,11 +430,6 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                             amount.getIntFrom(n).orElse(null),
                             note.replaceTextFrom(n, convert)));
         }
-    }
-
-    /** Return a {@link QuteDataActivity} read from this field in {@code source}, or null */
-    default QuteDataActivity getActivityFrom(JsonNode source, JsonSource convert) {
-        return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.readActivity(n, convert)).orElse(null);
     }
 
     /**
@@ -456,14 +459,8 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          *     {"number": 1, "unit": "varies", "entry": "{&#64;as 3} command,"}
          * </pre>
          */
-        private static QuteDataActivity readActivity(JsonNode node, JsonSource convert) {
+        private static QuteDataActivity getActivity(JsonNode node, JsonSource convert) {
             String actionType = unit.getTextOrNull(node);
-            String extra = entry.getTextFrom(node)
-                    .filter(s -> !s.toLowerCase().contains("varies"))
-                    .filter(Predicate.not(String::isBlank))
-                    .map(convert::replaceText).map(StringUtil::parenthesize)
-                    .orElse("");
-
             Pf2eActivity activity = switch (actionType) {
                 case "single", "action", "free", "reaction" ->
                     Pf2eActivity.toActivity(actionType, number.getIntOrThrow(node));
@@ -475,6 +472,13 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             if (activity == null) {
                 throw new IllegalArgumentException("Can't parse activity from: %s".formatted(node));
             }
+
+            String extra = entry.getTextFrom(node)
+                    .filter(s -> !s.toLowerCase().contains("varies"))
+                    .filter(Predicate.not(String::isBlank))
+                    .map(convert::replaceText).map(StringUtil::parenthesize)
+                    .orElse("");
+
             return activity.toQuteActivity(
                     convert, activity == Pf2eActivity.timed ? join(" ", number.getIntOrThrow(node), actionType, extra) : extra);
         }
