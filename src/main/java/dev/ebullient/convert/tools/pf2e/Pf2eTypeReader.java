@@ -140,20 +140,6 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eFeat implements Pf2eJsonNodeReader {
-        access,
-        activity,
-        archetype, // child of featType
-        cost,
-        featType,
-        frequency,
-        leadsTo,
-        level,
-        prerequisites,
-        special,
-        trigger
-    }
-
     enum Pf2eSpell implements Pf2eJsonNodeReader {
         amp,
         area,

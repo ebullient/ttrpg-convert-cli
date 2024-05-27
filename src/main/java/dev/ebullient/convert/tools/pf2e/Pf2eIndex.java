@@ -228,9 +228,9 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     void createArchetypeReference(String key, JsonNode node, Pf2eSources sources) {
-        JsonNode featType = Pf2eFeat.featType.getFrom(node);
+        JsonNode featType = Json2QuteFeat.Pf2eFeat.featType.getFrom(node);
         if (featType != null) {
-            List<String> archetype = Pf2eFeat.archetype.getListOfStrings(featType, tui());
+            List<String> archetype = Json2QuteFeat.Pf2eFeat.archetype.getListOfStrings(featType, tui());
             archetype.forEach(a -> {
                 String aKey = Pf2eIndexType.archetype.createKey(a, sources.primarySource());
                 archetypeToFeats.computeIfAbsent(aKey, k -> new HashSet<>())

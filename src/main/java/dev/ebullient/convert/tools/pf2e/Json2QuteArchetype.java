@@ -61,7 +61,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
                             .findFirst();
 
                     // Find either the adjusted archetype field level or the Feat level
-                    String level = Pf2eFeat.level.getTextOrDefault(feat, "1");
+                    String level = Json2QuteFeat.Pf2eFeat.level.getTextOrDefault(feat, "1");
                     if (extra.isPresent()) {
                         String extraKey = extra.get();
                         level = extraKey.substring(0, extraKey.indexOf("|"));
