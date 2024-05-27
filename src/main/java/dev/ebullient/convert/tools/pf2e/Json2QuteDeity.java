@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.joiningConjunct;
@@ -105,7 +106,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         cleric.spells = new TreeMap<>();
         Map<String, List<String>> clericSpells = Pf2eDeity.spells.fieldFromTo(rootNode, Tui.MAP_STRING_LIST_STRING, tui());
         if (clericSpells != null) {
-            clericSpells.forEach((k, v) -> cleric.spells.put(getOrdinalForm(k), v.stream()
+            clericSpells.forEach((k, v) -> cleric.spells.put(toOrdinal(k), v.stream()
                     .map(s -> linkify(Pf2eIndexType.spell, s))
                     .collect(Collectors.joining(", "))));
         }
