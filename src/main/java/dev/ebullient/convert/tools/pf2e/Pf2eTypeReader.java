@@ -3,17 +3,12 @@ package dev.ebullient.convert.tools.pf2e;
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.pluralize;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.qute.NamedText;
-import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
@@ -52,91 +47,6 @@ public interface Pf2eTypeReader extends JsonSource {
             return Stream.of(Pf2eAlignmentValue.values())
                     .filter(t -> t.matches(name))
                     .findFirst().orElse(null);
-        }
-    }
-
-    enum Pf2eWeaponData implements Pf2eJsonNodeReader {
-        ammunition,
-        damage,
-        damageType,
-        damage2,
-        damageType2,
-        group,
-        range,
-        reload;
-
-        public static QuteItemWeaponData buildWeaponData(JsonNode source,
-                Pf2eTypeReader convert, Tags tags) {
-
-            QuteItemWeaponData weaponData = new QuteItemWeaponData();
-            weaponData.traits = convert.collectTraitsFrom(source, tags);
-            weaponData.type = SourceField.type.getTextOrEmpty(source);
-            weaponData.damage = getDamageString(source, convert);
-
-            weaponData.ranged = new ArrayList<>();
-            String ammunition = Pf2eWeaponData.ammunition.getTextOrNull(source);
-            if (ammunition != null) {
-                weaponData.ranged.add(new NamedText("Ammunution", convert.linkify(Pf2eIndexType.item, ammunition)));
-            }
-            String range = Pf2eWeaponData.range.getTextOrNull(source);
-            if (range != null) {
-                weaponData.ranged.add(new NamedText("Range", range + " ft."));
-            }
-            String reload = Pf2eWeaponData.reload.getTextOrNull(source);
-            if (reload != null) {
-                weaponData.ranged.add(new NamedText("Reload", convert.replaceText(reload)));
-            }
-
-            String group = Pf2eWeaponData.group.getTextOrNull(source);
-            if (group != null) {
-                weaponData.group = convert.linkify(Pf2eIndexType.group, group);
-            }
-
-            return weaponData;
-        }
-
-        public static String getDamageString(JsonNode source, Pf2eTypeReader convert) {
-            String damage = Pf2eWeaponData.damage.getTextOrNull(source);
-            String damage2 = Pf2eWeaponData.damage2.getTextOrNull(source);
-
-            String result = "";
-            if (damage != null) {
-                result += convert.replaceText("{@damage %s} %s".formatted(
-                        damage,
-                        Pf2eWeaponData.damageType.getTextOrEmpty(source)));
-            }
-            if (damage2 != null) {
-                result += convert.replaceText("%s{@damage %s} %s".formatted(
-                        damage == null ? "" : " and ",
-                        damage2,
-                        Pf2eWeaponData.damageType2.getTextOrEmpty(source)));
-            }
-            return result;
-        }
-
-        static String getDamageType(JsonNodeReader damageType, JsonNode source) {
-            String value = damageType.getTextOrEmpty(source);
-            return switch (value) {
-                case "A" -> "acid";
-                case "B" -> "bludgeoning";
-                case "C" -> "cold";
-                case "D" -> "bleed";
-                case "E" -> "electricity";
-                case "F" -> "fire";
-                case "H" -> "chaotic";
-                case "I" -> "poison";
-                case "L" -> "lawful";
-                case "M" -> "mental";
-                case "Mod" -> "modular";
-                case "N" -> "sonic";
-                case "O" -> "force";
-                case "P" -> "piercing";
-                case "R" -> "precision";
-                case "S" -> "slashing";
-                case "+" -> "positive";
-                case "-" -> "negative";
-                default -> value;
-            };
         }
     }
 
