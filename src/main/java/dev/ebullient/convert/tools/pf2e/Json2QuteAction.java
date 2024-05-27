@@ -46,6 +46,16 @@ public class Json2QuteAction extends Json2QuteBase {
                 actionType == null ? null : actionType.build(this));
     }
 
+    public enum Pf2eAction implements Pf2eJsonNodeReader {
+        activity,
+        actionType,
+        cost,
+        frequency,
+        info,
+        prerequisites,
+        trigger
+    }
+
     @RegisterForReflection
     static class ActionType {
         public Boolean basic;
