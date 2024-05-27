@@ -21,7 +21,6 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
-import dev.ebullient.convert.tools.pf2e.Pf2eTypeReader.Pf2eAttack;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 
@@ -118,7 +117,7 @@ public interface JsonSource extends JsonTextReplacement {
                     // special inline types
                     case ability -> appendRenderable(text, Pf2eAbility.createEmbeddedAbility(node, this));
                     case affliction -> appendAffliction(text, node);
-                    case attack -> appendRenderable(text, Pf2eAttack.createInlineAttack(node, this));
+                    case attack -> appendRenderable(text, Pf2eJsonNodeReader.Pf2eAttack.createAttack(node, this));
                     case data -> embedData(text, node);
                     case lvlEffect -> appendLevelEffect(text, node);
                     case successDegree -> appendSuccessDegree(text, node);

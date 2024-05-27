@@ -318,6 +318,19 @@ public interface JsonNodeReader {
         return join(delimiter, inner);
     }
 
+    /**
+     * Parse this field from {@code source} as potentially-nested array of entries, and return a list of strings. This
+     * calls {@link JsonTextConverter#appendToText(List, JsonNode, String)} to recursively parse the input.
+     */
+    default List<String> transformListFrom(JsonNode source, JsonTextConverter<?> convert) {
+        if (!isArrayIn(source)) {
+            return List.of();
+        }
+        List<String> inner = new ArrayList<>();
+        convert.appendToText(inner, getFrom(source), null);
+        return inner;
+    }
+
     default boolean valueEquals(JsonNode previous, JsonNode next) {
         if (previous == null || next == null) {
             return true;

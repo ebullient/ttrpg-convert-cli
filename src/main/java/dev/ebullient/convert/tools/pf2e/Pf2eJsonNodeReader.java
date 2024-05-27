@@ -10,10 +10,12 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -481,6 +483,75 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
 
             return activity.toQuteActivity(
                     convert, activity == Pf2eActivity.timed ? join(" ", number.getIntOrThrow(node), actionType, extra) : extra);
+        }
+    }
+
+    /**
+     * Example JSON input for a creature:
+     *
+     * <pre>
+     *     "range": "Melee",
+     *     "name": "jaws",
+     *     "attack": 32,
+     *     "traits": ["evil", "magical", "reach 10 feet"],
+     *     "effects": ["essence drain", "Grab"],
+     *     "damage": "3d8+9 piercing plus 1d6 evil, essence drain, and Grab",
+     *     "types": ["evil", "piercing"]
+     * </pre>
+     *
+     * An example for a hazard with a complicated effect:
+     *
+     * <pre>
+     *     "type": "attack",
+     *     "range": "Ranged",
+     *     "name": "eye beam",
+     *     "attack": 20,
+     *     "traits": ["diving", "evocation", "range 120 feet"],
+     *     "effects": [
+     *         "The target is subjected to one of the effects summarized below.",
+     *         {
+     *             "type": "list",
+     *             "items": [{
+     *                 "type": "item",
+     *                 "name": "Green Eye Beam",
+     *                 "entries": ["(poison) 6d6 poison damage (DC24 basic Reflex save)"],
+     *             }, ...],
+     *         },
+     *     ],
+     *     "types": ["electricity", "fire", "poison", "acid"]
+     * </pre>
+     *
+     */
+    enum Pf2eAttack implements Pf2eJsonNodeReader {
+        name,
+        attack,
+        activity,
+        damage,
+        effects,
+        range,
+        types,
+        noMAP;
+
+        public static QuteInlineAttack createAttack(JsonNode node, JsonSource convert) {
+            List<String> attackEffects = Pf2eAttack.effects.transformListFrom(node, convert);
+            // Either the effects are a list of short descriptors which are also included in the damage, or they are a
+            // long multi-line description of a complicated effect.
+            String formattedDamage = damage.replaceTextFrom(node, convert);
+            boolean hasMultilineEffect = attackEffects.stream().anyMatch(Predicate.not(formattedDamage::contains));
+
+            return new QuteInlineAttack(
+                    name.replaceTextFrom(node, convert),
+                    Optional.ofNullable(activity.getActivityFrom(node, convert))
+                            .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
+                    QuteInlineAttack.AttackRangeType.valueOf(range.getTextOrDefault(node, "Melee").toUpperCase()),
+                    attack.getIntFrom(node).orElse(null),
+                    formattedDamage,
+                    types.replaceTextFromList(node, convert),
+                    convert.collectTraitsFrom(node, null),
+                    hasMultilineEffect ? List.of() : attackEffects,
+                    hasMultilineEffect ? String.join("\n", attackEffects) : null,
+                    noMAP.booleanOrDefault(node, false) ? List.of() : List.of("no multiple attack penalty"),
+                    convert);
         }
     }
 }
