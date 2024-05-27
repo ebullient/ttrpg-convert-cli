@@ -2,11 +2,9 @@ package dev.ebullient.convert.tools.pf2e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.pluralize;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,7 +13,6 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataSkillBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemWeaponData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -265,41 +262,6 @@ public interface Pf2eTypeReader extends JsonSource {
 
         public String getRulesPath(String rulesRoot) {
             return "%sTODO.md#%s".formatted(rulesRoot, toAnchorTag(this.name()));
-        }
-    }
-
-    enum Pf2eSkillBonus implements Pf2eJsonNodeReader {
-        std,
-        note;
-
-        /**
-         * Example JSON object input:
-         *
-         * <pre>
-         * {
-         *     "std": 10,
-         *     "in woods": 12,
-         *     "note": "some note"
-         * }
-         * </pre>
-         *
-         * @param skillName The name of the skill
-         * @param source Either a single integer bonus, or an object (see above example)
-         */
-        public static QuteDataSkillBonus createSkillBonus(
-                String skillName, JsonNode source, Pf2eTypeReader convert) {
-            String displayName = toTitleCase(skillName);
-
-            if (source.isInt()) {
-                return new QuteDataSkillBonus(displayName, source.asInt());
-            }
-
-            return new QuteDataSkillBonus(
-                    displayName,
-                    std.getIntOrThrow(source),
-                    convert.streamPropsExcluding(source, std, note)
-                            .collect(Collectors.toMap(e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
-                    note.getTextFrom(source).map(convert::replaceText).map(List::of).orElse(List.of()));
         }
     }
 
