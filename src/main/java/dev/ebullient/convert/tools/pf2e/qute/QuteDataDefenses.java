@@ -1,17 +1,17 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import static dev.ebullient.convert.StringUtil.flatJoin;
 import static dev.ebullient.convert.StringUtil.formatMap;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinWithPrefix;
 import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.QuteUtil;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBonus;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -63,29 +63,37 @@ public record QuteDataDefenses(
     }
 
     /**
-     * Pf2eTools saving throw attributes.
+     * Pathfinder 2e saving throws. Example default rendering:
+     * <blockquote>
+     * <b>Fort</b> +10 (+12 vs. poison), <b>Ref</b> +5 (+7 vs. traps), <b>Will</b> +4 (+6 vs. mental); +1 status to
+     * all saves vs. magic
+     * </blockquote>
      *
-     * <p>
-     * This data object provides a default mechanism for creating
-     * a marked up string based on the attributes that are present.
-     * To use it, reference it directly: `{resource.defenses.savingThrows}`.
-     * </p>
+     * @param fort Fortitude saving throw bonus, as a {@link QuteDataNamedBonus}
+     * @param ref Reflex saving throw bonus, as a {@link QuteDataNamedBonus}
+     * @param will Will saving throw bonus, as a {@link QuteDataNamedBonus}
+     * @param abilities Any saving throw related abilities
      */
     @TemplateData
-    public static class QuteSavingThrows implements QuteUtil {
-        /** Map of score (Wisdom, Charisma) to saving throw modifier as a string (+3) */
-        public Map<String, String> savingThrows = new LinkedHashMap<>();
-        /** Saving throw abilities as a string (Fortitude, Reflex, Will) */
-        public String abilities;
+    public record QuteSavingThrows(
+            QuteDataNamedBonus fort, QuteDataNamedBonus ref, QuteDataNamedBonus will,
+            List<String> abilities) implements QuteUtil {
+        /** Returns all abilities as a formatted, comma-separated string. */
+        public String formattedAbilities() {
+            return join(", ", abilities);
+        }
 
-        public boolean hasThrowAbilities;
+        /** Returns all saving throws as a formatted string, not including any abilities. See class doc for example. */
+        public String formattedBonuses() {
+            return Stream.of(fort, ref, will)
+                    .filter(Objects::nonNull)
+                    .map(save -> "**%s** %s".formatted(save.name(), save.bonus()))
+                    .collect(joiningNonEmpty(", "));
+        }
 
+        @Override
         public String toString() {
-            return flatJoin(
-                    hasThrowAbilities ? "; " : ", ",
-                    formatMap(savingThrows, "**%s** %s"::formatted),
-                    // Passing null into List.of causes an exception at runtime
-                    List.of(abilities == null ? "" : abilities));
+            return join("; ", formattedBonuses(), formattedAbilities());
         }
     }
 }

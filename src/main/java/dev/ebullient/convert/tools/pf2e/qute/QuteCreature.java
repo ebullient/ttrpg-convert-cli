@@ -118,12 +118,12 @@ public class QuteCreature extends Pf2eQuteBase {
      * </blockquote>
      *
      * @param skills Skill bonuses for the creature, as a list of
-     *        {@link QuteDataSkillBonus QuteDataSkillBonus}
+     *        {@link QuteDataGenericStat.QuteDataNamedBonus QuteDataNamedBonus}
      * @param notes Notes for the creature's skills (list of strings, optional)
      */
     @TemplateData
     public record CreatureSkills(
-            List<QuteDataSkillBonus> skills,
+            List<QuteDataGenericStat.QuteDataNamedBonus> skills,
             List<String> notes) {
 
         @Override

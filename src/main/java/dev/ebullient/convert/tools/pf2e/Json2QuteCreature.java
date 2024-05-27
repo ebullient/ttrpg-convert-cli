@@ -188,7 +188,7 @@ public class Json2QuteCreature extends Json2QuteBase {
                     languages.getObjectFrom(node).map(n -> Pf2eCreatureLanguages.create(n, convert)).orElse(null),
                     new QuteCreature.CreatureSkills(
                             skills.streamPropsExcluding(node, notes)
-                                    .map(e -> Pf2eSkillBonus.createSkillBonus(e.getKey(), e.getValue(), convert))
+                                    .map(e -> Pf2eNamedBonus.getNamedBonus(e.getKey(), e.getValue(), convert))
                                     .toList(),
                             notes.replaceTextFromList(node, convert)),
                     senses.streamFrom(node)
