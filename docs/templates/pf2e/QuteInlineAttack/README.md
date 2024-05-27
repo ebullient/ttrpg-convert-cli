@@ -43,7 +43,7 @@ Any notes associated with the attack e.g. "no multiple attack penalty" (list of 
 
 ### rangeType
 
-The range of the attack ([AttackType](AttackRangeType.md) enum)
+The range of the attack ([AttackRangeType](AttackRangeType.md) enum)
 
 ### traits
 
