@@ -72,4 +72,17 @@ public class Json2QuteFeat extends Json2QuteBase {
                 note, List.of(), true);
     }
 
+    public enum Pf2eFeat implements Pf2eJsonNodeReader {
+        access,
+        activity,
+        archetype, // child of featType
+        cost,
+        featType,
+        frequency,
+        leadsTo,
+        level,
+        prerequisites,
+        special,
+        trigger
+    }
 }
