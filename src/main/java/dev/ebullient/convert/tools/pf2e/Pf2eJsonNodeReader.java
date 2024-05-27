@@ -494,7 +494,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         noMAP;
 
         /** Returns a {@link QuteInlineAttack} read from {@code node} */
-        public static QuteInlineAttack createAttack(JsonNode node, JsonSource convert) {
+        public static QuteInlineAttack getAttack(JsonNode node, JsonSource convert) {
             List<String> attackEffects = Pf2eAttack.effects.transformListFrom(node, convert);
             // Either the effects are a list of short descriptors which are also included in the damage, or they are a
             // long multi-line description of a complicated effect.
