@@ -237,7 +237,22 @@ public class StringUtil {
      * stream.
      */
     public static <T> JoiningNonEmptyCollector<T> joiningNonEmpty(String delimiter) {
-        return new JoiningNonEmptyCollector<>(delimiter, null, true);
+        return joiningNonEmpty(delimiter, null);
+    }
+
+    /**
+     * Returns a collector which performs like {@link #join(String, Collection)}, but usable as a collector for a
+     * stream, with an optional prefix. Examples:
+     *
+     * <pre>
+     *     // "Label: one, two"
+     *     Stream.of("one", "two").collect(joiningNonEmpty(", ", "Label: "))
+     *     // ""
+     *     Stream.of().collect(joiningNonEmpty(", ", "Label: "))
+     * </pre>
+     */
+    public static <T> JoiningNonEmptyCollector<T> joiningNonEmpty(String delimiter, String prefix) {
+        return new JoiningNonEmptyCollector<>(delimiter, null, true, prefix);
     }
 
     /**
@@ -263,7 +278,7 @@ public class StringUtil {
      * </pre>
      */
     public static <T> JoiningNonEmptyCollector<T> joiningConjunct(String finalDelimiter, String delimiter) {
-        return new JoiningNonEmptyCollector<>(delimiter, finalDelimiter, true);
+        return new JoiningNonEmptyCollector<>(delimiter, finalDelimiter, true, null);
     }
 
     /**
@@ -329,9 +344,11 @@ public class StringUtil {
      *        "one, two, and three".
      * @param oxford If false, then don't add a delimiter for the 'oxford comma' - e.g. replace the final delimiter
      *        with {@code finalDelimiter} rather than adding it.
+     * @param prefix A prefix to add to the final result, if it's non-empty.
      */
     public record JoiningNonEmptyCollector<T>(
-            String delimiter, String finalDelimiter, Boolean oxford) implements Collector<T, List<String>, String> {
+            String delimiter, String finalDelimiter, Boolean oxford,
+            String prefix) implements Collector<T, List<String>, String> {
         @Override
         public Supplier<List<String>> supplier() {
             return ArrayList::new;
@@ -357,10 +374,10 @@ public class StringUtil {
         @Override
         public Function<List<String>, String> finisher() {
             return acc -> {
-                if (isPresent(finalDelimiter)) {
-                    return joinConjunct(acc, delimiter, finalDelimiter, !oxford);
-                }
-                return String.join(delimiter, acc);
+                String joined = isPresent(finalDelimiter)
+                        ? joinConjunct(acc, delimiter, finalDelimiter, !oxford)
+                        : String.join(delimiter, acc);
+                return isPresent(joined) && isPresent(prefix) ? prefix + joined : joined;
             };
         }
 
