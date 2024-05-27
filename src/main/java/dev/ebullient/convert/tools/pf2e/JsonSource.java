@@ -117,7 +117,7 @@ public interface JsonSource extends JsonTextReplacement {
                     // special inline types
                     case ability -> appendRenderable(text, Pf2eAbility.createEmbeddedAbility(node, this));
                     case affliction -> appendAffliction(text, node);
-                    case attack -> appendRenderable(text, Pf2eJsonNodeReader.Pf2eAttack.createAttack(node, this));
+                    case attack -> appendRenderable(text, Pf2eJsonNodeReader.Pf2eAttack.getAttack(node, this));
                     case data -> embedData(text, node);
                     case lvlEffect -> appendLevelEffect(text, node);
                     case successDegree -> appendSuccessDegree(text, node);
