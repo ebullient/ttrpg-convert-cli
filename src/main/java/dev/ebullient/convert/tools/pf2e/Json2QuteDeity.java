@@ -19,6 +19,7 @@ import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.pf2e.Pf2eJsonNodeReader.Pf2eAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack.AttackRangeType;
