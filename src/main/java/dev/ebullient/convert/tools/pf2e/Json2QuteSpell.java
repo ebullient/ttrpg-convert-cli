@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
@@ -228,6 +229,46 @@ public class Json2QuteSpell extends Json2QuteBase {
         }
 
         return amp;
+    }
+
+    public enum Pf2eSpell implements Pf2eJsonNodeReader {
+        amp,
+        area,
+        basic,
+        cast,
+        components, // nested array
+        cost,
+        domains,
+        duration,
+        focus,
+        heightened,
+        hidden,
+        level,
+        plusX, // heightened
+        primaryCheck, // ritual
+        range,
+        savingThrow,
+        secondaryCasters, //ritual
+        secondaryCheck, // ritual
+        spellLists,
+        subclass,
+        targets,
+        traditions,
+        trigger,
+        type,
+        X; // heightened
+
+        List<String> getNestedListOfStrings(JsonNode source, Tui tui) {
+            JsonNode result = source.get(this.nodeName());
+            if (result == null) {
+                return List.of();
+            } else if (result.isTextual()) {
+                return List.of(result.asText());
+            } else {
+                JsonNode first = result.get(0);
+                return getListOfStrings(first, tui);
+            }
+        }
     }
 
     @RegisterForReflection

@@ -3,12 +3,8 @@ package dev.ebullient.convert.tools.pf2e;
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.pluralize;
 
-import java.util.List;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import dev.ebullient.convert.io.Tui;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
@@ -47,46 +43,6 @@ public interface Pf2eTypeReader extends JsonSource {
             return Stream.of(Pf2eAlignmentValue.values())
                     .filter(t -> t.matches(name))
                     .findFirst().orElse(null);
-        }
-    }
-
-    enum Pf2eSpell implements Pf2eJsonNodeReader {
-        amp,
-        area,
-        basic,
-        cast,
-        components, // nested array
-        cost,
-        domains,
-        duration,
-        focus,
-        heightened,
-        hidden,
-        level,
-        plusX, // heightened
-        primaryCheck, // ritual
-        range,
-        savingThrow,
-        secondaryCasters, //ritual
-        secondaryCheck, // ritual
-        spellLists,
-        subclass,
-        targets,
-        traditions,
-        trigger,
-        type,
-        X; // heightened
-
-        List<String> getNestedListOfStrings(JsonNode source, Tui tui) {
-            JsonNode result = source.get(this.nodeName());
-            if (result == null) {
-                return List.of();
-            } else if (result.isTextual()) {
-                return List.of(result.asText());
-            } else {
-                JsonNode first = result.get(0);
-                return getListOfStrings(first, tui);
-            }
         }
     }
 

@@ -101,7 +101,7 @@ public class Json2QuteCompose extends Json2QuteBase {
         maybeAddBlankLine(text);
         text.add("**Spells** " + spells.stream()
                 .map(s -> index().getIncludedNode(s))
-                .sorted(Comparator.comparingInt(n -> Pf2eSpell.level.intOrDefault(n, 1)))
+                .sorted(Comparator.comparingInt(n -> Json2QuteSpell.Pf2eSpell.level.intOrDefault(n, 1)))
                 .map(Pf2eSources::findSources)
                 .map(s -> linkify(Pf2eIndexType.spell, s.getName() + "|" + s.primarySource()))
                 .collect(Collectors.joining(", ")));
