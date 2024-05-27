@@ -240,7 +240,7 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
     }
 
     void createDomainReference(String key, JsonNode node) {
-        Pf2eSpell.domains.getListOfStrings(node, tui())
+        Json2QuteSpell.Pf2eSpell.domains.getListOfStrings(node, tui())
                 .forEach(d -> domainToSpells.computeIfAbsent(d.toLowerCase(), k -> new HashSet<>())
                         .add(key));
     }
