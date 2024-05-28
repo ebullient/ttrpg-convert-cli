@@ -19,7 +19,8 @@ import io.quarkus.qute.TemplateData;
  * @param rulesPath The path which leads to an explanation of this particular activity
  */
 @TemplateData
-public record QuteDataActivity(String text, ImageRef glyph, String textGlyph, String rulesPath) implements QuteUtil {
+public record QuteDataActivity(String text, ImageRef glyph, String textGlyph,
+        String rulesPath) implements QuteUtil, QuteDataDuration {
 
     /** Return the text associated with the action. */
     @Override

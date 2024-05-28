@@ -10,6 +10,9 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+
 /**
  * Pf2eTools Spell attributes ({@code spell2md.txt})
  * <p>
@@ -34,11 +37,10 @@ public class QuteSpell extends Pf2eQuteBase {
     public final QuteSpellCasting casting;
     /** Spell target attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget QuteSpellTarget} */
     public final QuteSpellTarget targeting;
-    /**
-     * Spell save and duration attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSaveDuration
-     * QuteSpellSaveDuration}
-     */
-    public final QuteSpellSaveDuration saveDuration;
+    /** Spell save, as {@link QuteSpellSave} */
+    public final QuteSpellSave save;
+    /** Spell duration, as {@link QuteDataTimedDuration} */
+    public final QuteSpellDuration duration;
     /** Psi amp behavior as {@link dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp QuteSpellAmp} */
     public final QuteSpellAmp amp;
     /** List of spell domains (links) */
@@ -58,7 +60,7 @@ public class QuteSpell extends Pf2eQuteBase {
 
     public QuteSpell(Pf2eSources sources, List<String> text, Tags tags,
             String level, String spellType, Collection<String> traits, List<String> aliases,
-            QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSaveDuration saveDuration,
+            QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSave save, QuteSpellDuration duration,
             List<String> domains, List<String> traditions, List<String> spellLists,
             Collection<NamedText> subclass, Collection<NamedText> heightened, QuteSpellAmp amp) {
         super(sources, text, tags);
@@ -69,7 +71,8 @@ public class QuteSpell extends Pf2eQuteBase {
         this.aliases = aliases;
         this.casting = casting;
         this.targeting = targeting;
-        this.saveDuration = saveDuration;
+        this.save = save;
+        this.duration = duration;
         this.domains = domains;
         this.traditions = traditions;
         this.spellLists = spellLists;
@@ -95,8 +98,11 @@ public class QuteSpell extends Pf2eQuteBase {
      */
     @TemplateData
     public static class QuteSpellCasting implements QuteUtil {
-        /** Formatted action icon/link. Casting action */
-        public String cast;
+        /**
+         * Duration to cast, as a {@link QuteDataDuration} which is either a {@link QuteDataActivity}, or a
+         * {@link QuteDataTimedDuration}.
+         */
+        public QuteDataDuration duration;
         /** Comma-separated list of required spell components (material, somatic, verbal, focus) */
         public List<String> components;
         /** Formatted string. Material cost of the spell */
@@ -109,7 +115,7 @@ public class QuteSpell extends Pf2eQuteBase {
         public String toString() {
             List<String> parts = new ArrayList<>();
 
-            parts.add(cast + (components != null && !components.isEmpty()
+            parts.add("**Cast** " + duration + (components != null && !components.isEmpty()
                     ? ""
                     : " " + String.join(", ", components)));
 
@@ -128,32 +134,48 @@ public class QuteSpell extends Pf2eQuteBase {
     }
 
     /**
-     * Pf2eTools spell save attributes.
-     * <p>
-     * This attribute will render itself as labeled elements
-     * if you reference it directly: `{resource.saveDuration}`.
-     * </p>
+     * Details about the saving throw for a spell. Example default representations:
+     * <blockquote>basic Reflex or Fortitude</blockquote>
+     * <blockquote>basic Reflex, Fortitude, or Willpower</blockquote>
+     *
+     * @param saves The saving throws that can be used for this spell (list of strings)
+     * @param basic True if this is a basic save (boolean)
+     * @param hidden Whether this save should be hidden. This is sometimes true when it's a special save that is
+     *        described in the text of the spell.
      */
     @TemplateData
-    public static class QuteSpellSaveDuration implements QuteUtil {
-        /** Boolean. True if this is a basic saving throw */
-        public boolean basic;
-        /** Formatted string. Saving throw */
-        public String savingThrow;
-        /** Formatted string. Duration. */
-        public String duration;
+    public record QuteSpellSave(List<String> saves, boolean basic, boolean hidden) implements QuteUtil {
 
+        @Override
         public String toString() {
-            List<String> parts = new ArrayList<>();
-            if (isPresent(savingThrow)) {
-                parts.add(String.format("**Saving Throw**: %s%s",
-                        basic ? " basic " : "",
-                        savingThrow));
+            return join(" ", basic ? "basic" : "", joinConjunct(" or ", saves));
+        }
+    }
+
+    /**
+     * Details about the duration of the spell. Example default representations:
+     * <blockquote>1 minute</blockquote>
+     * <blockquote>sustained up to 1 minute</blockquote>
+     *
+     * @param sustained Whether this is a sustained spell, boolean
+     * @param dismissable Whether this spell can be dismissed, boolean. Not included in the default representation.
+     * @param duration The duration of this spell, as a {@link QuteDataTimedDuration}.
+     */
+    @TemplateData
+    public record QuteSpellDuration(
+            QuteDataTimedDuration duration, boolean sustained, boolean dismissable) implements QuteUtil {
+        @Override
+        public String toString() {
+            if (duration != null && duration.hasCustomDisplay()) {
+                return duration.toString();
             }
-            if (isPresent(duration)) {
-                parts.add("**Duration**: " + duration);
+            if (sustained && (duration == null || duration.unit() == QuteDataTimedDuration.DurationUnit.UNLIMITED)) {
+                return "sustained";
             }
-            return String.join("\n- ", parts);
+            if (duration == null) {
+                return "";
+            }
+            return (sustained ? "sustained up to " : "") + duration;
         }
     }
 

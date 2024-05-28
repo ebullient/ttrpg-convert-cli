@@ -185,8 +185,8 @@ public class StringUtil {
      *     pluralize("walrus", 2, true)
      * </pre>
      */
-    public static String pluralize(String s, int howMany, boolean assumeSingular) {
-        if (s == null) {
+    public static String pluralize(String s, Integer howMany, boolean assumeSingular) {
+        if (s == null || howMany == null) {
             return null;
         }
         if (s.isEmpty()) {
@@ -205,11 +205,11 @@ public class StringUtil {
     }
 
     /**
-     * {@link #pluralize(String, int, boolean)} with {@code assumeSingular} set to {@code false}
+     * {@link #pluralize(String, Integer, boolean)} with {@code assumeSingular} set to {@code false}
      *
-     * @see #pluralize(String, int, boolean)
+     * @see #pluralize(String, Integer, boolean)
      */
-    public static String pluralize(String s, int howMany) {
+    public static String pluralize(String s, Integer howMany) {
         return pluralize(s, howMany, false);
     }
 

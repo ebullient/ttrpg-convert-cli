@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,10 +17,13 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellCasting;
-import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSaveDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSave;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -88,7 +92,8 @@ public class Json2QuteSpell extends Json2QuteBase {
                 Field.alias.replaceTextFromList(rootNode, this),
                 getQuteSpellCasting(),
                 getQuteSpellTarget(tags),
-                getQuteSaveDuration(),
+                Pf2eSpell.savingThrow.getSpellSaveFrom(rootNode, this),
+                Pf2eSpell.duration.getSpellDurationFrom(rootNode, this),
                 Pf2eSpell.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, this),
                 Pf2eSpell.traditions.linkifyListFrom(rootNode, Pf2eIndexType.trait, this),
                 Pf2eSpell.spellLists.getListOfStrings(rootNode, tui()),
@@ -100,44 +105,17 @@ public class Json2QuteSpell extends Json2QuteBase {
     QuteSpellCasting getQuteSpellCasting() {
         QuteSpellCasting quteCast = new QuteSpellCasting();
 
-        NumberUnitEntry cast = Pf2eSpell.cast.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
-        quteCast.cast = cast.convertToDurationString(this);
-
         quteCast.components = Pf2eSpell.components.getNestedListOfStrings(rootNode, tui())
                 .stream()
                 .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesVaultRoot()))
                 .collect(Collectors.toList());
 
+        quteCast.duration = Pf2eSpell.cast.getDurationFrom(rootNode, this);
         quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this);
         quteCast.trigger = Pf2eSpell.trigger.transformTextFrom(rootNode, ", ", this);
         quteCast.requirements = Field.requirements.transformTextFrom(rootNode, ", ", this);
 
         return quteCast;
-    }
-
-    QuteSpellSaveDuration getQuteSaveDuration() {
-        JsonNode savingThrow = Pf2eSpell.savingThrow.getFrom(rootNode);
-        SpellDuration duration = Pf2eSpell.duration.fieldFromTo(rootNode, SpellDuration.class, tui());
-        if (savingThrow == null && duration == null) {
-            return null;
-        }
-        QuteSpellSaveDuration saveDuration = new QuteSpellSaveDuration();
-
-        boolean hidden = Pf2eSpell.hidden.booleanOrDefault(savingThrow, false);
-        String throwString = Pf2eSpell.type.getListOfStrings(savingThrow, tui())
-                .stream()
-                .map(Pf2eSavingThrowType::valueFromEncoding)
-                .map(t -> toTitleCase(t.name()))
-                .collect(Collectors.joining(" or "));
-        if (!hidden && !throwString.isEmpty()) {
-            saveDuration.basic = Pf2eSpell.basic.booleanOrDefault(savingThrow, false);
-            saveDuration.savingThrow = throwString;
-        }
-        if (duration != null) {
-            saveDuration.duration = duration.convertToSpellDurationString(this);
-        }
-
-        return saveDuration;
     }
 
     QuteSpellTarget getQuteSpellTarget(Tags tags) {
@@ -239,6 +217,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         cast,
         components, // nested array
         cost,
+        dismiss,
         domains,
         duration,
         focus,
@@ -253,6 +232,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         secondaryCheck, // ritual
         spellLists,
         subclass,
+        sustained,
         targets,
         traditions,
         trigger,
@@ -270,28 +250,37 @@ public class Json2QuteSpell extends Json2QuteBase {
                 return getListOfStrings(first, tui);
             }
         }
-    }
 
-    @RegisterForReflection
-    static class SpellDuration extends NumberUnitEntry {
-        public Boolean sustained;
-        public Boolean dismiss;
+        private QuteSpellSave getSpellSaveFrom(JsonNode source, JsonSource convert) {
+            JsonNode saveNode = getFromOrEmptyObjectNode(source);
+            List<String> saves = type.getListOfStrings(saveNode, convert.tui())
+                    .stream()
+                    .map(s -> switch (s.charAt(0)) {
+                        case 'F' -> "Fortitude";
+                        case 'R' -> "Reflex";
+                        case 'W' -> "Will";
+                        default -> null;
+                    })
+                    .filter(Objects::nonNull).toList();
+            return saves.isEmpty() ? null
+                    : new QuteSpellSave(
+                            saves, basic.booleanOrDefault(saveNode, false),
+                            hidden.booleanOrDefault(saveNode, false));
+        }
 
-        public String convertToSpellDurationString(JsonSource convert) {
-            if (entry != null) {
-                return convert.replaceText(entry);
+        private QuteSpellDuration getSpellDurationFrom(JsonNode source, JsonSource convert) {
+            if (!isObjectIn(source)) {
+                return null;
             }
-            boolean isSustained = sustained != null && sustained;
-            if (isSustained && "unlimited".equals(unit)) {
-                return "sustained";
+            JsonNode node = getFrom(source);
+            QuteDataDuration quteDuration = duration.getDurationFrom(source, convert);
+            if (quteDuration != null && quteDuration.isActivity()) {
+                convert.tui().errorf("Got activity as a spell duration from %s", source.toPrettyString());
             }
-            String rendered = number == null
-                    ? ""
-                    : String.format("%s %s%s", number, unit, (number > 1 ? "s" : ""));
-
-            return isSustained
-                    ? "sustained up to " + rendered
-                    : rendered;
+            return new QuteSpellDuration(
+                    (QuteDataTimedDuration) quteDuration,
+                    sustained.booleanOrDefault(node, false),
+                    dismiss.booleanOrDefault(node, false));
         }
     }
 

@@ -2,10 +2,13 @@ package dev.ebullient.convert.tools.pf2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.StringUtil;
+import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBonus;
@@ -23,7 +26,9 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 /** A utility class which extends {@link JsonNodeReader} with PF2e-specific functionality. */
@@ -58,6 +63,11 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
     /** Return a {@link QuteDataActivity} read from this field in {@code source}, or null */
     default QuteDataActivity getActivityFrom(JsonNode source, JsonSource convert) {
         return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.getActivity(n, convert)).orElse(null);
+    }
+
+    /** Return a {@link QuteDataTimedDuration} read from this field in {@code source}, or null. */
+    default QuteDataDuration getDurationFrom(JsonNode source, JsonSource convert) {
+        return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.getDuration(n, convert)).orElse(null);
     }
 
     /** Returns {@link QuteDataDefenses.QuteSavingThrows} read from this field in {@code source}, or null. */
@@ -444,6 +454,36 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
 
             return activity.toQuteActivity(
                     convert, activity == Pf2eActivity.timed ? join(" ", number.getIntOrThrow(node), actionType, extra) : extra);
+        }
+
+        /**
+         * Return a {@link QuteDataDuration} read from {@code node}. This will be either a {@link QuteDataActivity},
+         * or a {@link QuteDataTimedDuration}. Examples:
+         *
+         * <ul>
+         * <li>{@code {"entry": "1 round or 1 minute"}} timed duration with custom display of "1 round or 1 minute"</li>
+         * <li>{@code {"number": 1, "unit": "action"}} single-action activity</li>
+         * <li>{@code {"number": 1, "unit": "day"}} timed duration with value 1, unit "day"</li>
+         * </ul>
+         */
+        private static QuteDataDuration getDuration(JsonNode node, JsonSource convert) {
+            QuteDataTimedDuration timedDuration = new QuteDataTimedDuration(
+                    number.getIntFrom(node).orElse(1),
+                    unit.getEnumValueFrom(node, QuteDataTimedDuration.DurationUnit.class),
+                    entry.replaceTextFrom(node, convert));
+            // Prioritize using a custom display string if we have one
+            if (timedDuration.hasCustomDisplay()) {
+                return timedDuration;
+            }
+            String unitText = unit.getTextOrNull(node);
+            // This is disallowed by the schema, but if we don't get a unit, then discard the whole duration
+            if (unitText == null) {
+                return null;
+            }
+            // The activity is more specific unless we have a custom display. Otherwise, fall back to the timed duration
+            return Optional.ofNullable(Pf2eActivity.toActivity(unitText, timedDuration.value()))
+                    .map(a -> (QuteDataDuration) a.toQuteActivity(convert, null))
+                    .orElse(timedDuration);
         }
     }
 

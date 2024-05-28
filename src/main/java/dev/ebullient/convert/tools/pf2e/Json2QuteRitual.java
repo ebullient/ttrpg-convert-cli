@@ -68,11 +68,10 @@ public class Json2QuteRitual extends Json2QuteSpell {
     }
 
     QuteRitualCasting getQuteRitualCast() {
-        NumberUnitEntry cast = Pf2eSpell.cast.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         RitualSecondaryCaster casters = Pf2eSpell.secondaryCasters.fieldFromTo(rootNode, RitualSecondaryCaster.class, tui());
 
         QuteRitualCasting quteCast = new QuteRitualCasting();
-        quteCast.cast = cast.convertToDurationString(this);
+        quteCast.duration = Pf2eSpell.cast.getDurationFrom(rootNode, this);
         quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this);
         if (casters != null) {
             quteCast.secondaryCasters = casters.buildString(this);
