@@ -73,8 +73,11 @@ public class QuteRitual extends Pf2eQuteBase {
      */
     @TemplateData
     public static class QuteRitualCasting implements QuteUtil {
-        /** Formatted action icon/link. Casting action */
-        public String cast;
+        /**
+         * Duration to cast, as a {@link QuteDataDuration} which is either a {@link QuteDataActivity}, or a
+         * {@link QuteDataTimedDuration}.
+         */
+        public QuteDataDuration duration;
         /** Formatted string. Material cost of the spell */
         public String cost;
         /** Minumum number of secondary casters required */
@@ -83,8 +86,9 @@ public class QuteRitual extends Pf2eQuteBase {
         public String toString() {
             List<String> parts = new ArrayList<>();
 
-            parts.add(cast);
-
+            if (duration != null) {
+                parts.add("**Cast** " + duration);
+            }
             if (isPresent(cost)) {
                 parts.add(String.format("**Cost** %s", cost));
             }

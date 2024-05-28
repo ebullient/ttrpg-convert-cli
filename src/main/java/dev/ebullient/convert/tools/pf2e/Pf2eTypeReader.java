@@ -46,31 +46,6 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSavingThrowType implements Pf2eJsonNodeReader.FieldValue {
-        fortitude,
-        reflex,
-        will;
-
-        @Override
-        public String value() {
-            return this.name();
-        }
-
-        @Override
-        public boolean matches(String value) {
-            return this.name().startsWith(value.toLowerCase());
-        }
-
-        static Pf2eSavingThrowType valueFromEncoding(String value) {
-            if (!isPresent(value)) {
-                return null;
-            }
-            return Stream.of(Pf2eSavingThrowType.values())
-                    .filter(t -> t.matches(value))
-                    .findFirst().orElse(null);
-        }
-    }
-
     enum Pf2eSpellComponent implements Pf2eJsonNodeReader.FieldValue {
         focus("F"),
         material("M"),
@@ -112,17 +87,6 @@ public interface Pf2eTypeReader extends JsonSource {
         public Integer number;
         public String unit;
         public String entry;
-
-        public String convertToDurationString(Pf2eTypeReader convert) {
-            if (entry != null) {
-                return convert.replaceText(entry);
-            }
-            Pf2eActivity activity = Pf2eActivity.toActivity(unit, number);
-            if (activity != null && activity != Pf2eActivity.timed) {
-                return activity.linkify(convert.cfg().rulesVaultRoot());
-            }
-            return "%s %s".formatted(number, pluralize(unit, number));
-        }
 
         public String convertToRangeString(Pf2eTypeReader convert) {
             if (entry != null) {

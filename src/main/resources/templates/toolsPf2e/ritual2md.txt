@@ -13,7 +13,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {#if resource.traits }{#each resource.traits}{it}  {/each}
 {/if}  
 
-- **Cast** {resource.casting}
+- {resource.casting}
 {#if resource.checks }
 - {resource.checks}
 {/if}{#if resource.targeting }

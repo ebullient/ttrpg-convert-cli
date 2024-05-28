@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.join;
 
 import java.util.ArrayList;
@@ -329,6 +330,23 @@ public interface JsonNodeReader {
         List<String> inner = new ArrayList<>();
         convert.appendToText(inner, getFrom(source), null);
         return inner;
+    }
+
+    /** Returns the enum value of {@code enumClass} that this field in {@code source} contains, or null. */
+    default <E extends Enum<E>> E getEnumValueFrom(JsonNode source, Class<E> enumClass) {
+        String value = getTextOrNull(source);
+        if (!isPresent(value)) {
+            return null;
+        }
+        try {
+            return Enum.valueOf(enumClass, value.toLowerCase());
+        } catch (IllegalArgumentException ignored) {
+        }
+        try {
+            return Enum.valueOf(enumClass, value.toUpperCase());
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
     default boolean valueEquals(JsonNode previous, JsonNode next) {

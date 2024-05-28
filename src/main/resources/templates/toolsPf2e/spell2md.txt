@@ -20,11 +20,13 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {/if}{#if resource.subclass }
 - {#each resource.subclass}**{it.category}** {it.text}{#if it_hasNext}, {/if}{/each}
 {/if}
-- **Cast** {resource.casting}
+- {resource.casting}
 {#if resource.targeting }
 - {resource.targeting}
-{/if}{#if resource.saveDuration }
-- {resource.saveDuration}
+{/if}{#if resource.save and !resource.save.hidden}
+- **Saving Throw**: {resource.save}
+{/if}{#if resource.duration}
+- **Duration**: {resource.duration}
 {/if}
 
 {resource.text}
