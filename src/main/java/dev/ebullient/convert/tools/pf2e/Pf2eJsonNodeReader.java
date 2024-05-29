@@ -2,12 +2,12 @@ package dev.ebullient.convert.tools.pf2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.StringUtil;
-import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
@@ -81,6 +81,11 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
      */
     default QuteDataNamedBonus getNamedBonusFrom(JsonNode source, JsonSource convert) {
         return existsIn(source) ? Pf2eNamedBonus.getNamedBonus(name(), getFrom(source), convert) : null;
+    }
+
+    /** Return a {@link QuteDataRange} from this field in {@code source}, or null. */
+    default QuteDataRange getRangeFrom(JsonNode source, JsonSource convert) {
+        return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.getRange(n, convert)).orElse(null);
     }
 
     /**
@@ -413,11 +418,19 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
      *     "unit": "round",
      *     "entry": "until the start of your next turn"
      * </pre>
+     * Or, possibly for some range entries
+     * <pre>
+     *     "entry": "10 miles",
+     *     "distance": {"type": "mile", "amount": 10}
+     * </pre>
      */
     enum Pf2eNumberUnitEntry implements Pf2eJsonNodeReader {
         number,
         unit,
-        entry;
+        entry,
+        distance,
+        type,
+        amount;
 
         /**
          * Return a {@link QuteDataActivity} read from {@code node}. Example JSON input:
@@ -484,6 +497,55 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             return Optional.ofNullable(Pf2eActivity.toActivity(unitText, timedDuration.value()))
                     .map(a -> (QuteDataDuration) a.toQuteActivity(convert, null))
                     .orElse(timedDuration);
+        }
+
+        /**
+         * Return a {@link QuteDataRange} read from {@code node}. Example JSON input:
+         *
+         * <pre>
+         *     "number": 3,
+         *     "unit": "mile",
+         *     "entry": "some note"
+         * </pre>
+         *
+         * Or
+         *
+         * <pre>
+         *     "entry": "10 miles",
+         *     "distance": {"type": "mile", "amount": 10}
+         * </pre>
+         */
+        private static QuteDataRange getRange(JsonNode source, JsonSource convert) {
+            // Sometimes the amount and unit are in different fields of a nested "distance" object
+            JsonNode node = distance.getObjectFrom(source).orElse(source);
+            QuteDataRange.RangeUnit rangeUnit = unit.getRangeUnitFrom(node)
+                    .or(() -> type.getRangeUnitFrom(node))
+                    .or(() -> entry.getRangeUnitFrom(node)) // sometimes the entry is the unit
+                    .orElse(null);
+            Integer rangeValue = number.getIntFrom(node)
+                    .or(() -> amount.getIntFrom(node))
+                    .orElse(null);
+            String entryText = entry.replaceTextFrom(node, convert);
+            if (rangeValue == null && rangeUnit == null && !isPresent(entryText)) {
+                convert.tui().errorf("No range data in %s", source.toPrettyString());
+            }
+            return new QuteDataRange(
+                    rangeValue, rangeUnit,
+                    // Don't include the entry text if it's just the unit again
+                    entry.getRangeUnitFrom(node).map(ru -> ru == rangeUnit).orElse(false) ? null : entryText);
+        }
+
+        private Optional<QuteDataRange.RangeUnit> getRangeUnitFrom(JsonNode source) {
+            return getTextFrom(source)
+                    // normalize the unit to match enum names
+                    .map(s -> pluralize(s, 1).toUpperCase())
+                    .map(s -> {
+                        try {
+                            return QuteDataRange.RangeUnit.valueOf(s);
+                        } catch (IllegalArgumentException ignored) {
+                            return null;
+                        }
+                    });
         }
     }
 

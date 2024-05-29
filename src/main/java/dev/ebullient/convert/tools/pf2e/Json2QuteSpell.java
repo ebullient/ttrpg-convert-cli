@@ -18,6 +18,7 @@ import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp;
@@ -120,8 +121,8 @@ public class Json2QuteSpell extends Json2QuteBase {
 
     QuteSpellTarget getQuteSpellTarget(Tags tags) {
         String targets = replaceText(Pf2eSpell.targets.getTextOrEmpty(rootNode));
-        NumberUnitEntry range = Pf2eSpell.range.fieldFromTo(rootNode, NumberUnitEntry.class, tui());
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
+        QuteDataRange range = Pf2eSpell.range.getRangeFrom(rootNode, this);
         if (targets == null && area == null && range == null) {
             return null;
         }
@@ -129,9 +130,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         if (targets != null) {
             spellTarget.targets = replaceText(targets);
         }
-        if (range != null) {
-            spellTarget.range = range.convertToRangeString(this);
-        }
+        spellTarget.range = range;
         if (area != null) {
             spellTarget.area = area.entry;
             area.types.forEach(t -> tags.add(SPELL_TAG, "area", t));

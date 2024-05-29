@@ -1,11 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.pluralize;
-
 import java.util.stream.Stream;
-
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface Pf2eTypeReader extends JsonSource {
 
@@ -81,22 +77,4 @@ public interface Pf2eTypeReader extends JsonSource {
             return "%sTODO.md#%s".formatted(rulesRoot, toAnchorTag(this.name()));
         }
     }
-
-    @RegisterForReflection
-    class NumberUnitEntry {
-        public Integer number;
-        public String unit;
-        public String entry;
-
-        public String convertToRangeString(Pf2eTypeReader convert) {
-            if (entry != null) {
-                return convert.replaceText(entry);
-            }
-            if ("feet".equals(unit) || "miles".equals(unit)) {
-                return "%s %s".formatted(number, pluralize(unit, number));
-            }
-            return unit;
-        }
-    }
-
 }
