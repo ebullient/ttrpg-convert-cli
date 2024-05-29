@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
-public abstract class Json2QuteBase implements Pf2eTypeReader {
+public abstract class Json2QuteBase implements JsonSource {
     protected final Pf2eIndex index;
     protected final Pf2eIndexType type;
     protected final JsonNode rootNode;
