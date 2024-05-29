@@ -129,14 +129,14 @@ public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
 
     String prepareTrait(String key, JsonNode node) {
         String name = SourceField.name.getTextOrEmpty(node);
-        Pf2eAlignmentValue alignment = Pf2eAlignmentValue.fromString(name);
+        Pf2eAlignmentValue alignment = SourceField.name.getEnumValueFrom(node, Pf2eAlignmentValue.class);
 
         // Change the indexed name for [...] traits
         if (name.startsWith("[") || alignment != null) {
             // Update name & object node
             name = alignment == null
                     ? name.replaceAll("\\[(.*)]", "Any $1")
-                    : alignment.longName;
+                    : alignment.toString();
             key = replaceName(Pf2eIndexType.trait, name, key, node, true);
         }
 
