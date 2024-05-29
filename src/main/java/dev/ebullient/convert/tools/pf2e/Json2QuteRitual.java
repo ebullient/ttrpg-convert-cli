@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual.QuteRitualCasting;
 import dev.ebullient.convert.tools.pf2e.qute.QuteRitual.QuteRitualChecks;
@@ -47,9 +48,9 @@ public class Json2QuteRitual extends Json2QuteSpell {
 
     QuteSpellTarget getQuteRitualSpellTarget(Tags tags) {
         String targets = replaceText(Pf2eSpell.targets.getTextOrEmpty(rootNode));
-        JsonNode rangeEntry = Pf2eSpell.range.getFieldFrom(rootNode, SourceField.entry);
+        QuteDataRange range = Pf2eSpell.range.getRangeFrom(rootNode, this);
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
-        if (targets == null && rangeEntry == null && area == null) {
+        if (targets == null && range == null && area == null) {
             return null;
         }
 
@@ -57,9 +58,7 @@ public class Json2QuteRitual extends Json2QuteSpell {
         if (targets != null) {
             spellTarget.targets = replaceText(targets);
         }
-        if (rangeEntry != null) {
-            spellTarget.range = replaceText(rangeEntry.asText());
-        }
+        spellTarget.range = range;
         if (area != null) {
             spellTarget.area = area.entry;
             area.types.forEach(t -> tags.add(RITUAL_TAG, "area", t));

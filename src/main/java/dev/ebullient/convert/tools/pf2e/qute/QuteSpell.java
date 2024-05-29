@@ -188,8 +188,8 @@ public class QuteSpell extends Pf2eQuteBase {
      */
     @TemplateData
     public static class QuteSpellTarget implements QuteUtil {
-        /** Formatted string describing the spell range */
-        public String range;
+        /** The spell's range, as a {@link QuteDataRange}. */
+        public QuteDataRange range;
         /** Formatted string describing the spell area of effect */
         public String area;
         /** Formatted string describing the spell target(s) */
