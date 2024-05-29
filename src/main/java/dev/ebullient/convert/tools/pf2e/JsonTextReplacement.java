@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
@@ -347,15 +348,15 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             // [...] becomes "Any ..."
             traitName = traitName.replaceAll("\\[(.*)]", "Any $1");
         } else if (traitName.length() <= 2) {
-            Pf2eTypeReader.Pf2eAlignmentValue alignment = Pf2eTypeReader.Pf2eAlignmentValue.fromString(traitName);
+            Pf2eAlignmentValue alignment = JsonNodeReader.getEnumValue(traitName, Pf2eAlignmentValue.class);
             if (alignment != null) {
-                traitName = alignment.longName;
+                traitName = alignment.toString();
                 // Uppercase alignment text if it's an abbreviation, e.g. "CE"
                 if (linkText.length() <= 2) {
                     linkText = linkText.toUpperCase();
                 }
             }
-            traitName = alignment == null ? traitName : alignment.longName;
+            traitName = alignment == null ? traitName : alignment.toString();
         }
 
         String source = parts.length > 1 ? parts[1] : index().traitToSource(traitName);
@@ -457,5 +458,34 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         // display text} Class and Class feature source is assumed to be CRB.",
         //tui().debugf("TODO CLASS FEATURE found: %s", match);
         return match;
+    }
+
+    /** Represents a PF2e alignment. */
+    enum Pf2eAlignmentValue implements JsonNodeReader.FieldValue {
+        ce("Chaotic Evil"),
+        cg("Chaotic Good"),
+        cn("Chaotic Neutral"),
+        le("Lawful Evil"),
+        lg("Lawful Good"),
+        ln("Lawful Neutral"),
+        n("Neutral"),
+        ne("Neutral Evil"),
+        ng("Neutral Good");
+
+        final String longName;
+
+        Pf2eAlignmentValue(String s) {
+            longName = s;
+        }
+
+        @Override
+        public String value() {
+            return longName;
+        }
+
+        @Override
+        public String toString() {
+            return longName;
+        }
     }
 }
