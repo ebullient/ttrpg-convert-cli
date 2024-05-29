@@ -1,7 +1,9 @@
 package dev.ebullient.convert.tools;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.join;
 
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -583,6 +585,30 @@ public interface JsonTextConverter<T extends IndexType> {
 
     default String toAnchorTag(String x) {
         return Tui.toAnchorTag(x);
+    }
+
+    /** {@link #createLink(String, Path, String, String)} with an empty title */
+    default String createLink(String displayText, Path target, String anchor) {
+        return createLink(displayText, target, anchor, null);
+    }
+
+    /**
+     * Return a string with a markdown formatted link from the given components.
+     *
+     * @param displayText The display text to use for the link
+     * @param target The target path that the link should point to
+     * @param anchor An anchor to add to the link
+     * @param title A title to use for the link
+     */
+    default String createLink(String displayText, Path target, String anchor, String title) {
+        if (target == null) {
+            throw new IllegalArgumentException("Can't create link with null path");
+        }
+        title = title != null ? "\"%s\"".formatted(title) : null;
+        String targetPath = join("#", target.endsWith(".md") ? target : (target + ".md"), toAnchorTag(anchor));
+        return "[%s](%s)".formatted(displayText, join(" ", targetPath, title))
+                // Get rid of Windows-style path separators - they break links in Obsidian
+                .replace('\\', '/');
     }
 
     default List<String> toListOfStrings(JsonNode source) {

@@ -22,19 +22,25 @@ import dev.ebullient.convert.io.Tui;
 
 public interface JsonNodeReader {
 
-    interface FieldValue {
-        String value();
-
-        default String toAnchorTag(String x) {
-            return Tui.toAnchorTag(x);
+    /** Returns the enum value of {@code enumClass} corresponding to {@code value}. */
+    static <E extends Enum<E>> E getEnumValue(String value, Class<E> enumClass) {
+        if (!isPresent(value)) {
+            return null;
         }
-
-        default boolean isValueOfField(JsonNode source, JsonNodeReader field) {
-            return matches(field.getTextOrEmpty(source));
+        if (FieldValue.class.isAssignableFrom(enumClass)) {
+            // If it's a FieldValue, then try to use the matches() method instead.
+            return Arrays.stream(enumClass.getEnumConstants())
+                    .filter(e -> ((FieldValue) e).matches(value.toLowerCase()) || ((FieldValue) e).matches(value.toUpperCase()))
+                    .findAny().orElse(null);
         }
-
-        default boolean matches(String value) {
-            return this.value().equalsIgnoreCase(value);
+        try {
+            return Enum.valueOf(enumClass, value.toLowerCase());
+        } catch (IllegalArgumentException ignored) {
+        }
+        try {
+            return Enum.valueOf(enumClass, value.toUpperCase());
+        } catch (IllegalArgumentException ignored) {
+            return null;
         }
     }
 
@@ -334,18 +340,24 @@ public interface JsonNodeReader {
 
     /** Returns the enum value of {@code enumClass} that this field in {@code source} contains, or null. */
     default <E extends Enum<E>> E getEnumValueFrom(JsonNode source, Class<E> enumClass) {
-        String value = getTextOrNull(source);
-        if (!isPresent(value)) {
-            return null;
+        return getEnumValue(getTextOrNull(source), enumClass);
+    }
+
+    interface FieldValue {
+        String value();
+
+        String name();
+
+        default String toAnchorTag(String x) {
+            return Tui.toAnchorTag(x);
         }
-        try {
-            return Enum.valueOf(enumClass, value.toLowerCase());
-        } catch (IllegalArgumentException ignored) {
+
+        default boolean isValueOfField(JsonNode source, JsonNodeReader field) {
+            return matches(field.getTextOrEmpty(source));
         }
-        try {
-            return Enum.valueOf(enumClass, value.toUpperCase());
-        } catch (IllegalArgumentException ignored) {
-            return null;
+
+        default boolean matches(String value) {
+            return this.value().equalsIgnoreCase(value) || this.name().equalsIgnoreCase(value);
         }
     }
 

@@ -3,15 +3,20 @@ package dev.ebullient.convert.tools.pf2e.qute;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
 
+import static dev.ebullient.convert.StringUtil.formatMap;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.joinWithPrefix;
+import static dev.ebullient.convert.StringUtil.parenthesize;
 
 /**
  * Pf2eTools Spell attributes ({@code spell2md.txt})
@@ -31,10 +36,21 @@ public class QuteSpell extends Pf2eQuteBase {
     /** Aliases for this note */
     public final List<String> aliases;
     /**
-     * Spell casting attributes (trigger, duration, etc.) as
-     * {@link dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellCasting QuteSpellCasting}
+     * The time it takes to cast the spell, as a {@link QuteDataDuration} which is either a {@link QuteDataActivity}
+     * or a {@link QuteDataTimedDuration}.
      */
-    public final QuteSpellCasting casting;
+    public final QuteDataDuration castDuration;
+    /**
+     * The required spell components as a list of formatted strings (maybe empty). Use
+     * {@link QuteSpell#formattedComponents()} to get a pre-formatted representation.
+     */
+    public final List<String> components;
+    /** The material cost of the spell as a formatted string (optional) */
+    public final String cost;
+    /** The activation trigger for the spell as a formatted string (optional) */
+    public final String trigger;
+    /** The requirements to cast the spell (optional) */
+    public final String requirements;
     /** Spell target attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget QuteSpellTarget} */
     public final QuteSpellTarget targeting;
     /** Spell save, as {@link QuteSpellSave} */
@@ -60,7 +76,8 @@ public class QuteSpell extends Pf2eQuteBase {
 
     public QuteSpell(Pf2eSources sources, List<String> text, Tags tags,
             String level, String spellType, Collection<String> traits, List<String> aliases,
-            QuteSpellCasting casting, QuteSpellTarget targeting, QuteSpellSave save, QuteSpellDuration duration,
+            QuteDataDuration castDuration, List<String> components, String cost, String trigger, String requirements,
+            QuteSpellTarget targeting, QuteSpellSave save, QuteSpellDuration duration,
             List<String> domains, List<String> traditions, List<String> spellLists,
             Collection<NamedText> subclass, Collection<NamedText> heightened, QuteSpellAmp amp) {
         super(sources, text, tags);
@@ -69,7 +86,11 @@ public class QuteSpell extends Pf2eQuteBase {
         this.spellType = spellType;
         this.traits = traits;
         this.aliases = aliases;
-        this.casting = casting;
+        this.castDuration = castDuration;
+        this.components = components;
+        this.cost = cost;
+        this.trigger = trigger;
+        this.requirements = requirements;
         this.targeting = targeting;
         this.save = save;
         this.duration = duration;
@@ -90,47 +111,13 @@ public class QuteSpell extends Pf2eQuteBase {
     }
 
     /**
-     * Pf2eTools spell casting attributes.
-     * <p>
-     * This attribute will render itself as a list of labeled elements
-     * if you reference it directly: `{resource.casting}`.
-     * </p>
+     * The components required for the spell, as a formatted string. Example:
+     * <blockquote>
+     * <a href="#">somatic</a>, <a href="#">verbal</a>
+     * </blockquote>
      */
-    @TemplateData
-    public static class QuteSpellCasting implements QuteUtil {
-        /**
-         * Duration to cast, as a {@link QuteDataDuration} which is either a {@link QuteDataActivity}, or a
-         * {@link QuteDataTimedDuration}.
-         */
-        public QuteDataDuration duration;
-        /** Comma-separated list of required spell components (material, somatic, verbal, focus) */
-        public List<String> components;
-        /** Formatted string. Material cost of the spell */
-        public String cost;
-        /** Formatted string. Spell activation trigger. */
-        public String trigger;
-        /** Formatted string. Spell cast requirements */
-        public String requirements;
-
-        public String toString() {
-            List<String> parts = new ArrayList<>();
-
-            parts.add("**Cast** " + duration + (components != null && !components.isEmpty()
-                    ? ""
-                    : " " + String.join(", ", components)));
-
-            if (isPresent(cost)) {
-                parts.add("**Cost**: " + cost);
-            }
-            if (isPresent(trigger)) {
-                parts.add("**Trigger**: " + trigger);
-            }
-            if (isPresent(requirements)) {
-                parts.add("**Requirements**: " + requirements);
-            }
-
-            return String.join("\n- ", parts);
-        }
+    public String formattedComponents() {
+        return join(", ", components);
     }
 
     /**
