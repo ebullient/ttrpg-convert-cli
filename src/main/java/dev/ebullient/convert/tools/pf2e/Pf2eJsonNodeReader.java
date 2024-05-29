@@ -56,7 +56,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
     }
 
     /** Return a {@link QuteDataDefenses} read from this field in {@code source}, or null. */
-    default QuteDataDefenses getDefensesFrom(JsonNode source, Pf2eTypeReader convert) {
+    default QuteDataDefenses getDefensesFrom(JsonNode source, JsonSource convert) {
         return getObjectFrom(source).map(n -> Pf2eDefenses.getDefenses(n, convert)).orElse(null);
     }
 
@@ -418,7 +418,9 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
      *     "unit": "round",
      *     "entry": "until the start of your next turn"
      * </pre>
+     *
      * Or, possibly for some range entries
+     *
      * <pre>
      *     "entry": "10 miles",
      *     "distance": {"type": "mile", "amount": 10}

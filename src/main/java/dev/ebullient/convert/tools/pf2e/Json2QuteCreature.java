@@ -39,7 +39,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         mid,
         bot;
 
-        static QuteCreature.CreatureAbilities create(JsonNode node, Pf2eTypeReader convert) {
+        static QuteCreature.CreatureAbilities create(JsonNode node, JsonSource convert) {
             return new QuteCreature.CreatureAbilities(
                     createAbilityList(top.ensureArrayIn(node), convert),
                     createAbilityList(mid.ensureArrayIn(node), convert),
@@ -56,7 +56,7 @@ public class Json2QuteCreature extends Json2QuteBase {
          *     ]
          * </pre>
          */
-        private static List<QuteAbilityOrAffliction> createAbilityList(JsonNode node, Pf2eTypeReader convert) {
+        private static List<QuteAbilityOrAffliction> createAbilityList(JsonNode node, JsonSource convert) {
             // The Pf2e schema doesn't match the data here - afflictions are marked with "type": "affliction", but
             // abilities are unmarked.
             return convert.streamOf(node)
@@ -82,7 +82,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         abilities,
         notes;
 
-        static QuteCreature.CreatureLanguages create(JsonNode node, Pf2eTypeReader convert) {
+        static QuteCreature.CreatureLanguages create(JsonNode node, JsonSource convert) {
             return new QuteCreature.CreatureLanguages(
                     languages.getListOfStrings(node, convert.tui()),
                     abilities.replaceTextFromList(node, convert),
@@ -106,7 +106,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         type,
         range;
 
-        static QuteCreature.CreatureSense create(JsonNode node, Pf2eTypeReader convert) {
+        static QuteCreature.CreatureSense create(JsonNode node, JsonSource convert) {
             return new QuteCreature.CreatureSense(
                     name.getTextFrom(node).map(convert::replaceText).orElseThrow(),
                     type.getTextFrom(node).map(convert::replaceText).orElse(null),
@@ -171,7 +171,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         std,
         traits;
 
-        private static QuteCreature create(JsonNode node, Pf2eTypeReader convert) {
+        private static QuteCreature create(JsonNode node, JsonSource convert) {
             Tags tags = new Tags(convert.getSources());
             Collection<String> traits = convert.collectTraitsFrom(node, tags);
             traits.addAll(alignment.getAlignmentsFrom(node, convert));

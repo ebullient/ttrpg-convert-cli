@@ -202,7 +202,7 @@ public class Json2QuteItem extends Json2QuteBase {
         for (Pf2eItem k : keys) {
             String value = k.getTextOrEmpty(rootNode);
             if (!value.isEmpty()) {
-                namedText.add(k.properName(this), replaceText(value));
+                namedText.add(k.properName(), replaceText(value));
             }
         }
         return namedText.isEmpty() ? List.of() : namedText.build();
@@ -299,7 +299,7 @@ public class Json2QuteItem extends Json2QuteBase {
         variants,
         weaponData;
 
-        String properName(Pf2eTypeReader convert) {
+        String properName() {
             return toTitleCase(this.nodeName());
         }
     }
@@ -323,7 +323,7 @@ public class Json2QuteItem extends Json2QuteBase {
         reload;
 
         public static QuteItemWeaponData buildWeaponData(JsonNode source,
-                Pf2eTypeReader convert, Tags tags) {
+                JsonSource convert, Tags tags) {
 
             QuteItemWeaponData weaponData = new QuteItemWeaponData();
             weaponData.traits = convert.collectTraitsFrom(source, tags);
@@ -352,7 +352,7 @@ public class Json2QuteItem extends Json2QuteBase {
             return weaponData;
         }
 
-        public static String getDamageString(JsonNode source, Pf2eTypeReader convert) {
+        public static String getDamageString(JsonNode source, JsonSource convert) {
             String damage = Pf2eWeaponData.damage.getTextOrNull(source);
             String damage2 = Pf2eWeaponData.damage2.getTextOrNull(source);
 

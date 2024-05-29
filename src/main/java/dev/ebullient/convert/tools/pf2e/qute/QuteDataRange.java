@@ -11,7 +11,7 @@ import static dev.ebullient.convert.StringUtil.pluralize;
  * @param value An integer value for the range
  * @param unit What unit of measurement the {@code value} is given in, as a {@link QuteDataRange.RangeUnit}
  * @param notes Any associated notes, or an alternate rendering when the range can't be represented using just
- *              a unit and value.
+ *        a unit and value.
  */
 public record QuteDataRange(Integer value, RangeUnit unit, List<String> notes) implements QuteDataGenericStat {
 

@@ -24,7 +24,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 
-public class Pf2eIndex implements ToolsIndex, Pf2eTypeReader {
+public class Pf2eIndex implements ToolsIndex, JsonSource {
     static final String CORE_RULES_KEY = "book|book-crb";
     final CompendiumConfig config;
 
