@@ -28,7 +28,7 @@ import io.quarkus.qute.TemplateData;
  * </ul>
  *
  * @param ac The armor class as a {@link QuteDataArmorClass}
- * @param savingThrows The saving throws, as {@link QuteSavingThrows}
+ * @param savingThrows The saving throws, as {@link QuteDataDefenses.QuteSavingThrows}
  * @param hpHardnessBt HP, hardness, and broken threshold stored in a {@link QuteDataHpHardnessBt}
  * @param additionalHpHardnessBt Additional HP, hardness, or broken thresholds for other HP components as a map of
  *        names to {@link QuteDataHpHardnessBt}
@@ -69,9 +69,9 @@ public record QuteDataDefenses(
      * all saves vs. magic
      * </blockquote>
      *
-     * @param fort Fortitude saving throw bonus, as a {@link QuteDataNamedBonus}
-     * @param ref Reflex saving throw bonus, as a {@link QuteDataNamedBonus}
-     * @param will Will saving throw bonus, as a {@link QuteDataNamedBonus}
+     * @param fort Fortitude saving throw bonus, as a {@link QuteDataGenericStat.QuteDataNamedBonus}
+     * @param ref Reflex saving throw bonus, as a {@link QuteDataGenericStat.QuteDataNamedBonus}
+     * @param will Will saving throw bonus, as a {@link QuteDataGenericStat.QuteDataNamedBonus}
      * @param abilities Any saving throw related abilities
      */
     @TemplateData
