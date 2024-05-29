@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import static dev.ebullient.convert.StringUtil.isPresent;
 import java.util.stream.Stream;
 
 public interface Pf2eTypeReader extends JsonSource {
@@ -42,39 +41,4 @@ public interface Pf2eTypeReader extends JsonSource {
         }
     }
 
-    enum Pf2eSpellComponent implements Pf2eJsonNodeReader.FieldValue {
-        focus("F"),
-        material("M"),
-        somatic("S"),
-        verbal("V");
-
-        final String encoding;
-
-        Pf2eSpellComponent(String encoding) {
-            this.encoding = encoding;
-        }
-
-        @Override
-        public String value() {
-            return encoding;
-        }
-
-        @Override
-        public boolean matches(String value) {
-            return this.encoding.equals(value) || this.name().equalsIgnoreCase(value);
-        }
-
-        static Pf2eSpellComponent valueFromEncoding(String value) {
-            if (!isPresent(value)) {
-                return null;
-            }
-            return Stream.of(Pf2eSpellComponent.values())
-                    .filter(t -> t.matches(value))
-                    .findFirst().orElse(null);
-        }
-
-        public String getRulesPath(String rulesRoot) {
-            return "%sTODO.md#%s".formatted(rulesRoot, toAnchorTag(this.name()));
-        }
-    }
 }

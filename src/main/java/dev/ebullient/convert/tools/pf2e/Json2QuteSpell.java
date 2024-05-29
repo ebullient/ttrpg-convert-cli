@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
@@ -9,12 +10,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
@@ -22,7 +23,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp;
-import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellCasting;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellSave;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellTarget;
@@ -84,14 +84,22 @@ public class Json2QuteSpell extends Json2QuteBase {
 
                 namedText.add(name, desc);
             }
-            ;
         }
+
+        List<Pf2eSpellComponent> components = Pf2eSpell.components.getComponentsFrom(rootNode, this);
+        // Add additional traits according to present components
+        components.stream().map(Pf2eSpellComponent::getAddedTrait)
+                .distinct().map(this::linkifyTrait).forEach(traits::add);
 
         return new QuteSpell(sources, text, tags,
                 level, toTitleCase(type),
                 traits,
                 Field.alias.replaceTextFromList(rootNode, this),
-                getQuteSpellCasting(),
+                Pf2eSpell.cast.getDurationFrom(rootNode, this),
+                components.stream().map(c -> c.getRulesLink(this)).toList(),
+                Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this),
+                Pf2eSpell.trigger.transformTextFrom(rootNode, ", ", this),
+                Pf2eSpell.requirements.transformTextFrom(rootNode, ", ", this),
                 getQuteSpellTarget(tags),
                 Pf2eSpell.savingThrow.getSpellSaveFrom(rootNode, this),
                 Pf2eSpell.duration.getSpellDurationFrom(rootNode, this),
@@ -103,32 +111,16 @@ public class Json2QuteSpell extends Json2QuteBase {
                 getAmpEffects());
     }
 
-    QuteSpellCasting getQuteSpellCasting() {
-        QuteSpellCasting quteCast = new QuteSpellCasting();
-
-        quteCast.components = Pf2eSpell.components.getNestedListOfStrings(rootNode, tui())
-                .stream()
-                .map(c -> Pf2eSpellComponent.valueFromEncoding(c).getRulesPath(cfg().rulesVaultRoot()))
-                .collect(Collectors.toList());
-
-        quteCast.duration = Pf2eSpell.cast.getDurationFrom(rootNode, this);
-        quteCast.cost = Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this);
-        quteCast.trigger = Pf2eSpell.trigger.transformTextFrom(rootNode, ", ", this);
-        quteCast.requirements = Field.requirements.transformTextFrom(rootNode, ", ", this);
-
-        return quteCast;
-    }
-
     QuteSpellTarget getQuteSpellTarget(Tags tags) {
-        String targets = replaceText(Pf2eSpell.targets.getTextOrEmpty(rootNode));
+        String targets = Pf2eSpell.targets.replaceTextFrom(rootNode, this);
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
         QuteDataRange range = Pf2eSpell.range.getRangeFrom(rootNode, this);
-        if (targets == null && area == null && range == null) {
+        if (!isPresent(targets) && area == null && range == null) {
             return null;
         }
         QuteSpellTarget spellTarget = new QuteSpellTarget();
-        if (targets != null) {
-            spellTarget.targets = replaceText(targets);
+        if (isPresent(targets)) {
+            spellTarget.targets = targets;
         }
         spellTarget.range = range;
         if (area != null) {
@@ -226,6 +218,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         plusX, // heightened
         primaryCheck, // ritual
         range,
+        requirements,
         savingThrow,
         secondaryCasters, //ritual
         secondaryCheck, // ritual
@@ -238,23 +231,22 @@ public class Json2QuteSpell extends Json2QuteBase {
         type,
         X; // heightened
 
-        List<String> getNestedListOfStrings(JsonNode source, Tui tui) {
-            JsonNode result = source.get(this.nodeName());
-            if (result == null) {
+        List<Pf2eSpellComponent> getComponentsFrom(JsonNode source, JsonSource convert) {
+            if (!existsIn(source)) {
                 return List.of();
-            } else if (result.isTextual()) {
-                return List.of(result.asText());
-            } else {
-                JsonNode first = result.get(0);
-                return getListOfStrings(first, tui);
             }
+            return getTextFrom(source)
+                    .map(Stream::of)
+                    .orElseGet(() -> streamFrom(source).flatMap(convert::streamOf).map(JsonNode::asText))
+                    .map(s -> JsonNodeReader.getEnumValue(s, Pf2eSpellComponent.class)).filter(Objects::nonNull)
+                    .toList();
         }
 
         private QuteSpellSave getSpellSaveFrom(JsonNode source, JsonSource convert) {
             JsonNode saveNode = getFromOrEmptyObjectNode(source);
             List<String> saves = type.getListOfStrings(saveNode, convert.tui())
                     .stream()
-                    .map(s -> switch (s.charAt(0)) {
+                    .map(s -> switch (s.toUpperCase().charAt(0)) {
                         case 'F' -> "Fortitude";
                         case 'R' -> "Reflex";
                         case 'W' -> "Will";
@@ -289,4 +281,34 @@ public class Json2QuteSpell extends Json2QuteBase {
         public String entry;
     }
 
+    enum Pf2eSpellComponent implements JsonNodeReader.FieldValue {
+        focus("F", "manipulate"),
+        material("M", "manipulate"),
+        somatic("S", "manipulate"),
+        verbal("V", "concentrate");
+
+        final String encoding;
+        final String addedTrait;
+
+        Pf2eSpellComponent(String encoding, String addedTrait) {
+            this.encoding = encoding;
+            this.addedTrait = addedTrait;
+        }
+
+        @Override
+        public String value() {
+            return encoding;
+        }
+
+        /** The trait which should be added to the spell when this component is present. */
+        public String getAddedTrait() {
+            return addedTrait;
+        }
+
+        /** Return the formatted Markdown link which explains this spell component. */
+        public String getRulesLink(JsonSource convert) {
+            return convert.createLink(
+                    name(), convert.cfg().rulesFilePath().resolve("core-rulebook/chapter-7-spells"), name());
+        }
+    }
 }

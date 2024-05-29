@@ -20,8 +20,14 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {/if}{#if resource.subclass }
 - {#each resource.subclass}**{it.category}** {it.text}{#if it_hasNext}, {/if}{/each}
 {/if}
-- {resource.casting}
-{#if resource.targeting }
+- **Cast**: {resource.castDuration}{#if resource.components} ({resource.formattedComponents}){/if}
+{#if resource.cost}
+- **Cost**: {resource.cost}
+{/if}{#if resource.trigger}
+- **Trigger**: {resource.trigger}
+{/if}{#if resource.requirements}
+- **Requirements**: {resource.requirements}
+{/if}{#if resource.targeting}
 - {resource.targeting}
 {/if}{#if resource.save and !resource.save.hidden}
 - **Saving Throw**: {resource.save}
