@@ -2,7 +2,10 @@ package dev.ebullient.convert.qute;
 
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
+import dev.ebullient.convert.StringUtil;
 import io.quarkus.qute.TemplateExtension;
+
+import java.util.Collection;
 
 @TemplateExtension
 public class TtrpgTemplateExtension {
@@ -23,5 +26,10 @@ public class TtrpgTemplateExtension {
         }
         String s = obj.toString();
         return s.isEmpty() ? "" : (" " + s);
+    }
+
+    /** Return the given collection converted into a string and joined using {@code delim} */
+    static String join(Collection<?> collection, String delim) {
+        return StringUtil.join(delim, collection);
     }
 }

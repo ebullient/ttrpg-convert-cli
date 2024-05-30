@@ -89,6 +89,11 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.getRange(n, convert)).orElse(null);
     }
 
+    /** Return a list of {@link QuteInlineAttack}, or an empty list. */
+    default List<QuteInlineAttack> getAttacksFrom(JsonNode source, JsonSource convert) {
+        return streamFrom(source).map(n -> Pf2eAttack.getAttack(n, convert)).toList();
+    }
+
     /**
      * A {@link Pf2eJsonNodeReader} which reads JSON like the following:
      *
