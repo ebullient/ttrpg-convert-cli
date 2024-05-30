@@ -128,7 +128,7 @@ public class QuteCreature extends Pf2eQuteBase {
 
         @Override
         public String toString() {
-            return join(" ", join(", ", skills), join("; ", notes));
+            return flatJoin("; ", List.of(join(", ", skills)), notes);
         }
     }
 

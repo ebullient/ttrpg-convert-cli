@@ -33,9 +33,7 @@ public class Json2QuteHazard extends Json2QuteBase {
                 Pf2eHazard.reset.transformTextFrom(rootNode, "\n", index),
                 Pf2eHazard.routine.transformTextFrom(rootNode, "\n", index),
                 Pf2eHazard.defenses.getDefensesFrom(rootNode, this),
-                Pf2eHazard.attacks.streamFrom(rootNode)
-                        .map(n -> Pf2eJsonNodeReader.Pf2eAttack.getAttack(n, this))
-                        .toList(),
+                Pf2eHazard.attacks.getAttacksFrom(rootNode, this),
                 Pf2eHazard.abilities.streamFrom(rootNode)
                         .map(n -> Pf2eAbility.createEmbeddedAbility(n, this))
                         .toList(),
