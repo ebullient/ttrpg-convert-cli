@@ -29,6 +29,8 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderable, QuteAbilityOrAffliction {
 
+    /** A formatted string which is a link to the base ability that this ability references. Embedded only. */
+    public final String reference;
     /**
      * Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection.
      * See <a href="#traitlist">traitList</a> or <a href="#baretraitlist">bareTraitList</a>.
@@ -66,13 +68,14 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     // Internal only.
     private final JsonSource _converter;
 
-    public QuteAbility(Pf2eSources sources, String name, String text, Tags tags,
+    public QuteAbility(Pf2eSources sources, String name, String reference, String text, Tags tags,
             Collection<String> traits, QuteDataActivity activity, QuteDataRange range,
             List<String> components, String requirements, String prerequisites,
             String cost, String trigger, QuteDataFrequency frequency, String special, String note,
             boolean embedded, JsonSource converter) {
         super(Pf2eIndexType.ability, sources, name, text, tags);
 
+        this.reference = reference;
         this.traits = traits;
         this.activity = activity;
         this.range = range;

@@ -2,10 +2,10 @@ package dev.ebullient.convert.qute;
 
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
+import java.util.Collection;
+
 import dev.ebullient.convert.StringUtil;
 import io.quarkus.qute.TemplateExtension;
-
-import java.util.Collection;
 
 @TemplateExtension
 public class TtrpgTemplateExtension {
