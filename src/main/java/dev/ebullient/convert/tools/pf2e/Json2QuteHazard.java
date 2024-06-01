@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
-import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
 
@@ -37,11 +35,7 @@ public class Json2QuteHazard extends Json2QuteBase {
                 Pf2eHazard.abilities.streamFrom(rootNode)
                         .map(n -> Pf2eAbility.createEmbeddedAbility(n, this))
                         .toList(),
-                Pf2eHazard.actions.streamFrom(rootNode)
-                        .map(n -> Pf2eAffliction.isAfflictionBlock(n)
-                                ? Pf2eAffliction.createInlineAffliction(n, this)
-                                : (QuteAbilityOrAffliction) Pf2eAbility.createEmbeddedAbility(n, this))
-                        .toList(),
+                Pf2eHazard.actions.getAbilityOrAfflictionsFrom(rootNode, this),
                 Pf2eHazard.stealth.getObjectFrom(rootNode)
                         .map(n -> Pf2eHazardAttribute.buildStealth(n, this)).orElse(null),
                 Pf2eHazard.perception.getObjectFrom(rootNode)

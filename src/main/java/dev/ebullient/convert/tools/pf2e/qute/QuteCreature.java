@@ -16,10 +16,6 @@ import io.quarkus.qute.TemplateData;
 /**
  * Pf2eTools Creature attributes ({@code creature2md.txt})
  * <p>
- * Use `%%--` to mark the end of the preamble (frontmatter and
- * other leading content only appropriate to the standalone case).
- * </p>
- * <p>
  * Extension of {@link Pf2eQuteBase Pf2eQuteBase}
  * </p>
  */

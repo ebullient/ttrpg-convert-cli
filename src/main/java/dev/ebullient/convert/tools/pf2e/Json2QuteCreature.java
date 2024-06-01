@@ -4,14 +4,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
-import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
 
 public class Json2QuteCreature extends Json2QuteBase {
@@ -146,9 +143,9 @@ public class Json2QuteCreature extends Json2QuteBase {
         private QuteCreature.CreatureAbilities getCreatureAbilitiesFrom(JsonNode source, JsonSource convert) {
             return getObjectFrom(source)
                     .map(n -> new QuteCreature.CreatureAbilities(
-                            Pf2eCreatureAbilities.top.getAbilitiesFrom(n, convert),
-                            Pf2eCreatureAbilities.mid.getAbilitiesFrom(n, convert),
-                            Pf2eCreatureAbilities.bot.getAbilitiesFrom(n, convert)))
+                            Pf2eCreatureAbilities.top.getAbilityOrAfflictionsFrom(n, convert),
+                            Pf2eCreatureAbilities.mid.getAbilityOrAfflictionsFrom(n, convert),
+                            Pf2eCreatureAbilities.bot.getAbilityOrAfflictionsFrom(n, convert)))
                     .orElseGet(() -> new QuteCreature.CreatureAbilities(List.of(), List.of(), List.of()));
         }
 
@@ -156,25 +153,6 @@ public class Json2QuteCreature extends Json2QuteBase {
             top,
             mid,
             bot;
-
-            /**
-             * Example JSON input:
-             *
-             * <pre>
-             *     [
-             *       { &lt;ability data&gt; },
-             *       { "type": "affliction", &lt;affliction data&gt; }
-             *     ]
-             * </pre>
-             */
-            private List<QuteAbilityOrAffliction> getAbilitiesFrom(JsonNode node, JsonSource convert) {
-                // The Pf2e schema doesn't match the data here - afflictions are marked with "type": "affliction", but
-                // abilities are unmarked.
-                return streamFrom(node)
-                        .filter(Pf2eAffliction::isAfflictionBlock) // for now, we only want afflictions
-                        .map(n -> (QuteAbilityOrAffliction) Pf2eAffliction.createInlineAffliction(n, convert))
-                        .toList();
-            }
         }
 
         private List<QuteCreature.CreatureSense> getSensesFrom(JsonNode source, JsonSource convert) {
