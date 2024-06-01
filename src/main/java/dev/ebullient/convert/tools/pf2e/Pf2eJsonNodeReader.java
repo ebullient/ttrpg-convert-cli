@@ -4,10 +4,12 @@ import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
+import static java.util.Objects.requireNonNullElse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -20,6 +22,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
+import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
+import dev.ebullient.convert.tools.pf2e.JsonSource.AppendTypeValue;
+import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
@@ -121,6 +127,21 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                 .forEach(traits::add);
 
         return rawComponents.stream().map(convert::replaceText).toList();
+    }
+
+    /** Return a list of {@link QuteAbilityOrAffliction} from this field in {@code source}, or an empty list. */
+    default List<QuteAbilityOrAffliction> getAbilityOrAfflictionsFrom(JsonNode source, JsonSource convert) {
+        return streamFrom(source)
+                .map(n -> switch (requireNonNullElse(AppendTypeValue.getBlockType(n), AppendTypeValue.ability)) {
+                    case affliction -> (QuteAbilityOrAffliction) Pf2eAffliction.createInlineAffliction(n, convert);
+                    case ability -> Pf2eAbility.createEmbeddedAbility(n, convert);
+                    default -> {
+                        convert.tui().debugf("Unexpected block type in %s", source.toPrettyString());
+                        yield null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     /**

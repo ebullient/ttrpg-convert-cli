@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteUtil;
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
@@ -77,7 +75,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     /** Internal */
     default void appendObjectToText(List<String> text, JsonNode node, String heading) {
-        AppendTypeValue type = AppendTypeValue.valueFrom(node, SourceField.type);
+        AppendTypeValue type = AppendTypeValue.getBlockType(node);
         String source = SourceField.source.getTextOrEmpty(node);
 
         // entriesOtherSource handled here.
@@ -724,14 +722,14 @@ public interface JsonSource extends JsonTextReplacement {
             return this.value().equals(value) || this.name().equalsIgnoreCase(value);
         }
 
-        static AppendTypeValue valueFrom(JsonNode source, JsonNodeReader field) {
-            String textOrNull = field.getTextOrEmpty(source);
-            if (textOrNull.isEmpty()) {
-                return null;
-            }
-            return Stream.of(AppendTypeValue.values())
-                    .filter((t) -> t.matches(textOrNull))
-                    .findFirst().orElse(null);
+        /** Return the {@link AppendTypeValue} that {@code source} represents. */
+        static AppendTypeValue getBlockType(JsonNode source) {
+            return SourceField.type.getEnumValueFrom(source, AppendTypeValue.class);
+        }
+
+        /** Returns true if {@code node} is a block of this type. */
+        boolean isBlockTypeOf(JsonNode node) {
+            return this == getBlockType(node);
         }
     }
     // enum Type

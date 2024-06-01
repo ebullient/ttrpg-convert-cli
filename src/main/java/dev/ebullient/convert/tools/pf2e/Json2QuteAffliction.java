@@ -46,10 +46,6 @@ public class Json2QuteAffliction extends Json2QuteBase {
         entries,
         entry;
 
-        public static boolean isAfflictionBlock(JsonNode node) {
-            return type.getTextFrom(node).map(s -> s.equals("affliction")).orElse(false);
-        }
-
         /**
          * Example JSON input, with an embedded affliction that does not have nested affliction data:
          *
@@ -141,7 +137,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
                     nestedAfflictionNode.isEmpty()
                             ? List.of()
                             : entries.streamFrom(node)
-                                    .filter(Predicate.not(Pf2eAffliction::isAfflictionBlock))
+                                    .filter(Predicate.not(AppendTypeValue.affliction::isBlockTypeOf))
                                     .collect(
                                             ArrayList<String>::new,
                                             (acc, n) -> convert.appendToText(acc, n, "##"),
@@ -195,7 +191,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
                 return null;
             }
             List<JsonNode> topLevelAfflictions = Pf2eAffliction.entries.streamFrom(node)
-                    .filter(Pf2eAffliction::isAfflictionBlock).toList();
+                    .filter(AppendTypeValue.affliction::isBlockTypeOf).toList();
             if (topLevelAfflictions.size() != 1) {
                 return null;
             }
