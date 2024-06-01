@@ -1,11 +1,14 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.parenthesize;
+
+import java.util.Set;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
-
-import java.util.Set;
 
 public class Json2QuteAbility extends Json2QuteBase {
 
@@ -21,8 +24,6 @@ public class Json2QuteAbility extends Json2QuteBase {
     public enum Pf2eAbility implements Pf2eJsonNodeReader {
         /** e.g. {@code "Dirty Bomb"} */
         name,
-        /** @see dev.ebullient.convert.tools.pf2e.Json2QuteAction.ActionType */
-        actionType, // TODO
         /** @see Pf2eActivity */
         activity,
         /**
@@ -39,9 +40,9 @@ public class Json2QuteAbility extends Json2QuteBase {
         /**
          * If present this is a generic ability, defined further in a standalone note.
          *
-         * @see Pf2eAbilityGeneric
+         * @see Pf2eGenericAbilityReference
          */
-        generic, // TODO
+        generic,
         /** e.g. {@code "The corpselight is in wisp form and is adjacent to a Medium corpse"} */
         prerequisites,
         /** How to display this block, {@code "compact"} or {@code "full"} */
@@ -66,12 +67,17 @@ public class Json2QuteAbility extends Json2QuteBase {
             Tags tags = new Tags();
             Set<String> traits = convert.collectTraitsFrom(node, tags);
 
-            if (!entries.isArrayIn(node) && !generic.isObjectIn(node) && !actionType.isObjectIn(node)) {
-                convert.tui().debugf("No ability text or link for %s", node.toPrettyString());
+            if (!entries.isArrayIn(node) && !generic.isObjectIn(node)) {
+                convert.tui().debugf("missing %s (%s)", name.getTextOrEmpty(node), node);
+            }
+
+            if (generic.isObjectIn(node) && !generic.getLinkFrom(node, convert).contains(".md")) {
+                convert.tui().debugf("generic %s (%s)", generic.getFrom(node), name.getTextOrEmpty(node), node);
             }
 
             return new QuteAbility(sources,
                     name.getTextFrom(node).map(convert::replaceText).orElse("Activate"),
+                    generic.getLinkFrom(node, convert),
                     entries.transformTextFrom(node, "\n", convert),
                     tags,
                     traits,
@@ -94,9 +100,29 @@ public class Json2QuteAbility extends Json2QuteBase {
             return createAbility(node, convert, null);
         }
 
-        // TODO
-        enum Pf2eAbilityGeneric {
+        public String getLinkFrom(JsonNode node, JsonSource convert) {
+            return getObjectFrom(node)
+                    .map(n -> convert.linkify(
+                            Pf2eGenericAbilityReference.tag.getEnumValueFrom(n, Pf2eIndexType.class),
+                            join("|",
+                                    Pf2eGenericAbilityReference.name.getTextFrom(n)
+                                            .or(() -> name.getTextFrom(node))
+                                            // Add the hash as a parenthesized string after the name
+                                            .map(s -> s + Pf2eGenericAbilityReference.add_hash.getTextFrom(n)
+                                                    .map(hash -> " " + parenthesize(hash)).orElse(""))
+                                            .orElse(null),
+                                    Pf2eGenericAbilityReference.source.getTextOrNull(n))))
+                    .orElse(null);
+        }
+
+        private enum Pf2eGenericAbilityReference implements Pf2eJsonNodeReader {
+            /** An extra string to add to an ability for finding its link, e.g. {@code "Rogue"} */
+            add_hash,
+            /** e.g. {@code "Curse of the Werecreature"}, or {@code "Nimble Dodge (Rogue)"} */
+            name,
+            /** The type of the resource, e.g. {@code "ability"} or {@code "feat"} */
             tag,
+            /** The source, e.g. {@code "B1"} */
             source;
         }
     }
