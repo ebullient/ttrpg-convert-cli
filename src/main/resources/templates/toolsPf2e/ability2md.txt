@@ -1,30 +1,39 @@
 ---
 obsidianUIMode: preview
 cssclasses: pf2e,pf2e-ability
-{#if resource.tags }
+{#if resource.tags}
 tags:
-{#for tag in resource.tags}
-- {tag}
-{/for}
+{#each resource.tags}
+- {it}
+{/each}
 {/if}
 aliases: ["{resource.name}"]
 ---
-# {resource.name}{#if resource.activity} {resource.activity}{/if}
-{#if resource.traits }{#each resource.traits}{it}  {/each}
-{/if}
+# {resource.name} {resource.activity}
+{resource.traits join "  "}
 
-{#if resource.activity}{#if resource.activity.text }
-- **Activate**: {resource.activity.text}
-{/if}{/if}{#if resource.cost }
+{#if resource.activity && resource.activity.text}
+- **Activate**: {resource.activity.text}{resource.components.join(", ").prefixSpace}
+{/if}{#if resource.range}
+- **Range**: {resource.range}
+{/if}{#if resource.cost}
 - **Cost**: {resource.cost}
-{/if}{#if resource.frequency }
+{/if}{#if resource.frequency}
 - **Frequency**: {resource.frequency}
-{/if}{#if resource.trigger }
+{/if}{#if resource.trigger}
 - **Trigger**: {resource.trigger}
-{/if}{#if resource.requirements }
+{/if}{#if resource.requirements}
 - **Requirements**: {resource.requirements}
-{/if}{#if resource.hasAttributes }
+{/if}{#if resource.prerequisites}
+- **Prerequisites**: {resource.prerequisites}
+{/if}{#if resource.hasAttributes}
 
-{/if}{#if resource.hasEffect }**Effect** {/if}{resource.text}  {#if resource.source }
+{/if}{#if resource.hasEffect}
+**Effect** {/if}{resource.text}
+{#if resource.special}
 
-*Source: {resource.source}*  {/if}
+{resource.special}
+{/if}{#if resource.source}
+
+*Source: {resource.source}*
+{/if}

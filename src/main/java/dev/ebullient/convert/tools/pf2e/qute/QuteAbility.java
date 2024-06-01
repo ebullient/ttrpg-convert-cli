@@ -1,11 +1,12 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.QuteUtil;
-import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.pf2e.JsonSource;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
@@ -33,12 +34,16 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
      * See <a href="#traitlist">traitList</a> or <a href="#baretraitlist">bareTraitList</a>.
      */
     public final Collection<String> traits;
-    /** Formatted string. Components required to activate this ability (embedded/inline only) */
-    public final String components;
+    /** {@link QuteDataRange}. The targeting range for this ability. */
+    public final QuteDataRange range;
+    /** List of formatted strings. Activation components for this ability, e.g. command, envision */
+    public final List<String> components;
     /** Formatted string. Trigger to activate this ability */
     public final String trigger;
     /** Formatted string. Requirements for activating this ability */
     public final String requirements;
+    /** Formatted string. Prerequisites before this ability can be activated or taken. */
+    public final String prerequisites;
     /**
      * {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency QuteDataFrequency}.
      * How often this ability can be used/activated. Use directly to get a formatted string.
@@ -46,9 +51,9 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     public final QuteDataFrequency frequency;
     /** The cost of using this ability */
     public final String cost;
-    /** Caveats related to using this ability (embedded/inline only) */
+    /** Any additional notes related to this ability that aren't included in the other fields. */
     public final String note;
-    /** Special characteristics of this ability (embedded/inline only) */
+    /** Special notes for this ability - usually requirements or caveats relating to its use. */
     public final String special;
     /**
      * True if this ability is embedded in another note (admonition block).
@@ -59,19 +64,21 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     public final QuteDataActivity activity;
 
     // Internal only.
-    public final JsonTextConverter<?> _converter;
+    private final JsonSource _converter;
 
     public QuteAbility(Pf2eSources sources, String name, String text, Tags tags,
-            Collection<String> traits, QuteDataActivity activity,
-            String components, String requirements,
+            Collection<String> traits, QuteDataActivity activity, QuteDataRange range,
+            List<String> components, String requirements, String prerequisites,
             String cost, String trigger, QuteDataFrequency frequency, String special, String note,
-            boolean embedded, JsonTextConverter<?> converter) {
+            boolean embedded, JsonSource converter) {
         super(Pf2eIndexType.ability, sources, name, text, tags);
 
         this.traits = traits;
         this.activity = activity;
+        this.range = range;
         this.components = components;
         this.requirements = requirements;
+        this.prerequisites = prerequisites;
         this.cost = cost;
         this.trigger = trigger;
         this.frequency = frequency;
@@ -113,11 +120,6 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     /** True if frequency, trigger, and requirements are present. In other words, this is true if the ability has an effect. */
     public boolean getHasEffect() {
         return isPresent(frequency) || isPresent(trigger) || isPresent(requirements);
-    }
-
-    /** Return a comma-separated list of trait links */
-    public String getTraitList() {
-        return traits == null ? "" : String.join(", ", traits);
     }
 
     /** Return a comma-separated list of de-styled trait links (no title attributes) */

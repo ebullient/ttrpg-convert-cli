@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -89,9 +90,37 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         return getObjectFrom(source).map(n -> Pf2eNumberUnitEntry.getRange(n, convert)).orElse(null);
     }
 
-    /** Return a list of {@link QuteInlineAttack}, or an empty list. */
+    /** Return a list of {@link QuteInlineAttack} from this field in {@code source}, or an empty list. */
     default List<QuteInlineAttack> getAttacksFrom(JsonNode source, JsonSource convert) {
         return streamFrom(source).map(n -> Pf2eAttack.getAttack(n, convert)).toList();
+    }
+
+    /**
+     * Return a list of formatted activation component strings from this field in {@code source}, and add any linked
+     * traits from these activation components to {@code traits}. Return an empty list if we couldn't get activation
+     * components.
+     */
+    default List<String> getActivationComponentsFrom(JsonNode source, Set<String> traits, JsonSource convert) {
+        List<String> rawComponents = getListOfStrings(source, convert.tui()).stream()
+                .map(s -> s.replaceFirst("^\\((%s)\\)$", "\1")) // remove parens
+                .toList();
+
+        // Add linked traits for the activation components to the given trait set
+        rawComponents.stream()
+                .flatMap(s -> {
+                    if (s.contains("envision")) {
+                        return Stream.of("concentrate");
+                    } else if (s.contains("command")) {
+                        return Stream.of("auditory", "concentrate");
+                    } else if (s.contains("manipulate")) {
+                        return Stream.of("manipulate");
+                    }
+                    return Stream.of();
+                }).distinct()
+                .map(convert::linkifyTrait)
+                .forEach(traits::add);
+
+        return rawComponents.stream().map(convert::replaceText).toList();
     }
 
     /**

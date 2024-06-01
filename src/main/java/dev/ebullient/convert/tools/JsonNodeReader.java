@@ -318,7 +318,7 @@ public interface JsonNodeReader {
     default String transformTextFrom(JsonNode source, String delimiter, JsonTextConverter<?> replacer, String heading) {
         JsonNode target = getFrom(source);
         if (target == null) {
-            return null;
+            return "";
         }
         List<String> inner = new ArrayList<>();
         replacer.appendToText(inner, target, heading);
