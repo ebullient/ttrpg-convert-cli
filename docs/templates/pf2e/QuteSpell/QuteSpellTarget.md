@@ -15,7 +15,7 @@ Formatted string describing the spell area of effect
 
 ### range
 
-Formatted string describing the spell range
+The spell's range, as a [QuteDataRange](../QuteDataRange.md).
 
 ### targets
 

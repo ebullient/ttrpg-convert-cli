@@ -6,16 +6,16 @@ This data object provides a default mechanism for creating a marked up string ba
 
 ## Attributes
 
-[cast](#cast), [cost](#cost), [secondaryCasters](#secondarycasters)
+[cost](#cost), [duration](#duration), [secondaryCasters](#secondarycasters)
 
-
-### cast
-
-Formatted action icon/link. Casting action
 
 ### cost
 
 Formatted string. Material cost of the spell
+
+### duration
+
+Duration to cast, as a [QuteDataDuration](../QuteDataDuration.md) which is either a [QuteDataActivity](../QuteDataActivity.md), or a [QuteDataTimedDuration](../QuteDataTimedDuration.md).
 
 ### secondaryCasters
 

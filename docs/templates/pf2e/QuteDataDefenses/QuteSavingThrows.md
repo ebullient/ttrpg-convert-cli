@@ -1,21 +1,24 @@
 # QuteSavingThrows
 
-Pf2eTools saving throw attributes.
-
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly: `{resource.defenses.savingThrows}`.
+Pathfinder 2e saving throws. Example default rendering: <blockquote> **Fort** +10 (+12 vs. poison), **Ref** +5 (+7 vs. traps), **Will** +4 (+6 vs. mental); +1 status to all saves vs. magic </blockquote>
 
 ## Attributes
 
-[abilities](#abilities), [hasThrowAbilities](#hasthrowabilities), [savingThrows](#savingthrows)
+[abilities](#abilities), [fort](#fort), [ref](#ref), [will](#will)
 
+
+### fort
+
+Fortitude saving throw bonus, as a [QuteDataNamedBonus](../QuteDataGenericStat/QuteDataNamedBonus.md)
+
+### ref
+
+Reflex saving throw bonus, as a [QuteDataNamedBonus](../QuteDataGenericStat/QuteDataNamedBonus.md)
+
+### will
+
+Will saving throw bonus, as a [QuteDataNamedBonus](../QuteDataGenericStat/QuteDataNamedBonus.md)
 
 ### abilities
 
-Saving throw abilities as a string (Fortitude, Reflex, Will)
-
-### hasThrowAbilities
-
-
-### savingThrows
-
-Map of score (Wisdom, Charisma) to saving throw modifier as a string (+3)
+Any saving throw related abilities

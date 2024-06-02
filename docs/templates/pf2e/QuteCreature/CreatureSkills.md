@@ -9,7 +9,7 @@ A creature's skill information. Example default output: <blockquote> Athletics +
 
 ### skills
 
-Skill bonuses for the creature, as a list of [QuteDataSkillBonus](../QuteDataSkillBonus.md)
+Skill bonuses for the creature, as a list of [QuteDataNamedBonus](../QuteDataGenericStat/QuteDataNamedBonus.md)
 
 ### notes
 
