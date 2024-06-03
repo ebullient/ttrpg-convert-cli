@@ -24,7 +24,7 @@ JBang is a tool designed to simplify Java application execution. By eliminating 
 2. Install the pre-built release of ttrpg-convert-cli:
 
     ```shell
-    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.3.15/ttrpg-convert-cli-2.3.15-runner.jar
+    jbang app install --name ttrpg-convert --force --fresh https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.3.16/ttrpg-convert-cli-2.3.16-runner.jar
     ```
 
     🚧 If you want the latest [_unreleased snapshot_][]:
@@ -127,13 +127,13 @@ To run the CLI, you will need to have **Java 17** installed on your system.
 
 2. Download the CLI as a jar
 
-    - Latest release: [ttrpg-convert-cli-2.3.15-runner.jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.3.15/ttrpg-convert-cli-2.3.15-runner.jar)
+    - Latest release: [ttrpg-convert-cli-2.3.16-runner.jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/2.3.16/ttrpg-convert-cli-2.3.16-runner.jar)
     - 🚧 [_unreleased snapshot_][]: [ttrpg-convert-cli-299-SNAPSHOT-runner.jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar)
 
 3. Verify the install by running the command:
 
     ```shell
-    java -jar ttrpg-convert-cli-2.3.15-runner.jar --help
+    java -jar ttrpg-convert-cli-2.3.16-runner.jar --help
     ```
 
     🚧 If you are using the [_unreleased snapshot_][], use the following command:
