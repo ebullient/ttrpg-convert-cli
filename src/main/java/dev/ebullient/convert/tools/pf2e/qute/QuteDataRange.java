@@ -1,9 +1,9 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.List;
-
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.pluralize;
+
+import java.util.List;
 
 /**
  * A range with a given value and unit of measurement for that value.

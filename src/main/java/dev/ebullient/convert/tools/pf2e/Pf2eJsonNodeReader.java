@@ -1,20 +1,9 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import dev.ebullient.convert.StringUtil;
-import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBonus;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
-import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.pluralize;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +15,22 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.pluralize;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import dev.ebullient.convert.StringUtil;
+import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataFrequency;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBonus;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
+import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 
 /** A utility class which extends {@link JsonNodeReader} with PF2e-specific functionality. */
 public interface Pf2eJsonNodeReader extends JsonNodeReader {
