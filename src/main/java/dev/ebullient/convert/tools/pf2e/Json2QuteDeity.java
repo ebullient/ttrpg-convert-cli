@@ -1,9 +1,9 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.joiningConjunct;
+import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;

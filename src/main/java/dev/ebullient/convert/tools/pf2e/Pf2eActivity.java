@@ -1,12 +1,12 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.join;
+
 import java.nio.file.Path;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
-
-import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.join;
 
 public enum Pf2eActivity {
     single("Single Action", ">", "single_action.svg"),

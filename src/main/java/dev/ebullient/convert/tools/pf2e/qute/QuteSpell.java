@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,9 +12,6 @@ import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
-
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.joinConjunct;
 
 /**
  * Pf2eTools Spell attributes ({@code spell2md.txt})

@@ -1,9 +1,9 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import java.util.List;
-
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.pluralize;
+
+import java.util.List;
 
 /**
  * A duration of time, represented by a numerical value and a unit. Sometimes this includes a custom display string,
