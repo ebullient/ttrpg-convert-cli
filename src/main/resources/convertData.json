@@ -537,10 +537,10 @@
           "replace": "\"fortune\""
         }
       ],
-      "book/book-gmg.json": [
+      "backgrounds/backgrounds-sog0.json": [
         {
-          "match": "\\{@skill cleric}",
-          "replace": "\\{@class Cleric}"
+          "match": "\\{@lore\\|\\|Farming Lore}",
+          "replace": "{@skill Lore||Farming Lore}"
         }
       ],
       "deities.json": [
@@ -559,12 +559,6 @@
         {
           "match": "\\{@condition sustain a spell\\|\\|Sustaining the Spell}",
           "replace": "{@action sustain a spell||Sustaining the Spell}"
-        }
-      ],
-      "feats/feats-roe.json": [
-        {
-          "match": "\\{@condition daze}",
-          "replace": "\\{@condition dazzled}"
         }
       ],
       "feats/feats-som.json": [

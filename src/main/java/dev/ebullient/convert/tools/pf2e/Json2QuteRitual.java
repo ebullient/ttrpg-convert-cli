@@ -134,8 +134,11 @@ public class Json2QuteRitual extends Json2QuteSpell {
                     prof == null ? "" : String.format(" (%s)", prof));
         }
 
+        // Compensate for Lore skills..
+        // `${skill.includes("Lore") ? `${renderer.render(`{@skill Lore||${skill}}`)}`
         String skillsToString(JsonSource convert) {
             List<String> converted = skills.stream()
+                    .map(s -> s.replaceAll("(.* Lore)", "Lore||$1"))
                     .map(s -> convert.linkify(Pf2eIndexType.skill, s))
                     .collect(Collectors.toList());
             return joinConjunct(" or ", converted);
