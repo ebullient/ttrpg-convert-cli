@@ -449,6 +449,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | LOPSG | Lost Omens: Pathfinder Society Guide |
 | LOTG | Lost Omens: Travel Guide |
 | LOTGB | Lost Omens: The Grand Bazaar |
+| LOTXWG | Lost Omens: Tian Xia World Guide |
 | LOWG | Lost Omens: World Guide |
 | LTiBA | Little Trouble in Big Absalom |
 | Mal | Malevolence |
@@ -459,6 +460,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | OoA3 | Outlaws of Alkenstar #3: The Smoking Gun |
 | PC1 | Player Core |
 | PFUM | PATHFINDER: FUMBUS! |
+| POS1 | Pathfinder One-Shot: Sundered Waves |
 | QFF0 | Quest for the Frozen Flame Player's Guide |
 | QFF1 | Quest for the Frozen Flame #1: Broken Tusk Moon |
 | QFF2 | Quest for the Frozen Flame #2: Lost Mammoth Valley |
@@ -467,6 +469,9 @@ You may see these abbreviations referenced in source material, this is how they 
 | SKT0 | Sky King's Tomb Player's Guide |
 | SaS | Shadows at Sundown |
 | Sli | The Slithering |
+| SoG0 | Season of Ghosts Player's Guide |
+| SoG1 | Season of Ghosts #1: The Summer That Never Was |
+| SoG2 | Season of Ghosts #2: Let the Leaves Fall |
 | SoM | Secrets of Magic |
 | SoT0 | Strength of Thousands Player's Guide |
 | SoT1 | Strength of Thousands #1: Kindled Magic |
@@ -476,8 +481,15 @@ You may see these abbreviations referenced in source material, this is how they 
 | SoT5 | Strength of Thousands #5: Doorway to the Red Star |
 | SoT6 | Strength of Thousands #6: Shadows of the Ancients |
 | TV | Treasure Vault |
+| TaL | Torment and Legacy |
 | TiO | Troubles in Otari |
 | ToK | Threshold of Knowledge |
+| WoW0 | Wardens of Wildwood Player's Guide |
+| WtD1 | Wake the Dead #1 |
+| WtD2 | Wake the Dead #2 |
+| WtD3 | Wake the Dead #3 |
+| WtD4 | Wake the Dead #4 |
+| WtD5 | Wake the Dead #5 |
 
 ### Alternate abbreviation mapping
 
