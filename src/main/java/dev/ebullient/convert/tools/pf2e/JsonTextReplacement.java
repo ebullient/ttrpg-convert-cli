@@ -116,6 +116,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             result = runeItemPattern.matcher(result)
                     .replaceAll(this::linkifyRuneItem);
 
+            result = result.replaceAll("\\{@lore ", "{@skill ");
+
             result = Pf2eIndexType.matchPattern.matcher(result)
                     .replaceAll(this::linkify);
 
