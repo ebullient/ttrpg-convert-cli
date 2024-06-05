@@ -67,14 +67,6 @@ public class Json2QuteAbility extends Json2QuteBase {
             Tags tags = new Tags();
             Set<String> traits = convert.collectTraitsFrom(node, tags);
 
-            if (!entries.isArrayIn(node) && !generic.isObjectIn(node)) {
-                convert.tui().debugf("missing %s (%s)", name.getTextOrEmpty(node), node);
-            }
-
-            if (generic.isObjectIn(node) && !generic.getLinkFrom(node, convert).contains(".md")) {
-                convert.tui().debugf("generic %s (%s)", generic.getFrom(node), name.getTextOrEmpty(node), node);
-            }
-
             return new QuteAbility(sources,
                     name.getTextFrom(node).map(convert::replaceText).orElse("Activate"),
                     generic.getLinkFrom(node, convert),
