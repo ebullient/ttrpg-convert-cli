@@ -1,55 +1,67 @@
+{#with resource}
 ---
 obsidianUIMode: preview
 cssclasses: pf2e,pf2e-creature
-{#if resource.tags}
+{#if tags}
 tags:
-{#each resource.tags}
+{#each tags}
 - {it}
 {/each}
 {/if}
-{#if resource.aliases}
+{#if aliases}
 aliases:
-{#each resource.aliases}
+{#each aliases}
 - {it}
 {/each}
 {/if}
 ---
-# {resource.name} *Creature {resource.level}*  
-{resource.traits join " "}
+# {name} *Creature {level}*  
+{traits join " "}
 
 ``````ad-statblock-pf2e
-{#if resource.perception}
-- **Perception** {resource.perception.asBonus}; {resource.senses join ", "}
-{/if}{#if resource.languages}
-- **Languages** {resource.languages}
-{/if}{#if resource.skills}
-- **Skills** {resource.skills}
-{/if}{#if resource.abilityMods}
-- {#each resource.abilityMods.keys}**{it.capitalized}** {resource.abilityMods.get(it).asBonus}{#if it_hasNext}, {/if}{/each}
-{/if}{#if resource.items}
-- **Items** {resource.items join ", "}
-{/if}
-{resource.abilities.formattedTop}
----
-{#if resource.defenses}
-{resource.defenses}
-{/if}
-{resource.abilities.formattedMiddle}
----
-- **Speed** {resource.speed}
-{#each resource.attacks}
-{it}  
+{#if perception}
+- **Perception** {perception.asBonus}; {senses join ", "}
+{/if}{#if languages}
+- **Languages** {languages}
+{/if}{#if skills}
+- **Skills** {skills}
+{/if}{#if abilityMods}
+- {#each abilityMods.keys}**{it.capitalized}** {abilityMods.get(it).asBonus}{#if it_hasNext}, {/if}{/each}
+{/if}{#if items}
+- **Items** {items join ", "}
+{/if}{#each abilities.top}
+{it}
 {/each}
-{resource.abilities.formattedBottom}
+---
+{#if defenses}
+{defenses}
+{/if}{#each abilities.middle}
+{it}
+{/each}
+---
+- **Speed** {speed}
+{#for spells in spellcasting}
+- **{spells.name}** {spells.formattedStats}{#if spells.notes}, {spells.notes join ", "}{/if}{!
+!}{#if spells.ranks}; {/if}{spells.ranks join "; "}{!
+!}{#if spells.constantRanks}; {/if}{#each spells.constantRanks}{!
+  !}**Constant ({it.rank})** {it.spells join ", "}{#if it_hasNext}; {/if}{!
+!}{/each}
+{/for}{#each attacks}
+{it}  
+{/each}{#each abilities.bottom}
+{it}
+{/each}
+
 ``````
 ^statblock
 
-{#if resource.hasSections}
+{#if hasSections}
 ## Summary
-{/if}{#if resource.description}
-{resource.description}
-{/if}{#if resource.text}
+{/if}{#if description}
+{description}
+{/if}{#if text}
 {it}
 {/if}
 
-*Source: {resource.source}*
+*Source: {source}*
+{/with}

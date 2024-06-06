@@ -26,6 +26,14 @@ import java.util.stream.Collectors;
 public class StringUtil {
 
     /**
+     * Return {@code formatString} formatted with {@code o} as the first parameter.
+     * If {@code o} is null, then return an empty string.
+     */
+    public static String format(String formatString, Object val) {
+        return val == null ? "" : formatString.formatted(val);
+    }
+
+    /**
      * {@link #join(String, Collection)} but with the ability to accept varargs.
      *
      * @see #join(String, Collection)
@@ -334,14 +342,23 @@ public class StringUtil {
         };
     }
 
-    /** Return the given {@code level} as an ordinal, e.g. 1st, 2nd, 3rd. */
-    public static String toOrdinal(String level) {
-        return switch (level) {
-            case "1" -> "1st";
-            case "2" -> "2nd";
-            case "3" -> "3rd";
-            default -> level + "th";
+    /** Return the given {@code n} as an ordinal, e.g. 1st, 2nd, 3rd. */
+    public static String toOrdinal(Integer n) {
+        return n == null ? null : switch (n) {
+            case 1 -> "1st";
+            case 2 -> "2nd";
+            case 3 -> "3rd";
+            default -> n + "th";
         };
+    }
+
+    /** @see #toOrdinal(Integer) */
+    public static String toOrdinal(String level) {
+        try {
+            return toOrdinal(Integer.parseInt(level));
+        } catch (NumberFormatException e) {
+            return level + "th";
+        }
     }
 
     /**

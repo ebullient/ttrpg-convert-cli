@@ -1,9 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import static dev.ebullient.convert.StringUtil.join;
+
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -62,7 +66,7 @@ public class Json2QuteCreature extends Json2QuteBase {
         description,
         entries,
         hasImages,
-        inflicts,
+        inflicts, // not actually present in any of the entries
         isNpc,
         items,
         languages,
@@ -91,7 +95,7 @@ public class Json2QuteCreature extends Json2QuteBase {
                     alias.replaceTextFromList(node, convert),
                     description.replaceTextFrom(node, convert),
                     level.getIntFrom(node).orElse(null),
-                    perception.getPerceptionFrom(node),
+                    perception.getObjectFrom(node).map(std::getIntOrThrow).orElse(null),
                     defenses.getDefensesFrom(node, convert),
                     languages.getLanguagesFrom(node, convert),
                     skills.getSkillsFrom(node, convert),
@@ -102,7 +106,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                     items.replaceTextFromList(node, convert),
                     speed.getSpeedFrom(node, convert),
                     attacks.getAttacksFrom(node, convert),
-                    abilities.getCreatureAbilitiesFrom(node, convert));
+                    abilities.getCreatureAbilitiesFrom(node, convert),
+                    spellcasting.getSpellcastingFrom(node, convert));
         }
 
         private QuteCreature.CreatureSkills getSkillsFrom(JsonNode source, JsonSource convert) {
@@ -114,10 +119,6 @@ public class Json2QuteCreature extends Json2QuteBase {
                             notes.replaceTextFromList(n, convert)))
                     .filter(c -> !c.skills().isEmpty() || !c.notes().isEmpty())
                     .orElse(null);
-        }
-
-        private Integer getPerceptionFrom(JsonNode node) {
-            return getObjectFrom(node).map(std::getIntOrThrow).orElse(null);
         }
 
         private QuteCreature.CreatureLanguages getLanguagesFrom(JsonNode node, JsonSource convert) {
@@ -173,5 +174,105 @@ public class Json2QuteCreature extends Json2QuteBase {
             /** Range of the sense (in feet, usually), optional integer. */
             range;
         }
+
+        private List<QuteCreature.CreatureSpellcasting> getSpellcastingFrom(JsonNode source, JsonSource convert) {
+            return streamFrom(source)
+                    .map(n -> Pf2eCreatureSpellcasting.getSpellcasting(n, convert))
+                    .filter(spellcasting -> !spellcasting.ranks().isEmpty() || !spellcasting.constantRanks().isEmpty())
+                    .toList();
+        }
+
+        enum Pf2eCreatureSpellcasting implements Pf2eJsonNodeReader {
+            /** e.g. {@code "Champion Devotion Spells"} */
+            name,
+            /** Required - one of {@code "Innate"}, {@code "Prepared"}, {@code "Spontaneous"}, or {@code "Focus"} */
+            type,
+            /** e.g. {@code "see soul spells below"} */
+            note,
+            /** Integer - number of focus points available */
+            fp,
+            /** Required - one of {@code "arcane"}, {@code "divine"}, {@code "occult"}, or {@code "primal"} */
+            tradition,
+            /** Integer - The spell attack bonus */
+            attack,
+            /** Required - DC for spell effects */
+            DC,
+            /** Used within {@link #entry} only, as a key for a block. */
+            constant,
+            /**
+             * An object where the keys are the spell rank or {@link #constant}, and the values are another object with
+             * keys described below.
+             */
+            entry,
+
+            /**
+             * Used within {@link #entry} only. Integer. The level that these spells are heightened to - usually the
+             * same as the key for this block, except for cantrips.
+             */
+            level,
+            /**
+             * Used within {@link #entry} only. Integer. The number of slots available to cast the spells within this
+             * block.
+             */
+            slots,
+            /**
+             * Used within {@link #entry} only. A list of spell references.
+             *
+             * @see Pf2eCreatureSpellReference
+             */
+            spells;
+
+            private static QuteCreature.CreatureSpellcasting getSpellcasting(JsonNode source, JsonSource convert) {
+                return new QuteCreature.CreatureSpellcasting(
+                        name.getTextOrNull(source),
+                        type.getEnumValueFrom(source, QuteCreature.SpellcastingPreparation.class),
+                        tradition.getEnumValueFrom(source, QuteCreature.SpellcastingTradition.class),
+                        fp.getIntFrom(source).orElse(null),
+                        attack.getIntFrom(source).orElse(null),
+                        DC.getIntFrom(source).orElse(null),
+                        note.replaceTextFromList(source, convert),
+                        entry.getSpellsFrom(source, convert),
+                        constant.getSpellsFrom(entry.getFromOrEmptyObjectNode(source), convert));
+            }
+
+            private List<QuteCreature.CreatureSpells> getSpellsFrom(JsonNode source, JsonSource convert) {
+                return streamPropsExcluding(source, constant)
+                        .map(e -> new QuteCreature.CreatureSpells(
+                                Integer.valueOf(e.getKey()),
+                                level.getIntFrom(e.getValue()).orElse(null),
+                                slots.getIntFrom(e.getValue()).orElse(null),
+                                spells.streamFrom(e.getValue())
+                                        .map(n -> Pf2eCreatureSpellReference.getSpellReference(n, convert))
+                                        .toList()))
+                        .filter(Predicate.not(creatureSpells -> creatureSpells.spells().isEmpty()))
+                        .sorted(Comparator.comparing(QuteCreature.CreatureSpells::baseRank).reversed())
+                        .toList();
+            }
+        }
+
+        enum Pf2eCreatureSpellReference implements Pf2eJsonNodeReader {
+            /** e.g. {@code "comprehend language"}. */
+            name,
+            /** The book source for this spell, e.g. {@code "BotD"} */
+            source,
+            /** Integer, or {@code "at will"}. Amount of available casts. For spells only, not rituals. */
+            amount,
+            /** e.g. {@code ["self only"]} */
+            notes;
+
+            private static QuteCreature.CreatureSpellReference getSpellReference(JsonNode node, JsonSource convert) {
+                String spellName = name.getTextOrThrow(node);
+                return new QuteCreature.CreatureSpellReference(
+                        spellName,
+                        convert.linkify(Pf2eIndexType.spell, join("|", spellName, source.getTextOrNull(node))),
+                        amount.getTextFrom(node)
+                                .filter(s -> s.equalsIgnoreCase("at will"))
+                                .map(unused -> 0)
+                                .or(() -> amount.getIntFrom(node))
+                                .orElse(1),
+                        notes.replaceTextFromList(node, convert));
+            }
+        }
+
     }
 }
