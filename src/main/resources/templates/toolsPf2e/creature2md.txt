@@ -46,6 +46,8 @@ aliases:
 !}{#if spells.constantRanks}; {/if}{#each spells.constantRanks}{!
   !}**Constant ({it.rank})** {it.spells join ", "}{#if it_hasNext}; {/if}{!
 !}{/each}
+{/for}{#for rituals in ritualCasting}
+- **{rituals.name}** {#if rituals.dc}DC {rituals.dc}; {/if}{rituals.ranks join "; "}
 {/for}{#each attacks}
 {it}  
 {/each}{#each abilities.bottom}
