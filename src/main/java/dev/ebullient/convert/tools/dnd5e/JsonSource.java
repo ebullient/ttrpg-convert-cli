@@ -26,7 +26,6 @@ import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
-import dev.ebullient.convert.tools.dnd5e.JsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -550,7 +549,7 @@ public interface JsonSource extends JsonTextReplacement {
         TtrpgValue.indexInputType.setIn(data, type.name());
 
         // TODO: Remove me.
-        JsonNode copy = MetaFields._copy.getFrom(data);
+        JsonNode copy = JsonSourceCopier.MetaFields._copy.getFrom(data);
         if (copy != null) {
             String copyName = SourceField.name.getTextOrEmpty(copy).strip();
             String copySource = SourceField.source.getTextOrEmpty(copy).strip();
