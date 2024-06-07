@@ -21,10 +21,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.tools.JsonCopyException;
+import dev.ebullient.convert.tools.JsonSourceCopier;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 
-public class JsonSourceCopier extends dev.ebullient.convert.tools.JsonSourceCopier<Tools5eIndexType> implements JsonSource {
+public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> implements JsonSource {
     static final Map<Tools5eIndexType, List<String>> _MERGE_REQUIRES_PRESERVE = Map.of(
             Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
                     "altArt", "variant", "dragonCastingColor", "familiar"),
@@ -44,7 +45,7 @@ public class JsonSourceCopier extends dev.ebullient.convert.tools.JsonSourceCopi
 
     final Tools5eIndex index;
 
-    JsonSourceCopier(Tools5eIndex index) {
+    Tools5eJsonSourceCopier(Tools5eIndex index) {
         this.index = index;
     }
 

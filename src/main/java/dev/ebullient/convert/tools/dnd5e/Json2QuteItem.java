@@ -344,7 +344,7 @@ public class Json2QuteItem extends Json2QuteCommon {
 
     /** Update / replace item with variants (where appropriate) */
     public static List<Tuple> findGroupVariant(Tools5eIndex index, Tools5eIndexType type,
-            String key, JsonNode itemGroup, JsonSourceCopier copier) {
+            String key, JsonNode itemGroup, Tools5eJsonSourceCopier copier) {
 
         // Update type & key for the new item
         final JsonNode item = copier.copyNode(itemGroup);

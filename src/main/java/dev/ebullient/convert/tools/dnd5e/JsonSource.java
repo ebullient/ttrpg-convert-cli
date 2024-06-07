@@ -549,7 +549,7 @@ public interface JsonSource extends JsonTextReplacement {
         TtrpgValue.indexInputType.setIn(data, type.name());
 
         // TODO: Remove me.
-        JsonNode copy = JsonSourceCopier.MetaFields._copy.getFrom(data);
+        JsonNode copy = Tools5eJsonSourceCopier.MetaFields._copy.getFrom(data);
         if (copy != null) {
             String copyName = SourceField.name.getTextOrEmpty(copy).strip();
             String copySource = SourceField.source.getTextOrEmpty(copy).strip();
@@ -557,7 +557,7 @@ public interface JsonSource extends JsonTextReplacement {
                 embedReference(text, data, type, heading); // embed note that will be present in the final output
                 return;
             }
-            JsonSourceCopier copier = new JsonSourceCopier(index());
+            Tools5eJsonSourceCopier copier = new Tools5eJsonSourceCopier(index());
             data = copier.handleCopy(type, data);
             existingNode = null; // this is a modified node, ignore existing.
         } else if (equivalentNode(data, existingNode) && index().isIncluded(finalKey)) {
