@@ -30,7 +30,7 @@ public class StringUtil {
      * If {@code o} is null, then return an empty string.
      */
     public static String format(String formatString, Object val) {
-        return val == null ? "" : formatString.formatted(val);
+        return val == null || (val instanceof String && ((String) val).isBlank()) ? "" : formatString.formatted(val);
     }
 
     /**

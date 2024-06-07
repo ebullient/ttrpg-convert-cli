@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -107,7 +107,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                     speed.getSpeedFrom(node, convert),
                     attacks.getAttacksFrom(node, convert),
                     abilities.getCreatureAbilitiesFrom(node, convert),
-                    spellcasting.getSpellcastingFrom(node, convert));
+                    spellcasting.getSpellcastingFrom(node, convert),
+                    rituals.getRitualsFrom(node, convert));
         }
 
         private QuteCreature.CreatureSkills getSkillsFrom(JsonNode source, JsonSource convert) {
@@ -182,21 +183,32 @@ public class Json2QuteCreature extends Json2QuteBase {
                     .toList();
         }
 
+        private List<QuteCreature.CreatureRitualCasting> getRitualsFrom(JsonNode source, JsonSource convert) {
+            return streamFrom(source)
+                    .map(n -> Pf2eCreatureSpellcasting.getRitual(n, convert))
+                    .filter(rituals -> !rituals.ranks().isEmpty())
+                    .toList();
+        }
+
         enum Pf2eCreatureSpellcasting implements Pf2eJsonNodeReader {
             /** e.g. {@code "Champion Devotion Spells"} */
             name,
-            /** Required - one of {@code "Innate"}, {@code "Prepared"}, {@code "Spontaneous"}, or {@code "Focus"} */
-            type,
             /** e.g. {@code "see soul spells below"} */
             note,
-            /** Integer - number of focus points available */
-            fp,
             /** Required - one of {@code "arcane"}, {@code "divine"}, {@code "occult"}, or {@code "primal"} */
             tradition,
-            /** Integer - The spell attack bonus */
-            attack,
             /** Required - DC for spell effects */
             DC,
+
+            /** Rituals only. Array of ritual references - see {@link Pf2eCreatureSpellReference} */
+            rituals,
+
+            /** Required - one of {@code "Innate"}, {@code "Prepared"}, {@code "Spontaneous"}, or {@code "Focus"} */
+            type,
+            /** Integer - number of focus points available */
+            fp,
+            /** Integer - The spell attack bonus */
+            attack,
             /** Used within {@link #entry} only, as a key for a block. */
             constant,
             /**
@@ -222,6 +234,20 @@ public class Json2QuteCreature extends Json2QuteBase {
              */
             spells;
 
+            private static QuteCreature.CreatureRitualCasting getRitual(JsonNode source, JsonSource convert) {
+                return new QuteCreature.CreatureRitualCasting(
+                        tradition.getEnumValueFrom(source, QuteCreature.SpellcastingTradition.class),
+                        DC.getIntFrom(source).orElse(null),
+                        rituals.streamFrom(source)
+                                .collect(Collectors.toMap(
+                                        n -> level.getIntFrom(n).orElse(null),
+                                        n -> Stream.of(Pf2eCreatureSpellReference.getSpellReference(n, convert)),
+                                        Stream::concat))
+                                .entrySet().stream()
+                                .map(e -> new QuteCreature.CreatureSpells(e.getKey(), e.getValue().toList()))
+                                .toList());
+            }
+
             private static QuteCreature.CreatureSpellcasting getSpellcasting(JsonNode source, JsonSource convert) {
                 return new QuteCreature.CreatureSpellcasting(
                         name.getTextOrNull(source),
@@ -244,8 +270,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                                 spells.streamFrom(e.getValue())
                                         .map(n -> Pf2eCreatureSpellReference.getSpellReference(n, convert))
                                         .toList()))
-                        .filter(Predicate.not(creatureSpells -> creatureSpells.spells().isEmpty()))
-                        .sorted(Comparator.comparing(QuteCreature.CreatureSpells::baseRank).reversed())
+                        .filter(creatureSpells -> !creatureSpells.spells().isEmpty())
+                        .sorted(Comparator.comparing(QuteCreature.CreatureSpells::knownRank).reversed())
                         .toList();
             }
         }

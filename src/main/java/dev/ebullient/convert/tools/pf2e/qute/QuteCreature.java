@@ -66,15 +66,18 @@ public class QuteCreature extends Pf2eQuteBase {
     public final CreatureAbilities abilities;
     /** The creature's spellcasting capabilities, as a list of {@link QuteCreature.CreatureSpellcasting} */
     public final List<CreatureSpellcasting> spellcasting;
+    /** The creature's ritual casting capabilities, as a list of {@link QuteCreature.CreatureRitualCasting} */
+    public final List<CreatureRitualCasting> ritualCasting;
 
-    public QuteCreature(Pf2eSources sources, String text, Tags tags,
+    public QuteCreature(
+            Pf2eSources sources, String text, Tags tags,
             Collection<String> traits, List<String> aliases,
             String description, Integer level, Integer perception,
             QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
             List<CreatureSense> senses, Map<String, Integer> abilityMods,
             List<String> items, QuteDataSpeed speed,
             List<QuteInlineAttack> attacks, CreatureAbilities abilities,
-            List<CreatureSpellcasting> spellcasting) {
+            List<CreatureSpellcasting> spellcasting, List<CreatureRitualCasting> ritualCasting) {
         super(sources, text, tags);
         this.traits = traits;
         this.aliases = aliases;
@@ -91,6 +94,7 @@ public class QuteCreature extends Pf2eQuteBase {
         this.attacks = attacks;
         this.abilities = abilities;
         this.spellcasting = spellcasting;
+        this.ritualCasting = ritualCasting;
     }
 
     /**
@@ -173,9 +177,9 @@ public class QuteCreature extends Pf2eQuteBase {
 
     /**
      * A creature's abilities, split into the section of the statblock where they should be displayed. Each section is
-     * a list of {@link QuteAbilityOrAffliction QuteAbilityOrAffliction}. Using the value directly will give you a
-     * pre-formatted ability according to the embedded template defined for {@link QuteAbility QuteAbility} or
-     * {@link QuteAffliction QuteAffliction} as appropriate.
+     * a list of {@link QuteAbilityOrAffliction}. Using an entry in one of these lists directly
+     * will give you a pre-formatted ability according to the embedded template defined for {@link QuteAbility} or
+     * {@link QuteAffliction} as appropriate.
      *
      * @param top Abilities which should be displayed in the top section of the statblock
      * @param middle Abilities which should be displayed in the middle section of the statblock
@@ -189,6 +193,24 @@ public class QuteCreature extends Pf2eQuteBase {
     }
 
     /**
+     * Information about a type of ritual casting available to this creature.
+     *
+     * @param tradition The tradition for these rituals
+     * @param dc The spell save DC for these rituals
+     * @param ranks The ritual ranks, as a list of {@link QuteCreature.CreatureSpells}
+     */
+    @TemplateData
+    public record CreatureRitualCasting(
+            SpellcastingTradition tradition,
+            Integer dc,
+            List<CreatureSpells> ranks) {
+        /** The name of this set of rituals, e.g. "Divine Rituals" */
+        public String name() {
+            return join(" ", tradition, "Rituals");
+        }
+    }
+
+    /**
      * Information about a type of spellcasting available to this creature.
      *
      * @param customName A custom name for this set of spells, e.g. "Champion Devotion Spells". Use
@@ -199,7 +221,7 @@ public class QuteCreature extends Pf2eQuteBase {
      * @param focusPoints The number of focus points available to this creature for these spells. Present only if these
      *        are focus spells.
      * @param attackBonus The spell attack bonus for these spells (integer)
-     * @param dc The difficulty class for these spells (integer)
+     * @param dc The spell save DC for these spells (integer)
      * @param notes Any notes associated with these spells
      * @param ranks The spells for each rank, as a list of {@link QuteCreature.CreatureSpells}.
      * @param constantRanks The constant spells for each rank, as a list of {@link QuteCreature.CreatureSpells}
@@ -249,27 +271,39 @@ public class QuteCreature extends Pf2eQuteBase {
      * <b>4th</b> <a href="#">confusion</a>, <a href="#">phantasmal killer</a> (2 slots)
      * </blockquote>
      *
-     * @param baseRank The base rank for these spells (0 for cantrips).
-     * @param knownRank The rank that these spells are known at. Usually present only for cantrips.
-     * @param slots The number of slots available for these spells. Not present for constant spells.
+     * @param knownRank The rank that these spells are known at (0 for cantrips). May be absent for rituals.
+     * @param cantripRank The rank that these spells are auto-heightened to. Present only for cantrips.
+     * @param slots The number of slots available for these spells. Not present for constant spells or rituals.
      * @param spells A list of spells, as a list of {@link QuteCreature.CreatureSpellReference}
      */
     @TemplateData
     public record CreatureSpells(
-            Integer baseRank,
             Integer knownRank,
+            Integer cantripRank,
             Integer slots,
             List<CreatureSpellReference> spells) {
-        /** A string of the rank (base and known) for this set of spells. e.g. "5th", or "Cantrips (9th)" */
+
+        public CreatureSpells(Integer rank, List<CreatureSpellReference> spells) {
+            this(rank, null, null, spells);
+        }
+
+        /** True if these are cantrip spells */
+        public boolean isCantrips() {
+            return knownRank != null && knownRank == 0;
+        }
+
+        /** The rank for this set of spells, with appropriate cantrip handling. e.g. "5th", or "Cantrips (9th)" */
         public String rank() {
-            return join(" ",
-                    baseRank == 0 ? "Cantrips" : toOrdinal(baseRank), parenthesize(toOrdinal(knownRank)));
+            if (knownRank == null) {
+                return "";
+            }
+            return isCantrips() ? "Cantrips " + parenthesize(toOrdinal(cantripRank)) : toOrdinal(knownRank);
         }
 
         @Override
         public String toString() {
             return join(" ",
-                    "**%s**".formatted(rank()),
+                    format("**%s**", rank()),
                     join(", ", spells),
                     format("(%d slots)", slots));
         }
