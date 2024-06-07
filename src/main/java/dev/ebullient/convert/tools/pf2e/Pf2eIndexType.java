@@ -107,6 +107,7 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
         return valueOf(typeKey);
     }
 
+    @Override
     public String createKey(JsonNode node) {
         if (this == book || this == adventure) {
             String id = SourceField.id.getTextOrEmpty(node);
@@ -118,6 +119,7 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
         return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
     }
 
+    @Override
     public String createKey(String name, String source) {
         if (source == null || this == data) {
             return String.format("%s|%s", this.name(), name).toLowerCase();

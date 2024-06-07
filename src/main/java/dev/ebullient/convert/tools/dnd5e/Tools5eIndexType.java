@@ -124,6 +124,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         return fromText(typeKey);
     }
 
+    @Override
     public String createKey(JsonNode x) {
         if (this == book || this == adventure || this == bookData || this == adventureData) {
             String id = SourceField.id.getTextOrEmpty(x);
@@ -233,6 +234,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         }
     }
 
+    @Override
     public String createKey(String name, String source) {
         if (source == null) {
             return String.format("%s|%s", this.name(), name).toLowerCase();
