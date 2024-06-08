@@ -2,10 +2,10 @@ package dev.ebullient.convert.tools.pf2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class JsonSourceCopier implements JsonSource {
+public class Pf2eJsonSourceCopier implements JsonSource {
     final Pf2eIndex index;
 
-    JsonSourceCopier(Pf2eIndex index) {
+    Pf2eJsonSourceCopier(Pf2eIndex index) {
         this.index = index;
     }
 
