@@ -288,6 +288,10 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
                 }
             } else {
                 ModFieldMode mode = ModFieldMode.valueFrom(modInfo, MetaFields.mode);
+                if (mode == null) {
+                    tui().errorf("Error(%s): Unsupported modification mode for %s: %s", originKey, prop, modInfo);
+                    return;
+                }
                 if (doModProp(mode, originKey, modInfo, copyFrom, target)) {
                     return;
                 }
@@ -303,6 +307,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
                                 originKey, mode, modInfo, prop, target);
                     // Properties
                     case setProp -> doSetProp(originKey, modInfo, prop, target);
+                    case setProps -> doSetProps(originKey, modInfo, prop, target);
                     // Bestiary
                     case addSaves, addAllSaves, addAllSkills -> mode.notSupported(tui(), originKey, modInfo);
                     // MATH
@@ -388,16 +393,20 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return createNode(modified);
     }
 
-    private void doSetProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
-        List<String> propPath = List.of(MetaFields.prop.getTextOrEmpty(modInfo).split("\\."));
-        if (!"*".equals(prop)) {
-            propPath = new ArrayList<>(propPath);
-            propPath.add(0, prop);
-        }
-        String last = propPath.remove(propPath.size() - 1);
+    private void doSetProps(String originKey, JsonNode modInfo, String propPath, ObjectNode target) {
+        String[] path = splitLastNodePath(nodePath(propPath));
+        ObjectNode parent = target.withObject(path[0]);
+        parent.setAll((ObjectNode)copyNode(MetaFields.props.getFrom(modInfo)));
+    }
 
-        ObjectNode targetRw = ((ObjectNode) target).withObject("/" + String.join("/", propPath));
-        targetRw.set(last, copyNode(MetaFields.value.getFrom(modInfo)));
+    private void doSetProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
+        String fullPath = nodePath(MetaFields.prop.getTextOrEmpty(modInfo));
+        if (!"*".equals(prop)) {
+            fullPath = prop + nodePath(fullPath);
+        }
+        String[] path = splitLastNodePath(fullPath);
+        ObjectNode targetRw = target.withObject(path[0]);
+        targetRw.set(path[1], copyNode(MetaFields.value.getFrom(modInfo)));
     }
 
     private void doScalarAddHit(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
@@ -514,58 +523,35 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
 
     void doModArray(String originKey, ModFieldMode mode, JsonNode modInfo, String prop, ObjectNode target) {
         JsonNode items = ensureArray(MetaFields.items.getFrom(modInfo));
+        String propPath = nodePath(prop);
+
+        // Exit early if we can't get the target array for a modification that needs it
         switch (mode) {
-            case prependArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                insertIntoArray(tgtArray, 0, items);
-            }
-            case appendArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                appendToArray(tgtArray, items);
-            }
-            case appendIfNotExistsArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                appendIfNotExistsArr(tgtArray, items);
-            }
-            case insertArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to insert into array; %s is not present: %s", originKey, prop, target);
+            case insertArr, removeArr, replaceArr -> {
+                if (target.at(propPath).isMissingNode()) {
+                    tui().errorf("Error (%s): Unable to apply %s; %s is not present: %s", originKey, mode, prop, target);
                     return;
                 }
-                ArrayNode tgtArray = target.withArray(prop);
-                int index = MetaFields.index.intOrDefault(modInfo, -1);
-                if (index < 0) {
-                    index = tgtArray.size();
-                }
-                insertIntoArray(tgtArray, index, items);
             }
-            case removeArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to remove from array; %s is not present: %s", originKey, prop, target);
-                    return;
-                }
-                ArrayNode tgtArray = target.withArray(prop);
-                removeFromArray(originKey, modInfo, prop, tgtArray);
-            }
-            case replaceArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to replace array; %s is not present: %s", originKey, prop, target);
-                    return;
-                }
-                ArrayNode tgtArray = target.withArray(prop);
-                replaceArray(originKey, modInfo, tgtArray, items);
-            }
+            default -> {}
+        }
+
+        ArrayNode targetArray = target.withArray(propPath);
+        switch (mode) {
+            case prependArr -> insertIntoArray(targetArray, 0, items);
+            case appendArr -> appendToArray(targetArray, items);
+            case appendIfNotExistsArr -> appendIfNotExistsArr(targetArray, items);
+            case insertArr -> insertIntoArray(
+                targetArray,
+                MetaFields.index.getIntFrom(modInfo).filter(n -> n >= 0).orElse(targetArray.size()),
+                items);
+            case removeArr -> removeFromArray(originKey, modInfo, prop, targetArray);
+            case replaceArr -> replaceArray(originKey, modInfo, targetArray, items);
             case replaceOrAppendArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                boolean didReplace = false;
-                if (tgtArray.size() > 0) {
-                    didReplace = replaceArray(originKey, modInfo, tgtArray, items);
-                }
-                if (!didReplace) {
-                    appendToArray(tgtArray, items);
+                if (targetArray.isEmpty() || !replaceArray(originKey, modInfo, targetArray, items)) {
+                    appendToArray(targetArray, items);
                 }
             }
-            default -> tui().errorf("Error (%s): Unknown modification mode for property %s: %s", originKey, prop, modInfo);
         }
     }
 
@@ -720,6 +706,15 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return sorted;
     }
 
+    private String nodePath(String propPath) {
+        return "/" + String.join("/", propPath.split("\\."));
+    }
+
+    private String[] splitLastNodePath(String nodePath) {
+        int lastPropIdx = nodePath.lastIndexOf('/');
+        return new String[] {nodePath.substring(0, lastPropIdx), nodePath.substring(lastPropIdx)};
+    }
+
     public enum MetaFields implements JsonNodeReader {
         _copy,
         _copiedFrom, // mind
@@ -802,6 +797,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         scalarAddProp,
         scalarMultProp,
         setProp,
+        setProps,
 
         addSenses,
         addSaves,
