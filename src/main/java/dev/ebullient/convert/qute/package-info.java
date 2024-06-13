@@ -16,6 +16,8 @@
  * </p>
  *
  * <ul>
+ * <li><a href="../../examples/templates/README.md">Documentation for using templates with the CLI</a></li>
+ * <li><a href="../../examples/templates/tools5e/README.md">5e Template Examples</a></li>
  * <li>{@link dev.ebullient.convert.tools.dnd5e.qute 5eTools template attributes}</li>
  * <li>{@link dev.ebullient.convert.tools.pf2e.qute Pf2eTools template attributes}</li>
  * </ul>

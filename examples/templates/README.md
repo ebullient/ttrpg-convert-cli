@@ -29,6 +29,8 @@ The flag used to specify a template corresponds to the type of template being us
 
 Not everything is customizable. In some cases, indenting, organizing, formatting, and linking text accurately is easier to do inline as a big blob.
 
-[Documentation](../../docs/templates/) is generated for template-accessible attributes.
+- See the **[Template Reference](../../docs/templates/)** for information about attributes you can use in your templates
+
+### Examples
 
 - [**5eTools Example Templates**](tools5e/).
