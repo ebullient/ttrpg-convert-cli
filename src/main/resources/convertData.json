@@ -543,6 +543,65 @@
           "replace": "{@skill Lore||Farming Lore}"
         }
       ],
+      "bestiary/creatures-b2.json": [
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@skill Lore\\|Sailing Lore}",
+          "replace": "{@skill Lore||Sailing Lore}"
+        }
+      ],
+      "bestiary/creatures-lomm.json": [
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@condition drained <1>}",
+          "replace": "{@condition drained 1}"
+        },
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@condition drained <2>}",
+          "replace": "{@condition drained 2}"
+        },
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@condition clmusy\\|\\|clumsy 1}",
+          "replace": "{@condition clumsy 1}"
+        }
+      ],
+      "bestiary/creatures-ec2.json": [
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@condition flat‐footed}",
+          "replace": "{@condition flat-footed}"
+        }
+      ],
+      "bestiary/creatures-av1.json": [
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@skill Astrology Lore}",
+          "replace": "{@skill Lore||Astrology Lore}"
+        }
+      ],
+      "bestiary/creatures-b3.json": [
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@condition persistent damage\\|\\|persistent cold damage} damage\\|\\|persistent cold damage}",
+          "replace": "{@condition persistent damage||persistent cold damage}"
+        }
+      ],
+      "bestiary/creatures-botd.json": [
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\"name\": \"Throw \\{@dc 24} Fortitude;\"",
+          "replace": "\"name\": \"Throw\", \"dc\": 24, \"savingThrow\": \"Fortitude\""
+        }
+      ],
+      "bestiary/creatures-sog1.json": [
+        {
+          "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
+          "match": "\\{@action Recall Knowledge checks attempted",
+          "replace": "{@action Recall Knowledge} checks attempted"
+        }
+      ],
       "deities.json": [
         {
           "match": "immobilizied",
