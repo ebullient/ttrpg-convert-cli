@@ -334,6 +334,7 @@ public class TtrpgConfig {
 
     @RegisterForReflection
     public static class Fix {
+        public String _comment;
         public String match;
         public String replace;
     }
