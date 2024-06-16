@@ -1,6 +1,6 @@
 # CreatureAbilities
 
-A creature's abilities, split into the section of the statblock where they should be displayed. Each section is a list of [QuteAbilityOrAffliction](../QuteAbilityOrAffliction.md). Use [formattedTop](CreatureAbilities.md#formattedTop()), [formattedMiddle](CreatureAbilities.md#formattedTop()), and [formattedBottom](CreatureAbilities.md#formattedTop()) to get pre-formatted abilities according to the templates defined for [QuteAbility](../QuteAbility.md) or [QuteAffliction](../QuteAffliction.md).
+A creature's abilities, split into the section of the statblock where they should be displayed. Each section is a list of [QuteAbilityOrAffliction](../QuteAbilityOrAffliction.md). Using an entry in one of these lists directly will give you a pre-formatted ability according to the embedded template defined for [QuteAbility](../QuteAbility.md) or [QuteAffliction](../QuteAffliction.md) as appropriate.
 
 ## Attributes
 

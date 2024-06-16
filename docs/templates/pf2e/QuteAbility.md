@@ -10,10 +10,7 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 ## Attributes
 
-[_converter](#_converter), [activity](#activity), [bareTraitList](#baretraitlist), [components](#components), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasActivity](#hasactivity), [hasAttributes](#hasattributes), [hasDetails](#hasdetails), [hasEffect](#haseffect), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [note](#note), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traitList](#traitlist), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
-
-
-### _converter
+[activity](#activity), [bareTraitList](#baretraitlist), [components](#components), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasActivity](#hasactivity), [hasAttributes](#hasattributes), [hasDetails](#hasdetails), [hasEffect](#haseffect), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [note](#note), [prerequisites](#prerequisites), [range](#range), [reference](#reference), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### activity
@@ -26,7 +23,7 @@ Return a comma-separated list of de-styled trait links (no title attributes)
 
 ### components
 
-Formatted string. Components required to activate this ability (embedded/inline only)
+List of formatted strings. Activation components for this ability, e.g. command, envision
 
 ### cost
 
@@ -70,7 +67,19 @@ Note name
 
 ### note
 
-Caveats related to using this ability (embedded/inline only)
+Any additional notes related to this ability that aren't included in the other fields.
+
+### prerequisites
+
+Formatted string. Prerequisites before this ability can be activated or taken.
+
+### range
+
+[QuteDataRange](QuteDataRange.md). The targeting range for this ability.
+
+### reference
+
+A formatted string which is a link to the base ability that this ability references. Embedded only.
 
 ### requirements
 
@@ -86,7 +95,7 @@ Book sources as list of [SourceAndPage](../SourceAndPage.md)
 
 ### special
 
-Special characteristics of this ability (embedded/inline only)
+Special notes for this ability - usually requirements or caveats relating to its use.
 
 ### tags
 
@@ -95,10 +104,6 @@ Collected tags for inclusion in frontmatter
 ### text
 
 Formatted text. For most templates, this is the bulk of the content.
-
-### traitList
-
-Return a comma-separated list of trait links
 
 ### traits
 

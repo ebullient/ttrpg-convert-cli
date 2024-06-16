@@ -11,7 +11,7 @@
 - [QuteArchetype](QuteArchetype.md): Pf2eTools Archetype attributes (`archetype2md.txt`)
 - [QuteBackground](QuteBackground.md): Pf2eTools Background attributes (`background2md.txt`)
 - [QuteBook](QuteBook/README.md): Pf2eTools Book attributes (`book2md.txt`)
-- [QuteCreature](QuteCreature.md): Pf2eTools Creature attributes (`creature2md.txt`)
+- [QuteCreature](QuteCreature/README.md): Pf2eTools Creature attributes (`creature2md.txt`)
 - [QuteDeity](QuteDeity/README.md): Pf2eTools Deity attributes (`deity2md.txt`)
 - [QuteFeat](QuteFeat.md): Pf2eTools Feat attributes (`feat2md.txt`)
 - [QuteHazard](QuteHazard.md): Pf2eTools Hazard attributes (`hazard2md.txt`)
