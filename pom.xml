@@ -52,7 +52,7 @@
         <!-- Libraries -->
         <assertj.version>3.26.0</assertj.version>
         <evalex.version>3.2.0</evalex.version>
-        <github-slugify.version>3.0.6</github-slugify.version>
+        <github-slugify.version>3.0.7</github-slugify.version>
         <icu4j.version>75.1</icu4j.version><!-- Optional dependency of Slugify -->
         <jsonschema-generator.version>4.35.0</jsonschema-generator.version>
         <!-- Packaging -->
