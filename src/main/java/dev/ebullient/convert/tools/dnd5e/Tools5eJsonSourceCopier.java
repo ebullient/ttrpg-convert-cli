@@ -2,13 +2,10 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.ToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,39 +175,39 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
     @Override
     protected JsonNode resolveTemplateVariable(
-            TemplateVariable variableMode, String originKey, JsonNode value, JsonNode target, String... pieces) {
+            String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, List<String> params) {
         return switch (variableMode) {
             case name -> new TextNode(SourceField.name.getTextOrEmpty(target));
             case short_name -> new TextNode(getShortName(target, false));
             case title_short_name -> new TextNode(getShortName(target, true));
             case dc, spell_dc -> {
-                if (pieces.length < 2 || !target.has(pieces[1])) {
+                if (params.isEmpty() || !target.has(params.get(0))) {
                     tui().errorf("Error (%s): Missing detail for %s", originKey, value);
                     yield null;
                 }
-                int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
+                int mod = getAbilityModNumber(target.get(params.get(0)).asInt());
                 int pb = crToPb(MonsterFields.cr.getFrom(target));
                 yield new TextNode("" + (8 + pb + mod));
             }
             case to_hit -> {
-                if (pieces.length < 2 || !target.has(pieces[1])) {
+                if (params.isEmpty() || !target.has(params.get(0))) {
                     tui().errorf("Error (%s): Missing detail for %s", originKey, value);
                     yield null;
                 }
-                int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
+                int mod = getAbilityModNumber(target.get(params.get(0)).asInt());
                 int pb = crToPb(MonsterFields.cr.getFrom(target));
                 yield new TextNode(asModifier(pb + mod));
             }
             case damage_mod -> {
-                if (pieces.length < 2 || !target.has(pieces[1])) {
+                if (params.isEmpty() || !target.has(params.get(0))) {
                     tui().errorf("Error (%s): Missing detail for %s", originKey, value);
                     yield null;
                 }
-                int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
+                int mod = getAbilityModNumber(target.get(params.get(0)).asInt());
                 yield new TextNode(mod == 0 ? "" : asModifier(mod));
             }
             case damage_avg -> {
-                Matcher m = dmg_avg_subst.matcher(pieces[1]);
+                Matcher m = dmg_avg_subst.matcher(params.get(0));
                 if (m.matches()) {
                     String amount = m.group(1);
                     String op = m.group(2);
@@ -241,17 +238,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             }
         }
         return true;
-    }
-
-    ArrayNode sortArrayNode(ArrayNode array) {
-        if (array == null || array.size() <= 1) {
-            return array;
-        }
-        Set<JsonNode> elements = new TreeSet<>(Comparator.comparing(a -> a.asText().toLowerCase()));
-        array.forEach(elements::add);
-        ArrayNode sorted = mapper().createArrayNode();
-        sorted.addAll(elements);
-        return sorted;
     }
 
     private void doScalarMultXp(String originKey, JsonNode modInfo, ObjectNode target) {
@@ -534,7 +520,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             }
         }
     }
-
 
     private String getShortName(JsonNode target, boolean isTitleCase) {
         String name = SourceField.name.getTextOrEmpty(target);

@@ -389,6 +389,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .compile(subclassFeature_1 + allowed + subclassFeature_2 + allowed + subclassFeature_3 + allowed + "?");
     }
 
+    @Override
     public void prepare() {
         if (variantIndex != null || filteredIndex != null) {
             return;

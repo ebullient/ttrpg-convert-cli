@@ -9,8 +9,12 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.io.Tui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,30 +57,33 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
     protected abstract JsonNode getOriginNode(String key);
 
     public JsonNode handleCopy(T type, JsonNode copyTo) {
+        if (!MetaFields._copy.existsIn(copyTo)) {
+            // No copy needs to be done
+            return copyTo;
+        }
+        JsonNode copyDataNode = MetaFields._copy.getFrom(copyTo);
         String copyToKey = type.createKey(copyTo);
-        JsonNode _copy = MetaFields._copy.getFrom(copyTo);
-        if (_copy != null) {
-            String copyFromKey = type.createKey(_copy);
-            JsonNode copyFrom = getOriginNode(copyFromKey);
-            if (copyToKey.equals(copyFromKey)) {
-                tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, _copy);
-                return copyTo;
-            }
-            if (copyFrom == null) {
-                tui().errorf("Error (%s): Unable to find source for %s", copyToKey, copyFromKey);
-                return copyTo;
-            }
-            // is the copy a copy?
-            copyFrom = handleCopy(type, copyFrom);
-            try {
-                copyTo = mergeNodes(type, copyToKey, copyFrom, copyTo);
-            } catch (JsonCopyException | StackOverflowError | UnsupportedOperationException e) {
-                tui().errorf(e, "Error (%s): Unable to merge nodes. CopyTo: %s, CopyFrom: %s", copyToKey, copyTo, copyFrom);
-            }
+        String copyFromKey = type.createKey(copyDataNode);
+        if (copyToKey.equals(copyFromKey)) {
+            tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, copyDataNode);
+            return copyTo;
+        }
+        JsonNode copyFrom = getOriginNode(copyFromKey);
+        if (copyFrom == null) {
+            tui().errorf("Error (%s): Unable to find source for %s", copyToKey, copyFromKey);
+            return copyTo;
+        }
+        // is the copy a copy?
+        copyFrom = handleCopy(type, copyFrom);
+        try {
+            return mergeNodes(type, copyToKey, copyFrom, copyTo);
+        } catch (JsonCopyException | StackOverflowError | UnsupportedOperationException e) {
+            tui().errorf(e, "Error (%s): Unable to merge nodes. CopyTo: %s, CopyFrom: %s", copyToKey, copyTo, copyFrom);
         }
         return copyTo;
     }
 
+    /** Return the key for the given node, for use as an external template. */
     protected abstract String getExternalTemplateKey(JsonNode trait);
 
     // 	utils.js: static getCopy (impl, copyFrom, copyTo, templateData,...) {
@@ -94,7 +101,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             // fetch and apply external template mods
             String templateKey = getExternalTemplateKey(_trait);
             JsonNode template = getOriginNode(templateKey);
-            if (template == null) {
+            if (templateKey == null || template == null) {
                 tui().warn("Unable to find trait for " + templateKey);
             } else {
                 template = copyNode(template); // copy fast
@@ -191,8 +198,18 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return target;
     }
 
+    /**
+     * Resolve the dynamic text for the template variable given into a {@link JsonNode}.
+     *
+     * @param originKey    The key of the node which we're copying to
+     * @param value        The node which is being copied from
+     * @param target       The node which is being copied to
+     * @param variableMode The template variable to resolve
+     * @param params       Additional parameters for the template variable
+     * @return The node produced by resolving the template variable
+     */
     protected abstract JsonNode resolveTemplateVariable(
-        TemplateVariable variableMode, String originKey, JsonNode value, JsonNode target, String... pieces);
+        String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, List<String> params);
 
     // DataUtil.generic.variableResolver
     /**
@@ -217,10 +234,9 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         }
         Matcher matcher = variable_subst.matcher(value.toString());
         if (matcher.find()) {
-            String[] pieces = matcher.group("variable").split("__");
-            return requireNonNullElse(
-                resolveTemplateVariable(TemplateVariable.valueFrom(pieces[0]), originKey, value, target, pieces),
-                value);
+            List<String> params = Arrays.asList(matcher.group("variable").split("__"));
+            TemplateVariable variableMode = TemplateVariable.valueFrom(params.remove(0));
+            return requireNonNullElse(resolveTemplateVariable(originKey, value, target, variableMode, params), value);
         }
         return value;
     }
@@ -693,6 +709,17 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return -1;
     }
 
+    protected ArrayNode sortArrayNode(ArrayNode array) {
+        if (array == null || array.size() <= 1) {
+            return array;
+        }
+        Set<JsonNode> elements = new TreeSet<>(Comparator.comparing(a -> a.asText().toLowerCase()));
+        array.forEach(elements::add);
+        ArrayNode sorted = mapper().createArrayNode();
+        sorted.addAll(elements);
+        return sorted;
+    }
+
     public enum MetaFields implements JsonNodeReader {
         _copy,
         _copiedFrom, // mind
@@ -729,7 +756,6 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         type,
         value,
         with,
-        ;
     }
 
     protected enum TemplateVariable implements JsonNodeReader.FieldValue {
