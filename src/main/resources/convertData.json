@@ -567,6 +567,12 @@
           "replace": "{@condition clumsy 1}"
         }
       ],
+      "bestiary/creatures-lotxwg.json": [
+        {
+          "match": "\"\\{@ability swarm mind}\"",
+          "replace": "\"swarm mind\""
+        }
+      ],
       "bestiary/creatures-ec2.json": [
         {
           "_comment": "Removable once https://github.com/Pf2eToolsOrg/Pf2eTools/pull/359 is in a tagged release",
@@ -602,10 +608,20 @@
           "replace": "{@action Recall Knowledge} checks attempted"
         }
       ],
+      "bestiary/creatures-sog3.json": [
+        {
+          "match": "\\{@condition enfeebled 4\\.",
+          "replace": "{@condition enfeebled 4}."
+        }
+      ],
       "deities.json": [
         {
           "match": "immobilizied",
           "replace": "immobilized"
+        },
+        {
+          "match": "\"name\": \"\\{@i Ruyi Bang, the Extending Cudgel}\"",
+          "replace": "\"name\": \"Ruyi Bang, the Extending Cudgel\""
         }
       ],
       "feats/feats-apg.json": [
