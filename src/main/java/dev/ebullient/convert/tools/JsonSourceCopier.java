@@ -10,6 +10,9 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
     /** Handle any {@code _copy} fields which are present in the given node. */
     public abstract JsonNode handleCopy(T type, JsonNode copyTo);
 
+    /** Return the original node for the given key. */
+    protected abstract JsonNode getOriginNode(String key);
+
     public enum MetaFields implements JsonNodeReader {
         _copy,
         _copiedFrom, // mind
