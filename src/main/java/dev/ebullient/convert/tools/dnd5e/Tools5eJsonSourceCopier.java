@@ -15,7 +15,6 @@ import java.util.function.ToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -25,10 +24,7 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonCopyException;
-import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonSourceCopier;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
@@ -347,7 +343,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     // DataUtil.generic.variableResolver
     /**
      * @param value JsonNode to be checked for values to replace
-     * @param copyTo JsonNode with attributes that can be used to resolve templates
+     * @param target JsonNode with attributes that can be used to resolve templates
      */
     private JsonNode resolveDynamicText(String originKey, JsonNode value, JsonNode target) {
         if (value == null || !(value.isArray() || value.isObject() || value.isTextual())) {
@@ -366,7 +362,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             return value;
         }
         Matcher matcher = variable_subst.matcher(value.toString());
-        while (matcher.find()) {
+        if (matcher.find()) {
             String[] pieces = matcher.group("variable").split("__");
             TemplateVariable variableMode = TemplateVariable.valueFrom(pieces[0]);
             return switch (variableMode) {
@@ -1236,105 +1232,5 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
                 return "cha";
         }
         throw new IllegalArgumentException("Unknown skill: " + skill);
-    }
-
-    enum MetaFields implements JsonNodeReader {
-        _copy,
-        _copiedFrom, // mind
-        _mod,
-        _preserve,
-        _root,
-        _templates,
-        alias,
-        apply,
-        data,
-        dex,
-        dex_mod,
-        flags,
-        floor,
-        force,
-        index,
-        items,
-        joiner,
-        max,
-        mode,
-        names,
-        overwrite,
-        prof_bonus,
-        prop,
-        props,
-        range,
-        regex,
-        replace,
-        root,
-        scalar,
-        skills,
-        str,
-        type,
-        value,
-        with,
-    }
-
-    enum TemplateVariable implements JsonNodeReader.FieldValue {
-        name,
-        short_name,
-        title_short_name,
-        dc,
-        spell_dc,
-        to_hit,
-        damage_mod,
-        damage_avg;
-
-        public void notSupported(Tui tui, String originKey, JsonNode variableText) {
-            tui.errorf("Error (%s): Support for %s must be implemented. Raise an issue with this message. Text: %s",
-                originKey, this.value(), variableText);
-        }
-
-        static TemplateVariable valueFrom(String value) {
-            return FieldValue.valueFrom(value, TemplateVariable.class);
-        }
-    }
-
-    enum ModFieldMode implements JsonNodeReader.FieldValue {
-        appendStr,
-        replaceName,
-        replaceTxt,
-
-        prependArr,
-        appendArr,
-        replaceArr,
-        replaceOrAppendArr,
-        appendIfNotExistsArr,
-        insertArr,
-        removeArr,
-
-        calculateProp,
-        scalarAddProp,
-        scalarMultProp,
-        setProp,
-
-        addSenses,
-        addSaves,
-        addSkills,
-        addAllSaves,
-        addAllSkills,
-
-        addSpells,
-        removeSpells,
-        replaceSpells,
-
-        maxSize,
-        scalarMultXp,
-        scalarAddHit,
-        scalarAddDc;
-
-        public void notSupported(Tui tui, String originKey, JsonNode modInfo) {
-            tui.errorf("Error (%s): %s must be implemented. Raise an issue with this message. modInfo: %s",
-                originKey, this.value(), modInfo);
-        }
-
-        static ModFieldMode getModMode(JsonNode source) {
-            return FieldValue.valueFrom(MetaFields.mode.getTextOrNull(source), ModFieldMode.class);
-        }
     }
 }
