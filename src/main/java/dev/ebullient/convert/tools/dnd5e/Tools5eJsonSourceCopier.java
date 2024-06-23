@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonCopyException;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonSourceCopier;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
@@ -452,7 +453,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
                     tui().errorf("Error(%s): Unknown text modification mode for %s: %s", originKey, prop, modInfo);
                 }
             } else {
-                ModFieldMode mode = ModFieldMode.valueFrom(modInfo, MetaFields.mode);
+                ModFieldMode mode = ModFieldMode.getModMode(modInfo);
                 switch (mode) {
                     // Strings & text
                     case appendStr -> doAppendText(originKey, modInfo, copyFrom, prop, target);
@@ -1272,7 +1273,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         type,
         value,
         with,
-        ;
     }
 
     enum TemplateVariable implements JsonNodeReader.FieldValue {
@@ -1285,20 +1285,13 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         damage_mod,
         damage_avg;
 
-        @Override
-        public String value() {
-            return name();
-        }
-
         public void notSupported(Tui tui, String originKey, JsonNode variableText) {
             tui.errorf("Error (%s): Support for %s must be implemented. Raise an issue with this message. Text: %s",
                 originKey, this.value(), variableText);
         }
 
         static TemplateVariable valueFrom(String value) {
-            return Stream.of(TemplateVariable.values())
-                .filter((t) -> t.matches(value))
-                .findFirst().orElse(null);
+            return FieldValue.valueFrom(value, TemplateVariable.class);
         }
     }
 
@@ -1335,24 +1328,13 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         scalarAddHit,
         scalarAddDc;
 
-        @Override
-        public String value() {
-            return name();
-        }
-
         public void notSupported(Tui tui, String originKey, JsonNode modInfo) {
             tui.errorf("Error (%s): %s must be implemented. Raise an issue with this message. modInfo: %s",
                 originKey, this.value(), modInfo);
         }
 
-        static ModFieldMode valueFrom(JsonNode source, JsonNodeReader field) {
-            String textOrNull = field.getTextOrNull(source);
-            if (textOrNull == null) {
-                return null;
-            }
-            return Stream.of(ModFieldMode.values())
-                .filter((t) -> t.matches(textOrNull))
-                .findFirst().orElse(null);
+        static ModFieldMode getModMode(JsonNode source) {
+            return FieldValue.valueFrom(MetaFields.mode.getTextOrNull(source), ModFieldMode.class);
         }
     }
 }

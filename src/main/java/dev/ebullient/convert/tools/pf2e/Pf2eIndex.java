@@ -129,7 +129,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
 
     String prepareTrait(String key, JsonNode node) {
         String name = SourceField.name.getTextOrEmpty(node);
-        Pf2eAlignmentValue alignment = SourceField.name.getEnumValueFrom(node, Pf2eAlignmentValue.class);
+        Pf2eAlignmentValue alignment = Pf2eAlignmentValue.valueFrom(SourceField.name.getTextOrNull(node));
 
         // Change the indexed name for [...] traits
         if (name.startsWith("[") || alignment != null) {

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteUtil;
+import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
@@ -385,7 +386,7 @@ public interface JsonSource extends JsonTextReplacement {
                 JsonNode rowNode = rows.get(r);
                 int cols = rowNode.size(); // varies by row
 
-                if (FieldValue.multiRow.isValueOfField(rowNode, SourceField.type)) {
+                if (AppendTypeValue.multiRow.isBlockTypeOf(rowNode)) {
                     ArrayNode rows2 = TableField.rows.readArrayFrom(rowNode);
                     List<List<String>> multicol = new ArrayList<>();
                     for (int r2 = 0; r2 < rows2.size(); r2++) {
@@ -635,15 +636,6 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     // Other context-constrained type values (not the big append loop)
-    enum FieldValue implements Pf2eJsonNodeReader.FieldValue {
-        multiRow;
-
-        @Override
-        public String value() {
-            return this.name();
-        }
-    }
-
     enum SuccessDegree implements Pf2eJsonNodeReader {
         criticalSuccess("Critical Success"),
         success("Success"),
@@ -670,7 +662,7 @@ public interface JsonSource extends JsonTextReplacement {
         spans,
     }
 
-    enum AppendTypeValue implements Pf2eJsonNodeReader.FieldValue {
+    enum AppendTypeValue implements FieldValue {
         ability,
         affliction,
         attack,
@@ -680,6 +672,7 @@ public interface JsonSource extends JsonTextReplacement {
         item,
         list,
         lvlEffect,
+        multiRow,
         paper,
         pf2beigeBox("pf2-beige-box"),
         pf2brownBox("pf2-brown-box"),
@@ -717,14 +710,9 @@ public interface JsonSource extends JsonTextReplacement {
             return this.nodeValue;
         }
 
-        @Override
-        public boolean matches(String value) {
-            return this.value().equals(value) || this.name().equalsIgnoreCase(value);
-        }
-
         /** Return the {@link AppendTypeValue} that {@code source} represents. */
         static AppendTypeValue getBlockType(JsonNode source) {
-            return SourceField.type.getEnumValueFrom(source, AppendTypeValue.class);
+            return FieldValue.valueFrom(SourceField.type.getTextOrNull(source), AppendTypeValue.class);
         }
 
         /** Returns true if {@code node} is a block of this type. */

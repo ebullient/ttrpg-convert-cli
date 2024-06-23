@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonTextConverter;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
@@ -350,7 +351,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             // [...] becomes "Any ..."
             traitName = traitName.replaceAll("\\[(.*)]", "Any $1");
         } else if (traitName.length() <= 2) {
-            Pf2eAlignmentValue alignment = JsonNodeReader.getEnumValue(traitName, Pf2eAlignmentValue.class);
+            Pf2eAlignmentValue alignment = Pf2eAlignmentValue.valueFrom(traitName);
             if (alignment != null) {
                 traitName = alignment.toString();
                 // Uppercase alignment text if it's an abbreviation, e.g. "CE"
@@ -488,6 +489,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         @Override
         public String toString() {
             return longName;
+        }
+
+        static Pf2eAlignmentValue valueFrom(String value) {
+            return FieldValue.valueFrom(value, Pf2eAlignmentValue.class);
         }
     }
 }

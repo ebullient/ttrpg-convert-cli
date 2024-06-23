@@ -95,7 +95,7 @@ public class Json2QuteAbility extends Json2QuteBase {
         public String getLinkFrom(JsonNode node, JsonSource convert) {
             return getObjectFrom(node)
                     .map(n -> convert.linkify(
-                            Pf2eGenericAbilityReference.tag.getEnumValueFrom(n, Pf2eIndexType.class),
+                            Pf2eIndexType.fromText(Pf2eGenericAbilityReference.tag.getTextOrNull(n)),
                             join("|",
                                     Pf2eGenericAbilityReference.name.getTextFrom(n)
                                             .or(() -> name.getTextFrom(node))
