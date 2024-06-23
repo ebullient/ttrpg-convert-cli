@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.NamedText;
-import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
@@ -238,7 +238,7 @@ public class Json2QuteSpell extends Json2QuteBase {
             return getTextFrom(source)
                     .map(Stream::of)
                     .orElseGet(() -> streamFrom(source).flatMap(convert::streamOf).map(JsonNode::asText))
-                    .map(s -> JsonNodeReader.getEnumValue(s, Pf2eSpellComponent.class)).filter(Objects::nonNull)
+                    .map(Pf2eSpellComponent::valueFrom).filter(Objects::nonNull)
                     .toList();
         }
 
@@ -281,7 +281,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         public String entry;
     }
 
-    enum Pf2eSpellComponent implements JsonNodeReader.FieldValue {
+    enum Pf2eSpellComponent implements FieldValue {
         focus("F", "manipulate"),
         material("M", "manipulate"),
         somatic("S", "manipulate"),
@@ -309,6 +309,10 @@ public class Json2QuteSpell extends Json2QuteBase {
         public String getRulesLink(JsonSource convert) {
             return convert.createLink(
                     name(), convert.cfg().rulesFilePath().resolve("core-rulebook/chapter-7-spells"), name());
+        }
+
+        static Pf2eSpellComponent valueFrom(String value) {
+            return FieldValue.valueFrom(value, Pf2eSpellComponent.class);
         }
     }
 }

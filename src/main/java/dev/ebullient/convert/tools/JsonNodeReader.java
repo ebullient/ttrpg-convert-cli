@@ -22,28 +22,6 @@ import dev.ebullient.convert.io.Tui;
 
 public interface JsonNodeReader {
 
-    /** Returns the enum value of {@code enumClass} corresponding to {@code value}. */
-    static <E extends Enum<E>> E getEnumValue(String value, Class<E> enumClass) {
-        if (!isPresent(value)) {
-            return null;
-        }
-        if (FieldValue.class.isAssignableFrom(enumClass)) {
-            // If it's a FieldValue, then try to use the matches() method instead.
-            return Arrays.stream(enumClass.getEnumConstants())
-                    .filter(e -> ((FieldValue) e).matches(value.toLowerCase()) || ((FieldValue) e).matches(value.toUpperCase()))
-                    .findAny().orElse(null);
-        }
-        try {
-            return Enum.valueOf(enumClass, value.toLowerCase());
-        } catch (IllegalArgumentException ignored) {
-        }
-        try {
-            return Enum.valueOf(enumClass, value.toUpperCase());
-        } catch (IllegalArgumentException ignored) {
-            return null;
-        }
-    }
-
     String name();
 
     default String nodeName() {
@@ -348,13 +326,28 @@ public interface JsonNodeReader {
 
     /** Returns the enum value of {@code enumClass} that this field in {@code source} contains, or null. */
     default <E extends Enum<E>> E getEnumValueFrom(JsonNode source, Class<E> enumClass) {
-        return getEnumValue(getTextOrNull(source), enumClass);
+        String value = getTextOrNull(source);
+        if (!isPresent(value)) {
+            return null;
+        }
+        try {
+            return Enum.valueOf(enumClass, value.toLowerCase());
+        } catch (IllegalArgumentException ignored) {
+        }
+        try {
+            return Enum.valueOf(enumClass, value.toUpperCase());
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
+    /** An enum which implements this interface should have values which represent different JSON field values. */
     interface FieldValue {
-        String value();
-
         String name();
+
+        default String value() {
+            return name();
+        }
 
         default String toAnchorTag(String x) {
             return Tui.toAnchorTag(x);
@@ -366,6 +359,13 @@ public interface JsonNodeReader {
 
         default boolean matches(String value) {
             return this.value().equalsIgnoreCase(value) || this.name().equalsIgnoreCase(value);
+        }
+
+        static <E extends Enum<E> & FieldValue> E valueFrom(String value, Class<E> enumClass) {
+            if (!isPresent(value)) {
+                return null;
+            }
+            return Arrays.stream(enumClass.getEnumConstants()).filter(e -> e.matches(value)).findAny().orElse(null);
         }
     }
 
