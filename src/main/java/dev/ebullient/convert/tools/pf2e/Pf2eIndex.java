@@ -38,7 +38,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     private final Map<String, Set<String>> archetypeToFeats = new TreeMap<>();
     private final Map<String, Set<String>> domainToSpells = new TreeMap<>();
 
-    final JsonSourceCopier copier = new JsonSourceCopier(this);
+    final Pf2eJsonSourceCopier copier = new Pf2eJsonSourceCopier(this);
 
     public Pf2eIndex(CompendiumConfig config) {
         this.config = config;
