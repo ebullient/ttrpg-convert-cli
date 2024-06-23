@@ -101,7 +101,7 @@ public class MagicVariant implements JsonSource {
 
     /** Update / replace item with variants (where appropriate) */
     public List<Tuple> findSpecificVariants(Tools5eIndex index, Tools5eIndexType type,
-            String key, JsonNode genericVariant, JsonSourceCopier copier) {
+            String key, JsonNode genericVariant, Tools5eJsonSourceCopier copier) {
         // const specificVariants = Renderer.item._createSpecificVariants(baseItems, genericVariants);
         // const outSpecificVariants = Renderer.item._enhanceItems(specificVariants);
         List<Tuple> variants = new ArrayList<>();
