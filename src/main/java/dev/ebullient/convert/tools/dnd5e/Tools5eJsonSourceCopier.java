@@ -28,10 +28,11 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonCopyException;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonSourceCopier;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 
-public class Tools5eJsonSourceCopier implements JsonSource {
+public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> implements JsonSource {
     static final List<String> GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = List.of("caption", "type", "colLabels", "colLabelGroups",
         "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
 
@@ -86,7 +87,8 @@ public class Tools5eJsonSourceCopier implements JsonSource {
         throw new IllegalStateException("Should not call getSources while copying source");
     }
 
-    JsonNode handleCopy(Tools5eIndexType type, JsonNode copyTo) {
+    @Override
+    public JsonNode handleCopy(Tools5eIndexType type, JsonNode copyTo) {
         String copyToKey = type.createKey(copyTo);
         JsonNode _copy = MetaFields._copy.getFrom(copyTo);
         if (_copy != null) {
