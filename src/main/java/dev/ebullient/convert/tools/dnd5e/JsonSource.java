@@ -26,7 +26,7 @@ import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
-import dev.ebullient.convert.tools.dnd5e.JsonSourceCopier.MetaFields;
+import dev.ebullient.convert.tools.dnd5e.Tools5eJsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -558,7 +558,7 @@ public interface JsonSource extends JsonTextReplacement {
                 embedReference(text, data, type, heading); // embed note that will be present in the final output
                 return;
             }
-            JsonSourceCopier copier = new JsonSourceCopier(index());
+            Tools5eJsonSourceCopier copier = new Tools5eJsonSourceCopier(index());
             data = copier.handleCopy(type, data);
             existingNode = null; // this is a modified node, ignore existing.
         } else if (equivalentNode(data, existingNode) && index().isIncluded(finalKey)) {

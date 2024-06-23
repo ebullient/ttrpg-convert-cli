@@ -31,30 +31,30 @@ import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 
-public class JsonSourceCopier implements JsonSource {
+public class Tools5eJsonSourceCopier implements JsonSource {
     static final List<String> GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = List.of("caption", "type", "colLabels", "colLabelGroups",
-            "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
+        "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
 
     static final List<String> _MERGE_REQUIRES_PRESERVE_BASE = List.of(
-            "_versions",
-            "basicRules",
-            "hasFluff",
-            "hasFluffImages",
-            "hasToken",
-            "indexInputType", // mine: do I have the usage right?
-            "indexKey", // mine: do I have the usage right?
-            "otherSources",
-            "page",
-            "reprintedAs",
-            "srd");
+        "_versions",
+        "basicRules",
+        "hasFluff",
+        "hasFluffImages",
+        "hasToken",
+        "indexInputType", // mine: do I have the usage right?
+        "indexKey", // mine: do I have the usage right?
+        "otherSources",
+        "page",
+        "reprintedAs",
+        "srd");
     static final Map<Tools5eIndexType, List<String>> _MERGE_REQUIRES_PRESERVE = Map.of(
-            Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
-                    "altArt", "variant", "dragonCastingColor", "familiar"),
-            Tools5eIndexType.item, List.of("lootTables", "tier"),
-            Tools5eIndexType.itemGroup, List.of("lootTables", "tier"));
+        Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
+            "altArt", "variant", "dragonCastingColor", "familiar"),
+        Tools5eIndexType.item, List.of("lootTables", "tier"),
+        Tools5eIndexType.itemGroup, List.of("lootTables", "tier"));
     static final List<String> COPY_ENTRY_PROPS = List.of(
-            "action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
-            "actionHeader", "bonusHeader", "reactionHeader", "legendaryHeader", "mythicHeader");
+        "action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
+        "actionHeader", "bonusHeader", "reactionHeader", "legendaryHeader", "mythicHeader");
     static final List<String> LEARNED_SPELL_TYPE = List.of("constant", "will", "ritual");
     static final List<String> SPELL_CAST_FREQUENCY = List.of("recharge", "charges", "rest", "daily", "weekly", "yearly");
 
@@ -72,7 +72,7 @@ public class JsonSourceCopier implements JsonSource {
 
     final Tools5eIndex index;
 
-    JsonSourceCopier(Tools5eIndex index) {
+    Tools5eJsonSourceCopier(Tools5eIndex index) {
         this.index = index;
     }
 
@@ -117,9 +117,9 @@ public class JsonSourceCopier implements JsonSource {
         ObjectNode subraceOut = (ObjectNode) copyNode(raceNode);
 
         List.of("name", "source", "srd", "basicRules")
-                .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
+            .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
         List.of("subraces", "srd", "basicRules", "_versions", "hasFluff", "hasFluffImages", "_rawName")
-                .forEach(subraceOut::remove);
+            .forEach(subraceOut::remove);
 
         copyFrom.remove("__prop"); // cleanup: we copy remainder later
 
@@ -155,7 +155,7 @@ public class JsonSourceCopier implements JsonSource {
             } else if (cpySrAbility.size() != outAbility.size()) {
                 // if (cpy.ability.length !== cpySr.ability.length) throw new Error(`Race and subrace ability array lengths did not match!`);
                 tui().errorf("Error (%s): Unable to merge abilities (different lengths). CopyTo: %s, CopyFrom: %s", subraceOut,
-                        copyFrom);
+                    copyFrom);
             } else {
                 // cpySr.ability.forEach((obj, i) => Object.assign(cpy.ability[i], obj));
                 for (int i = 0; i < cpySrAbility.size(); i++) {
@@ -174,7 +174,7 @@ public class JsonSourceCopier implements JsonSource {
                 if (MetaFields.overwrite.existsIn(data)) {
                     // overwrite
                     int index = findIndexByName("subrace-merge:" + SourceField.name.getTextOrThrow(subraceOut),
-                            entries, MetaFields.overwrite.getTextOrThrow(data));
+                        entries, MetaFields.overwrite.getTextOrThrow(data));
                     if (index >= 0) {
                         entries.set(index, entry);
                     } else {
@@ -335,8 +335,8 @@ public class JsonSourceCopier implements JsonSource {
         target.put("_isCopy", true);
         target.remove("_rawName");
         MetaFields._copiedFrom.setIn(target, String.format("%s (%s)",
-                SourceField.name.getTextOrEmpty(copyFrom),
-                SourceField.source.getTextOrEmpty(copyFrom)));
+            SourceField.name.getTextOrEmpty(copyFrom),
+            SourceField.source.getTextOrEmpty(copyFrom)));
         MetaFields._copy.removeFrom(target);
         return target;
     }
@@ -459,7 +459,7 @@ public class JsonSourceCopier implements JsonSource {
                     // Arrays
                     case prependArr, appendArr, replaceArr, replaceOrAppendArr, appendIfNotExistsArr, insertArr, removeArr ->
                         doModArray(
-                                originKey, mode, modInfo, prop, target);
+                            originKey, mode, modInfo, prop, target);
                     // Properties
                     case setProp -> doSetProp(originKey, modInfo, prop, target);
                     // Bestiary
@@ -489,7 +489,7 @@ public class JsonSourceCopier implements JsonSource {
         if (target.has(prop)) {
             String joiner = MetaFields.joiner.getTextOrEmpty(modInfo);
             target.put(prop, getTextOrEmpty(target, prop) + joiner
-                    + MetaFields.str.getTextOrEmpty(modInfo));
+                + MetaFields.str.getTextOrEmpty(modInfo));
         } else {
             target.put(prop, MetaFields.str.getTextOrEmpty(modInfo));
         }
@@ -501,7 +501,7 @@ public class JsonSourceCopier implements JsonSource {
         }
         if (!target.get(prop).isArray()) {
             tui().warnf("replaceTxt for %s with a property %s that is not an array %s: %s", originKey, prop, modInfo,
-                    target.get(prop));
+                target.get(prop));
             return;
         }
 
@@ -586,7 +586,7 @@ public class JsonSourceCopier implements JsonSource {
 
         int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
         String fullNode = hitPattern.matcher(target.get(prop).toString())
-                .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+            .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
         target.set(prop, createNode(fullNode));
     }
 
@@ -597,7 +597,7 @@ public class JsonSourceCopier implements JsonSource {
         }
         int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
         String fullNode = dcPattern.matcher(target.get(prop).toString())
-                .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+            .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
         target.set(prop, createNode(fullNode));
     }
 
@@ -611,12 +611,12 @@ public class JsonSourceCopier implements JsonSource {
             JsonNode node = propRw.get(k);
             boolean isString = node.isTextual();
             int value = isString
-                    ? Integer.parseInt(node.asText())
-                    : node.asInt();
+                ? Integer.parseInt(node.asText())
+                : node.asInt();
             value += scalar;
             propRw.replace(k, isString
-                    ? new TextNode(asModifier(value))
-                    : new IntNode(value));
+                ? new TextNode(asModifier(value))
+                : new IntNode(value));
         };
 
         String modProp = MetaFields.prop.getTextOrNull(modInfo);
@@ -640,15 +640,15 @@ public class JsonSourceCopier implements JsonSource {
             JsonNode node = propRw.get(k);
             boolean isString = node.isTextual();
             double value = isString
-                    ? Double.parseDouble(node.asText())
-                    : node.asDouble();
+                ? Double.parseDouble(node.asText())
+                : node.asDouble();
             value *= scalar;
             if (floor) {
                 value = Math.floor(value);
             }
             propRw.replace(k, isString
-                    ? new TextNode(asModifier(value))
-                    : new DoubleNode(value));
+                ? new TextNode(asModifier(value))
+                : new DoubleNode(value));
         };
 
         String modProp = MetaFields.prop.getTextOrNull(modInfo);
@@ -710,8 +710,8 @@ public class JsonSourceCopier implements JsonSource {
 
         ArrayNode size = Tools5eFields.size.ensureArrayIn(target);
         List<JsonNode> collect = streamOf(size)
-                .filter(x -> SIZES.indexOf(x.asText()) <= maxIdx)
-                .collect(Collectors.toList());
+            .filter(x -> SIZES.indexOf(x.asText()) <= maxIdx)
+            .collect(Collectors.toList());
 
         if (size.size() != collect.size()) {
             size.removeAll();
@@ -761,7 +761,7 @@ public class JsonSourceCopier implements JsonSource {
                         // throw. Not supported
                         tui().errorf("Error (%s): Object at key %s, not an array", originKey, prop);
                         throw new JsonCopyException("Badly formed spell list in " + originKey
-                                + "; found JSON Object instead of an array for " + prop);
+                            + "; found JSON Object instead of an array for " + prop);
                     } else {
                         // overwrite
                         targetSpell.set(prop, copyNode(modSpellList));
@@ -806,7 +806,7 @@ public class JsonSourceCopier implements JsonSource {
         if (spellcasting == null) {
             tui().errorf("Error (%s): Can't replace spells for a monster without spellcasting", originKey);
             throw new JsonCopyException(
-                    "Can't replace spells for a monster without spellcasting; copy/merge of " + originKey);
+                "Can't replace spells for a monster without spellcasting; copy/merge of " + originKey);
         }
 
         if (MonsterFields.spells.existsIn(modInfo) && MonsterFields.spells.existsIn(spellcasting)) {
@@ -866,7 +866,7 @@ public class JsonSourceCopier implements JsonSource {
         if (spellcasting == null) {
             tui().errorf("Error (%s): Can't remove spells from a monster without spellcasting", originKey);
             throw new JsonCopyException(
-                    "Can't remove spells from a monster without spellcasting; copy/merge of " + originKey);
+                "Can't remove spells from a monster without spellcasting; copy/merge of " + originKey);
         }
 
         if (MonsterFields.spells.existsIn(modInfo) && MonsterFields.spells.existsIn(spellcasting)) {
@@ -877,8 +877,8 @@ public class JsonSourceCopier implements JsonSource {
                 // Look for spell levels: spells.1.spells
                 if (MonsterFields.spells.existsIn(spells.get(k))) {
                     removeSpells(originKey,
-                            MonsterFields.spells.ensureArrayIn(spells.get(k)),
-                            modSpellEntry.getValue());
+                        MonsterFields.spells.ensureArrayIn(spells.get(k)),
+                        modSpellEntry.getValue());
                 }
             }
 
@@ -1063,8 +1063,8 @@ public class JsonSourceCopier implements JsonSource {
             // Remove inbound items that already exist in the target array
             // Use anyMatch to stop filtering ASAP
             List<JsonNode> filtered = streamOf(items)
-                    .filter(it -> !streamOf(tgtArray).anyMatch(it::equals))
-                    .collect(Collectors.toList());
+                .filter(it -> !streamOf(tgtArray).anyMatch(it::equals))
+                .collect(Collectors.toList());
             tgtArray.addAll(filtered);
         }
     }
@@ -1085,7 +1085,7 @@ public class JsonSourceCopier implements JsonSource {
             removeFromArr(tgtArray, items);
         } else {
             tui().errorf("Error (%s / %s): One of names or items must be provided to remove elements from array; %s", originKey,
-                    prop, modInfo);
+                prop, modInfo);
         }
     }
 
@@ -1173,8 +1173,8 @@ public class JsonSourceCopier implements JsonSource {
         JsonNode shortName = MonsterFields.shortName.getFrom(target);
         boolean isNamedCreature = MonsterFields.isNamedCreature.booleanOrDefault(target, false);
         String prefix = isNamedCreature
-                ? ""
-                : isTitleCase ? "The " : "the ";
+            ? ""
+            : isTitleCase ? "The " : "the ";
 
         if (shortName != null) {
             if (shortName.isBoolean() && shortName.asBoolean()) {
@@ -1195,11 +1195,11 @@ public class JsonSourceCopier implements JsonSource {
 
     private String getShortNameFromName(String name, boolean isNamedCreature) {
         String result = name.split(",")[0]
-                .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
+            .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
 
         return isNamedCreature
-                ? result.split(" ")[0]
-                : result.toLowerCase();
+            ? result.split(" ")[0]
+            : result.toLowerCase();
     }
 
     int getAbilityModNumber(int abilityScore) {
@@ -1290,13 +1290,13 @@ public class JsonSourceCopier implements JsonSource {
 
         public void notSupported(Tui tui, String originKey, JsonNode variableText) {
             tui.errorf("Error (%s): Support for %s must be implemented. Raise an issue with this message. Text: %s",
-                    originKey, this.value(), variableText);
+                originKey, this.value(), variableText);
         }
 
         static TemplateVariable valueFrom(String value) {
             return Stream.of(TemplateVariable.values())
-                    .filter((t) -> t.matches(value))
-                    .findFirst().orElse(null);
+                .filter((t) -> t.matches(value))
+                .findFirst().orElse(null);
         }
     }
 
@@ -1340,7 +1340,7 @@ public class JsonSourceCopier implements JsonSource {
 
         public void notSupported(Tui tui, String originKey, JsonNode modInfo) {
             tui.errorf("Error (%s): %s must be implemented. Raise an issue with this message. modInfo: %s",
-                    originKey, this.value(), modInfo);
+                originKey, this.value(), modInfo);
         }
 
         static ModFieldMode valueFrom(JsonNode source, JsonNodeReader field) {
@@ -1349,8 +1349,8 @@ public class JsonSourceCopier implements JsonSource {
                 return null;
             }
             return Stream.of(ModFieldMode.values())
-                    .filter((t) -> t.matches(textOrNull))
-                    .findFirst().orElse(null);
+                .filter((t) -> t.matches(textOrNull))
+                .findFirst().orElse(null);
         }
     }
 }

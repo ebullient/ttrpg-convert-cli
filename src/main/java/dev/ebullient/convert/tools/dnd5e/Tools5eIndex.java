@@ -74,7 +74,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private final Set<String> srdKeys = new HashSet<>();
     private final Set<String> familiarKeys = new HashSet<>();
 
-    final JsonSourceCopier copier = new JsonSourceCopier(this);
+    final Tools5eJsonSourceCopier copier = new Tools5eJsonSourceCopier(this);
 
     Pattern classFeaturePattern;
     Pattern subclassFeaturePattern;

@@ -28,7 +28,7 @@ public class RegexTest implements JsonSource {
     @Test
     public void testToHitStr() {
         String s = " +<$to_hit__str$> ";
-        Matcher m = JsonSourceCopier.variable_subst.matcher(s);
+        Matcher m = Tools5eJsonSourceCopier.variable_subst.matcher(s);
         assertThat(m.find()).isTrue();
         assertThat(m.group("variable")).isEqualTo("to_hit__str");
         String[] pieces = m.group("variable").split("__");
@@ -38,7 +38,7 @@ public class RegexTest implements JsonSource {
     @Test
     public void testDamageAvg() {
         String s = "2.5+str";
-        Matcher m = JsonSourceCopier.dmg_avg_subst.matcher(s);
+        Matcher m = Tools5eJsonSourceCopier.dmg_avg_subst.matcher(s);
         assertThat(m.matches()).describedAs("damage_avg regex should match " + s).isTrue();
         assertThat(m.group(1)).isEqualTo("2.5");
         assertThat(m.group(2)).isEqualTo("+");
