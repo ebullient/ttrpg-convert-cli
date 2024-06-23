@@ -21,6 +21,11 @@ public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implem
     }
 
     @Override
+    protected JsonNode getOriginNode(String key) {
+        return index.getIncludedNode(key);
+    }
+
+    @Override
     public JsonNode handleCopy(Pf2eIndexType type, JsonNode jsonSource) {
 
         return jsonSource;

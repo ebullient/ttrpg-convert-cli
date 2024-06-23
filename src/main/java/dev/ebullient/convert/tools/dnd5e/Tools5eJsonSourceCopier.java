@@ -85,12 +85,17 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     }
 
     @Override
+    protected JsonNode getOriginNode(String key) {
+        return index().getOriginNoFallback(key);
+    }
+
+    @Override
     public JsonNode handleCopy(Tools5eIndexType type, JsonNode copyTo) {
         String copyToKey = type.createKey(copyTo);
         JsonNode _copy = MetaFields._copy.getFrom(copyTo);
         if (_copy != null) {
             String copyFromKey = type.createKey(_copy);
-            JsonNode copyFrom = index().getOriginNoFallback(copyFromKey);
+            JsonNode copyFrom = getOriginNode(copyFromKey);
             if (copyToKey.equals(copyFromKey)) {
                 tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, _copy);
                 return copyTo;
@@ -233,7 +238,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         for (JsonNode _template : templates) {
 
             String templateKey = Tools5eIndexType.monsterTemplate.createKey(_template);
-            JsonNode templateNode = index.getOriginNoFallback(templateKey);
+            JsonNode templateNode = getOriginNode(templateKey);
 
             if (templateNode == null) {
                 tui().warn("Unable to find traits for " + templateKey);
