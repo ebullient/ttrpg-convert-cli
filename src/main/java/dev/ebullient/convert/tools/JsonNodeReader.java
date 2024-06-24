@@ -94,6 +94,14 @@ public interface JsonNodeReader {
         return source.has(this.nodeName());
     }
 
+    default boolean nestedExistsIn(JsonNodeReader field, JsonNode source) {
+        if (source == null || source.isNull()) {
+            return false;
+        }
+        JsonNode parent = field.getFrom(source);
+        return this.existsIn(parent);
+    }
+
     default boolean isArrayIn(JsonNode source) {
         if (source == null || !source.has(this.nodeName())) {
             return false;

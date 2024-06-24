@@ -638,6 +638,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         spellcasting,
         spells,
         summonedBySpellLevel,
+        trait,
         type,
         will,
         choose,
