@@ -223,46 +223,50 @@ public class JsonSourceCopier implements JsonSource {
         // edit in place: if you don't, lower-level copies will keep being revisted.
         ObjectNode target = (ObjectNode) copyTo;
 
-        JsonNode _copy = MetaFields._copy.getFrom(copyTo);
-        JsonNode _mod = _copy == null ? null : normalizeMods(MetaFields._mod.getFrom(_copy));
-        JsonNode _trait = _copy == null ? null : MetaFields._trait.getFrom(_copy);
-
-        JsonNode templateApplyRoot = null;
-
-        if (_trait != null) {
-            // fetch and apply external template mods
-            String templateKey = Tools5eIndexType.monsterTemplate.createKey(_trait);
-            JsonNode template = index.getOriginNoFallback(templateKey);
-            if (template == null) {
-                tui().warn("Unable to find trait for " + templateKey);
-            } else {
-                template = copyNode(template); // copy fast
-
-                JsonNode apply = MetaFields.apply.getFrom(template);
-                templateApplyRoot = MetaFields._root.getFrom(apply);
-
-                JsonNode templateMods = normalizeMods(MetaFields._mod.getFrom(apply));
-                if (templateMods != null) {
-                    if (_mod == null) {
-                        _mod = templateMods;
-                    } else {
-                        ObjectNode _modRw = (ObjectNode) _mod;
-                        for (Entry<String, JsonNode> e : iterableFields(templateMods)) {
-                            if (_modRw.has(e.getKey())) {
-                                appendToArray(_modRw.withArray(e.getKey()), e.getValue());
-                            } else {
-                                _modRw.set(e.getKey(), e.getValue());
-                            }
-                        }
-                    }
-                }
-            }
-            MetaFields._trait.removeFrom(_copy);
+        JsonNode _copy = MetaFields._copy.getFromOrEmptyObjectNode(copyTo);
+        if (MetaFields._mod.existsIn(_copy)) {
+            normalizeMods(_copy);
         }
 
-        JsonNode _preserve = _copy == null
-                ? mapper().createObjectNode()
-                : MetaFields._preserve.getFrom(_copy);
+        // fetch and apply any external template
+        // append them to existing copy mods where available
+        ArrayNode templates = MetaFields._templates.readArrayFrom(_copy);
+        for (JsonNode _template : templates) {
+
+            String templateKey = Tools5eIndexType.monsterTemplate.createKey(_template);
+            JsonNode templateNode = index.getOriginNoFallback(templateKey);
+
+            if (templateNode == null) {
+                tui().warn("Unable to find traits for " + templateKey);
+                continue;
+            } else {
+                if (!MetaFields._mod.nestedExistsIn(MetaFields.apply, templateNode)) {
+                    // if template.apply._mod doesn't exist, skip this
+                    continue;
+                }
+
+                JsonNode template = copyNode(templateNode); // copy fast
+                JsonNode templateApply = MetaFields.apply.getFrom(template);
+                normalizeMods(templateApply);
+
+                JsonNode templateApplyMods = MetaFields._mod.getFrom(templateApply);
+                if (MetaFields._mod.existsIn(_copy)) {
+                    ObjectNode copyMods = (ObjectNode) MetaFields._mod.getFrom(_copy);
+                    for (Entry<String, JsonNode> e : iterableFields(templateApplyMods)) {
+                        if (copyMods.has(e.getKey())) {
+                            appendToArray(copyMods.withArray(e.getKey()), e.getValue());
+                        } else {
+                            copyMods.set(e.getKey(), e.getValue());
+                        }
+                    }
+                } else {
+                    MetaFields._mod.setIn(_copy, templateApplyMods);
+                }
+            }
+        }
+        MetaFields._templates.removeFrom(_copy);
+
+        JsonNode _preserve = MetaFields._preserve.getFromOrEmptyObjectNode(_copy);
 
         // Copy required values from...
         for (Entry<String, JsonNode> from : iterableFields(copyFrom)) {
@@ -288,9 +292,13 @@ public class JsonSourceCopier implements JsonSource {
             }
         }
 
-        // Apply template _root properties
+        // apply any root template properties after doing base copy
         List<String> copyToRootProps = streamOfFieldNames(copyTo).toList();
-        if (templateApplyRoot != null) {
+        for (JsonNode template : templates) {
+            if (!MetaFields._root.nestedExistsIn(MetaFields.apply, template)) {
+                continue;
+            }
+            JsonNode templateApplyRoot = MetaFields._root.getFrom(MetaFields.apply.getFrom(template));
             for (Entry<String, JsonNode> from : iterableFields(templateApplyRoot)) {
                 String k = from.getKey();
                 if (!copyToRootProps.contains(k)) {
@@ -301,13 +309,16 @@ public class JsonSourceCopier implements JsonSource {
         }
 
         // Apply mods
-        if (_mod != null) {
-            for (Entry<String, JsonNode> entry : iterableFields(_mod)) {
+        if (MetaFields._mod.existsIn(_copy)) {
+            // pre-convert any dynamic text
+            JsonNode copyMetaMod = MetaFields._mod.getFrom(_copy);
+            for (Entry<String, JsonNode> entry : iterableFields(copyMetaMod)) {
                 // use the copyTo value as the attribute source for resolving dynamic text
                 entry.setValue(resolveDynamicText(originKey, entry.getValue(), copyTo));
             }
 
-            for (Entry<String, JsonNode> entry : iterableFields(_mod)) {
+            // Now iterate and apply mod rules
+            for (Entry<String, JsonNode> entry : iterableFields(copyMetaMod)) {
                 String prop = entry.getKey();
                 JsonNode modInfos = entry.getValue();
                 if ("*".equals(prop)) {
@@ -408,17 +419,16 @@ public class JsonSourceCopier implements JsonSource {
         return value;
     }
 
-    private JsonNode normalizeMods(JsonNode copyMeta) {
-        if (copyMeta == null || !copyMeta.isObject()) {
-            return copyMeta;
-        }
-        for (String name : iterableFieldNames(copyMeta)) {
-            JsonNode mod = copyMeta.get(name);
-            if (!mod.isArray()) {
-                ((ObjectNode) copyMeta).set(name, mapper().createArrayNode().add(mod));
+    private void normalizeMods(JsonNode copyMeta) {
+        if (MetaFields._mod.existsIn(copyMeta)) {
+            ObjectNode mods = (ObjectNode) MetaFields._mod.getFrom(copyMeta);
+            for (String name : iterableFieldNames(mods)) {
+                JsonNode mod = mods.get(name);
+                if (!mod.isArray()) {
+                    mods.set(name, mapper().createArrayNode().add(mod));
+                }
             }
         }
-        return copyMeta;
     }
 
     private void doMod(String originKey, ObjectNode target, JsonNode copyFrom, JsonNode modInfos, List<String> props) {
@@ -1231,7 +1241,7 @@ public class JsonSourceCopier implements JsonSource {
         _mod,
         _preserve,
         _root,
-        _trait,
+        _templates,
         alias,
         apply,
         data,

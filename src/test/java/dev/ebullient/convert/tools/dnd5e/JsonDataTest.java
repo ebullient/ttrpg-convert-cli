@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -208,6 +209,22 @@ public class JsonDataTest {
     @Test
     public void testMonsterList() {
         commonTests.testMonsterList(outputPath);
+
+        if (!TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+            return;
+        }
+
+        JsonNode x;
+
+        x = commonTests.index.getOrigin("monster|reduced-threat aboleth|tftyp");
+        JsonNode hp = MonsterFields.hp.getFrom(x);
+        assertThat(hp).isNotNull();
+        assertThat(MonsterFields.average.getFrom(hp).toString())
+                .describedAs("Reduced Threat monsters should have a template with stat modifications applied")
+                .isEqualTo("67.0");
+        assertThat(MonsterFields.trait.getFrom(x).toPrettyString())
+                .describedAs("Reduced Threat monsters should have a template with stat modifications applied")
+                .contains("Reduced Threat");
     }
 
     @Test
