@@ -8,7 +8,34 @@ import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextConverter<T> {
 
     /** Handle any {@code _copy} fields which are present in the given node. */
-    public abstract JsonNode handleCopy(T type, JsonNode copyTo);
+    public JsonNode handleCopy(T type, JsonNode copyTo) {
+        String copyToKey = type.createKey(copyTo);
+        JsonNode _copy = MetaFields._copy.getFrom(copyTo);
+        if (_copy != null) {
+            String copyFromKey = type.createKey(_copy);
+            JsonNode copyFrom = getOriginNode(copyFromKey);
+            if (copyToKey.equals(copyFromKey)) {
+                tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, _copy);
+                return copyTo;
+            }
+            if (copyFrom == null) {
+                tui().errorf("Error (%s): Unable to find source for %s", copyToKey, copyFromKey);
+                return copyTo;
+            }
+            // is the copy a copy?
+            copyFrom = handleCopy(type, copyFrom);
+            try {
+                copyTo = mergeNodes(type, copyToKey, copyFrom, copyTo);
+            } catch (JsonCopyException | StackOverflowError | UnsupportedOperationException e) {
+                tui().errorf(e, "Error (%s): Unable to merge nodes. CopyTo: %s, CopyFrom: %s", copyToKey, copyTo, copyFrom);
+            }
+        }
+        return copyTo;
+    }
+
+    protected JsonNode mergeNodes(T type, String copyToKey, JsonNode copyFrom, JsonNode copyTo) {
+        return copyTo;
+    }
 
     /** Return the original node for the given key. */
     protected abstract JsonNode getOriginNode(String key);

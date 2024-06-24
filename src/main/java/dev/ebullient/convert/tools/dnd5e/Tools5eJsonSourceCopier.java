@@ -89,32 +89,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         return index().getOriginNoFallback(key);
     }
 
-    @Override
-    public JsonNode handleCopy(Tools5eIndexType type, JsonNode copyTo) {
-        String copyToKey = type.createKey(copyTo);
-        JsonNode _copy = MetaFields._copy.getFrom(copyTo);
-        if (_copy != null) {
-            String copyFromKey = type.createKey(_copy);
-            JsonNode copyFrom = getOriginNode(copyFromKey);
-            if (copyToKey.equals(copyFromKey)) {
-                tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, _copy);
-                return copyTo;
-            }
-            if (copyFrom == null) {
-                tui().errorf("Error (%s): Unable to find source for %s", copyToKey, copyFromKey);
-                return copyTo;
-            }
-            // is the copy a copy?
-            copyFrom = handleCopy(type, copyFrom);
-            try {
-                copyTo = mergeNodes(type, copyToKey, copyFrom, copyTo);
-            } catch (JsonCopyException | StackOverflowError | UnsupportedOperationException e) {
-                tui().errorf(e, "Error (%s): Unable to merge nodes. CopyTo: %s, CopyFrom: %s", copyToKey, copyTo, copyFrom);
-            }
-        }
-        return copyTo;
-    }
-
     // render.js: _getMergedSubrace
     public JsonNode mergeSubrace(JsonNode subraceNode, JsonNode raceNode) {
         ObjectNode copyFrom = (ObjectNode) copyNode(subraceNode);
@@ -223,7 +197,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     }
 
     // 	utils.js: static getCopy (impl, copyFrom, copyTo, templateData,...) {
-    JsonNode mergeNodes(Tools5eIndexType type, String originKey, JsonNode copyFrom, JsonNode copyTo) {
+    @Override
+    protected JsonNode mergeNodes(Tools5eIndexType type, String originKey, JsonNode copyFrom, JsonNode copyTo) {
         // edit in place: if you don't, lower-level copies will keep being revisted.
         ObjectNode target = (ObjectNode) copyTo;
 
