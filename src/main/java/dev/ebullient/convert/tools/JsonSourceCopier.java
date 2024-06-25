@@ -1,13 +1,22 @@
 package dev.ebullient.convert.tools;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
+
+import java.util.Map.Entry;
 
 /** Performs copy operations on nodes as a pre-processing step before they're handled by the individual converters. */
 public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextConverter<T> {
 
-    /** Handle any {@code _copy} fields which are present in the given node. */
+    /** Return the original node for the given key. */
+    protected abstract JsonNode getOriginNode(String key);
+
+    /** Return true if the merge rules indicate that this key should be preserved. */
+    protected abstract boolean mergePreserveKey(T type, String key);
+
+    /** Handle any {@code _copy} fields which are present in the given node. This is the main entry point. */
     public JsonNode handleCopy(T type, JsonNode copyTo) {
         String copyToKey = type.createKey(copyTo);
         JsonNode _copy = MetaFields._copy.getFrom(copyTo);
@@ -37,8 +46,41 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return copyTo;
     }
 
-    /** Return the original node for the given key. */
-    protected abstract JsonNode getOriginNode(String key);
+    /**
+     * Actually do the copy, copying required values from {@code copyFrom} into {@code copyTo}.
+     *
+     * @param _copy Node containing metadata about the copy
+     */
+    protected void copyValues(T type, JsonNode copyFrom, ObjectNode copyTo, JsonNode _copy) {
+        JsonNode _preserve = MetaFields._preserve.getFromOrEmptyObjectNode(_copy);
+        // Copy required values from...
+        for (Entry<String, JsonNode> from : iterableFields(copyFrom)) {
+            String k = from.getKey();
+            JsonNode copyToField = copyTo.get(k);
+            if (copyToField != null && copyToField.isNull()) {
+                // copyToField exists as `null`. Remove the field.
+                copyTo.remove(k);
+                continue;
+            }
+            if (copyToField == null) {
+                // not already present in copyTo -- should we copyFrom?
+                // Do merge rules indicate the value should be preserved
+                if (mergePreserveKey(type, k)) {
+                    // Does metadata indicate that it should be copied?
+                    if (metaPreserveKey(_preserve, k)) {
+                        copyTo.set(k, copyNode(from.getValue()));
+                    }
+                } else {
+                    // in general, yes.
+                    copyTo.set(k, copyNode(from.getValue()));
+                }
+            }
+        }
+    }
+
+    private static boolean metaPreserveKey(JsonNode _preserve, String key) {
+        return _preserve != null && (_preserve.has("*") || _preserve.has(key));
+    }
 
     public enum MetaFields implements JsonNodeReader {
         _copy,
