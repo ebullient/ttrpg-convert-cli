@@ -31,9 +31,11 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
     condition,
     creature, // B1
     creatureTemplate, // B1
+    creatureTemplateFluff, // B1
     curse("affliction"), // GMG
     data, // data from any source
     deity,
+    deityFluff,
     disease("affliction"), // GMG
     domain,
     eidolon, // SoM
@@ -49,6 +51,7 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
     nation, // GMG
     optfeature, // APG
     organization, // LOCG
+    organizationFluff, // LOCG
     place, // GMG
     plane, // GMG
     relicGift, // GMG

@@ -33,7 +33,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     static final List<String> GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = List.of("caption", "type", "colLabels", "colLabelGroups",
         "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
 
-    static final List<String> _MERGE_REQUIRES_PRESERVE_BASE = List.of(
+    private static final List<String> _MERGE_REQUIRES_PRESERVE_BASE = List.of(
         "_versions",
         "basicRules",
         "hasFluff",
@@ -45,7 +45,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         "page",
         "reprintedAs",
         "srd");
-    static final Map<Tools5eIndexType, List<String>> _MERGE_REQUIRES_PRESERVE = Map.of(
+    private static final Map<Tools5eIndexType, List<String>> _MERGE_REQUIRES_PRESERVE = Map.of(
         Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
             "altArt", "variant", "dragonCastingColor", "familiar"),
         Tools5eIndexType.item, List.of("lootTables", "tier"),
@@ -58,15 +58,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
     static final Pattern variable_subst = Pattern.compile("<\\$(?<variable>[^$]+)\\$>");
     static final Pattern dmg_avg_subst = Pattern.compile("([\\d.,]+)([+*-])([^$]+)");
-
-    static boolean mergePreserveKey(Tools5eIndexType type, String key) {
-        List<String> preserveType = _MERGE_REQUIRES_PRESERVE.getOrDefault(type, List.of());
-        return _MERGE_REQUIRES_PRESERVE_BASE.contains(key) || preserveType.contains(key);
-    }
-
-    static boolean metaPreserveKey(JsonNode _preserve, String key) {
-        return _preserve != null && (_preserve.has("*") || _preserve.has(key));
-    }
 
     final Tools5eIndex index;
 
@@ -87,6 +78,12 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     @Override
     protected JsonNode getOriginNode(String key) {
         return index().getOriginNoFallback(key);
+    }
+
+    @Override
+    protected boolean mergePreserveKey(Tools5eIndexType type, String key) {
+        List<String> preserveType = _MERGE_REQUIRES_PRESERVE.getOrDefault(type, List.of());
+        return _MERGE_REQUIRES_PRESERVE_BASE.contains(key) || preserveType.contains(key);
     }
 
     // render.js: _getMergedSubrace
@@ -245,31 +242,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         }
         MetaFields._templates.removeFrom(_copy);
 
-        JsonNode _preserve = MetaFields._preserve.getFromOrEmptyObjectNode(_copy);
-
         // Copy required values from...
-        for (Entry<String, JsonNode> from : iterableFields(copyFrom)) {
-            String k = from.getKey();
-            JsonNode copyToField = copyTo.get(k);
-            if (copyToField != null && copyToField.isNull()) {
-                // copyToField exists as `null`. Remove the field.
-                target.remove(k);
-                continue;
-            }
-            if (copyToField == null) {
-                // not already present in copyTo -- should we copyFrom?
-                // Do merge rules indicate the value should be preserved
-                if (mergePreserveKey(type, k)) {
-                    // Does metadata indicate that it should be copied?
-                    if (metaPreserveKey(_preserve, k)) {
-                        target.set(k, copyNode(from.getValue()));
-                    }
-                } else {
-                    // in general, yes.
-                    target.set(k, copyNode(from.getValue()));
-                }
-            }
-        }
+        copyValues(type, copyFrom, target, _copy);
 
         // apply any root template properties after doing base copy
         List<String> copyToRootProps = streamOfFieldNames(copyTo).toList();
