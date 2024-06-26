@@ -200,9 +200,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         ObjectNode target = (ObjectNode) copyTo;
 
         JsonNode _copy = MetaFields._copy.getFromOrEmptyObjectNode(copyTo);
-        if (MetaFields._mod.existsIn(_copy)) {
-            normalizeMods(_copy);
-        }
+        normalizeMods(_copy);
 
         // fetch and apply any external template
         // append them to existing copy mods where available
@@ -370,18 +368,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             };
         }
         return value;
-    }
-
-    private void normalizeMods(JsonNode copyMeta) {
-        if (MetaFields._mod.existsIn(copyMeta)) {
-            ObjectNode mods = (ObjectNode) MetaFields._mod.getFrom(copyMeta);
-            for (String name : iterableFieldNames(mods)) {
-                JsonNode mod = mods.get(name);
-                if (!mod.isArray()) {
-                    mods.set(name, mapper().createArrayNode().add(mod));
-                }
-            }
-        }
     }
 
     private void doMod(String originKey, ObjectNode target, JsonNode copyFrom, JsonNode modInfos, List<String> props) {
