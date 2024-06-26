@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import dev.ebullient.convert.tools.JsonSourceCopier;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -28,7 +29,7 @@ public class RegexTest implements JsonSource {
     @Test
     public void testToHitStr() {
         String s = " +<$to_hit__str$> ";
-        Matcher m = Tools5eJsonSourceCopier.variable_subst.matcher(s);
+        Matcher m = JsonSourceCopier.VARIABLE_SUBST_PAT.matcher(s);
         assertThat(m.find()).isTrue();
         assertThat(m.group("variable")).isEqualTo("to_hit__str");
         String[] pieces = m.group("variable").split("__");

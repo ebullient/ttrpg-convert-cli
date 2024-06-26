@@ -56,7 +56,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     static final List<String> LEARNED_SPELL_TYPE = List.of("constant", "will", "ritual");
     static final List<String> SPELL_CAST_FREQUENCY = List.of("recharge", "charges", "rest", "daily", "weekly", "yearly");
 
-    static final Pattern variable_subst = Pattern.compile("<\\$(?<variable>[^$]+)\\$>");
     static final Pattern dmg_avg_subst = Pattern.compile("([\\d.,]+)([+*-])([^$]+)");
 
     final Tools5eIndex index;
@@ -288,82 +287,58 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         return target;
     }
 
-    // DataUtil.generic.variableResolver
-    /**
-     * @param value JsonNode to be checked for values to replace
-     * @param target JsonNode with attributes that can be used to resolve templates
-     */
-    private JsonNode resolveDynamicText(String originKey, JsonNode value, JsonNode target) {
-        if (value == null || !(value.isArray() || value.isObject() || value.isTextual())) {
-            return value;
-        }
-        if (value.isArray()) {
-            for (int i = 0; i < value.size(); i++) {
-                ((ArrayNode) value).set(i, resolveDynamicText(originKey, value.get(i), target));
-            }
-            return value;
-        }
-        if (value.isObject()) {
-            for (Entry<String, JsonNode> e : iterableFields(value)) {
-                e.setValue(resolveDynamicText(originKey, e.getValue(), target));
-            }
-            return value;
-        }
-        Matcher matcher = variable_subst.matcher(value.toString());
-        if (matcher.find()) {
-            String[] pieces = matcher.group("variable").split("__");
-            TemplateVariable variableMode = TemplateVariable.valueFrom(pieces[0]);
-            return switch (variableMode) {
-                case name -> new TextNode(SourceField.name.getTextOrEmpty(target));
-                case short_name -> new TextNode(getShortName(target, false));
-                case title_short_name -> new TextNode(getShortName(target, true));
-                case dc, spell_dc -> {
-                    if (pieces.length < 2 || !target.has(pieces[1])) {
-                        tui().errorf("Error (%s): Missing detail for %s", originKey, value);
-                        yield value;
-                    }
-                    int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
-                    int pb = crToPb(MonsterFields.cr.getFrom(target));
-                    yield new TextNode("" + (8 + pb + mod));
-                }
-                case to_hit -> {
-                    if (pieces.length < 2 || !target.has(pieces[1])) {
-                        tui().errorf("Error (%s): Missing detail for %s", originKey, value);
-                        yield value;
-                    }
-                    int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
-                    int pb = crToPb(MonsterFields.cr.getFrom(target));
-                    yield new TextNode(asModifier(pb + mod));
-                }
-                case damage_mod -> {
-                    if (pieces.length < 2 || !target.has(pieces[1])) {
-                        tui().errorf("Error (%s): Missing detail for %s", originKey, value);
-                        yield value;
-                    }
-                    int mod = getAbilityModNumber(target.get(pieces[1]).asInt());
-                    yield new TextNode(mod == 0 ? "" : asModifier(mod));
-                }
-                case damage_avg -> {
-                    Matcher m = dmg_avg_subst.matcher(pieces[1]);
-                    if (m.matches()) {
-                        String amount = m.group(1);
-                        String op = m.group(2);
-                        int mod = getAbilityModNumber(target.get(m.group(3)).asInt());
-                        if ("+".equals(op)) {
-                            double total = Double.parseDouble(amount) + mod;
-                            yield new TextNode("" + Math.floor(total));
-                        }
-                    }
-                    tui().errorf("Error (%s): Unrecognized damage average template %s", originKey, value);
+    @Override
+    protected JsonNode resolveDynamicVariable(
+            String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, String[] params) {
+        return switch (variableMode) {
+            case name -> new TextNode(SourceField.name.getTextOrEmpty(target));
+            case short_name -> new TextNode(getShortName(target, false));
+            case title_short_name -> new TextNode(getShortName(target, true));
+            case dc, spell_dc -> {
+                if (params.length == 0 || !target.has(params[0])) {
+                    tui().errorf("Error (%s): Missing detail for %s", originKey, value);
                     yield value;
                 }
-                default -> {
-                    variableMode.notSupported(tui(), originKey, value);
+                int mod = getAbilityModNumber(target.get(params[0]).asInt());
+                int pb = crToPb(MonsterFields.cr.getFrom(target));
+                yield new TextNode("" + (8 + pb + mod));
+            }
+            case to_hit -> {
+                if (params.length == 0 || !target.has(params[0])) {
+                    tui().errorf("Error (%s): Missing detail for %s", originKey, value);
                     yield value;
                 }
-            };
-        }
-        return value;
+                int mod = getAbilityModNumber(target.get(params[0]).asInt());
+                int pb = crToPb(MonsterFields.cr.getFrom(target));
+                yield new TextNode(asModifier(pb + mod));
+            }
+            case damage_mod -> {
+                if (params.length == 0  || !target.has(params[0])) {
+                    tui().errorf("Error (%s): Missing detail for %s", originKey, value);
+                    yield value;
+                }
+                int mod = getAbilityModNumber(target.get(params[0]).asInt());
+                yield new TextNode(mod == 0 ? "" : asModifier(mod));
+            }
+            case damage_avg -> {
+                Matcher m = dmg_avg_subst.matcher(params[0]);
+                if (m.matches()) {
+                    String amount = m.group(1);
+                    String op = m.group(2);
+                    int mod = getAbilityModNumber(target.get(m.group(3)).asInt());
+                    if ("+".equals(op)) {
+                        double total = Double.parseDouble(amount) + mod;
+                        yield new TextNode("" + Math.floor(total));
+                    }
+                }
+                tui().errorf("Error (%s): Unrecognized damage average template %s", originKey, value);
+                yield value;
+            }
+            default -> {
+                variableMode.notSupported(tui(), originKey, value);
+                yield value;
+            }
+        };
     }
 
     private void doMod(String originKey, ObjectNode target, JsonNode copyFrom, JsonNode modInfos, List<String> props) {

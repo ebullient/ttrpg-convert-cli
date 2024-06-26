@@ -1,20 +1,36 @@
 package dev.ebullient.convert.tools;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 
+import java.util.Arrays;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Performs copy operations on nodes as a pre-processing step before they're handled by the individual converters. */
 public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextConverter<T> {
+    public static final Pattern VARIABLE_SUBST_PAT = Pattern.compile("<\\$(?<variable>[^$]+)\\$>");
 
     /** Return the original node for the given key. */
     protected abstract JsonNode getOriginNode(String key);
 
     /** Return true if the merge rules indicate that this key should be preserved. */
     protected abstract boolean mergePreserveKey(T type, String key);
+
+    /**
+     * Handle dynamic variables embedded within copy mods info.
+     *
+     * @param value JsonNode to be checked for values to replace
+     * @param target JsonNode with attributes that can be used to resolve templates
+     * @param variableMode The particular operation to use when resolving variables
+     * @param params Parameters for the variable mode
+     */
+    protected abstract JsonNode resolveDynamicVariable(
+        String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, String[] params);
 
     /** Handle any {@code _copy} fields which are present in the given node. This is the main entry point. */
     public JsonNode handleCopy(T type, JsonNode copyTo) {
@@ -102,6 +118,38 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             SourceField.name.getTextOrEmpty(copyFrom),
             SourceField.source.getTextOrEmpty(copyFrom)));
         MetaFields._copy.removeFrom(target);
+    }
+
+    // DataUtil.generic.variableResolver
+    /**
+     * @param originKey The origin key used to get the target from the index
+     * @param value JsonNode to be checked for values to replace
+     * @param target JsonNode with attributes that can be used to resolve templates
+     */
+    protected JsonNode resolveDynamicText(String originKey, JsonNode value, JsonNode target) {
+        if (value == null || !(value.isArray() || value.isObject() || value.isTextual())) {
+            return value;
+        }
+        if (value.isArray()) {
+            for (int i = 0; i < value.size(); i++) {
+                ((ArrayNode) value).set(i, resolveDynamicText(originKey, value.get(i), target));
+            }
+            return value;
+        }
+        if (value.isObject()) {
+            for (Entry<String, JsonNode> e : iterableFields(value)) {
+                e.setValue(resolveDynamicText(originKey, e.getValue(), target));
+            }
+            return value;
+        }
+        Matcher matcher = VARIABLE_SUBST_PAT.matcher(value.toString());
+        if (matcher.find()) {
+            String[] params = matcher.group("variable").split("__");
+            TemplateVariable variableMode = TemplateVariable.valueFrom(params[0]);
+            return resolveDynamicVariable(
+                originKey, value, target, variableMode, Arrays.copyOfRange(params, 1, params.length));
+        }
+        return value;
     }
 
     public enum MetaFields implements JsonNodeReader {
