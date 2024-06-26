@@ -50,7 +50,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             "altArt", "variant", "dragonCastingColor", "familiar"),
         Tools5eIndexType.item, List.of("lootTables", "tier"),
         Tools5eIndexType.itemGroup, List.of("lootTables", "tier"));
-    static final List<String> COPY_ENTRY_PROPS = List.of(
+    private static final List<String> COPY_ENTRY_PROPS = List.of(
         "action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
         "actionHeader", "bonusHeader", "reactionHeader", "legendaryHeader", "mythicHeader");
     static final List<String> LEARNED_SPELL_TYPE = List.of("constant", "will", "ritual");
@@ -83,6 +83,11 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     protected boolean mergePreserveKey(Tools5eIndexType type, String key) {
         List<String> preserveType = _MERGE_REQUIRES_PRESERVE.getOrDefault(type, List.of());
         return _MERGE_REQUIRES_PRESERVE_BASE.contains(key) || preserveType.contains(key);
+    }
+
+    @Override
+    protected List<String> getCopyEntryProps() {
+        return COPY_ENTRY_PROPS;
     }
 
     // render.js: _getMergedSubrace
@@ -259,27 +264,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         }
 
         // Apply mods
-        if (MetaFields._mod.existsIn(_copy)) {
-            // pre-convert any dynamic text
-            JsonNode copyMetaMod = MetaFields._mod.getFrom(_copy);
-            for (Entry<String, JsonNode> entry : iterableFields(copyMetaMod)) {
-                // use the target value as the attribute source for resolving dynamic text
-                entry.setValue(resolveDynamicText(originKey, entry.getValue(), target));
-            }
-
-            // Now iterate and apply mod rules
-            for (Entry<String, JsonNode> entry : iterableFields(copyMetaMod)) {
-                String prop = entry.getKey();
-                JsonNode modInfos = entry.getValue();
-                if ("*".equals(prop)) {
-                    doMod(originKey, target, copyFrom, modInfos, COPY_ENTRY_PROPS);
-                } else if ("_".equals(prop)) {
-                    doMod(originKey, target, copyFrom, modInfos, null);
-                } else {
-                    doMod(originKey, target, copyFrom, modInfos, List.of(prop));
-                }
-            }
-        }
+        applyMods(originKey, copyFrom, target, _copy);
 
         // indicate that this is a copy, and remove copy metadata (avoid revisit)
         cleanupCopy(target, copyFrom);
@@ -341,17 +326,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         };
     }
 
-    private void doMod(String originKey, ObjectNode target, JsonNode copyFrom, JsonNode modInfos, List<String> props) {
-        if (props == null || props.isEmpty()) { // '_' case
-            doModProp(originKey, modInfos, copyFrom, null, target);
-        } else {
-            for (String prop : props) {
-                doModProp(originKey, modInfos, copyFrom, prop, target);
-            }
-        }
-    }
-
-    void doModProp(String originKey, JsonNode modInfos, JsonNode copyFrom, String prop, ObjectNode target) {
+    @Override
+    protected void doModProp(String originKey, JsonNode modInfos, JsonNode copyFrom, String prop, ObjectNode target) {
         for (JsonNode modInfo : iterableElements(modInfos)) {
             if (modInfo.isTextual()) {
                 if ("remove".equals(modInfo.asText()) && prop != null) {

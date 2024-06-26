@@ -7,6 +7,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,9 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
 
     /** Return true if the merge rules indicate that this key should be preserved. */
     protected abstract boolean mergePreserveKey(T type, String key);
+
+    /** Return the props to use when a copy mod is applied with a path of {@code "*"}. */
+    protected abstract List<String> getCopyEntryProps();
 
     /**
      * Handle dynamic variables embedded within copy mods info.
@@ -92,6 +96,52 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
                 }
             }
         }
+    }
+
+    /**
+     * Apply modifiers to the {@code target}.
+     *
+     * @param originKey The key used to retrieve the target
+     * @param copyFrom The node that is being copied from
+     * @param target The target that the modifiers apply to
+     * @param _copy Metadata about the copy that contains mod data
+     */
+    protected void applyMods(String originKey, JsonNode copyFrom, ObjectNode target, JsonNode _copy) {
+        if (!MetaFields._mod.existsIn(_copy)) {
+            return;
+        }
+        // pre-convert any dynamic text
+        JsonNode copyMetaMod = MetaFields._mod.getFrom(_copy);
+        for (Entry<String, JsonNode> entry : iterableFields(copyMetaMod)) {
+            // use the target value as the attribute source for resolving dynamic text
+            entry.setValue(resolveDynamicText(originKey, entry.getValue(), target));
+        }
+
+        // Now iterate and apply mod rules
+        for (Entry<String, JsonNode> entry : iterableFields(copyMetaMod)) {
+            String prop = entry.getKey();
+            JsonNode modInfos = entry.getValue();
+            if ("*".equals(prop)) {
+                doMod(originKey, target, copyFrom, modInfos, getCopyEntryProps());
+            } else if ("_".equals(prop)) {
+                doMod(originKey, target, copyFrom, modInfos, null);
+            } else {
+                doMod(originKey, target, copyFrom, modInfos, List.of(prop));
+            }
+        }
+    }
+
+    private void doMod(String originKey, ObjectNode target, JsonNode copyFrom, JsonNode modInfos, List<String> props) {
+        if (props == null || props.isEmpty()) { // '_' case
+            doModProp(originKey, modInfos, copyFrom, null, target);
+        } else {
+            for (String prop : props) {
+                doModProp(originKey, modInfos, copyFrom, prop, target);
+            }
+        }
+    }
+
+    protected void doModProp(String originKey, JsonNode modInfos, JsonNode copyFrom, String prop, ObjectNode target) {
     }
 
     private static boolean metaPreserveKey(JsonNode _preserve, String key) {
