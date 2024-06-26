@@ -263,8 +263,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             // pre-convert any dynamic text
             JsonNode copyMetaMod = MetaFields._mod.getFrom(_copy);
             for (Entry<String, JsonNode> entry : iterableFields(copyMetaMod)) {
-                // use the copyTo value as the attribute source for resolving dynamic text
-                entry.setValue(resolveDynamicText(originKey, entry.getValue(), copyTo));
+                // use the target value as the attribute source for resolving dynamic text
+                entry.setValue(resolveDynamicText(originKey, entry.getValue(), target));
             }
 
             // Now iterate and apply mod rules
