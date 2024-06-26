@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.tools.JsonSourceCopier;
 
 import java.util.Set;
@@ -40,6 +41,14 @@ public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implem
             case creature -> MERGE_PRESERVE_CREATURE.contains(key);
             default -> false;
         };
+    }
+
+    @Override
+    protected JsonNode resolveDynamicVariable(
+            String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, String[] params) {
+        return variableMode == TemplateVariable.name
+            ? new TextNode(SourceField.name.getTextOrEmpty(target))
+            : value;
     }
 
     @Override
