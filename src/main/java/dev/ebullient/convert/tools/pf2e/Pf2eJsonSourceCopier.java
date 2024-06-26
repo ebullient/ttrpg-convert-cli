@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.tools.JsonSourceCopier;
 
+import java.util.List;
 import java.util.Set;
 
 public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implements JsonSource {
+    private static final List<String> COPY_ENTRY_PROPS = List.of(
+        "attacks", "abilities.top", "abilities.mid", "abilities.bot");
     private static final Set<String> MERGE_PRESERVE_BASE = Set.of("page", "otherSources");
     private static final Set<String> MERGE_PRESERVE_CREATURE = Set.of(
         "page", "otherSources", "hasImages", "description");
@@ -41,6 +44,11 @@ public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implem
             case creature -> MERGE_PRESERVE_CREATURE.contains(key);
             default -> false;
         };
+    }
+
+    @Override
+    protected List<String> getCopyEntryProps() {
+        return COPY_ENTRY_PROPS;
     }
 
     @Override
