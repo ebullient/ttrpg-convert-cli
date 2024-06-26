@@ -283,12 +283,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         }
 
         // indicate that this is a copy, and remove copy metadata (avoid revisit)
-        target.put("_isCopy", true);
-        target.remove("_rawName");
-        MetaFields._copiedFrom.setIn(target, String.format("%s (%s)",
-            SourceField.name.getTextOrEmpty(copyFrom),
-            SourceField.source.getTextOrEmpty(copyFrom)));
-        MetaFields._copy.removeFrom(target);
+        cleanupCopy(target, copyFrom);
+
         return target;
     }
 

@@ -94,11 +94,23 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         }
     }
 
+    /** Indicate that the given node is a copy, and remove copy metadata to avoid revisit. */
+    protected void cleanupCopy(ObjectNode target, JsonNode copyFrom) {
+        MetaFields._isCopy.setIn(target, true);
+        MetaFields._rawName.removeFrom(target);
+        MetaFields._copiedFrom.setIn(target, String.format("%s (%s)",
+            SourceField.name.getTextOrEmpty(copyFrom),
+            SourceField.source.getTextOrEmpty(copyFrom)));
+        MetaFields._copy.removeFrom(target);
+    }
+
     public enum MetaFields implements JsonNodeReader {
         _copy,
         _copiedFrom, // mind
+        _isCopy,
         _mod,
         _preserve,
+        _rawName,
         _root,
         _templates,
         alias,
