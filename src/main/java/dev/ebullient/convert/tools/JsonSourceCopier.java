@@ -82,6 +82,18 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return _preserve != null && (_preserve.has("*") || _preserve.has(key));
     }
 
+    protected void normalizeMods(JsonNode copyMeta) {
+        if (MetaFields._mod.existsIn(copyMeta)) {
+            ObjectNode mods = (ObjectNode) MetaFields._mod.getFrom(copyMeta);
+            for (String name : iterableFieldNames(mods)) {
+                JsonNode mod = mods.get(name);
+                if (!mod.isArray()) {
+                    mods.set(name, mapper().createArrayNode().add(mod));
+                }
+            }
+        }
+    }
+
     public enum MetaFields implements JsonNodeReader {
         _copy,
         _copiedFrom, // mind
