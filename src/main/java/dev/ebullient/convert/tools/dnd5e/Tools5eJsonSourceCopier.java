@@ -2,15 +2,10 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +15,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
@@ -326,142 +320,24 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         };
     }
 
-    @Override
-    protected void doModProp(String originKey, JsonNode modInfos, JsonNode copyFrom, String prop, ObjectNode target) {
-        for (JsonNode modInfo : iterableElements(modInfos)) {
-            if (modInfo.isTextual()) {
-                if ("remove".equals(modInfo.asText()) && prop != null) {
-                    target.remove(prop);
-                } else {
-                    tui().errorf("Error(%s): Unknown text modification mode for %s: %s", originKey, prop, modInfo);
-                }
-            } else {
-                ModFieldMode mode = ModFieldMode.getModMode(modInfo);
-                switch (mode) {
-                    // Strings & text
-                    case appendStr -> doAppendText(originKey, modInfo, copyFrom, prop, target);
-                    case replaceName -> mode.notSupported(tui(), originKey, modInfo);
-                    case replaceTxt -> doReplaceText(originKey, modInfo, copyFrom, prop, target);
-                    // Arrays
-                    case prependArr, appendArr, replaceArr, replaceOrAppendArr, appendIfNotExistsArr, insertArr, removeArr ->
-                        doModArray(
-                            originKey, mode, modInfo, prop, target);
-                    // Properties
-                    case setProp -> doSetProp(originKey, modInfo, prop, target);
-                    // Bestiary
-                    case addSenses -> doAddSenses(originKey, modInfo, copyFrom, target); // no prop
-                    case addSaves -> mode.notSupported(tui(), originKey, modInfo);
-                    case addSkills -> doAddSkills(originKey, modInfo, target); // no prop
-                    case addAllSaves -> mode.notSupported(tui(), originKey, modInfo);
-                    case addAllSkills -> mode.notSupported(tui(), originKey, modInfo);
-                    case addSpells -> doAddSpells(originKey, modInfo, copyFrom, target); // no prop
-                    case replaceSpells -> doReplaceSpells(originKey, modInfo, copyFrom, target); // no prop
-                    case removeSpells -> doRemoveSpells(originKey, modInfo, copyFrom, target); // no prop
-                    // MATH
-                    case calculateProp -> mode.notSupported(tui(), originKey, modInfo);
-                    case scalarAddProp -> doScalarAddProp(originKey, modInfo, prop, target);
-                    case scalarMultProp -> doScalarMultProp(originKey, modInfo, prop, target);
-                    case scalarMultXp -> doScalarMultXp(originKey, modInfo, target); // no prop
-                    case scalarAddDc -> doScalarAddDc(originKey, modInfo, prop, target);
-                    case scalarAddHit -> doScalarAddHit(originKey, modInfo, prop, target);
-                    case maxSize -> doMaxSize(originKey, modInfo, target); // no prop
-                    default -> tui().errorf("Error (%s): Unknown modification mode: %s", originKey, modInfo);
-                }
-            }
+    protected void doModProp(
+            String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target, ModFieldMode mode) {
+        switch (mode) {
+            // Bestiary
+            case addAllSaves, addAllSkills, addSaves -> mode.notSupported(tui(), originKey, modInfo);
+            case addSenses -> doAddSenses(originKey, modInfo, copyFrom, target); // no prop
+            case addSkills -> doAddSkills(originKey, modInfo, target); // no prop
+            case addSpells -> doAddSpells(originKey, modInfo, copyFrom, target); // no prop
+            case replaceSpells -> doReplaceSpells(originKey, modInfo, copyFrom, target); // no prop
+            case removeSpells -> doRemoveSpells(originKey, modInfo, copyFrom, target); // no prop
+            // MATH
+            case calculateProp -> mode.notSupported(tui(), originKey, modInfo);
+            case scalarMultXp -> doScalarMultXp(originKey, modInfo, target); // no prop
+            case scalarAddDc -> doScalarAddDc(originKey, modInfo, prop, target);
+            case scalarAddHit -> doScalarAddHit(originKey, modInfo, prop, target);
+            case maxSize -> doMaxSize(originKey, modInfo, target); // no prop
+            default -> super.doModProp(originKey, modInfo, copyFrom, prop, target, mode);
         }
-    }
-
-    void doAppendText(String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target) {
-        if (target.has(prop)) {
-            String joiner = MetaFields.joiner.getTextOrEmpty(modInfo);
-            target.put(prop, getTextOrEmpty(target, prop) + joiner
-                + MetaFields.str.getTextOrEmpty(modInfo));
-        } else {
-            target.put(prop, MetaFields.str.getTextOrEmpty(modInfo));
-        }
-    }
-
-    void doReplaceText(String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target) {
-        if (!target.has(prop)) {
-            return;
-        }
-        if (!target.get(prop).isArray()) {
-            tui().warnf("replaceTxt for %s with a property %s that is not an array %s: %s", originKey, prop, modInfo,
-                target.get(prop));
-            return;
-        }
-
-        String replace = MetaFields.replace.getTextOrEmpty(modInfo);
-        String with = MetaFields.with.getTextOrEmpty(modInfo);
-        JsonNode flags = MetaFields.flags.getFrom(modInfo);
-
-        final Pattern pattern;
-        if (flags != null) {
-            int pFlags = 0;
-            if (flags.asText().contains("i")) {
-                pFlags |= Pattern.CASE_INSENSITIVE;
-            }
-            pattern = Pattern.compile("\\b" + replace, pFlags);
-        } else {
-            pattern = Pattern.compile("\\b" + replace);
-        }
-
-        final boolean findPlainText;
-        final List<String> propNames;
-        JsonNode props = MetaFields.props.getFrom(modInfo);
-        if (props == null) {
-            findPlainText = true;
-            propNames = List.of("entries", "headerEntries", "footerEntries");
-        } else if (props.isEmpty()) {
-            tui().warnf("replaceText with empty props in %s: %s", originKey, modInfo);
-            return;
-        } else {
-            propNames = new ArrayList<>();
-            props.forEach(x -> propNames.add(x.isNull() ? "null" : x.asText()));
-            findPlainText = propNames.remove("null");
-        }
-
-        ArrayNode tgtArray = target.withArray(prop);
-        for (int i = 0; i < tgtArray.size(); i++) {
-            JsonNode it = tgtArray.get(i);
-            if (it.isTextual() && findPlainText) {
-                tgtArray.set(i, copyReplaceText(it, pattern, with));
-            } else if (it.isObject()) {
-                for (String k : propNames) {
-                    if (it.has(k)) {
-                        ((ObjectNode) it).set(k, copyReplaceText(it.get(k), pattern, with));
-                    }
-                }
-            }
-        }
-    }
-
-    private JsonNode copyReplaceText(JsonNode sourceNode, Pattern replace, String with) {
-        String modified = replace.matcher(sourceNode.toString()).replaceAll(with);
-        return createNode(modified);
-    }
-
-    ArrayNode sortArrayNode(ArrayNode array) {
-        if (array == null || array.size() <= 1) {
-            return array;
-        }
-        Set<JsonNode> elements = new TreeSet<>(Comparator.comparing(a -> a.asText().toLowerCase()));
-        array.forEach(elements::add);
-        ArrayNode sorted = mapper().createArrayNode();
-        sorted.addAll(elements);
-        return sorted;
-    }
-
-    private void doSetProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
-        List<String> propPath = List.of(MetaFields.prop.getTextOrEmpty(modInfo).split("\\."));
-        if (!"*".equals(prop)) {
-            propPath = new ArrayList<>(propPath);
-            propPath.add(0, prop);
-        }
-        String last = propPath.remove(propPath.size() - 1);
-
-        ObjectNode targetRw = ((ObjectNode) target).withObject("/" + String.join("/", propPath));
-        targetRw.set(last, copyNode(MetaFields.value.getFrom(modInfo)));
     }
 
     private void doScalarAddHit(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
@@ -485,66 +361,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         String fullNode = dcPattern.matcher(target.get(prop).toString())
             .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
         target.set(prop, createNode(fullNode));
-    }
-
-    private void doScalarAddProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
-        if (!target.has(prop)) {
-            return;
-        }
-        ObjectNode propRw = (ObjectNode) target.get(prop);
-        int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
-        Consumer<String> scalarAdd = (k) -> {
-            JsonNode node = propRw.get(k);
-            boolean isString = node.isTextual();
-            int value = isString
-                ? Integer.parseInt(node.asText())
-                : node.asInt();
-            value += scalar;
-            propRw.replace(k, isString
-                ? new TextNode(asModifier(value))
-                : new IntNode(value));
-        };
-
-        String modProp = MetaFields.prop.getTextOrNull(modInfo);
-        if ("*".equals(modProp)) {
-            for (String fieldName : iterableFieldNames(propRw)) {
-                scalarAdd.accept(fieldName);
-            }
-        } else {
-            scalarAdd.accept(modProp);
-        }
-    }
-
-    private void doScalarMultProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
-        if (!target.has(prop)) {
-            return;
-        }
-        ObjectNode propRw = (ObjectNode) target.get(prop);
-        double scalar = MetaFields.scalar.getFrom(modInfo).asDouble();
-        boolean floor = MetaFields.floor.booleanOrDefault(modInfo, false);
-        Consumer<String> scalarMult = (k) -> {
-            JsonNode node = propRw.get(k);
-            boolean isString = node.isTextual();
-            double value = isString
-                ? Double.parseDouble(node.asText())
-                : node.asDouble();
-            value *= scalar;
-            if (floor) {
-                value = Math.floor(value);
-            }
-            propRw.replace(k, isString
-                ? new TextNode(asModifier(value))
-                : new DoubleNode(value));
-        };
-
-        String modProp = MetaFields.prop.getTextOrNull(modInfo);
-        if ("*".equals(modProp)) {
-            for (String fieldName : iterableFieldNames(propRw)) {
-                scalarMult.accept(fieldName);
-            }
-        } else {
-            scalarMult.accept(modProp);
-        }
     }
 
     private void doScalarMultXp(String originKey, JsonNode modInfo, ObjectNode target) {
@@ -855,203 +671,6 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
                 allSkills.put(modSkill, asModifier(total));
             }
         }
-    }
-
-    void doModArray(String originKey, ModFieldMode mode, JsonNode modInfo, String prop, ObjectNode target) {
-        JsonNode items = ensureArray(MetaFields.items.getFrom(modInfo));
-        switch (mode) {
-            case prependArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                insertIntoArray(tgtArray, 0, items);
-            }
-            case appendArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                appendToArray(tgtArray, items);
-            }
-            case appendIfNotExistsArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                appendIfNotExistsArr(tgtArray, items);
-            }
-            case insertArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to insert into array; %s is not present: %s", originKey, prop, target);
-                    return;
-                }
-                ArrayNode tgtArray = target.withArray(prop);
-                int index = MetaFields.index.intOrDefault(modInfo, -1);
-                if (index < 0) {
-                    index = tgtArray.size();
-                }
-                insertIntoArray(tgtArray, index, items);
-            }
-            case removeArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to remove from array; %s is not present: %s", originKey, prop, target);
-                    return;
-                }
-                ArrayNode tgtArray = target.withArray(prop);
-                removeFromArray(originKey, modInfo, prop, tgtArray);
-            }
-            case replaceArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to replace array; %s is not present: %s", originKey, prop, target);
-                    return;
-                }
-                ArrayNode tgtArray = target.withArray(prop);
-                replaceArray(originKey, modInfo, tgtArray, items);
-            }
-            case replaceOrAppendArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                boolean didReplace = false;
-                if (tgtArray.size() > 0) {
-                    didReplace = replaceArray(originKey, modInfo, tgtArray, items);
-                }
-                if (!didReplace) {
-                    appendToArray(tgtArray, items);
-                }
-            }
-            default -> tui().errorf("Error (%s): Unknown modification mode for property %s: %s", originKey, prop, modInfo);
-        }
-    }
-
-    void appendToArray(ArrayNode tgtArray, JsonNode items) {
-        if (items == null) {
-            return;
-        }
-        if (items.isArray()) {
-            tgtArray.addAll((ArrayNode) items);
-        } else {
-            tgtArray.add(items);
-        }
-    }
-
-    void insertIntoArray(ArrayNode tgtArray, int index, JsonNode items) {
-        if (items == null) {
-            return;
-        }
-        if (items.isArray()) {
-            // iterate backwards so that items end up in the right order @ desired index
-            for (int i = items.size() - 1; i >= 0; i--) {
-                tgtArray.insert(index, items.get(i));
-            }
-        } else {
-            tgtArray.insert(index, items);
-        }
-    }
-
-    void appendIfNotExistsArr(ArrayNode tgtArray, JsonNode items) {
-        if (items == null) {
-            return;
-        }
-        if (tgtArray.size() == 0) {
-            appendToArray(tgtArray, items);
-        } else {
-            // Remove inbound items that already exist in the target array
-            // Use anyMatch to stop filtering ASAP
-            List<JsonNode> filtered = streamOf(items)
-                .filter(it -> !streamOf(tgtArray).anyMatch(it::equals))
-                .collect(Collectors.toList());
-            tgtArray.addAll(filtered);
-        }
-    }
-
-    void removeFromArray(String originKey, JsonNode modInfo, String prop, ArrayNode tgtArray) {
-        JsonNode names = ensureArray(MetaFields.names.getFrom(modInfo));
-        JsonNode items = ensureArray(MetaFields.items.getFrom(modInfo));
-        if (names != null) {
-            for (JsonNode name : iterableElements(names)) {
-                int index = findIndexByName(originKey, tgtArray, name.asText());
-                if (index >= 0) {
-                    tgtArray.remove(index);
-                } else if (!MetaFields.force.booleanOrDefault(modInfo, false)) {
-                    tui().errorf("Error (%s / %s): Unable to remove %s; %s", originKey, prop, name.asText(), modInfo);
-                }
-            }
-        } else if (items != null) {
-            removeFromArr(tgtArray, items);
-        } else {
-            tui().errorf("Error (%s / %s): One of names or items must be provided to remove elements from array; %s", originKey,
-                prop, modInfo);
-        }
-    }
-
-    void removeFromArr(ArrayNode tgtArray, JsonNode items) {
-        for (JsonNode itemToRemove : iterableElements(items)) {
-            int index = findIndex(tgtArray, itemToRemove);
-            if (index >= 0) {
-                tgtArray.remove(index);
-            }
-        }
-    }
-
-    boolean replaceArray(String originKey, JsonNode modInfo, ArrayNode tgtArray, JsonNode items) {
-        if (items == null || !items.isArray()) {
-            return false;
-        }
-        JsonNode replace = MetaFields.replace.getFrom(modInfo);
-
-        final int index;
-        if (replace.isTextual()) {
-            index = findIndexByName(originKey, tgtArray, replace.asText());
-        } else if (replace.isObject() && MetaFields.index.existsIn(replace)) {
-            index = MetaFields.index.intOrDefault(replace, 0);
-        } else if (replace.isObject() && MetaFields.regex.existsIn(replace)) {
-            Pattern pattern = Pattern.compile("\\b" + MetaFields.regex.getTextOrEmpty(replace));
-            index = matchFirstIndexByName(originKey, tgtArray, pattern);
-        } else {
-            tui().errorf("Error (%s): Unknown replace; %s", originKey, modInfo);
-            return false;
-        }
-
-        if (index >= 0) {
-            tgtArray.remove(index);
-            insertIntoArray(tgtArray, index, items);
-            return true;
-        }
-        return false;
-    }
-
-    int matchFirstIndexByName(String originKey, ArrayNode haystack, Pattern needle) {
-        for (int i = 0; i < haystack.size(); i++) {
-            final String toMatch;
-            if (haystack.get(i).isObject()) {
-                toMatch = SourceField.name.getTextOrEmpty(haystack.get(i));
-            } else if (haystack.get(i).isTextual()) {
-                toMatch = haystack.asText();
-            } else {
-                continue;
-            }
-            if (!toMatch.isBlank() && needle.matcher(toMatch).find()) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    int findIndexByName(String originKey, ArrayNode haystack, String needle) {
-        for (int i = 0; i < haystack.size(); i++) {
-            final String toMatch;
-            if (haystack.get(i).isObject()) {
-                toMatch = SourceField.name.getTextOrEmpty(haystack.get(i));
-            } else if (haystack.get(i).isTextual()) {
-                toMatch = haystack.get(i).asText();
-            } else {
-                continue;
-            }
-            if (needle.equals(toMatch)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    int findIndex(ArrayNode haystack, JsonNode needle) {
-        for (int i = 0; i < haystack.size(); i++) {
-            if (haystack.get(i).equals(needle)) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     private String getShortName(JsonNode target, boolean isTitleCase) {
