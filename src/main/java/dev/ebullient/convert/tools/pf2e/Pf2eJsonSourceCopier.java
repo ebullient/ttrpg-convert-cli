@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.tools.JsonSourceCopier;
 
@@ -60,8 +61,13 @@ public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implem
     }
 
     @Override
-    public JsonNode handleCopy(Pf2eIndexType type, JsonNode jsonSource) {
-
-        return jsonSource;
+    protected JsonNode mergeNodes(Pf2eIndexType type, String originKey, JsonNode copyFrom, ObjectNode target) {
+        JsonNode _copy = MetaFields._copy.getFromOrEmptyObjectNode(target);
+        normalizeMods(_copy);
+        // TODO handle creatureAdjustment for weak and elite variants
+        copyValues(type, copyFrom, target, _copy);
+        applyMods(originKey, copyFrom, target, _copy);
+        cleanupCopy(target, copyFrom);
+        return target;
     }
 }
