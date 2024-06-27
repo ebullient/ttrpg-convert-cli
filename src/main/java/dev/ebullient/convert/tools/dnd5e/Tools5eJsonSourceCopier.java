@@ -193,11 +193,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
     // 	utils.js: static getCopy (impl, copyFrom, copyTo, templateData,...) {
     @Override
-    protected JsonNode mergeNodes(Tools5eIndexType type, String originKey, JsonNode copyFrom, JsonNode copyTo) {
-        // edit in place: if you don't, lower-level copies will keep being revisted.
-        ObjectNode target = (ObjectNode) copyTo;
-
-        JsonNode _copy = MetaFields._copy.getFromOrEmptyObjectNode(copyTo);
+    protected JsonNode mergeNodes(Tools5eIndexType type, String originKey, JsonNode copyFrom, ObjectNode target) {
+        JsonNode _copy = MetaFields._copy.getFromOrEmptyObjectNode(target);
         normalizeMods(_copy);
 
         // fetch and apply any external template
@@ -242,7 +239,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         copyValues(type, copyFrom, target, _copy);
 
         // apply any root template properties after doing base copy
-        List<String> copyToRootProps = streamOfFieldNames(copyTo).toList();
+        List<String> copyToRootProps = streamOfFieldNames(target).toList();
         for (JsonNode template : templates) {
             if (!MetaFields._root.nestedExistsIn(MetaFields.apply, template)) {
                 continue;

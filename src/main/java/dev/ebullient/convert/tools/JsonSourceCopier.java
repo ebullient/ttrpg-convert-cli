@@ -63,7 +63,10 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             // is the copy a copy?
             copyFrom = handleCopy(type, copyFrom);
             try {
-                copyTo = mergeNodes(type, copyToKey, copyFrom, copyTo);
+                // edit in place: if you don't, lower-level copies will keep being revisted.
+                ObjectNode target = (ObjectNode) copyTo;
+
+                copyTo = mergeNodes(type, copyToKey, copyFrom, target);
             } catch (JsonCopyException | StackOverflowError | UnsupportedOperationException e) {
                 tui().errorf(e, "Error (%s): Unable to merge nodes. CopyTo: %s, CopyFrom: %s", copyToKey, copyTo, copyFrom);
             }
@@ -71,8 +74,8 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return copyTo;
     }
 
-    protected JsonNode mergeNodes(T type, String copyToKey, JsonNode copyFrom, JsonNode copyTo) {
-        return copyTo;
+    protected JsonNode mergeNodes(T type, String copyToKey, JsonNode copyFrom, ObjectNode target) {
+        return target;
     }
 
     /**
