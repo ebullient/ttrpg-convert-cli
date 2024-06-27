@@ -45,6 +45,9 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
     protected abstract JsonNode resolveDynamicVariable(
         String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, String[] params);
 
+    /** Merge {@code copyFrom} into {@code target} according to copy metadata. */
+    protected abstract JsonNode mergeNodes(T type, String originKey, JsonNode copyFrom, ObjectNode target);
+
     /** Handle any {@code _copy} fields which are present in the given node. This is the main entry point. */
     public JsonNode handleCopy(T type, JsonNode copyTo) {
         String copyToKey = type.createKey(copyTo);
@@ -72,10 +75,6 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             }
         }
         return copyTo;
-    }
-
-    protected JsonNode mergeNodes(T type, String copyToKey, JsonNode copyFrom, ObjectNode target) {
-        return target;
     }
 
     /**
