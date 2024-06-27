@@ -159,6 +159,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             case replaceTxt -> doReplaceText(originKey, modInfo, copyFrom, prop, target);
             // Properties
             case setProp -> doSetProp(originKey, modInfo, prop, target);
+            case setProps -> doSetProps(originKey, modInfo, prop, target);
             // Arrays
             case prependArr, appendArr, replaceArr, replaceOrAppendArr, appendIfNotExistsArr, insertArr, removeArr ->
                 doModArray(originKey, mode, modInfo, prop, target);
@@ -241,15 +242,33 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return value;
     }
 
+    /** Set the target prop which corresponds to the prop in {@code modInfo} to the value from {@code modInfo}. */
     private void doSetProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
-        List<String> propPath = new ArrayList<>(List.of(MetaFields.prop.getTextOrEmpty(modInfo).split("\\.")));
+        // target.(prop . modinfo.prop) = modinfo.value
+        String propPath = MetaFields.prop.getTextOrEmpty(modInfo);
         if (!"*".equals(prop)) {
-            propPath.add(0, prop);
+            // target.(prop . modinfo.prop) = modinfo.value
+            propPath = prop + "." + propPath;
         }
-        String last = propPath.remove(propPath.size() - 1);
+        String[] path = splitLastPropPath(propPath);
+        ObjectNode targetRw = target.withObject(path[0]);
+        targetRw.set(path[1], copyNode(MetaFields.value.getFrom(modInfo)));
+    }
 
-        ObjectNode targetRw = target.withObject("/" + String.join("/", propPath));
-        targetRw.set(last, copyNode(MetaFields.value.getFrom(modInfo)));
+    /** Set the {@code propPath} in {@code target} to contain the props in {@code modInfo}. */
+    private void doSetProps(String originKey, JsonNode modInfo, String propPath, ObjectNode target) {
+        ObjectNode parent = propPath.equals("*") ? target : target.withObject(splitLastPropPath(propPath)[0]);
+        parent.setAll((ObjectNode)copyNode(MetaFields.props.getFrom(modInfo)));
+    }
+
+    private String nodePath(String propPath) {
+        return "/" + String.join("/", propPath.split("\\."));
+    }
+
+    private String[] splitLastPropPath(String propPath) {
+        String nodePath = nodePath(propPath);
+        int lastPropIdx = nodePath.lastIndexOf('/');
+        return new String[] { nodePath.substring(0, lastPropIdx), nodePath.substring(lastPropIdx) };
     }
 
     private void doAppendText(String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target) {
@@ -666,6 +685,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         scalarAddProp,
         scalarMultProp,
         setProp,
+        setProps,
 
         addSenses,
         addSaves,
