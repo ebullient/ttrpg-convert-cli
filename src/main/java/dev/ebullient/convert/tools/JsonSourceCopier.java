@@ -403,55 +403,32 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
 
     private void doModArray(String originKey, ModFieldMode mode, JsonNode modInfo, String prop, ObjectNode target) {
         JsonNode items = ensureArray(MetaFields.items.getFrom(modInfo));
+        String propPath = nodePath(prop);
+
         switch (mode) {
-            case prependArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                insertIntoArray(tgtArray, 0, items);
-            }
-            case appendArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                appendToArray(tgtArray, items);
-            }
-            case appendIfNotExistsArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                appendIfNotExistsArr(tgtArray, items);
-            }
-            case insertArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to insert into array; %s is not present: %s", originKey, prop, target);
+            case insertArr, removeArr, replaceArr -> {
+                if (target.at(propPath).isMissingNode()) {
+                    tui().errorf("Error (%s): Unable to %s; %s is not present: %s", originKey, mode, prop, target);
                     return;
                 }
-                ArrayNode tgtArray = target.withArray(prop);
-                int index = MetaFields.index.intOrDefault(modInfo, -1);
-                if (index < 0) {
-                    index = tgtArray.size();
-                }
-                insertIntoArray(tgtArray, index, items);
             }
-            case removeArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to remove from array; %s is not present: %s", originKey, prop, target);
-                    return;
-                }
-                ArrayNode tgtArray = target.withArray(prop);
-                removeFromArray(originKey, modInfo, prop, tgtArray);
-            }
-            case replaceArr -> {
-                if (!target.has(prop)) {
-                    tui().errorf("Error (%s): Unable to replace array; %s is not present: %s", originKey, prop, target);
-                    return;
-                }
-                ArrayNode tgtArray = target.withArray(prop);
-                replaceArray(originKey, modInfo, tgtArray, items);
-            }
+        }
+
+        ArrayNode targetArray = target.withArray(propPath);
+        switch (mode) {
+            case prependArr -> insertIntoArray(targetArray, 0, items);
+            case appendArr -> appendToArray(targetArray, items);
+            case appendIfNotExistsArr -> appendIfNotExistsArr(targetArray, items);
+            case insertArr -> insertIntoArray(
+                targetArray,
+                MetaFields.index.getIntFrom(modInfo).filter(n -> n >= 0).orElse(targetArray.size()),
+                items);
+            case removeArr -> removeFromArray(originKey, modInfo, prop, targetArray);
+            case replaceArr -> replaceArray(originKey, modInfo, targetArray, items);
             case replaceOrAppendArr -> {
-                ArrayNode tgtArray = target.withArray(prop);
-                boolean didReplace = false;
-                if (tgtArray.size() > 0) {
-                    didReplace = replaceArray(originKey, modInfo, tgtArray, items);
-                }
+                boolean didReplace = !targetArray.isEmpty() && replaceArray(originKey, modInfo, targetArray, items);
                 if (!didReplace) {
-                    appendToArray(tgtArray, items);
+                    appendToArray(targetArray, items);
                 }
             }
             default -> tui().errorf("Error (%s): Unknown modification mode for property %s: %s", originKey, prop, modInfo);
