@@ -10,10 +10,10 @@ import java.util.Set;
 
 public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implements JsonSource {
     private static final List<String> COPY_ENTRY_PROPS = List.of(
-        "attacks", "abilities.top", "abilities.mid", "abilities.bot");
+            "attacks", "abilities.top", "abilities.mid", "abilities.bot");
     private static final Set<String> MERGE_PRESERVE_BASE = Set.of("page", "otherSources");
     private static final Set<String> MERGE_PRESERVE_CREATURE = Set.of(
-        "page", "otherSources", "hasImages", "description");
+            "page", "otherSources", "hasImages", "description");
 
     final Pf2eIndex index;
 
@@ -33,15 +33,16 @@ public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implem
 
     @Override
     protected JsonNode getOriginNode(String key) {
-        return index.getIncludedNode(key);
+        return index.getOrigin(key);
     }
 
     @Override
     protected boolean mergePreserveKey(Pf2eIndexType type, String key) {
         return switch (type) {
             case ritual, optfeature, spell, background,
-                 deity, deityFluff, organization, organizationFluff,
-                 creatureTemplate, creatureTemplateFluff -> MERGE_PRESERVE_BASE.contains(key);
+                    deity, deityFluff, organization, organizationFluff,
+                    creatureTemplate, creatureTemplateFluff ->
+                MERGE_PRESERVE_BASE.contains(key);
             case creature -> MERGE_PRESERVE_CREATURE.contains(key);
             default -> false;
         };
@@ -56,8 +57,8 @@ public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implem
     protected JsonNode resolveDynamicVariable(
             String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, String[] params) {
         return variableMode == TemplateVariable.name
-            ? new TextNode(SourceField.name.getTextOrEmpty(target))
-            : value;
+                ? new TextNode(SourceField.name.getTextOrEmpty(target))
+                : value;
     }
 
     @Override

@@ -301,6 +301,10 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         return traitToSource.get(trait.toLowerCase());
     }
 
+    public JsonNode getOrigin(String key) {
+        return imported.getOrDefault(key, null);
+    }
+
     @Override
     public JsonNode getAdventure(String a) {
         // TODO Auto-generated method stub
