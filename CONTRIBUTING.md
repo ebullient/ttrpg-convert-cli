@@ -118,6 +118,28 @@ Next navigate to *Java* -> *Code Style* -> *Organize Imports*. Click *Import* an
       ""
     ],
     ```
+   
+#### IntelliJ
+
+1. Open the *Settings* window
+2. Navigate to *Editor* -> *Code Style* -> *Java*
+3. Click on the little cog near the top of the dialogue box, next to the *Scheme* text box. Click on *Import Scheme* -> *Eclipse XML Profile* from the dropdown.
+4. Navigate to `src/ide-config/eclipse-format.xml` in the project directory and click *Ok*, and *Ok* again on the next dialogue box
+5. Click on the *Imports* tab
+6. Ensure that the *Layout static imports separately* checkbox is checked
+7. Underneath that, change the entries so that they look like this:
+
+    ```
+   import static all other imports
+   <blank line>
+   import java.*
+   import javax.*
+   import jakarta.*
+   import org.*
+   import com.*
+   <blank line>
+   import all other imports
+    ```
 
 ## Notes on control flow
 
