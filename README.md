@@ -37,15 +37,11 @@ If you don't have a favorite method already, or you don't know what those words 
     - Start with the built-in `Terminal` application.
     - [Learn the Mac OS X Command Line][]
 - For Windows Users:
-    - Use the native [Command Prompt][]
-    - [Open a command prompt in a folder (Windows)][]
-    - [Running executables from the command line (Windows)][]
-    - To show emoji in Windows Commmand Prompt: `chcp 65001` and choose a font with emoji support (Consolas is one).
+    - [A Beginner's Guide to the Windows Command Line][]
+    - See the [Windows README](README-WINDOWS.md)
 
 [Learn the Mac OS X Command Line]: https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line
-[Command Prompt]: https://www.digitaltrends.com/computing/how-to-use-command-prompt/
-[Open a command prompt in a folder (Windows)]: https://www.lifewire.com/open-command-prompt-in-a-folder-5185505
-[Running executables from the command line (Windows)]: https://www.techwalla.com/articles/how-to-use-quotcdquot-command-in-command-prompt-window
+[A Beginner's Guide to the Windows Command Line]: https://www.makeuseof.com/tag/a-beginners-guide-to-the-windows-command-line/
 
 ## Install the TTRPG Convert CLI
 
