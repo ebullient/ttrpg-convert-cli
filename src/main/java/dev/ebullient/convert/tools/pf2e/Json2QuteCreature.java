@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 
 public class Json2QuteCreature extends Json2QuteBase {
 
@@ -290,7 +291,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                 String spellName = name.getTextOrThrow(node);
                 return new QuteCreature.CreatureSpellReference(
                         spellName,
-                        convert.linkify(Pf2eIndexType.spell, join("|", spellName, source.getTextOrNull(node))),
+                        QuteDataRef.fromMarkdownLink(
+                            convert.linkify(Pf2eIndexType.spell, join("|", spellName, source.getTextOrNull(node)))),
                         amount.getTextFrom(node)
                                 .filter(s -> s.equalsIgnoreCase("at will"))
                                 .map(unused -> 0)
