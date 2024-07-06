@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.pf2e;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
+import static dev.ebullient.convert.tools.pf2e.Pf2eActivity.linkifyActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonTextConverter;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
@@ -193,31 +195,15 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     }
 
     default String replaceActionAs(MatchResult match) {
-        final Pf2eActivity type;
-        switch (match.group(1).toLowerCase()) {
-            case "1":
-            case "a":
-                type = Pf2eActivity.single;
-                break;
-            case "2":
-            case "d":
-                type = Pf2eActivity.two;
-                break;
-            case "3":
-            case "t":
-                type = Pf2eActivity.three;
-                break;
-            case "f":
-                type = Pf2eActivity.free;
-                break;
-            case "r":
-                type = Pf2eActivity.reaction;
-                break;
-            default:
-                type = Pf2eActivity.varies;
-                break;
-        }
-        return type.linkify(index().rulesVaultRoot());
+        Activity type = switch (match.group(1).toLowerCase()) {
+            case "1", "a" -> Activity.single;
+            case "2", "d" -> Activity.two;
+            case "3", "t" -> Activity.three;
+            case "f" -> Activity.free;
+            case "r" -> Activity.reaction;
+            default -> Activity.varies;
+        };
+        return linkifyActivity(type, index().rulesVaultRoot());
     }
 
     default String linkifyRuneItem(MatchResult match) {

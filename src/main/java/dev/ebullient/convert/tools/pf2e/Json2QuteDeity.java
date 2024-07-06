@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.StringUtil;
@@ -21,6 +20,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eJsonNodeReader.Pf2eAttack;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack.AttackRangeType;
@@ -176,7 +176,7 @@ public class Json2QuteDeity extends Json2QuteBase {
 
         return new QuteInlineAttack(
                 Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),
-                Pf2eActivity.single.toQuteActivity(this, null),
+                Pf2eActivity.toQuteActivity(this, Activity.single, null),
                 rangeType,
                 Json2QuteItem.Pf2eWeaponData.getDamageString(actionNode, this),
                 Stream.of(Json2QuteItem.Pf2eWeaponData.damageType, Json2QuteItem.Pf2eWeaponData.damageType2)

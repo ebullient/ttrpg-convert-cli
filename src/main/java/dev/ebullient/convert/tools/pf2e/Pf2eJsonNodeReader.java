@@ -17,7 +17,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.StringUtil;
@@ -27,6 +26,7 @@ import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.JsonSource.AppendTypeValue;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
@@ -518,26 +518,21 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          */
         private static QuteDataActivity getActivity(JsonNode node, JsonSource convert) {
             String actionType = unit.getTextOrNull(node);
-            Pf2eActivity activity = switch (actionType) {
-                case "single", "action", "free", "reaction" ->
-                    Pf2eActivity.toActivity(actionType, number.intOrThrow(node));
-                case "varies" -> Pf2eActivity.varies;
-                case "day", "minute", "hour", "round" -> Pf2eActivity.timed;
-                default -> null;
-            };
-
-            if (activity == null) {
-                throw new IllegalArgumentException("Can't parse activity from: %s".formatted(node));
-            }
 
             String extra = entry.getTextFrom(node)
-                    .filter(s -> !s.toLowerCase().contains("varies"))
-                    .filter(Predicate.not(String::isBlank))
-                    .map(convert::replaceText).map(StringUtil::parenthesize)
-                    .orElse("");
+                .filter(s -> !s.toLowerCase().contains("varies"))
+                .filter(Predicate.not(String::isBlank))
+                .map(convert::replaceText).map(StringUtil::parenthesize)
+                .orElse("");
 
-            return activity.toQuteActivity(
-                    convert, activity == Pf2eActivity.timed ? join(" ", number.intOrThrow(node), actionType, extra) : extra);
+            return switch (actionType) {
+                case "single", "action", "free", "reaction", "varies" ->
+                    Pf2eActivity.toQuteActivity(convert, actionType, number.intOrDefault(node, 0), extra);
+                case "day", "minute", "hour", "round" ->
+                    Pf2eActivity.toQuteActivity(
+                        convert, Activity.timed, join(" ", number.intOrThrow(node), actionType, extra));
+                default -> throw new IllegalArgumentException("Can't parse activity from: %s".formatted(node));
+            };
         }
 
         /**
@@ -565,9 +560,8 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                 return null;
             }
             // The activity is more specific unless we have a custom display. Otherwise, fall back to the timed duration
-            return Optional.ofNullable(Pf2eActivity.toActivity(unitText, timedDuration.value()))
-                    .map(a -> (QuteDataDuration) a.toQuteActivity(convert, null))
-                    .orElse(timedDuration);
+            return requireNonNullElse(
+                Pf2eActivity.toQuteActivity(convert, unitText, timedDuration.value(), null), timedDuration);
         }
 
         /**
@@ -677,7 +671,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             return new QuteInlineAttack(
                     name.replaceTextFrom(node, convert),
                     Optional.ofNullable(activity.getActivityFrom(node, convert))
-                            .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
+                            .orElse(Pf2eActivity.toQuteActivity(convert, Activity.single, "")),
                     QuteInlineAttack.AttackRangeType.valueOf(range.getTextOrDefault(node, "Melee").toUpperCase()),
                     attack.intOrNull(node),
                     formattedDamage,
