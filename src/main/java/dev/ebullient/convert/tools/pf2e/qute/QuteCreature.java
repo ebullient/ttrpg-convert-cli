@@ -1,7 +1,7 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
 import static dev.ebullient.convert.StringUtil.flatJoin;
-import static dev.ebullient.convert.StringUtil.format;
+import static dev.ebullient.convert.StringUtil.formatIfPresent;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.parenthesize;
 import static dev.ebullient.convert.StringUtil.pluralize;
@@ -250,8 +250,8 @@ public class QuteCreature extends Pf2eQuteBase {
         @JavadocVerbatim
         public String formattedStats() {
             return join(", ",
-                    format("DC %d", dc),
-                    format("attack %+d", attackBonus),
+                    formatIfPresent("DC %d", dc),
+                    formatIfPresent("attack %+d", attackBonus),
                     focusPoints == null ? "" : focusPoints + " Focus " + pluralize("Point", focusPoints));
         }
     }
@@ -299,9 +299,9 @@ public class QuteCreature extends Pf2eQuteBase {
         @Override
         public String toString() {
             return join(" ",
-                    format("**%s**", rank()),
+                    formatIfPresent("**%s**", rank()),
                     join(", ", spells),
-                    format("(%d slots)", slots));
+                    formatIfPresent("(%d slots)", slots));
         }
     }
 
