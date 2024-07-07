@@ -107,7 +107,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
             }
 
             switch (type) {
-                case ability -> rules.add(new Json2QuteAbility(index, type, node).buildNote());
+                case ability -> rules.add(new Json2QuteAbility(index, node, false).buildNote());
                 case affliction, curse, disease ->
                     compendium.add(new Json2QuteAffliction(index, type, node).buildNote());
                 case book -> {

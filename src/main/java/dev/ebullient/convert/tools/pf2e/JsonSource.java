@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -18,7 +17,6 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
@@ -115,7 +113,8 @@ public interface JsonSource extends JsonTextReplacement {
                     case quote -> appendQuote(text, node);
 
                     // special inline types
-                    case ability -> appendRenderable(text, Pf2eAbility.createEmbeddedAbility(node, this));
+                    case ability -> appendRenderable(text,
+                        new Json2QuteAbility(index(), node, true).buildQuteNote());
                     case affliction -> appendAffliction(text, node);
                     case attack -> appendRenderable(text, Pf2eJsonNodeReader.Pf2eAttack.getAttack(node, this));
                     case data -> embedData(text, node);
@@ -556,7 +555,7 @@ public interface JsonSource extends JsonTextReplacement {
         // So try to get the renderable embedded object first, and then add the collapsed
         // tag to the outermost admonition.
         QuteUtil.Renderable renderable = switch (dataType) {
-            case ability -> Pf2eAbility.createEmbeddedAbility(data, this);
+            case ability -> new Json2QuteAbility(index(), data, true).buildQuteNote();
             case affliction, curse, disease -> Pf2eAffliction.createInlineAffliction(data, this);
             default -> null;
         };

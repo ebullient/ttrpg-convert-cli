@@ -12,13 +12,17 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 
 public class Json2QuteAbility extends Json2QuteBase {
 
-    public Json2QuteAbility(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    private final boolean isEmbedded;
+
+    public Json2QuteAbility(Pf2eIndex index, JsonNode rootNode, boolean isEmbedded) {
+        super(index, Pf2eIndexType.ability, rootNode,
+            isEmbedded ? null : Pf2eSources.findOrTemporary(Pf2eIndexType.ability, rootNode));
+        this.isEmbedded = isEmbedded;
     }
 
     @Override
     protected QuteAbility buildQuteNote() {
-        return Pf2eAbility.createAbility(rootNode, this, sources);
+        return Pf2eAbility.createAbility(this);
     }
 
     public enum Pf2eAbility implements Pf2eJsonNodeReader {
@@ -63,11 +67,12 @@ public class Json2QuteAbility extends Json2QuteBase {
         /** Nestable entries for the ability effect. */
         entries;
 
-        private static QuteAbility createAbility(JsonNode node, JsonSource convert, Pf2eSources sources) {
+        private static QuteAbility createAbility(Json2QuteAbility convert) {
+            JsonNode node = convert.rootNode;
             Tags tags = new Tags();
             Set<String> traits = convert.collectTraitsFrom(node, tags);
 
-            return new QuteAbility(sources,
+            return new QuteAbility(convert.sources,
                     name.getTextFrom(node).map(convert::replaceText).orElse("Activate"),
                     generic.getLinkFrom(node, convert),
                     entries.transformTextFrom(node, "\n", convert),
@@ -87,11 +92,7 @@ public class Json2QuteAbility extends Json2QuteBase {
                     frequency.getFrequencyFrom(node, convert),
                     special.transformTextFrom(node, "\n", convert),
                     note.replaceTextFrom(node, convert),
-                    sources == null, convert);
-        }
-
-        public static QuteAbility createEmbeddedAbility(JsonNode node, JsonSource convert) {
-            return createAbility(node, convert, null);
+                    convert.isEmbedded, convert);
         }
 
         public String getLinkFrom(JsonNode node, JsonSource convert) {
