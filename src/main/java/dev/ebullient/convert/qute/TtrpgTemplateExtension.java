@@ -32,4 +32,9 @@ public class TtrpgTemplateExtension {
     static String join(Collection<?> collection, String delim) {
         return StringUtil.join(delim, collection);
     }
+
+    /** Indent each line of the given string with the given indent. */
+    static String indent(String lines, String indent) {
+        return lines.replaceAll("\n", "\n" + indent);
+    }
 }
