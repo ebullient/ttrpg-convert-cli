@@ -2,12 +2,10 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
 
@@ -33,7 +31,7 @@ public class Json2QuteHazard extends Json2QuteBase {
                 Pf2eHazard.defenses.getDefensesFrom(rootNode, this),
                 Pf2eHazard.attacks.getAttacksFrom(rootNode, this),
                 Pf2eHazard.abilities.streamFrom(rootNode)
-                        .map(n -> Pf2eAbility.createEmbeddedAbility(n, this))
+                        .map(n -> new Json2QuteAbility(index, n, true).buildQuteNote())
                         .toList(),
                 Pf2eHazard.actions.getAbilityOrAfflictionsFrom(rootNode, this),
                 Pf2eHazard.stealth.getObjectFrom(rootNode)
