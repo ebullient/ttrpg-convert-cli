@@ -11,12 +11,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
@@ -41,13 +39,6 @@ public class Json2QuteSpell extends Json2QuteBase {
 
     @Override
     protected Pf2eQuteBase buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
-
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
-        Collection<String> traits = collectTraitsFrom(rootNode, tags);
-
         boolean focus = Pf2eSpell.focus.booleanOrDefault(rootNode, false);
         String level = Pf2eSpell.level.getTextOrDefault(rootNode, "1");
         String type = "spell";
@@ -91,7 +82,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         components.stream().map(Pf2eSpellComponent::getAddedTrait)
                 .distinct().map(this::linkifyTrait).forEach(traits::add);
 
-        return new QuteSpell(sources, text, tags,
+        return new QuteSpell(sources, entries, tags,
                 level, toTitleCase(type),
                 traits,
                 Field.alias.replaceTextFromList(rootNode, this),
@@ -100,7 +91,7 @@ public class Json2QuteSpell extends Json2QuteBase {
                 Pf2eSpell.cost.transformTextFrom(rootNode, ", ", this),
                 Pf2eSpell.trigger.transformTextFrom(rootNode, ", ", this),
                 Pf2eSpell.requirements.transformTextFrom(rootNode, ", ", this),
-                getQuteSpellTarget(tags),
+                getQuteSpellTarget(),
                 Pf2eSpell.savingThrow.getSpellSaveFrom(rootNode, this),
                 Pf2eSpell.duration.getSpellDurationFrom(rootNode, this),
                 Pf2eSpell.domains.linkifyListFrom(rootNode, Pf2eIndexType.domain, this),
@@ -111,7 +102,7 @@ public class Json2QuteSpell extends Json2QuteBase {
                 getAmpEffects());
     }
 
-    QuteSpellTarget getQuteSpellTarget(Tags tags) {
+    QuteSpellTarget getQuteSpellTarget() {
         String targets = Pf2eSpell.targets.replaceTextFrom(rootNode, this);
         SpellArea area = Pf2eSpell.area.fieldFromTo(rootNode, SpellArea.class, tui());
         QuteDataRange range = Pf2eSpell.range.getRangeFrom(rootNode, this);

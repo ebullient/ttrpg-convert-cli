@@ -68,7 +68,7 @@ public class QuteCreature extends Pf2eQuteBase {
     public final List<CreatureRitualCasting> ritualCasting;
 
     public QuteCreature(
-            Pf2eSources sources, String text, Tags tags,
+            Pf2eSources sources, List<String> text, Tags tags,
             Collection<String> traits, List<String> aliases,
             String description, Integer level, Integer perception,
             QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,

@@ -3,11 +3,8 @@ package dev.ebullient.convert.tools.pf2e;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.parenthesize;
 
-import java.util.Set;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbility;
 
 public class Json2QuteAbility extends Json2QuteBase {
@@ -69,18 +66,15 @@ public class Json2QuteAbility extends Json2QuteBase {
 
         private static QuteAbility createAbility(Json2QuteAbility convert) {
             JsonNode node = convert.rootNode;
-            Tags tags = new Tags();
-            Set<String> traits = convert.collectTraitsFrom(node, tags);
-
             return new QuteAbility(convert.sources,
                     name.getTextFrom(node).map(convert::replaceText).orElse("Activate"),
                     generic.getLinkFrom(node, convert),
-                    entries.transformTextFrom(node, "\n", convert),
-                    tags,
-                    traits,
+                    convert.entries,
+                    convert.tags,
+                    convert.traits,
                     activity.getActivityFrom(node, convert),
                     range.getRangeFrom(node, convert),
-                    components.getActivationComponentsFrom(node, traits, convert),
+                    components.getActivationComponentsFrom(node, convert.traits, convert),
                     requirements.replaceTextFrom(node, convert),
                     prerequisites.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert)
