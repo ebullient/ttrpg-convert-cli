@@ -121,19 +121,9 @@ items: {items.join(", ").quoted}
 {#if abilitySet.value}
 abilities_{abilitySet.key}:
   {#each abilitySet.value}
-  - name: {it.name}
-    {#if it.isAbility}
-    desc: >
-    {it.activity.unicode}{#if it.traits || it.components} ({it.bareTraitsList}{#if it.bareTraitsList && it.components}, {/if}{resource.components.orEmpty join ", "});
-    {#if it.range}__Range__ {it.range}; {/if}
-    {#if it.cost}__Cost__ {it.cost}; {/if}
-    {#if it.frequency}__Frequency__ {it.frequency}; {/if}
-    {#if it.trigger}__Trigger__ {it.trigger}; {/if}
-    {#if it.requirements}__Requirements__ {it.requirements}; {/if}
-    {#if it.prerequisites}__Prerequisites__ {it.prerequisites}; {/if}
-    {#if it.hasEffect}
-    {#if it.range || it.cost || it.frequency || it.requirements || it.prerequisites}__Effect__ {/if}{it.text}
-    {/if}
+  {#if it.isAbility}
+  {it.renderAsYamlStatblock indent "  "}
+  {/if}
   {/each}
 {/if}
 {/for}

@@ -88,38 +88,29 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
         this._converter = converter;
     }
 
-    /** True if an activity (with text), components, or traits are present. */
-    public boolean getHasActivity() {
-        return activity != null || isPresent(components) || isPresent(traits);
-    }
-
     /**
-     * True if hasActivity is true, hasEffect is true or cost is present.
-     * In other words, this is true if a list of attributes could have been rendered.
+     * True if we have any details other than an activity, an effect, and components. e.g. if we have a cost, range,
+     * requirements, prerequisites, trigger, frequency, or special.
      *
-     * Use this to test for the end of those attributes (add whitespace or a special
-     * character ahead of ability text)
+     * <p>Use this to test for the end of those attributes (e.g. to add whitespace or a special
+     * character ahead of ability text)</p>
      */
     public boolean getHasAttributes() {
-        return getHasActivity() || getHasEffect() || isPresent(cost);
+        return isPresent(range) || isPresent(requirements) || isPresent(prerequisites) || isPresent(cost)
+            || isPresent(trigger) || isPresent(frequency) || isPresent(special) || isPresent(note);
     }
 
     /**
-     * True if the ability is a short, one-line name and description.
+     * False if the ability is a short, one-line name and description.
      * Use this to test to choose between a detailed or simple rendering.
      */
     public boolean getHasDetails() {
-        return getHasAttributes() || isPresent(special) || text.contains("\n") || text.split(" ").length > 5;
+        return getHasAttributes() || text.contains("\n") || text.split(" ").length > 5;
     }
 
     @Deprecated
     public boolean getHasBullets() {
         return getHasAttributes();
-    }
-
-    /** True if frequency, trigger, and requirements are present. In other words, this is true if the ability has an effect. */
-    public boolean getHasEffect() {
-        return isPresent(frequency) || isPresent(trigger) || isPresent(requirements);
     }
 
     /** Return a comma-separated list of de-styled trait links (no title attributes) */
@@ -128,7 +119,7 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
             return "";
         }
         return traits.stream()
-                .map(ref -> new QuteDataRef(ref.displayText(), ref.notePath(), null).toString())
+                .map(QuteDataRef::withoutTitle)
                 .collect(Collectors.joining(", "));
     }
 
