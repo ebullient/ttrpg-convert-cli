@@ -2,11 +2,11 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
 public class Json2QuteFeat extends Json2QuteBase {
@@ -48,7 +48,7 @@ public class Json2QuteFeat extends Json2QuteBase {
         Tags tags = new Tags();
 
         String note = null;
-        if (dedicationLevel != featLevel) {
+        if (!Objects.equals(dedicationLevel, featLevel)) {
             note = String.format(
                     "> [!pf2-note] This version of %s is intended for use with the %s Archetype. Its level has been changed accordingly.",
                     index.linkify(this.type, String.join("|", List.of(sources.getName(), sources.primarySource()))),
