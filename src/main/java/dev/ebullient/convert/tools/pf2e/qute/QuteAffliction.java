@@ -96,8 +96,8 @@ public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Rende
     }
 
     @Override
-    public String render() {
-        return _converter.renderEmbeddedTemplate(this, null);
+    public String render(boolean asYamlStatblock) {
+        return _converter.renderEmbeddedTemplate(this, null, asYamlStatblock);
     }
 
     @Override

@@ -112,7 +112,7 @@ public class Json2QuteArchetype extends Json2QuteBase {
     }
 
     String render(QuteFeat quteFeat, boolean archetypeFeat) {
-        return renderEmbeddedTemplate(quteFeat, "feat",
+        return renderEmbeddedTemplate(quteFeat, "feat", false,
             "title: %s, Feat %s".formatted(quteFeat.getName(), quteFeat.level + (archetypeFeat ? "*" : "")),
             "collapse: closed");
     }
