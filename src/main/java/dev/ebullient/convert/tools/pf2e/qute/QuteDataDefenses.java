@@ -52,7 +52,7 @@ public record QuteDataDefenses(
         Map<String, QuteDataGenericStat> weaknesses) implements QuteUtil {
 
     @SuppressWarnings("unused")  // for template use
-    public String additionalHp() {
+    public String getAdditionalHp() {
         return additionalHpHardnessBt.entrySet().stream()
             .filter(e -> e.getValue().hp() != null)
             .map(e -> "__%s HP__ %s".formatted(e.getKey(), e.getValue().hp()))
@@ -60,7 +60,7 @@ public record QuteDataDefenses(
     }
 
     @SuppressWarnings("unused")  // for template use
-    public String additionalHardness() {
+    public String getAdditionalHardness() {
         return additionalHpHardnessBt.entrySet().stream()
             .filter(e -> e.getValue().hardness() != null)
             .map(e -> "__%s Hardness__ %s".formatted(e.getKey(), e.getValue().hardness()))
@@ -101,6 +101,12 @@ public record QuteDataDefenses(
     public record QuteSavingThrows(
             QuteDataNamedBonus fort, QuteDataNamedBonus ref, QuteDataNamedBonus will,
             List<String> abilities) implements QuteUtil {
+
+        /** Return the saves as a list of {@link QuteDataGenericStat.QuteDataNamedBonus}. */
+        public List<QuteDataNamedBonus> getSaves() {
+            return List.of(fort, ref, will);
+        }
+
         /** Returns all abilities as a formatted, comma-separated string. */
         public String formattedAbilities() {
             return join(", ", abilities);

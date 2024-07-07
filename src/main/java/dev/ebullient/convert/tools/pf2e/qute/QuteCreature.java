@@ -95,6 +95,27 @@ public class QuteCreature extends Pf2eQuteBase {
         this.ritualCasting = ritualCasting;
     }
 
+    /** Return the size of this creature, or null if it has none. */
+    public String getSize() {
+        return traits.stream()
+            .filter(ref -> ref.title() != null && ref.title().contains("Size Trait"))
+            .findAny().map(QuteDataRef::displayText).orElse(null);
+    }
+
+    /** The alignment of this creature, or null if it has none. */
+    public String getAlignment() {
+        return traits.stream()
+            .filter(ref -> ref.title() != null && ref.title().contains("Alignment Trait"))
+            .findAny().map(QuteDataRef::displayText).orElse(null);
+    }
+
+    /** The rarity of this creature, or null if it has none. */
+    public String getRarity() {
+        return traits.stream()
+            .filter(ref -> ref.title() != null && ref.title().contains("Rarity Trait"))
+            .findAny().map(QuteDataRef::displayText).orElse(null);
+    }
+
     /**
      * The languages and language features known by a creature. Example default output:
      * `Common, Sylvan; telepathy 100ft; knows any language the summoner does`
@@ -182,6 +203,10 @@ public class QuteCreature extends Pf2eQuteBase {
             List<QuteAbilityOrAffliction> top,
             List<QuteAbilityOrAffliction> middle,
             List<QuteAbilityOrAffliction> bottom) implements QuteUtil {
+        /** Return abilities as a map. */
+        public Map<String, List<QuteAbilityOrAffliction>> getAbilityMap() {
+            return Map.of("top", top, "mid", middle, "bot", bottom);
+        }
     }
 
     /**
