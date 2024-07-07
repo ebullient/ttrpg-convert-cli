@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.NamedText;
@@ -35,18 +33,12 @@ public class Json2QuteItem extends Json2QuteBase {
 
     @Override
     protected Pf2eQuteBase buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
-        List<String> aliases = new ArrayList<>(Field.alias.replaceTextFromList(rootNode, this));
-        Set<String> traits = collectTraitsFrom(rootNode, tags);
-
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
         String duration = Pf2eItem.duration.existsIn(rootNode)
                 ? SourceField.entry.getTextOrEmpty(Pf2eItem.duration.getFrom(rootNode))
                 : null;
 
-        return new QuteItem(sources, text, tags, traits, aliases,
+        return new QuteItem(sources, entries, tags, traits,
+                Field.alias.replaceTextFromList(rootNode, this),
                 buildActivate(),
                 getPrice(rootNode),
                 join(", ", Pf2eItem.ammunition.linkifyListFrom(rootNode, Pf2eIndexType.item, this)),
@@ -54,15 +46,15 @@ public class Json2QuteItem extends Json2QuteBase {
                 Pf2eItem.onset.transformTextFrom(rootNode, ", ", this),
                 replaceText(Pf2eItem.access.getTextOrEmpty(rootNode)),
                 duration,
-                getCategory(tags),
+                getCategory(),
                 linkify(Pf2eIndexType.group, getGroup()),
                 Pf2eItem.hands.getTextOrEmpty(rootNode),
                 keysToList(List.of(Pf2eItem.usage, Pf2eItem.bulk)),
-                getContract(tags),
+                getContract(),
                 getShieldData(),
                 getArmorData(),
-                getWeaponData(tags),
-                getVariants(tags),
+                getWeaponData(),
+                getVariants(),
                 Pf2eItem.craftReq.transformTextFrom(rootNode, "; ", this));
     }
 
@@ -136,7 +128,7 @@ public class Json2QuteItem extends Json2QuteBase {
         return armorData;
     }
 
-    private List<QuteItemWeaponData> getWeaponData(Tags tags) {
+    private List<QuteItemWeaponData> getWeaponData() {
         JsonNode weaponDataNode = Pf2eItem.weaponData.getFrom(rootNode);
         if (weaponDataNode == null) {
             return null;
@@ -152,7 +144,7 @@ public class Json2QuteItem extends Json2QuteBase {
         return weaponDataList;
     }
 
-    private List<QuteItem.QuteItemVariant> getVariants(Tags tags) {
+    private List<QuteItem.QuteItemVariant> getVariants() {
 
         JsonNode variantsNode = Pf2eItem.variants.getFrom(rootNode);
         if (variantsNode == null)
@@ -176,7 +168,7 @@ public class Json2QuteItem extends Json2QuteBase {
         return variantList;
     }
 
-    private Collection<NamedText> getContract(Tags tags) {
+    private Collection<NamedText> getContract() {
         JsonNode contractNode = Pf2eItem.contract.getFrom(rootNode);
         if (contractNode == null) {
             return null;
@@ -241,7 +233,7 @@ public class Json2QuteItem extends Json2QuteBase {
         return Pf2eWeaponData.group.getTextOrEmpty(rootNode);
     }
 
-    String getCategory(Tags tags) {
+    String getCategory() {
         String category = Pf2eItem.category.getTextOrEmpty(rootNode);
         String subcategory = Pf2eItem.subCategory.getTextOrEmpty(rootNode);
         if (category == null) {

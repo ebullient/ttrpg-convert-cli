@@ -1,11 +1,7 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteBackground;
 
 public class Json2QuteBackground extends Json2QuteBase {
@@ -16,11 +12,6 @@ public class Json2QuteBackground extends Json2QuteBase {
 
     @Override
     protected QuteBackground buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
-
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
         Pf2eBackground.boosts.getListOfStrings(rootNode, tui())
                 .stream()
                 .filter(b -> !b.equalsIgnoreCase("Free"))
@@ -32,7 +23,7 @@ public class Json2QuteBackground extends Json2QuteBase {
         Pf2eBackground.feat.getListOfStrings(rootNode, tui())
                 .forEach(s -> tags.add("background", "feat", s));
 
-        return new QuteBackground(sources, text, tags);
+        return new QuteBackground(sources, entries, tags);
     }
 
     enum Pf2eBackground implements Pf2eJsonNodeReader {

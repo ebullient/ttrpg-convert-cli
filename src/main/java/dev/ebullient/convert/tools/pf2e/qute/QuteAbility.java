@@ -65,7 +65,7 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     // Internal only.
     private final JsonSource _converter;
 
-    public QuteAbility(Pf2eSources sources, String name, String reference, String text, Tags tags,
+    public QuteAbility(Pf2eSources sources, String name, String reference, List<String> text, Tags tags,
             Collection<String> traits, QuteDataActivity activity, QuteDataRange range,
             List<String> components, String requirements, String prerequisites,
             String cost, String trigger, QuteDataFrequency frequency, String special, String note,

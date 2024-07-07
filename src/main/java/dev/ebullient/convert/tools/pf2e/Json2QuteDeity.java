@@ -6,7 +6,6 @@ import static dev.ebullient.convert.StringUtil.joiningConjunct;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eJsonNodeReader.Pf2eAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
@@ -34,20 +32,15 @@ public class Json2QuteDeity extends Json2QuteBase {
 
     @Override
     protected QuteDeity buildQuteResource() {
-        List<String> text = new ArrayList<>();
-        Tags tags = new Tags(sources);
-
         Pf2eDeity.domains.getListOfStrings(rootNode, tui()).forEach(d -> tags.add("domain", d, "deity"));
         Pf2eDeity.alternateDomains.getListOfStrings(rootNode, tui()).forEach(d -> tags.add("domain", d, "deity"));
 
         String category = Pf2eDeity.category.getTextOrDefault(rootNode, "Deity");
         tags.add("deity", category);
 
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
         JsonNode alignNode = Pf2eDeity.alignment.getFrom(rootNode);
 
-        return new QuteDeity(sources, text, tags,
+        return new QuteDeity(sources, entries, tags,
                 Field.alias.replaceTextFromList(rootNode, this),
                 category,
                 join(", ", Pf2eDeity.pantheon.linkifyListFrom(rootNode, Pf2eIndexType.deity, this)),
@@ -57,7 +50,7 @@ public class Json2QuteDeity extends Json2QuteBase {
                 commandmentToString(Pf2eDeity.edict.replaceTextFromList(rootNode, this)),
                 commandmentToString(Pf2eDeity.anathema.replaceTextFromList(rootNode, this)),
                 buildCleric(),
-                buildAvatar(tags),
+                buildAvatar(),
                 buildIntercession());
     }
 
@@ -114,7 +107,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         return cleric;
     }
 
-    QuteDeity.QuteDivineAvatar buildAvatar(Tags tags) {
+    QuteDeity.QuteDivineAvatar buildAvatar() {
         JsonNode avatarNode = Pf2eDeity.avatar.getFrom(rootNode);
         if (avatarNode == null) {
             return null;
@@ -154,7 +147,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         avatar.attacks = Stream.concat(
                 Pf2eDeity.melee.streamFrom(avatarNode).map(n -> Map.entry(n, AttackRangeType.MELEE)),
                 Pf2eDeity.ranged.streamFrom(avatarNode).map(n -> Map.entry(n, AttackRangeType.RANGED)))
-                .map(e -> buildAvatarAttack(e.getKey(), tags, e.getValue()))
+                .map(e -> buildAvatarAttack(e.getKey(), e.getValue()))
                 .toList();
         avatar.ability = Pf2eDeity.ability.streamFrom(avatarNode)
                 .map(this::buildAvatarAbility)
@@ -169,7 +162,7 @@ public class Json2QuteDeity extends Json2QuteBase {
                 SourceField.entries.transformTextFrom(abilityNode, "; ", this));
     }
 
-    private QuteInlineAttack buildAvatarAttack(JsonNode actionNode, Tags tags, AttackRangeType rangeType) {
+    private QuteInlineAttack buildAvatarAttack(JsonNode actionNode, AttackRangeType rangeType) {
         Collection<String> traits = collectTraitsFrom(actionNode, tags);
         traits.addAll(Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()));
         Pf2eDeity.traitNote.getTextFrom(actionNode).ifPresent(traits::add);

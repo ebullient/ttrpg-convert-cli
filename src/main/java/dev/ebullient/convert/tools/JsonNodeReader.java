@@ -364,13 +364,18 @@ public interface JsonNodeReader {
      * Parse this field from {@code source} as potentially-nested array of entries, and return a list of strings. This
      * calls {@link JsonTextConverter#appendToText(List, JsonNode, String)} to recursively parse the input.
      */
-    default List<String> transformListFrom(JsonNode source, JsonTextConverter<?> convert) {
+    default List<String> transformListFrom(JsonNode source, JsonTextConverter<?> convert, String heading) {
         if (!isArrayIn(source)) {
             return List.of();
         }
         List<String> inner = new ArrayList<>();
-        convert.appendToText(inner, getFrom(source), null);
+        convert.appendToText(inner, getFrom(source), heading);
         return inner;
+    }
+
+    /** @see #transformListFrom(JsonNode, JsonTextConverter, String) */
+    default List<String> transformListFrom(JsonNode source, JsonTextConverter<?> convert) {
+        return transformListFrom(source, convert, null);
     }
 
     /** Returns the enum value of {@code enumClass} that this field in {@code source} contains, or null. */

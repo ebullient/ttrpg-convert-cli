@@ -1,7 +1,11 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 
@@ -10,6 +14,9 @@ public abstract class Json2QuteBase implements JsonSource {
     protected final Pf2eIndexType type;
     protected final JsonNode rootNode;
     protected final Pf2eSources sources;
+    protected final Tags tags;
+    protected final Set<String> traits;
+    protected final List<String> entries;
 
     public Json2QuteBase(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
         this(index, type, rootNode, Pf2eSources.findOrTemporary(type, rootNode));
@@ -20,6 +27,9 @@ public abstract class Json2QuteBase implements JsonSource {
         this.type = type;
         this.rootNode = rootNode;
         this.sources = sources;
+        this.tags = new Tags(sources);
+        this.traits = collectTraitsFrom(rootNode, tags);
+        this.entries = new ArrayList<>(SourceField.entries.transformListFrom(rootNode, this, "##"));
     }
 
     @Override

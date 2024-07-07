@@ -1,11 +1,8 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonTextConverter;
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteHazard;
 
@@ -17,13 +14,9 @@ public class Json2QuteHazard extends Json2QuteBase {
 
     @Override
     protected QuteHazard buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
+        entries.addAll(Pf2eHazard.description.transformListFrom(rootNode, this, "##"));
 
-        appendToText(text, Pf2eHazard.description.getFrom(rootNode), "##");
-
-        return new QuteHazard(sources, text, tags,
-                collectTraitsFrom(rootNode, tags),
+        return new QuteHazard(sources, entries, tags, traits,
                 Pf2eHazard.level.getTextOrDefault(rootNode, "0"),
                 Pf2eHazard.disable.transformTextFrom(rootNode, "\n", index),
                 Pf2eHazard.reset.transformTextFrom(rootNode, "\n", index),

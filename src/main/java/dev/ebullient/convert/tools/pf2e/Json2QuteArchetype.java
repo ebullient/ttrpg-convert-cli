@@ -6,10 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteArchetype;
 import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
@@ -21,18 +19,12 @@ public class Json2QuteArchetype extends Json2QuteBase {
 
     @Override
     protected QuteArchetype buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
-
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
         List<String> benefits = ArchetypeField.benefits.getListOfStrings(rootNode, tui());
         benefits.forEach(b -> tags.add("archetype", "benefit", b));
 
         int dedicationLevel = ArchetypeField.dedicationLevel.intOrDefault(rootNode, 2);
 
-        return new QuteArchetype(sources, text, tags,
-                collectTraitsFrom(rootNode, tags),
+        return new QuteArchetype(sources, entries, tags, traits,
                 dedicationLevel,
                 benefits,
                 getFeatures(dedicationLevel));
