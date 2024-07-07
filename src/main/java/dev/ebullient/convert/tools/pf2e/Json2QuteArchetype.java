@@ -120,12 +120,9 @@ public class Json2QuteArchetype extends Json2QuteBase {
     }
 
     String render(QuteFeat quteFeat, boolean archetypeFeat) {
-        List<String> inner = new ArrayList<>();
-        renderEmbeddedTemplate(inner, quteFeat, "feat", List.of(
-                String.format("title: %s, Feat %s", quteFeat.getName(), quteFeat.level + (archetypeFeat ? "*" : "")),
-                "collapse: closed"));
-
-        return String.join("\n", inner);
+        return renderEmbeddedTemplate(quteFeat, "feat",
+            "title: %s, Feat %s".formatted(quteFeat.getName(), quteFeat.level + (archetypeFeat ? "*" : "")),
+            "collapse: closed");
     }
 
     enum ArchetypeField implements Pf2eJsonNodeReader {

@@ -495,9 +495,9 @@ public interface JsonTextConverter<T extends IndexType> {
      * @param resource QuteBase containing required template resource data
      * @param admonition Type of embedded/encapsulating admonition
      */
-    default String renderEmbeddedTemplate(QuteBase resource, String admonition) {
+    default String renderEmbeddedTemplate(QuteUtil resource, String admonition, String... prepend) {
         List<String> inner = new ArrayList<>();
-        renderEmbeddedTemplate(inner, resource, admonition, List.of());
+        renderEmbeddedTemplate(inner, resource, admonition, prepend);
         return String.join("\n", inner);
     }
 
@@ -509,11 +509,11 @@ public interface JsonTextConverter<T extends IndexType> {
      * @param admonition Type of embedded/encapsulating admonition
      * @param prepend Text to prepend at beginning of admonition (e.g. title)
      */
-    default void renderEmbeddedTemplate(List<String> text, QuteBase resource, String admonition, List<String> prepend) {
-        boolean pushed = parseState().push(resource.sources());
+    default void renderEmbeddedTemplate(List<String> text, QuteUtil resource, String admonition, String... prepend) {
+        Boolean pushed = (resource instanceof QuteBase) ? parseState().push(((QuteBase)resource).sources()) : null;
         try {
             String rendered = tui().renderEmbedded(resource);
-            List<String> inner = new ArrayList<>(prepend);
+            List<String> inner = new ArrayList<>(Arrays.asList(prepend));
             inner.addAll(removePreamble(new ArrayList<>(List.of(rendered.split("\n")))));
 
             maybeAddBlankLine(text);
@@ -524,41 +524,10 @@ public interface JsonTextConverter<T extends IndexType> {
             }
             text.addAll(inner);
         } finally {
-            parseState().pop(pushed);
+            if (pushed != null) {
+                parseState().pop(pushed);
+            }
         }
-    }
-
-    /**
-     * Return the rendered contents of an (always) inline template.
-     *
-     * @param resource QuteUtil containing required template resource data
-     * @param admonition Type of inline admonition
-     */
-    default String renderInlineTemplate(QuteUtil resource, String admonition) {
-        List<String> inner = new ArrayList<>();
-        renderInlineTemplate(inner, resource, admonition);
-        return String.join("\n", inner);
-    }
-
-    /**
-     * Add rendered contents of an (always) inline template
-     * to collected text
-     *
-     * @param text List of text content should be added to
-     * @param resource QuteUtil containing required template resource data
-     * @param admonition Type of inline admonition
-     */
-    default void renderInlineTemplate(List<String> text, QuteUtil resource, String admonition) {
-        String rendered = tui().renderEmbedded(resource);
-        List<String> inner = removePreamble(new ArrayList<>(List.of(rendered.split("\n"))));
-
-        maybeAddBlankLine(text);
-        if (admonition != null) {
-            wrapAdmonition(inner, "inline-" + admonition);
-        } else {
-            balanceBackticks(inner);
-        }
-        text.addAll(inner);
     }
 
     /** Wrap {@code inner} in an admonition with the name {@code admonition}. */

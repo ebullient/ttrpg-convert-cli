@@ -108,7 +108,7 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     @Override
     public String render() {
-        return _converter.renderInlineTemplate(this, null);
+        return _converter.renderEmbeddedTemplate(this, null);
     }
 
     @Override

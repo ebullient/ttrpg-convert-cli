@@ -578,8 +578,8 @@ public interface JsonSource extends JsonTextReplacement {
         Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
         if (converted != null) {
             renderEmbeddedTemplate(text, converted, tag,
-                    List.of(String.format("title: %s", converted.title()),
-                            "collapse: closed"));
+                "title: %s".formatted(converted.title()),
+                "collapse: closed");
         } else {
             tui().errorf("Unable to process data for %s: %s", tag, dataNode.toString());
         }

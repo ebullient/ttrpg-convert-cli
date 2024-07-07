@@ -96,7 +96,7 @@ public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Rende
 
     @Override
     public String render() {
-        return _converter.renderInlineTemplate(this, null);
+        return _converter.renderEmbeddedTemplate(this, null);
     }
 
     @Override
