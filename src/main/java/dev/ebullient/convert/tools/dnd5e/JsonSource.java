@@ -605,7 +605,7 @@ public interface JsonSource extends JsonTextReplacement {
                         .withTargetFile(embedFileName)
                         .withTargetPath(relativePath));
             } else {
-                renderEmbeddedTemplate(text, qs, type.name(),
+                renderEmbeddedTemplate(text, qs, type.name(), false,
                     "title: " + name,
                     "collapse: closed",
                     existingNode == null ? "" : "%% See " + type.linkify(this, data) + " %%");

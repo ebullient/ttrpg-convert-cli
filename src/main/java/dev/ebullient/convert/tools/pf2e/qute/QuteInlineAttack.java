@@ -105,8 +105,8 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
     }
 
     @Override
-    public String render() {
-        return _converter.renderEmbeddedTemplate(this, null);
+    public String render(boolean asYamlStatblock) {
+        return _converter.renderEmbeddedTemplate(this, null, asYamlStatblock);
     }
 
     @Override

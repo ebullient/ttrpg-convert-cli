@@ -551,7 +551,7 @@ public interface JsonSource extends JsonTextReplacement {
         // and add the collapsible admonition ourselves
         Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
         if (converted != null) {
-            renderEmbeddedTemplate(text, converted, tag,
+            renderEmbeddedTemplate(text, converted, tag, false,
                 "title: %s".formatted(converted.title()),
                 "collapse: closed");
         } else {

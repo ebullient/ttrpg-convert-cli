@@ -96,6 +96,19 @@ public interface QuteUtil {
     @JavadocIgnore
     interface Renderable {
         /** Return this object rendered using its template. */
-        String render();
+        String render(boolean asYamlStatblock);
+
+        /** Return the object rendered using its template. */
+        default String render() {
+            return render(false);
+        }
+
+        /** Return the object rendered using its template with {@code asYamlStatblock} set to true. */
+        default String renderAsYamlStatblock() {
+            // Manually remove the dice roller syntax - the yaml statblocks handle dice roller syntax differently. At this
+            // point, the parsing has already finished, so we can't use parseState to stop them from being added in the first
+            // place. So all we can do is post-process to remove them again.
+            return render(true).replaceAll("`dice: [^`]+` \\(`([^`]+)`\\)", "$1");
+        }
     }
 }

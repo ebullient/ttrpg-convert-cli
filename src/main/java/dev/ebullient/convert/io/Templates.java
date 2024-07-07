@@ -78,11 +78,12 @@ public class Templates {
         }
     }
 
-    public String renderInlineEmbedded(QuteUtil resource) {
+    public String renderInlineEmbedded(QuteUtil resource, boolean asYamlStatblock) {
         Template tpl = customTemplateOrDefault(resource.template());
         try {
             return tpl
                     .data("resource", resource)
+                    .data("asYamlStatblock", asYamlStatblock)
                     .render().trim();
         } catch (TemplateException tex) {
             Throwable cause = tex.getCause();

@@ -143,7 +143,7 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     }
 
     @Override
-    public String render() {
-        return _converter.renderEmbeddedTemplate(this, null);
+    public String render(boolean asYamlStatblock) {
+        return _converter.renderEmbeddedTemplate(this, null, asYamlStatblock);
     }
 }

@@ -495,9 +495,9 @@ public interface JsonTextConverter<T extends IndexType> {
      * @param resource QuteBase containing required template resource data
      * @param admonition Type of embedded/encapsulating admonition
      */
-    default String renderEmbeddedTemplate(QuteUtil resource, String admonition, String... prepend) {
+    default String renderEmbeddedTemplate(QuteUtil resource, String admonition, boolean asYamlStatblock, String... prepend) {
         List<String> inner = new ArrayList<>();
-        renderEmbeddedTemplate(inner, resource, admonition, prepend);
+        renderEmbeddedTemplate(inner, resource, admonition, asYamlStatblock, prepend);
         return String.join("\n", inner);
     }
 
@@ -509,10 +509,11 @@ public interface JsonTextConverter<T extends IndexType> {
      * @param admonition Type of embedded/encapsulating admonition
      * @param prepend Text to prepend at beginning of admonition (e.g. title)
      */
-    default void renderEmbeddedTemplate(List<String> text, QuteUtil resource, String admonition, String... prepend) {
+    default void renderEmbeddedTemplate(
+            List<String> text, QuteUtil resource, String admonition, boolean asYamlStatblock, String... prepend) {
         Boolean pushed = (resource instanceof QuteBase) ? parseState().push(((QuteBase)resource).sources()) : null;
         try {
-            String rendered = tui().renderEmbedded(resource);
+            String rendered = tui().renderEmbedded(resource, asYamlStatblock);
             List<String> inner = new ArrayList<>(Arrays.asList(prepend));
             inner.addAll(removePreamble(new ArrayList<>(List.of(rendered.split("\n")))));
 
