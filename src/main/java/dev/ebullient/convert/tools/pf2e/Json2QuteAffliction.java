@@ -21,13 +21,16 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteAffliction;
 
 public class Json2QuteAffliction extends Json2QuteBase {
 
-    public Json2QuteAffliction(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode) {
-        super(index, type, rootNode);
+    private final boolean isEmbedded;
+
+    public Json2QuteAffliction(Pf2eIndex index, Pf2eIndexType type, JsonNode rootNode, boolean isEmbedded) {
+        super(index, type, rootNode, isEmbedded ? null : Pf2eSources.findOrTemporary(type, rootNode));
+        this.isEmbedded = isEmbedded;
     }
 
     @Override
     protected QuteAffliction buildQuteNote() {
-        return Pf2eAffliction.createAffliction(rootNode, this, getSources());
+        return Pf2eAffliction.createAffliction(this);
     }
 
     public enum Pf2eAffliction implements Pf2eJsonNodeReader {
@@ -96,20 +99,19 @@ public class Json2QuteAffliction extends Json2QuteBase {
          *     ],
          * </pre>
          */
-        private static QuteAffliction createAffliction(
-                JsonNode node, JsonSource convert, Pf2eSources sources) {
-            boolean isEmbedded = sources == null;
+        private static QuteAffliction createAffliction(Json2QuteAffliction convert) {
+            JsonNode node = convert.rootNode;
 
             // Sometimes the affliction data is nested as an entry within the parent node.
             Optional<JsonNode> nestedAfflictionNode = Optional.ofNullable(getNestedAffliction(node));
-            if (!isEmbedded && nestedAfflictionNode.isEmpty()) {
+            if (!convert.isEmbedded && nestedAfflictionNode.isEmpty()) {
                 // For standalone notes, we should always have a nested affliction node.
                 convert.tui().errorf("Unable to extract affliction entry from %s", node.toPrettyString());
                 return null;
             }
             JsonNode dataNode = nestedAfflictionNode.orElse(node);
 
-            Tags tags = new Tags(sources);
+            Tags tags = new Tags(convert.sources);
             Collection<String> traits = convert.collectTraitsFrom(node, tags);
 
             Optional<String> afflictionLevel = level.intFrom(node).map(Objects::toString);
@@ -130,9 +132,9 @@ public class Json2QuteAffliction extends Json2QuteBase {
             Optional<String> afflictionName = name.getTextFrom(node);
 
             return new QuteAffliction(
-                    sources,
+                    convert.sources,
                     // Standalone notes must have a valid affliction name so that we can name the file
-                    isEmbedded ? afflictionName.orElse("") : afflictionName.orElseThrow(),
+                    convert.isEmbedded ? afflictionName.orElse("") : afflictionName.orElseThrow(),
                     // Any entries which were alongside the nested affliction block
                     nestedAfflictionNode.isEmpty()
                             ? List.of()
@@ -177,12 +179,8 @@ public class Json2QuteAffliction extends Json2QuteBase {
                                             entry.transformTextFrom(e.getValue(), "\n", convert, e.getKey())),
                                     (x, y) -> y,
                                     LinkedHashMap::new)),
-                    isEmbedded,
+                    convert.isEmbedded,
                     convert);
-        }
-
-        static QuteAffliction createInlineAffliction(JsonNode node, JsonSource convert) {
-            return createAffliction(node, convert, null);
         }
 
         /** Try to extract the affliction node from the entries. Returns null if we couldn't extract one. */

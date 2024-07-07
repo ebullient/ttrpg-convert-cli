@@ -17,7 +17,6 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
@@ -115,7 +114,8 @@ public interface JsonSource extends JsonTextReplacement {
                     // special inline types
                     case ability -> appendRenderable(text,
                         new Json2QuteAbility(index(), node, true).buildQuteNote());
-                    case affliction -> appendAffliction(text, node);
+                    case affliction -> appendRenderable(text,
+                        new Json2QuteAffliction(index(), Pf2eIndexType.affliction, node, true).buildQuteNote());
                     case attack -> appendRenderable(text, Pf2eJsonNodeReader.Pf2eAttack.getAttack(node, this));
                     case data -> embedData(text, node);
                     case lvlEffect -> appendLevelEffect(text, node);
@@ -296,11 +296,6 @@ public interface JsonSource extends JsonTextReplacement {
         inner.forEach(x -> text.add(parseState().getListIndent()
                 + (x.isBlank() ? ">" : "> ")
                 + x));
-    }
-
-    /** Internal */
-    default void appendAffliction(List<String> text, JsonNode node) {
-        appendRenderable(text, Pf2eAffliction.createInlineAffliction(node, this));
     }
 
     /** Internal */
@@ -554,14 +549,14 @@ public interface JsonSource extends JsonTextReplacement {
         // (This might be the case anyway, but we know it probably is the case with these).
         // So try to get the renderable embedded object first, and then add the collapsed
         // tag to the outermost admonition.
-        QuteUtil.Renderable renderable = switch (dataType) {
-            case ability -> new Json2QuteAbility(index(), data, true).buildQuteNote();
-            case affliction, curse, disease -> Pf2eAffliction.createInlineAffliction(data, this);
+        Json2QuteBase json2Renderable = switch (dataType) {
+            case ability -> new Json2QuteAbility(index(), data, true);
+            case affliction, curse, disease -> new Json2QuteAffliction(index(), dataType, data, true);
             default -> null;
         };
-        if (renderable != null) {
+        if (json2Renderable != null) {
             List<String> renderedData = new ArrayList<>();
-            appendRenderable(renderedData, renderable);
+            appendRenderable(renderedData, (QuteUtil.Renderable) json2Renderable.buildQuteNote());
             // Make the outermost admonition collapsed, if there is one
             int[] adIndices = outerAdmonitionIndices(renderedData);
             if (adIndices != null) {
