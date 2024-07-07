@@ -231,10 +231,15 @@ public class TestUtils {
                 errors.add(String.format("Found invalid dice roll in %s: %s", p, l));
             }
         }
+
         // Alarm is a basic spell. It should always be linked. If it isn't,
         // a reference has gone awry somewhere along the way
         if (p.toString().contains("list-spells-") && l.contains(" Alarm")) {
             errors.add(String.format("Missing link to Alarm spell in %s: %s", p, l));
+        }
+
+        if (l.contains("NOT_FOUND")) {
+            errors.add(String.format("Found NOT_FOUND in %s: %s", p, l));
         }
     }
 
@@ -349,6 +354,43 @@ public class TestUtils {
         } catch (IOException e) {
             e.printStackTrace();
             errors.add(String.format("Unable to parse files in directory %s: %s", directory, e));
+        }
+        return errors;
+    }
+
+    public static List<String> yamlStatblockChecker(Path p, List<String> content) {
+        List<String> errors = new ArrayList<>();
+        boolean found = false;
+        boolean yaml = false;
+        boolean index = false;
+        List<String> statblock = new ArrayList<>();
+
+        for (String l : content) {
+            if (l.startsWith("# Index ")) {
+                index = true;
+            } else if (l.equals("```statblock")) {
+                found = yaml = true; // start yaml block
+            } else if (l.equals("```")) {
+                yaml = false; // end yaml block
+            } else if (yaml) {
+                statblock.add(l);
+                if (l.contains("*")) {
+                    errors.add(String.format("Found '*' in %s: %s", p, l));
+                }
+                if (l.contains("\"desc\": \"\"")) {
+                    errors.add(String.format("Found empty description in %s: %s", p, l));
+                }
+            }
+            TestUtils.commonTests(p, l, errors);
+        }
+
+        try {
+            Tui.quotedYaml().load(String.join("\n", statblock));
+        } catch (Exception e) {
+            errors.add(String.format("File %s contains invalid yaml: %s", p, e));
+        }
+        if (!found && !index) {
+            errors.add(String.format("File %s did not contain a yaml statblock", p));
         }
         return errors;
     }
