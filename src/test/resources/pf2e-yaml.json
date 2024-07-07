@@ -1,0 +1,5 @@
+{
+  "from": ["*"],
+  "useDiceRoller": true,
+  "yamlStatblocks": true
+}
