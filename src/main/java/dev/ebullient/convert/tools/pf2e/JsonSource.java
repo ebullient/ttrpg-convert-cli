@@ -5,8 +5,6 @@ import static dev.ebullient.convert.StringUtil.join;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -22,22 +20,6 @@ import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 
 public interface JsonSource extends JsonTextReplacement {
-
-    /**
-     * Collect and linkify traits from the specified node.
-     *
-     * @param tags The tags to populate while collecting traits. If null, then don't populate any tags.
-     *
-     * @return an empty or sorted/linkified list of traits (never null)
-     */
-    default Set<String> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
-        return Field.traits.getListOfStrings(sourceNode, tui()).stream()
-                .peek(tags == null ? t -> {
-                } : t -> tags.add("trait", t))
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.trait, s))
-                .collect(Collectors.toCollection(TreeSet::new));
-    }
 
     /**
      * External (and recursive) entry point for content parsing.

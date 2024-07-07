@@ -7,9 +7,11 @@ import static dev.ebullient.convert.tools.pf2e.Pf2eActivity.linkifyActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-
+import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -18,6 +20,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonTextConverter;
+import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
@@ -204,6 +207,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             default -> Activity.varies;
         };
         return linkifyActivity(type, index().rulesVaultRoot());
+    }
+
+    /**
+     * Collect and linkify traits from the specified node.
+     *
+     * @param tags The tags to populate while collecting traits. If null, then don't populate any tags.
+     *
+     * @return an empty or sorted/linkified list of traits (never null)
+     */
+    default Set<String> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
+        return Field.traits.getListOfStrings(sourceNode, tui()).stream()
+            .peek(tags == null ? t -> {
+            } : t -> tags.add("trait", t))
+            .sorted()
+            .map(s -> linkify(Pf2eIndexType.trait, s))
+            .collect(Collectors.toCollection(TreeSet::new));
     }
 
     default String linkifyRuneItem(MatchResult match) {
