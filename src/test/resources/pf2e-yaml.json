@@ -1,5 +1,8 @@
 {
   "from": ["*"],
   "useDiceRoller": true,
-  "yamlStatblocks": true
+  "yamlStatblocks": true,
+  "template": {
+    "creature" : "examples/templates/pf2etools/creature2md-yamlStatblock.txt"
+  }
 }

@@ -1,0 +1,178 @@
+{#with resource}
+---
+obsidianUIMode: preview
+cssclasses: pf2e,pf2e-creature
+statblock: inline
+{#if tags}
+tags:
+{#each tags}
+- {it}
+{/each}
+{/if}
+{#if aliases}
+aliases:
+{#each aliases}
+- {it}
+{/each}
+{/if}
+---
+# {name} *Creature {level}*  
+{traits join " "}
+
+```statblock
+layout: Pathfinder 2e Creature Layout
+source: "{sources.primarySource}"
+sourcebook: "{source}"
+name: "{name}"
+level: "Creature {level}"
+
+{#if alignment}
+alignment: {alignment}
+{/if}{#if rarity}
+rarity: {rarity}
+{/if}{#if size}
+size: {size}
+{/if}{#if traits}
+traits:
+  {#each traits}
+  {! Don't include traits which are already included above by the statblock layout !}
+  {#if !it.title || !(it.title.contains("Alignment Trait") || it.title.contains("Size Trait") || it.title.contains("Rarity Trait"))}
+  - {it.withoutTitle.quoted}
+  {/if}
+  {/each}
+{/if}
+
+{#if perception}
+modifier: {perception}
+{/if}{#if senses}
+senses: {senses.join(", ")}
+{/if}{#if languages}
+languages: "{languages}"
+{/if}{#if skills}
+skills:
+  {#each skills.skills}
+  - "{it.name}": {#if it.otherBonuses || it.formattedNotes}"{it.bonus}{#if it.notes} {it.formattedNotes}{/if}"{#else}{it.value}{/if}
+  {/each}
+{#if skills.notes}
+skillsNote: {skills.notes.join(", ")}
+{/if}
+{/if}{#if abilityMods}
+abilityMods: [{#each abilityMods.values}{it}{#if it_hasNext}, {/if}{/each}]
+{/if}{#if speed}
+speed: "{speed}"
+{/if}
+
+{#if defenses}
+{#if defenses.ac}
+ac: {defenses.ac.value}
+{#if defenses.ac.formattedNotes}
+acNote: "{defenses.ac.formattedNotes}"
+{/if}
+{/if}
+{#if defenses.savingThrows}
+saves:
+  {#for save in defenses.savingThrows.saves}
+  {#if save.otherBonuses || save.notes}
+  - {save.name.toLowerCase}: "{save.bonus}{#if save.notes} {save.formattedNotes}{/if}"
+  {#else}
+  - {save.name.toLowerCase}: {save.value}
+  {/if}
+  {/for}
+{#if defenses.savingThrows.abilities}
+savesNote: {defenses.savingThrows.abilities.join(", ")}
+{/if}
+{/if}
+{#if defenses.hpHardnessBt}
+{#if defenses.hpHardnessBt.hp}
+hp: {defenses.hpHardnessBt.hp.value}
+{/if}
+{#if defenses.hpHardnessBt.hp.formattedNotes || defenses.additionalHp}
+hpNote: "{defenses.hpHardnessBt.hp.formattedNotes}{#if defenses.additionalHp}; {defenses.additionalHp}{/if}"
+{/if}{#if defenses.additionalHardness}
+hardness: "{#if defenses.hpHardnessBt.hardness}{defenses.hpHardnessBt.hardness}; {/if}{defenses.additionalHardness}"
+{#else if defenses.hpHardnessBt.hardness}
+hardness: {defenses.hpHardnessBt.hardness}
+{/if}
+{/if}
+{#if defenses.immunities}
+immunities: "{#each defenses.immunities}{it.withoutTitle}{#if it_hasNext}, {/if}{/each}"
+{/if}{#if defenses.resistances}
+resistances: "{#each defenses.resistances}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
+{/if}{#if defenses.weaknesses}
+weaknesses: "{#each defenses.weaknesses}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
+{/if}
+{/if}
+
+{#if items}
+items: "{items join ", "}"
+{/if}
+
+{#for abilitySet in abilities.abilityMap.orEmpty}
+{#if abilitySet.value}
+abilities_{abilitySet.key}:
+  {#each abilitySet.value}
+  - name: {it.name}
+    {#if it.isAbility}
+    desc: >
+    {it.activity.unicode}{#if it.traits || it.components} ({it.bareTraitsList}{#if it.bareTraitsList && it.components}, {/if}{resource.components.orEmpty join ", "});
+    {#if it.range}__Range__ {it.range}; {/if}
+    {#if it.cost}__Cost__ {it.cost}; {/if}
+    {#if it.frequency}__Frequency__ {it.frequency}; {/if}
+    {#if it.trigger}__Trigger__ {it.trigger}; {/if}
+    {#if it.requirements}__Requirements__ {it.requirements}; {/if}
+    {#if it.prerequisites}__Prerequisites__ {it.prerequisites}; {/if}
+    {#if it.hasEffect}
+    {#if it.range || it.cost || it.frequency || it.requirements || it.prerequisites}__Effect__ {/if}{it.text}
+    {/if}
+  {/each}
+{/if}
+{/for}
+
+{#if attacks}
+attacks:
+  {#each attacks}
+  - name: ___{it.rangeType}___ {it.activity.unicodeGlyphOrText} {it.name}
+    desc: ({it.traits join ", "})
+    bonus: {it.attackBonus}
+    {#if it.multilineEffect}
+    damage: >
+      {it.damage}; {it.multilineEffect}
+    {#else}
+    damage: {it.damage}
+    {/if}
+  {/each}
+{/if}
+
+{#if spellcasting}
+spellcasting:
+{#for spells in spellcasting}
+  - name: "{spells.name}"
+    desc: >
+      {spells.formattedStats}{#if spells.notes}, {spells.notes join ", "}{/if};
+      {#if spells.ranks}{spells.ranks.join("; ").replaceAll("\*\*", "__")};{/if}
+      {#each spells.constantRanks}
+      __Constant ({it.rank})__ {it.spells.join(", ").replaceAll("\*\*", "__")}{#if it_hasNext}; {/if}
+      {/each}
+{/for}
+{#for rituals in ritualCasting}
+  - name: {rituals.name}
+    desc: >
+      {#if rituals.dc}
+      DC {rituals.dc};
+      {/if}
+      {rituals.ranks.join("; ").replaceAll("\*\*", "__")}
+{/for}
+{/if}
+```
+^statblock
+
+{#if hasSections && description}
+## Summary
+{/if}{#if description}
+{description}
+{/if}{#if text}
+{text}
+{/if}
+
+*Source: {source}*
+{/with}
