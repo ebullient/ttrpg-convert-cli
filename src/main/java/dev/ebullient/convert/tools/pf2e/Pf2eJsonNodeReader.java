@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.JsonSource.AppendTypeValue;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
@@ -132,14 +131,15 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
     default List<QuteAbilityOrAffliction> getAbilityOrAfflictionsFrom(JsonNode source, JsonSource convert) {
         return streamFrom(source)
                 .map(n -> switch (requireNonNullElse(AppendTypeValue.getBlockType(n), AppendTypeValue.ability)) {
-                    case affliction -> (QuteAbilityOrAffliction) Pf2eAffliction.createInlineAffliction(n, convert);
-                    case ability -> (QuteAbilityOrAffliction) new Json2QuteAbility(convert.index(), n, true).buildQuteNote();
+                    case affliction -> new Json2QuteAffliction(convert.index(), Pf2eIndexType.affliction, n, true);
+                    case ability -> new Json2QuteAbility(convert.index(), n, true);
                     default -> {
                         convert.tui().debugf("Unexpected block type in %s", source.toPrettyString());
                         yield null;
                     }
                 })
                 .filter(Objects::nonNull)
+                .map(json2Qute -> (QuteAbilityOrAffliction) json2Qute.buildNote())
                 .toList();
     }
 
