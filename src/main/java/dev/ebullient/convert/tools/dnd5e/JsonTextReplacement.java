@@ -125,10 +125,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         return String.join(", ", list);
     }
 
-    default String replaceText(String input) {
-        return replaceTokens(input, (s, b) -> this._replaceTokenText(s, b));
-    }
-
     default String tableHeader(String x) {
         if (x.contains("dice")) {
             // don't do the usual dice formatting in a column header
@@ -179,7 +175,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         });
     }
 
-    default String _replaceTokenText(String input, boolean nested) {
+    @Override
+    default String replaceTokenText(String input, boolean nested) {
         String result = input;
 
         // render.js this._renderString_renderTag

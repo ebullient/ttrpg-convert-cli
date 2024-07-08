@@ -42,8 +42,8 @@ public class TokenizerTest {
             }
 
             @Override
-            public String replaceText(String s) {
-                throw new UnsupportedOperationException("Unimplemented method 'replaceText'");
+            public String replaceTokenText(String s, boolean nested) {
+                throw new UnsupportedOperationException("Unimplemented method 'replaceTokenText'");
             }
 
             @Override

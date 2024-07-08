@@ -591,7 +591,12 @@ public interface JsonTextConverter<T extends IndexType> {
         return new int[] { firstLineIdx, lastLineIdx };
     }
 
-    String replaceText(String s);
+    default String replaceText(String input) {
+        return replaceTokens(input, this::replaceTokenText);
+    }
+
+    /** Replace specific tokens (e.g. "@"-tags) in the input string. */
+    String replaceTokenText(String input, boolean nested);
 
     default String replaceText(JsonNode input) {
         if (input == null) {

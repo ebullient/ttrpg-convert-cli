@@ -71,11 +71,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         return index().cfg();
     }
 
-    default String replaceText(String input) {
-        return replaceTokens(input, (s, b) -> this._replaceTokenText(s, b));
-    }
-
-    default String _replaceTokenText(String input, boolean nested) {
+    @Override
+    default String replaceTokenText(String input, boolean nested) {
         if (input == null || input.isEmpty()) {
             return input;
         }
