@@ -1,18 +1,9 @@
 package dev.ebullient.convert.tools;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
@@ -20,6 +11,16 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+
+import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 
 /** Performs copy operations on nodes as a pre-processing step before they're handled by the individual converters. */
 public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextConverter<T> {
@@ -43,7 +44,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
      * @param params Parameters for the variable mode
      */
     protected abstract JsonNode resolveDynamicVariable(
-        String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, String[] params);
+            String originKey, JsonNode value, JsonNode target, TemplateVariable variableMode, String[] params);
 
     /** Merge {@code copyFrom} into {@code target} according to copy metadata. */
     protected abstract JsonNode mergeNodes(T type, String originKey, JsonNode copyFrom, ObjectNode target);
@@ -207,8 +208,8 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         MetaFields._isCopy.setIn(target, true);
         MetaFields._rawName.removeFrom(target);
         MetaFields._copiedFrom.setIn(target, String.format("%s (%s)",
-            SourceField.name.getTextOrEmpty(copyFrom),
-            SourceField.source.getTextOrEmpty(copyFrom)));
+                SourceField.name.getTextOrEmpty(copyFrom),
+                SourceField.source.getTextOrEmpty(copyFrom)));
         MetaFields._copy.removeFrom(target);
     }
 
@@ -239,7 +240,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             String[] params = matcher.group("variable").split("__");
             TemplateVariable variableMode = TemplateVariable.valueFrom(params[0]);
             return resolveDynamicVariable(
-                originKey, value, target, variableMode, Arrays.copyOfRange(params, 1, params.length));
+                    originKey, value, target, variableMode, Arrays.copyOfRange(params, 1, params.length));
         }
         return value;
     }
@@ -260,7 +261,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
     /** Set the {@code propPath} in {@code target} to contain the props in {@code modInfo}. */
     private void doSetProps(String originKey, JsonNode modInfo, String propPath, ObjectNode target) {
         ObjectNode parent = propPath.equals("*") ? target : target.withObject(splitLastPropPath(propPath)[0]);
-        parent.setAll((ObjectNode)copyNode(MetaFields.props.getFrom(modInfo)));
+        parent.setAll((ObjectNode) copyNode(MetaFields.props.getFrom(modInfo)));
     }
 
     private String nodePath(String propPath) {
@@ -277,7 +278,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         if (target.has(prop)) {
             String joiner = MetaFields.joiner.getTextOrEmpty(modInfo);
             target.put(prop, target.get(prop).asText() + joiner
-                + MetaFields.str.getTextOrEmpty(modInfo));
+                    + MetaFields.str.getTextOrEmpty(modInfo));
         } else {
             target.put(prop, MetaFields.str.getTextOrEmpty(modInfo));
         }
@@ -289,7 +290,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         }
         if (!target.get(prop).isArray()) {
             tui().warnf("replaceTxt for %s with a property %s that is not an array %s: %s", originKey, prop, modInfo,
-                target.get(prop));
+                    target.get(prop));
             return;
         }
 
@@ -353,12 +354,12 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             JsonNode node = propRw.get(k);
             boolean isString = node.isTextual();
             int value = isString
-                ? Integer.parseInt(node.asText())
-                : node.asInt();
+                    ? Integer.parseInt(node.asText())
+                    : node.asInt();
             value += scalar;
             propRw.replace(k, isString
-                ? new TextNode("%+d".formatted(value))
-                : new IntNode(value));
+                    ? new TextNode("%+d".formatted(value))
+                    : new IntNode(value));
         };
 
         String modProp = MetaFields.prop.getTextOrNull(modInfo);
@@ -382,15 +383,15 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             JsonNode node = propRw.get(k);
             boolean isString = node.isTextual();
             double value = isString
-                ? Double.parseDouble(node.asText())
-                : node.asDouble();
+                    ? Double.parseDouble(node.asText())
+                    : node.asDouble();
             value *= scalar;
             if (floor) {
                 value = Math.floor(value);
             }
             propRw.replace(k, isString
-                ? new TextNode("%+f".formatted(value))
-                : new DoubleNode(value));
+                    ? new TextNode("%+f".formatted(value))
+                    : new DoubleNode(value));
         };
 
         String modProp = MetaFields.prop.getTextOrNull(modInfo);
@@ -422,9 +423,9 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             case appendArr -> appendToArray(targetArray, items);
             case appendIfNotExistsArr -> appendIfNotExistsArr(targetArray, items);
             case insertArr -> insertIntoArray(
-                targetArray,
-                MetaFields.index.getIntFrom(modInfo).filter(n -> n >= 0).orElse(targetArray.size()),
-                items);
+                    targetArray,
+                    MetaFields.index.getIntFrom(modInfo).filter(n -> n >= 0).orElse(targetArray.size()),
+                    items);
             case removeArr -> removeFromArray(originKey, modInfo, prop, targetArray);
             case replaceArr -> replaceArray(originKey, modInfo, targetArray, items);
             case replaceOrAppendArr -> {
@@ -483,8 +484,8 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             // Remove inbound items that already exist in the target array
             // Use anyMatch to stop filtering ASAP
             List<JsonNode> filtered = streamOf(items)
-                .filter(it -> !streamOf(tgtArray).anyMatch(it::equals))
-                .collect(Collectors.toList());
+                    .filter(it -> !streamOf(tgtArray).anyMatch(it::equals))
+                    .collect(Collectors.toList());
             tgtArray.addAll(filtered);
         }
     }
@@ -505,7 +506,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             removeFromArr(tgtArray, items);
         } else {
             tui().errorf("Error (%s / %s): One of names or items must be provided to remove elements from array; %s", originKey,
-                prop, modInfo);
+                    prop, modInfo);
         }
     }
 
@@ -639,7 +640,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
 
         public void notSupported(Tui tui, String originKey, JsonNode variableText) {
             tui.errorf("Error (%s): Support for %s must be implemented. Raise an issue with this message. Text: %s",
-                originKey, this.value(), variableText);
+                    originKey, this.value(), variableText);
         }
 
         public static TemplateVariable valueFrom(String value) {
@@ -683,7 +684,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
 
         public void notSupported(Tui tui, String originKey, JsonNode modInfo) {
             tui.errorf("Error (%s): %s must be implemented. Raise an issue with this message. modInfo: %s",
-                originKey, this.value(), modInfo);
+                    originKey, this.value(), modInfo);
         }
 
         public static ModFieldMode getModMode(JsonNode source) {

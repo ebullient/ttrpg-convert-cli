@@ -22,11 +22,11 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
-import dev.ebullient.convert.tools.JsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

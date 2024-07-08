@@ -25,28 +25,28 @@ import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 
 public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> implements JsonSource {
     static final List<String> GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = List.of("caption", "type", "colLabels", "colLabelGroups",
-        "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
+            "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
 
     private static final List<String> _MERGE_REQUIRES_PRESERVE_BASE = List.of(
-        "_versions",
-        "basicRules",
-        "hasFluff",
-        "hasFluffImages",
-        "hasToken",
-        "indexInputType", // mine: do I have the usage right?
-        "indexKey", // mine: do I have the usage right?
-        "otherSources",
-        "page",
-        "reprintedAs",
-        "srd");
+            "_versions",
+            "basicRules",
+            "hasFluff",
+            "hasFluffImages",
+            "hasToken",
+            "indexInputType", // mine: do I have the usage right?
+            "indexKey", // mine: do I have the usage right?
+            "otherSources",
+            "page",
+            "reprintedAs",
+            "srd");
     private static final Map<Tools5eIndexType, List<String>> _MERGE_REQUIRES_PRESERVE = Map.of(
-        Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
-            "altArt", "variant", "dragonCastingColor", "familiar"),
-        Tools5eIndexType.item, List.of("lootTables", "tier"),
-        Tools5eIndexType.itemGroup, List.of("lootTables", "tier"));
+            Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
+                    "altArt", "variant", "dragonCastingColor", "familiar"),
+            Tools5eIndexType.item, List.of("lootTables", "tier"),
+            Tools5eIndexType.itemGroup, List.of("lootTables", "tier"));
     private static final List<String> COPY_ENTRY_PROPS = List.of(
-        "action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
-        "actionHeader", "bonusHeader", "reactionHeader", "legendaryHeader", "mythicHeader");
+            "action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
+            "actionHeader", "bonusHeader", "reactionHeader", "legendaryHeader", "mythicHeader");
     static final List<String> LEARNED_SPELL_TYPE = List.of("constant", "will", "ritual");
     static final List<String> SPELL_CAST_FREQUENCY = List.of("recharge", "charges", "rest", "daily", "weekly", "yearly");
 
@@ -90,9 +90,9 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         ObjectNode subraceOut = (ObjectNode) copyNode(raceNode);
 
         List.of("name", "source", "srd", "basicRules")
-            .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
+                .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
         List.of("subraces", "srd", "basicRules", "_versions", "hasFluff", "hasFluffImages", "_rawName")
-            .forEach(subraceOut::remove);
+                .forEach(subraceOut::remove);
 
         copyFrom.remove("__prop"); // cleanup: we copy remainder later
 
@@ -128,7 +128,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             } else if (cpySrAbility.size() != outAbility.size()) {
                 // if (cpy.ability.length !== cpySr.ability.length) throw new Error(`Race and subrace ability array lengths did not match!`);
                 tui().errorf("Error (%s): Unable to merge abilities (different lengths). CopyTo: %s, CopyFrom: %s", subraceOut,
-                    copyFrom);
+                        copyFrom);
             } else {
                 // cpySr.ability.forEach((obj, i) => Object.assign(cpy.ability[i], obj));
                 for (int i = 0; i < cpySrAbility.size(); i++) {
@@ -147,7 +147,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
                 if (MetaFields.overwrite.existsIn(data)) {
                     // overwrite
                     int index = findIndexByName("subrace-merge:" + SourceField.name.getTextOrThrow(subraceOut),
-                        entries, MetaFields.overwrite.getTextOrThrow(data));
+                            entries, MetaFields.overwrite.getTextOrThrow(data));
                     if (index >= 0) {
                         entries.set(index, entry);
                     } else {
@@ -289,7 +289,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
                 yield new TextNode(asModifier(pb + mod));
             }
             case damage_mod -> {
-                if (params.length == 0  || !target.has(params[0])) {
+                if (params.length == 0 || !target.has(params[0])) {
                     tui().errorf("Error (%s): Missing detail for %s", originKey, value);
                     yield value;
                 }
@@ -345,7 +345,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
         int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
         String fullNode = hitPattern.matcher(target.get(prop).toString())
-            .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+                .replaceAll((match) -> "{@hit " + (Integer.parseInt(match.group(1)) + scalar) + "}");
         target.set(prop, createNode(fullNode));
     }
 
@@ -356,7 +356,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         }
         int scalar = MetaFields.scalar.getFrom(modInfo).asInt();
         String fullNode = dcPattern.matcher(target.get(prop).toString())
-            .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
+                .replaceAll((match) -> "{@dc " + (Integer.parseInt(match.group(1)) + scalar) + "}");
         target.set(prop, createNode(fullNode));
     }
 
@@ -409,8 +409,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
         ArrayNode size = Tools5eFields.size.ensureArrayIn(target);
         List<JsonNode> collect = streamOf(size)
-            .filter(x -> SIZES.indexOf(x.asText()) <= maxIdx)
-            .collect(Collectors.toList());
+                .filter(x -> SIZES.indexOf(x.asText()) <= maxIdx)
+                .collect(Collectors.toList());
 
         if (size.size() != collect.size()) {
             size.removeAll();
@@ -460,7 +460,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
                         // throw. Not supported
                         tui().errorf("Error (%s): Object at key %s, not an array", originKey, prop);
                         throw new JsonCopyException("Badly formed spell list in " + originKey
-                            + "; found JSON Object instead of an array for " + prop);
+                                + "; found JSON Object instead of an array for " + prop);
                     } else {
                         // overwrite
                         targetSpell.set(prop, copyNode(modSpellList));
@@ -505,7 +505,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         if (spellcasting == null) {
             tui().errorf("Error (%s): Can't replace spells for a monster without spellcasting", originKey);
             throw new JsonCopyException(
-                "Can't replace spells for a monster without spellcasting; copy/merge of " + originKey);
+                    "Can't replace spells for a monster without spellcasting; copy/merge of " + originKey);
         }
 
         if (MonsterFields.spells.existsIn(modInfo) && MonsterFields.spells.existsIn(spellcasting)) {
@@ -565,7 +565,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         if (spellcasting == null) {
             tui().errorf("Error (%s): Can't remove spells from a monster without spellcasting", originKey);
             throw new JsonCopyException(
-                "Can't remove spells from a monster without spellcasting; copy/merge of " + originKey);
+                    "Can't remove spells from a monster without spellcasting; copy/merge of " + originKey);
         }
 
         if (MonsterFields.spells.existsIn(modInfo) && MonsterFields.spells.existsIn(spellcasting)) {
@@ -576,8 +576,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
                 // Look for spell levels: spells.1.spells
                 if (MonsterFields.spells.existsIn(spells.get(k))) {
                     removeSpells(originKey,
-                        MonsterFields.spells.ensureArrayIn(spells.get(k)),
-                        modSpellEntry.getValue());
+                            MonsterFields.spells.ensureArrayIn(spells.get(k)),
+                            modSpellEntry.getValue());
                 }
             }
 
@@ -675,8 +675,8 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         JsonNode shortName = MonsterFields.shortName.getFrom(target);
         boolean isNamedCreature = MonsterFields.isNamedCreature.booleanOrDefault(target, false);
         String prefix = isNamedCreature
-            ? ""
-            : isTitleCase ? "The " : "the ";
+                ? ""
+                : isTitleCase ? "The " : "the ";
 
         if (shortName != null) {
             if (shortName.isBoolean() && shortName.asBoolean()) {
@@ -697,11 +697,11 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
     private String getShortNameFromName(String name, boolean isNamedCreature) {
         String result = name.split(",")[0]
-            .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
+                .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
 
         return isNamedCreature
-            ? result.split(" ")[0]
-            : result.toLowerCase();
+                ? result.split(" ")[0]
+                : result.toLowerCase();
     }
 
     int getAbilityModNumber(int abilityScore) {

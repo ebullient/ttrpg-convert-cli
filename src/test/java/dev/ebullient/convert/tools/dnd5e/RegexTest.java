@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import dev.ebullient.convert.tools.JsonSourceCopier;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -13,6 +12,7 @@ import dev.ebullient.convert.config.CompendiumConfig.Configurator;
 import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.config.ConfiguratorUtil;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.JsonSourceCopier;
 
 public class RegexTest implements JsonSource {
 

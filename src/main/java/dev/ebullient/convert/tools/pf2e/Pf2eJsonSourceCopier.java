@@ -1,12 +1,13 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import dev.ebullient.convert.tools.JsonSourceCopier;
 
-import java.util.List;
-import java.util.Set;
+import dev.ebullient.convert.tools.JsonSourceCopier;
 
 public class Pf2eJsonSourceCopier extends JsonSourceCopier<Pf2eIndexType> implements JsonSource {
     private static final List<String> COPY_ENTRY_PROPS = List.of(
