@@ -33,7 +33,7 @@ import io.quarkus.qute.TemplateData;
  * @param hpHardnessBt HP, hardness, and broken threshold stored in a {@link QuteDataHpHardnessBt}
  * @param additionalHpHardnessBt Additional HP, hardness, or broken thresholds for other HP components as a map of
  *        names to {@link QuteDataHpHardnessBt}
- * @param immunities List of strings, optional
+ * @param immunities List of {@link QuteDataRef}, optional
  * @param resistances Map of (name, {@link QuteDataGenericStat})
  * @param weaknesses Map of (name, {@link QuteDataGenericStat})
  */
@@ -43,7 +43,7 @@ public record QuteDataDefenses(
         QuteSavingThrows savingThrows,
         QuteDataHpHardnessBt hpHardnessBt,
         Map<String, QuteDataHpHardnessBt> additionalHpHardnessBt,
-        List<String> immunities,
+        List<QuteDataRef> immunities,
         Map<String, QuteDataGenericStat> resistances,
         Map<String, QuteDataGenericStat> weaknesses) implements QuteUtil {
 

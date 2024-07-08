@@ -288,7 +288,8 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     savingThrows.getSavingThrowsFrom(source, convert),
                     hpHardnessBt.remove(std.name()),
                     hpHardnessBt,
-                    immunities.linkifyListFrom(source, Pf2eIndexType.trait, convert),
+                    immunities.linkifyListFrom(source, Pf2eIndexType.trait, convert).stream()
+                        .map(QuteDataRef::fromMarkdownLink).toList(),
                     resistances.streamFrom(source).collect(Pf2eNameAmountNote.mappedStatCollector(convert)),
                     weaknesses.streamFrom(source).collect(Pf2eNameAmountNote.mappedStatCollector(convert)));
         }
