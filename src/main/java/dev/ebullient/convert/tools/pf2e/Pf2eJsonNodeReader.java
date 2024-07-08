@@ -41,16 +41,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 /** A utility class which extends {@link JsonNodeReader} with PF2e-specific functionality. */
 public interface Pf2eJsonNodeReader extends JsonNodeReader {
 
-    /**
-     * Return alignments as a list of formatted strings from this field in the given node.
-     * Returns an empty list if we couldn't get alignments.
-     */
-    default List<String> getAlignmentsFrom(JsonNode alignNode, JsonSource convert) {
-        return streamFrom(alignNode)
-                .map(JsonNode::asText)
-                .map(a -> a.length() > 2 ? a : convert.linkify(Pf2eIndexType.trait, a.toUpperCase()))
-                .toList();
-    }
 
     /** Return a {@link QuteDataSpeed} read from this field of the {@code source} node, or null. */
     default QuteDataSpeed getSpeedFrom(JsonNode source, JsonSource convert) {
