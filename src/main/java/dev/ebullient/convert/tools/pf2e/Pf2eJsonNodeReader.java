@@ -33,6 +33,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
@@ -47,7 +48,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
     default List<String> getAlignmentsFrom(JsonNode alignNode, JsonSource convert) {
         return streamFrom(alignNode)
                 .map(JsonNode::asText)
-                .map(a -> a.length() > 2 ? a : convert.linkifyTrait(a.toUpperCase()))
+                .map(a -> a.length() > 2 ? a : convert.linkify(Pf2eIndexType.trait, a.toUpperCase()))
                 .toList();
     }
 
@@ -104,7 +105,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
      * traits from these activation components to {@code traits}. Return an empty list if we couldn't get activation
      * components.
      */
-    default List<String> getActivationComponentsFrom(JsonNode source, Set<String> traits, JsonSource convert) {
+    default List<String> getActivationComponentsFrom(JsonNode source, Set<QuteDataRef> traits, JsonSource convert) {
         List<String> rawComponents = getListOfStrings(source, convert.tui()).stream()
                 .map(s -> s.replaceFirst("^\\((%s)\\)$", "\1")) // remove parens
                 .toList();
@@ -122,6 +123,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     return Stream.of();
                 }).distinct()
                 .map(convert::linkifyTrait)
+                .map(QuteDataRef::fromMarkdownLink)
                 .forEach(traits::add);
 
         return rawComponents.stream().map(convert::replaceText).toList();

@@ -48,8 +48,8 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
      */
     public final Collection<String> damageTypes;
 
-    /** Any traits associated with the attack (collection of decorated links) */
-    public final Collection<String> traits;
+    /** Any traits associated with the attack (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
 
     /**
      * Any additional effects associated with the attack e.g. grab (list of strings). Effects listed here
@@ -68,7 +68,7 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     public QuteInlineAttack(
             String name, QuteDataActivity activity, AttackRangeType rangeType, Integer attackBonus, String damage,
-            Collection<String> damageTypes, Collection<String> traits, List<String> effects, String multilineEffect,
+            Collection<String> damageTypes, Collection<QuteDataRef> traits, List<String> effects, String multilineEffect,
             List<String> notes, JsonTextConverter<?> converter) {
         this.name = name;
         this.activity = activity;
@@ -85,7 +85,7 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     public QuteInlineAttack(
             String name, QuteDataActivity activity, AttackRangeType rangeType, String damage,
-            Collection<String> damageTypes, Collection<String> traits, String note,
+            Collection<String> damageTypes, Collection<QuteDataRef> traits, String note,
             JsonTextConverter<?> converter) {
         this(
                 name, activity, rangeType, null,
