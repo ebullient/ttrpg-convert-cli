@@ -19,8 +19,8 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteItem extends Pf2eQuteBase {
 
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Aliases for this note */
     public final List<String> aliases;
     /**
@@ -66,7 +66,7 @@ public class QuteItem extends Pf2eQuteBase {
     public final List<QuteItemVariant> variants;
 
     public QuteItem(Pf2eSources sources, List<String> text, Tags tags,
-            Collection<String> traits, List<String> aliases, QuteItemActivate activate,
+            Collection<QuteDataRef> traits, List<String> aliases, QuteItemActivate activate,
             String price, String ammunition, String level, String onset, String access,
             String duration, String category, String group,
             String hands, Collection<NamedText> usage, Collection<NamedText> contract,
@@ -231,8 +231,8 @@ public class QuteItem extends Pf2eQuteBase {
     public static class QuteItemWeaponData implements QuteUtil {
         /** Formatted string. Weapon type */
         public String type;
-        /** Formatted string. List of traits (links) */
-        public Collection<String> traits;
+        /** Formatted string. List of traits ({@link QuteDataRef}) */
+        public Collection<QuteDataRef> traits;
         public Collection<NamedText> ranged;
         public String damage;
         public String group;

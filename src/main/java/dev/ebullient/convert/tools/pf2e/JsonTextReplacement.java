@@ -22,9 +22,9 @@ import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
-
     enum Field implements Pf2eJsonNodeReader {
         alias,
         auto,
@@ -214,14 +214,14 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
      *
      * @param tags The tags to populate while collecting traits. If null, then don't populate any tags.
      *
-     * @return an empty or sorted/linkified list of traits (never null)
+     * @return a set of {@link QuteDataRef}s to trait notes, or an empty set (never null)
      */
-    default Set<String> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
+    default Set<QuteDataRef> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
         return Field.traits.getListOfStrings(sourceNode, tui()).stream()
-            .peek(tags == null ? t -> {
-            } : t -> tags.add("trait", t))
+            .peek(tags == null ? (t -> {}) : t -> tags.add("trait", t))
             .sorted()
             .map(s -> linkify(Pf2eIndexType.trait, s))
+            .map(QuteDataRef::fromMarkdownLink)
             .collect(Collectors.toCollection(TreeSet::new));
     }
 

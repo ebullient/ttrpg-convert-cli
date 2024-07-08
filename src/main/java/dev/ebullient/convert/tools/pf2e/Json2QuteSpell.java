@@ -18,6 +18,7 @@ import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell;
 import dev.ebullient.convert.tools.pf2e.qute.QuteSpell.QuteSpellAmp;
@@ -80,7 +81,7 @@ public class Json2QuteSpell extends Json2QuteBase {
         List<Pf2eSpellComponent> components = Pf2eSpell.components.getComponentsFrom(rootNode, this);
         // Add additional traits according to present components
         components.stream().map(Pf2eSpellComponent::getAddedTrait)
-                .distinct().map(this::linkifyTrait).forEach(traits::add);
+                .distinct().map(this::linkifyTrait).map(QuteDataRef::fromMarkdownLink).forEach(traits::add);
 
         return new QuteSpell(sources, entries, tags,
                 level, toTitleCase(type),

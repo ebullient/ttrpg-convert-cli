@@ -15,15 +15,15 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteArchetype extends Pf2eQuteBase {
 
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
 
     public final int dedicationLevel;
     public final List<String> benefits;
     public final List<String> feats;
 
     public QuteArchetype(Pf2eSources sources, List<String> text, Tags tags,
-            Collection<String> traits, int dedicationLevel, List<String> benefits, List<String> feats) {
+            Collection<QuteDataRef> traits, int dedicationLevel, List<String> benefits, List<String> feats) {
         super(sources, text, tags);
 
         this.traits = traits;

@@ -19,6 +19,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.pf2e.Pf2eJsonNodeReader.Pf2eAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack.AttackRangeType;
@@ -163,9 +164,9 @@ public class Json2QuteDeity extends Json2QuteBase {
     }
 
     private QuteInlineAttack buildAvatarAttack(JsonNode actionNode, AttackRangeType rangeType) {
-        Collection<String> traits = collectTraitsFrom(actionNode, tags);
-        traits.addAll(Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()));
-        Pf2eDeity.traitNote.getTextFrom(actionNode).ifPresent(traits::add);
+        Collection<QuteDataRef> traits = collectTraitsFrom(actionNode, tags);
+        Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()).stream().map(QuteDataRef::new).forEach(traits::add);
+        Pf2eDeity.traitNote.getTextFrom(actionNode).map(QuteDataRef::new).ifPresent(traits::add);
 
         return new QuteInlineAttack(
                 Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),

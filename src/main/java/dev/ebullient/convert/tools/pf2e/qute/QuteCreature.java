@@ -28,8 +28,8 @@ public class QuteCreature extends Pf2eQuteBase {
 
     /** Aliases for this note (optional) */
     public final List<String> aliases;
-    /** Collection of traits (decorated links, optional) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Short creature description (optional) */
     public final String description;
     /** Creature level (number, optional) */
@@ -69,7 +69,7 @@ public class QuteCreature extends Pf2eQuteBase {
 
     public QuteCreature(
             Pf2eSources sources, List<String> text, Tags tags,
-            Collection<String> traits, List<String> aliases,
+            Collection<QuteDataRef> traits, List<String> aliases,
             String description, Integer level, Integer perception,
             QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
             List<CreatureSense> senses, Map<String, Integer> abilityMods,

@@ -57,14 +57,14 @@ public class Json2QuteCreature extends Json2QuteBase {
     enum Pf2eCreature implements Pf2eJsonNodeReader {
         abilities,
         abilityMods,
-        alignment,
+        alignment,  // unused in the data but defined in the schema
         alias,
         attacks,
         defenses,
         description,
         entries,
         hasImages,
-        inflicts, // not actually present in any of the entries
+        inflicts, // unused in the data but defined in the schema
         isNpc,
         items,
         languages,
@@ -83,8 +83,6 @@ public class Json2QuteCreature extends Json2QuteBase {
 
         private static QuteCreature create(Json2QuteCreature convert) {
             JsonNode node = convert.rootNode;
-            convert.traits.addAll(alignment.getAlignmentsFrom(node, convert));
-
             return new QuteCreature(convert.sources, convert.entries, convert.tags, convert.traits,
                     alias.replaceTextFromList(node, convert),
                     description.replaceTextFrom(node, convert),

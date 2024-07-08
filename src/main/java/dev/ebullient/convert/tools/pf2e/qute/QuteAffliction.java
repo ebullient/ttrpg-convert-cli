@@ -22,8 +22,8 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Renderable, QuteAbilityOrAffliction {
 
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits ({@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Integer from 1 to 10. Level of the affliction. */
     public final String level;
     /** Aliases for this note. Only populated if not embedded. */
@@ -58,7 +58,7 @@ public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Rende
 
     public QuteAffliction(
             Pf2eSources sources, String name, List<String> text, Tags tags,
-            Collection<String> traits, List<String> aliases, String level,
+            Collection<QuteDataRef> traits, List<String> aliases, String level,
             String category, String maxDuration, String onset, QuteAfflictionSave savingThrow,
             String effect, String temptedCurse, List<String> notes, Map<String, QuteAfflictionStage> stages,
             boolean isEmbedded, JsonTextConverter<?> _converter) {

@@ -18,6 +18,7 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 
 public interface JsonSource extends JsonTextReplacement {
 
@@ -585,7 +586,7 @@ public interface JsonSource extends JsonTextReplacement {
 
             // Add traits
             Tags tags = new Tags();
-            Collection<String> traits = collectTraitsFrom(data, tags);
+            Collection<QuteDataRef> traits = collectTraitsFrom(data, tags);
             text.add(join("  ", traits) + "  ");
             maybeAddBlankLine(text);
 
