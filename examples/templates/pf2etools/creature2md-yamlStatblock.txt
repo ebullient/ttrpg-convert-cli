@@ -130,17 +130,9 @@ abilities_{abilitySet.key}:
 
 {#if attacks}
 attacks:
-  {#each attacks}
-  - name: ___{it.rangeType}___ {it.activity.unicodeGlyphOrText} {it.name}
-    desc: ({it.traits join ", "})
-    bonus: {it.attackBonus}
-    {#if it.multilineEffect}
-    damage: >
-      {it.damage}; {it.multilineEffect}
-    {#else}
-    damage: {it.damage}
-    {/if}
-  {/each}
+{#each attacks}
+  {it.renderAsYamlStatblock indent "  "}
+{/each}
 {/if}
 
 {#if spellcasting}
