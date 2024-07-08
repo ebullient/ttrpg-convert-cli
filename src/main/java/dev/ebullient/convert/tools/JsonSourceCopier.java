@@ -260,8 +260,14 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
 
     /** Set the {@code propPath} in {@code target} to contain the props in {@code modInfo}. */
     private void doSetProps(String originKey, JsonNode modInfo, String propPath, ObjectNode target) {
-        ObjectNode parent = propPath.equals("*") ? target : target.withObject(splitLastPropPath(propPath)[0]);
-        parent.setAll((ObjectNode) copyNode(MetaFields.props.getFrom(modInfo)));
+        String[] path = splitLastPropPath(propPath);
+        ObjectNode parent = propPath.equals("*") ? target : target.withObject(path[0]);
+        JsonNode propNode = copyNode(MetaFields.props.getFrom(modInfo));
+        if (propNode.isObject()) {
+            parent.setAll((ObjectNode) propNode);
+        } else {
+            parent.set(path[1], propNode);
+        }
     }
 
     private String nodePath(String propPath) {
