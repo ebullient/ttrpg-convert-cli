@@ -40,13 +40,13 @@ public class Json2QuteDeity extends Json2QuteBase {
         tags.add("deity", category);
 
         JsonNode alignNode = Pf2eDeity.alignment.getFrom(rootNode);
-
+        // TODO handle "entry" field in alignment
         return new QuteDeity(sources, entries, tags,
                 Field.alias.replaceTextFromList(rootNode, this),
                 category,
                 join(", ", Pf2eDeity.pantheon.linkifyListFrom(rootNode, Pf2eIndexType.deity, this)),
-                join(", ", Pf2eDeity.alignment.getAlignmentsFrom(alignNode, this)),
-                join(", ", Pf2eDeity.followerAlignment.getAlignmentsFrom(alignNode, this)),
+                join(", ", Pf2eDeity.alignment.linkifyListFrom(alignNode, Pf2eIndexType.trait, this)),
+                join(", ", Pf2eDeity.followerAlignment.linkifyListFrom(alignNode, Pf2eIndexType.trait, this)),
                 Pf2eDeity.areasOfConcern.transformTextFrom(rootNode, ", ", this),
                 commandmentToString(Pf2eDeity.edict.replaceTextFromList(rootNode, this)),
                 commandmentToString(Pf2eDeity.anathema.replaceTextFromList(rootNode, this)),
