@@ -362,6 +362,11 @@ public class QuteCreature extends Pf2eQuteBase {
 
         @Override
         public String toString() {
+            if (notes.size() == 1 && notes.get(0).equals("*")) {
+                // Workaround for specific statblocks which use "*" to tag particular spells. Use a carat instead so it doesn't
+                // get Markdown formatted.
+                return join(" ", (spellRef == null ? name : spellRef.toString()) + "^", formattedAmount());
+            }
             return join(" ", spellRef == null ? name : spellRef, formattedAmount(), formattedNotes());
         }
     }

@@ -105,10 +105,14 @@ public interface QuteUtil {
 
         /** Return the object rendered using its template with {@code asYamlStatblock} set to true. */
         default String renderAsYamlStatblock() {
-            // Manually remove the dice roller syntax - the yaml statblocks handle dice roller syntax differently. At this
-            // point, the parsing has already finished, so we can't use parseState to stop them from being added in the first
-            // place. So all we can do is post-process to remove them again.
-            return render(true).replaceAll("`dice: [^`]+` \\(`([^`]+)`\\)", "$1");
+            return render(true)
+                // Manually remove the dice roller syntax - the yaml statblocks handle dice roller syntax differently. At this
+                // point, the parsing has already finished, so we can't use parseState to stop them from being added in the
+                // first place. So all we can do is post-process to remove them again.
+                .replaceAll("`dice: [^`]+` \\(`([^`]+)`\\)", "$1")
+                // This usage is usually a footnote. With the Markdown rendering the asterisk is unnecessary, so just don't
+                // add the asterisk, so this doesn't get treated as Markdown formatting.
+                .replaceAll("\\* \\^\\[", " ^[");
         }
     }
 }

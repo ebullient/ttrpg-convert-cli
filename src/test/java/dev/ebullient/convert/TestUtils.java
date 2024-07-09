@@ -48,6 +48,9 @@ public class TestUtils {
 
     static String GENERATED_DOCS = PROJECT_PATH.resolve("docs/templates").normalize().toAbsolutePath().toString();
 
+    private static final Pattern ASTERISK_START_PROP_PAT = Pattern.compile(":\\s*\\*");
+    private static final Pattern SINGLE_ASTERISK_PAT = Pattern.compile("[^*]\\*[^*]");
+
     // Obnoxious regular expression because markdown links are complicated:
     // Matches: [link text](vaultPath "title")
     // - link text is optional, and may contain parentheses. Use a negative lookahead for ](
@@ -374,7 +377,14 @@ public class TestUtils {
                 yaml = false; // end yaml block
             } else if (yaml) {
                 statblock.add(l);
-                if (l.contains("*")) {
+                // Asterisks at the start of values indicate aliases in YAML. If we find this, it's probably not intentional.
+                if (ASTERISK_START_PROP_PAT.matcher(l).matches()) {
+                    errors.add(String.format("Found '*' property alias in %s: %s", p, l));
+                }
+                // Sometimes statblock text uses asterisks. Double asterisks are usually intentional markdown, but single
+                // asterisks are suspect and may be asterisks which have snuck in from the data source, and won't be rendered
+                // literallywill be rendered.
+                if (SINGLE_ASTERISK_PAT.matcher(l).matches()) {
                     errors.add(String.format("Found '*' in %s: %s", p, l));
                 }
                 if (l.contains("\"desc\": \"\"")) {
