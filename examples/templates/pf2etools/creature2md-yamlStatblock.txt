@@ -21,10 +21,10 @@ aliases:
 
 ```statblock
 layout: Pathfinder 2e Creature Layout
-source: "{sources.primarySource}"
-sourcebook: "{source}"
-name: "{name}"
-level: "Creature {level}"
+source: {sources.primarySource.quoted}
+sourcebook: {source.quoted}
+name: {name.quoted}
+level: Creature {level}
 
 {#if alignment}
 alignment: {alignment}
@@ -45,41 +45,41 @@ traits:
 {#if perception}
 modifier: {perception}
 {/if}{#if senses}
-senses: {senses.join(", ")}
+senses: {senses.join(", ").quoted}
 {/if}{#if languages}
-languages: "{languages}"
+languages: {languages.quoted}
 {/if}{#if skills}
 skills:
   {#each skills.skills}
-  - "{it.name}": {#if it.otherBonuses || it.formattedNotes}"{it.bonus}{#if it.notes} {it.formattedNotes}{/if}"{#else}{it.value}{/if}
+  - {it.name.quoted}: {#if it.otherBonuses || it.formattedNotes}"{it.bonus}{#if it.notes} {it.formattedNotes}{/if}"{#else}{it.value}{/if}
   {/each}
 {#if skills.notes}
-skillsNote: {skills.notes.join(", ")}
+skillsNote: {skills.notes.join(", ").quoted}
 {/if}
 {/if}{#if abilityMods}
-abilityMods: [{#each abilityMods.values}{it}{#if it_hasNext}, {/if}{/each}]
+abilityMods: [{abilityMods.values join ", "}]
 {/if}{#if speed}
-speed: "{speed}"
+speed: {speed.quoted}
 {/if}
 
 {#if defenses}
 {#if defenses.ac}
 ac: {defenses.ac.value}
 {#if defenses.ac.formattedNotes}
-acNote: "{defenses.ac.formattedNotes}"
+acNote: {defenses.ac.formattedNotes.quoted}
 {/if}
 {/if}
 {#if defenses.savingThrows}
 saves:
   {#for save in defenses.savingThrows.saves}
   {#if save.otherBonuses || save.notes}
-  - {save.name.toLowerCase}: "{save.bonus}{#if save.notes} {save.formattedNotes}{/if}"
+  - {save.name.toLowerCase}: {save.bonus}{#if save.notes} {save.formattedNotes}{/if}
   {#else}
   - {save.name.toLowerCase}: {save.value}
   {/if}
   {/for}
 {#if defenses.savingThrows.abilities}
-savesNote: {defenses.savingThrows.abilities.join(", ")}
+savesNote: {defenses.savingThrows.abilities.join(", ").quoted}
 {/if}
 {/if}
 {#if defenses.hpHardnessBt}
@@ -104,7 +104,7 @@ weaknesses: "{#each defenses.weaknesses}{it.key} {it.value}{#if it_hasNext}, {/i
 {/if}
 
 {#if items}
-items: "{items join ", "}"
+items: {items.join(", ").quoted}
 {/if}
 
 {#for abilitySet in abilities.abilityMap.orEmpty}
@@ -128,16 +128,16 @@ attacks:
 {#if spellcasting}
 spellcasting:
 {#for spells in spellcasting}
-  - name: "{spells.name}"
+  - name: {spells.name.quoted}
     desc: >
       {spells.formattedStats}{#if spells.notes}, {spells.notes join ", "}{/if};
-      {#if spells.ranks}{spells.ranks.join("; ").replaceAll("\*\*", "__")};{/if}
+      {#if spells.ranks}{spells.ranks join "; "};{/if}
       {#each spells.constantRanks}
       __Constant ({it.rank})__ {it.spells.join(", ").replaceAll("\*\*", "__")}{#if it_hasNext}; {/if}
       {/each}
 {/for}
 {#for rituals in ritualCasting}
-  - name: {rituals.name}
+  - name: {rituals.name.quoted}
     desc: >
       {#if rituals.dc}
       DC {rituals.dc};

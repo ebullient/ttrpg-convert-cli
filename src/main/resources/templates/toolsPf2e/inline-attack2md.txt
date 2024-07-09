@@ -7,9 +7,9 @@
   bonus: {attackBonus}
   {#if multilineEffect}
   damage: >
-    {damage}; {multilineEffect}
+    {damage}; {multilineEffect.unfoldNewlines indent "    "}
   {#else}
-  damage: {damage}
+  damage: {damage.quoted}
   {/if}
 {#else}
 {#if multilineEffect}
