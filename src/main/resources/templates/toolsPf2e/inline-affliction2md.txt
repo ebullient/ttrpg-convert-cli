@@ -3,11 +3,11 @@
 - name: {name.quoted}
   desc: >
     ({#each traits}{it.withoutTitle}{#if it_hasNext}, {/if}{/each}){#if notes} {notes.join(", ")};{/if}{#if savingThrow}
-    __Saving Throw__ {savingThrow};{/if}{#if onset}
-    __Onset__ {onset};{/if}{#if maxDuration}
-    __Maximum Duration__ {maxDuration};{/if}{#if effect}
-    __Effect__ {effect};{/if}
-    {#each stages}__{it.key}__ {it.value.text}{#if it.value.duration} ({it.value.duration}){/if}{#if it_hasNext}; {/if}{/each}
+    **Saving Throw** {savingThrow};{/if}{#if onset}
+    **Onset** {onset};{/if}{#if maxDuration}
+    **Maximum Duration** {maxDuration};{/if}{#if effect}
+    **Effect** {effect};{/if}
+    {#each stages}**{it.key}** {it.value.text}{#if it.value.duration} ({it.value.duration}){/if}{#if it_hasNext}; {/if}{/each}
 {#else}
 ````ad-inline-affliction
 {#if name}
