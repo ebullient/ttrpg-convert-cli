@@ -68,16 +68,16 @@ abilityMods: [{abilityMods.values join ", "}]
 speed: {speed.quoted}
 {/if}
 
-{#if defenses}
-{#if defenses.ac}
-ac: {defenses.ac.value}
-{#if defenses.ac.formattedNotes}
-acNote: {defenses.ac.formattedNotes.quoted}
+{#with defenses}
+{#if ac}
+ac: {ac.value}
+{#if ac.formattedNotes}
+acNote: {ac.formattedNotes.quoted}
 {/if}
 {/if}
-{#if defenses.savingThrows}
+{#if savingThrows}
 saves:
-  {#for save in defenses.savingThrows.saves}
+  {#for save in savingThrows.saves}
   - {save.name.toLowerCase().quoted}: {save.value}
     {#each save.otherBonuses}
     {it.key.quoted}: {it.value}
@@ -86,30 +86,30 @@ saves:
     note: {save.formattedNotes}
     {/if}
   {/for}
-  {#if defenses.savingThrows.abilities}
-  - note: {defenses.savingThrows.abilities.join(", ").quoted}
+  {#if savingThrows.abilities}
+  - note: {savingThrows.abilities.join(", ").quoted}
   {/if}
 {/if}
-{#if defenses.hpHardnessBt}
-{#if defenses.hpHardnessBt.hp}
-hp: {defenses.hpHardnessBt.hp.value}
+{#if hpHardnessBt}
+{#if hpHardnessBt.hp}
+hp: {hpHardnessBt.hp.value}
 {/if}
-{#if defenses.hpHardnessBt.hp.formattedNotes || defenses.additionalHp}
-hpNote: "{defenses.hpHardnessBt.hp.formattedNotes}{#if defenses.additionalHp}; {defenses.additionalHp}{/if}"
-{/if}{#if defenses.additionalHardness}
-hardness: "{#if defenses.hpHardnessBt.hardness}{defenses.hpHardnessBt.hardness}; {/if}{defenses.additionalHardness}"
-{#else if defenses.hpHardnessBt.hardness}
-hardness: {defenses.hpHardnessBt.hardness}
-{/if}
-{/if}
-{#if defenses.immunities}
-immunities: "{#each defenses.immunities}{it.withoutTitle}{#if it_hasNext}, {/if}{/each}"
-{/if}{#if defenses.resistances}
-resistances: "{#each defenses.resistances}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
-{/if}{#if defenses.weaknesses}
-weaknesses: "{#each defenses.weaknesses}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
+{#if hpHardnessBt.hp.formattedNotes || additionalHp}
+hpNote: "{hpHardnessBt.hp.formattedNotes}{#if additionalHp}; {additionalHp}{/if}"
+{/if}{#if additionalHardness}
+hardness: "{#if hpHardnessBt.hardness}{hpHardnessBt.hardness}; {/if}{additionalHardness}"
+{#else if hpHardnessBt.hardness}
+hardness: {hpHardnessBt.hardness}
 {/if}
 {/if}
+{#if immunities}
+immunities: "{#each immunities}{it.withoutTitle}{#if it_hasNext}, {/if}{/each}"
+{/if}{#if resistances}
+resistances: "{#each resistances}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
+{/if}{#if weaknesses}
+weaknesses: "{#each weaknesses}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
+{/if}
+{/with}
 
 {#if items}
 items: {items.join(", ").quoted}
@@ -139,7 +139,7 @@ spellcasting:
       {spells.formattedStats}{#if spells.notes}, {spells.notes join ", "}{/if};
       {#if spells.ranks}{spells.ranks join "; "};{/if}
       {#each spells.constantRanks}
-      __Constant ({it.rank})__ {it.spells.join(", ").replaceAll("\*\*", "__")}{#if it_hasNext}; {/if}
+      **Constant ({it.rank})** {it.spells join ", "}{#if it_hasNext}; {/if}
       {/each}
 {/for}
 {#for rituals in ritualCasting}
@@ -148,7 +148,7 @@ spellcasting:
       {#if rituals.dc}
       DC {rituals.dc};
       {/if}
-      {rituals.ranks.join("; ").replaceAll("\*\*", "__")}
+      {rituals.ranks.join("; ")}
 {/for}
 {/if}
 ```

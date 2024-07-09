@@ -5,13 +5,13 @@
 {#if hasDetails && hasAttributes}
   desc: >{#if activity || componentsTraits}
     {activity.unicodeGlyphOrText ?: ""}{activity && componentsTraits ? " " : ""}{componentsTraits};{/if}{#if range}
-    __Range__ {range};{/if}{#if cost}
-    __Cost__ {cost};{/if}{#if frequency}
-    __Frequency__ {frequency};{/if}{#if trigger}
-    __Trigger__ {trigger};{/if}{#if requirements}
-    __Requirements__ {requirements};{/if}{#if prerequisites}
-    __Prerequisites__ {prerequisites};{/if}
-    __Effect__ {text.unfoldNewlines indent "    "}{#if special}; __Special__ {special}{/if}
+    **Range** {range};{/if}{#if cost}
+    **Cost** {cost};{/if}{#if frequency}
+    **Frequency** {frequency};{/if}{#if trigger}
+    **Trigger** {trigger};{/if}{#if requirements}
+    **Requirements** {requirements};{/if}{#if prerequisites}
+    **Prerequisites** {prerequisites};{/if}
+    **Effect** {text.unfoldNewlines indent "    "}{#if special}; **Special** {special}{/if}
 {#else if hasDetails}
   desc: >
     {activity.unicodeGlyphOrText ?: ""}{activity && componentsTraits ? " " : ""}{#if activity || componentsTraits && text}{#if componentsTraits};{/if} {/if}{text.unfoldNewlines indent "    "}
