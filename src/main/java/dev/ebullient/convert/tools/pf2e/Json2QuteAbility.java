@@ -80,8 +80,10 @@ public class Json2QuteAbility extends Json2QuteBase {
                     prerequisites.replaceTextFrom(node, convert),
                     cost.replaceTextFrom(node, convert)
                             // remove trailing period
-                            .replaceFirst("^(.*)\\.$", "\1"),
-                    trigger.replaceTextFrom(node, convert),
+                            .replaceFirst("(^[.])\\.$", "$1"),
+                    trigger.replaceTextFrom(node, convert)
+                            // remove trailing period
+                            .replaceFirst("(^[.])\\.$", "$1"),
                     frequency.getFrequencyFrom(node, convert),
                     special.transformTextFrom(node, "\n", convert),
                     note.replaceTextFrom(node, convert),
