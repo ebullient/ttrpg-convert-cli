@@ -121,9 +121,7 @@ items: {items.join(", ").quoted}
 {#if abilitySet.value}
 abilities_{abilitySet.key}:
   {#each abilitySet.value}
-  {#if it.isAbility}
   {it.renderAsYamlStatblock indent "  "}
-  {/if}
   {/each}
 {/if}
 {/for}
