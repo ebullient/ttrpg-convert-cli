@@ -25,6 +25,14 @@ import java.util.stream.Collectors;
  */
 public class StringUtil {
 
+    /** Return the number with prefixed with the appropriate sign (+ or -), or an empty string if null. */
+    public static String formatAsModifier(Integer n) {
+        if (n == null) {
+            return "";
+        }
+        return (n < 0 ? "-" : "+") + Math.abs(n);
+    }
+
     /**
      * Return {@code formatString} formatted with {@code o} as the first parameter.
      * If {@code o} is null, then return an empty string.
@@ -33,8 +41,8 @@ public class StringUtil {
         return val == null || val.toString().isBlank() ? "" : formatString.formatted(val);
     }
 
-    public static String valueOrDefault(String value, String fallback) {
-        return value == null || value.isEmpty() ? fallback : value;
+    public static String valueOrDefault(Object value, String fallback) {
+        return value == null || value.toString().isEmpty() ? fallback : value.toString();
     }
 
     public static String valueOrDefault(String[] parts, int index, String fallback) {

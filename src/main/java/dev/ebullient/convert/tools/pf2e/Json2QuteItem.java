@@ -52,7 +52,7 @@ public class Json2QuteItem extends Json2QuteBase {
                 keysToList(List.of(Pf2eItem.usage, Pf2eItem.bulk)),
                 getContract(),
                 getShieldData(),
-                getArmorData(),
+                Pf2eItem.armorData.getArmorFrom(rootNode),
                 getWeaponData(),
                 getVariants(),
                 Pf2eItem.craftReq.transformTextFrom(rootNode, "; ", this));
@@ -105,27 +105,6 @@ public class Json2QuteItem extends Json2QuteBase {
                                 new SimpleStat(Pf2eItem.hardness.intOrThrow(shieldNode)),
                                 Pf2eItem.bt.intOrThrow(shieldNode)),
                         penalty(Pf2eItem.speedPen.getTextOrEmpty(shieldNode), " ft."));
-    }
-
-    private QuteItemArmorData getArmorData() {
-        JsonNode armorDataNode = Pf2eItem.armorData.getFrom(rootNode);
-        if (armorDataNode == null) {
-            return null;
-        }
-
-        QuteItemArmorData armorData = new QuteItemArmorData();
-        Pf2eItem.ac.intFrom(armorDataNode).ifPresent(ac -> armorData.ac = new QuteDataArmorClass(ac));
-        armorData.dexCap = Pf2eItem.dexCap.bonusOrNull(armorDataNode);
-
-        armorData.strength = Pf2eItem.str.getTextOrDefault(armorDataNode, "—");
-
-        String checkPen = Pf2eItem.checkPen.getTextOrDefault(armorDataNode, null);
-        armorData.checkPenalty = penalty(checkPen, "");
-
-        String speedPen = Pf2eItem.speedPen.getTextOrDefault(armorDataNode, null);
-        armorData.speedPenalty = penalty(speedPen, " ft.");
-
-        return armorData;
     }
 
     private List<QuteItemWeaponData> getWeaponData() {
@@ -293,6 +272,18 @@ public class Json2QuteItem extends Json2QuteBase {
 
         String properName() {
             return toTitleCase(this.nodeName());
+        }
+
+        private QuteItemArmorData getArmorFrom(JsonNode source) {
+            return getObjectFrom(source)
+                .map(node -> new QuteItemArmorData(
+                    ac.intFrom(node).map(QuteDataArmorClass::new).orElseThrow(),
+                    dexCap.intOrNull(node),
+                    str.intOrNull(node),
+                    checkPen.intFrom(node).map(n -> -Math.abs(n)).orElse(0),
+                    speedPen.intFrom(node).map(n -> -Math.abs(n)).orElse(0)
+                ))
+                .orElse(null);
         }
     }
 

@@ -48,18 +48,6 @@ public interface JsonNodeReader {
         }
     }
 
-    default String bonusOrNull(JsonNode x) {
-        JsonNode value = getFrom(x);
-        if (value == null) {
-            return null;
-        }
-        if (!value.isNumber()) {
-            throw new IllegalArgumentException("bonusOrNull can only work with numbers: " + value);
-        }
-        int n = value.asInt();
-        return (n >= 0 ? "+" : "") + n;
-    }
-
     /**
      * Return the boolean value of the field in the node:
      * - if the field is a boolean, return the value
