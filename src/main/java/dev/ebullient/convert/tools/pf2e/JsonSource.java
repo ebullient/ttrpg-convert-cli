@@ -3,7 +3,6 @@ package dev.ebullient.convert.tools.pf2e;
 import static dev.ebullient.convert.StringUtil.join;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,11 +13,9 @@ import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 
 public interface JsonSource extends JsonTextReplacement {
 
@@ -585,9 +582,7 @@ public interface JsonSource extends JsonTextReplacement {
             text.add("title: " + title);
 
             // Add traits
-            Tags tags = new Tags();
-            Collection<QuteDataRef> traits = collectTraitsFrom(data, tags);
-            text.add(join("  ", traits) + "  ");
+            text.add(join("  ", getTraits(data)) + "  ");
             maybeAddBlankLine(text);
 
             // Add rendered sections

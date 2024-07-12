@@ -318,7 +318,7 @@ public class Json2QuteItem extends Json2QuteBase {
                 JsonSource convert, Tags tags) {
 
             QuteItemWeaponData weaponData = new QuteItemWeaponData();
-            weaponData.traits = convert.collectTraitsFrom(source, tags);
+            weaponData.traits = convert.getTraits(source).addToTags(tags);
             weaponData.type = SourceField.type.getTextOrEmpty(source);
             weaponData.damage = getDamageString(source, convert);
 

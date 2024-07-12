@@ -6,7 +6,6 @@ import static dev.ebullient.convert.StringUtil.joiningConjunct;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,7 +18,6 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.pf2e.Pf2eJsonNodeReader.Pf2eAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
-import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDeity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack.AttackRangeType;
@@ -164,10 +162,6 @@ public class Json2QuteDeity extends Json2QuteBase {
     }
 
     private QuteInlineAttack buildAvatarAttack(JsonNode actionNode, AttackRangeType rangeType) {
-        Collection<QuteDataRef> traits = collectTraitsFrom(actionNode, tags);
-        Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()).stream().map(QuteDataRef::new).forEach(traits::add);
-        Pf2eDeity.traitNote.getTextFrom(actionNode).map(QuteDataRef::new).ifPresent(traits::add);
-
         return new QuteInlineAttack(
                 Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),
                 Pf2eActivity.toQuteActivity(this, Activity.single, null),
@@ -177,7 +171,9 @@ public class Json2QuteDeity extends Json2QuteBase {
                         .map(field -> field.getTextOrEmpty(actionNode))
                         .filter(StringUtil::isPresent)
                         .toList(),
-                traits,
+                getTraits(actionNode).addToTags(tags)
+                    .addTraits(Pf2eDeity.preciousMetal.getListOfStrings(actionNode, tui()))
+                    .addTrait(Pf2eDeity.traitNote.getTextOrEmpty(actionNode)),
                 Pf2eDeity.note.replaceTextFrom(actionNode, this),
                 this);
     }

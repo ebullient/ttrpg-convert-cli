@@ -231,8 +231,8 @@ public class QuteItem extends Pf2eQuteBase {
     public static class QuteItemWeaponData implements QuteUtil {
         /** Formatted string. Weapon type */
         public String type;
-        /** Formatted string. List of traits ({@link QuteDataRef}) */
-        public Collection<QuteDataRef> traits;
+        /** Traits as a {@link QuteDataTraits} */
+        public QuteDataTraits traits;
         public Collection<NamedText> ranged;
         public String damage;
         public String group;

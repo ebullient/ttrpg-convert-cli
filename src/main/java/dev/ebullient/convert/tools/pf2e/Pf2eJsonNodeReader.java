@@ -7,11 +7,11 @@ import static dev.ebullient.convert.StringUtil.toTitleCase;
 import static java.util.Objects.requireNonNullElse;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -95,7 +95,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
      * traits from these activation components to {@code traits}. Return an empty list if we couldn't get activation
      * components.
      */
-    default List<String> getActivationComponentsFrom(JsonNode source, Set<QuteDataRef> traits, JsonSource convert) {
+    default List<String> getActivationComponentsFrom(JsonNode source, Collection<QuteDataRef> traits, JsonSource convert) {
         List<String> rawComponents = getListOfStrings(source, convert.tui()).stream()
                 .map(s -> s.replaceFirst("^\\((%s)\\)$", "\1")) // remove parens
                 .toList();
@@ -667,7 +667,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     attack.intOrNull(node),
                     formattedDamage,
                     types.replaceTextFromList(node, convert),
-                    convert.collectTraitsFrom(node, null),
+                    convert.getTraits(node),
                     hasMultilineEffect ? List.of() : attackEffects,
                     hasMultilineEffect ? String.join("\n", attackEffects) : null,
                     noMAP.booleanOrDefault(node, false) ? List.of() : List.of("no multiple attack penalty"),

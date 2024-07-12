@@ -1,6 +1,7 @@
+{#let componentsTraits = (resource.components.join(", ") + (resource.components && resource.traits ? " " : "") + (resource.traits ? (str:format("(%s)", resource.traits.formattedWithoutTitles)) : ""))}
 ```ad-embed-ability
 {#if resource.hasDetails }
-title: **{#if resource.reference}{resource.reference}{#else}{resource.name}{/if}** {resource.activity}{resource.components.join(", ").prefixSpace}{#if resource.traits} ({resource.bareTraitList}){/if}
+title: **{#if resource.reference}{resource.reference}{#else}{resource.name}{/if}** {resource.activity}{componentsTraits.prefixSpace}
 {#if resource.note}
 > [!pf2-note] 
 > {resource.note}

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public record QuteDataRef(String displayText, String notePath, String title) implements Comparable<QuteDataRef> {
 
-    private static final Pattern MARKDOWN_LINK_PAT = Pattern.compile("^\\[(?<display>[^]]+)]\\((?<path>.*?)(?: \"(?<title>.*)\")?\\)$");
+    private static final Pattern MARKDOWN_LINK_PAT = Pattern.compile("^\\[(?<display>.+)]\\((?<path>.*?)(?: \"(?<title>.*)\")?\\)$");
 
     public QuteDataRef(String displayText) {
         this(displayText, null, null);

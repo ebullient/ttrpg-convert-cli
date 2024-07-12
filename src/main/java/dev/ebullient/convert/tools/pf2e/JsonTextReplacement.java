@@ -7,11 +7,9 @@ import static dev.ebullient.convert.tools.pf2e.Pf2eActivity.linkifyActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.stream.Collector;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -20,9 +18,9 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonTextConverter;
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataTraits;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     enum Field implements Pf2eJsonNodeReader {
@@ -209,17 +207,15 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     /**
      * Collect and linkify traits from the specified node.
      *
-     * @param tags The tags to populate while collecting traits. If null, then don't populate any tags.
-     *
-     * @return a set of {@link QuteDataRef}s to trait notes, or an empty set (never null)
+     * @return a {@link QuteDataTraits} which may be empty (never null)
      */
-    default Set<QuteDataRef> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
+    default QuteDataTraits getTraits(JsonNode sourceNode) {
         return Field.traits.getListOfStrings(sourceNode, tui()).stream()
-            .peek(tags == null ? (t -> {}) : t -> tags.add("trait", t))
-            .sorted()
-            .map(s -> linkify(Pf2eIndexType.trait, s))
-            .map(QuteDataRef::fromMarkdownLink)
-            .collect(Collectors.toCollection(TreeSet::new));
+            .map(s -> QuteDataRef.fromMarkdownLink(linkify(Pf2eIndexType.trait, s)))
+            .collect(Collector.of(QuteDataTraits::new, QuteDataTraits::add, (a, b) -> {
+                a.addAll(b);
+                return b;
+            }));
     }
 
     default String linkifyRuneItem(MatchResult match) {
@@ -363,6 +359,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     default String linkifyTrait(JsonNode traitNode, String linkText) {
         if (traitNode != null) {
             String source = SourceField.source.getTextOrEmpty(traitNode);
+            // Some traits are surrounded in square brackets. Strip this out to avoid messing up link rendering.
+            linkText = linkText.replaceFirst("^\\[(.*)]$", "$1");
 
             return "[%s](%s/%s%s.md \"%s\")".formatted(
                     linkText,
