@@ -26,21 +26,18 @@ sourcebook: {source.quoted}
 name: {name.quoted}
 level: Creature {level}
 
-{#if alignment}
-alignment: {alignment}
-{/if}{#if rarity}
-rarity: {rarity}
-{/if}{#if size}
-size: {size}
-{/if}{#if traits}
+{#with traits.getFirst("Alignment")}
+alignment: {withoutTitle.quoted}
+{/with}{#with traits.getFirst("Rarity")}
+rarity: {withoutTitle.quoted}
+{/with}{#with traits.getFirst("Size")}
+size: {withoutTitle.quoted}
+{/with}{#with traits.genericTraits}
 traits:
-  {#each traits}
-  {! Don't include traits which are already included above by the statblock layout !}
-  {#if !it.title || !(it.title.contains("Alignment Trait") || it.title.contains("Size Trait") || it.title.contains("Rarity Trait"))}
-  - "{it.withoutTitle}"
-  {/if}
+  {#each this}
+  - {it.withoutTitle.quoted}
   {/each}
-{/if}
+{/with}
 
 {#if perception}
 modifier: {perception}

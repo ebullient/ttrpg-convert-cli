@@ -2,7 +2,7 @@
 {#if asYamlStatblock}
 - name: ___{rangeType}___ {activity.unicodeGlyphOrText} {name}
   {#if traits}
-  desc: ({#each traits}{it.withoutTitle}{#if it_hasNext}, {/if}{/each})
+  desc: ({traits.formattedWithoutTitles})
   {/if}
   bonus: {attackBonus}
   {#if multilineEffect}
@@ -14,7 +14,7 @@
 {#else}
 {#if multilineEffect}
 ```ad-inline-attack
-title: {rangeType} {activity} {name.capitalized}{bonus.prefixSpace}{formattedTraits.prefixSpace}
+title: {rangeType} {activity} {name.capitalized}{bonus.prefixSpace}{#if traits} ({traits}){/if}
 {#if damage}
 **Damage** {damage}  
 {/if}{#if multilineEffect}
@@ -22,7 +22,7 @@ title: {rangeType} {activity} {name.capitalized}{bonus.prefixSpace}{formattedTra
 {/if}
 ```
 {#else}
-- **{rangeType}** {activity} {name}{bonus.prefixSpace}{formattedTraits.prefixSpace}{#if damage}, **Damage** {damage}{/if}
+- **{rangeType}** {activity} {name}{bonus.prefixSpace}{#if traits} ({traits}){/if}{#if damage}, **Damage** {damage}{/if}
 {/if}
 {/if}
 {/with}
