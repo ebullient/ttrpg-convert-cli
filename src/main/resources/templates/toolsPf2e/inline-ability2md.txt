@@ -1,5 +1,5 @@
 {#with resource}
-{#let componentsTraits = (components.join(", ") + (components && traits ? " " : "") + (traits ? (str:format("(%s)", bareTraitList)) : ""))}
+{#let componentsTraits = (components.join(", ") + (components && traits ? " " : "") + (traits ? (str:format("(%s)", traits.formattedWithoutTitles)) : ""))}
 {#if asYamlStatblock}
 - name: {reference.or(name).quoted}
 {#if hasDetails && hasAttributes}
