@@ -24,8 +24,8 @@
 
 1. From the [latest release][1], download the following files:
 
-    - `ttrpg-convert-cli-2.3.16-windows-x86_64.zip`
-    - `ttrpg-convert-cli-2.3.16-examples.zip`
+    - `ttrpg-convert-cli-2.3.17-windows-x86_64.zip`
+    - `ttrpg-convert-cli-2.3.17-examples.zip`
 
 2. Unzip the downloaded files into a place you'll remember. For example, `Downloads`. 
 3. Navigate to the `bin` directory inside the unzipped files. It might be nested within another folder. You should see a `ttrpg-convert` EXE file in the folder - see the screenshot below.
@@ -94,7 +94,7 @@
 On Windows, the command output will look like this, with weird characters at the start of lines.
 ```
 [ Γ£à  OK] Finished reading config.
-ΓÅ▒∩╕Å Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-2.3.16-windows-x86_64\ttrpg-convert-cli-2.3.16-windows-x86_64\bin\5etools-mirror-2.github.io\data
+ΓÅ▒∩╕Å Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-2.3.17-windows-x86_64\ttrpg-convert-cli-2.3.17-windows-x86_64\bin\5etools-mirror-2.github.io\data
 [ Γ£à  OK] Finished reading data.
 ```
 These are emoji that Windows is having trouble displaying. This doesn't affect the functionality at all, but
@@ -106,7 +106,7 @@ chcp 65001
 You should then start seeing the emoji correctly:
 ```
 [ ✅  OK] Finished reading config.
-⏱️ Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-2.3.16-windows-x86_64\ttrpg-convert-cli-2.3.16-windows-x86_64\bin\5etools-mirror-2.github.io\data
+⏱️ Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-2.3.17-windows-x86_64\ttrpg-convert-cli-2.3.17-windows-x86_64\bin\5etools-mirror-2.github.io\data
 [ ✅  OK] Finished reading data.
 ```
 
@@ -133,7 +133,7 @@ the wrong directory, or there's a typo somewhere in the name of the command.
 Type in `dir` and press **Enter**. You should see output similar to this:
 ```
     Directory:
-    C:\Users\Kelly\Downloads\ttrpg-convert-cli-2.3.16-windows-x86_64\ttrpg-convert-cli-2.3.16-windows-x86_64\bin
+    C:\Users\Kelly\Downloads\ttrpg-convert-cli-2.3.17-windows-x86_64\ttrpg-convert-cli-2.3.17-windows-x86_64\bin
 
 
 Mode                 LastWriteTime         Length Name
