@@ -285,6 +285,19 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
 
             Map<String, QuteDataHpHardnessBt> hpHardnessBt = getHpHardnessBt(source, convert);
 
+            List<String> immunityLinks = Pf2eDefenses.immunities.getListOfStrings(source, convert.tui())
+                    .stream()
+                    .map(s -> {
+                        if (convert.index().traitToSource(s) != null) {
+                            return convert.linkify(Pf2eIndexType.trait, s);
+                        } else if (convert.index().conditionToSource(s) != null) {
+                            return convert.linkify(Pf2eIndexType.condition, s);
+                        } else {
+                            return convert.replaceText(s);
+                        }
+                    })
+                    .toList();
+
             return new QuteDataDefenses(
                     ac.getObjectFrom(source)
                             .map(acNode -> new QuteDataArmorClass(
@@ -297,7 +310,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     savingThrows.getSavingThrowsFrom(source, convert),
                     hpHardnessBt.remove(std.name()),
                     hpHardnessBt,
-                    immunities.linkifyListFrom(source, Pf2eIndexType.trait, convert),
+                    immunityLinks,
                     resistances.streamFrom(source).collect(Pf2eNameAmountNote.mappedStatCollector(convert)),
                     weaknesses.streamFrom(source).collect(Pf2eNameAmountNote.mappedStatCollector(convert)));
         }

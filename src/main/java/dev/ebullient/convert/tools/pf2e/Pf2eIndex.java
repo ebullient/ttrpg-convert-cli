@@ -33,6 +33,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     private final Map<String, String> alias = new HashMap<>();
     private final Map<String, JsonNode> filteredIndex = new TreeMap<>();
 
+    private final Map<String, String> conditionToSource = new HashMap<>();
     private final Map<String, String> traitToSource = new HashMap<>();
     private final Map<String, Collection<String>> categoryToTraits = new TreeMap<>();
     private final Map<String, Set<String>> archetypeToFeats = new TreeMap<>();
@@ -104,6 +105,10 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
             key = replaceName(type, name, key, node, false);
         }
 
+        if (type == Pf2eIndexType.condition) {
+            addQuickLookup(conditionToSource, node, Pf2eIndexType.condition.defaultSourceString());
+        }
+
         if (type == Pf2eIndexType.book || type == Pf2eIndexType.adventure) {
             String id = SourceField.id.getTextOrEmpty(node);
             String source = SourceField.source.getTextOrEmpty(node);
@@ -141,13 +146,19 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         }
 
         // Quick lookup for traits
-        String source = SourceField.source.getTextOrDefault(node, Pf2eIndexType.trait.defaultSourceString());
-        String oldSource = traitToSource.put(name.toLowerCase(), source);
-        if (oldSource != null && !oldSource.equals(source)) {
-            tui().warnf("Duplicate trait name %s, from source %s and %s",
-                    name, source, oldSource);
-        }
+        addQuickLookup(traitToSource, node, Pf2eIndexType.trait.defaultSourceString());
         return key;
+    }
+
+    private void addQuickLookup(Map<String, String> lookup, JsonNode node, String defaultSource) {
+        String name = SourceField.name.getTextOrEmpty(node);
+        String source = SourceField.source.getTextOrDefault(node, defaultSource);
+        String oldSource = lookup.put(name.toLowerCase(), source);
+        if (oldSource != null && !oldSource.equals(source)) {
+            tui().warnf("Duplicate name %s, from source %s and %s", name, source, oldSource);
+        } else {
+            lookup.put(name.toLowerCase(), SourceField.source.getTextOrEmpty(node));
+        }
     }
 
     private String replaceName(Pf2eIndexType type, String newName, String oldKey, JsonNode node, boolean makeAlias) {
@@ -295,6 +306,10 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     public Set<String> domainSpells(String domain) {
         Set<String> spells = domainToSpells.get(domain.toLowerCase());
         return spells == null ? Set.of() : spells;
+    }
+
+    public String conditionToSource(String trait) {
+        return conditionToSource.get(trait.toLowerCase());
     }
 
     public String traitToSource(String trait) {
