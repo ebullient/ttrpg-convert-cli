@@ -194,7 +194,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         // ATM, both 5e and pf2e use the same general structure.
         // Marker files are in configData
         for (Path inputPath : input) {
-            tui.printlnf("⏱️ Reading %s", inputPath);
+            tui.printlnf("⏱️  Reading %s", inputPath);
             Path input = inputPath.toAbsolutePath();
             if (input.toFile().isDirectory()) {
                 boolean isTools = tui.readToolsDir(input, index::importTree);
