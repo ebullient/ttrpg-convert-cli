@@ -380,6 +380,7 @@ You may see these abbreviations referenced in source material, this is how they 
 |--------------|-----------|
 | 7DfS0 | Seven Dooms for Sandpoint Player's Guide |
 | AAWS | Azarketi Ancestry Web Supplement |
+| AFFM | A Few Flowers More |
 | AFoF | A Fistful of Flowers |
 | APG | Advanced Player's Guide |
 | AV0 | Abomination Vaults Player's Guide |
@@ -413,10 +414,12 @@ You may see these abbreviations referenced in source material, this is how they 
 | BL5 | Blood Lords #5: A Taste of Ashes |
 | BL6 | Blood Lords #6: Ghost King's Rage |
 | BotD | Book of the Dead |
+| CC0 | Curtain Call Player's Guide |
 | CFD | Critical Fumble Deck |
 | CHD | Critical Hit Deck |
 | CRB | Core Rulebook |
 | DA | Dark Archive |
+| DaLl | Dinner at Lionlodge |
 | EC0 | Extinction Curse Player's Guide |
 | EC1 | Extinction Curse #1: The Show Must Go On |
 | EC2 | Extinction Curse #2: Legacy of the Lost God |
@@ -441,6 +444,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | LOCG | Lost Omens: Character Guide |
 | LOGM | Lost Omens: Gods & Magic |
 | LOGMWS | Lost Omens: Gods & Magic Web Supplement |
+| LOHh | Lost Omens: Highhelm |
 | LOIL | Lost Omens: Impossible Lands |
 | LOKL | Lost Omens: Knights of Lastwall |
 | LOL | Lost Omens: Legends |
@@ -453,6 +457,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | LOWG | Lost Omens: World Guide |
 | LTiBA | Little Trouble in Big Absalom |
 | Mal | Malevolence |
+| MotM | Mark of the Mantis |
 | NGD | Night of the Gray Death |
 | OoA0 | Outlaws of Alkenstar Player's Guide |
 | OoA1 | Outlaws of Alkenstar #1: Punks in a Powder Keg |
@@ -484,6 +489,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | SoT4 | Strength of Thousands #4: Secrets of the Temple-City |
 | SoT5 | Strength of Thousands #5: Doorway to the Red Star |
 | SoT6 | Strength of Thousands #6: Shadows of the Ancients |
+| TEC | The Enmity Cycle |
 | TV | Treasure Vault |
 | TaL | Torment and Legacy |
 | TiO | Troubles in Otari |
