@@ -128,8 +128,18 @@ public class Json2QuteDeity extends Json2QuteBase {
         if (Pf2eDeity.airWalk.booleanOrDefault(avatarNode, false)) {
             avatar.speed.addAbility(linkify(Pf2eIndexType.spell, "air walk"));
         }
-        String immunities = joinConjunct(" and ",
-                Pf2eDeity.immune.linkifyListFrom(avatarNode, Pf2eIndexType.condition, this));
+
+        List<String> immunityLinks = Pf2eDeity.immune.getListOfStrings(avatarNode, tui())
+                .stream()
+                .map(s -> {
+                    // some immunities are actually traits
+                    return (index.traitToSource(s) != null)
+                            ? linkify(Pf2eIndexType.trait, s)
+                            : linkify(Pf2eIndexType.condition, s);
+                })
+                .toList();
+
+        String immunities = joinConjunct(" and ", immunityLinks);
         if (!immunities.isEmpty()) {
             avatar.speed.addAbility("immune to " + immunities);
         }
