@@ -35,6 +35,7 @@ public class CommonDataTests {
 
     enum TestInput {
         all,
+        yamlStatblocks,
         partial,
         none;
     }
@@ -61,15 +62,16 @@ public class CommonDataTests {
 
         if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             switch (variant) {
-                case all:
-                    configurator.addSources(List.of("*"));
-                    break;
-                case partial:
-                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("pf2e.json"));
-                    break;
-                case none:
-                    // should be default (CRD)
-                    break;
+                case all -> configurator.addSources(List.of("*"));
+                case yamlStatblocks -> configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("pf2e-yaml.json"));
+                case partial -> configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("pf2e.json"));
+                // should be default (CRD)
+                case none -> {
+                }
+            }
+
+            if (variant != TestInput.yamlStatblocks) {
+                templates.setCustomTemplates(TtrpgConfig.getConfig());
             }
 
             for (String x : List.of("books.json",

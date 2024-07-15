@@ -1,34 +1,47 @@
+{#with resource}
+{#if asYamlStatblock}
+- name: {name.quoted}
+  desc: >
+    ({#each traits}{it.withoutTitle}{#if it_hasNext}, {/if}{/each}){#if notes} {notes.join(", ")};{/if}{#if savingThrow}
+    **Saving Throw** {savingThrow};{/if}{#if onset}
+    **Onset** {onset};{/if}{#if maxDuration}
+    **Maximum Duration** {maxDuration};{/if}{#if effect}
+    **Effect** {effect};{/if}
+    {#each stages}**{it.key}** {it.value.text}{#if it.value.duration} ({it.value.duration}){/if}{#if it_hasNext}; {/if}{/each}
+{#else}
 ````ad-inline-affliction
-{#if resource.name}
-title: {resource.name}{#if resource.formattedLevel} _{resource.formattedLevel}_{/if}
+{#if name}
+title: {name}{#if formattedLevel} _{formattedLevel}_{/if}
 {/if}
 
-{#if resource.traits}
-{#each resource.traits}{it}  {/each}
-{/if}{#if resource.text}
-{resource.text}
+{#if traits}
+{#each traits}{it}  {/each}
+{/if}{#if text}
+{text}
 
-{/if}{#if resource.notes}
-{#each resource.notes}{it}{#if it_hasNext}, {/if}{/each}
+{/if}{#if notes}
+{#each notes}{it}{#if it_hasNext}, {/if}{/each}
 
-{/if}{#if resource.savingThrow}
-- **Saving Throws**: {resource.savingThrow}
-{/if}{#if resource.onset}
-- **Onset**: {resource.onset}
-{/if}{#if resource.maxDuration}
-- **Maximum Duration**: {resource.maxDuration}  
-{/if}{#if resource.effect}
+{/if}{#if savingThrow}
+- **Saving Throws**: {savingThrow}
+{/if}{#if onset}
+- **Onset**: {onset}
+{/if}{#if maxDuration}
+- **Maximum Duration**: {maxDuration}  
+{/if}{#if effect}
 
-**Effect** {resource.effect}
-{/if}{#if resource.stages}
+**Effect** {effect}
+{/if}{#if stages}
 
 ## Stages
 
-{#each resource.stages}
+{#each stages}
 **{it.key}** {it.value.text}{#if it.value.duration } ({it.value.duration}){/if}  
 {/each}
-{/if}{#if resource.source}
-*Source: {resource.source}*
+{/if}{#if source}
+*Source: {source}*
 {/if}
-{#if resource.tags}%% {#each resource.tags}#{it} {/each}%%{/if}
+{#if tags}%% {#each tags}#{it} {/each}%%{/if}
 ````
+{/if}
+{/with}

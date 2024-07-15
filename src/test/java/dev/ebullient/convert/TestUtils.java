@@ -42,6 +42,9 @@ public class TestUtils {
 
     static String GENERATED_DOCS = PROJECT_PATH.resolve("docs/templates").normalize().toAbsolutePath().toString();
 
+    private static final Pattern ASTERISK_START_PROP_PAT = Pattern.compile(":\\s*\\*");
+    private static final Pattern SINGLE_ASTERISK_PAT = Pattern.compile("[^*]\\*[^*]");
+
     // Obnoxious regular expression because markdown links are complicated:
     // Matches: [link text](vaultPath "title")
     // - link text is optional, and may contain parentheses. Use a negative lookahead for ](
@@ -337,6 +340,50 @@ public class TestUtils {
         } catch (IOException e) {
             e.printStackTrace();
             errors.add(String.format("Unable to parse files in directory %s: %s", directory, e));
+        }
+        return errors;
+    }
+
+    public static List<String> yamlStatblockChecker(Path p, List<String> content) {
+        List<String> errors = new ArrayList<>();
+        boolean found = false;
+        boolean yaml = false;
+        boolean index = false;
+        List<String> statblock = new ArrayList<>();
+
+        for (String l : content) {
+            if (l.startsWith("# Index ")) {
+                index = true;
+            } else if (l.equals("```statblock")) {
+                found = yaml = true; // start yaml block
+            } else if (l.equals("```")) {
+                yaml = false; // end yaml block
+            } else if (yaml) {
+                statblock.add(l);
+                // Asterisks at the start of values indicate aliases in YAML. If we find this, it's probably not intentional.
+                if (ASTERISK_START_PROP_PAT.matcher(l).matches()) {
+                    errors.add(String.format("Found '*' property alias in %s: %s", p, l));
+                }
+                // Sometimes statblock text uses asterisks. Double asterisks are usually intentional markdown, but single
+                // asterisks are suspect and may be asterisks which have snuck in from the data source, and won't be rendered
+                // literallywill be rendered.
+                if (SINGLE_ASTERISK_PAT.matcher(l).matches()) {
+                    errors.add(String.format("Found '*' in %s: %s", p, l));
+                }
+                if (l.contains("\"desc\": \"\"")) {
+                    errors.add(String.format("Found empty description in %s: %s", p, l));
+                }
+            }
+            TestUtils.commonTests(p, l, errors);
+        }
+
+        try {
+            Tui.quotedYaml().load(String.join("\n", statblock));
+        } catch (Exception e) {
+            errors.add(String.format("File %s contains invalid yaml: %s", p, e));
+        }
+        if (!found && !index) {
+            errors.add(String.format("File %s did not contain a yaml statblock", p));
         }
         return errors;
     }
