@@ -27,7 +27,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
     static final Pattern linkifyPattern = Pattern.compile("\\{@("
             + "|action|background|card|class|condition|creature|deck|deity|disease"
-            + "|feat|hazard|item|itemMastery|legroup|object|race|reward"
+            + "|feat|hazard|item|itemMastery|legroup|object|psionic|race|reward"
             + "|sense|skill|spell|status|table|variantrule|vehicle"
             + "|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
     static final Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^{}]+)}");
@@ -499,6 +499,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@optfeature Agonizing Blast} assumes PHB by default,
             // {@optfeature Aspect of the Moon|xge} can have sources added with a pipe,
             // {@optfeature Aspect of the Moon|xge|and optional link text added with another pipe}.",
+            // {@psionic Mastery of Force} assumes UATheMysticClass by default
+            // {@psionic Mastery of Force|UATheMysticClass} can have sources added with a pipe
+            // {@psionic Mastery of Force|UATheMysticClass|and optional link text added with another pipe}.",
             // {@race Human} assumes PHB by default,
             // {@race Aasimar (Fallen)|VGM}
             // {@race Aasimar|DMG|racial traits for the aasimar}
