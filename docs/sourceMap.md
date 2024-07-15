@@ -466,6 +466,8 @@ You may see these abbreviations referenced in source material, this is how they 
 | QFF2 | Quest for the Frozen Flame #2: Lost Mammoth Valley |
 | QFF3 | Quest for the Frozen Flame #3: Burning Tundra |
 | RoE | Rage of Elements |
+| Rust | Rusthenge |
+| SF0 | Stolen Fate Player's Guide |
 | SKT0 | Sky King's Tomb Player's Guide |
 | SaS | Shadows at Sundown |
 | Sli | The Slithering |
@@ -473,6 +475,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | SoG1 | Season of Ghosts #1: The Summer That Never Was |
 | SoG2 | Season of Ghosts #2: Let the Leaves Fall |
 | SoG3 | Season of Ghosts #3: No Breath to Cry |
+| SoG4 | Season of Ghosts #4: To Bloom Below the Web |
 | SoM | Secrets of Magic |
 | SoT0 | Strength of Thousands Player's Guide |
 | SoT1 | Strength of Thousands #1: Kindled Magic |
