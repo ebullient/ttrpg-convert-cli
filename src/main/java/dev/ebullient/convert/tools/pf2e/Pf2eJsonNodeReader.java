@@ -729,10 +729,11 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             return new QuteDataNamedBonus(
                     displayName,
                     std.intOrThrow(source),
-                    convert.streamPropsExcluding(source, std, note)
+                    convert.streamPropsExcluding(source, std, note, abilities, notes)
                             .collect(Collectors.toMap(e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
-                    note.getTextFrom(source).map(convert::replaceText).map(List::of)
-                            .orElse((abilities.existsIn(source) ? abilities : notes).replaceTextFromList(source, convert)));
+                    Stream.of(abilities, note, notes)
+                        .flatMap(field -> field.replaceTextFromList(source, convert).stream())
+                        .toList());
         }
     }
 
