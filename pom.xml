@@ -31,7 +31,7 @@
         <url>https://github.com/ebullient/ttrpg-convert-cli/issues</url>
     </issueManagement>
     <properties>
-        <revision>2.3.18</revision>
+        <revision>299-SNAPSHOT</revision>
         <!-- Build -->
         <clean-plugin.version>3.4.0</clean-plugin.version>
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
