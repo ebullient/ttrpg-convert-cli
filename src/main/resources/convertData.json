@@ -614,6 +614,12 @@
           "replace": "{@condition enfeebled 4}."
         }
       ],
+      "creatures-wow2.json": [
+        {
+          "match": "\\{@conditio n",
+          "replace": "{@condition "
+        }
+      ],
       "deities.json": [
         {
           "match": "immobilizied",

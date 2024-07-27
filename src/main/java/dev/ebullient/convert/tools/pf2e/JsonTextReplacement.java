@@ -164,6 +164,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
                         .replaceAll("\\{@strike ([^}]+?)}", "$1")
                         .replaceAll("\\{@n ([^}]+?)}", "$1")
                         .replaceAll("\\{@b ([^}]+?)}", "**$1**")
+                        .replaceAll("\\{@B ([^}]+?)}", "**$1**")
                         .replaceAll("\\{@bold ([^}]+?)}", "**$1**")
                         .replaceAll("\\{@i ([^}]+?)}", "_$1_")
                         .replaceAll("\\{@italic ([^}]+)}", "_$1_")
