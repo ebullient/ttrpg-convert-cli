@@ -25,18 +25,12 @@ If there isn't an issue yet, open one! Be as specific as you can, and include th
 - **Use maven:** `./mvnw install`
 - **Use the Quarkus CLI**: `quarkus build`
 
-To test with actual/live data, clone 5eTools and/or PF2eTools into a `sources` directory.
+To test with actual/live data, add 5eTools and/or PF2eTools into a `sources` directory.
 
 Using the GitHub CLI:
 
 ```shell
 mkdir -p sources
-# 5eTools
-gh repo clone 5etools-mirror-2/5etools-mirror-2.github.io sources/5etools-mirror-2.github.io -- --depth=1
-gh repo clone TheGiddyLimit/homebrew sources/5e-homebrew -- --depth=1
-gh repo clone TheGiddyLimit/unearthed-arcana sources/5e-unearthed-arcana -- --depth=1
-# Optional: 5eTools images; requires an extra config step
-gh repo clone 5etools-mirror-2/5etools-img sources/5etools-img -- --depth=1
 
 # PF2eTools
 gh repo clone Pf2eToolsOrg/Pf2eTools sources/Pf2eTools -- --depth=1
@@ -118,7 +112,7 @@ Next navigate to *Java* -> *Code Style* -> *Organize Imports*. Click *Import* an
       ""
     ],
     ```
-   
+
 #### IntelliJ
 
 1. Open the *Settings* window
@@ -129,7 +123,7 @@ Next navigate to *Java* -> *Code Style* -> *Organize Imports*. Click *Import* an
 6. Ensure that the *Layout static imports separately* checkbox is checked
 7. Underneath that, change the entries so that they look like this:
 
-    ```
+    ```shell
    import static all other imports
    <blank line>
    import java.*

@@ -413,10 +413,6 @@ The following configuration options allow you to change how the CLI treats these
 
 - Create a shallow clone of the images repository, and set `images.internalRoot` in your configuration file to tell the CLI where it can locally find "internal" images.
 
-    ```shell
-    git clone --depth 1 https://github.com/5etools-mirror-2/5etools-img.git
-    ```
-
     ```json
     "images": {
         "copyInternal": true,
