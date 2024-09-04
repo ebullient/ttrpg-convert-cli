@@ -279,10 +279,13 @@
                     <excludePackageNames>
                         dev.ebullient.convert,dev.ebullient.convert.config,dev.ebullient.convert.io,dev.ebullient.convert.tools,dev.ebullient.convert.tools.dnd5e,dev.ebullient.convert.tools.pf2e</excludePackageNames>
                     <doclet>dev.ebullient.convert.io.MarkdownDoclet</doclet>
-                    <docletPath>./target/classes</docletPath>
-                    <reportOutputDirectory>./</reportOutputDirectory>
-                    <destDir>./</destDir>
-                    <additionalparam>-d javadoc/</additionalparam>
+                    <docletPath>${project.basedir}/target/classes</docletPath>
+                    <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
+                    <destDir>${project.basedir}</destDir>
+                    <additionalOptions>
+                        <additionalOption>-d</additionalOption>
+                        <additionalOption>javadoc</additionalOption>
+                    </additionalOptions>
                     <useStandardDocletOptions>false</useStandardDocletOptions>
                 </configuration>
                 <executions>
