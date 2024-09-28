@@ -1,6 +1,7 @@
 # SourceAndPage
 
-A representation of a source and page number. This attribute will print itself nicely if you don't reference sub-attributes.
+A representation of a source and page number. This attribute will print
+itself nicely if you don't reference sub-attributes.
 
 ## Attributes
 

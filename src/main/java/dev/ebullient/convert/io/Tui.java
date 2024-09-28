@@ -5,16 +5,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +42,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
 import com.github.slugify.Slugify;
@@ -79,7 +82,13 @@ public class Tui {
     public final static TypeReference<Map<String, List<String>>> MAP_STRING_LIST_STRING = new TypeReference<>() {
     };
 
-    public final static ObjectMapper MAPPER = initMapper(new ObjectMapper());
+    public final static PrintWriter streamToWriter(PrintStream stream) {
+        return new PrintWriter(stream, true, Charset.forName("UTF-8"));
+    }
+
+    public final static ObjectMapper MAPPER = initMapper(JsonMapper.builder()
+            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
+            .build());
 
     private static Slugify slugify;
 
@@ -117,8 +126,9 @@ public class Tui {
     }
 
     private static ObjectMapper initMapper(ObjectMapper mapper) {
-        mapper.setVisibility(VisibilityChecker.Std.defaultInstance()
-                .with(JsonAutoDetect.Visibility.ANY));
+        mapper.setSerializationInclusion(Include.NON_DEFAULT)
+                .setVisibility(VisibilityChecker.Std.defaultInstance()
+                        .with(JsonAutoDetect.Visibility.ANY));
         return mapper;
     }
 
@@ -180,7 +190,9 @@ public class Tui {
     private Templates templates;
     private CommandLine commandLine;
     private boolean debug;
+    private boolean debugOrLog;
     private boolean verbose;
+    private boolean verboseOrLog;
     private Path output = Paths.get("");
     private final Set<Path> inputRoot = new TreeSet<>();
 
@@ -188,8 +200,8 @@ public class Tui {
         this.ansi = Help.Ansi.OFF;
         this.colors = Help.defaultColorScheme(ansi);
 
-        this.out = new PrintWriter(System.out);
-        this.err = new PrintWriter(System.err);
+        this.out = streamToWriter(System.out);
+        this.err = streamToWriter(System.err);
         this.debug = false;
         this.verbose = true;
 
@@ -209,8 +221,11 @@ public class Tui {
             this.commandLine = spec.commandLine();
         }
 
-        this.debug = debug || log;
-        this.verbose = verbose;
+        this.debug = debug || picocliDebugEnabled;
+        this.debugOrLog = this.debug || log;
+        this.verbose = verbose || debug;
+        this.verboseOrLog = this.verbose || log;
+
         if (log) {
             Path p = Path.of("ttrpg-convert.out.txt");
             try {
@@ -250,103 +265,125 @@ public class Tui {
         }
     }
 
-    private void outLine(Text line) {
+    private void outLine(String text, Text line) {
         out.println(line);
         if (log != null) {
-            log.println(line.plainString());
+            log.println(text);
         }
     }
 
-    private void errLine(Text line) {
+    private void errLine(String text, Text line) {
         err.println(line);
         if (log != null) {
-            log.println(line.plainString());
+            log.println(text);
         }
     }
 
     public boolean isDebug() {
-        return debug || picocliDebugEnabled;
-    }
-
-    public void debugf(String format, Object... params) {
-        if (isDebug()) {
-            debug(String.format(format, params));
-        }
-    }
-
-    public void debug(String output) {
-        if (isDebug()) {
-            outLine(ansi.new Text("@|faint 🔧 " + output + "|@", colors));
-        }
+        return debugOrLog;
     }
 
     public boolean isVerbose() {
-        return verbose;
+        return verboseOrLog;
     }
 
-    public void verbosef(String format, Object... params) {
-        if (isVerbose()) {
-            verbose(String.format(format, params));
-        }
+    public void debugf(String output, Object... params) {
+        debugf(Msg.NOOP, output, params);
     }
 
-    public void verbose(String output) {
-        if (isVerbose()) {
-            outLine(ansi.new Text("@|faint 🔹 " + output + "|@", colors));
-        }
-    }
-
-    public void warnf(String format, Object... params) {
-        warn(String.format(format, params));
-    }
-
-    public void warn(String output) {
-        outLine(ansi.new Text("[🔸 WARN] " + output));
-    }
-
-    public void donef(String format, Object... params) {
-        done(String.format(format, params));
-    }
-
-    public void done(String output) {
-        outLine(ansi.new Text("[ ✅  OK] " + output));
-    }
-
-    public void printlnf(String format, Object... args) {
-        println(String.format(format, args));
-    }
-
-    public void println(String output) {
-        outLine(ansi.new Text(output, colors));
-        flush();
-    }
-
-    public void println(String... output) {
-        Arrays.stream(output).forEach(l -> outLine(ansi.new Text(l, colors)));
-        flush();
-    }
-
-    public void errorf(String format, Object... args) {
-        error(null, String.format(format, args));
-    }
-
-    public void errorf(Throwable th, String format, Object... args) {
-        error(th, String.format(format, args));
-    }
-
-    public void error(String errorMsg) {
-        error(null, errorMsg);
-    }
-
-    public void error(Throwable ex, String errorMsg) {
-        errLine(colors.errorText("[ 🛑 ERR] " + errorMsg));
-        if (ex != null && isDebug()) {
-            ex.printStackTrace(err);
+    public void debugf(Msg msg, String output, Object... params) {
+        if (debugOrLog) {
+            output = format(msg.wrap(output), params);
+            if (debug) {
+                out.println(ansi.new Text(Msg.DEBUG.color(output), colors));
+            }
             if (log != null) {
-                ex.printStackTrace(log);
+                log.println(Msg.DEBUG.wrap(output));
             }
         }
-        flush();
+    }
+
+    public void progressf(String output, Object... params) {
+        verboseMsg(Msg.PROGRESS, output, params);
+    }
+
+    private void verboseMsg(Msg msgWrap, String output, Object... params) {
+        if (verboseOrLog) {
+            output = format(output, params);
+            if (verbose) {
+                out.println(ansi.new Text(msgWrap.color(output), colors));
+            }
+            if (log != null) {
+                log.println(msgWrap.wrap(output));
+            }
+        }
+    }
+
+    public void logf(String output, Object... params) {
+        logf(Msg.NOOP, output, params);
+    }
+
+    public void logf(Msg msg, String output, Object... params) {
+        if (log != null) {
+            output = format(msg.wrap(output), params);
+            log.println(output);
+        }
+    }
+
+    public void infof(Msg msg, String output, Object... params) {
+        infof(msg.wrap(output), params);
+    }
+
+    public void infof(String output, Object... params) {
+        output = format(Msg.INFO.wrap(output), params);
+        outLine(output, ansi.new Text(output));
+    }
+
+    public void warnf(Msg msg, String output, Object... params) {
+        warnf(msg.wrap(output), params);
+    }
+
+    public void warnf(String output, Object... params) {
+        output = format(Msg.WARN.wrap(output), params);
+        outLine(output, ansi.new Text(output));
+    }
+
+    public void printlnf(Msg msgType, String output, Object... params) {
+        output = format(msgType.wrap(output), params);
+        outLine(output, ansi.new Text(output));
+    }
+
+    public void errorf(String output, Object... params) {
+        errorf(null, Msg.NOOP, output, params);
+    }
+
+    public void errorf(Msg msgType, String output, Object... params) {
+        errorf(null, msgType, output, params);
+    }
+
+    public void errorf(Throwable th, String output, Object... params) {
+        errorf(th, Msg.NOOP, output, params);
+    }
+
+    public void errorf(Throwable th, Msg msgType, String output, Object... params) {
+        output = format(msgType.wrap(output), params);
+        error(th, output);
+    }
+
+    private void error(Throwable ex, String errorMsg) {
+        String message = Msg.ERR.wrap(errorMsg
+                .replace("java.nio.file.NoSuchFileException: ", "File not found: "));
+        errLine(message, colors.errorText(message));
+        if (ex != null && log != null) {
+            ex.printStackTrace(log);
+        }
+    }
+
+    private String format(String output, Object... params) {
+        if (params != null && params.length > 0) {
+            return String.format(output, params);
+        }
+        return output;
     }
 
     public void throwInvalidArgumentException(String message) {
@@ -372,12 +409,12 @@ public class Tui {
             Path targetPath = output.resolve(Path.of("css-snippets", slugify(fontRef.fontFamily) + ".css"));
             targetPath.getParent().toFile().mkdirs();
 
-            printlnf("⏱️ Generating CSS snippet for %s", fontRef.sourcePath);
+            progressf("Generating CSS snippet for %s", fontRef.sourcePath);
             if (fontRef.sourcePath.startsWith("http")) {
                 try (InputStream is = URI.create(fontRef.sourcePath.replace(" ", "%20")).toURL().openStream()) {
                     Files.writeString(targetPath, templates.renderCss(fontRef, is));
                 } catch (IOException e) {
-                    errorf(e, "Unable to copy font from %s to %s", fontRef.sourcePath, targetPath);
+                    errorf("Unable to copy font. %s", e);
                 }
             } else {
                 Optional<Path> resolvedSource = resolvePath(Path.of(fontRef.sourcePath));
@@ -388,7 +425,7 @@ public class Tui {
                 try (BufferedInputStream is = new BufferedInputStream(Files.newInputStream(resolvedSource.get()))) {
                     Files.writeString(targetPath, templates.renderCss(fontRef, is));
                 } catch (IOException e) {
-                    errorf(e, "Unable to copy font from %s to %s", fontRef.sourcePath, targetPath);
+                    errorf("Unable to copy font. %s", e);
                 }
             }
         }
@@ -418,7 +455,7 @@ public class Tui {
             try {
                 Files.copy(image.sourcePath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                errorf(e, "Unable to copy image from %s to %s (%s)", image.sourcePath(), image.targetFilePath(), e);
+                errorf("Unable to copy image. %s", e);
             }
         }
     }
@@ -431,7 +468,7 @@ public class Tui {
             InputStream in = TtrpgConfig.class.getResourceAsStream(sourcePath);
             Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            errorf(e, "Unable to copy resource from %s to %s (%s)", sourcePath, image.targetFilePath(), e);
+            errorf("Unable to copy resource. %s", e);
         }
     }
 
@@ -456,13 +493,14 @@ public class Tui {
                 fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             }
         } catch (IOException e) {
-            errorf(e, "Unable to copy remote image from %s to %s (%s)", url, image.targetFilePath(), e);
+            errorf("Unable to copy remote image (%s). ", url, e);
         }
     }
 
     public boolean readFile(Path p, List<Fix> fixes, BiConsumer<String, JsonNode> callback) {
         inputRoot.add(p.getParent().toAbsolutePath());
         try {
+            progressf("Reading %s", p);
             File f = p.toFile();
             String contents = Files.readString(p);
             for (Fix fix : fixes) {
@@ -470,7 +508,6 @@ public class Tui {
             }
             JsonNode node = MAPPER.readTree(contents);
             callback.accept(f.getName(), node);
-            verbosef("🔖 Finished reading %s", p);
         } catch (IOException e) {
             errorf(e, "Unable to read source file at path %s (%s)", p, e.getMessage());
             return false;
@@ -479,7 +516,7 @@ public class Tui {
     }
 
     public boolean readDirectory(String relative, Path dir, BiConsumer<String, JsonNode> callback) {
-        debugf("📁 %s", dir);
+        debugf(Msg.FOLDER.wrap(dir.toString()));
 
         inputRoot.add(dir.toAbsolutePath());
 
@@ -590,10 +627,16 @@ public class Tui {
 
     public static JsonNode readTreeFromResource(String resource) {
         try {
-            return Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream(resource));
+            return resource.endsWith(".yaml")
+                    ? Tui.yamlMapper().readTree(TtrpgConfig.class.getResourceAsStream(resource))
+                    : Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream(resource));
         } catch (IOException | IllegalArgumentException e) {
             Tui.instance.errorf(e, "Unable to read or parse required resource (%s): %s", resource, e.toString());
             return null;
         }
+    }
+
+    public static String jsonStringify(Object o) {
+        return Tui.MAPPER.valueToTree(o).toPrettyString();
     }
 }

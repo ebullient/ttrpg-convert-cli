@@ -100,11 +100,11 @@ public class Json2QuteVehicle extends Json2QuteCommon {
     private ShipAcHp getAcHp(JsonNode node) {
         String cost = getCost(node);
         return new ShipAcHp(vehicleType.name(),
-                VehicleFields.ac.getIntFrom(node).orElse(null),
+                VehicleFields.ac.intOrNull(node),
                 VehicleFields.acFrom.getTextOrNull(node),
-                VehicleFields.hp.getIntFrom(node).orElse(null),
+                VehicleFields.hp.intOrNull(node),
                 VehicleFields.hpNote.getTextOrNull(node),
-                VehicleFields.dt.getIntFrom(node).orElse(null),
+                VehicleFields.dt.intOrNull(node),
                 null,
                 cost == null ? null : cost.toString());
     }
@@ -122,7 +122,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
     }
 
     private String convertCost(JsonNode node) {
-        Optional<Integer> costCp = VehicleFields.cost.getIntFrom(node);
+        Optional<Integer> costCp = VehicleFields.cost.intFrom(node);
         String note = VehicleFields.note.getTextOrNull(node);
         if (costCp.isPresent() || note != null) {
             return costCp.map(x -> convertCurrency(x)).orElse("\u23E4") + (note == null ? "" : " (" + note + ")");
@@ -137,7 +137,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
         String keelBeam = null;
 
         if (vehicleType == VehicleType.SHIP) {
-            shipPace = VehicleFields.pace.getIntFrom(rootNode).orElse(null);
+            shipPace = VehicleFields.pace.intOrNull(rootNode);
         } else if (vehicleType == VehicleType.SPELLJAMMER) {
             JsonNode speedNode = VehicleFields.speed.getFrom(rootNode);
             JsonNode paceNode = VehicleFields.pace.getFrom(rootNode);
@@ -164,15 +164,15 @@ public class Json2QuteVehicle extends Json2QuteCommon {
                 keelBeam = VehicleFields.dimensions.joinAndReplace(rootNode, this, " by ");
             }
         } else if (vehicleType == VehicleType.INFWAR) {
-            int dexMod = VehicleFields.dexMod.getIntFrom(rootNode).orElse(0);
+            int dexMod = VehicleFields.dexMod.intOrDefault(rootNode, 0);
             JsonNode hpNode = VehicleFields.hp.getFrom(rootNode);
             shipAcHp = new ShipAcHp(vehicleType.name(),
                     dexMod == 0 ? 19 : 19 + dexMod,
                     dexMod == 0 ? "" : "19 while motionless",
-                    VehicleFields.hp.getIntFrom(hpNode).orElse(null),
+                    VehicleFields.hp.intOrNull(hpNode),
                     null,
-                    VehicleFields.dt.getIntFrom(hpNode).orElse(null),
-                    VehicleFields.mt.getIntFrom(hpNode).orElse(null),
+                    VehicleFields.dt.intOrNull(hpNode),
+                    VehicleFields.mt.intOrNull(hpNode),
                     null);
             speedPace = speed(Tools5eFields.speed.getFrom(rootNode));
         } else if (vehicleType == VehicleType.CREATURE || vehicleType == VehicleType.OBJECT) {
@@ -261,7 +261,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
         }
         for (JsonNode node : VehicleFields.weapon.iterateArrayFrom(rootNode)) {
             String name = SourceField.name.replaceTextFrom(node, this);
-            Optional<Integer> count = VehicleFields.count.getIntFrom(node);
+            Optional<Integer> count = VehicleFields.count.intFrom(node);
             if (count.isPresent()) {
                 name += " (" + count.get() + ")";
             }
@@ -299,8 +299,8 @@ public class Json2QuteVehicle extends Json2QuteCommon {
     private void getSpelljammerSections(List<ShipSection> sections) {
         for (JsonNode node : VehicleFields.weapon.iterateArrayFrom(rootNode)) {
             String name = SourceField.name.replaceTextFrom(node, this);
-            Optional<Integer> count = VehicleFields.count.getIntFrom(node);
-            Optional<Integer> crew = VehicleFields.crew.getIntFrom(node);
+            Optional<Integer> count = VehicleFields.count.intFrom(node);
+            Optional<Integer> crew = VehicleFields.crew.intFrom(node);
             boolean isMultiple = count.isPresent() && count.get() > 1;
 
             if (isMultiple) {

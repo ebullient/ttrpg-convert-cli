@@ -12,10 +12,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 /**
  * Holder of a name or category and associated descriptive text.
  *
- * <p>
- * This attribute will render itself as labeled elements
- * if you reference it directly.
- * </p>
+ * This attribute will render itself as labeled elements if you reference it directly.
  */
 @TemplateData
 @RegisterForReflection

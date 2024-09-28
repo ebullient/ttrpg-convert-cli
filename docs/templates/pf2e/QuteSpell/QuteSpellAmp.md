@@ -2,7 +2,8 @@
 
 Pf2eTools spell Amp attributes
 
-This attribute will render itself as labeled elements if you reference it directly: `{resource.amp}`.
+This attribute will render itself as labeled elements
+if you reference it directly: `{resource.amp}`.
 
 ## Attributes
 

@@ -1,6 +1,6 @@
 package dev.ebullient.convert.config;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Path;
@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
@@ -45,37 +43,16 @@ public class ConfiguratorTest {
     }
 
     @Test
-    public void testPathNested() throws Exception {
-        TtrpgConfig.init(tui, Datasource.tools5e);
-        Configurator test = new Configurator(tui);
-
-        tui.readFile(TestUtils.TEST_RESOURCES.resolve("paths.json"), List.of(), (f, node) -> {
-            ObjectNode parent = Tui.MAPPER.createObjectNode();
-            ObjectNode ttrpg = Tui.MAPPER.createObjectNode();
-            parent.set("ttrpg", ttrpg);
-            ttrpg.set("5e", node);
-
-            test.readConfigIfPresent(parent);
-            CompendiumConfig config = TtrpgConfig.getConfig();
-
-            assertThat(config).isNotNull();
-            assertThat(config).isNotNull();
-            assertThat(config.compendiumVaultRoot()).isEqualTo("");
-            assertThat(config.compendiumFilePath()).isEqualTo(CompendiumConfig.CWD);
-            assertThat(config.rulesVaultRoot()).isEqualTo("rules/");
-            assertThat(config.rulesFilePath()).isEqualTo(Path.of("rules/"));
-        });
-
-    }
-
-    @Test
     public void testSources() throws Exception {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources.json"), List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("5e/sources.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
+            config.resolveAdventures();
+            config.resolveBooks();
+            config.resolveHomebrew();
 
             assertThat(config).isNotNull();
             assertThat(config.allSources()).isFalse();
@@ -110,12 +87,12 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources-book-adventure.json"), List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("5e/sources-book-adventure.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
 
-            Collection<String> books = config.getBooks();
-            Collection<String> adventures = config.getAdventures();
+            Collection<String> books = config.resolveBooks();
+            Collection<String> adventures = config.resolveAdventures();
 
             assertThat(config).isNotNull();
             assertThat(books).contains("book/book-phb.json");
@@ -148,7 +125,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_RESOURCES.resolve("images-remote.json"), List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
 

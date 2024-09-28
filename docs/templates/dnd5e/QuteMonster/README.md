@@ -6,16 +6,19 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [alignment](#alignment), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [legendaryGroupLink](#legendarygrouplink), [name](#name), [passive](#passive), [pb](#pb), [reaction](#reaction), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
+[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [alignment](#alignment), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [legendaryGroupLink](#legendarygrouplink), [name](#name), [passive](#passive), [pb](#pb), [reaction](#reaction), [reprintOf](#reprintof), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
 
 
 ### 5eInitiativeYaml
 
-A minimal YAML snippet containing monster attributes required by the Initiative Tracker plugin. Use this in frontmatter.
+A minimal YAML snippet containing monster attributes required by the
+Initiative Tracker plugin. Use this in frontmatter.
 
 ### 5eStatblockYaml
 
-Complete monster attributes in the format required by the Fantasy statblock plugin. Uses double-quoted syntax to deal with a variety of characters occuring in trait descriptions. Usable in frontmatter or Fantasy Statblock code blocks.
+Complete monster attributes in the format required by the Fantasy statblock plugin.
+Uses double-quoted syntax to deal with a variety of characters occuring in
+trait descriptions. Usable in frontmatter or Fantasy Statblock code blocks.
 
 ### ac
 
@@ -27,7 +30,7 @@ Creature AC and HP as [AcHp](../AcHp.md)
 
 ### acText
 
-See [AcHp#acText](../AcHp.md#acText)
+See [AcHp#acText](../AcHp.md#actext)
 
 ### action
 
@@ -47,7 +50,7 @@ List of source books (abbreviated name). Fantasy statblock uses this list.
 
 ### conditionImmune
 
-See [ImmuneResist#conditionImmune](../ImmuneResist.md#conditionImmune)
+See [ImmuneResist#conditionImmune](../ImmuneResist.md#conditionimmune)
 
 ### cr
 
@@ -75,7 +78,7 @@ True if the content (text) contains sections
 
 ### hitDice
 
-See [AcHp#hitDice](../AcHp.md#hitDice)
+See [AcHp#hitDice](../AcHp.md#hitdice)
 
 ### hp
 
@@ -83,7 +86,7 @@ See [AcHp#hp](../AcHp.md#hp)
 
 ### hpText
 
-See [AcHp#hpText](../AcHp.md#hpText)
+See [AcHp#hpText](../AcHp.md#hptext)
 
 ### immune
 
@@ -111,7 +114,9 @@ Creature legendary traits as a list of [NamedText](../../NamedText.md)
 
 ### legendaryGroup
 
-Map of grouped legendary traits (Lair Actions, Regional Effects, etc.). The key the group name, and the value is a list of [NamedText](../../NamedText.md).
+Map of grouped legendary traits (Lair Actions, Regional Effects, etc.). The key the group name, and the value is a list
+of
+[NamedText](../../NamedText.md).
 
 ### legendaryGroupLink
 
@@ -133,6 +138,10 @@ Proficiency bonus (modifier)
 
 Creature reactions as a list of [NamedText](../../NamedText.md)
 
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
+
 ### resist
 
 See [ImmuneResist#resist](../ImmuneResist.md#resist)
@@ -143,7 +152,8 @@ Creature saving throws and skill modifiers as [SavesAndSkills](SavesAndSkills.md
 
 ### savingThrows
 
-String representation of saving throws. Equivalent to `{resource.savesSkills.saves}`
+String representation of saving throws.
+Equivalent to `{resource.savesSkills.saves}`
 
 ### scores
 
@@ -159,7 +169,8 @@ Creature size (capitalized)
 
 ### skills
 
-String representation of saving throws. Equivalent to `{resource.savesSkills.skills}`
+String representation of saving throws.
+Equivalent to `{resource.savesSkills.skills}`
 
 ### source
 

@@ -5,14 +5,17 @@ import static dev.ebullient.convert.StringUtil.pluralize;
 
 import java.util.List;
 
+import dev.ebullient.convert.io.JavadocVerbatim;
+
 /**
  * A duration of time, represented by a numerical value and a unit. Sometimes this includes a custom display string,
- * for durations which cannot be represented using the normal structure. Examples:
- * <ul>
- * <li>A duration of 3 minutes: <blockquote>3 minutes</blockquote></li>
- * <li>A duration of 1 turn: <blockquote>until the end of your next turn</blockquote></li>
- * <li>An unlimited duration: <blockquote>unlimited</blockquote></li>
- * </ul>
+ * for durations which cannot be represented using the normal structure.
+ *
+ * Examples:
+ *
+ * - A duration of 3 minutes: `3 minutes`
+ * - A duration of 1 turn: `until the end of your next turn`
+ * - An unlimited duration: `unlimited`
  *
  * @param value The quantity of time
  * @param unit The unit that the quantity is measured in, as a {@link QuteDataTimedDuration.DurationUnit}
@@ -34,6 +37,8 @@ public record QuteDataTimedDuration(Integer value, DurationUnit unit,
         return !notes.isEmpty();
     }
 
+    /** Returns a comma delimited string containing all notes. */
+    @JavadocVerbatim
     @Override
     public String formattedNotes() {
         return join(", ", notes);

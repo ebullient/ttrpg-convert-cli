@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools;
 
+import static dev.ebullient.convert.StringUtil.join;
+
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,18 +24,21 @@ public class Tags {
 
     public void addSourceTags(CompendiumSources sources) {
         if (sources != null) {
-            tags.addAll(sources.primarySourceTag());
+            String sourceTag = config.tagOfRaw(sources.primarySourceTag());
+            tags.add(sourceTag);
         }
     }
 
     /** Prepend configured prefix and slugify parts */
-    public void addRaw(String first, String rawValue) {
-        tags.add(config.tagOfRaw(first + "/" + rawValue));
+    public void addRaw(String... rawValues) {
+        String rawTag = config.tagOfRaw(join("/", List.of(rawValues)));
+        tags.add(rawTag);
     }
 
     /** Prepend configured prefix and slugify parts */
-    public void add(String... tag) {
-        tags.add(config.tagOf(tag));
+    public void add(String... segments) {
+        String tag = config.tagOf(segments);
+        tags.add(tag);
     }
 
     public Set<String> build() {

@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
+ * Examples:
+ *
+ * - `10 feet, swim 20 feet (some note); some ability`
+ * - `10 feet, swim 20 feet, some ability`
  *
  * @param value The land speed in feet
  * @param otherSpeeds Other speeds, as a map of (name, speed in feet)
@@ -36,16 +40,6 @@ public record QuteDataSpeed(
                 formatMap(otherSpeeds, "%s %d feet"::formatted));
     }
 
-    /**
-     * Examples:
-     * <blockquote>
-     * 10 feet, swim 20 feet (some note); some ability
-     * </blockquote>
-     * <blockquote>
-     * 10 feet, swim 20 feet, some ability
-     * </blockquote>
-     *
-     */
     @Override
     public String toString() {
         return join(notes.isEmpty() ? ", " : " ", formattedSpeeds(), formattedNotes());

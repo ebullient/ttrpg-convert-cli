@@ -1,6 +1,6 @@
 # CreatureSense
 
-A creature's senses. Example default output: <blockquote> tremorsense (imprecise) 20ft </blockquote>
+A creature's senses. Example default output: `tremorsense (imprecise) 20ft`
 
 ## Attributes
 
@@ -11,10 +11,10 @@ A creature's senses. Example default output: <blockquote> tremorsense (imprecise
 
 The name of the sense (required, string)
 
-### type
-
-The type of the sense - e.g. precise, imprecise (optional, string)
-
 ### range
 
 The range of the sense (optional, integer)
+
+### type
+
+The type of the sense - e.g. precise, imprecise (optional, string)

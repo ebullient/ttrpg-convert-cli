@@ -7,15 +7,16 @@ import static dev.ebullient.convert.StringUtil.pluralize;
 import java.util.List;
 
 /**
- * A description of a frequency e.g. "once", which may include an interval that this is repeated for. Examples:
- * <ul>
- * <li>once per day</li>
- * <li>once per hour</li>
- * <li>3 times per day</li>
- * <li>{@code recurs=true}: once every day</li>
- * <li>{@code overcharge=true}: once per day, plus overcharge</li>
- * <li>{@code interval=2}: once per 2 days</li>
- * </ul>
+ * A description of a frequency e.g. "once", which may include an interval that this is repeated for.
+ *
+ * Examples:
+ *
+ * - once per day
+ * - once per hour
+ * - 3 times per day
+ * - {@code recurs=true}: once every day
+ * - {@code overcharge=true}: once per day, plus overcharge
+ * - {@code interval=2}: once per 2 days
  *
  * @param value The number represented by the frequency, integer
  * @param unit The unit the frequency is in, string. Required.

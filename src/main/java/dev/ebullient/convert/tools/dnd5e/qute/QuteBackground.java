@@ -9,9 +9,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools background attributes ({@code background2md.txt}).
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteBackground extends Tools5eQuteBase {

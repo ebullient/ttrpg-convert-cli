@@ -266,6 +266,9 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
         if (rulesAllow.isPresent()) {
             return rulesAllow.get();
         }
+        if (config.allSources()) {
+            return true;
+        }
         if (CORE_RULES_KEY.equals(key)) { // include core rules unless turned off
             return true;
         }

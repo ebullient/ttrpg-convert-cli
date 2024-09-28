@@ -2,15 +2,18 @@
 
 Pf2eTools Feat attributes (`feat2md.txt`)
 
-Feats are rendered both standalone and inline (as an admonition block). The default template can render both. It contains some special syntax to handle the inline case.
+Feats are rendered both standalone and inline (as an admonition block).
+The default template can render both.
+It uses special syntax to handle the inline case.
 
-Use `%%--` to mark the end of the preamble (frontmatter and other leading content only appropriate to the standalone case).
+Use `%%--` to mark the end of the preamble (frontmatter and
+other leading content only appropriate to the standalone case).
 
 Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[access](#access), [activity](#activity), [aliases](#aliases), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasSections](#hassections), [labeledSource](#labeledsource), [leadsTo](#leadsto), [level](#level), [name](#name), [note](#note), [prerequisites](#prerequisites), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[access](#access), [activity](#activity), [aliases](#aliases), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasSections](#hassections), [labeledSource](#labeledsource), [leadsTo](#leadsto), [level](#level), [name](#name), [note](#note), [prerequisites](#prerequisites), [reprintOf](#reprintof), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### access
@@ -29,12 +32,15 @@ Aliases for this note
 
 ### embedded
 
-True if this ability is embedded in another note (admonition block). The default template uses this flag to include a `title:` prefix for the admonition block:  
- `{#if resource.embedded }title: {#else}# {/if}{resource.name}` *
+True if this ability is embedded in another note (admonition block).
+The default template uses this flag to include a `title:` prefix for the admonition block:  
+
+`{#if resource.embedded }title: {#else}# {/if}{resource.name}` *
 
 ### frequency
 
-[QuteDataFrequency](QuteDataFrequency.md). How often this feat can be used/activated. Use directly to get a formatted string.
+[QuteDataFrequency](QuteDataFrequency.md).
+How often this feat can be used/activated. Use directly to get a formatted string.
 
 ### hasSections
 
@@ -59,6 +65,10 @@ Note name
 
 ### prerequisites
 
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### requirements
 

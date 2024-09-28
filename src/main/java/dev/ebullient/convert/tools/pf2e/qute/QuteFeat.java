@@ -9,18 +9,15 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Feat attributes ({@code feat2md.txt})
- * <p>
+ *
  * Feats are rendered both standalone and inline (as an admonition block).
- * The default template can render both. It contains
- * some special syntax to handle the inline case.
- * </p>
- * <p>
+ * The default template can render both.
+ * It uses special syntax to handle the inline case.
+ *
  * Use `%%--` to mark the end of the preamble (frontmatter and
  * other leading content only appropriate to the standalone case).
- * </p>
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteFeat extends Pf2eQuteBase {

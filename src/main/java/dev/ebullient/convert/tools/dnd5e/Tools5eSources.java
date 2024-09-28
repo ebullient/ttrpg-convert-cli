@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.FontRef;
 import dev.ebullient.convert.io.Tui;
@@ -33,8 +35,45 @@ public class Tools5eSources extends CompendiumSources {
     private static final Map<String, ImageRef> imageSourceToRef = new HashMap<>();
     private static final Map<String, FontRef> fontSourceToRef = new HashMap<>();
     private static final Map<String, List<QuteBase>> keyToInlineNotes = new HashMap<>();
+    private static final Set<String> basicRulesKeys = new HashSet<>();
+    private static final Set<String> freeRulesKeys = new HashSet<>();
+
+    private static boolean isBasicRules(String key, JsonNode jsonElement) {
+        if (basicRulesKeys.isEmpty()) {
+            final JsonNode basicRules = TtrpgConfig.activeGlobalConfig("basicRules");
+            basicRules.forEach(node -> basicRulesKeys.add(node.asText()));
+        }
+        return SourceAttributes.basicRules.coerceBooleanOrDefault(jsonElement, false)
+                || basicRulesKeys.contains(key);
+    }
+
+    private static boolean isFreeRules2024(String key, JsonNode jsonElement) {
+        if (freeRulesKeys.isEmpty()) {
+            final JsonNode freeRules = TtrpgConfig.activeGlobalConfig("freeRules2024");
+            freeRules.forEach(node -> freeRulesKeys.add(node.asText()));
+        }
+        return SourceAttributes.freeRules2024.coerceBooleanOrDefault(jsonElement, false)
+                || freeRulesKeys.contains(key);
+    }
+
+    public static boolean includedByConfig(String key) {
+        Tools5eSources sources = findSources(key);
+        return sources != null && sources.includedByConfig();
+    }
+
+    public static boolean excludedByConfig(String key) {
+        return !includedByConfig(key);
+    }
+
+    public static boolean filterRuleApplied(String key) {
+        Tools5eSources sources = findSources(key);
+        return sources != null && sources.filterRule;
+    }
 
     public static Tools5eSources findSources(String key) {
+        if (key == null) {
+            return null;
+        }
         return keyToSources.get(key);
     }
 
@@ -43,15 +82,12 @@ public class Tools5eSources extends CompendiumSources {
         return keyToSources.get(key);
     }
 
-    public static Tools5eSources constructSources(JsonNode node) {
+    public static Tools5eSources constructSources(String key, JsonNode node) {
         if (node == null) {
             throw new IllegalArgumentException("Must pass a JsonNode");
         }
-        String key = TtrpgValue.indexKey.getTextOrEmpty(node);
-        if (key == null) {
-            throw new IllegalArgumentException("Node has not been indexed (no key)");
-        }
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
+        TtrpgValue.indexKey.setIn(node, key);
         return keyToSources.computeIfAbsent(key, k -> {
             Tools5eSources s = new Tools5eSources(type, key, node);
             s.checkKnown();
@@ -68,10 +104,12 @@ public class Tools5eSources extends CompendiumSources {
             type = SourceField.source.existsIn(node)
                     ? Tools5eIndexType.reference
                     : Tools5eIndexType.syntheticGroup;
+            TtrpgValue.indexInputType.setIn(node, type.name());
         }
         String key = TtrpgValue.indexKey.getTextOrNull(node);
         if (key == null) {
             key = type.createKey(node);
+            TtrpgValue.indexKey.setIn(node, key);
         }
         Tools5eSources sources = findSources(key);
         return sources == null
@@ -109,7 +147,7 @@ public class Tools5eSources extends CompendiumSources {
         }
     }
 
-    static void addFont(String fontFamily, String fontString) {
+    public static void addFont(String fontFamily, String fontString) {
         FontRef ref = FontRef.of(fontFamily, fontString);
         if (ref == null) {
             Tui.instance().warnf("Font '%s' is invalid, empty, or not found", fontString);
@@ -121,7 +159,7 @@ public class Tools5eSources extends CompendiumSources {
         }
     }
 
-    static void addFont(String fontString) {
+    public static void addFont(String fontString) {
         String fontFamily = FontRef.fontFamily(fontString);
         addFont(fontFamily, fontString);
     }
@@ -136,15 +174,86 @@ public class Tools5eSources extends CompendiumSources {
         return fontFamily;
     }
 
+    public static boolean isSrd(JsonNode node) {
+        return SourceAttributes.srd.coerceBooleanOrDefault(node, false)
+                || SourceAttributes.srd52.coerceBooleanOrDefault(node, false);
+    }
+
+    /** Return the srd name or null */
+    public static String srdName(JsonNode node) {
+        String name = SourceAttributes.srd52.getTextOrDefault(node, SourceAttributes.srd.getTextOrNull(node));
+        return "true".equalsIgnoreCase(name) ? null : name;
+    }
+
     final boolean srd;
     final boolean basicRules;
+    final boolean srd52;
+    final boolean freeRules2024;
     final Tools5eIndexType type;
+    final String edition;
+
+    boolean filterRule;
+    boolean cfgIncluded;
 
     private Tools5eSources(Tools5eIndexType type, String key, JsonNode jsonElement) {
         super(type, key, jsonElement);
         this.type = type;
-        this.basicRules = jsonElement.has("basicRules") && jsonElement.get("basicRules").asBoolean(false);
-        this.srd = jsonElement.has("srd") && jsonElement.get("srd").asBoolean(false);
+        this.basicRules = isBasicRules(key, jsonElement);
+        this.freeRules2024 = isFreeRules2024(key, jsonElement);
+        this.srd = SourceAttributes.srd.coerceBooleanOrDefault(jsonElement, false);
+        this.srd52 = SourceAttributes.srd52.coerceBooleanOrDefault(jsonElement, false);
+        this.edition = SourceAttributes.edition.getTextOrEmpty(jsonElement);
+        testSourceRules();
+    }
+
+    /**
+     * Is this included by configuration (source list, include/exclude rules)?
+     * Content may be suppressed for other reasons (reprints)
+     */
+    public boolean includedByConfig() {
+        return cfgIncluded;
+    }
+
+    /**
+     * Was this targeted by an include/exclude rule?
+     */
+    public boolean filterRuleApplied() {
+        return filterRule;
+    }
+
+    private void testSourceRules() {
+        CompendiumConfig config = TtrpgConfig.getConfig();
+        Optional<Boolean> rulesSpecify = config.keyIsIncluded(key);
+        this.filterRule = rulesSpecify.isPresent();
+        this.cfgIncluded = testSourceRules(config, rulesSpecify);
+    }
+
+    /**
+     * Test if this source is included by the configuration
+     */
+    private boolean testSourceRules(CompendiumConfig config, Optional<Boolean> rulesSpecify) {
+        if (rulesSpecify.isPresent()) {
+            return rulesSpecify.get();
+        }
+        if (config.allSources()) {
+            return true;
+        }
+        if (config.noSources()) {
+            return this.srd || this.basicRules || this.srd52 || this.freeRules2024;
+        }
+        if (type == Tools5eIndexType.background) {
+            // backgrounds don't nest. Check only primary source
+            return config.sourceIncluded(this.primarySource())
+                    || (config.sourceIncluded("srd") && this.srd)
+                    || (config.sourceIncluded("srd52") && this.srd52)
+                    || (config.sourceIncluded("basicrules") && this.basicRules)
+                    || (config.sourceIncluded("freerules2024") && this.freeRules2024);
+        }
+        return config.sourceIncluded(this)
+                || (config.sourceIncluded("srd") && this.srd)
+                || (config.sourceIncluded("srd52") && this.srd52)
+                || (config.sourceIncluded("basicrules") && this.basicRules)
+                || (config.sourceIncluded("freerules2024") && this.freeRules2024);
     }
 
     @Override
@@ -157,15 +266,34 @@ public class Tools5eSources extends CompendiumSources {
         return type == Tools5eIndexType.syntheticGroup;
     }
 
+    public String edition() {
+        return edition;
+    }
+
+    public boolean isClassic() {
+        return "classic".equalsIgnoreCase(edition);
+    }
+
     public String getSourceText(boolean useSrd) {
         if (useSrd) {
-            return "SRD / Basic Rules";
+            List<String> bits = new ArrayList<>();
+            if (srd) {
+                bits.add("SRD 5.1");
+            } else if (srd52) {
+                bits.add("SRD 5.2");
+            }
+            if (freeRules2024) {
+                bits.add("the Free Rules (2024)");
+            } else if (basicRules) {
+                bits.add("the Basic Rules (2014)");
+            }
+            return String.join(" and ", bits);
         }
         return sourceText;
     }
 
     public JsonNode findNode() {
-        return Tools5eIndex.getInstance().getNode(this.key);
+        return Tools5eIndex.getInstance().getOrigin(this.key);
     }
 
     protected String findName(IndexType type, JsonNode jsonElement) {
@@ -185,32 +313,45 @@ public class Tools5eSources extends CompendiumSources {
         }
         String srcText = super.findSourceText(type, jsonElement);
 
-        boolean basicRules = jsonElement.has("basicRules") && jsonElement.get("basicRules").asBoolean(false);
-        String value = jsonElement.has("srd") ? jsonElement.get("srd").asText() : null;
-        boolean srd = !(value == null || "false".equals(value));
-        String srdValue = srd && !"true".equals(value) ? " (as '" + value + "')" : "";
+        JsonNode basicRules = jsonElement.get("basicRules");
+        JsonNode freeRules2024 = jsonElement.get("freeRules2024");
+        JsonNode srd52 = jsonElement.get("srd52");
+        JsonNode srd = jsonElement.get("srd");
 
-        String srdBasic = "";
-        if (srd && basicRules) {
-            srdBasic = "Available in the SRD and the Basic Rules" + srdValue + ".";
-        } else if (srd) {
-            srdBasic = "Available in the SRD" + srdValue + ".";
-        } else if (basicRules) {
-            srdBasic = "Available in the Basic Rules" + srdValue + ".";
+        String srdText = "";
+        if (srd52 != null) {
+            srdText = "the <span title='Systems Reference Document (5.2)'>SRD</span>";
+            if (srd52.isTextual()) {
+                srdText += " (as \"" + srd52.asText() + "\")";
+            }
+        } else if (srd != null) {
+            srdText = "the <span title='Systems Reference Document (5.1)'>SRD</span>";
+            if (srd.isTextual()) {
+                srdText += " (as \"" + srd.asText() + "\")";
+            }
+        }
+
+        String basicRulesText = "";
+        if (freeRules2024 != null) {
+            basicRulesText = "the Free Rules (2024)";
+            if (freeRules2024.isTextual()) {
+                basicRulesText += " (as \"" + freeRules2024.asText() + "\")";
+            }
+        } else if (basicRules != null) {
+            basicRulesText = "the Basic Rules (2014)";
+            if (basicRules.isTextual()) {
+                basicRulesText += " (as \"" + basicRules.asText() + "\")";
+            }
         }
 
         String sourceText = String.join(", ", srcText);
-        if (srdBasic.isBlank()) {
+        if (srdText.isBlank() && basicRulesText.isBlank()) {
             return sourceText;
         }
+        String srdBasic = "Available in " + srdText + (srdText.isEmpty() ? "" : " and ") + basicRulesText;
         return sourceText.isEmpty()
                 ? srdBasic
                 : sourceText + ". " + srdBasic;
-    }
-
-    @Override
-    protected boolean datasourceFilter(String source) {
-        return !List.of("phb", "mm", "dmg").contains(source.toLowerCase());
     }
 
     public Optional<String> uaSource() {
@@ -292,16 +433,43 @@ public class Tools5eSources extends CompendiumSources {
     public void amendSources(Tools5eSources otherSources) {
         this.sources.addAll(otherSources.sources);
         this.bookRef.addAll(otherSources.bookRef);
+        testSourceRules();
     }
 
     @Override
     public boolean includedBy(Set<String> sources) {
         return super.includedBy(sources) ||
+                (this.basicRules && sources.contains("basicrules")) ||
+                (this.srd && sources.contains("srd")) ||
+                (this.srd52 && sources.contains("srd52")) ||
+                (this.freeRules2024 && sources.contains("freerules2024")) ||
                 (TtrpgConfig.getConfig().noSources() && (this.srd || this.basicRules));
     }
 
     public boolean contains(Tools5eSources sources) {
         Collection<String> sourcesList = sources.getSources();
         return this.sources.stream().anyMatch(sourcesList::contains);
+    }
+
+    public enum SourceAttributes implements JsonNodeReader {
+        srd,
+        basicRules,
+        srd52,
+        freeRules2024,
+        edition;
+    }
+
+    public static void clear() {
+        keyToSources.clear();
+        imageSourceToRef.clear();
+        fontSourceToRef.clear();
+        keyToInlineNotes.clear();
+        basicRulesKeys.clear();
+        freeRulesKeys.clear();
+    }
+
+    public static boolean isClassicEdition(JsonNode baseItem) {
+        String edition = SourceAttributes.edition.getTextOrDefault(baseItem, "");
+        return "classic".equalsIgnoreCase(edition);
     }
 }

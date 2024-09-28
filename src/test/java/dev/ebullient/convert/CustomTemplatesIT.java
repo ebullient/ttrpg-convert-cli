@@ -8,6 +8,6 @@ import io.quarkus.test.junit.main.QuarkusMainIntegrationTest;
 public class CustomTemplatesIT extends CustomTemplatesTest {
     @BeforeAll
     public static void setupDir() {
-        setupDir("Tools5eDataConvertIT");
+        setupDir("templates-IT");
     }
 }

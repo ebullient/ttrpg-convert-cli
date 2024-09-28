@@ -60,9 +60,42 @@ public interface JsonNodeReader {
         return (n >= 0 ? "+" : "") + n;
     }
 
+    /**
+     * Return the boolean value of the field in the node:
+     * - if the field is a boolean, return the value
+     * - if the field is a string, return true if the string is present and not 'false'
+     *
+     * @param source
+     * @param value
+     * @return
+     */
+    default boolean coerceBooleanOrDefault(JsonNode source, boolean value) {
+        JsonNode result = getFrom(source);
+        if (result == null) {
+            return value;
+        }
+        if (result.isBoolean()) {
+            return result.asBoolean();
+        }
+        if (result.isTextual()) {
+            return !result.asText().equalsIgnoreCase("false");
+        }
+        return value;
+    }
+
     default boolean booleanOrDefault(JsonNode source, boolean value) {
         JsonNode result = getFrom(source);
         return result == null ? value : result.asBoolean(value);
+    }
+
+    default Double doubleOrDefault(JsonNode source, double value) {
+        JsonNode result = getFrom(source);
+        return result == null ? value : result.asDouble();
+    }
+
+    default Double doubleOrNull(JsonNode source) {
+        JsonNode result = getFrom(source);
+        return result == null ? null : result.asDouble();
     }
 
     default boolean existsIn(JsonNode source) {
@@ -151,19 +184,6 @@ public interface JsonNodeReader {
         return targetNode.get(field.nodeName());
     }
 
-    default Optional<Integer> getIntFrom(JsonNode source) {
-        JsonNode result = getFrom(source);
-        return result == null || !result.isInt() ? Optional.empty() : Optional.of(result.asInt());
-    }
-
-    default int getIntOrThrow(JsonNode x) {
-        JsonNode result = getFrom(x);
-        if (result == null) {
-            throw new IllegalArgumentException("Missing int from " + this.nodeName());
-        }
-        return result.asInt();
-    }
-
     default List<String> getListOfStrings(JsonNode source, Tui tui) {
         JsonNode target = getFrom(source);
         if (target == null) {
@@ -214,9 +234,27 @@ public interface JsonNodeReader {
         return Optional.empty();
     }
 
+    default Optional<Integer> intFrom(JsonNode source) {
+        JsonNode result = getFrom(source);
+        return result == null || !result.isInt() ? Optional.empty() : Optional.of(result.asInt());
+    }
+
     default int intOrDefault(JsonNode source, int value) {
         JsonNode result = getFrom(source);
         return result == null || result.isNull() ? value : result.asInt();
+    }
+
+    default Integer intOrNull(JsonNode source) {
+        JsonNode result = getFrom(source);
+        return result == null || result.isNull() ? null : result.asInt();
+    }
+
+    default int intOrThrow(JsonNode x) {
+        JsonNode result = getFrom(x);
+        if (result == null) {
+            throw new IllegalArgumentException("Missing int from " + this.nodeName());
+        }
+        return result.asInt();
     }
 
     default String joinAndReplace(JsonNode source, JsonTextConverter<?> replacer) {
@@ -447,5 +485,16 @@ public interface JsonNodeReader {
             return;
         }
         ((ObjectNode) target).set(this.nodeName(), getFrom(source).deepCopy());
+    }
+
+    /** Destructive! */
+    default void link(JsonNode source, JsonNode target) {
+        if (source == null || target == null) {
+            return;
+        }
+        if (!source.has(this.nodeName())) {
+            return;
+        }
+        ((ObjectNode) target).set(this.nodeName(), getFrom(source));
     }
 }

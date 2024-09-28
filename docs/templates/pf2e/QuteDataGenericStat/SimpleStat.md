@@ -1,5 +1,8 @@
 # SimpleStat
 
-A basic [QuteDataGenericStat](../QuteDataGenericStat.md) which provides only a value and possibly a note. Default representation: <blockquote> 10 (some note) (some other note) </blockquote>
+A basic [QuteDataGenericStat](README.md) which provides
+only a value and possibly a note.
+
+Default representation: `10 (some note) (some other note)`
 
 ## Attributes

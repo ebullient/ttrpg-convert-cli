@@ -2,7 +2,9 @@
 
 Pf2eTools item shield attributes. When referenced directly, provides a default formatting, e.g.
 
+```md
 **AC Bonus** +2; **Speed Penalty** —; **Hardness** 3; **HP (BT)** 12 (6)
+```
 
 ## Attributes
 
@@ -11,11 +13,14 @@ Pf2eTools item shield attributes. When referenced directly, provides a default f
 
 ### ac
 
-AC bonus for the shield, as [QuteDataArmorClass](../QuteDataArmorClass.md) (required)
+AC bonus for the shield, as [QuteDataArmorClass](../QuteDataArmorClass.md)
+(required)
 
 ### hpHardnessBt
 
-HP, hardness, and broken threshold of the shield, as [QuteDataHpHardnessBt](../QuteDataHpHardnessBt.md) (required)
+HP, hardness, and broken threshold of the shield, as
+[QuteDataHpHardnessBt](../QuteDataHpHardnessBt/README.md)
+(required)
 
 ### speedPenalty
 

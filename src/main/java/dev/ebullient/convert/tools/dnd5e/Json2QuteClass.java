@@ -13,9 +13,10 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
+import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
@@ -305,7 +306,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         maybeAddBlankLine(startMulticlass);
         JsonNode requirements = multiclassing.get("requirements");
         if (requirements == null) {
-            tui().warnf("No requirements specified to multiclass %s: %s", getSources().getKey(), multiclassing);
+            tui().warnf(Msg.NOT_SET, "No requirements specified to multiclass %s: %s", getSources().getKey(), multiclassing);
         } else if (requirements.has("or")) {
             List<String> options = new ArrayList<>();
             requirements.get("or").get(0).fields().forEachRemaining(ability -> options.add(String.format("%s %s",
@@ -368,7 +369,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     static ClassFeature findClassFeature(JsonSource converter, Tools5eIndexType type, JsonNode cf, String fieldName) {
         String lookup = cf.isTextual() ? cf.asText() : cf.get(fieldName).asText();
 
-        String finalKey = type.fromRawKey(lookup);
+        String finalKey = type.fromTagReference(lookup);
         JsonNode featureJson = finalKey == null ? null : converter.index().resolveClassFeatureNode(finalKey);
 
         if (featureJson == null) {
@@ -397,7 +398,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         for (JsonNode x : index().classElementsMatching(Tools5eIndexType.subclass, getSources().getName(), classSource)) {
             scNodes.put(x, classSource);
         }
-        for (String aliasKey : index.getAliasesTo(getSources().getKey())) {
+        for (String aliasKey : index.getAliasesFor(getSources().getKey())) {
             int lastSegment = aliasKey.lastIndexOf('|');
             String aliasSource = aliasKey.substring(lastSegment + 1);
             for (JsonNode x : index().classElementsMatching(Tools5eIndexType.subclass, getSources().getName(), aliasSource)) {
@@ -454,7 +455,9 @@ public class Json2QuteClass extends Json2QuteCommon {
                             toAnchorTag(oft.title)));
                     text.add("^list-" + slugify(oft.title));
                 } else {
-                    tui().errorf("Can not find OptionalFeatureType for optional feature progression %s: %s", featureType, ofp);
+                    tui().errorf(
+                            Msg.UNRESOLVED, "Can not find optional feature type %s for progression. Source: %s",
+                            featureType, ofp);
                 }
             }
         }
@@ -747,5 +750,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     enum ClassFields implements JsonNodeReader {
         optionalfeatureProgression,
+        subclassSource,
+        subclassShortName,
     }
 }

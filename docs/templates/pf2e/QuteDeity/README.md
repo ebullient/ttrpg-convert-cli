@@ -2,15 +2,18 @@
 
 Pf2eTools Deity attributes (`deity2md.txt`)
 
-Deities are rendered both standalone and inline (as an admonition block). The default template can render both. It contains some special syntax to handle the inline case.
+Deities are rendered both standalone and inline (as an admonition block).
+The default template can render both.
+It uses special syntax to handle the inline case.
 
-Use `%%--` to mark the end of the preamble (frontmatter and other leading content only appropriate to the standalone case).
+Use `%%--` to mark the end of the preamble (frontmatter and
+other leading content only appropriate to the standalone case).
 
 Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [alignment](#alignment), [anathema](#anathema), [areasOfConcern](#areasofconcern), [avatar](#avatar), [category](#category), [cleric](#cleric), [edicts](#edicts), [followerAlignment](#followeralignment), [hasSections](#hassections), [intercession](#intercession), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[aliases](#aliases), [alignment](#alignment), [anathema](#anathema), [areasOfConcern](#areasofconcern), [avatar](#avatar), [category](#category), [cleric](#cleric), [edicts](#edicts), [followerAlignment](#followeralignment), [hasSections](#hassections), [intercession](#intercession), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -58,6 +61,10 @@ Note name
 
 ### pantheon
 
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 
 ### source
 

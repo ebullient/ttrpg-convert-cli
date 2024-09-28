@@ -8,9 +8,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Trait attributes ({@code trait2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteTrait extends Pf2eQuteBase {

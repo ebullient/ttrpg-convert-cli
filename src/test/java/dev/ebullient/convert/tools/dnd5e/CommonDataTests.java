@@ -1,17 +1,14 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -32,29 +29,31 @@ public class CommonDataTests {
     protected final Templates templates;
     protected final Path toolsData;
 
-    protected final boolean dataPresent;
-    protected final boolean imgPresent;
+    public final boolean dataPresent;
 
-    protected Tools5eIndex index;
-    protected TestInput variant;
+    public final Tools5eIndex index;
+    public final TestInput variant;
 
     enum TestInput {
         all,
-        subset,
-        none;
+        allNewest,
+        none,
+        noneEdition,
+        srd2014,
+        srd2024,
+        subset2014,
+        subset2024,
+        ;
     }
 
     public CommonDataTests(TestInput variant, Path toolsData) throws Exception {
         this.toolsData = toolsData;
         dataPresent = toolsData.toFile().exists();
-        imgPresent = toolsData.toString().contains("mirror-2")
-                ? TestUtils.PATH_5E_TOOLS_IMAGES.toFile().exists()
-                : false;
 
         this.variant = variant;
 
         tui = Arc.container().instance(Tui.class).get();
-        tui.init(null, true, false);
+        tui.init(null, !TestUtils.USING_MAVEN, true, true);
 
         templates = Arc.container().instance(Templates.class).get();
         tui.setTemplates(templates);
@@ -63,54 +62,122 @@ public class CommonDataTests {
         TtrpgConfig.setToolsPath(TestUtils.PATH_5E_TOOLS_DATA);
 
         configurator = new Configurator(tui);
-        if (imgPresent) {
-            configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("images-from-local.json"));
-        } else {
-            configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("images-remote.json"));
-        }
+        configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json"));
 
         index = new Tools5eIndex(TtrpgConfig.getConfig());
 
         if (dataPresent) {
             templates.setCustomTemplates(TtrpgConfig.getConfig());
+            var additional = new ArrayList<>(List.of("adventures.json", "books.json"));
 
             switch (variant) {
-                case none:
-                    // do nothing. SRD!
-                    break;
-                case subset:
-                    // use default: compendium/ and rules/
-                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("sources.json"));
-                    break;
-                case all:
-                    configurator.addSources(List.of("*"));
-                    // use default: / and rules/
-                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("paths.json"));
-                    break;
-            }
+                case none -> {
+                    // do nothing. SRD content.. newest of all editions (so 2024)
+                }
+                case noneEdition -> {
+                    // no content specified (just SRD)
+                    // Do not follow reprints across editions
+                    var o = Tui.MAPPER.createObjectNode()
+                            .put("reprintBehavior", "edition");
+                    configurator.readConfigIfPresent(o);
+                }
+                case srd2014 -> {
+                    // only 2014
+                    var o = Tui.MAPPER.createObjectNode()
+                            .set("sources", Tui.MAPPER.createObjectNode()
+                                    .set("reference", Tui.MAPPER.createArrayNode()
+                                            .add("srd").add("basicrules")));
+                    configurator.readConfigIfPresent(o);
+                }
+                case srd2024 -> {
+                    // only 2024
+                    var o = Tui.MAPPER.createObjectNode()
+                            .set("sources", Tui.MAPPER.createObjectNode()
+                                    .set("reference", Tui.MAPPER.createArrayNode()
+                                            .add("srd52").add("freerules2024")));
+                    configurator.readConfigIfPresent(o);
+                }
+                case subset2014 -> {
+                    var o = Tui.MAPPER.createObjectNode()
+                            .set("sources", Tui.MAPPER.createObjectNode()
+                                    .set("reference", Tui.MAPPER.createArrayNode()
+                                            .add("mm").add("tce").add("xge")));
+                    configurator.readConfigIfPresent(o);
 
-            var additional = new ArrayList<>(List.of("adventures.json", "books.json"));
-            if (variant != TestInput.none) {
-                additional.addAll(List.of("adventure/adventure-wdh.json", "adventure/adventure-pota.json", "book/book-vgm.json",
-                        "book/book-phb.json"));
+                    additional.addAll(List.of(
+                            "adventure/adventure-lmop.json",
+                            "book/book-dmg.json",
+                            "book/book-mm.json",
+                            "book/book-phb.json"));
+                }
+                case subset2024 -> {
+                    var o = Tui.MAPPER.createObjectNode()
+                            .set("sources", Tui.MAPPER.createObjectNode()
+                                    .set("reference", Tui.MAPPER.createArrayNode()
+                                            .add("mpmm")));
+                    configurator.readConfigIfPresent(o);
+
+                    additional.addAll(List.of(
+                            "adventure/adventure-dsotdq.json",
+                            "book/book-tdcsr.json",
+                            "book/book-xphb.json",
+                            "book/book-xdmg.json"));
+                }
+                case allNewest -> {
+                    // default behavior: newest only
+                    configurator.addSources(List.of("*"));
+                    additional.addAll(List.of(
+                            "adventure/adventure-wdh.json",
+                            "adventure/adventure-pota.json",
+                            "book/book-vgm.json",
+                            "book/book-phb.json", "book/book-xphb.json",
+                            "book/book-dmg.json", "book/book-xdmg.json"));
+                }
+                case all -> {
+                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("paths.json"));
+                    // add book/adventure (beyond reference material)
+                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("5e/sources.json"));
+                    configurator.addSources(List.of("*"));
+
+                    additional.addAll(List.of(
+                            "adventure/adventure-wdh.json", "adventure/adventure-pota.json",
+                            "book/book-vgm.json",
+                            "book/book-phb.json", "book/book-xphb.json",
+                            "book/book-dmg.json", "book/book-xdmg.json"));
+
+                    // Literally all. Ignore reprints
+                    var o = Tui.MAPPER.createObjectNode()
+                            .put("reprintBehavior", "all");
+                    configurator.readConfigIfPresent(o);
+                }
             }
 
             for (String x : additional) {
                 tui.readFile(toolsData.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
             }
+
             tui.readToolsDir(toolsData, index::importTree);
             index.prepare();
         }
     }
 
-    public void cleanup() {
-        tui.close();
+    public void afterEach() throws Exception {
         configurator.setUseDiceRoller(DiceRoller.disabled);
         templates.setCustomTemplates(TtrpgConfig.getConfig());
+        TestUtils.cleanupReferences();
     }
 
-    public void done() {
+    public void afterAll(Path outputPath) throws IOException {
         index.cleanup();
+
+        assertThat(Tools5eIndex.getInstance()).isNull();
+        tui.close();
+        Path logFile = Path.of("ttrpg-convert.out.txt");
+        if (Files.exists(logFile)) {
+            Path newFile = outputPath.resolve(logFile);
+            Files.move(logFile, newFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+        System.out.println("Done.");
     }
 
     public void testKeyIndex(Path outputPath) throws Exception {
@@ -123,16 +190,20 @@ public class CommonDataTests {
             index.writeFilteredIndex(p1Source);
 
             assertThat(p1Full).exists();
-            JsonNode fullIndex = Tui.MAPPER.readTree(p1Full.toFile());
-            ArrayNode fullIndexKeys = fullIndex.withArray("keys");
-            assertThat(fullIndexKeys).isNotNull();
-            assertThat(fullIndexKeys).isNotEmpty();
-
             assertThat(p1Source).exists();
-            JsonNode filteredIndex = Tui.MAPPER.readTree(p1Source.toFile());
-            ArrayNode filteredIndexKeys = filteredIndex.withArray("keys");
-            assertThat(filteredIndexKeys).isNotNull();
-            assertThat(filteredIndexKeys).isNotEmpty();
+        }
+    }
+
+    public void testAdventures(Path outputPath) {
+        tui.setOutputPath(outputPath);
+        if (dataPresent) {
+            Path testDir = deleteDir(Tools5eIndexType.adventureData, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer)
+                    .writeFiles(Tools5eIndexType.adventureData);
+
+            TestUtils.assertDirectoryContents(testDir, tui);
         }
     }
 
@@ -143,11 +214,22 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.background)
-                    .writeNotesAndTables()
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.background);
 
             TestUtils.assertDirectoryContents(backgroundDir, tui);
+        }
+    }
+
+    public void testBookList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+        if (dataPresent) {
+            Path testDir = deleteDir(Tools5eIndexType.bookData, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer)
+                    .writeFiles(Tools5eIndexType.bookData);
+
+            TestUtils.assertDirectoryContents(testDir, tui);
         }
     }
 
@@ -159,8 +241,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.classtype)
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.classtype);
 
             TestUtils.assertDirectoryContents(classDir, tui, (p, content) -> {
                 List<String> e = new ArrayList<>();
@@ -192,19 +273,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.deck)
-                    .writeImages();
-
-            TestUtils.assertDirectoryContents(outDir, tui);
-            if (imgPresent) {
-                Path imageDir = outDir.resolve("img");
-                assertThat(imageDir).isDirectory();
-            }
-
-            List<Path> srd = List.of(outDir.resolve("deck-of-illusions.md"), outDir.resolve("deck-of-many-things.md"));
-            List<Path> some = List.of(outDir.resolve("roleplaying-cards-wbtw.md"));
-            List<Path> all = List.of(outDir.resolve("elder-runes-deck-wdmm.md"));
-            testVariants(srd, some, all);
+                    .writeFiles(Tools5eIndexType.deck);
 
             TestUtils.assertDirectoryContents(outDir, tui);
         }
@@ -218,22 +287,21 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.deity)
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.deity);
 
-            List<Path> srd = List.of(outDir.resolve("celtic-lugh.md"), outDir.resolve("forgotten-realms-oghma.md"));
-            List<Path> some = List.of(outDir.resolve("dragonlance-majere.md"));
-            List<Path> all = List.of(outDir.resolve("exandria-lolth.md"));
-            testVariants(srd, some, all);
+            TestUtils.assertDirectoryContents(outDir, tui);
+        }
+    }
 
-            if (imgPresent) {
-                Path imageDir = outDir.resolve("img");
-                if (variant == TestInput.none) {
-                    assertThat(imageDir).doesNotExist();
-                } else {
-                    assertThat(imageDir).isDirectory();
-                }
-            }
+    public void testFacilityList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+        if (dataPresent) {
+            Path outDir = deleteDir(Tools5eIndexType.facility, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer)
+                    .writeFiles(Tools5eIndexType.facility);
+
             TestUtils.assertDirectoryContents(outDir, tui);
         }
     }
@@ -245,8 +313,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.feat)
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.feat);
 
             TestUtils.assertDirectoryContents(featDir, tui);
         }
@@ -260,8 +327,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(List.of(Tools5eIndexType.item, Tools5eIndexType.itemGroup))
-                    .writeImages();
+                    .writeFiles(List.of(Tools5eIndexType.item, Tools5eIndexType.itemGroup));
 
             TestUtils.assertDirectoryContents(itemDir, tui);
         }
@@ -276,20 +342,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup))
-                    .writeImages();
-
-            if (imgPresent) {
-                Path tokenDir = bestiaryDir.resolve("undead/token");
-                assertThat(tokenDir.toFile()).exists();
-            }
-
-            Path lgDir = bestiaryDir.resolve("legendary-group");
-            if (variant == TestInput.none) {
-                assertThat(lgDir).doesNotExist();
-            } else {
-                assertThat(lgDir).exists();
-            }
+                    .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             try (Stream<Path> paths = Files.list(bestiaryDir)) {
                 paths.forEach(p -> {
@@ -442,19 +495,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(List.of(
-                            Tools5eIndexType.object))
-                    .writeImages();
-
-            if (imgPresent) {
-                Path imageDir = outDir.resolve("token");
-                assertThat(imageDir).exists();
-            }
-
-            List<Path> srd = List.of(outDir.resolve("generic-object.md"));
-            List<Path> some = List.of(outDir.resolve("ballista.md"));
-            List<Path> all = List.of(outDir.resolve("boilerdrak-dsotdq.md"));
-            testVariants(srd, some, all);
+                    .writeFiles(List.of(Tools5eIndexType.object));
 
             TestUtils.assertDirectoryContents(outDir, tui);
         }
@@ -470,8 +511,7 @@ public class CommonDataTests {
             index.markdownConverter(writer)
                     .writeFiles(List.of(
                             Tools5eIndexType.optionalFeatureTypes,
-                            Tools5eIndexType.optionalfeature))
-                    .writeImages();
+                            Tools5eIndexType.optfeature));
 
             TestUtils.assertDirectoryContents(ofDir, tui);
         }
@@ -485,8 +525,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.psionic)
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.psionic);
 
             TestUtils.assertDirectoryContents(outDir, tui);
         }
@@ -500,8 +539,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.race)
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.race);
 
             TestUtils.assertDirectoryContents(raceDir, tui);
         }
@@ -515,12 +553,9 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.reward)
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.reward);
 
-            if (variant == TestInput.none) {
-                assertThat(rewardDir).doesNotExist();
-            } else {
+            if (rewardDir.toFile().exists()) {
                 TestUtils.assertDirectoryContents(rewardDir, tui);
             }
         }
@@ -536,9 +571,9 @@ public class CommonDataTests {
             TestUtils.deleteDir(index.rulesFilePath());
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
-            index.markdownConverter(writer)
-                    .writeNotesAndTables()
-                    .writeImages();
+            index.markdownConverter(writer).writeFiles(Stream.of(Tools5eIndexType.values())
+                    .filter(x -> x.isOutputType() && !x.useCompendiumBase())
+                    .toList());
 
             TestUtils.assertDirectoryContents(outputPath.resolve(index.rulesFilePath()), tui);
         }
@@ -552,8 +587,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.spell)
-                    .writeImages();
+                    .writeFiles(Tools5eIndexType.spell);
 
             TestUtils.assertDirectoryContents(spellDir, tui);
         }
@@ -567,8 +601,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(List.of(Tools5eIndexType.trap, Tools5eIndexType.hazard))
-                    .writeImages();
+                    .writeFiles(List.of(Tools5eIndexType.trap, Tools5eIndexType.hazard));
 
             TestUtils.assertDirectoryContents(trapsDir, tui);
         }
@@ -582,12 +615,9 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(List.of(Tools5eIndexType.vehicle))
-                    .writeImages();
+                    .writeFiles(List.of(Tools5eIndexType.vehicle));
 
-            if (variant == TestInput.none) {
-                assertThat(outDir).doesNotExist();
-            } else {
+            if (outDir.toFile().exists()) {
                 TestUtils.assertDirectoryContents(outDir, tui);
             }
         }
@@ -599,27 +629,31 @@ public class CommonDataTests {
 
     Path deleteDir(Tools5eIndexType type, Path outputPath, Path vaultPath) {
         final String relative = type.getRelativePath();
-        final Path typeDir = outputPath.resolve(vaultPath).resolve(relative);
+        final Path typeDir = outputPath.resolve(vaultPath).resolve(relative).normalize();
         TestUtils.deleteDir(typeDir);
         return typeDir;
     }
 
-    void testVariants(List<Path> srd, List<Path> some, List<Path> all) {
-        if (variant == TestInput.none) {
-            assertAll(
-                    () -> srd.forEach(path -> assertThat(path).exists()),
-                    () -> some.forEach(path -> assertThat(path).doesNotExist()),
-                    () -> all.forEach(path -> assertThat(path).doesNotExist()));
-        } else if (variant == TestInput.subset) {
-            assertAll(
-                    () -> srd.forEach(path -> assertThat(path).exists()),
-                    () -> some.forEach(path -> assertThat(path).exists()),
-                    () -> all.forEach(path -> assertThat(path).doesNotExist()));
-        } else {
-            assertAll(
-                    () -> srd.forEach(path -> assertThat(path).exists()),
-                    () -> some.forEach(path -> assertThat(path).exists()),
-                    () -> all.forEach(path -> assertThat(path).exists()));
+    public void assert_Present(String key) {
+        assertOrigin(key);
+        assertThat(index.getNode(key))
+                .describedAs(variant.name() + " should contain " + key)
+                .isNotNull();
+    }
+
+    public void assert_MISSING(String key) {
+        assertOrigin(key);
+        assertThat(index.getNode(key))
+                .describedAs(variant.name() + " should not contain " + key)
+                .isNull();
+    }
+
+    public void assertOrigin(String key) {
+        if (key.contains("level spell")) {
+            key = key.replaceAll(" \\(.*?level spell\\)", "").trim();
         }
+        assertThat(index.getOrigin(key))
+                .describedAs("Origin should contain " + key)
+                .isNotNull();
     }
 }

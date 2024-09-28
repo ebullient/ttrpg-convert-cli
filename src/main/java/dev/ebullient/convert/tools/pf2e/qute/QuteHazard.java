@@ -13,18 +13,15 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Hazard attributes ({@code hazard2md.txt})
- * <p>
+ *
  * Hazards are rendered both standalone and inline (as an admonition block).
- * The default template can render both. It contains
- * some special syntax to handle the inline case.
- * </p>
- * <p>
+ * The default template can render both.
+ * It uses special syntax to handle the inline case.
+ *
  * Use `%%--` to mark the end of the preamble (frontmatter and
  * other leading content only appropriate to the standalone case).
- * </p>
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteHazard extends Pf2eQuteBase {
@@ -54,21 +51,22 @@ public class QuteHazard extends Pf2eQuteBase {
      * The hazard's actions, as a list of
      * {@link dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction QuteAbilityOrAffliction}.
      *
-     * <p>
      * Using the elements directly will give a default rendering, but if you want more
      * control you can use {@code isAffliction} and {@code isAbility} to check whether it's an affliction or an
      * ability. Example:
-     * </p>
      *
-     * <pre>
+     *
+     * ```md
      * {#each resource.actions}
      * {#if it.isAffliction}
+     *
      * **Affliction** {it}
      * {#else if it.isAbility}
+     *
      * **Ability** {it}
      * {/if}
      * {/each}
-     * </pre>
+     * ```
      */
     public final List<QuteAbilityOrAffliction> actions;
 
@@ -132,10 +130,8 @@ public class QuteHazard extends Pf2eQuteBase {
     /**
      * Pf2eTools hazard attributes.
      *
-     * <p>
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
-     * </p>
      *
      * @param value The hazard's Stealth bonus
      * @param minProf The minimum Perception proficiency required to be able to roll against the hazard's Stealth

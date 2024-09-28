@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import dev.ebullient.convert.io.JavadocVerbatim;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
@@ -15,9 +16,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Spell attributes ({@code spell2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteSpell extends Pf2eQuteBase {
@@ -108,18 +108,23 @@ public class QuteSpell extends Pf2eQuteBase {
 
     /**
      * The components required for the spell, as a formatted string. Example:
-     * <blockquote>
-     * <a href="#">somatic</a>, <a href="#">verbal</a>
-     * </blockquote>
+     *
+     * ```md
+     * [somatic](#), [verbal](#)
+     * ```
      */
+    @JavadocVerbatim
     public String formattedComponents() {
         return join(", ", components);
     }
 
     /**
-     * Details about the saving throw for a spell. Example default representations:
-     * <blockquote>basic Reflex or Fortitude</blockquote>
-     * <blockquote>basic Reflex, Fortitude, or Willpower</blockquote>
+     * Details about the saving throw for a spell.
+     *
+     * Example default representations:
+     *
+     * - `basic Reflex or Fortitude`
+     * - `basic Reflex, Fortitude, or Willpower`
      *
      * @param saves The saving throws that can be used for this spell (list of strings)
      * @param basic True if this is a basic save (boolean)
@@ -136,9 +141,12 @@ public class QuteSpell extends Pf2eQuteBase {
     }
 
     /**
-     * Details about the duration of the spell. Example default representations:
-     * <blockquote>1 minute</blockquote>
-     * <blockquote>sustained up to 1 minute</blockquote>
+     * Details about the duration of the spell.
+     *
+     * Example default representations:
+     *
+     * - `1 minute`
+     * - `sustained up to 1 minute`
      *
      * @param sustained Whether this is a sustained spell, boolean
      * @param dismissable Whether this spell can be dismissed, boolean. Not included in the default representation.
@@ -164,10 +172,9 @@ public class QuteSpell extends Pf2eQuteBase {
 
     /**
      * Pf2eTools spell target attributes.
-     * <p>
+     *
      * This attribute will render itself as labeled elements
      * if you reference it directly: `{resource.targeting}`.
-     * </p>
      */
     @TemplateData
     public static class QuteSpellTarget implements QuteUtil {
@@ -195,10 +202,9 @@ public class QuteSpell extends Pf2eQuteBase {
 
     /**
      * Pf2eTools spell Amp attributes
-     * <p>
+     *
      * This attribute will render itself as labeled elements
      * if you reference it directly: `{resource.amp}`.
-     * </p>
      */
     @TemplateData
     public static class QuteSpellAmp implements QuteUtil {

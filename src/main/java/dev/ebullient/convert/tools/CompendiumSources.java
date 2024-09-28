@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.qute.Reprinted;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import io.quarkus.qute.TemplateData;
@@ -23,16 +25,27 @@ public abstract class CompendiumSources {
     // sources will only appear once, iterate by insertion order
     protected final Set<String> sources = new LinkedHashSet<>();
     protected final Set<SourceAndPage> bookRef = new LinkedHashSet<>();
-    protected final String sourceText;
+    protected String sourceText;
+
+    // Provides a list of sources that this is a reprint of
+    protected final Set<CompendiumSources> reprintOf = new HashSet<>();
+    // Source that this is a copy of
+    protected final JsonNode copyElement;
 
     public CompendiumSources(IndexType type, String key, JsonNode jsonElement) {
         this.type = type;
         this.key = key;
         this.name = findName(type, jsonElement);
-        this.sourceText = findSourceText(type, jsonElement);
+        // remember this: handling copies will remove the copy field from the element
+        // to avoid repeated processing
+        this.copyElement = Fields._copy.getFrom(jsonElement);
+        initSources(jsonElement);
     }
 
     public String getSourceText() {
+        if (sourceText == null) {
+            sourceText = findSourceText(type, findNode());
+        }
         return sourceText;
     }
 
@@ -41,31 +54,95 @@ public abstract class CompendiumSources {
     }
 
     /** Protected: used by Tags.addSourceTags(sources) */
-    List<String> primarySourceTag() {
-        return List.of(
-                String.format("compendium/src/%s/%s",
-                        TtrpgConfig.getConfig().datasource().shortName(),
-                        isSynthetic() ? "" : primarySource().toLowerCase()));
+    String primarySourceTag() {
+        return String.format("compendium/src/%s/%s",
+                TtrpgConfig.getConfig().datasource().shortName(),
+                isSynthetic() ? "" : primarySource().toLowerCase());
     }
 
     public abstract JsonNode findNode();
 
     protected abstract String findName(IndexType type, JsonNode jsonElement);
 
-    protected String findSourceText(IndexType type, JsonNode jsonElement) {
-        List<String> srcText = new ArrayList<>();
-
+    protected void initSources(JsonNode jsonElement) {
         // add the primary source...
         SourceAndPage primary = new SourceAndPage(jsonElement);
         if (primary.source != null) {
-            srcText.add(primary.toString());
             this.sources.add(primary.source);
             this.bookRef.add(primary);
-        } else {
-            this.sources.add(type.defaultSourceString());
+        } else if (type.defaultSourceString() != null) {
+            // synthetic groups don't have a default source
+            String source = type.defaultSourceString();
+            this.sources.add(source);
+            this.bookRef.add(new SourceAndPage(source, null));
         }
 
-        JsonNode copyElement = Fields._copy.getFrom(jsonElement);
+        String copySrc = SourceField.source.getTextOrNull(copyElement);
+
+        if (Fields.additionalSources.existsIn(jsonElement)) {
+            // Additional information from...
+            Fields.additionalSources.streamFrom(jsonElement)
+                    .map(SourceAndPage::new)
+                    .filter(sp -> sp.source != null)
+                    .filter(sp -> !sp.source.equals(copySrc))
+                    .forEach(sp -> {
+                        this.bookRef.add(sp);
+                        this.sources.add(sp.source);
+                    });
+        }
+
+        if (Fields.otherSources.existsIn(jsonElement)) {
+            // Also found in...
+            // This can be overly generous.. only add other sources that
+            // are explicitly included in the configuration
+            Fields.otherSources.streamFrom(jsonElement)
+                    .map(SourceAndPage::new)
+                    .filter(sp -> sp.source != null)
+                    .filter(sp -> !sp.source.equals(copySrc))
+                    .filter(sp -> TtrpgConfig.getConfig().sourceIncluded(sp.source))
+                    .forEach(sp -> {
+                        this.bookRef.add(sp);
+                        this.sources.add(sp.source);
+                    });
+        }
+    }
+
+    protected String findSourceText(IndexType type, JsonNode jsonElement) {
+        List<String> srcText = new ArrayList<>();
+
+        final SourceAndPage primary = bookRef.iterator().next();
+        List<SourceAndPage> consolidated = bookRef.stream()
+                .reduce(new ArrayList<>(), (list, sp) -> {
+                    if (list.isEmpty()) {
+                        list.add(sp);
+                    } else {
+                        SourceAndPage existing = list.stream()
+                                .filter(x -> x.source.equals(sp.source))
+                                .findFirst()
+                                .orElse(null);
+                        if (existing == null) {
+                            list.add(sp);
+                        } else if (existing.page != null) {
+                            SourceAndPage replace = new SourceAndPage(existing.source, null);
+                            list.remove(existing);
+                            if (existing == primary) {
+                                list.add(0, replace);
+                            } else {
+                                list.add(replace);
+                            }
+                        }
+                    }
+                    return list;
+                }, (a, b) -> {
+                    a.addAll(b);
+                    return a;
+                });
+
+        final SourceAndPage first = consolidated.iterator().next();
+        if (first.source != null) {
+            srcText.add(first.toString());
+        }
+
         String copyOf = SourceField.name.getTextOrNull(copyElement);
         String copySrc = SourceField.source.getTextOrNull(copyElement);
         String copiedFrom = Fields._copiedFrom.getTextOrNull(copyElement);
@@ -77,39 +154,16 @@ public abstract class CompendiumSources {
         }
 
         // find/add additional sources
-        if (Fields.additionalSources.existsIn(jsonElement)) { // Additional information from...
-            srcText.addAll(Fields.additionalSources.streamFrom(jsonElement)
-                    .map(SourceAndPage::new)
-                    .filter(sp -> sp.source != null)
-                    .filter(sp -> !sp.source.equals(copySrc))
-                    .filter(sp -> datasourceFilter(sp.source)) // eliminate common sources, e.g.
-                    .peek(this.bookRef::add)
-                    .peek(sp -> this.sources.add(sp.source))
-                    .map(sp -> sp.toString())
-                    .collect(Collectors.toList()));
-        }
-        if (Fields.otherSources.existsIn(jsonElement)) { // Also found in...
-            srcText.addAll(Fields.otherSources.streamFrom(jsonElement)
-                    .map(SourceAndPage::new)
-                    .filter(sp -> sp.source != null)
-                    .filter(sp -> !sp.source.equals(copySrc))
-                    .filter(sp -> datasourceFilter(sp.source))
-                    .peek(this.bookRef::add)
-                    .peek(sp -> this.sources.add(sp.source))
-                    .filter(sp -> TtrpgConfig.getConfig().sourceIncluded(sp.source))
-                    .map(sp -> sp.toString())
-                    .collect(Collectors.toList()));
-        }
+        consolidated.stream()
+                .filter(sp -> sp != first && sp.source != null)
+                .filter(sp -> !sp.source.equals(copySrc))
+                .forEach(sp -> srcText.add(sp.toString()));
 
         return String.join(", ", srcText);
     }
 
-    protected boolean datasourceFilter(String source) {
-        return true;
-    }
-
     public boolean isPrimarySource(String source) {
-        return source.equals(primarySource());
+        return source.equalsIgnoreCase(primarySource());
     }
 
     public String primarySource() {
@@ -141,6 +195,16 @@ public abstract class CompendiumSources {
         return type;
     }
 
+    public Collection<SourceAndPage> getSourceAndPage() {
+        return bookRef;
+    }
+
+    public Collection<Reprinted> getReprints() {
+        return reprintOf.stream()
+                .map(s -> new Reprinted(s.getName(), s.primarySource()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public String toString() {
         return "sources[" + key + ']';
@@ -148,6 +212,10 @@ public abstract class CompendiumSources {
 
     public void checkKnown() {
         TtrpgConfig.checkKnown(this.sources);
+    }
+
+    public void addReprint(CompendiumSources reprint) {
+        this.reprintOf.add(reprint);
     }
 
     /** Documents that have no primary source (compositions) */
@@ -160,9 +228,5 @@ public abstract class CompendiumSources {
         _copiedFrom,
         additionalSources,
         otherSources,
-    }
-
-    public Collection<SourceAndPage> getSourceAndPage() {
-        return bookRef;
     }
 }

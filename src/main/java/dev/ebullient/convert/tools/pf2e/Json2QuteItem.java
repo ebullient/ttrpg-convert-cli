@@ -106,12 +106,12 @@ public class Json2QuteItem extends Json2QuteBase {
         return shieldNode == null ? null
                 : new QuteItemShieldData(
                         new QuteDataArmorClass(
-                                Pf2eItem.ac.getIntOrThrow(shieldNode),
-                                Pf2eItem.ac2.getIntFrom(shieldNode).orElse(null)),
+                                Pf2eItem.ac.intOrThrow(shieldNode),
+                                Pf2eItem.ac2.intOrNull(shieldNode)),
                         new QuteDataHpHardnessBt(
-                                new QuteDataHpHardnessBt.HpStat(Pf2eItem.hp.getIntOrThrow(shieldNode)),
-                                new SimpleStat(Pf2eItem.hardness.getIntOrThrow(shieldNode)),
-                                Pf2eItem.bt.getIntOrThrow(shieldNode)),
+                                new QuteDataHpHardnessBt.HpStat(Pf2eItem.hp.intOrThrow(shieldNode)),
+                                new SimpleStat(Pf2eItem.hardness.intOrThrow(shieldNode)),
+                                Pf2eItem.bt.intOrThrow(shieldNode)),
                         penalty(Pf2eItem.speedPen.getTextOrEmpty(shieldNode), " ft."));
     }
 
@@ -122,7 +122,7 @@ public class Json2QuteItem extends Json2QuteBase {
         }
 
         QuteItemArmorData armorData = new QuteItemArmorData();
-        Pf2eItem.ac.getIntFrom(armorDataNode).ifPresent(ac -> armorData.ac = new QuteDataArmorClass(ac));
+        Pf2eItem.ac.intFrom(armorDataNode).ifPresent(ac -> armorData.ac = new QuteDataArmorClass(ac));
         armorData.dexCap = Pf2eItem.dexCap.bonusOrNull(armorDataNode);
 
         armorData.strength = Pf2eItem.str.getTextOrDefault(armorDataNode, "—");

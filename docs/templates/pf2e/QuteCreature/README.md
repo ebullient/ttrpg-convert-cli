@@ -6,12 +6,13 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[abilities](#abilities), [abilityMods](#abilitymods), [aliases](#aliases), [attacks](#attacks), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [ritualCasting](#ritualcasting), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[abilities](#abilities), [abilityMods](#abilitymods), [aliases](#aliases), [attacks](#attacks), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [reprintOf](#reprintof), [ritualCasting](#ritualcasting), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### abilities
 
-The creature's abilities, as a [CreatureAbilities](CreatureAbilities.md).
+The creature's abilities, as a
+[CreatureAbilities](CreatureAbilities.md).
 
 ### abilityMods
 
@@ -23,11 +24,11 @@ Aliases for this note (optional)
 
 ### attacks
 
-The creature's attacks, as a list of [QuteInlineAttack](../QuteInlineAttack.md)
+The creature's attacks, as a list of [QuteInlineAttack](../QuteInlineAttack/README.md)
 
 ### defenses
 
-Defenses (AC, saves, etc) as [QuteDataDefenses](../QuteDataDefenses.md)
+Defenses (AC, saves, etc) as [QuteDataDefenses](../QuteDataDefenses/README.md)
 
 ### description
 
@@ -60,6 +61,10 @@ Note name
 ### perception
 
 Creature perception (number, optional)
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 
 ### ritualCasting
 

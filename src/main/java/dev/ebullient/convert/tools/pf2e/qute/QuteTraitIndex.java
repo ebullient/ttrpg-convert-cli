@@ -13,14 +13,12 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Trait index attributes ({@code indexTrait.md})
- * <p>
+ *
  * This replaces the index usually generated for folders.
  * The default template for the trait consructs a list of links to
  * traits grouped by category.
- * </p>
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote Pf2eQuteNote}
- * </p>
  */
 @TemplateData
 public class QuteTraitIndex extends Pf2eQuteNote {

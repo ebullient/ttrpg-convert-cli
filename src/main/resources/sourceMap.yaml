@@ -1,0 +1,910 @@
+---
+config5e:
+  reference:
+    AAG:
+      name: "Astral Adventurer's Guide"
+      date: "2022-08-16"
+    AATM:
+      name: "Adventure Atlas: The Mortuary"
+      date: "2023-10-17"
+    AI:
+      name: "Acquisitions Incorporated"
+      date: "2019-06-18"
+    AL:
+      name: "Adventurers' League"
+    ALCoS:
+      name: "Adventurers League: Curse of Strahd"
+      date: "2016-03-15"
+    ALEE:
+      name: "Adventurers League: Elemental Evil"
+      date: "2015-04-07"
+    ALRoD:
+      name: "Adventurers League: Rage of Demons"
+      date: "2015-09-15"
+    AWM:
+      name: "Adventure with Muk"
+      date: "2019-11-12"
+    AZfyT:
+      name: "A Zib for your Thoughts"
+      date: "2019-03-05"
+    AitFR:
+      name: "Adventures in the Forgotten Realms"
+      date: "2021-06-30"
+    AitFR-AVT:
+      name: "Adventures in the Forgotten Realms: A Verdant Tomb"
+      date: "2021-07-14"
+    AitFR-DN:
+      name: "Adventures in the Forgotten Realms: Deepest Night"
+      date: "2021-07-21"
+    AitFR-FCD:
+      name: "Adventures in the Forgotten Realms: From Cyan Depths"
+      date: "2021-07-28"
+    AitFR-ISF:
+      name: "Adventures in the Forgotten Realms: In Scarlet Flames"
+      date: "2021-06-30"
+    AitFR-THP:
+      name: "Adventures in the Forgotten Realms: The Hidden Page"
+      date: "2021-07-07"
+    BAM:
+      name: "Boo's Astral Menagerie"
+      date: "2022-08-16"
+    BGDIA:
+      name: "Baldur's Gate: Descent Into Avernus"
+      date: "2019-09-17"
+    BGG:
+      name: "Bigby Presents: Glory of the Giants"
+      date: "2023-08-15"
+    BMT:
+      name: "The Book of Many Things"
+      date: "2023-11-14"
+    CM:
+      name: "Candlekeep Mysteries"
+      date: "2021-03-16"
+    CRCotN:
+      name: "Critical Role: Call of the Netherdeep"
+      date: "2022-03-15"
+    CoA:
+      name: "Chains of Asmodeus"
+      date: "2023-10-30"
+    CoS:
+      name: "Curse of Strahd"
+      date: "2016-03-15"
+    DC:
+      name: "Divine Contention"
+      date: "2019-06-24"
+    DD:
+      name: "Dangerous Designs"
+      date: "2020-03-17"
+    DIP:
+      name: "Dragon of Icespire Peak"
+      date: "2019-06-24"
+    DMG:
+      name: "Dungeon Master's Guide"
+      date: "2014-12-09"
+    DMTCRG:
+      name: "The Deck of Many Things: Card Reference Guide"
+      date: "2023-11-14"
+    DSotDQ:
+      name: "Dragonlance: Shadow of the Dragon Queen"
+      date: "2022-11-22"
+    DitLCoT:
+      name: "Descent into the Lost Caverns of Tsojcanth"
+      date: "2024-03-26"
+    DoD:
+      name: "Domains of Delight"
+      date: "2021-09-21"
+    DoDk:
+      name: "Dungeons of Drakkenheim"
+      date: "2023-12-21"
+    DoSI:
+      name: "Dragons of Stormwreck Isle"
+      date: "2022-07-31"
+    EEPC:
+      name: "Elemental Evil Player's Companion"
+      date: "2015-03-10"
+    EET:
+      name: "Elemental Evil: Trinkets"
+      date: "2015-03-10"
+    EFR:
+      name: "Eberron: Forgotten Relics"
+      date: "2019-11-19"
+    EGW:
+      name: "Explorer's Guide to Wildemount"
+      date: "2020-03-17"
+    EGW_DD:
+      name: "Dangerous Designs"
+      date: "2020-03-17"
+    EGW_FS:
+      name: "Frozen Sick"
+      date: "2020-03-17"
+    EGW_ToR:
+      name: "Tide of Retribution"
+      date: "2020-03-17"
+    EGW_US:
+      name: "Unwelcome Spirits"
+      date: "2020-03-17"
+    ERLW:
+      name: "Eberron: Rising from the Last War"
+      date: "2019-11-19"
+    ESK:
+      name: "Essentials Kit"
+      date: "2019-06-24"
+    FS:
+      name: "Frozen Sick"
+      date: "2020-03-17"
+    FTD:
+      name: "Fizban's Treasury of Dragons"
+      date: "2021-11-26"
+    GGR:
+      name: "Guildmasters' Guide to Ravnica"
+      date: "2018-11-20"
+    GHLoE:
+      name: "Grim Hollow: Lairs of Etharis"
+      date: "2023-11-30"
+    GoS:
+      name: "Ghosts of Saltmarsh"
+      date: "2019-05-21"
+    GotSF:
+      name: "Giants of the Star Forge"
+      date: "2023-08-01"
+    HAT-LMI:
+      name: "Honor Among Thieves: Legendary Magic Items"
+    HAT-TG:
+      name: "Honor Among Thieves: Thieves' Gallery"
+    HF:
+      name: "Heroes' Feast"
+      date: "2020-10-27"
+    HFDoMM:
+      name: "Heroes' Feast: The Deck of Many Morsels"
+      date: "2024-10-01"
+    HFFotM:
+      name: "Heroes' Feast Flavors of the Multiverse"
+      date: "2023-11-07"
+    HFStCM:
+      name: "Heroes' Feast: Saving the Children's Menu"
+      date: "2023-11-21"
+    HWAitW:
+      name: "Humblewood: Adventure in the Wood"
+      date: "2019-06-17"
+    HWCS:
+      name: "Humblewood Campaign Setting"
+      date: "2019-06-17"
+    HftT:
+      name: "Hunt for the Thessalhydra"
+      date: "2019-05-01"
+    HoL:
+      name: "The House of Lament"
+      date: "2021-05-18"
+    HotDQ:
+      name: "Hoard of the Dragon Queen"
+      date: "2014-08-19"
+    IDRotF:
+      name: "Icewind Dale: Rime of the Frostmaiden"
+      date: "2020-09-15"
+    IMR:
+      name: "Infernal Machine Rebuild"
+      date: "2019-11-12"
+    JttRC:
+      name: "Journeys through the Radiant Citadel"
+      date: "2022-07-19"
+    KKW:
+      name: "Krenko's Way"
+      date: "2018-11-20"
+    KftGV:
+      name: "Keys from the Golden Vault"
+      date: "2023-02-21"
+    LK:
+      name: "Lightning Keep"
+      date: "2023-09-26"
+    LLK:
+      name: "Lost Laboratory of Kwalish"
+      date: "2018-11-10"
+    LMoP:
+      name: "Lost Mine of Phandelver"
+      date: "2014-07-15"
+    LR:
+      name: "Locathah Rising"
+      date: "2019-09-19"
+    LRDT:
+      name: "Red Dragon's Tale: A LEGO Adventure"
+      date: "2024-04-01"
+    LoX:
+      name: "Light of Xaryxis"
+      date: "2022-08-16"
+    MCV1SC:
+      name: "Monstrous Compendium Volume 1: Spelljammer Creatures"
+      date: "2022-04-21"
+    MCV2DC:
+      name: "Monstrous Compendium Volume 2: Dragonlance Creatures"
+      date: "2022-12-05"
+    MCV3MC:
+      name: "Monstrous Compendium Volume 3: Minecraft Creatures"
+      date: "2023-03-28"
+    MCV4EC:
+      name: "Monstrous Compendium Volume 3: 4: Eldraine Creatures"
+      date: "2023-09-21"
+    MFF:
+      name: "Mordenkainen's Fiendish Folio"
+      date: "2019-11-12"
+    MGELFT:
+      name: "Muk's Guide To Everything He Learned From Tasha"
+      date: "2020-12-01"
+    MM:
+      name: "Monster Manual"
+      date: "2014-09-30"
+    MOT:
+      name: "Mythic Odysseys of Theros"
+      date: "2020-06-02"
+    MPMM:
+      name: "Mordenkainen Presents: Monsters of the Multiverse"
+      date: "2022-01-25"
+    MPP:
+      name: "Morte's Planar Parade"
+      date: "2023-10-17"
+    MTF:
+      name: "Mordenkainen's Tome of Foes"
+      date: "2018-05-29"
+    MaBJoV:
+      name: "Minsc and Boo's Journal of Villainy"
+      date: "2021-10-05"
+    MisMV1:
+      name: "Misplaced Monsters: Volume 1"
+      date: "2023-05-03"
+    NRH:
+      name: "NERDS Restoring Harmony"
+      date: "2021-09-01"
+    NRH-ASS:
+      name: "NERDS Restoring Harmony: A Sticky Situation"
+      date: "2021-09-01"
+    NRH-AT:
+      name: "NERDS Restoring Harmony: Adventure Together"
+      date: "2021-09-01"
+    NRH-AVitW:
+      name: "NERDS Restoring Harmony: A Voice in the Wilderness"
+      date: "2021-09-01"
+    NRH-AWoL:
+      name: "NERDS Restoring Harmony: A Web of Lies"
+      date: "2021-09-01"
+    NRH-CoI:
+      name: "NERDS Restoring Harmony: Circus of Illusions"
+      date: "2021-09-01"
+    NRH-TCMC:
+      name: "NERDS Restoring Harmony: The Candy Mountain Caper"
+      date: "2021-09-01"
+    NRH-TLT:
+      name: "NERDS Restoring Harmony: The Lost Tomb"
+      date: "2021-09-01"
+    OGA:
+      name: "One Grung Above"
+      date: "2017-10-11"
+    OoW:
+      name: "The Orrery of the Wanderer"
+      date: "2019-06-18"
+    OotA:
+      name: "Out of the Abyss"
+      date: "2015-09-15"
+    PHB:
+      name: "Player's Handbook"
+      date: "2014-08-19"
+    PSA:
+      name: "Plane Shift: Amonkhet"
+      date: "2017-07-06"
+    PSD:
+      name: "Plane Shift: Dominaria"
+      date: "2018-07-31"
+    PSI:
+      name: "Plane Shift: Innistrad"
+      date: "2016-07-12"
+    PSK:
+      name: "Plane Shift: Kaladesh"
+      date: "2017-02-16"
+    PSX:
+      name: "Plane Shift: Ixalan"
+      date: "2018-01-09"
+    PSZ:
+      name: "Plane Shift: Zendikar"
+      date: "2016-04-27"
+    PaBTSO:
+      name: "Phandelver and Below: The Shattered Obelisk"
+      date: "2023-09-19"
+    PaF:
+      name: "Puncheons and Flagons"
+      date: "2024-08-27"
+    PiP:
+      name: "Peril in Pinegrove"
+      date: "2023-11-20"
+    PotA:
+      name: "Princes of the Apocalypse"
+      date: "2015-04-07"
+    QftIS:
+      name: "Quests from the Infinite Staircase"
+      date: "2024-07-16"
+    RMBRE:
+      name: "The Lost Dungeon of Rickedness: Big Rick Energy"
+      date: "2019-11-19"
+    RMR:
+      name: "Dungeons & Dragons vs. Rick and Morty: Basic Rules"
+      date: "2019-11-19"
+    RoT:
+      name: "The Rise of Tiamat"
+      date: "2014-11-04"
+    RoTOS:
+      name: "The Rise of Tiamat Online Supplement"
+      date: "2014-11-04"
+    RtG:
+      name: "Return to Glory"
+      date: "2021-05-21"
+    SAC:
+      name: "Sage Advice Compendium"
+      date: "2019-01-31"
+    SADS:
+      name: "Sapphire Anniversary Dice Set"
+      date: "2019-12-12"
+    SAiS:
+      name: "Spelljammer: Adventures in Space"
+      date: "2022-08-16"
+    SCAG:
+      name: "Sword Coast Adventurer's Guide"
+      date: "2015-11-03"
+    SCC:
+      name: "Strixhaven: A Curriculum of Chaos"
+      date: "2021-12-07"
+    SCC-ARiR:
+      name: "A Reckoning in Ruins"
+      date: "2021-12-07"
+    SCC-CK:
+      name: "Campus Kerfuffle"
+      date: "2021-12-07"
+    SCC-HfMT:
+      name: "Hunt for Mage Tower"
+      date: "2021-12-07"
+    SCC-TMM:
+      name: "The Magister's Masquerade"
+      date: "2021-12-07"
+    ScoEE:
+      name: "Scions of Elemental Evil"
+      date: "2024-10-24"
+    SCREEN:
+      name: "Dungeon Master's Screen"
+      date: "2015-01-20"
+    SCREEN_DUNGEON_KIT:
+      name: "Dungeon Master's Screen: Dungeon Kit"
+      date: "2020-09-21"
+    SCREEN_WILDERNESS_KIT:
+      name: "Dungeon Master's Screen: Wilderness Kit"
+      date: "2020-11-17"
+    SCREEN_SPELLJAMMER:
+      name: "Dungeon Master's Screen: Spelljammer"
+      date: "2022-08-16"
+    SDW:
+      name: "Sleeping Dragon's Wake"
+      date: "2019-06-24"
+    SKT:
+      name: "Storm King's Thunder"
+      date: "2016-09-06"
+    SLW:
+      name: "Storm Lord's Wrath"
+      date: "2019-06-24"
+    SatO:
+      name: "Sigil and the Outlands"
+      date: "2023-10-17"
+    SjA:
+      name: "Spelljammer Academy"
+      date: "2022-07-11"
+    TCE:
+      name: "Tasha's Cauldron of Everything"
+      date: "2020-11-17"
+    TD:
+      name: "Tarot Deck"
+      date: "2022-05-24"
+    TDCSR:
+      name: "Tal'Dorei Campaign Setting Reborn"
+      date: "2022-01-18"
+    TLK:
+      name: "The Lost Kenku"
+      date: "2017-11-28"
+    TTP:
+      name: "The Tortle Package"
+      date: "2017-09-19"
+    TftYP:
+      name: "Tales from the Yawning Portal"
+    TftYP-AtG:
+      name: "Tales from the Yawning Portal: Against the Giants"
+      date: "2017-04-04"
+    TftYP-DiT:
+      name: "Tales from the Yawning Portal: Dead in Thay"
+      date: "2017-04-04"
+    TftYP-TFoF:
+      name: "Tales from the Yawning Portal: The Forge of Fury"
+      date: "2017-04-04"
+    TftYP-THSoT:
+      name: "Tales from the Yawning Portal: The Hidden Shrine of Tamoachan"
+      date: "2017-04-04"
+    TftYP-TSC:
+      name: "Tales from the Yawning Portal: The Sunless Citadel"
+      date: "2017-04-04"
+    TftYP-ToH:
+      name: "Tales from the Yawning Portal: Tomb of Horrors"
+      date: "2017-04-04"
+    TftYP-WPM:
+      name: "Tales from the Yawning Portal: White Plume Mountain"
+      date: "2017-04-04"
+    ToA:
+      name: "Tomb of Annihilation"
+      date: "2017-09-19"
+    ToB1-2023:
+      name: "Tome of Beasts 1 (2023 Edition)"
+      date: "2023-05-31"
+    ToD:
+      name: "Tyranny of Dragons"
+      date: "2019-10-22"
+    ToFW:
+      name: "Turn of Fortune's Wheel"
+      date: "2023-10-17"
+    ToR:
+      name: "Tide of Retribution"
+      date: "2020-03-17"
+    UATMC:
+      name: "Unearthed Arcana: The Mystic Class"
+      date: "2017-03-13"
+    US:
+      name: "Unwelcome Spirits"
+      date: "2020-03-17"
+    UtHftLH:
+      name: "Uni and the Hunt for the Lost Horn"
+      date: "2024-09-24"
+    VD:
+      name: "Vecna Dossier"
+      date: "2022-06-09"
+    VEoR:
+      name: "Vecna: Eve of Ruin"
+      date: "2024-05-21"
+    VGM:
+      name: "Volo's Guide to Monsters"
+      date: "2016-11-15"
+    VNotEE:
+      name: "Vecna: Nest of the Eldritch Eye"
+      date: "2024-04-16"
+    VRGR:
+      name: "Van Richten's Guide to Ravenloft"
+      date: "2021-05-18"
+    WBtW:
+      name: "The Wild Beyond the Witchlight"
+      date: "2021-09-21"
+    WDH:
+      name: "Waterdeep: Dragon Heist"
+      date: "2018-09-18"
+    WDMM:
+      name: "Waterdeep: Dungeon of the Mad Mage"
+      date: "2018-11-20"
+    XDMG:
+      name: "Dungeon Master's Guide (2024)"
+      date: "2024-11-12"
+    XGE:
+      name: "Xanathar's Guide to Everything"
+      date: "2017-11-21"
+    XMM:
+      name: "Monster Manual (2024)"
+      date: "2025-02-18"
+    XMtS:
+      name: "X Marks the Spot"
+      date: "2017-12-11"
+    XPHB:
+      name: "Player's Handbook (2024)"
+      date: "2024-09-17"
+    XScreen:
+      name: "Dungeon Master's Screen (2024)"
+      date: "2024-11-12"
+  longToAbv:
+    ALCurseOfStrahd: "ALCoS"
+    ALElementalEvil: "ALEE"
+    ALRageOfDemons: "ALRoD"
+    HEROES_FEAST: "HF"
+    PS-A: "PSA"
+    PS-D: "PSD"
+    PS-I: "PSI"
+    PS-K: "PSK"
+    PS-X: "PSX"
+    PS-Z: "PSZ"
+    SCC_ARiR: "SCC-ARir"
+    SCC_CK: "SCC-CK"
+    SCC_HfMT: "SCC-HfMT"
+    SCC_TMM: "SCC-TMM"
+    Screen: "SCREEN"
+    ScreenDungeonKit: "SCREEN_DUNGEON_KIT"
+    ScreenSpelljammer: "SRC_SCREEN_SPELLJAMMER"
+    ScreenWildernessKit: "SCREEN_WILDERNESS_KIT"
+    TYP: "TftYP"
+    TYP_AtG: "TftYP-AtG"
+    TYP_DiT: "TftYP-DiT"
+    TYP_TFoF: "TftYP-TFoF"
+    TYP_THSoT: "TftYP-THSoT"
+    TYP_TSC: "TftYP-TSC"
+    TYP_ToH: "TftYP-ToHs"
+    TYP_WPM: "TftYP-WPM"
+    UATheMysticClass: "UATMC"
+configPf2e:
+  reference:
+    "7DfS0":
+      name: "Seven Dooms for Sandpoint Player's Guide"
+      date: "2024-03-08"
+    AAWS:
+      name: "Azarketi Ancestry Web Supplement"
+      date: "2021-02-24"
+    AFFM:
+      name: "A Few Flowers More"
+      date: "2023-07-23"
+    AFoF:
+      name: "A Fistful of Flowers"
+      date: "2022-07-25"
+    APG:
+      name: "Advanced Player's Guide"
+      date: "2020-07-30"
+    AV0:
+      name: "Abomination Vaults Player's Guide"
+      date: "2021-01-15"
+    AV1:
+      name: "Abomination Vaults #1: Ruins of Gauntlight"
+      date: "2021-01-15"
+    AV2:
+      name: "Abomination Vaults #2: Hands of the Devil"
+      date: "2021-02-24"
+    AV3:
+      name: "Abomination Vaults #3: Eyes of Empty Death"
+      date: "2021-04-07"
+    AVH:
+      name: "Abomination Vaults Hardcover"
+      date: "2022-05-25"
+    AoA0:
+      name: "Age of Ashes Player's Guide"
+      date: "2019-08-01"
+    AoA1:
+      name: "Age of Ashes #1: Hellknight Hill"
+      date: "2019-08-01"
+    AoA2:
+      name: "Age of Ashes #2: Cult of Cinders"
+      date: "2019-09-01"
+    AoA3:
+      name: "Age of Ashes #3: Tomorrow Must Burn"
+      date: "2019-09-18"
+    AoA4:
+      name: "Age of Ashes #4: Fires of the Haunted City"
+      date: "2019-10-16"
+    AoA5:
+      name: "Age of Ashes #5: Against the Scarlet Triad"
+      date: "2019-11-13"
+    AoA6:
+      name: "Age of Ashes #6: Broken Promises"
+      date: "2019-12-12"
+    AoE0:
+      name: "Agents of Edgewatch Player's Guide"
+      date: "2020-07-08"
+    AoE1:
+      name: "Agents of Edgewatch #1: Devil at the Dreaming Palace"
+      date: "2020-07-30"
+    AoE2:
+      name: "Agents of Edgewatch #2: Sixty Feet Under"
+      date: "2020-08-26"
+    AoE3:
+      name: "Agents of Edgewatch #3: All or Nothing"
+      date: "2020-09-15"
+    AoE4:
+      name: "Agents of Edgewatch #4: Assault on Hunting Lodge Seven"
+      date: "2020-10-14"
+    AoE5:
+      name: "Agents of Edgewatch #5: Belly of the Black Whale"
+      date: "2020-11-15"
+    AoE6:
+      name: "Agents of Edgewatch #6: Ruins of the Radiant Siege"
+      date: "2020-12-15"
+    B1:
+      name: "Bestiary"
+      date: "2019-08-01"
+    B2:
+      name: "Bestiary 2"
+      date: "2020-05-27"
+    B3:
+      name: "Bestiary 3"
+      date: "2021-04-07"
+    BB:
+      name: "Beginner Box"
+      date: "2020-11-11"
+    BL0:
+      name: "Blood Lords Player's Guide"
+      date: "2022-06-29"
+    BL1:
+      name: "Blood Lords #1: Zombie Feast"
+      date: "2022-07-27"
+    BL2:
+      name: "Blood Lords #2: Graveclaw"
+      date: "2022-08-31"
+    BL3:
+      name: "Blood Lords #3: Field of Maidens"
+      date: "2022-09-21"
+    BL4:
+      name: "Blood Lords #4: The Ghouls Hunger"
+      date: "2022-10-19"
+    BL5:
+      name: "Blood Lords #5: A Taste of Ashes"
+      date: "2022-11-16"
+    BL6:
+      name: "Blood Lords #6: Ghost King's Rage"
+      date: "2022-12-14"
+    BotD:
+      name: "Book of the Dead"
+      date: "2022-04-27"
+    CC0:
+      name: "Curtain Call Player's Guide"
+      date: "2024-07-10"
+    CFD:
+      name: "Critical Fumble Deck"
+      date: "2019-10-16"
+    CHD:
+      name: "Critical Hit Deck"
+      date: "2019-10-16"
+    CRB:
+      name: "Core Rulebook"
+      date: "2019-08-01"
+    DA:
+      name: "Dark Archive"
+      date: "2022-07-27"
+    DaLl:
+      name: "Dinner at Lionlodge"
+      date: "2021-05-30"
+    EC0:
+      name: "Extinction Curse Player's Guide"
+      date: "2020-01-13"
+    EC1:
+      name: "Extinction Curse #1: The Show Must Go On"
+      date: "2020-01-30"
+    EC2:
+      name: "Extinction Curse #2: Legacy of the Lost God"
+      date: "2020-02-26"
+    EC3:
+      name: "Extinction Curse #3: Life's Long Shadows"
+      date: "2020-03-26"
+    EC4:
+      name: "Extinction Curse #4: Siege of the Dinosaurs"
+      date: "2020-04-29"
+    EC5:
+      name: "Extinction Curse #5: Lord of the Black Sands"
+      date: "2020-05-27"
+    EC6:
+      name: "Extinction Curse #6: The Apocalypse Prophet"
+      date: "2020-06-24"
+    FRP0:
+      name: "Fists of the Ruby Phoenix Player's Guide"
+      date: "2021-04-12"
+    FRP1:
+      name: "Fists of the Ruby Phoenix #1: Despair on Danger Island"
+      date: "2021-07-07"
+    FRP2:
+      name: "Fists of the Ruby Phoenix #2: Ready? Fight!"
+      date: "2021-07-07"
+    FRP3:
+      name: "Fists of the Ruby Phoenix #3: King of the Mountain"
+      date: "2021-07-07"
+    FoP:
+      name: "The Fall of Plaguestone"
+      date: "2019-08-01"
+    G&G:
+      name: "Guns & Gears"
+      date: "2021-10-13"
+    GMG:
+      name: "Gamemastery Guide"
+      date: "2020-02-26"
+    GW0:
+      name: "Gatewalkers Player's Guide"
+      date: "2023-01-10"
+    GW1:
+      name: "Gatewalkers #1: The Seventh Arch"
+      date: "2023-01-25"
+    GW2:
+      name: "Gatewalkers #2: They Watched the Stars"
+      date: "2023-02-22"
+    GW3:
+      name: "Gatewalkers #3: Dreamers of the Nameless Spires"
+      date: "2023-03-29"
+    HPD:
+      name: "Hero Point Deck"
+      date: "2021-11-10"
+    HStR:
+      name: "Head-Shot the Rot"
+      date: "2021-10-21"
+    LOACLO:
+      name: "Lost Omens: Absalom, City of Lost Omens"
+      date: "2021-12-22"
+    LOAG:
+      name: "Lost Omens: Ancestry Guide"
+      date: "2021-02-24"
+    LOCG:
+      name: "Lost Omens: Character Guide"
+      date: "2019-10-16"
+    LOGM:
+      name: "Lost Omens: Gods & Magic"
+      date: "2020-01-29"
+    LOGMWS:
+      name: "Lost Omens: Gods & Magic Web Supplement"
+      date: "2020-01-29"
+    LOHh:
+      name: "Lost Omens: Highhelm"
+      date: "2023-06-28"
+    LOIL:
+      name: "Lost Omens: Impossible Lands"
+      date: "2021-11-06"
+    LOKL:
+      name: "Lost Omens: Knights of Lastwall"
+      date: "2022-05-25"
+    LOL:
+      name: "Lost Omens: Legends"
+      date: "2020-07-30"
+    LOME:
+      name: "Lost Omens: The Mwangi Expanse"
+      date: "2021-07-07"
+    LOMM:
+      name: "Lost Omens: Monsters of Myth"
+      date: "2021-12-22"
+    LOPSG:
+      name: "Lost Omens: Pathfinder Society Guide"
+      date: "2020-10-14"
+    LOTG:
+      name: "Lost Omens: Travel Guide"
+      date: "2022-08-31"
+    LOTGB:
+      name: "Lost Omens: The Grand Bazaar"
+      date: "2021-10-13"
+    LOTXWG:
+      name: "Lost Omens: Tian Xia World Guide"
+      date: "2024-04-24"
+    LOWG:
+      name: "Lost Omens: World Guide"
+      date: "2019-08-31"
+    LTiBA:
+      name: "Little Trouble in Big Absalom"
+      date: "2020-07-25"
+    Mal:
+      name: "Malevolence"
+      date: "2021-07-07"
+    MotM:
+      name: "Mark of the Mantis"
+      date: "2022-02-23"
+    NGD:
+      name: "Night of the Gray Death"
+      date: "2021-10-13"
+    OoA0:
+      name: "Outlaws of Alkenstar Player's Guide"
+      date: "2022-03-28"
+    OoA1:
+      name: "Outlaws of Alkenstar #1: Punks in a Powder Keg"
+      date: "2022-04-27"
+    OoA2:
+      name: "Outlaws of Alkenstar #2: Cradle of Quartz"
+      date: "2022-05-25"
+    OoA3:
+      name: "Outlaws of Alkenstar #3: The Smoking Gun"
+      date: "2022-06-29"
+    PC1:
+      name: "Player Core"
+      date: "2023-11-15"
+    PFUM:
+      name: "PATHFINDER: FUMBUS!"
+      date: "2021-11-11"
+    POS1:
+      name: "Pathfinder One-Shot: Sundered Waves"
+      date: "2021-03-06"
+    QFF0:
+      name: "Quest for the Frozen Flame Player's Guide"
+      date: "2021-12-20"
+    QFF1:
+      name: "Quest for the Frozen Flame #1: Broken Tusk Moon"
+      date: "2021-01-26"
+    QFF2:
+      name: "Quest for the Frozen Flame #2: Lost Mammoth Valley"
+      date: "2021-02-23"
+    QFF3:
+      name: "Quest for the Frozen Flame #3: Burning Tundra"
+      date: "2021-03-30"
+    RoE:
+      name: "Rage of Elements"
+      date: "2023-08-02"
+    Rust:
+      name: "Rusthenge"
+      date: "2023-10-18"
+    SF0:
+      name: "Stolen Fate Player's Guide"
+      date: "2023-04-13"
+    SKT0:
+      name: "Sky King's Tomb Player's Guide"
+      date: "2023-07-13"
+    SaS:
+      name: "Shadows at Sundown"
+      date: "2022-05-25"
+    Sli:
+      name: "The Slithering"
+      date: "2020-07-30"
+    SoG0:
+      name: "Season of Ghosts Player's Guide"
+      date: "2023-10-02"
+    SoG1:
+      name: "Season of Ghosts #1: The Summer That Never Was"
+      date: "2023-10-18"
+    SoG2:
+      name: "Season of Ghosts #2: Let the Leaves Fall"
+      date: "2023-11-15"
+    SoG3:
+      name: "Season of Ghosts #3: No Breath to Cry"
+      date: "2023-12-23"
+    SoG4:
+      name: "Season of Ghosts #4: To Bloom Below the Web"
+      date: "2024-01-31"
+    SoM:
+      name: "Secrets of Magic"
+      date: "2021-09-01"
+    SoT0:
+      name: "Strength of Thousands Player's Guide"
+      date: "2021-07-26"
+    SoT1:
+      name: "Strength of Thousands #1: Kindled Magic"
+      date: "2021-08-05"
+    SoT2:
+      name: "Strength of Thousands #2: Spoken on the Song Wind"
+      date: "2021-09-01"
+    SoT3:
+      name: "Strength of Thousands #3: Hurricane's Howl"
+      date: "2021-10-13"
+    SoT4:
+      name: "Strength of Thousands #4: Secrets of the Temple-City"
+      date: "2021-10-13"
+    SoT5:
+      name: "Strength of Thousands #5: Doorway to the Red Star"
+      date: "2021-11-10"
+    SoT6:
+      name: "Strength of Thousands #6: Shadows of the Ancients"
+      date: "2021-07-26"
+    TEC:
+      name: "The Enmity Cycle"
+      date: "2023-05-24"
+    TV:
+      name: "Treasure Vault"
+      date: "2023-02-22"
+    TaL:
+      name: "Torment and Legacy"
+      date: "2019-09-11"
+    TiO:
+      name: "Troubles in Otari"
+      date: "2020-12-09"
+    ToK:
+      name: "Threshold of Knowledge"
+      date: "2021-11-19"
+    TotT0:
+      name: "Triumph of the Tusk Player's Guide"
+      date: "2024-10-09"
+    WoW0:
+      name: "Wardens of Wildwood Player's Guide"
+      date: "2024-04-23"
+    WoW1:
+      name: "Wardens of Wildwood #1: Pactbreaker"
+      date: "2024-04-23"
+    WoW2:
+      name: "Wardens of Wildwood #2: Severed at the Root"
+      date: "2024-05-22"
+    WoW3:
+      name: "Wardens of Wildwood #3: Shepherd of Decay"
+      date: "2024-06-26"
+    WtD1:
+      name: "Wake the Dead #1"
+      date: "2023-05-31"
+    WtD2:
+      name: "Wake the Dead #2"
+      date: "2023-07-26"
+    WtD3:
+      name: "Wake the Dead #3"
+      date: "2023-09-27"
+    WtD4:
+      name: "Wake the Dead #4"
+      date: "2023-11-28"
+    WtD5:
+      name: "Wake the Dead #5"
+      date: "2024-01-31"
+  longToAbv:
+    GnG: "G&G"

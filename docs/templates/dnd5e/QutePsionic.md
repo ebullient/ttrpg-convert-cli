@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[focus](#focus), [hasSections](#hassections), [labeledSource](#labeledsource), [modes](#modes), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [typeOrder](#typeorder), [vaultPath](#vaultpath)
+[focus](#focus), [hasSections](#hassections), [labeledSource](#labeledsource), [modes](#modes), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [typeOrder](#typeorder), [vaultPath](#vaultpath)
 
 
 ### focus
@@ -28,6 +28,10 @@ Psionic mode as list of [NamedText](../NamedText.md)
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

@@ -8,9 +8,7 @@ public interface MarkdownConverter {
 
     MarkdownConverter writeFiles(List<? extends IndexType> types);
 
-    MarkdownConverter writeNotesAndTables();
-
-    MarkdownConverter writeFiles(IndexType feat);
+    MarkdownConverter writeFiles(IndexType type);
 
     MarkdownConverter writeImages();
 }

@@ -148,7 +148,7 @@ public class Json2QuteDeity extends Json2QuteBase {
                     "ignore {@quickref difficult terrain||3|terrain} and {@quickref greater difficult terrain||3|terrain}"));
         }
 
-        avatar.shield = Pf2eDeity.shield.getIntFrom(avatarNode)
+        avatar.shield = Pf2eDeity.shield.intFrom(avatarNode)
                 .map("shield (%d Hardness, can't be damaged)"::formatted).orElse(null);
 
         avatar.attacks = Stream.concat(

@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[classProgression](#classprogression), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [parentClass](#parentclass), [parentClassLink](#parentclasslink), [parentClassSource](#parentclasssource), [source](#source), [sourceAndPage](#sourceandpage), [subclassTitle](#subclasstitle), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[classProgression](#classprogression), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [parentClass](#parentclass), [parentClassLink](#parentclasslink), [parentClassSource](#parentclasssource), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [subclassTitle](#subclasstitle), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### classProgression
@@ -36,6 +36,10 @@ Markdown link to the parent class
 ### parentClassSource
 
 Source of the parent class (abbreviation)
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

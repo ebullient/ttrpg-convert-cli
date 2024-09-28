@@ -15,10 +15,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.NestingKind;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.QualifiedNameable;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -41,6 +50,8 @@ import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
 
 public class MarkdownDoclet implements Doclet {
+    Pattern preformattedText = Pattern.compile("```|<pre>");
+
     Reporter reporter;
     DocletEnvironment environment;
     Path outputDirectory;
@@ -65,7 +76,7 @@ public class MarkdownDoclet implements Doclet {
 
         @Override
         public Kind getKind() {
-            return Doclet.Option.Kind.STANDARD;
+            return Kind.OTHER;
         }
 
         @Override
@@ -112,7 +123,10 @@ public class MarkdownDoclet implements Doclet {
     @Override
     public boolean run(DocletEnvironment environment) {
         try {
+            System.out.println("TTRPG Convert Cli Markdown Doclet: run begin");
+            System.out.println("target: " + targetDir.getValue());
             processFiles(environment);
+            System.out.println("TTRPG Convert Cli Markdown Doclet: run end");
         } catch (final Exception e) {
             reporter.print(Diagnostic.Kind.ERROR, e.getMessage());
             e.printStackTrace();
@@ -138,29 +152,45 @@ public class MarkdownDoclet implements Doclet {
 
         Set<? extends Element> elements = environment.getIncludedElements();
 
-        Map<TypeElement, List<TypeElement>> innerClasses = ElementFilter.typesIn(elements).stream()
-                .filter(t -> t.getKind() != ElementKind.INTERFACE)
-                .filter(t -> t.getNestingKind() != NestingKind.TOP_LEVEL)
-                .filter(t -> !isExcluded(t))
-                .collect(Collectors.groupingBy(t -> (TypeElement) t.getEnclosingElement()));
-
-        for (TypeElement t : innerClasses.keySet()) {
-            String reference = t.getQualifiedName().toString();
-            classNameMapping.put(reference, reference + ".README");
-        }
+        // Find TOP_LEVEL elements that enclose (interesting) others
+        ElementFilter.typesIn(elements).stream()
+                .filter(t -> isQute(t)) // only include template-related classes
+                .filter(t -> !isIgnored(t)) // skip @JavadocIgnore and Builder classes
+                .filter(t -> t.getNestingKind() != NestingKind.TOP_LEVEL) // find nested elements
+                .filter(t -> t.getKind() != ElementKind.INTERFACE) // skip inner interfaces
+                .map(TypeElement::getEnclosingElement) // map to enclosing element
+                .distinct() // remove duplicates
+                .forEach(te -> {
+                    // Append "README" to the class name to generate a README file
+                    // inside the directory for GH-based documentation
+                    String reference = te.toString();
+                    classNameMapping.put(reference, reference + ".README");
+                });
 
         // Print package indexes (README.md)
         packages = ElementFilter.packagesIn(elements);
         for (PackageElement p : packages) {
-            writeReadmeFile(docTrees, p);
+            if (isQute(p) && !isIgnored(p)) {
+                writeReadmeFile(docTrees, p);
+            }
         }
 
         for (TypeElement t : ElementFilter.typesIn(elements)) {
-            if (t.getKind() == ElementKind.INTERFACE) {
+            if (!isQute(t) || isExcluded(t)) {
                 continue;
             }
+            String mapping = classNameMapping.get(t.getQualifiedName().toString());
+            System.out.println(
+                    t.getKind().toString().substring(0, 4)
+                            + "\t" + t.getQualifiedName()
+                            + (mapping == null ? "" : "\n\t-- " + mapping));
             writeReferenceFile(docTrees, t);
         }
+    }
+
+    private void debugFile(String type, Name name, Path outFile) {
+        // String out = outFile.toString().replace(targetDir.getValue(), "");
+        // System.out.println(type + ", " + name.toString() + " --> " + out);
     }
 
     protected void writeReferenceFile(DocTrees docTrees, TypeElement t) throws IOException {
@@ -169,6 +199,7 @@ public class MarkdownDoclet implements Doclet {
             return;
         }
         Path outFile = getOutputFile(t);
+        debugFile("reference", t.getQualifiedName(), outFile);
         try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(outFile))) {
             Aggregator aggregator = new Aggregator();
             aggregator.add("# " + name + "\n\n");
@@ -197,6 +228,7 @@ public class MarkdownDoclet implements Doclet {
                     .collect(Collectors.joining(", ")));
             aggregator.add("\n\n");
 
+            Map<String, List<? extends DocTree>> recordContent = new HashMap<>();
             if (t.getKind() == ElementKind.RECORD) {
                 // If it's a record, then we can't retrieve the attributes as Elements, so we have to parse them from
                 // the comment tree instead.
@@ -206,46 +238,68 @@ public class MarkdownDoclet implements Doclet {
                         .map(param -> (ParamTree) param)
                         .filter(p -> !p.getName().toString().startsWith("_")) // fields with "_" prefix are internal
                         .forEach(param -> {
-                            aggregator.add("\n\n### " + param.getName() + "\n\n");
-                            aggregator.addAll(param.getDescription());
+                            recordContent.put(param.getName().toString(), param.getDescription());
                         });
-            } else {
-                for (Map.Entry<String, Element> entry : members.entrySet()) {
-                    aggregator.add("\n\n### " + entry.getKey() + "\n\n");
+            }
+
+            for (Map.Entry<String, Element> entry : members.entrySet()) {
+                aggregator.add("\n\n### " + entry.getKey() + "\n\n");
+                var content = recordContent.get(entry.getKey());
+                if (content != null) {
+                    aggregator.addAll(content);
+                } else {
                     aggregator.addFullBody(docTrees.getDocCommentTree(entry.getValue()));
                 }
             }
+
             out.println(aggregator);
+            out.flush();
         }
     }
 
     protected void processElement(DocTrees docTrees, Map<String, Element> members, Element e) {
         String name = e.getSimpleName().toString();
         ElementKind kind = e.getKind();
-        if (!e.getModifiers().stream().anyMatch(m -> m == Modifier.PUBLIC)
-                || e.getModifiers().stream().anyMatch(m -> m == Modifier.STATIC)) {
-            return;
-        }
-        if (kind == ElementKind.METHOD) {
-            if (!name.startsWith("get") && !name.startsWith("is")) {
-                return;
-            }
-            if (e.getAnnotation(Deprecated.class) != null) {
-                return;
-            }
-        } else if (!kind.isField() && kind != ElementKind.RECORD_COMPONENT) {
+
+        if (isIgnored(e)) {
+            // Return early if the element is annotated with @JavadocIgnore
             return;
         }
 
-        if (kind == ElementKind.METHOD) {
-            name = name.replaceFirst("(get|is)", "");
-            name = name.substring(0, 1).toLowerCase() + name.substring(1);
+        if (!isIncludedVerbatim(e)) {
+            // If the element is not annotated with @JavadocVerbatim,
+            // filter and format the element name
+
+            if (!e.getModifiers().stream().anyMatch(m -> m == Modifier.PUBLIC)
+                    || e.getModifiers().stream().anyMatch(m -> m == Modifier.STATIC)) {
+                // Skip non-public and static elements
+                return;
+            }
+            if (kind == ElementKind.METHOD) {
+                if (!name.startsWith("get") && !name.startsWith("is")) {
+                    // Skip methods that don't start with "get" or "is"
+                    return;
+                }
+                if (e.getAnnotation(Deprecated.class) != null) {
+                    // Skip deprecated methods
+                    return;
+                }
+
+                name = name.replaceFirst("(get|is)", "");
+                name = name.substring(0, 1).toLowerCase() + name.substring(1);
+            } else if (!kind.isField() && kind != ElementKind.RECORD_COMPONENT) {
+                // Skip any other non-field elements
+                return;
+            }
         }
+
         members.put(name, e);
     }
 
     void writeReadmeFile(DocTrees docTrees, PackageElement p) throws IOException {
         Path outFile = getOutputFile(p);
+        debugFile("readme", p.getQualifiedName(), outFile);
+
         try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(outFile))) {
             Aggregator aggregator = new Aggregator();
 
@@ -255,10 +309,10 @@ public class MarkdownDoclet implements Doclet {
             // Make list linking to package members
             Map<String, TypeElement> members = new TreeMap<>();
             for (Element e : p.getEnclosedElements()) {
+                TypeElement te = (TypeElement) e;
                 if (isExcluded(e)) {
                     continue;
                 }
-                TypeElement te = (TypeElement) e;
                 if (te.getKind() == ElementKind.INTERFACE) {
                     continue;
                 }
@@ -283,14 +337,36 @@ public class MarkdownDoclet implements Doclet {
                 aggregator.add(result);
             }
             out.println(aggregator.toString());
+            out.flush();
         }
     }
 
+    private boolean isQute(QualifiedNameable e) {
+        return e.getQualifiedName().toString().contains("qute");
+    }
+
+    boolean isIgnored(Element element) {
+        return element.getAnnotation(JavadocIgnore.class) != null
+                || element.getSimpleName().toString().contains("Builder");
+    }
+
+    boolean isIncludedVerbatim(Element element) {
+        return element.getAnnotation(JavadocVerbatim.class) != null;
+    }
+
     boolean isExcluded(Element element) {
-        ElementKind kind = element.getKind();
+        if (isIncludedVerbatim(element)) {
+            return false;
+        }
+
+        boolean excludeKind = switch (element.getKind()) {
+            case CLASS, INTERFACE, RECORD, ENUM -> false;
+            default -> true;
+        };
+
         return !environment.isIncluded(element)
-                || element.getSimpleName().toString().contains("Builder")
-                || (kind != ElementKind.CLASS && kind != ElementKind.INTERFACE && kind != ElementKind.ENUM);
+                || isIgnored(element)
+                || excludeKind;
     }
 
     String getDescription(DocTrees docTrees, TypeElement te) {
@@ -327,11 +403,11 @@ public class MarkdownDoclet implements Doclet {
     }
 
     String qualifiedNameToPath(QualifiedNameable element) {
-        String reference = element.getQualifiedName().toString();
-        return qualifiedNameToPath(classNameMapping.getOrDefault(reference, reference));
+        return qualifiedNameToPath(element.getQualifiedName().toString());
     }
 
     String qualifiedNameToPath(String reference) {
+        reference = classNameMapping.getOrDefault(reference, reference);
         if (reference.endsWith("qute")) {
             reference += ".README";
         } else if (!isValidClass(reference.replace(".README", ""))) {
@@ -373,7 +449,17 @@ public class MarkdownDoclet implements Doclet {
         void add(DocTree docTree) {
             switch (docTree.getKind()) {
                 case TEXT:
-                    add(((TextTree) docTree).getBody().toString().replace("\n", ""));
+                    // Always remove single leading javadoc space
+                    String text = ((TextTree) docTree).getBody().toString()
+                            .replaceAll("\n ", "\n")
+                            .replaceAll("\n\n\n", "\n\n"); // consolidate extra lines
+
+                    Matcher m = preformattedText.matcher(text);
+                    if (!m.find()) {
+                        // if there isn't any pre-formatted text, remove any other leading whitespace
+                        text = text.replaceAll("\n +", "\n");
+                    }
+                    add(text);
                     break;
                 case CODE:
                 case LITERAL:
@@ -409,8 +495,18 @@ public class MarkdownDoclet implements Doclet {
                     reference = qualifiedNameToPath(reference);
                     if (!reference.startsWith("http")) {
                         Path target = outputDirectory.resolve(reference);
-                        Path relative = currentResource.getParent().relativize(target);
-                        reference = relative.toString();
+                        if (target.equals(currentResource)) {
+                            reference = "";
+                        } else {
+                            Path relative = currentResource.getParent().relativize(target);
+                            reference = relative.toString();
+                        }
+                        anchor = anchor
+                                .replaceFirst("^#(get|is)", "#")
+                                .replace("()", "").toLowerCase();
+                        label = label
+                                .replaceFirst("#(get|is)", "#")
+                                .replace("()", "");
                     }
                     add(String.format("[%s](%s%s)", label, reference, anchor));
                     break;

@@ -14,9 +14,7 @@ import io.quarkus.qute.TemplateData;
 /**
  * Pf2eTools Attack attributes (inline/embedded, {@code inline-attack2md.txt})
  *
- * <p>
  * When used directly, renders according to {@code inline-attack2md.txt}
- * </p>
  */
 @TemplateData
 public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Renderable {

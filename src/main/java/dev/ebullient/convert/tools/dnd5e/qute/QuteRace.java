@@ -9,9 +9,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools race attributes ({@code race2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteRace extends Tools5eQuteBase {

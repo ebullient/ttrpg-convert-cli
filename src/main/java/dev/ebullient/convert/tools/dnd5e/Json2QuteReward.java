@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteReward;
 
 public class Json2QuteReward extends Json2QuteCommon {
@@ -30,9 +29,9 @@ public class Json2QuteReward extends Json2QuteCommon {
         if (type != null) {
             details.add(type);
         }
-        PropertyEnum rarity = PropertyEnum.fromValue(RewardField.rarity.getTextOrNull(rootNode));
+        String rarity = RewardField.rarity.getTextOrNull(rootNode);
         if (rarity != null) {
-            details.add(rarity.toString());
+            details.add(rarity);
         }
         String detail = String.join(", ", details);
 

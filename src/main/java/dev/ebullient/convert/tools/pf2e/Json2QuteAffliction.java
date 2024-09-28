@@ -112,7 +112,7 @@ public class Json2QuteAffliction extends Json2QuteBase {
             Tags tags = new Tags(sources);
             Collection<String> traits = convert.collectTraitsFrom(node, tags);
 
-            Optional<String> afflictionLevel = level.getIntFrom(node).map(Objects::toString);
+            Optional<String> afflictionLevel = level.intFrom(node).map(Objects::toString);
             afflictionLevel.ifPresent(lv -> tags.add("affliction", "level", lv));
 
             String temptedCurseText = temptedCurse.transformTextFrom(node, "\n", convert);
@@ -157,10 +157,10 @@ public class Json2QuteAffliction extends Json2QuteBase {
                     // fields are present
                     savingThrow.getTextFrom(dataNode)
                             .or(() -> DC.getTextFrom(dataNode))
-                            .or(() -> DC.getIntFrom(dataNode).map(Objects::toString))
+                            .or(() -> DC.intFrom(dataNode).map(Objects::toString))
                             .map(StringUtil::isPresent)
                             .map(unused -> new QuteAffliction.QuteAfflictionSave(
-                                    DC.getIntFrom(dataNode).orElse(null),
+                                    DC.intOrNull(dataNode),
                                     savingThrow.getTextFrom(dataNode)
                                             .map(s -> s.contains(" ") ? s : toTitleCase(s)).orElse(null),
                                     DC.getTextFrom(dataNode).map(convert::replaceText).orElse(null)))

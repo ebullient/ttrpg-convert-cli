@@ -14,25 +14,19 @@ import io.quarkus.qute.TemplateData;
 /**
  * Create links to referenced images.
  *
- * <p>
  * The general form of a markdown image link is: `![alt text](vaultPath "title")`.
  * You can also use anchors to position the image within the page,
  * which creates links that look like this: `![alt text](vaultPath#anchor "title")`.
- * </p>
  *
- * <h2>Anchor Tags</h2>
+ * ## Anchor Tags
  *
- * <p>
  * Anchor tags are used to position images within a page and are styled with CSS. Examples:
- * </p>
  *
- * <ul>
- * <li>`center` centers the image and constrains its height.</li>
- * <li>`gallery` constrains images within a gallery callout.</li>
- * <li>`portrait` floats an image to the right.</li>
- * <li>`symbol` floats Deity symbols to the right.</li>
- * <li>`token` is a smaller image, also floated to the right. Used in statblocks.</li>
- * </ul>
+ * - `center` centers the image and constrains its height.
+ * - `gallery` constrains images within a gallery callout.
+ * - `portrait` floats an image to the right.
+ * - `symbol` floats Deity symbols to the right.
+ * - `token` is a smaller image, also floated to the right. Used in statblocks.
  */
 @TemplateData
 public class ImageRef {
@@ -97,17 +91,17 @@ public class ImageRef {
      * Return an embedded markdown link to the image, using an optional
      * anchor tag to position the image in the page.
      * For example: `{resource.image.getEmbeddedLink("symbol")}`
-     * <p>
+     *
      * If the title is longer than 50 characters:
      * `![{resource.shortTitle}]({resource.vaultPath}#anchor "{resource.title}")`,
-     * </p>
-     * <p>
+     *
+     *
      * If the title is 50 characters or less:
      * `![{resource.title}]({resource.vaultPath}#anchor)`,
-     * </p>
-     * <p>
+     *
+     *
      * Links will be generated using "center" as the anchor by default.
-     * </p>
+     *
      */
     public String getEmbeddedLink() {
         String anchor = "center";

@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[alignment](#alignment), [altNames](#altnames), [category](#category), [domains](#domains), [hasSections](#hassections), [image](#image), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [province](#province), [source](#source), [sourceAndPage](#sourceandpage), [symbol](#symbol), [tags](#tags), [text](#text), [title](#title), [vaultPath](#vaultpath)
+[alignment](#alignment), [altNames](#altnames), [category](#category), [domains](#domains), [hasSections](#hassections), [image](#image), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [province](#province), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [symbol](#symbol), [tags](#tags), [text](#text), [title](#title), [vaultPath](#vaultpath)
 
 
 ### alignment
@@ -48,6 +48,10 @@ Pantheon to which this deity belongs: Celtic
 ### province
 
 Province of this deity: Discovery, Luck, Storms, Travel, ...
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

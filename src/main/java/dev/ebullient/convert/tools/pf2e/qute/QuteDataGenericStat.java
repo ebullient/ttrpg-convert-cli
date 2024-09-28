@@ -32,11 +32,9 @@ public interface QuteDataGenericStat extends QuteUtil {
 
     /**
      * A basic {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat QuteDataGenericStat} which provides
-     * only a value and possibly a note. Default representation:
+     * only a value and possibly a note.
      *
-     * <blockquote>
-     * 10 (some note) (some other note)
-     * </blockquote>
+     * Default representation: `10 (some note) (some other note)`
      */
     class SimpleStat implements QuteDataGenericStat {
         private final Integer value;
@@ -72,10 +70,10 @@ public interface QuteDataGenericStat extends QuteUtil {
     }
 
     /**
-     * A Pathfinder 2e named bonus, potentially with other conditional bonuses. Example default representation:
-     * <blockquote>
-     * Stealth +36 (+42 in forests) (ignores tremorsense)
-     * </blockquote>
+     * A Pathfinder 2e named bonus, potentially with other conditional bonuses.
+     *
+     * Example default representation:
+     * `Stealth +36 (+42 in forests) (ignores tremorsense)`
      *
      * @param name The name of the skill
      * @param value The standard bonus associated with this skill

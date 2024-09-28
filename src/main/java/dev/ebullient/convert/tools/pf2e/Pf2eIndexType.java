@@ -148,6 +148,7 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
     }
 
     public Pf2eQuteBase convertJson2QuteBase(Pf2eIndex index, JsonNode node) {
+        // also update #isOutputType
         return switch (this) {
             case action -> new Json2QuteAction(index, node).build();
             case archetype -> new Json2QuteArchetype(index, node).build();
@@ -179,20 +180,65 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
     }
 
     public boolean useQuteNote() {
+        // also update #isOutputType
         return switch (this) {
-            case ability, affliction, curse, disease, condition, domain, skill, table -> true; // QuteNote-based
+            case ability,
+                    affliction,
+                    book,
+                    condition,
+                    curse,
+                    disease,
+                    domain,
+                    skill,
+                    table ->
+                true; // QuteNote-based
             default -> false;
         };
     }
 
     public boolean useCompendiumBase() {
         return switch (this) {
-            case ability, action, book, condition, trait, table, variantrule -> false; // use rules
+            case ability,
+                    action,
+                    book,
+                    condition,
+                    trait,
+                    table,
+                    variantrule ->
+                false; // use rules
             default -> true; // use compendium
         };
     }
 
+    public boolean isOutputType() {
+        return switch (this) {
+            case ability,
+                    action,
+                    affliction,
+                    archetype,
+                    background,
+                    book,
+                    condition,
+                    creature,
+                    curse,
+                    deity,
+                    disease,
+                    domain,
+                    feat,
+                    hazard,
+                    item,
+                    ritual,
+                    skill,
+                    spell,
+                    table,
+                    trait ->
+                true;
+            default -> false;
+        };
+    }
+
     public String relativePath() {
+        // also update #isOutputType
         return switch (this) {
             // Simple suffix subdir (rules or compendium)
             case action, feat, spell, table, trait, variantrule -> this.name() + 's';

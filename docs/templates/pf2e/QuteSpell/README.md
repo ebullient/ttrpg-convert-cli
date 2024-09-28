@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [amp](#amp), [castDuration](#castduration), [components](#components), [cost](#cost), [domains](#domains), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [requirements](#requirements), [save](#save), [source](#source), [sourceAndPage](#sourceandpage), [spellLists](#spelllists), [spellType](#spelltype), [subclass](#subclass), [tags](#tags), [targeting](#targeting), [text](#text), [traditions](#traditions), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[aliases](#aliases), [amp](#amp), [castDuration](#castduration), [components](#components), [cost](#cost), [domains](#domains), [duration](#duration), [formattedComponents](#formattedcomponents), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [reprintOf](#reprintof), [requirements](#requirements), [save](#save), [source](#source), [sourceAndPage](#sourceandpage), [spellLists](#spelllists), [spellType](#spelltype), [subclass](#subclass), [tags](#tags), [targeting](#targeting), [text](#text), [traditions](#traditions), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -19,11 +19,14 @@ Psi amp behavior as [QuteSpellAmp](QuteSpellAmp.md)
 
 ### castDuration
 
-The time it takes to cast the spell, as a [QuteDataDuration](../QuteDataDuration.md) which is either a [QuteDataActivity](../QuteDataActivity.md) or a [QuteDataTimedDuration](../QuteDataTimedDuration.md).
+The time it takes to cast the spell, as a [QuteDataDuration](../QuteDataDuration.md) which is either a [QuteDataActivity](../QuteDataActivity.md)
+or a [QuteDataTimedDuration](../QuteDataTimedDuration/README.md).
 
 ### components
 
-The required spell components as a list of formatted strings (maybe empty). Use [QuteSpell#formattedComponents()](../QuteSpell.md#formattedComponents()) to get a pre-formatted representation.
+The required spell components as a list of formatted strings (maybe empty). Use
+[QuteSpell#formattedComponents](#formattedcomponents)
+to get a pre-formatted representation.
 
 ### cost
 
@@ -35,7 +38,15 @@ List of spell domains (links)
 
 ### duration
 
-Spell duration, as [QuteDataTimedDuration](../QuteDataTimedDuration.md)
+Spell duration, as [QuteDataTimedDuration](../QuteDataTimedDuration/README.md)
+
+### formattedComponents
+
+The components required for the spell, as a formatted string. Example:
+
+```md
+[somatic](#), [verbal](#)
+```
 
 ### hasSections
 
@@ -56,6 +67,10 @@ A spell’s overall power, from 1 to 10.
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 
 ### requirements
 
@@ -83,7 +98,8 @@ Type: spell, cantrip, or focus
 
 ### subclass
 
-List of category (Bloodline or Mystery) to Subclass (Sorcerer or Oracle). Link to class (if present) as a list of [NamedText](../../NamedText.md).
+List of category (Bloodline or Mystery) to Subclass (Sorcerer or Oracle). Link to class (if present)
+as a list of [NamedText](../../NamedText.md).
 
 ### tags
 

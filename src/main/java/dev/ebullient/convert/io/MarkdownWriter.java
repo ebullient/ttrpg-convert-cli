@@ -93,7 +93,7 @@ public class MarkdownWriter {
                     }
                 });
 
-        counts.forEach((k, v) -> tui.donef("Wrote %s %s files.", v, k));
+        counts.forEach((k, v) -> tui.printlnf(Msg.OK, "Wrote %s %s files.", v, k));
     }
 
     <T extends QuteBase> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
@@ -131,7 +131,7 @@ public class MarkdownWriter {
             writeNote(fd, fileName, n);
         }
 
-        tui.donef("Wrote %s notes to %s.",
+        tui.printlnf(Msg.OK, "Wrote %s notes to %s.",
                 notes.size(),
                 compendium ? "compendium" : "rules");
     }

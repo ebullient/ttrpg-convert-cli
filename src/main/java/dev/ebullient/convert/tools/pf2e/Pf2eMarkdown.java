@@ -48,7 +48,8 @@ public class Pf2eMarkdown implements MarkdownConverter {
         if (types == null) {
         } else {
             writePf2eQuteBase(types.stream()
-                    .filter(x -> !((Pf2eIndexType) x).useQuteNote())
+                    .map(x -> (Pf2eIndexType) x)
+                    .filter(x -> x.isOutputType() && !x.useQuteNote())
                     .collect(Collectors.toList()));
             writeNotesAndTables(types.stream()
                     .filter(x -> ((Pf2eIndexType) x).useQuteNote())
@@ -58,9 +59,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
     }
 
     private void writePf2eQuteBase(List<? extends IndexType> types) {
-        if (types != null && types.isEmpty()) {
+        if (types == null || types.isEmpty()) {
             return;
         }
+        index.tui().progressf("Converting data: %s", types);
 
         List<Pf2eQuteBase> compendium = new ArrayList<>();
         List<Pf2eQuteBase> rules = new ArrayList<>();
@@ -85,15 +87,11 @@ public class Pf2eMarkdown implements MarkdownConverter {
         writer.writeFiles(index.rulesFilePath(), rules);
     }
 
-    @Override
-    public Pf2eMarkdown writeNotesAndTables() {
-        return writeNotesAndTables(null);
-    }
-
     private Pf2eMarkdown writeNotesAndTables(List<? extends IndexType> types) {
-        if (types != null && types.isEmpty()) {
+        if (types == null || types.isEmpty()) {
             return this;
         }
+        index.tui().progressf("Converting data: %s", types);
 
         List<QuteNote> compendium = new ArrayList<>();
         List<QuteNote> rules = new ArrayList<>();
@@ -113,7 +111,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
                 case affliction, curse, disease ->
                     compendium.add(new Json2QuteAffliction(index, type, node).buildNote());
                 case book -> {
-                    index.tui().printlnf("📖 Looking at book: %s", e.getKey());
+                    index.tui().progressf("book %s", e.getKey());
                     JsonNode data = index.getIncludedNode(key.replace("book|", "data|"));
                     if (data == null) {
                         index.tui().errorf("No data for %s", key);

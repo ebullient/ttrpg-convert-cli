@@ -2,7 +2,8 @@
 
 Pf2eTools spell target attributes.
 
-This attribute will render itself as labeled elements if you reference it directly: `{resource.targeting}`.
+This attribute will render itself as labeled elements
+if you reference it directly: `{resource.targeting}`.
 
 ## Attributes
 
@@ -15,7 +16,7 @@ Formatted string describing the spell area of effect
 
 ### range
 
-The spell's range, as a [QuteDataRange](../QuteDataRange.md).
+The spell's range, as a [QuteDataRange](../QuteDataRange/README.md).
 
 ### targets
 

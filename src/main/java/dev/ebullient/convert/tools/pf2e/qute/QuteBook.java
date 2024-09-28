@@ -9,9 +9,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Book attributes ({@code book2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote Pf2eQuteNote}
- * </p>
  */
 @TemplateData
 public class QuteBook extends Pf2eQuteNote {
@@ -49,11 +48,11 @@ public class QuteBook extends Pf2eQuteNote {
     /**
      * Pf2eTools book information
      *
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.actionType}`.
-     * </p>
+     *
      */
     @TemplateData
     public static class BookInfo {

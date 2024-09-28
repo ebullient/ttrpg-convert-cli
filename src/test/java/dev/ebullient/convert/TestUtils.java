@@ -21,19 +21,25 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
+    public final static boolean USING_MAVEN = System.getProperty("maven.home") != null;
+
     public final static Path PROJECT_PATH = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
+
     public final static Path OUTPUT_ROOT_5E = PROJECT_PATH.resolve("target/test-5e");
+    public final static Path OUTPUT_5E_DATA = OUTPUT_ROOT_5E.resolve(USING_MAVEN ? "data" : "data-ide");
+
     public final static Path OUTPUT_ROOT_PF2 = PROJECT_PATH.resolve("target/test-pf2");
 
     public final static Path TEST_RESOURCES = PROJECT_PATH.resolve("src/test/resources/");
 
     // for compile/test purposes. Must clone/sync separately.
-    public final static Path PATH_5E_TOOLS_DATA = PROJECT_PATH.resolve("sources/5etools-mirror-2.github.io/data");
+    public final static Path PATH_5E_TOOLS_DATA = PROJECT_PATH.resolve("sources/5etools-src/data");
     public final static Path PATH_5E_TOOLS_IMAGES = PROJECT_PATH.resolve("sources/5etools-img");
 
     public final static Path PATH_5E_HOMEBREW = PROJECT_PATH.resolve("sources/5e-homebrew");
@@ -64,6 +70,7 @@ public class TestUtils {
     public static void cleanupReferences() {
         TestUtils.pathHeadings.clear();
         TestUtils.pathBlockReferences.clear();
+        TtrpgConfig.init(Tui.instance());
     }
 
     public static void checkMarkdownLink(String baseDir, Path p, String line, List<String> errors) {

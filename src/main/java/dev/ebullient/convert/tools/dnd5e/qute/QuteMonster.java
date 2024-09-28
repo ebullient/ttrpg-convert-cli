@@ -18,9 +18,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * 5eTools creature attributes ({@code monster2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteMonster extends Tools5eQuteBase {
@@ -346,22 +345,25 @@ public class QuteMonster extends Tools5eQuteBase {
 
     /**
      * 5eTools creature spellcasting attributes.
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
-     * To use it, reference it directly:<br />
-     * ```<br />
-     * {#for spellcasting in resource.spellcasting}<br />
-     * {spellcasting}<br />
-     * {/for}<br />
-     * ```<br />
-     * or, using `{#each}` instead:<br />
-     * ```<br />
-     * {#each resource.spellcasting}<br />
-     * {it}<br />
-     * {/each}<br />
+     *
+     * To use it, reference it directly:
+     *
+     * ```md
+     * {#for spellcasting in resource.spellcasting}
+     * {spellcasting}
+     * {/for}
      * ```
-     * </p>
+     *
+     * or, using `{#each}` instead:
+     *
+     * ```md
+     * {#each resource.spellcasting}
+     * {it}
+     * {/each}
+     * ```
      */
     @TemplateData
     @RegisterForReflection

@@ -33,6 +33,18 @@ public class StringUtil {
         return val == null || (val instanceof String && ((String) val).isBlank()) ? "" : formatString.formatted(val);
     }
 
+    public static String valueOrDefault(String value, String fallback) {
+        return value == null || value.isEmpty() ? fallback : value;
+    }
+
+    public static String uppercaseFirst(String value) {
+        return value == null || value.isEmpty() ? value : Character.toUpperCase(value.charAt(0)) + value.substring(1);
+    }
+
+    public static boolean equal(Object o1, Object o2) {
+        return o1 == null ? o2 == null : o1.equals(o2);
+    }
+
     /**
      * {@link #join(String, Collection)} but with the ability to accept varargs.
      *

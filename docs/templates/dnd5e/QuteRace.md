@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[ability](#ability), [description](#description), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [type](#type), [vaultPath](#vaultpath)
+[ability](#ability), [description](#description), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [type](#type), [vaultPath](#vaultpath)
 
 
 ### ability
@@ -32,6 +32,10 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### size
 

@@ -2,13 +2,15 @@
 
 Pf2eTools Trait index attributes (`indexTrait.md`)
 
-This replaces the index usually generated for folders. The default template for the trait consructs a list of links to traits grouped by category.
+This replaces the index usually generated for folders.
+The default template for the trait consructs a list of links to
+traits grouped by category.
 
 Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 ## Attributes
 
-[categoryLinks](#categorylinks), [categoryToTraits](#categorytotraits), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[categoryLinks](#categorylinks), [categoryToTraits](#categorytotraits), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### categoryLinks
@@ -30,6 +32,10 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

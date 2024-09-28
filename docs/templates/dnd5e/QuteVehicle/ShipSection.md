@@ -2,7 +2,9 @@
 
 5eTools vehicle sections
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly.
+This data object provides a default mechanism for creating
+a marked up string based on the attributes that are present.
+To use it, reference it directly.
 
 ## Attributes
 

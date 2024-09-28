@@ -1,0 +1,24 @@
+{
+  "sources": {
+    "book": [
+      "PHB",
+      "DMG",
+      "XGE",
+      "TCE"
+    ],
+    "adventure": [
+      "WbtW"
+    ]
+  },
+  "include": [
+    "race|changeling|mpmm"
+  ],
+  "exclude": [
+    "monster\\|expert\\|dc",
+    "monster\\|expert\\|sdw",
+    "monster\\|expert\\|slw"
+  ],
+  "excludePattern": [
+    "race\\|.*\\|dmg"
+  ]
+}

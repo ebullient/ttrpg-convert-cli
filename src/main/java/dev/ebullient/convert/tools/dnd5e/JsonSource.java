@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static java.util.Map.entry;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.SourceAndPage;
@@ -33,6 +36,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public interface JsonSource extends JsonTextReplacement {
     int CR_UNKNOWN = 100001;
     int CR_CUSTOM = 100000;
+    Pattern leadingNumber = Pattern.compile("(\\d+)(.*)");
 
     default String getName() {
         return getSources() == null ? null : getSources().getName();
@@ -131,7 +135,7 @@ public interface JsonSource extends JsonTextReplacement {
             } else if (node.isObject()) {
                 appendObjectToText(text, node, heading);
             } else {
-                tui().errorf("Unknown entry type in %s: %s", getSources(), node.toPrettyString());
+                tui().debugf(Msg.UNKNOWN, "Unknown entry type in %s: %s", getSources(), node.toPrettyString());
             }
         } finally {
             parseState().pop(pushed); // restore state
@@ -199,8 +203,8 @@ public interface JsonSource extends JsonTextReplacement {
                     case tableGroup -> appendTableGroup(text, node, heading);
                     case variant -> appendCallout("danger", "Variant", text, node);
                     case variantInner, variantSub -> appendCallout("example", "Variant", text, node);
-                    default -> tui().errorf("Unknown entry object type %s from %s: %s", type, getSources(),
-                            node.toPrettyString());
+                    default -> tui().debugf(Msg.UNKNOWN, "Unknown entry object type %s from %s: %s",
+                            type, getSources(), node.toPrettyString());
                 }
                 // any entry/entries handled by type...
                 return;
@@ -228,27 +232,34 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendAbility(AppendTypeValue type, List<String> text, JsonNode entry) {
-        if (type == AppendTypeValue.abilityDc) {
-            text.add(String.format(
-                    "**Spell save DC**: 8 + your proficiency bonus + your %s modifier",
-                    asAbilityEnum(entry.withArray("attributes").get(0))));
-        } else if (type == AppendTypeValue.abilityAttackMod) {
-            text.add(String.format(
-                    "**Spell attack modifier**: your proficiency bonus + your %s modifier",
-                    asAbilityEnum(entry.withArray("attributes").get(0))));
-        } else { // abilityGeneric
-            List<String> abilities = new ArrayList<>();
-            iterableElements(Tools5eFields.attributes.getFrom(entry))
-                    .forEach(x -> abilities.add(asAbilityEnum(x)));
+        List<String> abilities = Tools5eFields.attributes.streamFrom(entry)
+                .map(this::asAbilityEnum)
+                .toList();
+        String ability = joinConjunct(" or ", abilities);
 
+        if (type == AppendTypeValue.abilityDc) {
+            text.add(spanWrap("abilityDc",
+                    "**Spell save DC**: 8 + your proficiency bonus + your %s modifier"
+                            .formatted(ability)));
+        } else if (type == AppendTypeValue.abilityAttackMod) {
+            text.add(spanWrap("abilityAttackMod",
+                    "**Spell attack modifier**: your proficiency bonus + your %s modifier"
+                            .formatted(ability)));
+        } else { // abilityGeneric
             List<String> inner = new ArrayList<>();
-            SourceField.name.appendUnlessEmptyFrom(entry, inner, this);
-            Tools5eFields.text.appendUnlessEmptyFrom(entry, inner);
-            inner.add(String.join(", ", abilities));
-            inner.add("modifier");
+            String name = SourceField.name.replaceTextFrom(entry, this);
+            if (isPresent(name)) {
+                inner.add("**" + name + ".**");
+            }
+            if (Tools5eFields.text.existsIn(entry)) {
+                Tools5eFields.text.replaceTextFrom(entry, this);
+            }
+            if (!abilities.isEmpty()) {
+                inner.add(ability + " modifier");
+            }
 
             maybeAddBlankLine(text);
-            text.add(String.join(" ", inner));
+            text.add(spanWrap("abilityGeneric", String.join(" ", inner)));
             maybeAddBlankLine(text);
         }
     }
@@ -259,10 +270,11 @@ public interface JsonSource extends JsonTextReplacement {
         String atkString = flattenToString(AttackFields.attackEntries.getFrom(entry), " ");
         String hitString = flattenToString(AttackFields.hitEntries.getFrom(entry), " ");
 
-        text.add(String.format("%s*%s:* %s *Hit:* %s",
-                isPresent(name) ? "***" + name + ".*** " : "",
-                "MW".equals(attackType) ? "Melee Weapon Attack" : "Ranged Weapon Attack",
-                atkString, hitString));
+        text.add(spanWrap("attack",
+                "%s*%s:* %s *Hit:* %s".formatted(
+                        isPresent(name) ? "***" + name + ".*** " : "",
+                        "MW".equals(attackType) ? "Melee Weapon Attack" : "Ranged Weapon Attack",
+                        atkString, hitString)));
     }
 
     default void appendCallout(String callout, String title, List<String> text, JsonNode entry) {
@@ -402,19 +414,19 @@ public interface JsonSource extends JsonTextReplacement {
     default void appendOptionalFeatureRef(List<String> text, JsonNode entry) {
         String lookup = Tools5eFields.optionalfeature.getTextOrNull(entry);
         if (lookup == null) {
-            tui().warnf("Optional Feature not found in %s", entry);
+            tui().warnf(Msg.UNRESOLVED, "Optional Feature not found in %s", entry);
             return; // skipped or not found
         }
         String[] parts = lookup.split("\\|");
         String nodeSource = parts.length > 1 && !parts[1].isBlank() ? parts[1]
-                : Tools5eIndexType.optionalfeature.defaultSourceString();
-        String key = Tools5eIndexType.optionalfeature.createKey(lookup, nodeSource);
+                : Tools5eIndexType.optfeature.defaultSourceString();
+        String key = Tools5eIndexType.optfeature.createKey(lookup, nodeSource);
         if (index().isIncluded(key)) {
             if (parseState().inList()) {
-                text.add(linkify(Tools5eIndexType.optionalfeature, lookup));
+                text.add(linkify(Tools5eIndexType.optfeature, lookup));
             } else {
                 tui().errorf("TODO refOptionalfeature %s -> %s",
-                        lookup, Tools5eIndexType.optionalfeature.fromRawKey(lookup));
+                        lookup, Tools5eIndexType.optfeature.fromTagReference(lookup));
             }
         }
     }
@@ -504,9 +516,9 @@ public interface JsonSource extends JsonTextReplacement {
         List<String> quoteText = new ArrayList<>();
         if (entry.has("by")) {
             String by = replaceText(Tools5eFields.by.getTextOrEmpty(entry));
-            quoteText.add("[!quote]- A quote from " + by + "  ");
+            quoteText.add("[!quote] A quote from " + by + "  ");
         } else {
-            quoteText.add("[!quote]-  ");
+            quoteText.add("[!quote]  ");
         }
         appendToText(quoteText, SourceField.entries.getFrom(entry), null);
 
@@ -520,7 +532,7 @@ public interface JsonSource extends JsonTextReplacement {
         String tagPropText = Tools5eFields.tag.getTextOrDefault(entry, Tools5eFields.prop.getTextOrEmpty(entry));
         Tools5eIndexType type = Tools5eIndexType.fromText(tagPropText);
         if (type == null) {
-            tui().warnf("🚧 Unrecognized statblock type in %s", entry);
+            tui().debugf(Msg.SOMEDAY, "Unrecognized statblock type in %s", entry);
             return;
         }
         embedReference(text, entry, type, heading);
@@ -530,7 +542,7 @@ public interface JsonSource extends JsonTextReplacement {
         // For inline statblocks, we start with the dataType
         Tools5eIndexType type = Tools5eIndexType.fromText(Tools5eFields.dataType.getTextOrEmpty(entry));
         if (type == null) {
-            tui().warnf("🚧 Unrecognized statblock dataType in %s", entry);
+            tui().debugf(Msg.SOMEDAY, "Unrecognized statblock dataType in %s", entry);
             return;
         }
         JsonNode data = Tools5eFields.data.getFrom(entry);
@@ -565,7 +577,7 @@ public interface JsonSource extends JsonTextReplacement {
             embedReference(text, data, type, heading); // embed note that will be present in the final output
             return;
         } else if (existingNode == null) {
-            Tools5eSources.constructSources(data);
+            Tools5eSources.constructSources(finalKey, data);
         }
 
         Tools5eQuteBase qs = null;
@@ -620,7 +632,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         if (type == Tools5eIndexType.charoption) {
             // charoption is a special case, it is not a linkable type.
-            tui().warnf("🚧 charoption is not yet an embeddable type: %s", entry);
+            tui().debugf(Msg.SOMEDAY, "charoption is not yet an embeddable type: %s", entry);
             return;
         }
 
@@ -636,7 +648,7 @@ public interface JsonSource extends JsonTextReplacement {
             }
         } else {
             text.add(link);
-            tui().warnf("statblock entry did not resolve to a markdown link: %s", entry);
+            tui().warnf(Msg.UNRESOLVED, "unable to find statblock target: %s", entry);
         }
     }
 
@@ -1026,6 +1038,12 @@ public interface JsonSource extends JsonTextReplacement {
         return "Unknown";
     }
 
+    default String spanWrap(String cssClass, String text) {
+        return parseState().inTrait()
+                ? text
+                : "<span class='%s'>%s</span>".formatted(cssClass, text);
+    }
+
     default String sizeToString(String size) {
         return switch (size) {
             case "F" -> "Fine";
@@ -1077,6 +1095,17 @@ public interface JsonSource extends JsonTextReplacement {
 
     default String asModifier(int value) {
         return (value >= 0 ? "+" : "") + value;
+    }
+
+    default String articleFor(String value) {
+        value = leadingNumber.matcher(value).replaceAll((m) -> {
+            return numberToText(Integer.parseInt(m.group(1))) + m.group(2);
+        });
+
+        return switch (value.toLowerCase().charAt(0)) {
+            case 'a', 'e', 'i', 'o', 'u' -> "an";
+            default -> "a";
+        };
     }
 
     default String numberToText(int value) {
@@ -1232,12 +1261,16 @@ public interface JsonSource extends JsonTextReplacement {
         by,
         className,
         classSource,
+        classFeatureKeys, // ELH: keys for related class/subclass features
         condition, // speed, ac
         count,
         cr,
         data, // statblock, statblockInline
         dataType, // statblockInline
+        deck,
+        edition,
         entriesTemplate,
+        familiar,
         featureType,
         fluff,
         group,
@@ -1254,6 +1287,7 @@ public interface JsonSource extends JsonTextReplacement {
         prop, // statblock
         race,
         regionalEffects, // legendary group
+        shortName,
         size,
         sort, // monsters, vehicles (sorted traits)
         speed,
@@ -1263,11 +1297,11 @@ public interface JsonSource extends JsonTextReplacement {
         subrace,
         tables, // for optfeature types
         tag, // statblock
+        template,
         text,
         tokenHref,
         tokenUrl,
         traitTags,
-        typeLookup,
         visible,
         xp,
     }

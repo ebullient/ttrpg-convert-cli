@@ -8,11 +8,10 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools armor class and hit points attributes
- * <p>
+ *
  * This data object provides a default mechanism for creating
  * a marked up string based on the attributes that are present.
  * To use it, reference it directly.
- * </p>
  */
 @TemplateData
 public class AcHp implements QuteUtil {

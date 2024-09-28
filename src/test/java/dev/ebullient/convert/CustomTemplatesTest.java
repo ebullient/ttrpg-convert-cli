@@ -24,19 +24,19 @@ public class CustomTemplatesTest {
 
     @BeforeAll
     public static void setupDir() {
-        setupDir("Tools5eDataConvertTest");
+        setupDir("templates");
+    }
+
+    public static void setupDir(String name) {
+        tui = new Tui();
+        tui.init(null, false, false);
+        testOutput = TestUtils.OUTPUT_ROOT_5E.resolve(name);
+        testOutput.toFile().mkdirs();
     }
 
     @AfterAll
     public static void cleanup() {
         System.out.println("Done.");
-    }
-
-    public static void setupDir(String root) {
-        tui = new Tui();
-        tui.init(null, false, false);
-        testOutput = TestUtils.OUTPUT_ROOT_5E.resolve(root).resolve("test-cli");
-        testOutput.toFile().mkdirs();
     }
 
     @Test
@@ -65,7 +65,7 @@ public class CustomTemplatesTest {
             LaunchResult result = launcher.launch("--index",
                     "--background=garbage.txt",
                     "-o", target.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())
@@ -82,7 +82,7 @@ public class CustomTemplatesTest {
             LaunchResult result = launcher.launch("--index",
                     "-o", target.toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.TEST_RESOURCES.resolve("sources-bad-template.json").toString());
 
             assertThat(result.exitCode())
@@ -109,7 +109,7 @@ public class CustomTemplatesTest {
                     "--spell", TestUtils.TEST_RESOURCES.resolve("other/spell.txt").toString(),
                     "--subclass", TestUtils.TEST_RESOURCES.resolve("other/subclass.txt").toString(),
                     "-o", target.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())
@@ -161,9 +161,9 @@ public class CustomTemplatesTest {
             TestUtils.deleteDir(target);
 
             LaunchResult result = launcher.launch("--debug", "--index",
-                    "-c", TestUtils.TEST_RESOURCES.resolve("sources-templates.json").toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-templates.json").toString(),
                     "-o", target.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("images-remote.json").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
 
             assertThat(result.exitCode())

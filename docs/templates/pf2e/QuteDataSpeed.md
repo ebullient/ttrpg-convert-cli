@@ -1,23 +1,27 @@
 # QuteDataSpeed
 
+Examples:
+
+- `10 feet, swim 20 feet (some note); some ability`
+- `10 feet, swim 20 feet, some ability`
 
 ## Attributes
 
 [abilities](#abilities), [notes](#notes), [otherSpeeds](#otherspeeds), [value](#value)
 
 
-### value
+### abilities
 
-The land speed in feet
-
-### otherSpeeds
-
-Other speeds, as a map of (name, speed in feet)
+Any speed-related abilities
 
 ### notes
 
 Any speed-related notes
 
-### abilities
+### otherSpeeds
 
-Any speed-related abilities
+Other speeds, as a map of (name, speed in feet)
+
+### value
+
+The land speed in feet

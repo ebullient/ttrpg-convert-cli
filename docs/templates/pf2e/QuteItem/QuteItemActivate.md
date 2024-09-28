@@ -2,7 +2,9 @@
 
 Pf2eTools item activation attributes.
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly: `{resource.activate}`.
+This data object provides a default mechanism for creating
+a marked up string based on the attributes that are present.
+To use it, reference it directly: `{resource.activate}`.
 
 ## Attributes
 
@@ -19,7 +21,8 @@ Formatted string. Components required to activate this item
 
 ### frequency
 
-[QuteDataFrequency](../QuteDataFrequency.md). How often this item can be used/activated. Use directly to get a formatted string.
+[QuteDataFrequency](../QuteDataFrequency.md).
+How often this item can be used/activated. Use directly to get a formatted string.
 
 ### requirements
 

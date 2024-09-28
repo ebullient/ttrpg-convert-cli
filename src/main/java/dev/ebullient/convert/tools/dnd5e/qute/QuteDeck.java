@@ -11,9 +11,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * 5eTools deck attributes ({@code deck2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteDeck extends Tools5eQuteBase {

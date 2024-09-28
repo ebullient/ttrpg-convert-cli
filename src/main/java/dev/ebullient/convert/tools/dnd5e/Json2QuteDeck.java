@@ -35,9 +35,9 @@ public class Json2QuteDeck extends Json2QuteCommon {
         for (JsonNode cardRef : DeckFields.cards.iterateArrayFrom(rootNode)) {
             final String cardKey;
             if (cardRef.isTextual()) {
-                cardKey = Tools5eIndexType.card.fromRawKey(cardRef.asText());
+                cardKey = Tools5eIndexType.card.fromTagReference(cardRef.asText());
             } else if (cardRef.isObject()) {
-                cardKey = Tools5eIndexType.card.fromRawKey(DeckFields.uid.getTextOrThrow(cardRef));
+                cardKey = Tools5eIndexType.card.fromTagReference(DeckFields.uid.getTextOrThrow(cardRef));
             } else {
                 cardKey = null;
             }
@@ -66,7 +66,7 @@ public class Json2QuteDeck extends Json2QuteCommon {
         ImageRef face = hasCardArt ? getImage(DeckFields.face, cardNode) : null;
         String cardText = flattenToString(cardNode);
         String suit = DeckFields.suit.getTextOrEmpty(cardNode);
-        Optional<Integer> value = DeckFields.value.getIntFrom(cardNode);
+        Optional<Integer> value = DeckFields.value.intFrom(cardNode);
         String valueName = DeckFields.valueName.getTextOrEmpty(cardNode);
 
         String suitValue = null;

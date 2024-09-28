@@ -8,6 +8,6 @@ import io.quarkus.test.junit.main.QuarkusMainIntegrationTest;
 public class Pf2eDataConvertIT extends Pf2eDataConvertTest {
     @BeforeAll
     public static void setupDir() {
-        setupDir("Pf2eDataConvertIT");
+        setupDir("test-cli-IT");
     }
 }

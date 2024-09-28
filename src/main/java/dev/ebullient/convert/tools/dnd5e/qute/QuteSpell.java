@@ -10,9 +10,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools spell attributes ({@code spell2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteSpell extends Tools5eQuteBase {

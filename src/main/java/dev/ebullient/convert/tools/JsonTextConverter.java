@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -22,15 +23,23 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
-import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteUtil;
+import dev.ebullient.convert.tools.ParseState.DiceFormulaState;
 
 public interface JsonTextConverter<T extends IndexType> {
-    public static String DICE_FORMULA = "[ +d\\d-‒]+";
+    public static String DICE_FORMULA = "[ +d\\d-]+";
     public static String DICE_TABLE_HEADER = "\\| dice: \\d*d\\d+ \\|.*";
-    Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
+
+    static final Pattern dicePattern = Pattern.compile("\\{@("
+            + "dice|autodice|damage|h |hit|d20|initiative|scaledice|scaledamage"
+            + ") ?([^}]+)}");
+    static final Pattern dicePatternWithSpan = Pattern.compile("(.+)(<span[^>]+>)(.+)(</span>)");
+    static final Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
+    static final Pattern textAverageRoll = Pattern.compile(" (\\d+) \\((`dice:[^`]+text\\(([^)]+)\\)`)\\)");
+    static final Pattern averageRoll = Pattern.compile(" (\\d+) \\(`(dice:[^`]+)` (\\([^)]+\\))\\)");
 
     void appendToText(List<String> inner, JsonNode target, String heading);
 
@@ -89,94 +98,174 @@ public interface JsonTextConverter<T extends IndexType> {
         return x;
     }
 
-    default String formatDice(String diceRoll) {
-        DiceRoller roller = cfg().useDiceRoller();
-        boolean suppressInYaml = parseState().inTrait() && roller.useFantasyStatblocks();
-
-        int pos = diceRoll.indexOf(";");
-        if (pos >= 0) {
-            diceRoll = diceRoll.substring(0, pos);
+    default String replaceWithDiceRoller(String input) {
+        Matcher m = dicePattern.matcher(input);
+        if (!m.find()) {
+            return input;
         }
-        if (roller == DiceRoller.disabled) {
-            return '`' + diceRoll + '`';
-        } else if (suppressInYaml) {
-            return diceRoll;
+        if (m.groupCount() < 2) {
+            tui().warnf(Msg.UNKNOWN, "Unknown/Invalid dice formula Input: %s", input);
+            return input;
         }
 
+        DiceFormulaState formulaState = parseState().diceFormulaState();
+
+        String tag = m.group(1);
+        String[] parts = m.group(2).split("\\|");
+
+        String rollString = parts[0].trim();
+        String displayText = parts.length > 1 ? parts[1].trim() : null;
+        String scaleSkillName = parts.length > 2 ? parts[2].trim() : null;
+
+        return switch (tag) {
+            case "d20", "h", "hit", "initiative" -> {
+                // {@d20 -4}, {@d20 -2 + PB},
+                // {@d20 0|10}, {@d20 2|+2|Perception}, {@d20 -1|\u22121|Father Belderone}
+                // {@hit +7}, {@hit 6|+6|Slam}, {@hit 6|+6 bonus}, {@hit +3|+3 to hit}
+                // @initiative -- like @hit
+                String posGroup = "(?<!-)\\+? ?(\\d+)";
+                String mod = rollString.replaceAll(posGroup, "+$1");
+                String mod20 = "1d20" + mod;
+
+                if (scaleSkillName != null) {
+                    //  Perception (`+2`), Father Belderone (`-1`), Slam (`+6`)
+                    yield scaleSkillName + " ("
+                            + formatDice(mod20, codeString(mod, formulaState), formulaState, false, false)
+                            + ")";
+                }
+
+                String formattedRoll = formatDice(mod20,
+                        codeString(mod, formulaState),
+                        formulaState, false, false);
+
+                if (displayText != null) {
+                    if (tag.equals("hit")) {
+                        // +6 bonus, +3 to hit
+                        yield displayText;
+                    }
+                    // non-standard order: `+0` (`10`)
+                    yield formattedRoll + " (" + codeString(displayText, formulaState) + ")";
+                }
+                yield formattedRoll;
+            }
+            case "scaledamage", "scaledice" -> {
+                // damage of 2d6 or 3d6 at level 1: {@scaledamage 2d6;3d6|2-9|1d6} for each level beyond 2nd;
+                // roll 2d6 when using 1 psi point: {@scaledice 2d6|1,3,5,7,9|1d6|psi|extra amount} for each additional psi point spent
+                // format: {@scaledice 2d6;3d6|2-8,9|1d6|psi|display text} (or @scaledamage)
+                // [baseRoll, progression, addPerProgress, renderMode, displayText]
+                yield parts.length > 4
+                        ? formatDice(scaleSkillName, parts[4].trim(), formulaState, true, true)
+                        : formatDice(scaleSkillName, codeString(scaleSkillName, formulaState), formulaState, true, false);
+            }
+            // {@dice 1d2-2+2d3+5} for regular dice rolls
+            // {@dice 1d6;2d6} for multiple options;
+            // {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
+            // --> prompts will have been replaced with default value: {@dice 1d6 + <span...>lotsofstuff</span>}
+            // {@dice 1d20+2|display text}
+            // {@dice 1d20+2|display text|rolled by name}
+            // {@damage 1d12+3}
+            // @autodice -- like @dice
+            default -> {
+                String[] alternatives = rollString.split(";");
+                if (displayText == null && alternatives.length > 1) {
+                    for (int i = 0; i < alternatives.length; i++) {
+                        String coded = codeString(alternatives[i], formulaState);
+                        alternatives[i] = formatDice(alternatives[i], coded, formulaState, true, false);
+                    }
+                    displayText = String.join(" or ", alternatives);
+                }
+                yield formatDice(rollString, displayText, formulaState, true, true);
+            }
+        };
+    }
+
+    default String formatDice(String diceRoll, String displayText, DiceFormulaState formulaState, boolean useAverage,
+            boolean appendFormula) {
+        if (diceRoll.contains(";")) {
+            return displayText;
+        }
+        if (diceRoll.contains("<span")) {
+            // There is (or was) an input prompt here.
+            Matcher m = dicePatternWithSpan.matcher(diceRoll);
+            if (m.matches()) {
+                displayText = "%s%s%s".formatted(m.group(2), codeString(m.group(1) + m.group(3), formulaState), m.group(4));
+            }
+        }
+        if (displayText == null && diceRoll.contains("summonSpellLevel")) {
+            displayText = codeString(diceRoll.replace(" + summonSpellLevel", ""), formulaState)
+                    + " + the spell's level";
+        } else if (displayText != null && displayText.contains("summonSpellLevel")) {
+            displayText = displayText.replace("summonSpellLevel", "the spell's level");
+        }
+        if (displayText == null && diceRoll.contains("summonClassLevel")) {
+            displayText = codeString(diceRoll.replace(" + summonClassLevel", ""), formulaState)
+                    + " + your class level";
+        } else if (displayText != null && displayText.contains("summonClassLevel")) {
+            displayText = displayText.replace("summonClassLevel", "your class level");
+        }
+
+        String dice = codeString(diceRoll.replace("1d20", ""), formulaState);
+
+        if (diceRoll.matches(JsonTextConverter.DICE_FORMULA)) {
+            String postText = appendFormula ? " (" + dice + ")" : "";
+            if (formulaState.noRoller()) {
+                return displayText == null
+                        ? dice
+                        : displayText + postText;
+            }
+            return diceFormula(diceRoll.replace(" ", ""), displayText, useAverage) + postText;
+        } else {
+            // Most likely have display text here. (Prompt, spell level, class level most likely cause)
+            return displayText == null
+                    ? dice
+                    : displayText;
+        }
+    }
+
+    default String diceFormula(String diceRoll) {
+        // Only a dice formula in the roll part. May also have display text.
+        return "`dice: " + diceRoll + "`";
+    }
+
+    default String diceFormula(String diceRoll, String displayText, boolean average) {
         // needs to be escaped: \\ to escape the \\ so it is preserved in the output
-        String avg = parseState().inMarkdownTable() ? "\\\\|avg\\\\|noform" : "|avg|noform";
-        return diceRoll.matches(JsonTextConverter.DICE_FORMULA)
-                ? "`dice: " + diceRoll + avg + "` (`" + diceRoll + "`)"
-                : '`' + diceRoll + '`';
-    }
-
-    default String replaceWithDiceRoller(String text) {
-        DiceRoller roller = cfg().useDiceRoller();
-        boolean suppressInYaml = parseState().inTrait() && roller.useFantasyStatblocks();
-
-        String posGroup = "\\+? ?(\\d+)";
-        String negGroup = "(-\\d+)";
-
-        String hitPos = "\\{@(hit|h) " + posGroup + "}";
-        String hitNeg = "\\{@(hit|h) " + negGroup + "}";
-        String d20Pos = "\\{@d20 " + posGroup + "}";
-        String d20Neg = "\\{@d20 " + negGroup + "}";
-        String modScorePos = "\\{@d20 " + posGroup + "\\|([^|}]+)}";
-        String modScoreNeg = "\\{@d20 " + negGroup + "\\|([^|}]+)}";
-        String altScorePos = "\\{@d20 " + posGroup + "\\|[^}|]*?\\|([^}]+)}";
-        String altScoreNeg = "\\{@d20 " + negGroup + "\\|[^}|]*?\\|([^}]+)}";
-        String altText = "\\{@hit ([^}|]+)\\|([^}]+)}";
-        String nonFormula = "\\{@hit ([^}]+)}";
-
-        if (roller == DiceRoller.disabled) {
-            return text
-                    .replaceAll(hitPos, "`+$2`")
-                    .replaceAll(hitNeg, "`$2`")
-                    .replaceAll(altScorePos, "$2 (`+$1`)")
-                    .replaceAll(altScoreNeg, "$2 (`$1`)")
-                    .replaceAll(modScorePos, "`+$1` (`$2`)")
-                    .replaceAll(modScoreNeg, "`$1` (`$2`)")
-                    .replaceAll(d20Pos, "`+$1`")
-                    .replaceAll(d20Neg, "`$1`")
-                    .replaceAll(altText, "$2")
-                    .replaceAll(nonFormula, "`$1`");
-        } else if (suppressInYaml) {
-            // No backticks or formatting. Fantasy Statblocks will render
-            return text
-                    .replaceAll(hitPos, "+$2")
-                    .replaceAll(hitNeg, "$2")
-                    .replaceAll(d20Pos, "+$1")
-                    .replaceAll(d20Neg, "$1")
-                    .replaceAll(altScorePos, "$2 (+$1)")
-                    .replaceAll(altScoreNeg, "$2 ($1)")
-                    .replaceAll(modScorePos, "+$1 ($2)")
-                    .replaceAll(modScoreNeg, "$1 ($2)")
-                    .replaceAll(altText, "$2")
-                    .replaceAll(nonFormula, "$1");
-        }
-
+        String noform = parseState().inMarkdownTable() ? "\\\\|noform" : "|noform";
+        String avg = parseState().inMarkdownTable() ? "\\\\|avg" : "|avg";
         String dtxt = parseState().inMarkdownTable() ? "\\\\|text(" : "|text(";
+        String textValue = displayText == null ? "" : displayText.replace("`", "");
 
-        return text
-                .replaceAll(hitPos, "`dice: d20+$2` (`+$2`)")
-                .replaceAll(hitNeg, "`dice: d20$2` (`$2`)")
-                .replaceAll(d20Pos, "`dice: d20+$1` (`+$1`)")
-                .replaceAll(d20Neg, "`dice: d20$1` (`$1`)")
-                .replaceAll(altScorePos, "$2 (`dice: d20+$1" + dtxt + "+$1)`)")
-                .replaceAll(altScoreNeg, "$2 (`dice: d20$1" + dtxt + "$1)`)")
-                .replaceAll(modScorePos, "`+$1` (`$2`)")
-                .replaceAll(modScoreNeg, "`$1` (`$2`)")
-                .replaceAll(altText, "$2")
-                .replaceAll(nonFormula, "`$1`");
+        // Only a dice formula in the roll part. May also have display text.
+        return "`dice:" + diceRoll + noform +
+                (average ? avg : "") +
+                (displayText == null ? "`" : dtxt + textValue + ")`");
     }
 
+    default String codeString(String text, DiceFormulaState formulaState) {
+        text = text.replace("1d20", "");
+        return formulaState.plainText() ? text : "`" + text + "`";
+    }
+
+    // reduce dice strings.. when parsing tags, we can't see leadng average
     default String simplifyFormattedDiceText(String text) {
-        // 7 (`dice: 2d6|avg|noform` (`2d6`)) --> `dice: 2d6|text(7)` (`2d6`)
+        DiceFormulaState formulaState = parseState().diceFormulaState();
         String dtxt = parseState().inMarkdownTable() ? "\\\\|text(" : "|text(";
-        return text
-                .replaceAll("` \\((" + DICE_FORMULA + ")\\) to hit", "` ($1 to hit)")
-                .replaceAll(" (\\d+) \\(`dice:[^`]+` \\(`([^`]+)`\\)\\)",
-                        " `dice:$2" + dtxt + "$1)` (`$2`)");
+
+        // 26 (`dice:1d20+8|noform|text(+8)`) --> `dice:1d20+8|noform|text(26)` (`+8`)
+        text = textAverageRoll.matcher(text).replaceAll((match) -> {
+            String replaceText = "(" + match.group(3) + ")";
+            String avgValue = "(" + match.group(1) + ")";
+            return " " + match.group(2).replace(replaceText, avgValue)
+                    + " (" + codeString(match.group(3), formulaState) + ")";
+        });
+
+        // 7 (`dice:1d6+4|noform|avg` (`1d6 + 4`)) --> `dice:1d6+4|noform|avg|text(7)` (`1d6 + 4`)
+        // 7 (`dice:2d6|noform|avg` (`2d6`)) --> `dice:2d6|noform|avg|text(7)` (`2d6`)
+        text = averageRoll.matcher(text).replaceAll((match) -> {
+            String dice = match.group(2) + dtxt + match.group(1) + ")";
+            return " `" + dice + "` " + match.group(3);
+        });
+
+        return text;
     }
 
     /** Tokenizer: use a stack of StringBuilders to deal with nested tags */
@@ -629,11 +718,15 @@ public interface JsonTextConverter<T extends IndexType> {
         id,
         items,
         _meta,
+        isReprinted,
         name,
         note,
         page,
+        reprintedAs,
         source,
-        type;
+        tag,
+        type,
+        uid;
 
         final String nodeName;
 

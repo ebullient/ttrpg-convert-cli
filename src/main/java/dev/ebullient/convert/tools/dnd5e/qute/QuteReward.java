@@ -6,9 +6,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools reward attributes ({@code reward2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteReward extends Tools5eQuteBase {

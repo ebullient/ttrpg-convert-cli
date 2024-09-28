@@ -13,18 +13,15 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Ability attributes ({@code ability2md.txt} or {@code inline-ability2md.txt}).
- * <p>
+ *
  * Abilities are rendered both standalone and inline (as an admonition block).
  * The default template can render both. It contains some special syntax to handle
  * the inline case.
- * </p>
- * <p>
+ *
  * Use `%%--` to mark the end of the preamble (frontmatter and
  * other leading content only appropriate to the standalone case).
- * </p>
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote Pf2eQuteNote}
- * </p>
  */
 @TemplateData
 public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderable, QuteAbilityOrAffliction {
@@ -33,7 +30,7 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     public final String reference;
     /**
      * Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection.
-     * See <a href="#traitlist">traitList</a> or <a href="#baretraitlist">bareTraitList</a>.
+     * See [traitList](#traitlist) or [bareTraitList](#baretraitlist).
      */
     public final Collection<String> traits;
     /** {@link QuteDataRange}. The targeting range for this ability. */

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.tools.JsonCopyException;
 import dev.ebullient.convert.tools.JsonSourceCopier;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
@@ -206,7 +207,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             JsonNode templateNode = getOriginNode(templateKey);
 
             if (templateNode == null) {
-                tui().warn("Unable to find traits for " + templateKey);
+                tui().warnf(Msg.NOT_SET.wrap("Unable to find traits for %s"), templateKey);
                 continue;
             } else {
                 if (!MetaFields._mod.nestedExistsIn(MetaFields.apply, templateNode)) {
@@ -625,7 +626,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         for (JsonNode modSense : iterableElements(modSenses)) {
             boolean found = false;
             String modType = MetaFields.type.getTextOrThrow(modSense);
-            int modRange = MetaFields.range.getIntOrThrow(modSense);
+            int modRange = MetaFields.range.intOrThrow(modSense);
             Pattern p = Pattern.compile(modType + " (\\d+)", Pattern.CASE_INSENSITIVE);
             for (int i = 0; i < senses.size(); i++) {
                 Matcher m = p.matcher(senses.get(i).asText());
@@ -656,7 +657,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             int abilityMod = getAbilityModNumber(abilityScore);
 
             // mode: 1 = proficient; 2 = expert
-            int mode = MetaFields.mode.getIntOrThrow(entry.getValue());
+            int mode = MetaFields.mode.intOrThrow(entry.getValue());
             int total = mode * pb + abilityMod;
 
             if (allSkills.has(modSkill)) {
@@ -672,7 +673,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
     private String getShortName(JsonNode target, boolean isTitleCase) {
         String name = SourceField.name.getTextOrEmpty(target);
-        JsonNode shortName = MonsterFields.shortName.getFrom(target);
+        JsonNode shortName = Tools5eFields.shortName.getFrom(target);
         boolean isNamedCreature = MonsterFields.isNamedCreature.booleanOrDefault(target, false);
         String prefix = isNamedCreature
                 ? ""

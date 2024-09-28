@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[classProgression](#classprogression), [hasSections](#hassections), [hitDice](#hitdice), [hitRollAverage](#hitrollaverage), [labeledSource](#labeledsource), [multiclassing](#multiclassing), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [startingEquipment](#startingequipment), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[classProgression](#classprogression), [hasSections](#hassections), [hitDice](#hitdice), [hitRollAverage](#hitrollaverage), [labeledSource](#labeledsource), [multiclassing](#multiclassing), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [startingEquipment](#startingequipment), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### classProgression
@@ -36,6 +36,10 @@ Formatted text section describing how to multiclass with this class
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

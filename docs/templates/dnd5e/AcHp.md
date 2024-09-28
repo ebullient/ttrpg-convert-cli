@@ -2,7 +2,9 @@
 
 5eTools armor class and hit points attributes
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly.
+This data object provides a default mechanism for creating
+a marked up string based on the attributes that are present.
+To use it, reference it directly.
 
 ## Attributes
 
@@ -27,8 +29,11 @@ Hit points (number or —)
 
 ### hpDiceRoller
 
-Hit points as a dice roller formula: \`dice: 1d20+7|text(37)\` (\`1d20+7\`)
+Hit points as a dice roller formula:
+\`dice: 1d20+7|text(37)\` (\`1d20+7\`)
 
 ### hpText
 
-Additional hit point text. In the case of summoned creatures, this will contain notes for how hit points should be calculated relative to the player's modifiers.
+Additional hit point text.
+In the case of summoned creatures, this will contain notes for how hit points
+should be calculated relative to the player's modifiers.

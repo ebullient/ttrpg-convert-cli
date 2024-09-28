@@ -77,6 +77,12 @@
         "type" : "string"
       }
     },
+    "includePattern" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
     "paths" : {
       "type" : "object",
       "properties" : {
@@ -84,6 +90,42 @@
           "type" : "string"
         },
         "rules" : {
+          "type" : "string"
+        }
+      }
+    },
+    "reprintBehavior" : {
+      "type" : "string",
+      "enum" : [ "newest", "edition", "all" ]
+    },
+    "sources" : {
+      "type" : "object",
+      "properties" : {
+        "adventure" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "book" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "homebrew" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "reference" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "toolsRoot" : {
           "type" : "string"
         }
       }

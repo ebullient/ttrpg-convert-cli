@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
@@ -32,13 +33,9 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteMonster extends Json2QuteCommon {
     public static boolean isNpc(JsonNode source) {
-        if (source.has("isNpc")) {
-            return source.get("isNpc").asBoolean(false);
-        }
-        if (source.has("isNamedCreature")) {
-            return source.get("isNamedCreature").asBoolean(false);
-        }
-        return false;
+        return MonsterFields.isNpc.booleanOrDefault(source,
+                MonsterFields.isNamedCreature.booleanOrDefault(source,
+                        false));
     }
 
     String creatureType;
@@ -94,10 +91,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     legendaryGroupText = legendaryGroup(lgNode);
                     legendaryGroupLink = linkifyType(Tools5eIndexType.legendaryGroup,
                             lgKey,
-                            lgSources.getName());
+                            lgSources.getName(),
+                            sources.getKey());
                 }
             } else {
-                tui().debugf("Legendary group %s source excluded", lgKey);
+                tui().debugf(Msg.FILTER, "Legendary group source excluded: %s", lgKey);
             }
         }
 
@@ -136,7 +134,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 : MonsterFields.creatureType.getFrom(rootNode);
         if (typeNode == null) {
             if (type == Tools5eIndexType.monster) {
-                tui().warn("Empty type for " + getSources());
+                tui().warnf("Empty type for %s", getSources());
             }
             return;
         }
@@ -300,8 +298,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
             if (array == null || array.isNull()) {
                 return null;
             } else if (array.isObject()) {
-                tui().errorf("Unknown spellcasting for %s: %s", sources.getKey(), array.toPrettyString());
-                throw new IllegalArgumentException("Unknown spellcasting: " + getSources());
+                tui().warnf(Msg.UNKNOWN, "Unknown spellcasting for %s: %s", sources.getKey(), array.toPrettyString());
+                return null;
             }
 
             List<Spellcasting> casting = new ArrayList<>();
@@ -384,7 +382,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return Tools5eQuteBase.monsterPath(isNpc, creatureType);
     }
 
-    public static List<Tuple> findMonsterVariants(Tools5eIndex index, Tools5eIndexType type,
+    public static List<Tuple> findMonsterVariants(
+            Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
         if (MonsterFields.summonedBySpellLevel.existsIn(jsonSource)) {
             return findConjuredMonsterVariants(index, type, key, jsonSource);
@@ -423,6 +422,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
             return variants;
         }
+
+        if (key.contains("splugoth the returned") || key.contains("prophetess dran")) {
+            MonsterFields.isNpc.setIn(jsonSource, true); // Fix.
+        }
         return List.of(new Tuple(key, jsonSource));
     }
 
@@ -432,39 +435,55 @@ public class Json2QuteMonster extends Json2QuteCommon {
         int startLevel = MonsterFields.summonedBySpellLevel.intOrDefault(jsonSource, 0);
 
         String name = SourceField.name.getTextOrEmpty(jsonSource);
-        String hpString = jsonSource.get("hp").get("special").asText();
-        String acString = jsonSource.get("ac").get(0).get("special").asText();
+        String hpString = MonsterFields.special.getTextOrEmpty(MonsterFields.hp.getFrom(jsonSource));
+
+        JsonNode acNode = MonsterFields.ac.getFirstFromArray(jsonSource);
+        String acString = MonsterFields.special.existsIn(acNode)
+                ? MonsterFields.special.getTextOrEmpty(acNode)
+                : acNode.asText();
 
         List<Tuple> variants = new ArrayList<>();
         for (int i = startLevel; i < 10; i++) {
-            if (hpString.contains(" or ")) {
+            if (hpString.matches(" or \\d+") ||
+                    hpString.matches("(,\\s)?\\d+\\s\\([a-zA-Z ]+\\)")) {
+                String[] parts = {};
+                String[] variantGroups = {};
                 // "50 (Demon only) or 40 (Devil only) or 60 (Yugoloth only) + 15 for each spell
                 // level above 6th"
                 // "30 (Ghostly and Putrid only) or 20 (Skeletal only) + 10 for each spell level
                 // above 3rd"
-                String[] parts = hpString.split(" \\+ ");
-                String[] variantGroups = parts[0].split(" or ");
+                if (hpString.matches(" or \\d+")) {
+                    parts = hpString.split(" \\+ ");
+                    variantGroups = parts[0].split(" or ");
+                } else if (hpString.matches("(,\\s)?\\d+\\s\\([a-zA-Z0-9_ ]+\\)")) {
+                    // 10 (Medium or smaller), 20 (Large), 40 (Huge)
+                    variantGroups = hpString.split(",\\s");
+                }
                 for (String group : variantGroups) {
                     Matcher m = variantPattern.matcher(group);
                     if (m.find()) {
                         String amount = m.group(1);
                         String variant = m.group(2);
+                        String hpText = amount;
+                        if (parts.length > 1) {
+                            hpText.concat(" + " + parts[1]);
+                        }
 
                         if (variant.contains(" and ")) {
                             for (String v : variant.split(" and ")) {
                                 String variantName = String.format("%s (%s, %s-Level Spell)",
                                         name, v.replace(" only", ""), JsonSource.levelToString(i));
                                 createVariant(index, variants, jsonSource, type, variantName, i,
-                                        amount + " + " + parts[1], acString);
+                                        hpText, acString);
                             }
                         } else {
                             String variantName = String.format("%s (%s, %s-Level Spell)",
                                     name, variant.replace(" only", ""), JsonSource.levelToString(i));
                             createVariant(index, variants, jsonSource, type, variantName, i,
-                                    amount + " + " + parts[1], acString);
+                                    hpText, acString);
                         }
                     } else {
-                        index.tui().errorf("Unknown HP variant from %s: %s", key, hpString);
+                        index.tui().warnf(Msg.UNKNOWN, "Unknown HP variant from %s: %s", key, hpString);
                     }
                 }
             } else {
@@ -482,10 +501,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
         ConjuredMonster fixed = new ConjuredMonster(level, variantName, hpString, acString, jsonSource);
 
         ObjectNode adjustedSource = (ObjectNode) index.copyNode(jsonSource);
-        adjustedSource.set("original", adjustedSource.get("name"));
-        adjustedSource.replace("name", fixed.getName());
-        adjustedSource.replace("ac", fixed.getAc());
-        adjustedSource.replace("hp", fixed.getHp());
+        MonsterFields.original.setIn(adjustedSource, SourceField.name.getFrom(adjustedSource));
+        SourceField.name.setIn(adjustedSource, fixed.getName());
+        MonsterFields.ac.setIn(adjustedSource, fixed.getAc());
+        MonsterFields.hp.setIn(adjustedSource, fixed.getHp());
 
         String newKey = type.createKey(adjustedSource);
         variants.add(new Tuple(newKey, adjustedSource));
@@ -556,6 +575,9 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 }
                 this.ac = value;
                 this.from = armor == null ? null : new String[] { armor };
+            } else if (acString.matches("\\d+")) {
+                this.ac = Integer.parseInt(acString);
+                this.from = new String[] {};
             } else {
                 throw new IllegalArgumentException("Unknown AC pattern: " + acString);
             }
@@ -566,7 +588,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class MonsterHp {
         static final Pattern hpPattern = Pattern
-                .compile("(\\d+) \\+ (\\d+) for each spell level above (\\d)(nd|rd|th|st) ?\\(?(.*?)?\\)?");
+                .compile("(\\d+) \\+ (\\d+) for each spell level above (\\d) ?\\(?(.*?)?\\)?");
 
         public final String special;
         public final String original;
@@ -602,8 +624,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     int scale = level - Integer.parseInt(m.group(3));
                     value += Integer.parseInt(m.group(2)) * scale;
                 } else {
-                    throw new IllegalArgumentException("Unknown HP pattern: " + hpString);
+                    // TODO: 20 (Air only) or 30 (Land and Water only) + 5 for each spell level above 2
+                    // nothing we can do right now
                 }
+            } else if (hpString.matches("^\\d+$")) {
+                value = Integer.parseInt(hpString);
+            } else if (hpString.matches("(\\d+\\s\\([a-zA-Z ]+\\),?\\s?)+")) {
+                // 10 (Medium or smaller), 20 (Large), 40 (Huge)
+                // nothing we can do right now
             } else {
                 throw new IllegalArgumentException("Unknown HP pattern: " + hpString);
             }
@@ -626,12 +654,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
         headerEntries,
         hp,
         isNamedCreature,
+        isNpc,
         legendaryGroup,
         lower,
         original,
         save,
         senses,
-        shortName,
         skill,
         slots,
         special,

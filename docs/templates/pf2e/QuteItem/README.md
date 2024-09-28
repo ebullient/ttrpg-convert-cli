@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[access](#access), [activate](#activate), [aliases](#aliases), [ammunition](#ammunition), [armor](#armor), [category](#category), [contract](#contract), [craftReq](#craftreq), [duration](#duration), [group](#group), [hands](#hands), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [onset](#onset), [price](#price), [shield](#shield), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [usage](#usage), [variants](#variants), [vaultPath](#vaultpath), [weapons](#weapons)
+[access](#access), [activate](#activate), [aliases](#aliases), [ammunition](#ammunition), [armor](#armor), [category](#category), [contract](#contract), [craftReq](#craftreq), [duration](#duration), [group](#group), [hands](#hands), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [onset](#onset), [price](#price), [reprintOf](#reprintof), [shield](#shield), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [usage](#usage), [variants](#variants), [vaultPath](#vaultpath), [weapons](#weapons)
 
 
 ### access
@@ -76,6 +76,10 @@ Formatted string. Onset attributes
 ### price
 
 Formatted string. Item price (pp, gp, sp, cp)
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 
 ### shield
 

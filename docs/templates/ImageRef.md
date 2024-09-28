@@ -2,7 +2,11 @@
 
 Create links to referenced images.
 
-The general form of a markdown image link is: `![alt text](vaultPath "title")`. You can also use anchors to position the image within the page, which creates links that look like this: `![alt text](vaultPath#anchor "title")`.  ## Anchor Tags
+The general form of a markdown image link is: `![alt text](vaultPath "title")`.
+You can also use anchors to position the image within the page,
+which creates links that look like this: `![alt text](vaultPath#anchor "title")`.
+
+## Anchor Tags
 
 Anchor tags are used to position images within a page and are styled with CSS. Examples:
 
@@ -19,11 +23,15 @@ Anchor tags are used to position images within a page and are styled with CSS. E
 
 ### embeddedLink
 
-Return an embedded markdown link to the image, using an optional anchor tag to position the image in the page. For example: `{resource.image.getEmbeddedLink("symbol")}`
+Return an embedded markdown link to the image, using an optional
+anchor tag to position the image in the page.
+For example: `{resource.image.getEmbeddedLink("symbol")}`
 
-If the title is longer than 50 characters: `![{resource.shortTitle}]({resource.vaultPath}#anchor "{resource.title}")`,
+If the title is longer than 50 characters:
+`![{resource.shortTitle}]({resource.vaultPath}#anchor "{resource.title}")`,
 
-If the title is 50 characters or less: `![{resource.title}]({resource.vaultPath}#anchor)`,
+If the title is 50 characters or less:
+`![{resource.title}]({resource.vaultPath}#anchor)`,
 
 Links will be generated using "center" as the anchor by default.
 

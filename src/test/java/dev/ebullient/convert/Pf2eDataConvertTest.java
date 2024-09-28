@@ -2,13 +2,18 @@ package dev.ebullient.convert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.io.Tui;
@@ -18,12 +23,21 @@ import io.quarkus.test.junit.main.QuarkusMainTest;
 
 @QuarkusMainTest
 public class Pf2eDataConvertTest {
-    static Path testOutput;
+    static Path testOutputRoot;
     static Tui tui;
+
+    Path testOutput;
 
     @BeforeAll
     public static void setupDir() {
-        setupDir("Pf2eDataConvertTest");
+        setupDir("test-cli");
+    }
+
+    public static void setupDir(String name) {
+        tui = new Tui();
+        tui.init(null, false, false);
+        testOutputRoot = TestUtils.OUTPUT_ROOT_PF2.resolve(name);
+        testOutputRoot.toFile().mkdirs();
     }
 
     @AfterAll
@@ -31,29 +45,39 @@ public class Pf2eDataConvertTest {
         System.out.println("Done.");
     }
 
-    public static void setupDir(String root) {
-        tui = new Tui();
-        tui.init(null, false, false);
-        testOutput = TestUtils.OUTPUT_ROOT_PF2.resolve(root).resolve("test-cli");
-        testOutput.toFile().mkdirs();
+    @BeforeEach
+    public void setup() {
+        testOutput = null; // test should set this to something readable
     }
 
     @AfterEach
-    public void clear() {
+    public void clear() throws IOException {
+        assertThat(testOutput).isNotNull(); // make sure test set this
+
+        Path logFile = Path.of("ttrpg-convert.out.txt");
+        if (Files.exists(logFile)) {
+            Path filePath = testOutput.resolve(logFile);
+            Files.move(logFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            String content = Files.readString(filePath, Charset.forName("UTF-8"));
+            if (content.contains("Exception")) {
+                tui.errorf("Exception found in %s", filePath);
+            }
+        }
         TestUtils.cleanupReferences();
     }
 
     @Test
     void testLiveData_Pf2eAllSources(QuarkusMainLauncher launcher) {
+        testOutput = testOutputRoot.resolve("all-index");
         if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             // All, I mean it. Really for real.. ALL.
-            final Path allIndex = testOutput.resolve("all-index");
-            TestUtils.deleteDir(allIndex);
+            TestUtils.deleteDir(testOutput);
 
-            List<String> args = new ArrayList<>(List.of("--index", "--debug",
-                    "-s", "ALL",
-                    "-o", allIndex.toString(),
+            List<String> args = new ArrayList<>(List.of("--index", "--log",
+                    "-o", testOutput.toString(),
                     "-g", "pf2e",
+                    TestUtils.TEST_RESOURCES.resolve("sources-from-all.json").toString(),
                     TestUtils.PATH_PF2E_TOOLS_DATA.toString()));
 
             args.addAll(TestUtils.getFilesFrom(TestUtils.PATH_PF2E_TOOLS_DATA.resolve("adventure"))
@@ -70,9 +94,9 @@ public class Pf2eDataConvertTest {
             Tui tui = new Tui();
             tui.init(null, false, false);
 
-            TestUtils.assertDirectoryContents(allIndex, tui, (p, content) -> {
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
-                content.forEach(l -> TestUtils.checkMarkdownLink(allIndex.toString(), p, l, errors));
+                content.forEach(l -> TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors));
                 return errors;
             });
         }

@@ -9,6 +9,9 @@ _Support content creators. Only use or include sources that you own._
 
 ## Source name mapping for 5etools
 
+- **2014** (sources/reference): "srd", "basicrules"
+- **2024** (sources/reference): "srd52", "freerules2024"
+
 <!--%% 5etools %% -->
 
 ## Source name mapping for Pf2eTools

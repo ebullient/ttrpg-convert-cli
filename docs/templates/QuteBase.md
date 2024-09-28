@@ -2,11 +2,12 @@
 
 Defines attributes inherited by other Qute templates.
 
-Notes created from `QuteBase` (or a derivative) will use a specific template for the type. For example, `QuteBackground` will use `background2md.txt`.
+Notes created from `QuteBase` (or a derivative) will use a specific template
+for the type. For example, `QuteBackground` will use `background2md.txt`.
 
 ## Attributes
 
-[hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### hasSections
@@ -20,6 +21,10 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](Reprinted.md))
 
 ### source
 

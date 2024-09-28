@@ -19,15 +19,19 @@ The to-hit bonus for the attack (integer)
 
 ### damage
 
-Damage if the attack hits (formatted string), e.g. "1d8 bludgeoning plus grab". This will include damage types and non-multiline effects.
+Damage if the attack hits (formatted string), e.g. "1d8 bludgeoning plus grab". This will include
+damage types and non-multiline effects.
 
 ### damageTypes
 
-The damage types caused by the attack. Will be included in either [damage](../QuteInlineAttack.md#damage) or in [multilineEffect](../QuteInlineAttack.md#multilineEffect).
+The damage types caused by the attack. Will be included in either
+[damage](#damage) or in
+[multilineEffect](#multilineeffect).
 
 ### effects
 
-Any additional effects associated with the attack e.g. grab (list of strings). Effects listed here may be repeated in [damage](../QuteInlineAttack.md#damage).
+Any additional effects associated with the attack e.g. grab (list of strings). Effects listed here
+may be repeated in [damage](#damage).
 
 ### multilineEffect
 
