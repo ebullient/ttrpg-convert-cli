@@ -2,18 +2,24 @@
 
 Pf2eTools item weapon attributes
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly:  
- ```  
- {#for weapons in resource.weapons}  
- {weapons}  
- {/for}  
- ```  
- or, using `{#each}` instead:  
- ```  
- {#each resource.weapons}  
- {it}  
- {/each}  
- ```
+This data object provides a default mechanism for creating
+a marked up string based on the attributes that are present.
+
+To use it, reference it directly:
+
+```md
+{#for weapons in resource.weapons}
+{weapons}
+{/for}
+```
+
+or, using `{#each}` instead:
+
+```md
+{#each resource.weapons}
+{it}
+{/each}
+```
 
 ## Attributes
 

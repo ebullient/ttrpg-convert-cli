@@ -44,7 +44,7 @@ public class Templates {
         if (!engine.isTemplateLoaded(key)) {
             Path customPath = config.getCustomTemplate(id);
             if (customPath != null) {
-                tui.verbosef("📝 %s template: %s", id, customPath);
+                tui.infof("%25s: %s", id, customPath);
                 try {
                     Template template = engine.parse(Files.readString(customPath));
                     engine.putTemplate(key, template);
@@ -73,7 +73,7 @@ public class Templates {
         } catch (TemplateException tex) {
             Throwable cause = tex.getCause();
             String message = cause != null ? cause.toString() : tex.toString();
-            tui.error(tex, message);
+            tui.errorf(tex, message);
             return "%% ERROR: " + message + " %%";
         }
     }
@@ -87,7 +87,7 @@ public class Templates {
         } catch (TemplateException tex) {
             Throwable cause = tex.getCause();
             String message = cause != null ? cause.toString() : tex.toString();
-            tui.error(tex, message);
+            tui.errorf(tex, message);
             return "%% ERROR: " + message + " %%";
         }
     }
@@ -102,7 +102,7 @@ public class Templates {
         } catch (TemplateException tex) {
             Throwable cause = tex.getCause();
             String message = cause != null ? cause.toString() : tex.toString();
-            tui.error(tex, message);
+            tui.errorf(tex, message);
             return "%% ERROR: " + message + " %%";
         }
     }
@@ -121,7 +121,7 @@ public class Templates {
         } catch (TemplateException tex) {
             Throwable cause = tex.getCause();
             String message = cause != null ? cause.toString() : tex.toString();
-            tui.error(tex, message);
+            tui.errorf(tex, message);
             return "%% ERROR: " + message + " %%";
         }
     }

@@ -7,14 +7,15 @@ A range with a given value and unit of measurement for that value.
 [notes](#notes), [unit](#unit), [value](#value)
 
 
-### value
+### notes
 
-An integer value for the range
+Any associated notes, or an alternate rendering when the range can't be represented using just
+a unit and value.
 
 ### unit
 
 What unit of measurement the `value` is given in, as a [RangeUnit](RangeUnit.md)
 
-### notes
+### value
 
-Any associated notes, or an alternate rendering when the range can't be represented using just a unit and value.
+An integer value for the range

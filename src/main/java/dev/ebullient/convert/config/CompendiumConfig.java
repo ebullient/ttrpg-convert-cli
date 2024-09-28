@@ -2,34 +2,32 @@ package dev.ebullient.convert.config;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.TtrpgConfig.Fix;
+import dev.ebullient.convert.config.UserConfig.ImageOptions;
+import dev.ebullient.convert.config.UserConfig.VaultPaths;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.ParseState;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class CompendiumConfig {
+
     public enum DiceRoller {
         disabled,
         disabledUsingFS,
@@ -56,8 +54,12 @@ public class CompendiumConfig {
 
     final static Path CWD = Path.of(".");
 
+    @JsonIgnore
     final Tui tui;
-    final Datasource datasource;
+
+    Datasource datasource;
+
+    @JsonIgnore
     final ParseState parseState = new ParseState();
 
     String tagPrefix = "";
@@ -65,6 +67,7 @@ public class CompendiumConfig {
     ImageOptions images;
     boolean allSources = false;
     DiceRoller useDiceRoller = DiceRoller.disabled;
+    ReprintBehavior reprintBehavior = ReprintBehavior.newest;
     final Set<String> allowedSources = new HashSet<>();
     final Set<String> includedKeys = new HashSet<>();
     final Set<String> includedGroups = new HashSet<>();
@@ -76,9 +79,9 @@ public class CompendiumConfig {
     final Map<String, Path> customTemplates = new HashMap<>();
     final Map<String, String> sourceIdAlias = new HashMap<>();
 
-    CompendiumConfig(Datasource src, Tui tui) {
+    CompendiumConfig(Datasource datasource, Tui tui) {
+        this.datasource = datasource;
         this.tui = tui;
-        this.datasource = src;
     }
 
     public ParseState parseState() {
@@ -97,6 +100,10 @@ public class CompendiumConfig {
         return useDiceRoller;
     }
 
+    public ReprintBehavior reprintBehavior() {
+        return reprintBehavior;
+    }
+
     public boolean allSources() {
         return allSources;
     }
@@ -109,6 +116,10 @@ public class CompendiumConfig {
         return allSources ? "([^|]+)" : "(" + String.join("|", allowedSources) + ")";
     }
 
+    public boolean readSource(Path p, List<Fix> fixes, BiConsumer<String, JsonNode> callback) {
+        return tui.readFile(p, fixes, callback);
+    }
+
     public boolean sourceIncluded(String source) {
         if (allSources) {
             return true;
@@ -117,6 +128,16 @@ public class CompendiumConfig {
             return false;
         }
         return allowedSources.contains(source.toLowerCase());
+    }
+
+    public boolean sourcesIncluded(List<String> sources) {
+        if (allSources) {
+            return true;
+        }
+        if (sources == null || sources.isEmpty()) {
+            return false;
+        }
+        return sources.stream().anyMatch(x -> allowedSources.contains(x.toLowerCase()));
     }
 
     public boolean sourceIncluded(CompendiumSources source) {
@@ -133,9 +154,6 @@ public class CompendiumConfig {
         if (excludedKeys.contains(key) ||
                 excludedPatterns.stream().anyMatch(x -> x.matcher(key).matches())) {
             return Optional.of(false);
-        }
-        if (allSources) {
-            return Optional.of(true);
         }
         return Optional.empty();
     }
@@ -170,7 +188,7 @@ public class CompendiumConfig {
         return tagPrefix + tag;
     }
 
-    public List<String> getBooks() {
+    public List<String> resolveBooks() {
         // works for 5eTools and pf2eTools
         return books.stream()
                 .map(b -> {
@@ -185,7 +203,7 @@ public class CompendiumConfig {
                 .toList();
     }
 
-    public List<String> getAdventures() {
+    public List<String> resolveAdventures() {
         // works for 5eTools and pf2eTools
         return adventures.stream()
                 .map(a -> {
@@ -200,7 +218,7 @@ public class CompendiumConfig {
                 .toList();
     }
 
-    public Collection<String> getHomebrew() {
+    public Collection<String> resolveHomebrew() {
         return Collections.unmodifiableCollection(homebrew);
     }
 
@@ -314,33 +332,22 @@ public class CompendiumConfig {
         }
 
         /**
-         * Reads contents of JsonNode. If TTRPG/Compendium
-         * configuration is present, it will create the
-         * CompendiumConfig for it, and set that on
-         * {@link TtrpgConfig} (as default, or with
-         * appropriate key).
+         * Reads contents of JsonNode.
+         * Will read and process user configuration keys if they are
+         * present.
          *
          * @param node
          */
         public void readConfigIfPresent(JsonNode node) {
-            JsonNode ttrpgNode = ConfigKeys.ttrpg.get(node);
-            if (ttrpgNode != null) {
-                for (Iterator<Entry<String, JsonNode>> i = ttrpgNode.fields(); i.hasNext();) {
-                    Entry<String, JsonNode> e = i.next();
-                    Datasource source = Datasource.matchDatasource(e.getKey());
-                    CompendiumConfig cfg = TtrpgConfig.getConfig(source);
-                    readConfig(cfg, e.getValue());
-                }
-            } else if (userConfigPresent(node)) {
+            if (userConfigPresent(node)) {
                 CompendiumConfig cfg = TtrpgConfig.getConfig();
                 readConfig(cfg, node);
             }
         }
 
         private void readConfig(CompendiumConfig config, JsonNode node) {
-            InputConfig input = Tui.MAPPER.convertValue(node, InputConfig.class);
+            UserConfig input = Tui.MAPPER.convertValue(node, UserConfig.class);
 
-            config.addSources(input.from);
             if (input.useDiceRoller != null || input.yamlStatblocks != null) {
                 config.useDiceRoller = DiceRoller.fromAttributes(input.useDiceRoller, input.yamlStatblocks);
             }
@@ -350,9 +357,10 @@ public class CompendiumConfig {
             input.exclude.forEach(s -> config.excludedKeys.add(s.toLowerCase()));
             input.excludePattern.forEach(s -> config.addExcludePattern(s.toLowerCase()));
 
-            config.books.addAll(input.fullSource.book);
-            config.adventures.addAll(input.fullSource.adventure);
-            config.homebrew.addAll(input.fullSource.homebrew);
+            config.books.addAll(input.books());
+            config.adventures.addAll(input.adventures());
+            config.homebrew.addAll(input.homebrew());
+            config.addSources(input.references());
 
             config.images = new ImageOptions(config.images, input.images);
             config.paths = new PathAttributes(config.paths, input.paths);
@@ -370,11 +378,13 @@ public class CompendiumConfig {
                 tplPaths.verify(tui);
                 config.customTemplates.putAll(tplPaths.customTemplates);
             }
+
+            config.reprintBehavior = input.reprintBehavior;
         }
     }
 
     private static boolean userConfigPresent(JsonNode node) {
-        return Stream.of(ConfigKeys.values())
+        return Stream.of(UserConfig.ConfigKeys.values())
                 .anyMatch((k) -> k.get(node) != null);
     }
 
@@ -388,7 +398,7 @@ public class CompendiumConfig {
         PathAttributes() {
         }
 
-        public PathAttributes(PathAttributes old, InputPaths paths) {
+        public PathAttributes(PathAttributes old, VaultPaths paths) {
             String root;
             if (paths.rules != null) {
                 root = toRoot(paths.rules);
@@ -427,133 +437,5 @@ public class CompendiumConfig {
         private static String toVaultRoot(String root) {
             return root.replaceAll(" ", "%20");
         }
-    }
-
-    private enum ConfigKeys {
-        useDiceRoller,
-        exclude,
-        excludePattern,
-        fallbackPaths(List.of("fallback-paths")),
-        from,
-        fullSource(List.of("convert", "full-source")),
-        images,
-        include,
-        includeGroups,
-        paths,
-        yamlStatblocks,
-        tagPrefix,
-        template,
-        ttrpg;
-
-        final List<String> aliases;
-
-        ConfigKeys() {
-            aliases = List.of();
-        }
-
-        ConfigKeys(List<String> aliases) {
-            this.aliases = aliases;
-        }
-
-        JsonNode get(JsonNode node) {
-            JsonNode child = node.get(this.name());
-            if (child == null) {
-                Optional<JsonNode> y = aliases.stream()
-                        .map(node::get)
-                        .filter(Objects::nonNull)
-                        .findFirst();
-                return y.orElse(null);
-            }
-            return child;
-        }
-    }
-
-    @RegisterForReflection
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class InputConfig {
-        List<String> from = new ArrayList<>();
-
-        @JsonAlias({ "convert" })
-        @JsonProperty(value = "full-source")
-        FullSource fullSource = new FullSource();
-
-        InputPaths paths = new InputPaths();
-
-        List<String> include = new ArrayList<>();
-
-        List<String> includeGroup = new ArrayList<>();
-
-        List<String> exclude = new ArrayList<>();
-
-        List<String> excludePattern = new ArrayList<>();
-
-        Map<String, String> template = new HashMap<>();
-
-        Boolean useDiceRoller = null;
-        Boolean yamlStatblocks = null;
-
-        String tagPrefix = "";
-
-        ImageOptions images = new ImageOptions();
-    }
-
-    @RegisterForReflection
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    static class ImageOptions {
-        String internalRoot;
-        Boolean copyInternal;
-        Boolean copyExternal;
-        final Map<String, String> fallbackPaths = new HashMap<>();
-
-        public ImageOptions() {
-        }
-
-        public ImageOptions(ImageOptions images, ImageOptions images2) {
-            if (images != null) {
-                copyExternal = images.copyExternal;
-                copyInternal = images.copyInternal;
-                internalRoot = images.internalRoot;
-                fallbackPaths.putAll(images.fallbackPaths);
-            }
-            if (images2 != null) {
-                copyExternal = images2.copyExternal == null
-                        ? copyExternal
-                        : images2.copyExternal;
-                copyInternal = images2.copyInternal == null
-                        ? copyInternal
-                        : images2.copyInternal;
-                internalRoot = images2.internalRoot == null
-                        ? internalRoot
-                        : images2.internalRoot;
-                fallbackPaths.putAll(images2.fallbackPaths);
-            }
-        }
-
-        public boolean copyExternal() {
-            return copyExternal != null && copyExternal;
-        }
-
-        public boolean copyInternal() {
-            return copyInternal != null && copyInternal;
-        }
-
-        public Map<String, String> fallbackPaths() {
-            return Collections.unmodifiableMap(fallbackPaths);
-        }
-    }
-
-    @RegisterForReflection
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    static class FullSource {
-        List<String> adventure = new ArrayList<>();
-        List<String> book = new ArrayList<>();
-        List<String> homebrew = new ArrayList<>();
-    }
-
-    @RegisterForReflection
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    static class InputPaths {
-        String compendium;
-        String rules;
     }
 }

@@ -1,9 +1,20 @@
 # QuteDataDefenses
 
-Pf2eTools Armor class, Saving Throws, and other attributes describing defenses of a creature or hazard. Example:
+Pf2eTools Armor class, Saving Throws, and other attributes describing defenses of a creature or hazard.
 
-- **AC** 23 (33 with mage armor); **Fort** +15, **Ref** +12, **Will** +10
-- **Floor Hardness** 18, **Floor HP** 72 (BT 36); **Channel Hardness** 12, **Channel HP** 48 (BT24 ) to destroy a channel gate; **Immunities** critical hits; **Resistances** precision damage; **Weaknesses** bludgeoning damage
+Example:
+
+```md
+**AC** 23 (33 with mage armor); **Fort** +15, **Ref** +12, **Will** +10
+```
+
+```md
+**Floor Hardness** 18, **Floor HP** 72 (BT 36);
+**Channel Hardness** 12, **Channel HP** 48 (BT24 ) to destroy a channel gate;
+**Immunities** critical hits;
+**Resistances** precision damage;
+**Weaknesses** bludgeoning damage
+```
 
 ## Attributes
 
@@ -14,17 +25,14 @@ Pf2eTools Armor class, Saving Throws, and other attributes describing defenses o
 
 The armor class as a [QuteDataArmorClass](../QuteDataArmorClass.md)
 
-### savingThrows
+### additionalHpHardnessBt
 
-The saving throws, as [QuteSavingThrows](QuteSavingThrows.md)
+Additional HP, hardness, or broken thresholds for other HP components as a map of
+names to [QuteDataHpHardnessBt](../QuteDataHpHardnessBt/README.md)
 
 ### hpHardnessBt
 
-HP, hardness, and broken threshold stored in a [QuteDataHpHardnessBt](../QuteDataHpHardnessBt.md)
-
-### additionalHpHardnessBt
-
-Additional HP, hardness, or broken thresholds for other HP components as a map of names to [QuteDataHpHardnessBt](../QuteDataHpHardnessBt.md)
+HP, hardness, and broken threshold stored in a [QuteDataHpHardnessBt](../QuteDataHpHardnessBt/README.md)
 
 ### immunities
 
@@ -32,8 +40,12 @@ List of strings, optional
 
 ### resistances
 
-List of strings, optional
+Map of (name, [QuteDataGenericStat](../QuteDataGenericStat/README.md))
+
+### savingThrows
+
+The saving throws, as [QuteSavingThrows](QuteSavingThrows.md)
 
 ### weaknesses
 
-List of strings, optional
+Map of (name, [QuteDataGenericStat](../QuteDataGenericStat/README.md))

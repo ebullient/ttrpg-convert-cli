@@ -10,9 +10,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Action attributes ({@code action2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteAction extends Pf2eQuteBase {
@@ -70,11 +69,11 @@ public class QuteAction extends Pf2eQuteBase {
     /**
      * Pf2eTools Action type attributes.
      *
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference this attribute directly: `{resource.actionType}`.
-     * </p>
+     *
      */
     @TemplateData
     public static class ActionType {

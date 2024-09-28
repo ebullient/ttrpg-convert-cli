@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
@@ -16,6 +17,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
         Tags tags = new Tags(getSources());
         tags.add("feat");
 
+        // TODO: update w/ category, ability, additionalSpells
         return new QuteFeat(sources,
                 type.decoratedName(rootNode),
                 getSourceText(sources),
@@ -23,5 +25,12 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 null, // Level coming someday..
                 getText("##"),
                 tags);
+    }
+
+    enum FeatFields implements JsonNodeReader {
+        ability,
+        additionalSpells,
+        category,
+        ;
     }
 }

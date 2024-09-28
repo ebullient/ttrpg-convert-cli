@@ -17,18 +17,15 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Deity attributes ({@code deity2md.txt})
- * <p>
+ *
  * Deities are rendered both standalone and inline (as an admonition block).
- * The default template can render both. It contains
- * some special syntax to handle the inline case.
- * </p>
- * <p>
+ * The default template can render both.
+ * It uses special syntax to handle the inline case.
+ *
  * Use `%%--` to mark the end of the preamble (frontmatter and
  * other leading content only appropriate to the standalone case).
- * </p>
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteDeity extends Pf2eQuteBase {
@@ -73,11 +70,11 @@ public class QuteDeity extends Pf2eQuteBase {
     /**
      * Pf2eTools cleric divine attributes
      *
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.actionType}`.
-     * </p>
+     *
      */
     @TemplateData
     public static class QuteDeityCleric implements QuteUtil {
@@ -121,11 +118,11 @@ public class QuteDeity extends Pf2eQuteBase {
     /**
      * Pf2eTools avatar attributes
      *
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.actionType}`.
-     * </p>
+     *
      */
     @TemplateData
     public static class QuteDivineAvatar implements QuteUtil {
@@ -141,19 +138,17 @@ public class QuteDeity extends Pf2eQuteBase {
         /**
          * Example:
          *
-         * <blockquote>
-         * <p>
-         * <b>Cee-el-aye</b> When casting the <i>avatar</i> spell, a worshipper of the Cee-el-aye typically begins reading
+         * ```md
+         * **Cee-el-aye** When casting the <i>avatar</i> spell, a worshipper of the Cee-el-aye typically begins reading
          * entirely too much JSON, and gains the following additional abilities.
-         * </p>
-         * <p>
+         *
          * Speed 50 feet, burrow 70 feet, immune to <u>petrified</u>;
          * shield (15 Hardness, can't be damaged);
-         * <b>Melee</b> polytool (<u>reach 15 feet</u>), <b>Damage</b> 6d6+6 slashing;
-         * <b>Ranged</b> pull request (<u>nonlethal</u>, <u>reach 9358 miles</u>), <b>Damage</b> 3d6+3 mental plus commit
+         * **Melee** polytool (<u>reach 15 feet</u>), **Damage** 6d6+6 slashing;
+         * **Ranged** pull request (<u>nonlethal</u>, <u>reach 9358 miles</u>), **Damage** 3d6+3 mental plus commit
          * history;
-         * <b>Commit History</b> A creature who reviews the pull request must spend the next 1d4 hours reading code.
-         * </blockquote>
+         * **Commit History** A creature who reviews the pull request must spend the next 1d4 hours reading code.
+         * ```
          */
         @Override
         public String toString() {
@@ -167,11 +162,11 @@ public class QuteDeity extends Pf2eQuteBase {
     /**
      * Pf2eTools divine intercession attributes.
      *
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.actionType}`.
-     * </p>
+     *
      */
     @TemplateData
     public static class QuteDivineIntercession {

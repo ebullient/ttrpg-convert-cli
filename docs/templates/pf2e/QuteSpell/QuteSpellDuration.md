@@ -1,15 +1,16 @@
 # QuteSpellDuration
 
-Details about the duration of the spell. Example default representations: <blockquote>1 minute</blockquote> <blockquote>sustained up to 1 minute</blockquote>
+Details about the duration of the spell.
+
+Example default representations:
+
+- `1 minute`
+- `sustained up to 1 minute`
 
 ## Attributes
 
 [dismissable](#dismissable), [duration](#duration), [sustained](#sustained)
 
-
-### sustained
-
-Whether this is a sustained spell, boolean
 
 ### dismissable
 
@@ -17,4 +18,8 @@ Whether this spell can be dismissed, boolean. Not included in the default repres
 
 ### duration
 
-The duration of this spell, as a [QuteDataTimedDuration](../QuteDataTimedDuration.md).
+The duration of this spell, as a [QuteDataTimedDuration](../QuteDataTimedDuration/README.md).
+
+### sustained
+
+Whether this is a sustained spell, boolean

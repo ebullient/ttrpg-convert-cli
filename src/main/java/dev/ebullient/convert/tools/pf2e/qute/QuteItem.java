@@ -13,9 +13,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Item attributes
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteItem extends Pf2eQuteBase {
@@ -99,11 +98,9 @@ public class QuteItem extends Pf2eQuteBase {
     /**
      * Pf2eTools item activation attributes.
      *
-     * <p>
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.activate}`.
-     * </p>
      */
     @TemplateData
     public static class QuteItemActivate implements QuteUtil {
@@ -144,9 +141,10 @@ public class QuteItem extends Pf2eQuteBase {
 
     /**
      * Pf2eTools item shield attributes. When referenced directly, provides a default formatting, e.g.
-     * <p>
-     * <b>AC Bonus</b> +2; <b>Speed Penalty</b> —; <b>Hardness</b> 3; <b>HP (BT)</b> 12 (6)
-     * </p>
+     *
+     * ```md
+     * **AC Bonus** +2; **Speed Penalty** —; **Hardness** 3; **HP (BT)** 12 (6)
+     * ```
      *
      * @param ac AC bonus for the shield, as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass QuteDataArmorClass}
      *        (required)
@@ -171,11 +169,9 @@ public class QuteItem extends Pf2eQuteBase {
     /**
      * Pf2eTools item armor attributes
      *
-     * <p>
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.armor}`.
-     * </p>
      */
     @TemplateData
     public static class QuteItemArmorData implements QuteUtil {
@@ -212,24 +208,25 @@ public class QuteItem extends Pf2eQuteBase {
     /**
      * Pf2eTools item weapon attributes
      *
-     * <p>
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
-     * To use it, reference it directly:<br />
-     * ```<br />
-     * {#for weapons in resource.weapons}<br />
-     * {weapons}<br />
-     * {/for}<br />
-     * ```<br />
-     * or, using `{#each}` instead:<br />
-     * ```<br />
-     * {#each resource.weapons}<br />
-     * {it}<br />
-     * {/each}<br />
+     *
+     * To use it, reference it directly:
+     *
+     * ```md
+     * {#for weapons in resource.weapons}
+     * {weapons}
+     * {/for}
      * ```
-     * </p>
+     *
+     * or, using `{#each}` instead:
+     *
+     * ```md
+     * {#each resource.weapons}
+     * {it}
+     * {/each}
+     * ```
      */
-
     @TemplateData
     public static class QuteItemWeaponData implements QuteUtil {
         /** Formatted string. Weapon type */
@@ -265,22 +262,24 @@ public class QuteItem extends Pf2eQuteBase {
     /**
      * Pf2eTools item variant attributes
      *
-     * <p>
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
-     * To use it, reference it directly:<br />
-     * ```<br />
-     * {#for variants in resource.variants}<br />
-     * {variants}<br />
-     * {/for}<br />
-     * ```<br />
-     * or, using `{#each}` instead:<br />
-     * ```<br />
-     * {#each resource.variants}<br />
-     * {it}<br />
-     * {/each}<br />
+     *
+     * To use it, reference it directly:
+     *
+     * ```md
+     * {#for variants in resource.variants}
+     * {variants}
+     * {/for}
      * ```
-     * </p>
+     *
+     * or, using `{#each}` instead:
+     *
+     * ```md
+     * {#each resource.variants}
+     * {it}
+     * {/each}
+     * ```
      */
     @TemplateData
     public static class QuteItemVariant implements QuteUtil {

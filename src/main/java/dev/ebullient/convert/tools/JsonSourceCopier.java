@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 
@@ -57,11 +58,11 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             String copyFromKey = type.createKey(_copy);
             JsonNode copyFrom = getOriginNode(copyFromKey);
             if (copyToKey.equals(copyFromKey)) {
-                tui().errorf("Error (%s): Self-referencing copy. This is a data entry error. %s", copyToKey, _copy);
+                tui().errorf("(%s) Self-referencing copy. This is a data entry error.", copyToKey, _copy);
                 return copyTo;
             }
             if (copyFrom == null) {
-                tui().errorf("Error (%s): Unable to find source for %s", copyToKey, copyFromKey);
+                tui().errorf("(%s): Unable to find source %s to copy from", copyToKey, copyFromKey);
                 return copyTo;
             }
             // is the copy a copy?
@@ -163,13 +164,15 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             // Properties
             case setProp -> doSetProp(originKey, modInfo, prop, target);
             case setProps -> doSetProps(originKey, modInfo, prop, target);
+            case prefixSuffixStringProp -> doPrefixSuffixStringProp(originKey, modInfo, prop, target);
             // Arrays
             case prependArr, appendArr, replaceArr, replaceOrAppendArr, appendIfNotExistsArr, insertArr, removeArr ->
                 doModArray(originKey, mode, modInfo, prop, target);
             // MATH
             case scalarAddProp -> doScalarAddProp(originKey, modInfo, prop, target);
             case scalarMultProp -> doScalarMultProp(originKey, modInfo, prop, target);
-            default -> tui().errorf("Error (%s): Unknown modification mode: %s", originKey, modInfo);
+            default -> tui().warnf(Msg.UNKNOWN, "(%s): Unknown modification mode: %s",
+                    originKey, modInfo);
         }
     }
 
@@ -179,7 +182,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
                 if ("remove".equals(modInfo.asText()) && prop != null) {
                     target.remove(prop);
                 } else {
-                    tui().errorf("Error(%s): Unknown text modification mode for %s: %s", originKey, prop, modInfo);
+                    tui().warnf(Msg.UNKNOWN, "(%s): Unknown text modification mode for %s: %s", originKey, prop, modInfo);
                 }
             } else {
                 doModProp(originKey, modInfo, copyFrom, prop, target, ModFieldMode.getModMode(modInfo));
@@ -268,6 +271,32 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         } else {
             parent.set(path[1], propNode);
         }
+    }
+
+    /** Set the target prop which corresponds to the prop in {@code modInfo} to the value from {@code modInfo}. */
+    private void doPrefixSuffixStringProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
+        // target.(prop . modinfo.prop) = modinfo.value
+        String propPath = MetaFields.prop.getTextOrEmpty(modInfo);
+        if (!"*".equals(prop)) {
+            // target.(prop . modinfo.prop) = modinfo.value
+            propPath = prop + "." + propPath;
+        }
+        String prefix = MetaFields.prefix.getTextOrEmpty(modInfo);
+        String suffix = MetaFields.suffix.getTextOrEmpty(modInfo);
+
+        String[] path = splitLastPropPath(propPath);
+        ObjectNode targetRw = target.withObject(path[0]);
+
+        // Verify that we're going to replace a string value
+        JsonNode targetValue = targetRw.get(path[1]);
+        if (targetValue == null || !targetValue.isTextual()) {
+            return;
+        }
+        // Update the string value, add prefix and suffix
+        targetRw.put(path[1],
+                prefix
+                        + MetaFields.value.getTextOrEmpty(modInfo)
+                        + suffix);
     }
 
     private String nodePath(String propPath) {
@@ -421,6 +450,8 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
                     return;
                 }
             }
+            default -> {
+            }
         }
 
         ArrayNode targetArray = target.withArray(propPath);
@@ -430,7 +461,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             case appendIfNotExistsArr -> appendIfNotExistsArr(targetArray, items);
             case insertArr -> insertIntoArray(
                     targetArray,
-                    MetaFields.index.getIntFrom(modInfo).filter(n -> n >= 0).orElse(targetArray.size()),
+                    MetaFields.index.intFrom(modInfo).filter(n -> n >= 0).orElse(targetArray.size()),
                     items);
             case removeArr -> removeFromArray(originKey, modInfo, prop, targetArray);
             case replaceArr -> replaceArray(originKey, modInfo, targetArray, items);
@@ -440,7 +471,8 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
                     appendToArray(targetArray, items);
                 }
             }
-            default -> tui().errorf("Error (%s): Unknown modification mode for property %s: %s", originKey, prop, modInfo);
+            default -> tui().warnf(Msg.UNKNOWN, "(%s): Unknown modification mode for property %s: %s",
+                    originKey, prop, modInfo);
         }
     }
 
@@ -540,7 +572,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             Pattern pattern = Pattern.compile("\\b" + MetaFields.regex.getTextOrEmpty(replace));
             index = matchFirstIndexByName(originKey, tgtArray, pattern);
         } else {
-            tui().errorf("Error (%s): Unknown replace; %s", originKey, modInfo);
+            tui().warnf(Msg.UNKNOWN, "(%s): Unknown replace; %s", originKey, modInfo);
             return false;
         }
 
@@ -619,6 +651,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         mode,
         names,
         overwrite,
+        prefix,
         prof_bonus,
         prop,
         props,
@@ -629,9 +662,11 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         scalar,
         skills,
         str,
+        suffix,
         type,
         value,
         with,
+        ;
     }
 
     public enum TemplateVariable implements JsonNodeReader.FieldValue {
@@ -672,6 +707,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         scalarMultProp,
         setProp,
         setProps,
+        prefixSuffixStringProp,
 
         addSenses,
         addSaves,

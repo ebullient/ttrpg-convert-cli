@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
@@ -67,7 +68,7 @@ public interface JsonSource extends JsonTextReplacement {
             } else if (node.isObject()) {
                 appendObjectToText(text, node, heading);
             } else {
-                tui().errorf("Unknown entry type in %s: %s", getSources(), node.toPrettyString());
+                tui().warnf(Msg.UNKNOWN, "Unknown entry type in %s: %s", getSources(), node.toPrettyString());
             }
         } finally {
             parseState().pop(pushed); // restore state
@@ -533,7 +534,7 @@ public interface JsonSource extends JsonTextReplacement {
             text.addAll(inner);
             return;
         } else if (dataType == null) {
-            tui().errorf("Unknown data type %s from: %s", tag, dataNode.toString());
+            tui().warnf(Msg.UNKNOWN, "Unknown data type %s from: %s", tag, dataNode.toString());
             return;
         }
 

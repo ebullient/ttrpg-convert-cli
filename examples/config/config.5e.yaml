@@ -1,6 +1,14 @@
 ---
-from:
-- "PHB"
+sources:
+  toolsRoot: "local/5etools/data"
+  reference:
+  - "DMG"
+  adventure:
+  - "LMoP"
+  book:
+  - "PHB"
+  homebrew:
+  - "homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json"
 paths:
   compendium: "/compendium/"
   rules: "/compendium/rules/"
@@ -14,6 +22,7 @@ exclude:
 - "monster|expert|slw"
 excludePattern:
 - "race|.*|dmg"
+reprintBehavior: "newest"
 template:
   background: "examples/templates/tools5e/images-background2md.txt"
 useDiceRoller: true
@@ -23,10 +32,3 @@ images:
   internalRoot: "local/path/for/remote/images"
   copyInternal: true
   copyExternal: true
-full-source:
-  adventure:
-  - "LMoP"
-  book:
-  - "PHB"
-  homebrew:
-  - "homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json"

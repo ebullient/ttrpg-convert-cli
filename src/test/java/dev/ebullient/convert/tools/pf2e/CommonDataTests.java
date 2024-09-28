@@ -2,14 +2,16 @@ package dev.ebullient.convert.tools.pf2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.junit.jupiter.api.AfterEach;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -41,7 +43,7 @@ public class CommonDataTests {
 
     public CommonDataTests(TestInput variant) throws Exception {
         tui = Arc.container().instance(Tui.class).get();
-        tui.init(null, true, false);
+        tui.init(null, !TestUtils.USING_MAVEN, true, true);
 
         templates = Arc.container().instance(Templates.class).get();
         tui.setTemplates(templates);
@@ -81,12 +83,20 @@ public class CommonDataTests {
         }
     }
 
-    @AfterEach
-    public void cleanup() {
-        tui.close();
-        tui.setOutputPath(outputPath);
+    public void cleanup() throws Exception {
         configurator.setUseDiceRoller(DiceRoller.disabled);
         templates.setCustomTemplates(TtrpgConfig.getConfig());
+    }
+
+    public void done() throws IOException {
+        tui.close();
+        Path logFile = Path.of("ttrpg-convert.out.txt");
+        if (Files.exists(logFile)) {
+            Path newFile = outputPath.resolve(logFile);
+            ;
+            Files.move(logFile, newFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+        System.out.println("Done.");
     }
 
     public void testDataIndex_pf2e() throws Exception {
@@ -125,7 +135,9 @@ public class CommonDataTests {
         if (TestUtils.PATH_PF2E_TOOLS_DATA.toFile().exists()) {
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeNotesAndTables()
+                    .writeFiles(Stream.of(Pf2eIndexType.values())
+                            .filter(x -> x.isOutputType() && x.useQuteNote())
+                            .toList())
                     .writeImages();
 
             TestUtils.assertDirectoryContents(rulesDir, tui);

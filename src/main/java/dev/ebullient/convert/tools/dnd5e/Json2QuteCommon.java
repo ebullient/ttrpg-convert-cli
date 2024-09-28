@@ -2,7 +2,6 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -24,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.StringUtil;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
@@ -39,6 +39,11 @@ public class Json2QuteCommon implements JsonSource {
     static final Pattern featPattern = Pattern.compile("([^|]+)\\|?.*");
     static final List<String> SPEED_MODE = List.of("walk", "burrow", "climb", "fly", "swim");
     static final List<String> specialTraits = List.of("special equipment", "shapechanger");
+    static final Map<String, String> SCF_TYPE_TO_NAME = Map.of(
+            "arcane", "Arcane Focus",
+            "druid", "Druidic Focus",
+            "holy", "Holy Symbol");
+
     static final Comparator<Entry<String, List<String>>> compareNumberStrings = Comparator
             .comparingInt(e -> Integer.parseInt(e.getKey()));
 
@@ -101,12 +106,12 @@ public class Json2QuteCommon implements JsonSource {
             JsonNode monsterFluff = Tools5eFields._monsterFluff.getFrom(fluffNode);
             if (monsterFluff != null) {
                 String fluffKey = fluffType.createKey(monsterFluff);
-                fluffNode = index.getNode(fluffKey);
+                fluffNode = index.getOrigin(fluffKey);
             }
         } else if (Tools5eFields.hasFluff.booleanOrDefault(rootNode, false)
                 || Tools5eFields.hasFluffImages.booleanOrDefault(rootNode, false)) {
             String fluffKey = fluffType.createKey(rootNode);
-            fluffNode = index.getNode(fluffKey);
+            fluffNode = index.getOrigin(fluffKey);
         }
 
         if (fluffNode != null) {
@@ -133,7 +138,7 @@ public class Json2QuteCommon implements JsonSource {
             getImages(Tools5eFields.images.getFrom(fluffNode), images);
         } else if (Tools5eFields.hasFluffImages.booleanOrDefault(fluffNode, false)) {
             String fluffKey = fluffType.createKey(fluffNode);
-            fluffNode = index.getNode(fluffKey);
+            fluffNode = index.getOrigin(fluffKey);
             if (fluffNode != null) {
                 getImages(Tools5eFields.images.getFrom(fluffNode), images);
             }
@@ -144,7 +149,7 @@ public class Json2QuteCommon implements JsonSource {
         List<ImageRef> images = new ArrayList<>();
         if (Tools5eFields.hasFluffImages.booleanOrDefault(rootNode, false)) {
             String fluffKey = fluffType.createKey(rootNode);
-            JsonNode fluffNode = index.getNode(fluffKey);
+            JsonNode fluffNode = index.getOrigin(fluffKey);
             if (fluffNode != null) {
                 getImages(Tools5eFields.images.getFrom(fluffNode), images);
             }
@@ -256,12 +261,44 @@ public class Json2QuteCommon implements JsonSource {
         return joinConjunct(" or ", backgrounds);
     }
 
-    private String campaignPrereq(JsonNode campaignPrereq) {
+    private String replaceConjoinOr(JsonNode campaignPrereq, String suffix) {
         List<String> cmpn = new ArrayList<>();
         for (JsonNode p : iterableElements(campaignPrereq)) {
             replaceText(p.asText());
         }
-        return joinConjunct(" or ", cmpn);
+        return joinConjunct(" or ", cmpn) + suffix;
+    }
+
+    private String expertisePrereq(JsonNode expertisePrereq) {
+        // "prerequisite": [
+        //     {
+        //         "expertise": [
+        //             {
+        //                 "skill": true
+        //             }
+        //         ]
+        //     }
+        // ],
+        List<String> expertise = new ArrayList<>();
+        for (JsonNode p : iterableElements(expertisePrereq)) {
+            for (Entry<String, JsonNode> prof : iterableFields(p)) {
+                switch (prof.getKey()) {
+                    case "skill" -> {
+                        if (prof.getValue().asBoolean()) {
+                            expertise.add("Expertise in a skill");
+                        } else {
+                            tui().warnf(Msg.UNKNOWN, "unknown expertise prereq value %s from %s / %s",
+                                    p.toString(), getSources().getKey(), parseState().getSource());
+                        }
+                    }
+                    default -> {
+                        tui().warnf(Msg.UNKNOWN, "unknown expertise prereq type %s from %s / %s",
+                                p.toString(), getSources().getKey(), parseState().getSource());
+                    }
+                }
+            }
+        }
+        return joinConjunct(" or ", expertise);
     }
 
     // "scion of the outer planes|ua2022wondersofthemultiverse|scion of the outer planes (good outer plane)"
@@ -274,38 +311,15 @@ public class Json2QuteCommon implements JsonSource {
         return joinConjunct(" or ", feats);
     }
 
-    private String featurePrereq(JsonNode featurePrereq) {
-        List<String> features = new ArrayList<>();
-        for (JsonNode p : iterableElements(featurePrereq)) {
-            replaceText(p.asText());
-        }
-        return joinConjunct(" or ", features);
-    }
-
-    private String groupPrereq(JsonNode groupPrereq) {
-        List<String> grp = new ArrayList<>();
-        for (JsonNode p : iterableElements(groupPrereq)) {
-            replaceText(toTitleCase(p.asText()));
-        }
-        return joinConjunct(" or ", grp);
-    }
-
-    private String itemPrereq(JsonNode itemPrereq) {
-        List<String> items = new ArrayList<>();
-        for (JsonNode p : iterableElements(itemPrereq)) {
-            replaceText(p.asText());
-        }
-        return joinConjunct(" or ", items);
-    }
-
     private String itemTypePrereq(JsonNode itemTypePrereq) {
         List<String> types = new ArrayList<>();
         for (JsonNode p : iterableElements(itemTypePrereq)) {
             ItemType type = index.findItemType(p.asText(), getSources());
             if (type != null) {
-                types.add(type.getSpecializedType());
+                types.add(type.linkify());
             } else {
-                tui().errorf("Unknown item type %s from %s", p, itemTypePrereq);
+                tui().warnf(Msg.UNKNOWN, "unknown item type prereq %s from %s / %s",
+                        p.asText(), getSources().getKey(), parseState().getSource());
             }
         }
         return joinConjunct(" and ", types);
@@ -316,9 +330,10 @@ public class Json2QuteCommon implements JsonSource {
         for (JsonNode p : iterableElements(itemPropertyPrereq)) {
             ItemProperty prop = index.findItemProperty(p.asText(), getSources());
             if (prop != null) {
-                props.add(prop.getMarkdownLink(index));
+                props.add(prop.linkify());
             } else {
-                tui().errorf("Unknown item property %s", p);
+                tui().warnf(Msg.UNKNOWN, "unknown item property prereq %s from %s / %s",
+                        p.asText(), getSources().getKey(), parseState().getSource());
             }
         }
         return joinConjunct(" and ", props);
@@ -328,7 +343,7 @@ public class Json2QuteCommon implements JsonSource {
     // "level":{"level":1,"class":{"name":"Fighter","visible":true}}}
     private String levelPrereq(JsonNode levelPrereq) {
         if (levelPrereq.isArray())
-            tui().error("levelPrereq: Array parameter");
+            tui().errorf("levelPrereq: Array parameter");
 
         if (levelPrereq.isNumber()) {
             return levelToText(levelPrereq.asText());
@@ -378,7 +393,8 @@ public class Json2QuteCommon implements JsonSource {
                     case "weaponGroup" -> profs.add(String.format("%s weapons",
                             replaceText(prof.getValue().asText())));
                     default -> {
-                        tui().errorf("Unknown proficiency prereq", p);
+                        tui().warnf(Msg.UNKNOWN, "unknown proficiency prereq %s from %s / %s",
+                                p.toString(), getSources().getKey(), parseState().getSource());
                     }
                 }
             }
@@ -404,6 +420,30 @@ public class Json2QuteCommon implements JsonSource {
         return joinConjunct(" or ", races);
     }
 
+    private String scfPrereq(JsonNode scfPrereq) {
+        if (scfPrereq.isBoolean()) {
+            return replaceText("Ability to use a {@variantrule Spellcasting Focus|XPHB}");
+        }
+
+        List<String> scfTypes = new ArrayList<>();
+        for (JsonNode p : iterableElements(scfPrereq)) {
+            String type = p.asText();
+            String name = SCF_TYPE_TO_NAME.getOrDefault(type, type);
+            String article = scfTypes.isEmpty()
+                    ? articleFor(name) + " "
+                    : "";
+
+            if (!name.equals(type)) {
+                name = replaceText("{@item " + name + "|XPHB}");
+            }
+
+            scfTypes.add("%s%s".formatted(article, name));
+        }
+
+        return replaceText("Ability to use %s as a {@variantrule Spellcasting Focus|XPHB}"
+                .formatted(joinConjunct(" or ", scfTypes)));
+    }
+
     private List<String> testBoolean(JsonNode node, String valueIfTrue) {
         return node.booleanValue()
                 ? List.of(valueIfTrue)
@@ -422,7 +462,8 @@ public class Json2QuteCommon implements JsonSource {
                 } else if ("x".equals(split[1])) {
                     spells.add(replaceText(String.format("{@spell hex} spell or a warlock feature that curses", split[0])));
                 } else {
-                    tui().errorf("Unknown spell prereq %s", p);
+                    tui().warnf(Msg.UNKNOWN, "unknown spell prereq %s from %s / %s",
+                            p.toString(), getSources().getKey(), parseState().getSource());
                 }
             } else {
                 spells.add(replaceText(String.format("{@filter %s|spells|%s}",
@@ -470,7 +511,8 @@ public class Json2QuteCommon implements JsonSource {
                     .map(x -> {
                         PrereqFields field = fromString(x);
                         if (field == PrereqFields.unknown) {
-                            tui().errorf("Unknown prerequisite %s from %s", x, prerequisite);
+                            tui().warnf(Msg.UNKNOWN, "Unexpected prerequisite %s (from %s / %s)",
+                                    x, prerequisite, getSources().getKey());
                         }
                         return field;
                     })
@@ -483,16 +525,18 @@ public class Json2QuteCommon implements JsonSource {
                 }
                 JsonNode value = field.getFrom(prerequisite);
 
-                // TODO: blocklist?
                 switch (field) {
                     case ability -> values.add(abilityPrereq(value));
                     case alignment -> values.add(alignmentListToFull(value));
                     case background -> values.add(backgroundPrereq(value));
-                    case campaign -> values.add(campaignPrereq(value));
+                    case campaign -> values.add(replaceConjoinOr(value, " Campaign"));
+                    case culture -> values.add(replaceConjoinOr(value, " Culture"));
+                    case expertise -> values.add(expertisePrereq(value));
                     case feat -> values.add(featPrereq(value));
-                    case feature -> values.add(featurePrereq(value));
-                    case group -> values.add(groupPrereq(value));
-                    case item -> values.add(itemPrereq(value));
+                    case feature -> values.add(replaceConjoinOr(value, ""));
+                    case optionalfeature -> values.add(replaceConjoinOr(value, ""));
+                    case group -> values.add(replaceConjoinOr(value, " Group"));
+                    case item -> values.add(replaceConjoinOr(value, ""));
                     case itemProperty -> values.add(itemPropertyPrereq(value));
                     case itemType -> values.add(itemTypePrereq(value));
                     case level -> values.add(levelPrereq(value));
@@ -503,6 +547,7 @@ public class Json2QuteCommon implements JsonSource {
                     case proficiency -> values.add(proficiencyPrereq(value));
                     case race -> values.add(racePrereq(value));
                     case spell -> values.add(spellPrereq(value));
+                    case spellcastingFocus -> values.add(scfPrereq(value));
                     // --- Boolean values ----
                     case psionics -> values.addAll(testBoolean(value,
                             replaceText("Psionic Talent feature or {@feat Wild Talent|UA2020PsionicOptionsRevisited} feat")));
@@ -517,7 +562,7 @@ public class Json2QuteCommon implements JsonSource {
                     // --- Other: Note ----
                     case note -> note = replaceText(value);
                     default -> {
-                        tui().errorf("Unknown prerequisite %s from %s", field.nodeName(), prerequisite);
+                        tui().debugf(Msg.UNKNOWN, "Unexpected prerequisite %s (from %s)", field.nodeName(), prerequisite);
                     }
                 }
             }
@@ -662,7 +707,7 @@ public class Json2QuteCommon implements JsonSource {
         } else if (MonsterFields.special.existsIn(acNode)) {
             acHp.acText = MonsterFields.special.replaceTextFrom(acNode, this);
         } else {
-            tui().errorf("Unknown armor class in monster %s: %s", sources.getKey(), acNode.toPrettyString());
+            tui().warnf(Msg.UNKNOWN, "Unknown armor class in monster %s: %s", sources.getKey(), acNode.toPrettyString());
         }
     }
 
@@ -849,8 +894,8 @@ public class Json2QuteCommon implements JsonSource {
             if (array == null || array.isNull()) {
                 return;
             } else if (array.isObject()) {
-                tui().errorf("Unknown %s for %s: %s", array, sources.getKey(), array.toPrettyString());
-                throw new IllegalArgumentException("Unknown field: " + getSources());
+                tui().warnf(Msg.UNKNOWN, "Unknown %s for %s: %s", array, sources.getKey(), array.toPrettyString());
+                return;
             }
             for (JsonNode e : iterableElements(array)) {
                 String name = SourceField.name.replaceTextFrom(e, this)
@@ -909,8 +954,8 @@ public class Json2QuteCommon implements JsonSource {
             }
 
             return streamOf(arrayNode).sorted((a, b) -> {
-                Optional<Integer> aSort = Tools5eFields.sort.getIntFrom(a);
-                Optional<Integer> bSort = Tools5eFields.sort.getIntFrom(b);
+                Optional<Integer> aSort = Tools5eFields.sort.intFrom(a);
+                Optional<Integer> bSort = Tools5eFields.sort.intFrom(b);
 
                 if (aSort.isPresent() && bSort.isPresent()) {
                     return aSort.get().compareTo(bSort.get());
@@ -998,33 +1043,37 @@ public class Json2QuteCommon implements JsonSource {
 
     // weighted (order matters)
     enum PrereqFields implements JsonNodeReader {
-        /* 1 */ level,
-        /* 2 */ pact,
-        /* 3 */ patron,
-        /* 4 */ spell,
-        /* 5 */ race,
-        /* 6 */ alignment,
-        /* 7 */ ability,
-        /* 8 */ proficiency,
-        /* 9 */ spellcasting,
-        /* 10 */ spellcasting2020,
-        /* 11 */ spellcastingFeature,
-        /* 12 */ spellcastingPrepared,
-        /* 13 */ psionics,
-        /* 14 */ feature,
-        /* 15 */ feat,
-        /* 16 */ background,
-        /* 17 */ item,
-        /* 18 */ itemType,
-        /* 19 */ itemProperty,
-        /* 20 */ campaign,
-        /* 21 */ group,
-        /* 22 */ other,
-        /* 23 */ otherSummary,
+        /* */ level,
+        /* */ pact,
+        /* */ patron,
+        /* */ spell,
+        /* */ race,
+        /* */ alignment,
+        /* */ ability,
+        /* */ proficiency,
+        /* */ expertise,
+        /* */ spellcasting,
+        /* */ spellcasting2020,
+        /* */ spellcastingFeature,
+        /* */ spellcastingPrepared,
+        /* */ spellcastingFocus,
+        /* */ psionics,
+        /* */ feature,
+        /* */ feat,
+        /* */ background,
+        /* */ item,
+        /* */ itemType,
+        /* */ itemProperty,
+        /* */ campaign,
+        /* */ culture,
+        /* */ group,
+        /* */ other,
+        /* */ otherSummary,
         choose, // inner field for spells
         displayEntry, // inner field for display
         note, // field alongside other fields
         prerequisite, // prereq field itself
+        optionalfeature,
         unknown // catcher for unknown attributes (see #fromString())
     }
 

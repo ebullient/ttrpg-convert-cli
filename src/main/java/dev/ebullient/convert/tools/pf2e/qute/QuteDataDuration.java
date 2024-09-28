@@ -5,9 +5,7 @@ package dev.ebullient.convert.tools.pf2e.qute;
  * than an activity, or a {@link QuteDataActivity}. Use {@link QuteDataDuration#isActivity()} to check whether this
  * duration is an activity.
  *
- * <p>
  * Using this directly will give the default representation for either object.
- * </p>
  */
 public sealed interface QuteDataDuration permits QuteDataActivity, QuteDataTimedDuration {
 

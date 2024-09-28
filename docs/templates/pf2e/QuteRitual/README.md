@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [casting](#casting), [checks](#checks), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [requirements](#requirements), [ritualType](#ritualtype), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [targeting](#targeting), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [casting](#casting), [checks](#checks), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [reprintOf](#reprintof), [requirements](#requirements), [ritualType](#ritualtype), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [targeting](#targeting), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -44,6 +44,10 @@ A spell’s overall power, from 1 to 10.
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 
 ### requirements
 

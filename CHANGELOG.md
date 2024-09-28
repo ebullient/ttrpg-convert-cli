@@ -12,6 +12,35 @@
 >
 > To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
 
+## 🔥✨ 3.0.0: Moving the things
+
+- The `-s` option is no more. All sources must be specified in config files.
+- There have been some changes to how dice strings are rendered.
+- `from` and `full-source` have been merged. The [`sources` key](./docs/configuration.md#specify-content-with-the-sources-key) now defines all types of source: `reference` for reference-only, `book`/`adventure` for complete source text, and `homebrew` for homebrew.
+
+    ```json
+    {
+        "sources": {
+            "adventure": [
+                ...
+            ],
+            "book": [
+                ...
+            ],
+            "homebrew": [
+                ...
+            ],
+            "reference": [
+                ...
+            ]
+        },
+    }
+    ```
+
+- The [Source Map](./docs/sourceMap.md) for 5e sources now indicates if the source is a `book` or `adventure`.
+- The Players Handbook directory has changed from `players-handbook` to `players-handbook-2014`
+- **Reprint behavior** has always been knd of obscure, but it really matters now. The CLI will always default to one-note-per-thing, perferring the most recent version of said thing. This means that the 2024 PHB content will be preferred if you have that source available. Use [`include` and `exclude` configuration](docs/configuration.md#refine-content-choices) to tweak that behavior.
+
 ## 🔖 ✨ 2.3.14: Improvements to Pathfinder rendering
 
 @miscoined has made significant contributions to improve support for Pf2e creatures (the bestiary). 🙏🎉💖
@@ -43,13 +72,11 @@ If you are using the Fantasy Statblocks plugin to render your statblocks, you ca
 
 ## 🔖 ✨ 2.3.0: 5eTools moving to mirror2
 
-[5eTools Mirror1](https://github.com/5etools-mirror-1/5etools-mirror-1.github.io) has been deprecated in favor of [5eTools Mirror2](https://github.com/5etools-mirror-2/5etools-mirror-2.github.io), which uses a separate repository for [images](https://github.com/5etools-mirror-2/5etools-img).
+The 5eTools Mirror now uses a separate repository for images. When you run `ttrpg-convert` against 5eTools content, images will not be copied into your vault by default. Links to external images will be used instead. This can greatly reduce the size of your vault, but you will need to be connected to the internet for images to render.
 
-When you run `ttrpg-convert` against mirror2 content, no images will be copied into your vault by default.
+See [Copying "internal" images](./docs/configuration.md#copying-internal-images) for options on how to copy tokens and other item/spell/monster fluff images into your vault.
 
-See [Copying "internal" images](./docs/configuration.md#copying-internal-images) for options on how to copy tokens and other item/spell/monster fluff images into your notes.
-
-See [Copying "external" images](./docs/configuration.md#copying-external-images) to copy additional images referenced in general text into your notes.
+See [Copying "external" images](./docs/configuration.md#copying-external-images) to copy additional images referenced in general text into your vault.
 
 ## 🔖 ✨ 2.2.12: 5e support for generic and magic item variants
 

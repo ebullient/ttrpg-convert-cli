@@ -52,6 +52,22 @@ public interface ToolsIndex {
         return cfg().compendiumFilePath();
     }
 
+    default boolean resolveSources(Path toolsPath) {
+        TtrpgConfig.setToolsPath(toolsPath);
+        var allOk = true;
+        for (String adventure : cfg().resolveAdventures()) {
+            allOk &= cfg().readSource(toolsPath.resolve(adventure), TtrpgConfig.getFixes(adventure), this::importTree);
+        }
+        for (String book : cfg().resolveBooks()) {
+            allOk &= cfg().readSource(toolsPath.resolve(book), TtrpgConfig.getFixes(book), this::importTree);
+        }
+        // Include additional standalone files from config (relative to current directory)
+        for (String brew : cfg().resolveHomebrew()) {
+            allOk &= cfg().readSource(Path.of(brew), TtrpgConfig.getFixes(brew), this::importTree);
+        }
+        return allOk;
+    }
+
     void prepare();
 
     boolean notPrepared();

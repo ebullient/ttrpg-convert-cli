@@ -6,9 +6,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools subclass attributes ({@code subclass2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteSubclass extends Tools5eQuteBase {
@@ -43,7 +42,9 @@ public class QuteSubclass extends Tools5eQuteBase {
 
     @Override
     public String targetFile() {
-        return Tools5eQuteBase.getSubclassResource(name, parentClass, sources.primarySource());
+        return Tools5eQuteBase.getSubclassResource(name,
+                parentClass, parentClassSource,
+                sources.primarySource());
     }
 
     @Override

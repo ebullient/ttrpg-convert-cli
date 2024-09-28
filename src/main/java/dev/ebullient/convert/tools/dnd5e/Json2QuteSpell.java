@@ -111,7 +111,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         if (durations.size() > 1) {
             JsonNode ends = durations.get(1);
             result.append(", ");
-            String type = getTextOrEmpty(ends, "type");
+            String type = SpellFields.type.getTextOrEmpty(ends);
             if ("timed".equals(type)) {
                 result.append(" up to ");
             }
@@ -121,7 +121,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     void addDuration(JsonNode element, StringBuilder result) {
-        String type = getTextOrEmpty(element, "type");
+        String type = SpellFields.type.getTextOrEmpty(element);
         switch (type) {
             case "instant" -> result.append("Instantaneous");
             case "permanent" -> {
@@ -185,10 +185,11 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 SpellFields.unit.getTextOrEmpty(time));
     }
 
+    // FIXME: spell lists are pretty broken.
     Set<String> indexedSpellClasses(Tags tags) {
         Collection<String> list = index().classesForSpell(this.sources.getKey());
         if (list == null) {
-            tui().debugf("No classes found for %s", this.sources.getKey());
+            // tui().debugf("No classes found for %s", this.sources.getKey());
             return new TreeSet<>();
         }
 
@@ -245,6 +246,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
             }
         });
         if (classes.contains("Wizard")) {
+            // FIXME. Spell schools are busted (PHB/XPHB for these two)
             if (school == SpellSchool.SchoolEnum.Abjuration || school == SpellSchool.SchoolEnum.Evocation) {
                 String finalKey = Tools5eIndexType.getSubclassKey("Fighter", "PHB", "Eldritch Knight", "PHB");
                 if (index().isIncluded(finalKey)) {
@@ -277,7 +279,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 String.format("%s (%s)", className, subclassName),
                 subclassKey,
                 Tools5eIndexType.classtype.getRelativePath(),
-                Tools5eQuteBase.getSubclassResource(subclassName, className, subclassSource));
+                Tools5eQuteBase.getSubclassResource(subclassName, className, classSource, subclassSource));
     }
 
     enum SpellFields implements JsonNodeReader {

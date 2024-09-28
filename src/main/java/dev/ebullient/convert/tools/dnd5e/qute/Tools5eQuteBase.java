@@ -9,6 +9,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -16,10 +17,9 @@ import io.quarkus.qute.TemplateData;
 /**
  * Attributes for notes that are generated from the 5eTools data.
  * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteBase}.
- * <p>
+ *
  * Notes created from {@code Tools5eQuteBase} will use a specific template
  * for the type. For example, {@code QuteBackground} will use {@code background2md.txt}.
- * </p>
  */
 @TemplateData
 public class Tools5eQuteBase extends QuteBase {
@@ -39,7 +39,10 @@ public class Tools5eQuteBase extends QuteBase {
         return switch (type) {
             case background -> fixFileName(type.decoratedName(node), primarySource, type);
             case deity -> Tui.slugify(getDeityResourceName(name, primarySource, node.get("pantheon").asText()));
-            case subclass -> getSubclassResource(name, node.get("className").asText(), primarySource);
+            case subclass -> getSubclassResource(name,
+                    Tools5eFields.className.getTextOrEmpty(node),
+                    Tools5eFields.classSource.getTextOrEmpty(node),
+                    primarySource);
             default -> fixFileName(name, primarySource, type);
         };
     }
@@ -78,9 +81,17 @@ public class Tools5eQuteBase extends QuteBase {
         return fixFileName(className, classSource, Tools5eIndexType.classtype);
     }
 
-    public static String getSubclassResource(String subclass, String parentClass, String subclassSource) {
+    public static String getSubclassResource(String subclass, String parentClass, String classSource, String subclassSource) {
+        String parentFile = Tui.slugify(parentClass);
+        if ("xphb".equalsIgnoreCase(classSource)) {
+            // For the most part, all subclasses are derived from the basic classes.
+            // There wasn't really a need to include the class source in the file name.
+            // However, the XPHB has created duplicates of all of the base classes.
+            // So if the parent class is from the XPHB, we need to include that in the file name.
+            parentFile += "-xphb";
+        }
         return fixFileName(
-                Tui.slugify(parentClass) + "-" + Tui.slugify(subclass),
+                parentFile + "-" + Tui.slugify(subclass),
                 subclassSource,
                 Tools5eIndexType.subclass);
     }
@@ -89,9 +100,13 @@ public class Tools5eQuteBase extends QuteBase {
         String suffix = "";
         switch (pantheon.toLowerCase()) {
             case "exandria" -> {
-                if (!source.equalsIgnoreCase("egw")) {
-                    suffix = "-" + Tui.slugify(source);
-                }
+                suffix = source.equalsIgnoreCase("egw") ? "" : ("-" + Tui.slugify(source));
+            }
+            case "dragonlance" -> {
+                suffix = source.equalsIgnoreCase("dsotdq") ? "" : ("-" + Tui.slugify(source));
+            }
+            default -> {
+                suffix = sourceIfNotDefault(source, Tools5eIndexType.deity);
             }
         }
         return pantheon + "-" + name + suffix;

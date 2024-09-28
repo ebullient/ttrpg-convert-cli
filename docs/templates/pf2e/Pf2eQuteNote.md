@@ -1,12 +1,14 @@
 # Pf2eQuteNote
 
-Attributes for notes that are generated from the Pf2eTools data. This is a trivial extension of [QuteNote](../QuteNote.md).
+Attributes for notes that are generated from the Pf2eTools data.
+This is a trivial extension of [QuteNote](../QuteNote.md).
 
-Notes created from `Pf2eQuteNote` will use the `note2md.txt` template unless otherwise noted. Folder index notes use `index2md.txt`.
+Notes created from `Pf2eQuteNote` will use the `note2md.txt` template
+unless otherwise noted. Folder index notes use `index2md.txt`.
 
 ## Attributes
 
-[hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### hasSections
@@ -20,6 +22,10 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

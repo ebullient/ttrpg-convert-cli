@@ -1,7 +1,12 @@
 {
   "config5e": {
+    "constants": {
+      "imgRoot": "https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/",
+      "tools5eSource": "https://api.github.com/repos/5etools-mirror-3/5etools-src/releases/latest"
+    },
     "templateKeys": [
       "background",
+      "bastion",
       "class",
       "deck",
       "deity",
@@ -24,10 +29,7 @@
         {
           "type": "entries",
           "name": "Attunement",
-          "source": "DMG",
-          "page": 136,
-          "srd": true,
-          "basicRules": true,
+          "edition": "classic",
           "entries": [
             "Some magic items require a creature to form a bond with them before their magical properties can be used. This bond is called attunement, and certain items have a prerequisite for it. If the prerequisite is a class, a creature must be a member of that class to attune to the item. (If the class is a spellcasting class, a monster qualifies if it has spell slots and uses that class's spell list.) If the prerequisite is to be a spellcaster, a creature qualifies if it can cast at least one spell using its traits or features, not using a magic item or the like.",
             "Without becoming attuned to an item that requires attunement, a creature gains only its nonmagical benefits, unless its description states otherwise. For example, a magic shield that requires attunement provides the benefits of a normal shield to a creature not attuned to it, but none of its magical properties.",
@@ -51,235 +53,69 @@
           ]
         },
         {
-          "name": "General and Weapon Properties",
-          "srd": true,
-          "basicRules": true,
+          "type": "entries",
+          "name": "Attunement",
+          "edition": "one",
+          "source": "XPHB",
+          "page": 232,
+          "id": "717",
           "entries": [
+            "Some magic items require a creature to form a bond\u2014called Attunement\u2014with them before the creature can use an item's magical properties. Without becoming attuned to an item that requires Attunement, you gain only its nonmagical benefits unless its description states otherwise. For example, a magic Shield that requires Attunement provides the benefits of a normal Shield if you aren't attuned to it, but none of its magical properties.",
             {
               "type": "entries",
-              "name": "Ammunition",
-              "itemType": "A",
-              "abbreviation": "A",
-              "srd": true,
-              "basicRules": true,
-              "source": "PHB",
-              "page": 146,
+              "name": "Attune during a Short Rest",
+              "page": 232,
+              "id": "718",
               "entries": [
-                "You can use a weapon that has the ammunition property to make a ranged attack only if you have ammunition to fire from the weapon. Each time you attack with the weapon, you expend one piece of ammunition. Drawing the ammunition from a quiver, case, or other container is part of the attack. Loading a one-handed weapon requires a free hand. At the end of the battle, you can recover half your expended ammunition by taking a minute to search the battlefield.",
-                "If you use a weapon that has the ammunition property to make a melee attack, you treat the weapon as an improvised weapon. A sling must be loaded to deal any damage when used in this way."
+                "Attuning to an item requires you to spend a {@variantrule Short Rest|XPHB} focused on only that item while being in physical contact with it (this can't be the same Short Rest used to learn the item's properties). This focus can take the form of weapon practice (for a Weapon), meditation (for a Wand), or some other appropriate activity. If the Short Rest is interrupted, the Attunement attempt fails. Otherwise, at the end of the Short Rest, you're attuned to the magic item and can access its full magical capabilities."
               ]
             },
             {
               "type": "entries",
-              "name": "Ammunition (Firearm)",
-              "itemType": "AF",
-              "abbreviation": "AF",
-              "page": 267,
-              "source": "DMG",
+              "name": "No More Than Three Items",
+              "page": 232,
+              "id": "719",
               "entries": [
-                "You can use a weapon that has the ammunition property to make a ranged attack only if you have ammunition to fire from the weapon. Each time you attack with the weapon, you expend one piece of ammunition. Drawing the ammunition from a quiver, case, or other container is part of the attack. Loading a one-handed weapon requires a free hand. The ammunition of a firearm is destroyed upon use.",
-                "If you use a weapon that has the ammunition property to make a melee attack, you treat the weapon as an improvised weapon. A sling must be loaded to deal any damage when used in this way."
+                "You can be attuned to no more than three magic items at a time. Any attempt to attune to a fourth item fails; you must end your Attunement to an item first. Additionally, you can't attune to more than one copy of an item. For example, you can't attune to more than one {@item Ring of Protection} at a time."
               ]
             },
             {
               "type": "entries",
-              "name": "Burst Fire",
-              "abbreviation": "BF",
-              "page": 267,
-              "source": "DMG",
+              "name": "Ending Attunement",
+              "page": 232,
+              "id": "71a",
               "entries": [
-                "A weapon that has the burst fire property can make a single-target attack, or it can spray a 10-foot-cube area within normal range with shots. Each creature in the area must succeed on a DC 15 Dexterity saving throw or take the weapon's normal damage. This action uses ten pieces of ammunition."
+                "Your Attunement to an item ends if you no longer satisfy the prerequisites for Attunement, if the item has been more than 100 feet away for at least 24 hours, if you die, or if another creature attunes to the item. You can also voluntarily end Attunement by spending another {@variantrule Short Rest|XPHB} focused on the item unless the item is cursed."
               ]
             },
             {
               "type": "entries",
-              "name": "Finesse",
-              "abbreviation": "F",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
+              "name": "Optional Attunement",
               "entries": [
-                "When making an attack with a finesse weapon, you use your choice of your Strength or Dexterity modifier for the attack and damage rolls. You must use the same modifier for both rolls."
+                "Attunement may be required for this item."
               ]
             },
             {
               "type": "entries",
-              "name": "Heavy",
-              "abbreviation": "H",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
+              "name": "Requires Attunement",
               "entries": [
-                "Creatures that are Small or Tiny have disadvantage on attack rolls with heavy weapons. A heavy weapon's size and bulk make it too large for a Small or Tiny creature to use effectively."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Light",
-              "abbreviation": "L",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "A light weapon is small and easy to handle, making it ideal for use when fighting with two weapons."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Loading",
-              "abbreviation": "LD",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "Because of the time required to load this weapon, you can fire only one piece of ammunition from it when you use an action, bonus action, or reaction to fire it, regardless of the number of attacks you can normally make."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Martial",
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "Martial weapons, including swords, axes, and polearms, require more specialized training to use effectively. Most warriors use martial weapons because these weapons put their fighting style and training to best use."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Poison",
-              "source": "DMG",
-              "page": 257,
-              "entries": [
-                "Given their insidious and deadly nature, poisons are illegal in most societies but are a favorite tool among assassins, drow, and other evil creatures.",
-                "Poisons come in the following four types.",
-                {
-                  "type": "entries",
-                  "name": "Contact",
-                  "page": 257,
-                  "entries": [
-                    "Contact poison can be smeared on an object and remains potent until it is touched or washed off. A creature that touches contact poison with exposed skin suffers its effects."
-                  ],
-                  "id": "2f9"
-                },
-                {
-                  "type": "entries",
-                  "name": "Ingested",
-                  "page": 257,
-                  "entries": [
-                    "A creature must swallow an entire dose of ingested poison to suffer its effects. You might decide that a partial dose has a reduced effect, such as allowing advantage on the saving throw or dealing only half damage on a failed save. The dose can be delivered in food or a liquid."
-                  ],
-                  "id": "2fa"
-                },
-                {
-                  "type": "entries",
-                  "name": "Inhaled",
-                  "page": 257,
-                  "entries": [
-                    "These poisons are powders or gases that take effect when inhaled. Blowing the powder or releasing the gas subjects creatures in a 5-foot cube to its effect. The resulting cloud dissipates immediately afterward. Holding one's breath is ineffective against inhaled poisons, as they affect nasal membranes, tear ducts, and other parts of the body."
-                  ],
-                  "id": "2fb"
-                },
-                {
-                  "type": "entries",
-                  "name": "Injury",
-                  "page": 257,
-                  "entries": [
-                    "Injury poison can be applied to weapons, ammunition, trap components, and other objects that deal piercing or slashing damage and remains potent until delivered through a wound or washed off. A creature that takes piercing or slashing damage from an object coated with the poison is exposed to its effects."
-                  ],
-                  "id": "2fc"
-                }
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Range",
-              "source": "PHB",
-              "page": 146,
-              "itemType": "R",
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "A weapon that can be used to make a ranged attack has a range in parentheses after the ammunition or thrown property. The range lists two numbers. The first is the weapon's normal range in feet, and the second indicates the weapon's long range. When attacking a target beyond normal range, you have disadvantage on the attack roll. You can't attack a target beyond the weapon's long range."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Reach",
-              "abbreviation": "R",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "This weapon adds 5 feet to your reach when you attack with it. This property also determines your reach for opportunity attacks with a reach weapon."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Reload",
-              "abbreviation": "RLD",
-              "source": "DMG",
-              "page": 267,
-              "entries": [
-                "A limited number of shots can be made with a weapon that has the reload property. A character must then reload it using an action or a bonus action (the character's choice)."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Special",
-              "abbreviation": "S",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "A weapon with the special property has unusual rules governing its use, explained in the weapon's description (see \"Special Weapons\")."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Thrown",
-              "abbreviation": "T",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "If a weapon has the thrown property, you can throw the weapon to make a ranged attack. If the weapon is a melee weapon, you use the same ability modifier for that attack roll and damage roll that you would use for a melee attack with the weapon. For example, if you throw a handaxe, you use your Strength, but if you throw a dagger, you can use either your Strength or your Dexterity, since the dagger has the finesse property."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Two-Handed",
-              "abbreviation": "2H",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "This weapon requires two hands to use. This property is relevant only when you attack with the weapon, not when you simply hold it."
-              ]
-            },
-            {
-              "type": "entries",
-              "name": "Versatile",
-              "abbreviation": "V",
-              "source": "PHB",
-              "page": 147,
-              "srd": true,
-              "basicRules": true,
-              "entries": [
-                "This weapon can be used with one or two hands. A damage value in parentheses appears with the property\u2014the damage when the weapon is used with two hands to make a melee attack."
+                "Attunement is required for this item."
               ]
             }
           ]
         },
         {
+          "name": "General and Weapon Properties",
+          "srd": true,
+          "basicRules": true,
+          "entries": [
+          ]
+        },
+        {
           "name": "Improvised Weapons",
+          "edition": "classic",
+          "source": "PHB",
+          "page": 147,
           "srd": true,
           "basicRules": true,
           "entries": [
@@ -289,9 +125,21 @@
           ]
         },
         {
+          "name": "Improvised Weapons",
+          "edition": "one",
+          "source": "XPHB",
+          "page": 213,
+          "id": "645",
+          "entries": [
+            "If you use an object\u2014such as a table leg, frying pan, or bottle\u2014as a makeshift weapon, see \"{@variantrule Improvised Weapons|XPHB}\" in the {@book rules glossary|XPHB|10|Improvised Weapons}. Also see those rules if you wield a weapon in an unusual way, such as using a Ranged weapon to make a melee attack."
+          ]
+        },
+        {
           "name": "Silvered Weapons",
           "srd": true,
           "basicRules": true,
+          "source": "PHB",
+          "page": 148,
           "entries": [
             "Some monsters that have immunity or resistance to nonmagical weapons are susceptible to silver weapons, so cautious adventurers invest extra coin to plate their weapons with silver. You can silver a single weapon or ten pieces of ammunition for 100 gp. This cost represents not only the price of the silver, but the time and expertise needed to add silver to the weapon without making it less effective."
           ]
@@ -300,6 +148,8 @@
           "name": "Special Weapons",
           "srd": true,
           "basicRules": true,
+          "source": "PHB",
+          "page": 148,
           "entries": [
             "Weapons with special rules are described here.",
             {
@@ -320,18 +170,391 @@
           ]
         },
         {
-          "name": "Vestige",
-          "source": "TDCSR",
-          "page": 200,
+          "type": "entries",
+          "name": "Cursed Items",
+          "source": "DMG",
+          "page": 138,
           "entries": [
-            "A Vestige of Divergence, see {@book Tal'Dorei Treasures|TDCSR|5|Vestiges of Divergence} for more information."
+            "Some magic items bear curses that bedevil their users, sometimes long after a user has stopped using an item. Most methods of identifying items, including the identify spell, fail to reveal the presence of a curse, although lore might hint at it.",
+            "Attunement to a cursed item can't be ended voluntarily unless the curse is broken first, such as with the {@spell remove curse} spell."
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Poison",
+          "source": "DMG",
+          "page": 257,
+          "entries": [
+            "Given their insidious and deadly nature, poisons are illegal in most societies but are a favorite tool among assassins, drow, and other evil creatures.",
+            "Poisons come in the following four types.",
+            {
+              "type": "entries",
+              "name": "Contact",
+              "page": 257,
+              "entries": [
+                "Contact poison can be smeared on an object and remains potent until it is touched or washed off. A creature that touches contact poison with exposed skin suffers its effects."
+              ],
+              "id": "2f9"
+            },
+            {
+              "type": "entries",
+              "name": "Ingested",
+              "page": 257,
+              "entries": [
+                "A creature must swallow an entire dose of ingested poison to suffer its effects. You might decide that a partial dose has a reduced effect, such as allowing advantage on the saving throw or dealing only half damage on a failed save. The dose can be delivered in food or a liquid."
+              ],
+              "id": "2fa"
+            },
+            {
+              "type": "entries",
+              "name": "Inhaled",
+              "page": 257,
+              "entries": [
+                "These poisons are powders or gases that take effect when inhaled. Blowing the powder or releasing the gas subjects creatures in a 5-foot cube to its effect. The resulting cloud dissipates immediately afterward. Holding one's breath is ineffective against inhaled poisons, as they affect nasal membranes, tear ducts, and other parts of the body."
+              ],
+              "id": "2fb"
+            },
+            {
+              "type": "entries",
+              "name": "Injury",
+              "page": 257,
+              "entries": [
+                "Injury poison can be applied to weapons, ammunition, trap components, and other objects that deal piercing or slashing damage and remains potent until delivered through a wound or washed off. A creature that takes piercing or slashing damage from an object coated with the poison is exposed to its effects."
+              ],
+              "id": "2fc"
+            }
           ]
         }
       ]
     },
-    "constants": {
-      "imgRoot": "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/"
-    },
+    "basicRules": [
+      "action|attack|phb",
+      "action|cast a spell|phb",
+      "action|dash|phb",
+      "action|disengage|phb",
+      "action|dodge|phb",
+      "action|escape a grapple|phb",
+      "action|grapple|phb",
+      "action|help|phb",
+      "action|hide|phb",
+      "action|opportunity attack|phb",
+      "action|ready|phb",
+      "action|search|phb",
+      "action|shove|phb",
+      "action|two-weapon fighting|phb",
+      "action|use an object|phb",
+      "background|acolyte|phb",
+      "background|criminal|phb",
+      "background|folk hero|phb",
+      "background|noble|phb",
+      "background|sage|phb",
+      "background|soldier|phb",
+      "classtype|cleric|phb",
+      "classtype|fighter|phb",
+      "classtype|rogue|phb",
+      "classtype|wizard|phb",
+      "condition|blinded|phb",
+      "condition|charmed|phb",
+      "condition|deafened|phb",
+      "condition|frightened|phb",
+      "condition|grappled|phb",
+      "condition|incapacitated|phb",
+      "condition|invisible|phb",
+      "condition|paralyzed|phb",
+      "condition|petrified|phb",
+      "condition|poisoned|phb",
+      "condition|prone|phb",
+      "condition|restrained|phb",
+      "condition|stunned|phb",
+      "condition|unconscious|phb",
+      "itemproperty|2h|phb",
+      "itemproperty|a|phb",
+      "itemproperty|f|phb",
+      "itemproperty|h|phb",
+      "itemproperty|ld|phb",
+      "itemproperty|l|phb",
+      "itemproperty|rld|dmg",
+      "itemproperty|r|phb",
+      "itemproperty|s|phb",
+      "itemproperty|t|phb",
+      "itemproperty|v|phb",
+      "itemtype|$c|phb",
+      "itemtype|at|phb",
+      "itemtype|a|phb",
+      "itemtype|fd|phb",
+      "itemtype|gs|phb",
+      "itemtype|g|phb",
+      "itemtype|ha|phb",
+      "itemtype|ins|phb",
+      "itemtype|la|phb",
+      "itemtype|ma|phb",
+      "itemtype|mnt|phb",
+      "itemtype|m|phb",
+      "itemtype|oth|phb",
+      "itemtype|p|phb",
+      "itemtype|r|phb",
+      "itemtype|scf|phb",
+      "itemtype|s|phb",
+      "itemtype|tah|phb",
+      "itemtype|tg|phb",
+      "itemtype|t|phb",
+      "itemtype|veh|phb",
+      "race|dwarf|phb",
+      "race|elf|phb",
+      "race|halfling|phb",
+      "race|human|phb",
+      "sense|blindsight|phb",
+      "sense|darkvision|phb",
+      "sense|truesight|phb",
+      "skill|acrobatics|phb",
+      "skill|animal handling|phb",
+      "skill|arcana|phb",
+      "skill|athletics|phb",
+      "skill|deception|phb",
+      "skill|history|phb",
+      "skill|insight|phb",
+      "skill|intimidation|phb",
+      "skill|investigation|phb",
+      "skill|medicine|phb",
+      "skill|nature|phb",
+      "skill|perception|phb",
+      "skill|performance|phb",
+      "skill|persuasion|phb",
+      "skill|religion|phb",
+      "skill|sleight of hand|phb",
+      "skill|stealth|phb",
+      "skill|survival|phb",
+      "subclass|champion|fighter|phb|phb",
+      "subclass|life domain|cleric|phb|phb",
+      "subclass|school of evocation|wizard|phb|phb",
+      "subclass|thief|rogue|phb|phb",
+      "subrace|dwarf (hill)|dwarf|phb|phb",
+      "subrace|dwarf (mountain)|dwarf|phb|phb",
+      "subrace|elf (high)|elf|phb|phb",
+      "subrace|elf (wood)|elf|phb|phb",
+      "subrace|halfling (lightfoot)|halfling|phb|phb",
+      "subrace|halfling (stout)|halfling|phb|phb",
+      "subrace|human (variant)|human|phb|phb"
+    ],
+    "freeRules2024": [
+      "action|attack|xphb",
+      "action|dash|xphb",
+      "action|disengage|xphb",
+      "action|dodge|xphb",
+      "action|escape a grapple|xphb",
+      "action|help|xphb",
+      "action|hide|xphb",
+      "action|influence|xphb",
+      "action|magic|xphb",
+      "action|opportunity attack|xphb",
+      "action|ready|xphb",
+      "action|search|xphb",
+      "action|study|xphb",
+      "action|two-weapon fighting|xphb",
+      "action|utilize|xphb",
+      "background|acolyte|xphb",
+      "background|criminal|xphb",
+      "background|sage|xphb",
+      "background|soldier|xphb",
+      "classtype|barbarian|xphb",
+      "classtype|bard|xphb",
+      "classtype|cleric|xphb",
+      "classtype|druid|xphb",
+      "classtype|fighter|xphb",
+      "classtype|monk|xphb",
+      "classtype|paladin|xphb",
+      "classtype|ranger|xphb",
+      "classtype|rogue|xphb",
+      "classtype|sorcerer|xphb",
+      "classtype|warlock|xphb",
+      "classtype|wizard|xphb",
+      "condition|blinded|xphb",
+      "condition|charmed|xphb",
+      "condition|deafened|xphb",
+      "condition|exhaustion|xphb",
+      "condition|frightened|xphb",
+      "condition|grappled|xphb",
+      "condition|incapacitated|xphb",
+      "condition|invisible|xphb",
+      "condition|paralyzed|xphb",
+      "condition|petrified|xphb",
+      "condition|poisoned|xphb",
+      "condition|prone|xphb",
+      "condition|restrained|xphb",
+      "condition|stunned|xphb",
+      "condition|unconscious|xphb",
+      "hazard|burning|xphb",
+      "hazard|dehydration|xphb",
+      "hazard|falling|xphb",
+      "hazard|malnutrition|xphb",
+      "hazard|suffocation|xphb",
+      "feat|ability score improvement|xphb",
+      "feat|alert|xphb",
+      "feat|archery|xphb",
+      "feat|boon of combat prowess|xphb",
+      "feat|boon of dimensional travel|xphb",
+      "feat|boon of fate|xphb",
+      "feat|boon of irresistible offense|xphb",
+      "feat|boon of the night spirit|xphb",
+      "feat|boon of truesight|xphb",
+      "feat|defense|xphb",
+      "feat|great weapon fighting|xphb",
+      "feat|magic initiate|xphb",
+      "feat|savage attacker|xphb",
+      "feat|skilled|xphb",
+      "feat|two-weapon fighting|xphb",
+      "race|dwarf|xphb",
+      "race|elf|xphb",
+      "race|halfling|xphb",
+      "race|human|xphb",
+      "sense|blindsight|xphb",
+      "sense|darkvision|xphb",
+      "sense|tremorsense|xphb",
+      "sense|truesight|xphb",
+      "skill|acrobatics|xphb",
+      "skill|animal handling|xphb",
+      "skill|arcana|xphb",
+      "skill|athletics|xphb",
+      "skill|deception|xphb",
+      "skill|history|xphb",
+      "skill|insight|xphb",
+      "skill|intimidation|xphb",
+      "skill|investigation|xphb",
+      "skill|medicine|xphb",
+      "skill|nature|xphb",
+      "skill|perception|xphb",
+      "skill|performance|xphb",
+      "skill|persuasion|xphb",
+      "skill|religion|xphb",
+      "skill|sleight of hand|xphb",
+      "skill|stealth|xphb",
+      "skill|survival|xphb",
+      "subclass|champion|fighter|xphb|xphb",
+      "subclass|circle of the land|druid|xphb|xphb",
+      "subclass|college of lore|bard|xphb|xphb",
+      "subclass|draconic sorcery|sorcerer|xphb|xphb",
+      "subclass|evoker|wizard|xphb|xphb",
+      "subclass|fiend patron|warlock|xphb|xphb",
+      "subclass|hunter|ranger|xphb|xphb",
+      "subclass|life domain|cleric|xphb|xphb",
+      "subclass|oath of devotion|paladin|xphb|xphb",
+      "subclass|path of the berserker|barbarian|xphb|xphb",
+      "subclass|thief|rogue|xphb|xphb",
+      "subclass|warrior of the open hand|monk|xphb|xphb",
+      "variantrule|ability check|xphb",
+      "variantrule|ability score and modifier|xphb",
+      "variantrule|action|xphb",
+      "variantrule|advantage|xphb",
+      "variantrule|adventure|xphb",
+      "variantrule|alignment|xphb",
+      "variantrule|ally|xphb",
+      "variantrule|area of effect|xphb",
+      "variantrule|armor class|xphb",
+      "variantrule|armor training|xphb",
+      "variantrule|attack roll|xphb",
+      "variantrule|attitude|xphb",
+      "variantrule|attunement|xphb",
+      "variantrule|bloodied|xphb",
+      "variantrule|bonus action|xphb",
+      "variantrule|breaking objects|xphb",
+      "variantrule|bright light|xphb",
+      "variantrule|burrow speed|xphb",
+      "variantrule|campaign|xphb",
+      "variantrule|cantrip|xphb",
+      "variantrule|carrying capacity|xphb",
+      "variantrule|challenge rating|xphb",
+      "variantrule|character sheet|xphb",
+      "variantrule|climb speed|xphb",
+      "variantrule|climbing|xphb",
+      "variantrule|condition|xphb",
+      "variantrule|cone [area of effect]|xphb",
+      "variantrule|cover|xphb",
+      "variantrule|crawling|xphb",
+      "variantrule|creature type|xphb",
+      "variantrule|creature|xphb",
+      "variantrule|critical hit|xphb",
+      "variantrule|cube [area of effect]|xphb",
+      "variantrule|curses|xphb",
+      "variantrule|cylinder [area of effect]|xphb",
+      "variantrule|d20 test|xphb",
+      "variantrule|damage roll|xphb",
+      "variantrule|damage threshold|xphb",
+      "variantrule|damage types|xphb",
+      "variantrule|damage|xphb",
+      "variantrule|darkness|xphb",
+      "variantrule|dead|xphb",
+      "variantrule|death saving throw|xphb",
+      "variantrule|difficult terrain|xphb",
+      "variantrule|difficulty class|xphb",
+      "variantrule|dim light|xphb",
+      "variantrule|disadvantage|xphb",
+      "variantrule|encounter|xphb",
+      "variantrule|enemy|xphb",
+      "variantrule|experience points|xphb",
+      "variantrule|expertise|xphb",
+      "variantrule|fly speed|xphb",
+      "variantrule|flying|xphb",
+      "variantrule|friendly [attitude]|xphb",
+      "variantrule|grappling|xphb",
+      "variantrule|hazard|xphb",
+      "variantrule|healing|xphb",
+      "variantrule|heavily obscured|xphb",
+      "variantrule|heroic inspiration|xphb",
+      "variantrule|high jump|xphb",
+      "variantrule|hit point dice|xphb",
+      "variantrule|hit points|xphb",
+      "variantrule|hostile [attitude]|xphb",
+      "variantrule|hover|xphb",
+      "variantrule|illusions|xphb",
+      "variantrule|immunity|xphb",
+      "variantrule|improvised weapons|xphb",
+      "variantrule|indifferent [attitude]|xphb",
+      "variantrule|initiative|xphb",
+      "variantrule|jumping|xphb",
+      "variantrule|knocking out a creature|xphb",
+      "variantrule|lightly obscured|xphb",
+      "variantrule|long jump|xphb",
+      "variantrule|long rest|xphb",
+      "variantrule|magical effect|xphb",
+      "variantrule|monster|xphb",
+      "variantrule|nonplayer character|xphb",
+      "variantrule|object|xphb",
+      "variantrule|occupied space|xphb",
+      "variantrule|passive perception|xphb",
+      "variantrule|per day|xphb",
+      "variantrule|player character|xphb",
+      "variantrule|possession|xphb",
+      "variantrule|proficiency|xphb",
+      "variantrule|reaction|xphb",
+      "variantrule|resistance|xphb",
+      "variantrule|ritual|xphb",
+      "variantrule|round down|xphb",
+      "variantrule|save|xphb",
+      "variantrule|saving throw|xphb",
+      "variantrule|shape-shifting|xphb",
+      "variantrule|short rest|xphb",
+      "variantrule|simultaneous effects|xphb",
+      "variantrule|size|xphb",
+      "variantrule|skill|xphb",
+      "variantrule|speed|xphb",
+      "variantrule|spell|xphb",
+      "variantrule|spell attack|xphb",
+      "variantrule|spellcasting focus|xphb",
+      "variantrule|sphere [area of effect]|xphb",
+      "variantrule|stable|xphb",
+      "variantrule|stat block|xphb",
+      "variantrule|swim speed|xphb",
+      "variantrule|swimming|xphb",
+      "variantrule|target|xphb",
+      "variantrule|telepathy|xphb",
+      "variantrule|teleportation|xphb",
+      "variantrule|temporary hit points|xphb",
+      "variantrule|unarmed strike|xphb",
+      "variantrule|unoccupied space|xphb",
+      "variantrule|vulnerability|xphb",
+      "variantrule|weapon attack|xphb",
+      "variantrule|weapon|xphb"
+    ],
     "markerFiles": [
       "bestiary/bestiary-mm.json",
       "cultsboons.json",
@@ -342,6 +565,7 @@
     "aliases": {
       "item|alchemist's tools|phb": "item|alchemist's supplies|phb",
       "item|alchemists' supplies|phb": "item|alchemist's supplies|phb",
+      "item|backpack|dmg": "item|backpack|phb",
       "item|breastplate|dmg": "item|breastplate|phb",
       "item|caltrops (20)|phb": "item|caltrops (bag of 20)|phb",
       "item|crysal ball|dmg": "item|crystal ball|dmg",
@@ -351,6 +575,7 @@
       "item|painter's tools|phb": "item|painter's supplies|phb",
       "item|pale tincture (ingested)|dmg": "item|pale tincture|dmg",
       "item|potion of speed|phb": "item|potion of speed|dmg",
+      "item|prosthetic limb|erlw": "item|prosthetic limb|tce",
       "item|rope of climbing|xge": "item|rope of climbing|dmg",
       "item|shield, +1|dmg": "item|+1 shield|dmg",
       "item|thieves tools|phb": "item|thieves' tools|phb",
@@ -359,13 +584,23 @@
       "spell|bane spell|phb": "spell|bane|phb",
       "spell|ceremony|phb": "spell|ceremony|xge",
       "spell|charm monster|phb": "spell|charm monster|xge",
+      "spell|commpelled duel|phb": "spell|compelled duel|phb",
       "spell|deception|phb": "skill|deception|phb",
       "spell|detect good and evil|phb": "spell|detect evil and good|phb",
       "spell|enlarge|phb": "spell|enlarge/reduce|phb",
+      "spell|frostbite|phb": "spell|frostbite|xge",
       "spell|history|phb": "skill|history|phb",
       "spell|infestation|phb": "spell|infestation|xge",
+      "spell|less restoration|phb": "spell|lesser restoration|phb",
       "spell|phatasmal force|phb": "spell|phantasmal force|phb",
+      "spell|magic aura|phb": "spell|arcanist's magic aura|phb",
+      "spell|mind sliver|phb": "spell|mind sliver|tce",
+      "spell|ray of enfeeblemen t|phb": "spell|ray of enfeeblement|phb",
       "spell|reduce|phb": "spell|enlarge/reduce|phb",
+      "spell|tenser 's floating disk|phb": "spell|tenser's floating disk|phb",
+      "spell|thunderclap|phb": "spell|thunderclap|xge",
+      "spell|toll the dead|phb": "spell|toll the dead|xge",
+      "spell|word of radiance|phb": "spell|word of radiance|xge",
       "trap|quicksand|dmg": "hazard|quicksand|dmg"
     },
     "fixes": {
@@ -420,6 +655,7 @@
       "actions.json",
       "adventures.json",
       "backgrounds.json",
+      "bastions.json",
       "bestiary",
       "bestiary/legendarygroups.json",
       "bestiary/template.json",
@@ -430,8 +666,16 @@
       "deities.json",
       "feats.json",
       "fluff-backgrounds.json",
+      "fluff-bastions.json",
+      "fluff-conditionsdiseases.json",
+      "fluff-feats.json",
       "fluff-items.json",
+      "fluff-objects.json",
+      "fluff-optionalfeatures.json",
       "fluff-races.json",
+      "fluff-rewards.json",
+      "fluff-trapshazards.json",
+      "fluff-vehicles.json",
       "generated/gendata-tables.json",
       "items-base.json",
       "items.json",

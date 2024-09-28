@@ -4,14 +4,14 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools Ability Score attributes.
- * <p>
+ *
  * Used to describe a monster, object or vehicle's ability scores.
- * </p>
- * <p>
+ *
  * If referenced as a unit (ignoring inner attributes), it will render ability scores as
- * a `|` separated list of values, in `STR,DEX,CON,INT,WIS,CHA` order, for example:<br />
+ * a `|` separated list of values, in `STR,DEX,CON,INT,WIS,CHA` order.
+ *
+ * For example:
  * `10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)`.
- * </p>
  */
 @TemplateData
 public class AbilityScores {

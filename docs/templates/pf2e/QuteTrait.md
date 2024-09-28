@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [categories](#categories), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[aliases](#aliases), [categories](#categories), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -28,6 +28,10 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

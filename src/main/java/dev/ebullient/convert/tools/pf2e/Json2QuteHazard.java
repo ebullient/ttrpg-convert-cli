@@ -64,15 +64,15 @@ public class Json2QuteHazard extends Json2QuteBase {
 
         static QuteHazard.QuteHazardStealth buildStealth(JsonNode node, JsonTextConverter<?> convert) {
             return new QuteHazard.QuteHazardStealth(
-                    bonus.getIntFrom(node).orElse(null),
-                    dc.getIntFrom(node).orElse(null),
+                    bonus.intOrNull(node),
+                    dc.intOrNull(node),
                     minProf.getTextOrNull(node),
                     notes.getTextFrom(node).map(convert::replaceText).orElse(null));
         }
 
         static QuteDataGenericStat.SimpleStat buildPerception(JsonNode node, JsonTextConverter<?> convert) {
             return new QuteDataGenericStat.SimpleStat(
-                    bonus.getIntOrThrow(node),
+                    bonus.intOrThrow(node),
                     notes.getTextFrom(node).map(convert::replaceText).orElse(null));
         }
     }

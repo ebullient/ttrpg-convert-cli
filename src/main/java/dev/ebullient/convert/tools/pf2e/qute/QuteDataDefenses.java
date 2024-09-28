@@ -15,17 +15,21 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBo
 import io.quarkus.qute.TemplateData;
 
 /**
- * Pf2eTools Armor class, Saving Throws, and other attributes describing defenses of a creature or hazard. Example:
- * <ul>
- * <li><b>AC</b> 23 (33 with mage armor); <b>Fort</b> +15, <b>Ref</b> +12, <b>Will</b> +10</li>
- * <li>
- * <b>Floor Hardness</b> 18, <b>Floor HP</b> 72 (BT 36);
- * <b>Channel Hardness</b> 12, <b>Channel HP</b> 48 (BT24 ) to destroy a channel gate;
- * <b>Immunities</b> critical hits;
- * <b>Resistances</b> precision damage;
- * <b>Weaknesses</b> bludgeoning damage
- * </li>
- * </ul>
+ * Pf2eTools Armor class, Saving Throws, and other attributes describing defenses of a creature or hazard.
+ *
+ * Example:
+ *
+ * ```md
+ * **AC** 23 (33 with mage armor); **Fort** +15, **Ref** +12, **Will** +10
+ * ```
+ *
+ * ```md
+ * **Floor Hardness** 18, **Floor HP** 72 (BT 36);
+ * **Channel Hardness** 12, **Channel HP** 48 (BT24 ) to destroy a channel gate;
+ * **Immunities** critical hits;
+ * **Resistances** precision damage;
+ * **Weaknesses** bludgeoning damage
+ * ```
  *
  * @param ac The armor class as a {@link QuteDataArmorClass}
  * @param savingThrows The saving throws, as {@link QuteDataDefenses.QuteSavingThrows}
@@ -64,10 +68,11 @@ public record QuteDataDefenses(
 
     /**
      * Pathfinder 2e saving throws. Example default rendering:
-     * <blockquote>
-     * <b>Fort</b> +10 (+12 vs. poison), <b>Ref</b> +5 (+7 vs. traps), <b>Will</b> +4 (+6 vs. mental); +1 status to
+     *
+     * ```md
+     * **Fort** +10 (+12 vs. poison), **Ref** +5 (+7 vs. traps), **Will** +4 (+6 vs. mental); +1 status to
      * all saves vs. magic
-     * </blockquote>
+     * ```
      *
      * @param fort Fortitude saving throw bonus, as a {@link QuteDataGenericStat.QuteDataNamedBonus}
      * @param ref Reflex saving throw bonus, as a {@link QuteDataGenericStat.QuteDataNamedBonus}

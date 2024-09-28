@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
@@ -48,7 +49,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
 
     Pattern asPattern = Pattern.compile("\\{@as ([^}]+)}");
     Pattern runeItemPattern = Pattern.compile("\\{@runeItem ([^}]+)}");
-    Pattern dicePattern = Pattern.compile("\\{@(dice|damage) ([^}]+)}");
     Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
@@ -90,14 +90,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             }
 
             result = replaceWithDiceRoller(result); // {@hit ..} and {@d20 ..}
-            result = dicePattern.matcher(result)
-                    .replaceAll((match) -> {
-                        String[] parts = match.group(2).split("\\|");
-                        if (parts.length > 1) {
-                            return parts[1];
-                        }
-                        return formatDice(parts[0]);
-                    });
 
             result = chancePattern.matcher(result)
                     .replaceAll((match) -> match.group(1) + "% chance");
@@ -146,17 +138,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
                         .replaceAll("\\{@reward ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@dc ([^}]+)}", "DC $1")
                         .replaceAll("\\{@flatDC ([^}]+)}", "$1")
-                        .replaceAll("\\{@d20 ([^}]+?)}", "$1")
                         .replaceAll("\\{@recharge ([^}]+?)}", "(Recharge $1-6)")
                         .replaceAll("\\{@recharge}", "(Recharge 6)")
-                        .replaceAll("\\{@(scaledice|scaledamage) [^|]+\\|[^|]+\\|([^|}]+)[^}]*}", "$2")
                         .replaceAll("\\{@filter ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@cult ([^|}]+)\\|([^|}]+)\\|[^|}]*}", "$2")
                         .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
-                        .replaceAll("\\{@variantrule ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
-                        .replaceAll("\\{@hit ([^}<]+)}", "+$1")
                         .replaceAll("\\{@h}", "Hit: ")
                         .replaceAll("\\{@c ([^}]+?)}", "$1")
                         .replaceAll("\\{@center ([^}]+?)}", "$1")
@@ -249,7 +237,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     default String linkify(MatchResult match) {
         Pf2eIndexType targetType = Pf2eIndexType.fromText(match.group(1));
         if (targetType == null) {
-            tui().errorf("Unknown type to linkify: %s", match.group(0));
+            tui().warnf(Msg.UNKNOWN, "Unknown type to linkify: %s", match.group(0));
             return match.group(0);
         }
         return linkify(targetType, match.group(2));

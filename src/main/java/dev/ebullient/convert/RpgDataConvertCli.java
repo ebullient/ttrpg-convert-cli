@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -16,6 +15,7 @@ import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TemplatePaths;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Templates;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.ToolsIndex;
@@ -112,10 +112,6 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
     @Option(names = { "-c", "--config" }, description = "Config file")
     Path configPath;
 
-    @Option(names = "-s", hidden = true, description = "Source Books%n  " +
-            "Comma-separated list or multiple declarations (PHB,DMG,...); use ALL for all sources")
-    List<String> source = Collections.emptyList();
-
     @Option(names = "--index", description = "Create index of keys that can be used to exclude entries")
     boolean writeIndex;
 
@@ -157,14 +153,6 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         TtrpgConfig.init(tui, game);
         Configurator configurator = new Configurator(tui);
 
-        if (source.size() == 1 && source.get(0).contains(",")) {
-            String tmp = source.remove(0);
-            source = List.of(tmp.split(","));
-        }
-        if (source.contains("ALL")) {
-            source = List.of("*");
-        }
-        configurator.addSources(source);
         configurator.setTemplatePaths(templatePaths);
 
         if (configPath != null) {
@@ -183,8 +171,8 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
 
         CompendiumConfig config = TtrpgConfig.getConfig();
 
-        tui.done("Finished reading config.");
-        tui.verbosef("Writing markdown to %s.\n", output);
+        tui.printlnf(Msg.OK, "Finished reading config.");
+        tui.progressf("Writing markdown to %s.\n", output);
 
         ToolsIndex index = ToolsIndex.createIndex();
         Path toolsPath = null;
@@ -194,13 +182,12 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         // ATM, both 5e and pf2e use the same general structure.
         // Marker files are in configData
         for (Path inputPath : input) {
-            tui.printlnf("⏱️  Reading %s", inputPath);
+            tui.progressf("Reading %s", inputPath);
             Path input = inputPath.toAbsolutePath();
             if (input.toFile().isDirectory()) {
                 boolean isTools = tui.readToolsDir(input, index::importTree);
                 if (isTools) { // we found the tools directory
                     toolsPath = input;
-                    TtrpgConfig.setToolsPath(toolsPath);
                 } else {
                     // this is some other directory full of json
                     allOk &= tui.readDirectory("", input, index::importTree);
@@ -210,30 +197,27 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             }
         }
 
-        // Include extra books and adventures from config (relative to toolsPath)
-        if (allOk && toolsPath != null) {
-            for (String adventure : config.getAdventures()) {
-                allOk &= tui.readFile(toolsPath.resolve(adventure), TtrpgConfig.getFixes(adventure), index::importTree);
-            }
-            for (String book : config.getBooks()) {
-                allOk &= tui.readFile(toolsPath.resolve(book), TtrpgConfig.getFixes(book), index::importTree);
-            }
+        // We've read all user specified files and user config.
+        if (toolsPath == null) {
+            tui.errorf("❌ No tools directory found. Please specify the directory containing the data files.");
+            return ExitCode.USAGE;
         }
 
-        // Include additional standalone files from config (relative to current directory)
-        for (String brew : config.getHomebrew()) {
-            allOk &= tui.readFile(Path.of(brew), TtrpgConfig.getFixes(brew), index::importTree);
+        // Include extra books, adventures, and homebrew from config
+        if (allOk && toolsPath != null) {
+            allOk = index.resolveSources(toolsPath);
         }
 
         if (!allOk) {
-            tui.println("❌ errors reading data. Check the following: ",
-                    "- Are you specifying the right game? (-g 5e OR -g pf2e),",
-                    "    Using " + TtrpgConfig.getConfig().datasource().shortName(),
-                    "- Check error messages to see what files couldn't be read",
-                    "   For bulk conversion, specify the the <tools>/data directory");
+            tui.warnf("""
+                    Unable to find or read data. Check the following:
+                    - Are you specifying the right game (-g 5e OR -g pf2e)?
+                    - Check error messages to see what files couldn't be read
+                    """);
             return ExitCode.USAGE;
         }
-        tui.done("Finished reading data.");
+        tui.printlnf(Msg.OK, "Finished reading data.");
+
         try {
             index.prepare();
 
@@ -242,25 +226,26 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                     index.writeFullIndex(output.resolve("all-index.json"));
                     index.writeFilteredIndex(output.resolve("src-index.json"));
                 } catch (IOException e) {
-                    tui.error(e, "  Exception: " + e.getMessage());
+                    tui.errorf(e, "Exception: %s", e);
                     allOk = false;
                 }
             }
 
-            tui.println("💡 Writing files to " + output);
+            tui.progressf("💡 Writing files to %s", output);
             tpl.setCustomTemplates(config);
 
             MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);
             index.markdownConverter(writer)
                     .writeAll()
-                    .writeNotesAndTables()
                     .writeImages();
+
+            tui.printlnf(Msg.ALLDONE, "All done!");
         } catch (Throwable e) {
             String message = e.getMessage();
             if (message == null) {
                 message = e.getClass().getSimpleName();
             }
-            tui.errorf(e, "An error occurred: %s.%n%nRun with --debug for details.", message);
+            tui.errorf(e, "An error occurred: %s.%n%nRun again with --log to capture details.", message);
             allOk = false;
         }
 
@@ -282,6 +267,8 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .setExecutionStrategy(this::executionStrategy)
                 .setParameterExceptionHandler(new ShortErrorMessageHandler())
+                .setOut(Tui.streamToWriter(System.out))
+                .setErr(Tui.streamToWriter(System.err))
                 .execute(args);
     }
 
@@ -291,7 +278,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             CommandSpec spec = cmd.getCommandSpec();
             tui.init(spec, debug, verbose);
 
-            tui.error(ex, ex.getMessage());
+            tui.errorf(ex, ex.getMessage());
             UnmatchedArgumentException.printSuggestions(ex, cmd.getErr());
 
             cmd.getErr().println(cmd.getHelp().fullSynopsis()); // normal text to error stream

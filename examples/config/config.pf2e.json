@@ -1,8 +1,14 @@
 {
-  "from" : [
-    "CRB",
-    "GMG"
-  ],
+  "sources" : {
+    "reference" : [
+      "CRB",
+      "GMG"
+    ],
+    "book" : [
+      "crb",
+      "gmg"
+    ]
+  },
   "paths" : {
     "compendium" : "compendium/",
     "rules" : "compendium/rules/"
@@ -16,16 +22,11 @@
   "excludePattern" : [
     "background|.*|lowg"
   ],
+  "reprintBehavior" : "newest",
   "template" : {
     "ability" : "../path/to/ability2md.txt"
   },
   "useDiceRoller" : true,
   "tagPrefix" : "ttrpg-cli",
-  "images" : { },
-  "full-source" : {
-    "book" : [
-      "crb",
-      "gmg"
-    ]
-  }
+  "images" : { }
 }

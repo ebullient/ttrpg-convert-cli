@@ -14,9 +14,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools object attributes ({@code object2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteObject extends Tools5eQuteBase {

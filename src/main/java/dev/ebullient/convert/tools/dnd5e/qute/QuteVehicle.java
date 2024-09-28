@@ -15,14 +15,12 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools vehicle attributes ({@code vehicle2md.txt})
- * <p>
+ *
  * Several different types of vehicle use this template, including:
  * Ship, spelljammer, infernal war manchie, objects and creatures.
  * They can have very different properties. Treat most as optional.
- * </p>
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteVehicle extends Tools5eQuteBase {
@@ -113,16 +111,17 @@ public class QuteVehicle extends Tools5eQuteBase {
 
     /**
      * 5eTools Ship crew, cargo, and pace attributes
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
-     * To use it, reference it directly:<br />
-     * ```<br />
-     * {#if resource.shipCrewCargoPace}<br />
-     * {resource.shipCrewCargoPace}<br />
-     * {/if}<br />
-     * ```<br />
-     * </p>
+     *
+     * To use it, reference it directly:
+     *
+     * ```md
+     * {#if resource.shipCrewCargoPace}
+     * {resource.shipCrewCargoPace}
+     * {/if}
+     * ```
      */
     @TemplateData
     public static class ShipCrewCargoPace implements QuteUtil {
@@ -223,11 +222,11 @@ public class QuteVehicle extends Tools5eQuteBase {
 
     /**
      * 5eTools vehicle armor class and hit points attributes
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly.
-     * </p>
+     *
      */
     @TemplateData
     public static class ShipAcHp extends AcHp {
@@ -285,11 +284,11 @@ public class QuteVehicle extends Tools5eQuteBase {
 
     /**
      * 5eTools vehicle sections
-     * <p>
+     *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly.
-     * </p>
+     *
      */
     @TemplateData
     public static class ShipSection implements QuteUtil {

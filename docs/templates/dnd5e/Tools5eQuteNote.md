@@ -1,12 +1,13 @@
 # Tools5eQuteNote
 
-Attributes for notes that are generated from the 5eTools data. This is a trivial extension of [QuteNote](../QuteNote.md).
+Attributes for notes that are generated from the 5eTools data.
+This is a trivial extension of [QuteNote](../QuteNote.md).
 
 Notes created from `Tools5eQuteNote` will use the `note2md.txt` template.
 
 ## Attributes
 
-[hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### hasSections
@@ -20,6 +21,10 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 ### name
 
 Note name
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

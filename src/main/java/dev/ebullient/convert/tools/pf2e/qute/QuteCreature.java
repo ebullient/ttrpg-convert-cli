@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import dev.ebullient.convert.StringUtil;
+import dev.ebullient.convert.io.JavadocVerbatim;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
@@ -21,9 +22,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Creature attributes ({@code creature2md.txt})
- * <p>
+ *
  * Extension of {@link Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteCreature extends Pf2eQuteBase {
@@ -99,10 +99,7 @@ public class QuteCreature extends Pf2eQuteBase {
 
     /**
      * The languages and language features known by a creature. Example default output:
-     *
-     * <blockquote>
-     * Common, Sylvan; telepathy 100ft; knows any language the summoner does
-     * </blockquote>
+     * `Common, Sylvan; telepathy 100ft; knows any language the summoner does`
      *
      * @param languages Languages known (optional)
      * @param notes Language-related notes (optional)
@@ -123,9 +120,9 @@ public class QuteCreature extends Pf2eQuteBase {
     /**
      * A creature's skill information. Example default output:
      *
-     * <blockquote>
+     * ```md
      * Athletics +10, Cult Lore +10 (lore on their cult), Stealth +10 (+12 in forests); Some skill note
-     * </blockquote>
+     * ```
      *
      * @param skills Skill bonuses for the creature, as a list of
      *        {@link QuteDataGenericStat.QuteDataNamedBonus QuteDataNamedBonus}
@@ -143,10 +140,7 @@ public class QuteCreature extends Pf2eQuteBase {
     }
 
     /**
-     * A creature's senses. Example default output:
-     * <blockquote>
-     * tremorsense (imprecise) 20ft
-     * </blockquote>
+     * A creature's senses. Example default output: `tremorsense (imprecise) 20ft`
      *
      * @param name The name of the sense (required, string)
      * @param type The type of the sense - e.g. precise, imprecise (optional, string)
@@ -241,6 +235,7 @@ public class QuteCreature extends Pf2eQuteBase {
          * The name for this set of spells. This is either the custom name, or derived from the tradition and
          * preparation - e.g. "Occult Prepared Spells", or "Divine Innate Spells".
          */
+        @JavadocVerbatim
         public String name() {
             return customName != null && !customName.isBlank()
                     ? customName
@@ -250,10 +245,11 @@ public class QuteCreature extends Pf2eQuteBase {
         /**
          * Stats for this kind of spellcasting, including the DC, attack bonus, and any focus points.
          *
-         * <blockquote>
+         * ```md
          * DC 20, attack +25, 2 Focus Points
-         * </blockquote>
+         * ```
          */
+        @JavadocVerbatim
         public String formattedStats() {
             return join(", ",
                     format("DC %d", dc),
@@ -264,12 +260,14 @@ public class QuteCreature extends Pf2eQuteBase {
 
     /**
      * A collection of spells with some additional information.
-     * <blockquote>
-     * <b>Cantrips (9th)</b> <a href="#">daze</a>, <a href="#">shadow siphon</a> (acid only) (×2)
-     * </blockquote>
-     * <blockquote>
-     * <b>4th</b> <a href="#">confusion</a>, <a href="#">phantasmal killer</a> (2 slots)
-     * </blockquote>
+     *
+     * ```md
+     * **Cantrips (9th)** [daze](#), [shadow siphon](#) (acid only) (×2)
+     * ```
+     *
+     * ```md
+     * **4th** [confusion](#), [phantasmal killer](#) (2 slots)
+     * ```
      *
      * @param knownRank The rank that these spells are known at (0 for cantrips). May be absent for rituals.
      * @param cantripRank The rank that these spells are auto-heightened to. Present only for cantrips.
@@ -311,9 +309,10 @@ public class QuteCreature extends Pf2eQuteBase {
 
     /**
      * A spell known by the creature.
-     * <blockquote>
-     * <a href="#">shadow siphon</a> (acid only) (×2)
-     * </blockquote>
+     *
+     * ```md
+     * [shadow siphon](#) (acid only) (×2)
+     * ```
      *
      * @param name The name of the spell
      * @param link A formatted link to the spell's note, or just the spell's name if we couldn't get a link.

@@ -94,8 +94,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                     traits,
                     alias.replaceTextFromList(node, convert),
                     description.replaceTextFrom(node, convert),
-                    level.getIntFrom(node).orElse(null),
-                    perception.getObjectFrom(node).map(std::getIntOrThrow).orElse(null),
+                    level.intOrNull(node),
+                    perception.getObjectFrom(node).map(std::intOrThrow).orElse(null),
                     defenses.getDefensesFrom(node, convert),
                     languages.getLanguagesFrom(node, convert),
                     skills.getSkillsFrom(node, convert),
@@ -163,7 +163,7 @@ public class Json2QuteCreature extends Json2QuteBase {
                     .map(n -> new QuteCreature.CreatureSense(
                             Pf2eCreatureSense.name.getTextFrom(n).map(convert::replaceText).orElseThrow(),
                             Pf2eCreatureSense.type.getTextFrom(n).map(convert::replaceText).orElse(null),
-                            Pf2eCreatureSense.range.getIntFrom(n).orElse(null)))
+                            Pf2eCreatureSense.range.intOrNull(n)))
                     .toList();
         }
 
@@ -237,10 +237,10 @@ public class Json2QuteCreature extends Json2QuteBase {
             private static QuteCreature.CreatureRitualCasting getRitual(JsonNode source, JsonSource convert) {
                 return new QuteCreature.CreatureRitualCasting(
                         tradition.getEnumValueFrom(source, QuteCreature.SpellcastingTradition.class),
-                        DC.getIntFrom(source).orElse(null),
+                        DC.intOrNull(source),
                         rituals.streamFrom(source)
                                 .collect(Collectors.toMap(
-                                        n -> level.getIntFrom(n).orElse(null),
+                                        n -> level.intOrNull(n),
                                         n -> Stream.of(Pf2eCreatureSpellReference.getSpellReference(n, convert)),
                                         Stream::concat))
                                 .entrySet().stream()
@@ -253,9 +253,9 @@ public class Json2QuteCreature extends Json2QuteBase {
                         name.getTextOrNull(source),
                         type.getEnumValueFrom(source, QuteCreature.SpellcastingPreparation.class),
                         tradition.getEnumValueFrom(source, QuteCreature.SpellcastingTradition.class),
-                        fp.getIntFrom(source).orElse(null),
-                        attack.getIntFrom(source).orElse(null),
-                        DC.getIntFrom(source).orElse(null),
+                        fp.intOrNull(source),
+                        attack.intOrNull(source),
+                        DC.intOrNull(source),
                         note.replaceTextFromList(source, convert),
                         entry.getSpellsFrom(source, convert),
                         constant.getSpellsFrom(entry.getFromOrEmptyObjectNode(source), convert));
@@ -265,8 +265,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                 return streamPropsExcluding(source, constant)
                         .map(e -> new QuteCreature.CreatureSpells(
                                 Integer.valueOf(e.getKey()),
-                                level.getIntFrom(e.getValue()).orElse(null),
-                                slots.getIntFrom(e.getValue()).orElse(null),
+                                level.intOrNull(e.getValue()),
+                                slots.intOrNull(e.getValue()),
                                 spells.streamFrom(e.getValue())
                                         .map(n -> Pf2eCreatureSpellReference.getSpellReference(n, convert))
                                         .toList()))
@@ -294,7 +294,7 @@ public class Json2QuteCreature extends Json2QuteBase {
                         amount.getTextFrom(node)
                                 .filter(s -> s.equalsIgnoreCase("at will"))
                                 .map(unused -> 0)
-                                .or(() -> amount.getIntFrom(node))
+                                .or(() -> amount.intFrom(node))
                                 .orElse(1),
                         notes.replaceTextFromList(node, convert));
             }

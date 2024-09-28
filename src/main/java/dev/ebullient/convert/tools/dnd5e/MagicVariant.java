@@ -23,8 +23,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemFields;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemField;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
+import dev.ebullient.convert.tools.dnd5e.Tools5eSources.SourceAttributes;
 
 public class MagicVariant implements JsonSource {
 
@@ -38,8 +39,21 @@ public class MagicVariant implements JsonSource {
 
     static final MagicVariant INSTANCE = new MagicVariant();
 
-    /** Update generic variant item with inherited attributes (minimally source, required for key) */
-    public void populateGenericVariant(final JsonNode variant) {
+    public static List<Tuple> findSpecificVariants(Tools5eIndex index, Tools5eIndexType type,
+            String key, JsonNode genericVariant, Tools5eJsonSourceCopier copier,
+            List<JsonNode> baseItems) {
+        return INSTANCE.findVariants(index, type, key, genericVariant, copier, baseItems);
+    }
+
+    public static void populateGenericVariant(final JsonNode variant) {
+        INSTANCE.populateVariant(variant);
+    }
+
+    /**
+     * Update generic variant item with inherited attributes
+     * (minimally source, which is required to create the key)
+     */
+    private void populateVariant(final JsonNode variant) {
         JsonNode inherits = MagicItemField.inherits.getFrom(variant);
 
         // for (const prop in genericVariant.inherits) {
@@ -100,39 +114,46 @@ public class MagicVariant implements JsonSource {
     }
 
     /** Update / replace item with variants (where appropriate) */
-    public List<Tuple> findSpecificVariants(Tools5eIndex index, Tools5eIndexType type,
-            String key, JsonNode genericVariant, Tools5eJsonSourceCopier copier) {
-        // const specificVariants = Renderer.item._createSpecificVariants(baseItems, genericVariants);
-        // const outSpecificVariants = Renderer.item._enhanceItems(specificVariants);
+    private List<Tuple> findVariants(Tools5eIndex index, Tools5eIndexType type,
+            String key, JsonNode genericVariant, Tools5eJsonSourceCopier copier,
+            List<JsonNode> baseItems) {
         List<Tuple> variants = new ArrayList<>();
-        genericVariant = copyNode(genericVariant);
+        // baseItems.forEach((curBaseItem) => {
+        //     ....
+        //     genericVariants.forEach((curGenericVariant) => {
+        //         if (!Renderer.item._createSpecificVariants_isEditionMatch({curBaseItem, curGenericVariant})) return;
+        //         if (!Renderer.item._createSpecificVariants_hasRequiredProperty(curBaseItem, curGenericVariant)) return;
+        //         if (Renderer.item._createSpecificVariants_hasExcludedProperty(curBaseItem, curGenericVariant)) return;
+        //         genericAndSpecificVariants.push(Renderer.item._createSpecificVariants_createSpecificVariant(curBaseItem, curGenericVariant, opts));
+        //     });
+        // });
+        // ..
+        // We're looping the other way (variant is the outer loop / is passed in)
+        boolean spawnNewItems = key.contains(" (*)");
+
         String gvKey = Tools5eIndexType.item.createKey(genericVariant);
-        // Generic variants with (*) in the name have a single specific variant.
-        // Those will be replaced (See below)
-        if (!key.contains(" (*)")) {
+        if (!spawnNewItems) {
             // Add generic variant to the list of variants as a regular item
-            // (will have variants field, see)
+            // Variations will be added to this item.
             TtrpgValue.indexInputType.setIn(genericVariant, Tools5eIndexType.item.name());
             variants.add(new Tuple(gvKey, genericVariant));
             index.addAlias(key, gvKey);
         }
 
-        // Create specific variants
-        List<JsonNode> baseItems = index.originNodesMatching(x -> TtrpgValue.indexBaseItem.booleanOrDefault(x, false));
         for (JsonNode baseItem : baseItems) {
-            if (MagicItemField.packContents.existsIn(baseItem)
-                    || !hasRequiredProperty(genericVariant, baseItem)
-                    || hasExcludedProperty(genericVariant, baseItem)) {
+            if (ItemField.packContents.existsIn(baseItem)
+                    || !editionMatch(baseItem, genericVariant)
+                    || !hasRequiredProperty(baseItem, genericVariant)
+                    || hasExcludedProperty(baseItem, genericVariant)) {
                 continue;
             }
-            JsonNode specficVariant = createSpecificVariant(genericVariant, baseItem);
+            JsonNode specficVariant = createSpecificVariant(baseItem, genericVariant);
             if (specficVariant != null) {
                 String newKey = Tools5eIndexType.item.createKey(specficVariant);
                 TtrpgValue.indexInputType.setIn(specficVariant, Tools5eIndexType.item.name());
                 TtrpgValue.indexKey.setIn(specficVariant, newKey);
-                Tools5eSources.constructSources(specficVariant);
-                if (key.contains(" (*)")) {
-                    // specific variant will replace single generic variant (Shield) as a regular item
+                Tools5eSources.constructSources(newKey, specficVariant);
+                if (spawnNewItems) {
                     variants.add(new Tuple(newKey, specficVariant));
                     if (key.replace(" (*)", "").replace("magicvariant", "item").equals(newKey)) {
                         index.addAlias(key, newKey);
@@ -143,22 +164,68 @@ public class MagicVariant implements JsonSource {
                 } else {
                     // add variant to list of variants for this generic variant
                     // magic variant remains in index as a magic variant
-                    ItemFields._variants.ensureArrayIn(genericVariant).add(specficVariant);
+                    ItemField._variants.ensureArrayIn(genericVariant).add(specficVariant);
                     index.addAlias(newKey, gvKey);
                 }
             }
         }
-
         return variants;
     }
 
-    boolean hasRequiredProperty(JsonNode genericVariant, JsonNode baseItem) {
+    // @formatter:off
+    /**
+     * render.js -- _createSpecificVariants_isEditionMatch
+     *
+     * When creating specific variants, the application of "classic" and "one" editions
+     * goes by the following logic:
+     *
+     * |  B. Item | Gen. Var | Apply | Example
+     * |----------|----------|-------|----------------------------------------
+     * |     null |     null |     X | "Fool's Blade|BMT" -> "Pitchfork|ToB3-Lairs"
+     * |  classic |     null |       | "Fool's Blade|BMT" -> "Longsword|PHB"
+     * |      one |     null |     X | "Fool's Blade|BMT" -> "Longsword|XPHB"
+     * |     null |  classic |     X | "+1 Weapon|DMG" -> "Pitchfork|ToB3-Lairs" -- TODO(Future): consider cutting this, with a homebrew tag migration
+     * |  classic |  classic |     X | "+1 Weapon|DMG" -> "Longsword|PHB"
+     * |      one |  classic |       | "+1 Weapon|DMG" -> "Longsword|XPHB"
+     * |     null |      one |     X | "+1 Weapon|XDMG" -> "Pitchfork|ToB3-Lairs"
+     * |  classic |      one |       | "+1 Weapon|XDMG" -> "Longsword|PHB"
+     * |      one |      one |     X | "+1 Weapon|XDMG" -> "Longsword|XPHB"
+     *
+     * This aims to minimize spamming near-duplicates, while preserving as many '14 items as possible.
+     */
+    // @formatter:on
+    boolean editionMatch(JsonNode baseItem, JsonNode genericVariant) {
+        String baseItemEdition = Tools5eFields.edition.getTextOrNull(baseItem);
+        String variantEdition = Tools5eFields.edition.getTextOrNull(genericVariant);
+        if (baseItemEdition == null && variantEdition == null) {
+            return true; // ok: null -> null
+        }
+        if (baseItemEdition != null) { // variantEdition may be null
+            if (baseItemEdition.equalsIgnoreCase(variantEdition)) {
+                return true; // ok: classic -> classic, one -> one
+            }
+            if ("classic".equalsIgnoreCase(baseItemEdition)) {
+                return false; // nope: classic -> one or classic -> null
+            }
+            if ("one".equalsIgnoreCase(baseItemEdition)) {
+                // ok: one -> null; nope: one -> classic
+                return !"classic".equalsIgnoreCase(variantEdition);
+            }
+        }
+        // ok: null -> classic, null -> one
+        return true;
+    }
+
+    /**
+     * render.js -- _createSpecificVariants_hasRequiredProperty
+     */
+    boolean hasRequiredProperty(JsonNode baseItem, JsonNode genericVariant) {
         JsonNode variantRequires = MagicItemField.requires.getFrom(genericVariant);
         if (variantRequires == null) {
             return true; // all is well if there are no required properties defined
         }
         if (!variantRequires.isArray()) {
-            tui().errorf("Incorrectly specified magic variant requirements", genericVariant);
+            tui().errorf("Incorrect magic variant requirements: %s", genericVariant);
             return false;
         }
         // "requires": [
@@ -166,48 +233,61 @@ public class MagicVariant implements JsonSource {
         //   { "type": "S" },
         //   { "net": true }
         // ],
-        // return genericVariant.requires.some(req => Renderer.item._createSpecificVariants_isRequiresExcludesMatch(baseItem, req, "every"));
-        return streamOf(variantRequires).anyMatch((r) -> {
-            return streamOfFieldNames(r).allMatch((name) -> testProperty(baseItem, name, r.get(name)));
+        // return genericVariant.requires.some(req =>
+        //      Renderer.item._createSpecificVariants_isRequiresExcludesMatch(baseItem, req, "every"));
+        return streamOf(variantRequires).anyMatch(req -> {
+            if (req != null && !req.isObject()) {
+                tui().errorf("Incorrectly specified magic variant requirement in %s: %s",
+                        TtrpgValue.indexKey.getFrom(genericVariant), req);
+            }
+            return matchesRequiresExcludes(baseItem, req, true);
         });
     }
 
-    boolean hasExcludedProperty(JsonNode genericVariant, JsonNode baseItem) {
+    boolean hasExcludedProperty(JsonNode baseItem, JsonNode genericVariant) {
         JsonNode excludes = MagicItemField.excludes.getFrom(genericVariant);
-        if (excludes == null) {
-            // no excluded properties
-            return false;
-        }
-        if (!excludes.isObject()) {
-            tui().errorf("Incorrectly specified magic variant requirements", genericVariant);
+        if (excludes != null && !excludes.isObject()) {
+            tui().errorf("Incorrectly specified magic variant excludes in %s: %s",
+                    TtrpgValue.indexKey.getFrom(genericVariant), excludes);
             return true;
         }
         // "excludes": {
         //   "net": true
         // },
-        // bail the first time you find an excluded property
-        return streamOfFieldNames(excludes).anyMatch((name) -> testProperty(baseItem, name, excludes.get(name)));
+        // return Renderer.item._createSpecificVariants_isRequiresExcludesMatch(baseItem, genericVariant.excludes, "some");
+        return matchesRequiresExcludes(baseItem, excludes, false);
     }
 
-    boolean testProperty(JsonNode baseItem, String reqKey, JsonNode reqValue) {
-        JsonNode customProperties = MagicItemField.customProperties.getFrom(baseItem);
-        JsonNode candidate = getProperty(baseItem, customProperties, reqKey);
-        if (candidate == null || candidate.isNull()) {
+    // _createSpecificVariants_isRequiresExcludesMatch
+    private boolean matchesRequiresExcludes(JsonNode candidate, JsonNode reqsOrExcludes, boolean matchAll) {
+        if (candidate == null || reqsOrExcludes == null) {
             return false;
         }
+
+        var entries = reqsOrExcludes.properties().stream();
+
+        return matchAll
+                ? entries.allMatch(e -> testProperty(candidate, e.getKey(), e.getValue(), matchAll))
+                : entries.anyMatch(e -> testProperty(candidate, e.getKey(), e.getValue(), matchAll));
+    }
+
+    private boolean testProperty(JsonNode candidate, String reqKey, JsonNode reqValue, boolean matchAll) {
+        JsonNode candidateValue = candidate.get(reqKey);
+        if (candidateValue == null || candidateValue.isNull()) {
+            return reqValue == null || reqValue.isNull();
+        }
         if (reqValue.isArray()) {
-            return candidate.isArray()
-                    ? streamOf(candidate).anyMatch((x) -> arrayContains(reqValue, x))
-                    : arrayContains(reqValue, candidate);
+            return candidateValue.isArray()
+                    ? streamOf(candidateValue).anyMatch(it -> arrayContains(reqValue, it))
+                    : arrayContains(reqValue, candidateValue);
         }
         if (reqValue.isObject()) {
-            tui().errorf(
-                    "Unsupported comparison for required property \"%s\"; Raise an issue containing this message. We need to look for %s in %s",
-                    reqKey, reqValue, baseItem);
+            // recursion: chase required custom properties (e.g.)
+            return matchesRequiresExcludes(candidate.get(reqKey), reqValue, matchAll);
         }
-        return candidate.isArray()
-                ? arrayContains(candidate, reqValue)
-                : reqValue.equals(candidate);
+        return candidateValue.isArray()
+                ? arrayContains(candidateValue, reqValue)
+                : reqValue.equals(candidateValue);
     }
 
     boolean arrayContains(JsonNode array, JsonNode value) {
@@ -316,37 +396,31 @@ public class MagicVariant implements JsonSource {
         };
     }
 
-    private JsonNode getProperty(JsonNode baseItem, JsonNode customProperties, String fieldName) {
-        JsonNode value = baseItem.get(fieldName);
-        if (value == null || value.isNull()) {
-            if (customProperties != null) {
-                value = customProperties.get(fieldName);
-            }
-        }
-        return value;
-    }
-
-    private JsonNode createSpecificVariant(JsonNode genericVariant, JsonNode baseItem) {
+    private JsonNode createSpecificVariant(JsonNode baseItem, JsonNode genericVariant) {
+        JsonNode inherits = MagicItemField.inherits.getFrom(genericVariant);
         JsonNode specificVariant = copyNode(baseItem);
+
+        // Remove base item flag
         TtrpgValue.indexBaseItem.removeFrom(specificVariant);
 
         // Magic variants apply their own SRD info; page info
-        Tools5eFields.basicRules.removeFrom(specificVariant);
-        Tools5eFields.srd.removeFrom(specificVariant);
+        SourceAttributes.basicRules.removeFrom(specificVariant);
+        SourceAttributes.freeRules2024.removeFrom(specificVariant);
+        SourceAttributes.srd.removeFrom(specificVariant);
+        SourceAttributes.srd52.removeFrom(specificVariant);
         SourceField.page.removeFrom(specificVariant);
 
         // Magic items do not inherit the value of the non-magical item
-        ItemFields.value.removeFrom(specificVariant);
+        ItemField.value.removeFrom(specificVariant);
 
-        // Remove fluff specifiers
-        ItemFields.hasFluff.removeFrom(specificVariant);
-        ItemFields.hasFluffImages.removeFrom(specificVariant);
+        // Reset or remove fluff specifiers based on generic variant
+        resetOrRemove(ItemField.hasFluff, genericVariant, specificVariant);
+        resetOrRemove(ItemField.hasFluffImages, genericVariant, specificVariant);
 
-        JsonNode inherits = MagicItemField.inherits.getFrom(genericVariant);
-        for (Entry<String, JsonNode> property : iterableFields(inherits)) {
+        for (Entry<String, JsonNode> property : inherits.properties()) {
             switch (property.getKey()) {
                 case "barding" -> {
-                    MagicItemField.bardingType.setIn(specificVariant, ItemFields.type.getFrom(baseItem));
+                    MagicItemField.bardingType.setIn(specificVariant, ItemField.type.getFrom(baseItem));
                 }
                 case "entries" -> {
                     JsonNode entries = resolveEntryAttributes(property.getValue(),
@@ -367,11 +441,11 @@ public class MagicVariant implements JsonSource {
                     SourceField.name.setIn(specificVariant, p.matcher(name).replaceAll(""));
                 }
                 case "propertyAdd" -> {
-                    ArrayNode itemProperty = ItemFields.property.ensureArrayIn(specificVariant);
+                    ArrayNode itemProperty = ItemField.property.ensureArrayIn(specificVariant);
                     index().copier.appendIfNotExistsArr(itemProperty, property.getValue());
                 }
                 case "propertyRemove" -> {
-                    ArrayNode itemProperty = ItemFields.property.ensureArrayIn(specificVariant);
+                    ArrayNode itemProperty = ItemField.property.ensureArrayIn(specificVariant);
                     index().copier.removeFromArr(itemProperty, property.getValue());
                 }
                 case "valueExpression", "weightExpression" -> {
@@ -396,10 +470,10 @@ public class MagicVariant implements JsonSource {
                             EvaluationValue result = expression.evaluate();
                             if (property.getKey() == "valueExpression") {
                                 IntNode value = IntNode.valueOf(result.getNumberValue().intValue());
-                                ItemFields.value.setIn(specificVariant, value);
+                                ItemField.value.setIn(specificVariant, value);
                             } else {
                                 DoubleNode value = DoubleNode.valueOf(result.getNumberValue().doubleValue());
-                                ItemFields.weight.setIn(specificVariant, value);
+                                ItemField.weight.setIn(specificVariant, value);
                             }
                         } catch (EvaluationException | ParseException e) {
                             tui().errorf(e, "Unable to parse %s: %s", property.getKey(), property.getValue());
@@ -418,7 +492,19 @@ public class MagicVariant implements JsonSource {
                 }
             }
         }
+        // TODO:
+        // Renderer.item._createSpecificVariants_mergeVulnerableResistImmune({specificVariant, inherits});
+
         return specificVariant;
+    }
+
+    private void resetOrRemove(JsonNodeReader field, JsonNode source, JsonNode target) {
+        JsonNode value = field.getFrom(source);
+        if (value == null || value.isNull()) {
+            field.removeFrom(target);
+        } else {
+            field.setIn(target, value);
+        }
     }
 
     enum MagicItemField implements JsonNodeReader {

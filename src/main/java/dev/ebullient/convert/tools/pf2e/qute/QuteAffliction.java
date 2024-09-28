@@ -16,9 +16,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Affliction attributes (inline/embedded, {@code inline-affliction2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote Pf2eQuteNote}
- * </p>
  */
 @TemplateData
 public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Renderable, QuteAbilityOrAffliction {

@@ -40,56 +40,38 @@
 
    ![A screenshot of a Windows Powershell window opened to the ttrpg-convert-cli directory](docs/screenshots/windows-powershell-open.png)
 
-6. Acquire the JSON data sources following the instructions in [Convert 5eTools JSON data][] or [Convert Pf2eTools JSON data][] by entering commands in this window and pressing **Enter**.
-
-    - For example, for Pf2eTools:
-
-        ```shell
-        git clone --depth 1 https://github.com/Pf2eToolsOrg/Pf2eTools.git
-        ```
-
-    - If you don't have Git, you can instead manually download the latest [Pf2eTools release](https://github.com/Pf2eToolsOrg/Pf2eTools/releases/latest) and extract the zip file to the `bin/` directory, so that it sits alongside the `ttrpg-convert.exe` file.
-
-    - At this point, it should look like this:
-
-    ![A screenshot of a Windows Explorer window with a ttrpg-convert.exe file next to a 5etools-mirror-2.github.io folder, and a Powershell window showing the output of the git command to download the sources](docs/screenshots/windows-explorer-powershell-with-sources.png)
-
-7. Run the tool to check that it works. Enter `./ttrpg-convert --version`  following into the terminal and press Enter
+6. Run the tool to check that it works. Enter `./ttrpg-convert --version`  following into the terminal and press Enter
    to run the command. You should see something like the following:
 
     ```shell
     PS C:\Users\Kelly\Downloads\ttrpg-convert-cli-2.3.14-windows-x86_64\bin> .\ttrpg-convert --version
     ttrpg-convert version 2.3.14
     Git commit: 6ecb310
-    Build time: 2024-05-18T12:36:51Z
     ```
 
    If this works, then you're good to run the command to generate your notes. Otherwise, look below
    for troubleshooting instructions
 
-8. Run the tool to generate your notes. What this looks like depends on what you want the tool to do
+7. Run the tool to generate your notes. What this looks like depends on what you want the tool to do
    and is described more in detail elsewhere in the README. For example, to generate notes from the
    D&D5e SRD into a folder called `dm`, run:
 
     ```shell
-    ./ttrpg-convert --index -o dm 5etools-mirror-2.github.io-master/data 
+    ./ttrpg-convert --index -o dm
     ```
 
     - You should see output like the following, listing out how many notes of each type were generated, and a new `dm` folder should be in that directory.
 
     ![A screenshot of a Windows Explorer window with a ttrpg-convert.exe file next to a 5etools-mirror-2.github.io folder and a dm folder, and a Powershell window showing the output of the ttrpg-convert command](docs/screenshots/windows-explorer-powershell-after-run.png)
 
-9. To use additional sources, templates, or books, or for more configuration options,
+8. To use additional sources, templates, or books, or for more configuration options,
    [create a config file][3] and [see the main README][4].
 
     - For example, assuming you have a custom configuration located in a file called `dm-sources.json`, you can use this command to generate notes using that configuration:
 
     ```shell
-    ./ttrpg-convert --index -o dm -c dm-sources.json 5etools-mirror-2.github.io-master/data 
+    ./ttrpg-convert --index -o dm -c dm-sources.json
     ```
-
-[Convert 5eTools JSON data]: https://github.com/ebullient/ttrpg-convert-cli/tree/main?tab=readme-ov-file#convert-5etools-json-data
-[Convert Pf2eTools JSON data]: https://github.com/ebullient/ttrpg-convert-cli/tree/main?tab=readme-ov-file#convert-pf2etools-json-data
 
 [1]: https://github.com/ebullient/ttrpg-convert-cli/releases/latest
 [3]: docs/configuration.md

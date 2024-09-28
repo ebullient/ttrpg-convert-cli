@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[actionType](#actiontype), [activity](#activity), [aliases](#aliases), [basic](#basic), [cost](#cost), [frequency](#frequency), [hasSections](#hassections), [item](#item), [labeledSource](#labeledsource), [name](#name), [prerequisites](#prerequisites), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[actionType](#actiontype), [activity](#activity), [aliases](#aliases), [basic](#basic), [cost](#cost), [frequency](#frequency), [hasSections](#hassections), [item](#item), [labeledSource](#labeledsource), [name](#name), [prerequisites](#prerequisites), [reprintOf](#reprintof), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### actionType
@@ -31,7 +31,8 @@ The cost of using this action
 
 ### frequency
 
-[QuteDataFrequency](../QuteDataFrequency.md). How often this action can be used/activated. Use directly to get a formatted string.
+[QuteDataFrequency](../QuteDataFrequency.md).
+How often this action can be used/activated. Use directly to get a formatted string.
 
 ### hasSections
 
@@ -52,6 +53,10 @@ Note name
 ### prerequisites
 
 Prerequisite trait or characteristic for performing this action
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 
 ### requirements
 

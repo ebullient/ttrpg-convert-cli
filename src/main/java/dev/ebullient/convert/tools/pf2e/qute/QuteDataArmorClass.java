@@ -11,10 +11,13 @@ import java.util.Map;
 import io.quarkus.qute.TemplateData;
 
 /**
- * Pf2eTools armor class attributes. Default representation example:
- * <p>
- * <b>AC</b> 15 (10 with mage armor) note ability
- * </p>
+ * Pf2eTools armor class attributes.
+ *
+ * Default representation example:
+ *
+ * ```md
+ * **AC** 15 (10 with mage armor) note ability
+ * ```
  *
  * @param value The AC value
  * @param alternateValues Alternate AC values as a map of (condition, AC value)

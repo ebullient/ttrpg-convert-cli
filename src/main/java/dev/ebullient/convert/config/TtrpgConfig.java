@@ -18,7 +18,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
-import dev.ebullient.convert.config.CompendiumConfig.ImageOptions;
+import dev.ebullient.convert.config.UserConfig.ImageOptions;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -27,30 +28,35 @@ public class TtrpgConfig {
 
     public static final String DEFAULT_IMG_ROOT = "imgRoot";
 
-    static final Map<Datasource, DatasourceConfig> globalConfig = new HashMap<>();
-    static final Map<Datasource, CompendiumConfig> userConfig = new HashMap<>();
     static final Set<String> missingSourceName = new HashSet<>();
 
-    private static Datasource datasource = Datasource.tools5e;
+    private static Datasource datasource;
+    private static CompendiumConfig activeConfig = null;
+    private static DatasourceConfig datasourceConfig = null;
     private static Tui tui;
     private static ImageRoot internalImageRoot;
     private static Path toolsPath;
 
+    public static void init(Tui tui) {
+        init(tui, null);
+    }
+
     public static void init(Tui tui, Datasource datasource) {
-        userConfig.clear();
         TtrpgConfig.tui = tui;
-        TtrpgConfig.datasource = datasource;
         TtrpgConfig.internalImageRoot = null;
         TtrpgConfig.toolsPath = null;
+        TtrpgConfig.activeConfig = null;
+        TtrpgConfig.datasource = datasource == null ? Datasource.tools5e : datasource;
+        TtrpgConfig.datasourceConfig = new DatasourceConfig();
+        TtrpgConfig.missingSourceName.clear();
         readSystemConfig();
     }
 
     public static CompendiumConfig getConfig() {
-        return getConfig(datasource == null ? Datasource.tools5e : datasource);
-    }
-
-    public static CompendiumConfig getConfig(Datasource datasource) {
-        return userConfig.computeIfAbsent(datasource, (k) -> new CompendiumConfig(datasource, tui));
+        if (activeConfig == null) {
+            activeConfig = new CompendiumConfig(TtrpgConfig.datasource, tui);
+        }
+        return activeConfig;
     }
 
     public static String getConstant(String key) {
@@ -62,7 +68,7 @@ public class TtrpgConfig {
     }
 
     private static DatasourceConfig activeDSConfig() {
-        return globalConfig.computeIfAbsent(datasource, (k) -> new DatasourceConfig());
+        return datasourceConfig;
     }
 
     public static List<Fix> getFixes(String filepath) {
@@ -70,11 +76,19 @@ public class TtrpgConfig {
     }
 
     public static String sourceToLongName(String src) {
-        return activeDSConfig().abvToName.getOrDefault(sourceToAbbreviation(src).toLowerCase(), src);
+        String abbreviation = sourceToAbbreviation(src).toLowerCase();
+        SourceReference ref = activeDSConfig().reference.get(abbreviation);
+        return ref == null ? src : ref.name;
     }
 
     public static String sourceToAbbreviation(String src) {
         return activeDSConfig().longToAbv.getOrDefault(src.toLowerCase(), src);
+    }
+
+    public static String sourcePublicationDate(String src) {
+        String abbreviation = sourceToAbbreviation(src).toLowerCase();
+        SourceReference ref = activeDSConfig().reference.get(abbreviation);
+        return ref == null || ref.date == null ? "1970-01-01" : ref.date; // utils.json: ascSortDateString
     }
 
     public static Collection<String> getTemplateKeys() {
@@ -131,7 +145,7 @@ public class TtrpgConfig {
                     this.internalImageRoot = endWithSlash(imgPath.toString());
                     this.copyInternal = true;
                 }
-                Tui.instance().printlnf("[ 🖼️  OK] Using %s as the source for remote images (copyInternal=%s)",
+                Tui.instance().infof("Using %s as the source for remote images (copyInternal=%s)",
                         this.internalImageRoot, this.copyInternal);
             }
         }
@@ -203,7 +217,7 @@ public class TtrpgConfig {
         DatasourceConfig activeConfig = activeDSConfig();
         bookSources.forEach(s -> {
             String check = s.toLowerCase();
-            if (activeConfig.abvToName.containsKey(check)) {
+            if (activeConfig.reference.containsKey(check)) {
                 return;
             }
             String alternate = activeConfig.longToAbv.get(check);
@@ -211,7 +225,7 @@ public class TtrpgConfig {
                 return;
             }
             if (missingSourceName.add(check)) {
-                tui.warnf("Source %s is unknown", s);
+                tui.warnf(Msg.SOURCE, "Source %s is unknown", s);
             }
         });
     }
@@ -235,53 +249,52 @@ public class TtrpgConfig {
         JsonNode node = Tui.readTreeFromResource("/convertData.json");
         readSystemConfig(node);
 
-        node = Tui.readTreeFromResource("/sourceMap.json");
+        node = Tui.readTreeFromResource("/sourceMap.yaml");
         readSystemConfig(node);
     }
 
     // Global config: path mapping for missing images
     protected static void readSystemConfig(JsonNode node) {
-        DatasourceConfig config = globalConfig.computeIfAbsent(datasource, k -> new DatasourceConfig());
-
         if (datasource == Datasource.tools5e) {
-            JsonNode config5e = ConfigKeys.config5e.get(node);
+            JsonNode config5e = ConfigKeys.config5e.getFrom(node);
             if (config5e != null) {
-                JsonNode srdEntries = ConfigKeys.srdEntries.get(config5e);
+                JsonNode srdEntries = ConfigKeys.srdEntries.getFrom(config5e);
                 if (srdEntries != null) {
-                    config.data.put(ConfigKeys.srdEntries.name(), srdEntries);
+                    datasourceConfig.data.put(ConfigKeys.srdEntries.name(), srdEntries);
                 }
-                config.constants.putAll(ConfigKeys.constants.getAsMap(config5e));
-                config.aliases.putAll(ConfigKeys.aliases.getAsMap(config5e));
-                config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(config5e));
-                config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(config5e));
-                config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(config5e));
-                config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(config5e));
-                config.sources.addAll(ConfigKeys.sources.getAsList(config5e));
-                config.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(config5e));
-                config.templateKeys.addAll(ConfigKeys.templateKeys.getAsList(config5e));
-
-                Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(config5e, FIXES);
-                if (fixes != null) {
-                    config.fixes.putAll(fixes);
+                JsonNode basicRules = ConfigKeys.basicRules.getFrom(config5e);
+                if (basicRules != null) {
+                    datasourceConfig.data.put(ConfigKeys.basicRules.name(), basicRules);
                 }
+                JsonNode freeRules2024 = ConfigKeys.freeRules2024.getFrom(config5e);
+                if (freeRules2024 != null) {
+                    datasourceConfig.data.put(ConfigKeys.freeRules2024.name(), freeRules2024);
+                }
+                readCommonSystemConfig(config5e);
             }
         }
         if (datasource == Datasource.toolsPf2e) {
-            JsonNode configPf2e = ConfigKeys.configPf2e.get(node);
+            JsonNode configPf2e = ConfigKeys.configPf2e.getFrom(node);
             if (configPf2e != null) {
-                config.abvToName.putAll(ConfigKeys.abvToName.getAsKeyLowerMap(configPf2e));
-                config.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(configPf2e));
-                config.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(configPf2e));
-                config.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(configPf2e));
-                config.sources.addAll(ConfigKeys.sources.getAsList(configPf2e));
-                config.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(configPf2e));
-                config.templateKeys.addAll(ConfigKeys.templateKeys.getAsList(configPf2e));
-
-                Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(configPf2e, FIXES);
-                if (fixes != null) {
-                    config.fixes.putAll(fixes);
-                }
+                readCommonSystemConfig(configPf2e);
             }
+        }
+    }
+
+    protected static void readCommonSystemConfig(JsonNode source) {
+        datasourceConfig.constants.putAll(ConfigKeys.constants.getAsMap(source));
+        datasourceConfig.aliases.putAll(ConfigKeys.aliases.getAsMap(source));
+        datasourceConfig.reference.putAll(ConfigKeys.reference.getAsKeyLowerRefMap(source));
+        datasourceConfig.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(source));
+        datasourceConfig.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(source));
+        datasourceConfig.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(source));
+        datasourceConfig.sources.addAll(ConfigKeys.sources.getAsList(source));
+        datasourceConfig.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(source));
+        datasourceConfig.templateKeys.addAll(ConfigKeys.templateKeys.getAsList(source));
+
+        Map<String, List<Fix>> fixes = ConfigKeys.fixes.getAs(source, FIXES);
+        if (fixes != null) {
+            datasourceConfig.fixes.putAll(fixes);
         }
     }
 
@@ -289,7 +302,7 @@ public class TtrpgConfig {
         final Map<String, JsonNode> data = new HashMap<>();
         final Map<String, String> constants = new HashMap<>();
         final Map<String, String> aliases = new HashMap<>();
-        final Map<String, String> abvToName = new HashMap<>();
+        final Map<String, SourceReference> reference = new HashMap<>();
         final Map<String, String> longToAbv = new HashMap<>();
         final Map<String, String> fallbackImagePaths = new HashMap<>();
         final Map<String, List<Fix>> fixes = new HashMap<>();
@@ -309,11 +322,11 @@ public class TtrpgConfig {
 
         public boolean addSource(String name, String abv, String longAbv) {
             String key = abv.toLowerCase();
-            if (abvToName.containsKey(key)) {
+            if (reference.containsKey(key)) {
                 tui.errorf("Duplicate source abbreviation %s for %s", abv, name);
                 return false;
             }
-            abvToName.put(key, name);
+            reference.put(key, new SourceReference(name));
 
             if (longAbv != null) {
                 String longKey = longAbv.toLowerCase();
@@ -329,8 +342,25 @@ public class TtrpgConfig {
         }
     }
 
+    public final static TypeReference<Map<String, SourceReference>> MAP_REFERENCE = new TypeReference<>() {
+    };
+
     public final static TypeReference<Map<String, List<Fix>>> FIXES = new TypeReference<>() {
     };
+
+    @RegisterForReflection
+    static class SourceReference {
+        String name;
+        String type;
+        String date;
+
+        SourceReference() {
+        }
+
+        SourceReference(String name) {
+            this.name = name;
+        }
+    }
 
     @RegisterForReflection
     public static class Fix {
@@ -342,6 +372,8 @@ public class TtrpgConfig {
     enum ConfigKeys implements JsonNodeReader {
         aliases,
         abvToName,
+        basicRules, // 5e
+        freeRules2024, // 5e
         config5e,
         configPf2e,
         constants,
@@ -352,13 +384,11 @@ public class TtrpgConfig {
         longToAbv,
         markerFiles,
         properties,
+        reference,
         sources,
         srdEntries,
-        templateKeys;
-
-        JsonNode get(JsonNode node) {
-            return node.get(this.name());
-        }
+        templateKeys,
+        ;
 
         public <T> T getAs(JsonNode node, TypeReference<T> ref) {
             JsonNode obj = node.get(this.name());
@@ -381,6 +411,20 @@ public class TtrpgConfig {
             }
             Map<String, String> result = new HashMap<>();
             map.fields().forEachRemaining(e -> result.put(e.getKey().toLowerCase(), e.getValue().asText()));
+            return result;
+        }
+
+        Map<String, SourceReference> getAsKeyLowerRefMap(JsonNode node) {
+            JsonNode map = node.get(this.name());
+            if (map == null) {
+                return Map.of();
+            }
+            Map<String, SourceReference> result = new HashMap<>();
+            map.fields().forEachRemaining(e -> {
+                String key = e.getKey().toLowerCase();
+                SourceReference ref = Tui.MAPPER.convertValue(e.getValue(), SourceReference.class);
+                result.put(key, ref);
+            });
             return result;
         }
 

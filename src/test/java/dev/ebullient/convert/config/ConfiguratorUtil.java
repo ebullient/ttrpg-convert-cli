@@ -15,13 +15,12 @@ public class ConfiguratorUtil {
     }
 
     public static CompendiumConfig createNewConfig(Tui tui) {
-        TtrpgConfig.init(tui, Datasource.tools5e);
-        return TtrpgConfig.getConfig(Datasource.tools5e);
+        return createNewConfig(tui, Datasource.tools5e);
     }
 
     public static CompendiumConfig createNewConfig(Tui tui, Datasource datasource) {
         TtrpgConfig.init(tui, datasource);
-        return TtrpgConfig.getConfig(datasource);
+        return TtrpgConfig.getConfig();
     }
 
     public static CompendiumConfig copy(CompendiumConfig base, TemplatePaths newTemplates) {

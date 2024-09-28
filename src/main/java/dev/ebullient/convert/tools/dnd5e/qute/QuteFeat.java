@@ -6,9 +6,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools feat and optional feat attributes ({@code feat2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QuteFeat extends Tools5eQuteBase {

@@ -7,7 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
+import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
@@ -28,25 +28,24 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
 
     @Override
     protected Tools5eQuteNote buildQuteNote() {
-        List<JsonNode> nodes = optionalFeatures.nodes;
+        List<String> featureKeys = optionalFeatures.features;
+        List<JsonNode> nodes = featureKeys.stream()
+                .map(index::getAliasOrDefault)
+                .map(index::getNode)
+                .filter(x -> x != null)
+                .sorted(Comparator.comparing(SourceField.name::getTextOrEmpty))
+                .toList();
+
         String key = super.sources.getKey();
         if (nodes.isEmpty() || index().isExcluded(key)) {
             return null;
         }
-        nodes.sort(Comparator.comparing(SourceField.name::getTextOrEmpty));
 
         Tags tags = new Tags(getSources());
         List<String> text = new ArrayList<>();
 
         for (JsonNode entry : nodes) {
-            Tools5eSources featureSource = Tools5eSources.findSources(entry);
-            if (index().isExcluded(featureSource.getKey())) {
-                continue;
-            }
-            text.add("- " + linkify(Tools5eIndexType.optionalfeature,
-                    featureSource.getName()
-                            + "|" + featureSource.primarySource()
-                            + "|" + decoratedUaName(featureSource.getName(), featureSource)));
+            text.add("- " + linkify(Tools5eIndexType.optfeature, Tools5eIndexType.optfeature.toTagReference(entry)));
         }
         if (text.isEmpty()) {
             return null;

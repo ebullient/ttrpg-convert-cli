@@ -10,10 +10,9 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Defines attributes inherited by other Qute templates.
- * <p>
+ *
  * Notes created from {@code QuteBase} (or a derivative) will use a specific template
  * for the type. For example, {@code QuteBackground} will use {@code background2md.txt}.
- * </p>
  */
 @TemplateData
 public class QuteBase implements QuteUtil {
@@ -52,12 +51,20 @@ public class QuteBase implements QuteUtil {
         return "_Source: " + sourceText + "_";
     }
 
-    /** Book sources as list of {@link dev.ebullient.convert.qute.SourceAndPage SourceAndPage} */
+    /** Book sources as list of {@link dev.ebullient.convert.qute.SourceAndPage} */
     public Collection<SourceAndPage> getSourceAndPage() {
         if (sources == null) {
             return List.of();
         }
         return sources.getSourceAndPage();
+    }
+
+    /** List of content superceded by this note (as {@link dev.ebullient.convert.qute.Reprinted}) */
+    public Collection<Reprinted> getReprintOf() {
+        if (sources == null) {
+            return List.of();
+        }
+        return sources.getReprints();
     }
 
     /** True if the content (text) contains sections */

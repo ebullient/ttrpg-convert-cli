@@ -1,0 +1,43 @@
+---
+sources:
+  reference:
+  - ALL
+include:
+  - classtype|artificer|tce
+  - classtype|barbarian|phb
+  - classtype|barbarian|xphb
+  - classtype|bard|phb
+  - classtype|bard|xphb
+  - classtype|cleric|phb
+  - classtype|cleric|xphb
+  - classtype|druid|phb
+  - classtype|druid|xphb
+  - classtype|expert sidekick|tce
+  - classtype|fighter|phb
+  - classtype|fighter|xphb
+  - classtype|monk|phb
+  - classtype|monk|xphb
+  - classtype|mystic|uathemysticclass
+  - classtype|paladin|phb
+  - classtype|paladin|xphb
+  - classtype|ranger|phb
+  - classtype|ranger|xphb
+  - classtype|rogue|phb
+  - classtype|rogue|xphb
+  - classtype|sorcerer|phb
+  - classtype|sorcerer|xphb
+  - classtype|spellcaster sidekick|tce
+  - classtype|warlock|phb
+  - classtype|warlock|xphb
+  - classtype|warrior sidekick|tce
+  - classtype|wizard|phb
+  - classtype|wizard|xphb
+template:
+  background: "examples/templates/tools5e/images-background2md.txt"
+  item: "examples/templates/tools5e/images-item2md.txt"
+  monster: "examples/templates/tools5e/images-monster2md.txt"
+  object: "examples/templates/tools5e/images-object2md.txt"
+  race: "examples/templates/tools5e/images-race2md.txt"
+  spell: "examples/templates/tools5e/images-spell2md.txt"
+  vehicle: "examples/templates/tools5e/images-vehicle2md.txt"
+useDiceRoller: true

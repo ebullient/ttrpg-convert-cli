@@ -1,8 +1,10 @@
 package dev.ebullient.convert.tools.pf2e;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,8 +23,13 @@ public class Pf2eJsonDataSubsetTest {
     }
 
     @AfterAll
-    public static void done() {
-        System.out.println("Done.");
+    public static void done() throws IOException {
+        commonTests.done();
+    }
+
+    @AfterEach
+    public void cleanup() throws Exception {
+        commonTests.cleanup();
     }
 
     @Test

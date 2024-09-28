@@ -10,7 +10,7 @@ import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.PsionicType.PsionicTypeEnum;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.HomebrewMetaTypes;
+import dev.ebullient.convert.tools.dnd5e.Tools5eHomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.qute.QutePsionic;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -82,8 +82,8 @@ public class Json2QutePsionicTalent extends Json2QuteCommon {
         List<String> amendWith = new ArrayList<>();
         if (PsionicFields.cost.existsIn(mode)) {
             JsonNode cost = PsionicFields.cost.getFrom(mode);
-            int max = PsionicFields.max.getIntOrThrow(cost);
-            int min = PsionicFields.min.getIntOrThrow(cost);
+            int max = PsionicFields.max.intOrThrow(cost);
+            int min = PsionicFields.min.intOrThrow(cost);
             if (max == min) {
                 amendWith.add(max + " psi");
             } else {
@@ -93,7 +93,7 @@ public class Json2QutePsionicTalent extends Json2QuteCommon {
         if (PsionicFields.concentration.existsIn(mode)) {
             JsonNode concentration = PsionicFields.concentration.getFrom(mode);
             amendWith.add(String.format("conc., %s %s",
-                    PsionicFields.duration.getIntOrThrow(concentration),
+                    PsionicFields.duration.intOrThrow(concentration),
                     PsionicFields.unit.getTextOrThrow(concentration)));
         }
 

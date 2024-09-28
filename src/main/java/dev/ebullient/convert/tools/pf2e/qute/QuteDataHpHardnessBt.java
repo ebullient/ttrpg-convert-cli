@@ -14,20 +14,23 @@ import io.quarkus.qute.TemplateData;
 /**
  * Hit Points, Hardness, and a broken threshold for hazards and shields. Used for creatures, hazards, and shields.
  *
- * <p>
  * Hazard example with a broken threshold and note:
- * </p>
- * <blockquote><b>Hardness</b> 10, <b>HP (BT)</b> 30 (15) to destroy a channel gate</blockquote>
  *
- * <p>
+ * ```md
+ * **Hardness** 10, **HP (BT)** 30 (15) to destroy a channel gate
+ * ```
+ *
  * Hazard example with a name, broken threshold, and note:
- * </p>
- * <blockquote><b>Floor Hardness</b> 10, <b>Floor HP</b> 30 (BT 15) to destroy a channel gate</blockquote>
  *
- * <p>
+ * ```md
+ * **Floor Hardness** 10, **Floor HP** 30 (BT 15) to destroy a channel gate
+ * ```
+ *
  * Creature example with a name and ability:
- * </p>
- * <blockquote><b>Head Hardness</b> 10, <b>Head HP</b> 30 (hydra regeneration)</blockquote>
+ *
+ * ```md
+ * **Head Hardness** 10, **Head HP** 30 (hydra regeneration)
+ * ```
  *
  * @param hp The HP as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt.HpStat HpStat} (optional)
  * @param hardness Hardness as a {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.SimpleStat SimpleStat}
@@ -64,9 +67,7 @@ public record QuteDataHpHardnessBt(HpStat hp, SimpleStat hardness, Integer broke
 
     /**
      * HP value and associated notes. Referencing this directly provides a default representation, e.g.
-     * <blockquote>
-     * 15 to destroy a head (head regrowth)
-     * </blockquote>
+     * `15 to destroy a head (head regrowth)`
      *
      * @param value The HP value itself
      * @param abilities Any abilities associated with the HP

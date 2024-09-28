@@ -2,13 +2,15 @@
 
 5eTools vehicle attributes (`vehicle2md.txt`)
 
-Several different types of vehicle use this template, including: Ship, spelljammer, infernal war manchie, objects and creatures. They can have very different properties. Treat most as optional.
+Several different types of vehicle use this template, including:
+Ship, spelljammer, infernal war manchie, objects and creatures.
+They can have very different properties. Treat most as optional.
 
 Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[action](#action), [fluffImages](#fluffimages), [hasSections](#hassections), [immuneResist](#immuneresist), [isCreature](#iscreature), [isObject](#isobject), [isShip](#isship), [isSpelljammer](#isspelljammer), [isWarMachine](#iswarmachine), [labeledSource](#labeledsource), [name](#name), [scores](#scores), [shipCrewCargoPace](#shipcrewcargopace), [shipSections](#shipsections), [sizeDimension](#sizedimension), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [terrain](#terrain), [text](#text), [token](#token), [vaultPath](#vaultpath), [vehicleType](#vehicletype)
+[action](#action), [fluffImages](#fluffimages), [hasSections](#hassections), [immuneResist](#immuneresist), [isCreature](#iscreature), [isObject](#isobject), [isShip](#isship), [isSpelljammer](#isspelljammer), [isWarMachine](#iswarmachine), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [scores](#scores), [shipCrewCargoPace](#shipcrewcargopace), [shipSections](#shipsections), [sizeDimension](#sizedimension), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [terrain](#terrain), [text](#text), [token](#token), [vaultPath](#vaultpath), [vehicleType](#vehicletype)
 
 
 ### action
@@ -55,9 +57,14 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 
 Note name
 
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../../Reprinted.md))
+
 ### scores
 
-Object ability scores as [AbilityScores](../AbilityScores.md) Used by Ship, Infernal War Machine, Creature, Object
+Object ability scores as [AbilityScores](../AbilityScores.md)
+Used by Ship, Infernal War Machine, Creature, Object
 
 ### shipCrewCargoPace
 
@@ -65,7 +72,8 @@ Ship capacity and pace attributes as [ShipCrewCargoPace](ShipCrewCargoPace.md).
 
 ### shipSections
 
-Ship sections and traits as [ShipAcHp](ShipAcHp.md) (hull, sails, oars, .. )
+Ship sections and traits as [ShipAcHp](ShipAcHp.md) (hull, sails,
+oars, .. )
 
 ### sizeDimension
 

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.SourceAndPage;
@@ -380,5 +381,32 @@ public class ParseState {
                     k, v));
         });
         citations.clear();
+    }
+
+    public DiceFormulaState diceFormulaState() {
+        return new DiceFormulaState(this);
+    }
+
+    public static class DiceFormulaState {
+        public final DiceRoller roller;
+        public final boolean suppressInYaml;
+
+        public DiceFormulaState(ParseState parseState) {
+            this.roller = TtrpgConfig.getConfig().useDiceRoller();
+            this.suppressInYaml = parseState.inTrait() && roller.useFantasyStatblocks();
+        }
+
+        /**
+         * We can't use dice roller fomulas if the roller is disabled, or if we're
+         * in a YAML trait block.
+         */
+        public boolean noRoller() {
+            return !roller.enabled() || suppressInYaml;
+        }
+
+        /** In YAML blocks (traits), we avoid all formatting in dice formulas */
+        public boolean plainText() {
+            return suppressInYaml;
+        }
     }
 }

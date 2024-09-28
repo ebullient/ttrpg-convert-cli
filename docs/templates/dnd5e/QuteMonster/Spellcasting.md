@@ -2,18 +2,24 @@
 
 5eTools creature spellcasting attributes.
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly:  
- ```  
- {#for spellcasting in resource.spellcasting}  
- {spellcasting}  
- {/for}  
- ```  
- or, using `{#each}` instead:  
- ```  
- {#each resource.spellcasting}  
- {it}  
- {/each}  
- ```
+This data object provides a default mechanism for creating
+a marked up string based on the attributes that are present.
+
+To use it, reference it directly:
+
+```md
+{#for spellcasting in resource.spellcasting}
+{spellcasting}
+{/for}
+```
+
+or, using `{#each}` instead:
+
+```md
+{#each resource.spellcasting}
+{it}
+{/each}
+```
 
 ## Attributes
 
@@ -45,7 +51,8 @@ Name: "Spellcasting" or "Innate Spellcasting"
 
 ### spells
 
-Map: key = spell level, value: spell level information as [Spells](Spells.md)
+Map: key = spell level, value: spell level information as
+[Spells](Spells.md)
 
 ### will
 

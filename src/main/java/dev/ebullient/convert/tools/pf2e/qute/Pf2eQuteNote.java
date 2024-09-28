@@ -11,10 +11,9 @@ import io.quarkus.qute.TemplateData;
 /**
  * Attributes for notes that are generated from the Pf2eTools data.
  * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteNote QuteNote}.
- * <p>
+ *
  * Notes created from {@code Pf2eQuteNote} will use the {@code note2md.txt} template
  * unless otherwise noted. Folder index notes use {@code index2md.txt}.
- * </p>
  */
 @TemplateData
 public class Pf2eQuteNote extends QuteNote {

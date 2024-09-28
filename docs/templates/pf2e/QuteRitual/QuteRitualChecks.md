@@ -2,7 +2,9 @@
 
 Pf2eTools ritual check attributes
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly: `{resource.checks}`.
+This data object provides a default mechanism for creating
+a marked up string based on the attributes that are present.
+To use it, reference it directly: `{resource.checks}`.
 
 ## Attributes
 

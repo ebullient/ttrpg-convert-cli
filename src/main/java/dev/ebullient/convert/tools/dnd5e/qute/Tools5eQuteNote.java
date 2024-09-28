@@ -13,9 +13,8 @@ import io.quarkus.qute.TemplateData;
 /**
  * Attributes for notes that are generated from the 5eTools data.
  * This is a trivial extension of {@link dev.ebullient.convert.qute.QuteNote}.
- * <p>
+ *
  * Notes created from {@code Tools5eQuteNote} will use the {@code note2md.txt} template.
- * </p>
  */
 @TemplateData
 public class Tools5eQuteNote extends QuteNote {

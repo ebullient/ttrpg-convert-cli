@@ -9,9 +9,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * 5eTools psionic talent attributes ({@code psionic2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
- * </p>
  */
 @TemplateData
 public class QutePsionic extends Tools5eQuteBase {

@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [prerequisite](#prerequisite), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [prerequisite](#prerequisite), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### fluffImages
@@ -28,6 +28,10 @@ Note name
 ### prerequisite
 
 Formatted text listing other prerequisite conditions (optional)
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### source
 

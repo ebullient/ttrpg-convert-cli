@@ -2,7 +2,9 @@
 
 Pf2eTools ritual casting attributes
 
-This data object provides a default mechanism for creating a marked up string based on the attributes that are present. To use it, reference it directly: `{resource.casting}`.
+This data object provides a default mechanism for creating
+a marked up string based on the attributes that are present.
+To use it, reference it directly: `{resource.casting}`.
 
 ## Attributes
 
@@ -15,7 +17,8 @@ Formatted string. Material cost of the spell
 
 ### duration
 
-Duration to cast, as a [QuteDataDuration](../QuteDataDuration.md) which is either a [QuteDataActivity](../QuteDataActivity.md), or a [QuteDataTimedDuration](../QuteDataTimedDuration.md).
+Duration to cast, as a [QuteDataDuration](../QuteDataDuration.md) which is either a [QuteDataActivity](../QuteDataActivity.md), or a
+[QuteDataTimedDuration](../QuteDataTimedDuration/README.md).
 
 ### secondaryCasters
 

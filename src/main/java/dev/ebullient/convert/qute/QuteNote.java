@@ -9,10 +9,9 @@ import io.quarkus.qute.TemplateData;
 /**
  * Common attributes for simple notes. THese attributes are more
  * often used by books, adventures, rules, etc.
- * <p>
+ *
  * Notes created from {@code QuteNote} (or a derivative) will look for a template
  * named {@code note2md.txt} by default.
- * </p>
  */
 @TemplateData
 public class QuteNote extends QuteBase {

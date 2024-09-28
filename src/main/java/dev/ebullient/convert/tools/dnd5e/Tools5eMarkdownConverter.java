@@ -5,17 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.MarkdownWriter;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.OptionalFeatureType;
+import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Tools5eMarkdownConverter implements MarkdownConverter {
@@ -28,19 +27,11 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
     }
 
     public Tools5eMarkdownConverter writeAll() {
-        return writeFiles(Stream.of(Tools5eIndexType.values())
-                .filter(Tools5eIndexType::writeFile)
-                .collect(Collectors.toList()));
-    }
-
-    public Tools5eMarkdownConverter writeNotesAndTables() {
-        return writeFiles(Stream.of(Tools5eIndexType.values())
-                .filter(x -> !x.writeFile())
-                .filter(Tools5eIndexType::useQuteNote)
-                .collect(Collectors.toList()));
+        return writeFiles(List.of(Tools5eIndexType.values()));
     }
 
     public Tools5eMarkdownConverter writeImages() {
+        index.tui().progressf("Writing images and fonts");
         index.tui().copyImages(Tools5eSources.getImages());
         index.tui().copyFonts(Tools5eSources.getFonts());
         return this;
@@ -56,10 +47,12 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
         }
         if (types != null) {
             writeQuteBaseFiles(types.stream()
-                    .filter(x -> !((Tools5eIndexType) x).useQuteNote())
+                    .map(x -> (Tools5eIndexType) x)
+                    .filter(x -> x.writeFile())
                     .toList());
             writeQuteNoteFiles(types.stream()
-                    .filter(x -> ((Tools5eIndexType) x).useQuteNote())
+                    .map(x -> (Tools5eIndexType) x)
+                    .filter(x -> x.isOutputType() && x.useQuteNote())
                     .toList());
         }
         return this;
@@ -69,6 +62,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
         if (types.isEmpty()) {
             return;
         }
+        index.tui().progressf("Converting data: %s", types);
 
         List<QuteBase> compendium = new ArrayList<>();
         List<QuteBase> rules = new ArrayList<>();
@@ -108,12 +102,13 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             case background -> new Json2QuteBackground(index, type, jsonSource).build();
             case deck -> new Json2QuteDeck(index, type, jsonSource).build();
             case deity -> new Json2QuteDeity(index, type, jsonSource).build();
+            case facility -> new Json2QuteBastion(index, type, jsonSource).build();
             case feat -> new Json2QuteFeat(index, type, jsonSource).build();
             case hazard, trap -> new Json2QuteHazard(index, type, jsonSource).build();
-            case item -> new Json2QuteItem(index, type, jsonSource).build();
+            case item, itemGroup -> new Json2QuteItem(index, type, jsonSource).build();
             case monster -> new Json2QuteMonster(index, type, jsonSource).build();
             case object -> new Json2QuteObject(index, type, jsonSource).build();
-            case optionalfeature -> new Json2QuteOptionalFeature(index, type, jsonSource).build();
+            case optfeature -> new Json2QuteOptionalFeature(index, type, jsonSource).build();
             case psionic -> new Json2QutePsionicTalent(index, type, jsonSource).build();
             case race, subrace -> new Json2QuteRace(index, type, jsonSource).build();
             case reward -> new Json2QuteReward(index, type, jsonSource).build();
@@ -124,6 +119,11 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
     }
 
     private void writeQuteNoteFiles(List<? extends IndexType> types) {
+        if (types.isEmpty()) {
+            return;
+        }
+        index.tui().progressf("Converting data: %s", types);
+
         final String vrDir = Tools5eIndexType.variantrule.getRelativePath();
 
         List<QuteNote> compendium = new ArrayList<>();
@@ -156,7 +156,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                     } else if (index.isIncluded(metadataKey)) {
                         compendium.addAll(new Json2QuteBook(index, nodeType, metadata, node).buildBook());
                     } else {
-                        index.tui().debugf("%s is excluded", metadataKey);
+                        index.tui().debugf(Msg.FILTER, "%s is excluded", metadataKey);
                     }
                 }
                 case status, condition -> {

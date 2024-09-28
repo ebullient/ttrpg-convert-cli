@@ -1,8 +1,10 @@
 # Qute Template Reference
 
-The following pages describe attributes that you can use to customize generated output in Qute templates.
+The following pages describe attributes that you can use to customize
+generated output in Qute templates.
 
-Use a `resource.` prefix to access these attributes unless otherwise noted. For example, `resource.title`.
+Use a `resource.` prefix to access these attributes unless otherwise noted.
+For example, `resource.title`.
 
 For more information about Qute, see the [Qute guide](https://quarkus.io/guides/qute).
 
@@ -17,5 +19,6 @@ For more information about Qute, see the [Qute guide](https://quarkus.io/guides/
 - [NamedText](NamedText.md): Holder of a name or category and associated descriptive text.
 - [QuteBase](QuteBase.md): Defines attributes inherited by other Qute templates.
 - [QuteNote](QuteNote.md): Common attributes for simple notes.
+- [Reprinted](Reprinted.md): A simple record to hold the name and source of a reprinted item.
 - [SourceAndPage](SourceAndPage.md): A representation of a source and page number.
-- [TtrpgTemplateExtension](TtrpgTemplateExtension.md)
+- [TtrpgTemplateExtension](TtrpgTemplateExtension.md): Qute template extensions for TTRPG data.

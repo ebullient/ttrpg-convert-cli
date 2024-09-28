@@ -1,10 +1,10 @@
 /*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-compendium.scss */
-@use 'dnd5e/admonitions';
-@use 'dnd5e/statblock';
-@use 'dnd5e/float-images';
-@use 'dnd5e/no-inline-title';
+@use 'dnd5e/admonitions' as *;
+@use 'dnd5e/statblock' as *;
+@use 'dnd5e/float-images' as *;
+@use 'dnd5e/no-inline-title' as *;
 
-// Change background in Initiative Tracker creature view 
+// Change background in Initiative Tracker creature view
 // trim margin on included statblock admonitions
 .creature-view-container.workspace-leaf-content {
   background-color: var(--background-primary-alt);

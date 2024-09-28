@@ -13,9 +13,8 @@ import io.quarkus.qute.TemplateData;
 
 /**
  * Pf2eTools Ritual attributes ({@code ritual2md.txt})
- * <p>
+ *
  * Extension of {@link dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase Pf2eQuteBase}
- * </p>
  */
 @TemplateData
 public class QuteRitual extends Pf2eQuteBase {
@@ -65,11 +64,9 @@ public class QuteRitual extends Pf2eQuteBase {
     /**
      * Pf2eTools ritual casting attributes
      *
-     * <p>
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.casting}`.
-     * </p>
      */
     @TemplateData
     public static class QuteRitualCasting implements QuteUtil {
@@ -103,11 +100,9 @@ public class QuteRitual extends Pf2eQuteBase {
     /**
      * Pf2eTools ritual check attributes
      *
-     * <p>
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.checks}`.
-     * </p>
      */
     @TemplateData
     public static class QuteRitualChecks implements QuteUtil {

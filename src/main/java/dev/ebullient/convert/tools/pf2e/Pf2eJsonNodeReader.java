@@ -164,7 +164,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         /** Read a {@link QuteDataSpeed} from the {@code source} node. */
         private static QuteDataSpeed getSpeed(JsonNode source, JsonSource convert) {
             return new QuteDataSpeed(
-                    walk.getIntFrom(source).orElse(null),
+                    walk.intOrNull(source),
                     convert.streamPropsExcluding(source, speedNote, abilities)
                             .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().asInt())),
                     speedNote.getTextFrom(source)
@@ -224,7 +224,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             }
             return new QuteDataFrequency(
                     // This should usually be an integer, but some entries deviate from the schema and use a word
-                    number.getIntFrom(node).orElseGet(() -> {
+                    number.intFrom(node).orElseGet(() -> {
                         // Try to coerce the word back into a number, and otherwise log an error and give 0
                         String freqString = number.getTextOrThrow(node).trim();
                         if (freqString.equalsIgnoreCase("once")) {
@@ -233,7 +233,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                         convert.tui().errorf("Got unexpected frequency value \"%s\"", freqString);
                         return 0;
                     }),
-                    interval.getIntFrom(node).orElse(null),
+                    interval.intOrNull(node),
                     unit.getTextFrom(node).orElseGet(() -> customUnit.getTextOrThrow(node)),
                     recurs.booleanOrDefault(node, false),
                     overcharge.booleanOrDefault(node, false));
@@ -301,7 +301,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             return new QuteDataDefenses(
                     ac.getObjectFrom(source)
                             .map(acNode -> new QuteDataArmorClass(
-                                    std.getIntOrThrow(acNode),
+                                    std.intOrThrow(acNode),
                                     ac.streamPropsExcluding(source, note, abilities, notes, std)
                                             .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().asInt())),
                                     (note.existsIn(acNode) ? note : notes).replaceTextFromList(acNode, convert),
@@ -426,7 +426,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             return convert.streamOf(convert.ensureArray(source)).collect(Collectors.toMap(
                     n -> Pf2eHpStat.name.getTextFrom(n).map(StringUtil::toTitleCase).orElse(std.name()),
                     n -> new QuteDataHpHardnessBt.HpStat(
-                            hp.getIntOrThrow(n),
+                            hp.intOrThrow(n),
                             notes.replaceTextFromList(n, convert),
                             abilities.replaceTextFromList(n, convert))));
         }
@@ -472,9 +472,9 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
         private static Collector<JsonNode, ?, Map<String, QuteDataGenericStat>> mappedStatCollector(
                 JsonSource convert) {
             return Collectors.toMap(
-                    name::getTextOrThrow,
+                    n -> name.replaceTextFrom(n, convert),
                     n -> new QuteDataGenericStat.SimpleStat(
-                            amount.getIntFrom(n).orElse(null),
+                            amount.intOrNull(n),
                             note.replaceTextFrom(n, convert)));
         }
     }
@@ -520,7 +520,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             String actionType = unit.getTextOrNull(node);
             Pf2eActivity activity = switch (actionType) {
                 case "single", "action", "free", "reaction" ->
-                    Pf2eActivity.toActivity(actionType, number.getIntOrThrow(node));
+                    Pf2eActivity.toActivity(actionType, number.intOrThrow(node));
                 case "varies" -> Pf2eActivity.varies;
                 case "day", "minute", "hour", "round" -> Pf2eActivity.timed;
                 default -> null;
@@ -537,7 +537,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     .orElse("");
 
             return activity.toQuteActivity(
-                    convert, activity == Pf2eActivity.timed ? join(" ", number.getIntOrThrow(node), actionType, extra) : extra);
+                    convert, activity == Pf2eActivity.timed ? join(" ", number.intOrThrow(node), actionType, extra) : extra);
         }
 
         /**
@@ -552,7 +552,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          */
         private static QuteDataDuration getDuration(JsonNode node, JsonSource convert) {
             QuteDataTimedDuration timedDuration = new QuteDataTimedDuration(
-                    number.getIntFrom(node).orElse(1),
+                    number.intFrom(node).orElse(1),
                     unit.getEnumValueFrom(node, QuteDataTimedDuration.DurationUnit.class),
                     entry.replaceTextFrom(node, convert));
             // Prioritize using a custom display string if we have one
@@ -593,8 +593,8 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     .or(() -> type.getRangeUnitFrom(node))
                     .or(() -> entry.getRangeUnitFrom(node)) // sometimes the entry is the unit
                     .orElse(null);
-            Integer rangeValue = number.getIntFrom(node)
-                    .or(() -> amount.getIntFrom(node))
+            Integer rangeValue = number.intFrom(node)
+                    .or(() -> amount.intFrom(node))
                     .orElse(null);
             String entryText = entry.replaceTextFrom(node, convert);
             if (rangeValue == null && rangeUnit == null && !isPresent(entryText)) {
@@ -679,7 +679,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     Optional.ofNullable(activity.getActivityFrom(node, convert))
                             .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
                     QuteInlineAttack.AttackRangeType.valueOf(range.getTextOrDefault(node, "Melee").toUpperCase()),
-                    attack.getIntFrom(node).orElse(null),
+                    attack.intOrNull(node),
                     formattedDamage,
                     types.replaceTextFromList(node, convert),
                     convert.collectTraitsFrom(node, null),
@@ -728,7 +728,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
 
             return new QuteDataNamedBonus(
                     displayName,
-                    std.getIntOrThrow(source),
+                    std.intOrThrow(source),
                     convert.streamPropsExcluding(source, std, note)
                             .collect(Collectors.toMap(e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
                     note.getTextFrom(source).map(convert::replaceText).map(List::of)

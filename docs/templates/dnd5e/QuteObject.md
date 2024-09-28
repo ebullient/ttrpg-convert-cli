@@ -6,16 +6,19 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [books](#books), [conditionImmune](#conditionimmune), [creatureType](#creaturetype), [fluffImages](#fluffimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [name](#name), [objectType](#objecttype), [resist](#resist), [scores](#scores), [senses](#senses), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [token](#token), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
+[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [books](#books), [conditionImmune](#conditionimmune), [creatureType](#creaturetype), [fluffImages](#fluffimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [name](#name), [objectType](#objecttype), [reprintOf](#reprintof), [resist](#resist), [scores](#scores), [senses](#senses), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [token](#token), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
 
 
 ### 5eInitiativeYaml
 
-A minimal YAML snippet containing object attributes required by the Initiative Tracker plugin. Use this in frontmatter.
+A minimal YAML snippet containing object attributes required by the
+Initiative Tracker plugin. Use this in frontmatter.
 
 ### 5eStatblockYaml
 
-Complete object attributes in the format required by the Fantasy statblock plugin. Uses double-quoted syntax to deal with a variety of characters occuring in trait descriptions. Usable in frontmatter or Fantasy Statblock code blocks.
+Complete object attributes in the format required by the Fantasy statblock plugin.
+Uses double-quoted syntax to deal with a variety of characters occuring in
+trait descriptions. Usable in frontmatter or Fantasy Statblock code blocks.
 
 ### ac
 
@@ -27,7 +30,7 @@ Object AC and HP as [AcHp](AcHp.md)
 
 ### acText
 
-See [AcHp#acText](AcHp.md#acText)
+See [AcHp#acText](AcHp.md#actext)
 
 ### action
 
@@ -39,7 +42,7 @@ List of source books (abbreviated name). Fantasy statblock uses this list.
 
 ### conditionImmune
 
-See [ImmuneResist#conditionImmune](ImmuneResist.md#conditionImmune)
+See [ImmuneResist#conditionImmune](ImmuneResist.md#conditionimmune)
 
 ### creatureType
 
@@ -55,7 +58,7 @@ True if the content (text) contains sections
 
 ### hitDice
 
-See [AcHp#hitDice](AcHp.md#hitDice)
+See [AcHp#hitDice](AcHp.md#hitdice)
 
 ### hp
 
@@ -63,7 +66,7 @@ See [AcHp#hp](AcHp.md#hp)
 
 ### hpText
 
-See [AcHp#hpText](AcHp.md#hpText)
+See [AcHp#hpText](AcHp.md#hptext)
 
 ### immune
 
@@ -88,6 +91,10 @@ Note name
 ### objectType
 
 Object type
+
+### reprintOf
+
+List of content superceded by this note (as [Reprinted](../Reprinted.md))
 
 ### resist
 

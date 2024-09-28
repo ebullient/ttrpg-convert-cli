@@ -55,6 +55,7 @@
         <github-slugify.version>3.0.7</github-slugify.version>
         <icu4j.version>76.1</icu4j.version><!-- Optional dependency of Slugify -->
         <jsonschema-generator.version>4.37.0</jsonschema-generator.version>
+        <hebi-sass.version>1.0.3</hebi-sass.version>
         <!-- Packaging -->
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <native.executable.name>ttrpg-convert</native.executable.name>
@@ -129,7 +130,7 @@
             <plugin>
                 <groupId>us.hebi.sass</groupId>
                 <artifactId>sass-cli-maven-plugin</artifactId>
-                <version>1.0.3</version>
+                <version>${hebi-sass.version}</version>
                 <configuration>
                     <sassVersion>${sass.version}</sassVersion>
                     <args> <!-- Any argument that should be forwarded to the sass cli -->
@@ -269,22 +270,11 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${javadoc-plugin.version}</version>
                 <configuration>
-                    <!--
-                  Exclude packages:
-                    dev.ebullient.convert.*
-                  BUT include the packages:
-                    dev.ebullient.convert.tools.dnd5e.qute
-                    dev.ebullient.convert.tools.pf2e.qute
-                  -->
-                    <excludePackageNames>
-                        dev.ebullient.convert,dev.ebullient.convert.config,dev.ebullient.convert.io,dev.ebullient.convert.tools,dev.ebullient.convert.tools.dnd5e,dev.ebullient.convert.tools.pf2e</excludePackageNames>
                     <doclet>dev.ebullient.convert.io.MarkdownDoclet</doclet>
                     <docletPath>${project.basedir}/target/classes</docletPath>
-                    <reportOutputDirectory>${project.basedir}</reportOutputDirectory>
-                    <destDir>${project.basedir}</destDir>
                     <additionalOptions>
                         <additionalOption>-d</additionalOption>
-                        <additionalOption>javadoc</additionalOption>
+                        <additionalOption>${project.basedir}/docs/templates</additionalOption>
                     </additionalOptions>
                     <useStandardDocletOptions>false</useStandardDocletOptions>
                 </configuration>

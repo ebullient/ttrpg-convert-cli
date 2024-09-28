@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dev.ebullient.convert.io.JavadocIgnore;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 
+@JavadocIgnore
 public interface QuteUtil {
     default boolean isPresent(Map<?, ?> s) {
         return s != null && !s.isEmpty();
@@ -73,6 +75,7 @@ public interface QuteUtil {
         return Pf2eIndexType.syntheticGroup;
     }
 
+    @JavadocIgnore
     interface Renderable {
         /** Return this object rendered using its template. */
         String render();
