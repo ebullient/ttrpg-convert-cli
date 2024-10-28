@@ -24,7 +24,7 @@ jobs:
       cache_key: ${{ steps.test-data-key.outputs.cache_key }}
 
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Pf2e Tools release cache key
         id: test-data-key
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - uses: actions/cache/restore@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
         id: cache
@@ -107,7 +107,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - uses: actions/cache/restore@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
         id: cache
@@ -153,7 +153,7 @@ jobs:
     needs: [test-with-data, native-test-with-data]
 
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - id: gh-issue
         env:
