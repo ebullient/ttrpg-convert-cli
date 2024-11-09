@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -444,9 +445,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 TtrpgValue.indexKey.setIn(v.node, v.key);
                 Tools5eSources.constructSources(v.node);
 
+                if (variantIndex.containsKey(v.key) && variantIndex.get(v.key).has("reprintedAs")) {
+                    variantIndex.remove(v.key);
+                    tui().debugf("Removed %s from index", v.key);
+                }
+
                 JsonNode old = variantIndex.put(v.key, v.node);
                 if (old != null && !old.equals(v.node)) {
-                    tui().errorf("Duplicate key: %s%nold: %s%nnew: %s", v.key, old, v.node);
+                    String message = String.format("Duplicate key: %s%nold: %s%nnew: %s", v.key, old, v.node);
+                    if (v.node.has("reprintedAs")) {
+                        tui().debugf(message);
+                    } else {
+                        tui().errorf(message);
+                    }
                 }
             });
 
@@ -659,13 +670,23 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     boolean isReprinted(String finalKey, JsonNode jsonSource) {
+        final Pattern sourcePattern = Pattern.compile("\"uid\"\\s:\\s\"[A-Za-z ]+\\|([A-Z]+)\"");
         if (jsonSource.has("reprintedAs")) {
             // "reprintedAs": [ "Deep Gnome|MPMM" ]
             // If any reprinted source is included, skip this in favor of the reprint
             for (Iterator<JsonNode> i = jsonSource.withArray("reprintedAs").elements(); i.hasNext();) {
                 String reprint = i.next().asText();
                 String[] ra = reprint.split("\\|");
-                if (sourceIncluded(ra[1])) {
+                boolean srcinc = false;
+                if (ra.length < 2) {
+                    Matcher m = sourcePattern.matcher(reprint);
+                    if (m.find()) {
+                        srcinc = sourceIncluded(m.group(2));
+                    }
+                } else {
+                    srcinc = sourceIncluded(ra[1]);
+                }
+                if (srcinc) {
                     Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(finalKey);
                     String primarySource = jsonSource.get("source").asText().toLowerCase();
                     String reprintKey = type + "|" + reprint.toLowerCase();
@@ -771,6 +792,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return null;
         }
         HomebrewMetaTypes meta = homebrewMetaTypes.get(sources.primarySource());
+        if (abbreviation.contains("|")) {
+            abbreviation = abbreviation.split("|")[0];
+        }
         ItemProperty prop = PropertyEnum.fromEncodedType(abbreviation);
         if (prop == null && meta != null) {
             prop = meta.getItemProperty(abbreviation);
@@ -787,6 +811,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return null;
         }
         HomebrewMetaTypes meta = homebrewMetaTypes.get(sources.primarySource());
+        if (abbreviation.contains("|")) {
+            abbreviation = abbreviation.split("|")[0];
+        }
         ItemType itemType = ItemEnum.fromEncodedValue(abbreviation);
         if (itemType == null && meta != null) {
             itemType = meta.getItemType(abbreviation);
