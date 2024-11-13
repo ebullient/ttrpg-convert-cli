@@ -33,8 +33,9 @@ public class Json2QuteItem extends Json2QuteCommon {
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         Set<ItemProperty> itemProperties = new TreeSet<>(ItemProperty.comparator); // stable order
+        Set<ItemMastery> itemMasteries = new TreeSet<>(ItemMastery.comparator);
 
-        Variant rootVariant = createVariant(rootNode, itemProperties);
+        Variant rootVariant = createVariant(rootNode, itemProperties, itemMasteries);
         List<ImageRef> fluffImages = new ArrayList<>();
         String text = itemText(itemProperties, fluffImages);
         String detail = itemDetail(itemProperties);
@@ -44,11 +45,15 @@ public class Json2QuteItem extends Json2QuteCommon {
         for (ItemProperty p : itemProperties) {
             tags.addRaw("item", p.tagValue());
         }
+        for (ItemMastery m : itemMasteries) {
+            tags.addRaw("item", m.tagValue());
+        }
 
         List<Variant> variants = new ArrayList<>();
         if (ItemFields._variants.existsIn(rootNode)) {
             for (JsonNode variantNode : iterableElements(ItemFields._variants.getFrom(rootNode))) {
-                variants.add(createVariant(variantNode, new TreeSet<>(ItemProperty.comparator)));
+                variants.add(createVariant(variantNode, new TreeSet<>(ItemProperty.comparator),
+                        new TreeSet<>(ItemMastery.comparator)));
             }
         }
 
@@ -61,6 +66,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 rootVariant.damage2h,
                 rootVariant.range,
                 rootVariant.properties,
+                rootVariant.mastery,
                 rootVariant.strengthRequirement,
                 rootVariant.stealthPenalty,
                 rootVariant.cost,
@@ -73,11 +79,16 @@ public class Json2QuteItem extends Json2QuteCommon {
                 tags);
     }
 
-    private Variant createVariant(JsonNode variantNode, Set<ItemProperty> itemProperties) {
+    private Variant createVariant(JsonNode variantNode, Set<ItemProperty> itemProperties, Set<ItemMastery> itemMasteries) {
         findProperties(itemProperties);
+        findMastery(itemMasteries);
 
         String properties = itemProperties.stream()
                 .filter(PropertyEnum::mundaneProperty)
+                .map(x -> x.getMarkdownLink(index))
+                .collect(Collectors.joining(", "));
+
+        String mastery = itemMasteries.stream()
                 .map(x -> x.getMarkdownLink(index))
                 .collect(Collectors.joining(", "));
 
@@ -110,6 +121,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 damage2h,
                 range,
                 properties,
+                mastery,
                 strength,
                 booleanOrDefault(variantNode, "stealth", false),
                 coinValue(variantNode),
@@ -246,6 +258,18 @@ public class Json2QuteItem extends Json2QuteCommon {
         String category = getTextOrEmpty(rootNode, "weaponCategory");
         if ("martial".equals(category)) {
             itemProperties.add(PropertyEnum.MARTIAL);
+        }
+    }
+
+    void findMastery(Collection<ItemMastery> itemMasteries) {
+        JsonNode property = rootNode.get("mastery");
+        if (property != null && property.isArray()) {
+            for (JsonNode x : iterableElements(property)) {
+                ItemMastery mastery = index.findItemMastery(x.asText(), getSources());
+                if (mastery != null) {
+                    itemMasteries.add(mastery);
+                }
+            }
         }
     }
 

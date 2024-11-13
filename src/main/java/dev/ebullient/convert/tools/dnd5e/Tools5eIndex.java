@@ -31,6 +31,8 @@ import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
+import dev.ebullient.convert.tools.dnd5e.ItemMastery.CustomItemMastery;
+import dev.ebullient.convert.tools.dnd5e.ItemMastery.MasteryEnum;
 import dev.ebullient.convert.tools.dnd5e.ItemProperty.CustomItemProperty;
 import dev.ebullient.convert.tools.dnd5e.ItemProperty.PropertyEnum;
 import dev.ebullient.convert.tools.dnd5e.ItemType.CustomItemType;
@@ -697,9 +699,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                         }
                     }
                     if (!variantIndex.containsKey(reprintKey)) {
-                        reprintKey = aliases.get(reprintKey);
-                        if (reprintKey == null) {
-                            tui().errorf("Unable to find reprint of %s: %s", finalKey, reprint);
+                        String alias = aliases.get(reprintKey);
+                        if (alias == null) {
+                            tui().errorf("Unable to find reprint of %s: %s (Reprint key: %s)", finalKey, reprint, reprintKey);
                             return false;
                         }
                     }
@@ -804,6 +806,21 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return new CustomItemProperty(abbreviation);
         }
         return prop;
+    }
+
+    public ItemMastery findItemMastery(String name, Tools5eSources sources) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        if (name.contains("|")) {
+            name = name.split("\\|")[0];
+        }
+        ItemMastery mastery = MasteryEnum.fromName(name);
+        if (mastery == null) {
+            tui().errorf("Unknown mastery %s for %s", name, sources);
+            return new CustomItemMastery(name);
+        }
+        return mastery;
     }
 
     public ItemType findItemType(String abbreviation, Tools5eSources sources) {

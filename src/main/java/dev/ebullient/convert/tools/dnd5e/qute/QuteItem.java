@@ -31,6 +31,8 @@ public class QuteItem extends Tools5eQuteBase {
     public final String range;
     /** Formatted string listing item's properties (with links to rules if the source is present) */
     public final String properties;
+    /** Formatted string listing the items mastery */
+    public final String mastery;
     /** Strength requirement as a numerical value, if applicable */
     public final Integer strengthRequirement;
     /** True if the item imposes a stealth penalty, if applicable */
@@ -50,7 +52,7 @@ public class QuteItem extends Tools5eQuteBase {
 
     public QuteItem(Tools5eSources sources, String name, String source, String detail,
             String armorClass, String damage, String damage2h,
-            String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
+            String range, String properties, String mastery, Integer strengthRequirement, boolean stealthPenalty,
             String costGp, Integer costCp, Double weightLbs, String prerequisite,
             String text, List<ImageRef> images, List<Variant> variants, Tags tags) {
         super(sources, name, source, text, tags);
@@ -61,6 +63,7 @@ public class QuteItem extends Tools5eQuteBase {
         this.damage2h = damage2h;
         this.range = range;
         this.properties = properties;
+        this.mastery = mastery;
         this.strengthRequirement = strengthRequirement;
         this.stealthPenalty = stealthPenalty;
         this.cost = costGp;
@@ -112,6 +115,8 @@ public class QuteItem extends Tools5eQuteBase {
         public final String range;
         /** Formatted string listing item's properties (with links to rules if the source is present) */
         public final String properties;
+        /** Formatted string listing the items mastery */
+        public final String mastery;
         /** Strength requirement as a numerical value, if applicable */
         public final Integer strengthRequirement;
         /** True if the item imposes a stealth penalty, if applicable */
@@ -126,7 +131,7 @@ public class QuteItem extends Tools5eQuteBase {
         public final String prerequisite;
 
         public Variant(String name, String armorClass, String damage, String damage2h,
-                String range, String properties, Integer strengthRequirement, boolean stealthPenalty,
+                String range, String properties, String mastery, Integer strengthRequirement, boolean stealthPenalty,
                 String cost, Integer costCp, Double weightLbs, String prerequisite) {
             this.name = name;
             this.armorClass = armorClass;
@@ -134,6 +139,7 @@ public class QuteItem extends Tools5eQuteBase {
             this.damage2h = damage2h;
             this.range = range;
             this.properties = properties;
+            this.mastery = mastery;
             this.strengthRequirement = strengthRequirement;
             this.stealthPenalty = stealthPenalty;
             this.cost = cost;

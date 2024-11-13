@@ -30,6 +30,8 @@ aliases:
 - **Range**: {resource.range}
 {/if}{/if}{#if resource.properties }
 - **Properties**: {resource.properties}
+{/if}{#if resource.mastery }
+- **Mastery**: {resource.mastery}
 {/if}{#if resource.strengthRequirement }
 - **Strength**: Requires {resource.strengthRequirement} STR.
 {/if}{#if resource.stealthPenalty }
