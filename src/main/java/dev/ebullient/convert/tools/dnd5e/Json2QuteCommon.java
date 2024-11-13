@@ -1,9 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import static dev.ebullient.convert.StringUtil.isPresent;
-import static dev.ebullient.convert.StringUtil.joinConjunct;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
-
 import java.nio.file.Path;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -24,6 +20,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.StringUtil;
+import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
@@ -503,6 +502,7 @@ public class Json2QuteCommon implements JsonSource {
                     case proficiency -> values.add(proficiencyPrereq(value));
                     case race -> values.add(racePrereq(value));
                     case spell -> values.add(spellPrereq(value));
+                    case optionalfeature -> values.add(featurePrereq(value));
                     // --- Boolean values ----
                     case psionics -> values.addAll(testBoolean(value,
                             replaceText("Psionic Talent feature or {@feat Wild Talent|UA2020PsionicOptionsRevisited} feat")));
@@ -1025,6 +1025,7 @@ public class Json2QuteCommon implements JsonSource {
         displayEntry, // inner field for display
         note, // field alongside other fields
         prerequisite, // prereq field itself
+        optionalfeature,
         unknown // catcher for unknown attributes (see #fromString())
     }
 
