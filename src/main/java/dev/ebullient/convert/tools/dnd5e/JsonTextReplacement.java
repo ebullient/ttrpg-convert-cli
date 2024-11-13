@@ -38,7 +38,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     static final Pattern notePattern = Pattern.compile("\\{@note (\\*|Note:)?\\s?([^}]+)}");
     static final Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
+    //TODO not sure if the "savingThrow" syntax is still in use. XPHB uses "actSave". Maybe can be cleaned up
     static final Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str 20}
+    static final Pattern savingThrowPattern = Pattern.compile("\\{@actSave ([^}]+)}");
     static final Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+)}"); // {@skillCheck animal_handling 5}
     static final Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]*)}");
     static final Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
@@ -191,6 +193,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
             result = abilitySavePattern.matcher(result).replaceAll(this::replaceSkillOrAbility);
             result = skillCheckPattern.matcher(result).replaceAll(this::replaceSkillCheck);
+            result = savingThrowPattern.matcher(result).replaceAll(this::replaceSavingThrow);
 
             result = superscriptCitationPattern.matcher(result).replaceAll((match) -> {
                 // {@sup {@cite Casting Times|FleeMortals|A}}
@@ -308,6 +311,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@h}", "*Hit:* ")
                         .replaceAll("\\{@m}", "*Miss:* ")
+                        //TODO Unsure if both @atk and @atkr are in use. Perhaps remove one type in the future
                         .replaceAll("\\{@atk a}", "*Area Attack:*")
                         .replaceAll("\\{@atk aw}", "*Area Weapon Attack:*")
                         .replaceAll("\\{@atk g}", "*Magical Attack:*")
@@ -324,6 +328,26 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@atk ms}", "*Melee Spell Attack:*")
                         .replaceAll("\\{@atk rs}", "*Ranged Spell Attack:*")
                         .replaceAll("\\{@atk ms, ?rs}", "*Melee or Ranged Spell Attack:*")
+                        .replaceAll("\\{@atkr a}", "*Area Attack:*")
+                        .replaceAll("\\{@atkr aw}", "*Area Weapon Attack:*")
+                        .replaceAll("\\{@atkr g}", "*Magical Attack:*")
+                        .replaceAll("\\{@atkr m}", "*Melee Attack:*")
+                        .replaceAll("\\{@atkr r}", "*Ranged Attack:*")
+                        .replaceAll("\\{@atkr mw}", "*Melee Weapon Attack:*")
+                        .replaceAll("\\{@atkr rw}", "*Ranged Weapon Attack:*")
+                        .replaceAll("\\{@atkr m, ?r}", "*Melee or Ranged Attack:*")
+                        .replaceAll("\\{@atkr mw\\|rw}", "*Melee or Ranged Weapon Attack:*")
+                        .replaceAll("\\{@atkr mw, ?rw}", "*Melee or Ranged Weapon Attack:*")
+                        .replaceAll("\\{@atkr mp}", "*Melee Power Attack:*")
+                        .replaceAll("\\{@atkr rp}", "*Ranged Power Attack:*")
+                        .replaceAll("\\{@atkr mp, ?rp}", "*Melee or Ranged Power Attack:*")
+                        .replaceAll("\\{@atkr ms}", "*Melee Spell Attack:*")
+                        .replaceAll("\\{@atkr rs}", "*Ranged Spell Attack:*")
+                        .replaceAll("\\{@atkr ms, ?rs}", "*Melee or Ranged Spell Attack:*")
+                        .replaceAll("\\{@hitYourSpellAttack Bonus equals your spell attack modifier}",
+                                "Bonus equals your spell attack modifier")
+                        .replaceAll("\\{@actSaveFail}", "*On failed save:*")
+                        .replaceAll("\\{@actSaveSuccess}", "*On success:*")
                         .replaceAll("\\{@spell\\s*}", "") // error in homebrew
                         .replaceAll("\\{@color ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
@@ -389,6 +413,14 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
 
         return input;
+    }
+
+    default String replaceSavingThrow(MatchResult match) {
+        // format: {@actSave dex}
+        String key = match.group(1);
+        SkillOrAbility ability = index().findSkillOrAbility(key, getSources());
+
+        return String.format("*%s Saving Throw:*", ability.value());
     }
 
     default String replaceSkillOrAbility(MatchResult match) {
