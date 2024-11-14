@@ -246,15 +246,15 @@ public class Json2QuteSpell extends Json2QuteCommon {
         });
         if (classes.contains("Wizard")) {
             if (school == SpellSchool.SchoolEnum.Abjuration || school == SpellSchool.SchoolEnum.Evocation) {
-                String finalKey = Tools5eIndexType.getSubclassKey("Fighter", "PHB", "Eldritch Knight", "PHB");
+                String finalKey = Tools5eIndexType.getSubclassKey("Fighter", "XPHB", "Eldritch Knight", "XPHB");
                 if (index().isIncluded(finalKey)) {
-                    classes.add(getSubclass(tags, "Fighter", "PHB", "Eldritch Knight", "PHB", finalKey));
+                    classes.add(getSubclass(tags, "Fighter", "XPHB", "Eldritch Knight", "XPHB", finalKey));
                 }
             }
             if (school == SpellSchool.SchoolEnum.Enchantment || school == SpellSchool.SchoolEnum.Illusion) {
-                String finalKey = Tools5eIndexType.getSubclassKey("Rogue", "PHB", "Arcane Trickster", "PHB");
+                String finalKey = Tools5eIndexType.getSubclassKey("Rogue", "XPHB", "Arcane Trickster", "XPHB");
                 if (index().isIncluded(finalKey)) {
-                    classes.add(getSubclass(tags, "Rogue", "PHB", "Arcane Trickster", "PHB", finalKey));
+                    classes.add(getSubclass(tags, "Rogue", "XPHB", "Arcane Trickster", "XPHB", finalKey));
                 }
             }
         }

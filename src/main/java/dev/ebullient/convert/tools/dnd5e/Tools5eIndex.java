@@ -51,10 +51,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return instance;
     }
 
-    // classfeature|ability score improvement|monk|phb|12
+    // classfeature|ability score improvement|monk|xphb|12
     static final String classFeature_1 = "classfeature\\|[^|]+\\|[^|]+\\|";
     static final String classFeature_2 = "\\|\\d+\\|?";
-    // subclassfeature|blessed strikes|cleric|phb|death|dmg|8|uaclassfeaturevariants
+    // subclassfeature|blessed strikes|cleric|xphb|death|dmg|8|uaclassfeaturevariants
     static final String subclassFeature_1 = "subclassfeature\\|[^|]+\\|[^|]+\\|";
     static final String subclassFeature_2 = "\\|[^|]+\\|";
     static final String subclassFeature_3 = "\\|\\d+\\|?";
@@ -451,7 +451,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     variantIndex.remove(v.key);
                     tui().debugf("Removed %s from index", v.key);
                 }
-
                 JsonNode old = variantIndex.put(v.key, v.node);
                 if (old != null && !old.equals(v.node)) {
                     String message = String.format("Duplicate key: %s%nold: %s%nnew: %s", v.key, old, v.node);
@@ -530,9 +529,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 String[] parts = srKey.split("\\|");
                 String source = SourceField.source.getTextOrThrow(sr);
                 final String lookupKey;
-                if (parts[1].contains("(")) { // "subrace|dwarf (duergar)|dwarf|phb|mtf"
+                if (parts[1].contains("(")) { // "subrace|dwarf (duergar)|dwarf|xphb|mtf"
                     lookupKey = String.format("race|%s|%s", parts[1], source).toLowerCase();
-                } else { // "subrace|half-elf|half-elf|phb"
+                } else { // "subrace|half-elf|half-elf|xphb"
                     if (parts[1].equals(parts[2])) {
                         lookupKey = String.format("race|%s|%s", parts[1], source).toLowerCase();
                     } else {
@@ -549,7 +548,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     private List<Tuple> findDeities(List<Tuple> allDeities) {
-        List<String> reverseOrder = List.of("dsotdq", "erlw", "mtf", "vgm", "scag", "dmg", "phb");
+        List<String> reverseOrder = List.of("dsotdq", "erlw", "mtf", "vgm", "scag", "dmg");
         List<Tuple> result = new ArrayList<>();
         Map<String, List<Tuple>> booklist = new HashMap<>();
 
@@ -642,7 +641,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     }
                 }
                 for (Entry<String, JsonNode> sourceClassSubclassMap : iterableFields(spellMap.get("subclass"))) {
-                    String classSource = sourceClassSubclassMap.getKey(); // PHB, XGE, etc
+                    String classSource = sourceClassSubclassMap.getKey(); // XPHB, XGE, etc
                     if (!sourceIncluded(classSource)) {
                         // skip it
                         continue;
@@ -650,7 +649,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     for (Entry<String, JsonNode> classMap : iterableFields(sourceClassSubclassMap.getValue())) {
                         String className = classMap.getKey(); // Bard, Cleric, etc
                         for (Entry<String, JsonNode> sourceSubclassMap : iterableFields(classMap.getValue())) {
-                            String subclassSource = sourceSubclassMap.getKey(); // PHB, XGE, etc
+                            String subclassSource = sourceSubclassMap.getKey(); // XPHB, XGE, etc
                             if (!sourceIncluded(subclassSource)) {
                                 // skip it
                                 continue;
@@ -1020,7 +1019,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         // Special case for class features (match against constructed patterns)
         if (key.contains("classfeature|")) {
-            String featureKey = key.replace("||", "|phb|");
+            String featureKey = key.replace("||", "|xphb|");
             return classFeaturePattern.matcher(featureKey).matches() || subclassFeaturePattern.matcher(featureKey).matches();
         }
         // Familiars
@@ -1314,7 +1313,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 case "AS:V2-UA" -> "UARSC";
                 case "MV:C2-UA" -> "UARCO";
                 case "OR" -> "UACDW";
-                default -> "PHB";
+                default -> "XPHB";
             };
         }
 

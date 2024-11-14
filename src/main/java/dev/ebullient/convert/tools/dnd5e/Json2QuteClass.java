@@ -412,7 +412,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
             Subclass sc = new Subclass();
             sc.subclassNode = resolved;
-            sc.parentClassSource = parentClassSource; // e.g. PHB or DMG
+            sc.parentClassSource = parentClassSource; // e.g. XPHB or DMG
             sc.parentKey = getSources().getKey();
             sc.shortName = resolved.get("shortName").asText();
             sc.sources = Tools5eSources.findSources(scKey);

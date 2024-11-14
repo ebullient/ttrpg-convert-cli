@@ -143,12 +143,12 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
         switch (this) {
             case classfeature -> {
-                String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
+                String classSource = IndexFields.classSource.getTextOrDefault(x, "xphb");
                 return String.format("%s|%s|%s|%s|%s%s",
                         this.name(),
                         name,
                         IndexFields.className.getTextOrEmpty(x),
-                        "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+                        "xphb".equalsIgnoreCase(classSource) ? "" : classSource,
                         IndexFields.level.getTextOrEmpty(x),
                         source.equalsIgnoreCase(classSource) ? "" : "|" + source)
                         .toLowerCase();
@@ -189,11 +189,11 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 return String.format("%s|%s%s",
                         this.name(),
                         name,
-                        "phb".equalsIgnoreCase(source) ? "" : "|" + source)
+                        "xphb".equalsIgnoreCase(source) ? "" : "|" + source)
                         .toLowerCase();
             }
             case subclass -> {
-                String classSource = IndexFields.classSource.getTextOrDefault(x, "PHB");
+                String classSource = IndexFields.classSource.getTextOrDefault(x, "XPHB");
                 String scSource = SourceField.source.getTextOrDefault(x, classSource);
                 // subclass|subclassName|className|classSource|subclassSource
                 return String.format("%s|%s|%s|%s|%s",
@@ -205,21 +205,21 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                         .toLowerCase();
             }
             case subclassFeature -> {
-                String classSource = IndexFields.classSource.getTextOrDefault(x, "PHB");
-                String scSource = IndexFields.subclassSource.getTextOrDefault(x, "PHB");
+                String classSource = IndexFields.classSource.getTextOrDefault(x, "XPHB");
+                String scSource = IndexFields.subclassSource.getTextOrDefault(x, "XPHB");
                 return String.format("%s|%s|%s|%s|%s|%s|%s%s",
                         this.name(),
                         name,
                         IndexFields.className.getTextOrEmpty(x).trim(),
-                        "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+                        "xphb".equalsIgnoreCase(classSource) ? "" : classSource,
                         IndexFields.subclassShortName.getTextOrEmpty(x).trim(),
-                        "phb".equalsIgnoreCase(scSource) ? "" : scSource,
+                        "xphb".equalsIgnoreCase(scSource) ? "" : scSource,
                         IndexFields.level.getTextOrEmpty(x),
                         source.equalsIgnoreCase(scSource) ? "" : "|" + source)
                         .toLowerCase();
             }
             case subrace -> {
-                String raceSource = IndexFields.raceSource.getTextOrDefault(x, "PHB");
+                String raceSource = IndexFields.raceSource.getTextOrDefault(x, "XPHB");
                 return String.format("%s|%s|%s|%s%s",
                         this.name(),
                         name,
@@ -247,7 +247,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             return String.format("%s|%s%s",
                     Tools5eIndexType.optionalfeature,
                     name,
-                    "phb".equalsIgnoreCase(source) ? "" : "|" + source)
+                    "xphb".equalsIgnoreCase(source) ? "" : "|" + source)
                     .toLowerCase();
         }
 
@@ -259,9 +259,9 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             String[] parts = crossRef.trim().split("\s?\\|\\s?");
             // 0    name,
             // 1    IndexFields.className.getTextOrEmpty(x),
-            // 2    "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+            // 2    "xphb".equalsIgnoreCase(classSource) ? "" : classSource,
             // 3    IndexFields.subclassShortName.getTextOrEmpty(x),
-            // 4    "phb".equalsIgnoreCase(scSource) ? "" : scSource,
+            // 4    "xphb".equalsIgnoreCase(scSource) ? "" : scSource,
             // 5    IndexFields.level.getTextOrEmpty(x),
             // 6    source.equalsIgnoreCase(scSource) ? "" : "|" + source)
             if (parts.length < 6) {
@@ -277,7 +277,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             String[] parts = crossRef.trim().split("\s?\\|\\s?");
             // 0    name,
             // 1    IndexFields.className.getTextOrEmpty(x),
-            // 2    "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+            // 2    "xphb".equalsIgnoreCase(classSource) ? "" : classSource,
             // 3    IndexFields.level.getTextOrEmpty(x),
             // 4    source.equalsIgnoreCase(classSource) ? "" : "|" + source)
             if (parts.length < 4) {
@@ -344,8 +344,8 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
     public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
         if (classSource == null || classSource.isEmpty()) {
-            // phb stays in the subclass text reference (match allowed sources)
-            classSource = "phb";
+            // xphb stays in the subclass text reference (match allowed sources)
+            classSource = "xphb";
         }
         return String.format("%s|%s|%s|%s|%s",
                 Tools5eIndexType.subclass,
@@ -359,10 +359,10 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     public static String getSubclassTextReference(String className, String classSource, String subclassName,
             String subclassSource, String text) {
         if (classSource == null || classSource.isEmpty()) {
-            // phb stays in the subclass text reference (match allowed sources)
-            classSource = "phb";
+            // xphb stays in the subclass text reference (match allowed sources)
+            classSource = "xphb";
         }
-        // {@class Fighter|phb|Samurai|Samurai|xge}
+        // {@class Fighter|xphb|Samurai|Samurai|xge}
         return String.format("%s|%s|%s|%s|%s",
                 className,
                 classSource,
@@ -377,7 +377,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 Tools5eIndexType.classfeature,
                 name,
                 className,
-                "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+                "xphb".equalsIgnoreCase(classSource) ? "" : classSource,
                 level,
                 featureSource.equalsIgnoreCase(classSource) ? "" : "|" + featureSource)
                 .toLowerCase();
@@ -389,9 +389,9 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 Tools5eIndexType.subclassFeature,
                 name,
                 className,
-                "phb".equalsIgnoreCase(classSource) ? "" : classSource,
+                "xphb".equalsIgnoreCase(classSource) ? "" : classSource,
                 scShortName,
-                "phb".equalsIgnoreCase(scSource) ? "" : scSource,
+                "xphb".equalsIgnoreCase(scSource) ? "" : scSource,
                 level,
                 featureSource.equalsIgnoreCase(scSource) ? "" : "|" + featureSource)
                 .toLowerCase();
@@ -530,7 +530,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case charoption -> "MOT";
             case syntheticGroup -> null;
             case itemTypeAdditionalEntries -> "XGE";
-            default -> "PHB";
+            default -> "XPHB";
         };
     }
 

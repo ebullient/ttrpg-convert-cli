@@ -56,12 +56,12 @@ import picocli.CommandLine.UnmatchedArgumentException;
         "",
         "{",
         "  \"from\" : [",
-        "    \"PHB\",",
+        "    \"XPHB\",",
         "    \"DMG\",",
         "    \"SCAG\",",
         "  ]",
         "  \"exclude\" : [",
-        "    \"background|sage|phb\",",
+        "    \"background|sage|xphb\",",
         "  ]",
         "  \"excludePattern\" : [",
         "    \"race|.*|dmg\",",
@@ -113,7 +113,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
     Path configPath;
 
     @Option(names = "-s", hidden = true, description = "Source Books%n  " +
-            "Comma-separated list or multiple declarations (PHB,DMG,...); use ALL for all sources")
+            "Comma-separated list or multiple declarations (XPHB,DMG,...); use ALL for all sources")
     List<String> source = Collections.emptyList();
 
     @Option(names = "--index", description = "Create index of keys that can be used to exclude entries")

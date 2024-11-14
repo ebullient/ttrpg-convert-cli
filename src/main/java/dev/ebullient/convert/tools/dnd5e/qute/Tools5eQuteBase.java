@@ -58,7 +58,7 @@ public class Tools5eQuteBase extends QuteBase {
 
     private static String sourceIfNotDefault(String source, Tools5eIndexType type) {
         switch (source.toLowerCase()) {
-            case "phb":
+            case "xphb":
             case "mm":
             case "dmg":
                 return "";

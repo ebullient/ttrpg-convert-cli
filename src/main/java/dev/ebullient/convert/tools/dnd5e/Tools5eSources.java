@@ -210,7 +210,7 @@ public class Tools5eSources extends CompendiumSources {
 
     @Override
     protected boolean datasourceFilter(String source) {
-        return !List.of("phb", "mm", "dmg").contains(source.toLowerCase());
+        return !List.of("xphb", "mm", "dmg").contains(source.toLowerCase());
     }
 
     public Optional<String> uaSource() {
