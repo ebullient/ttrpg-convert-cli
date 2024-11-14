@@ -690,7 +690,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 if (srcinc) {
                     Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(finalKey);
                     String primarySource = jsonSource.get("source").asText().toLowerCase();
-                    String reprintKey = type + "|" + reprint.toLowerCase();
+                    String reprintKey = type + "|" + reprint;
+                    reprintKey = reprintKey.toLowerCase();
                     if (type == Tools5eIndexType.subrace && !variantIndex.containsKey(reprintKey)) {
                         reprintKey = Tools5eIndexType.race + "|" + reprint.toLowerCase();
                         if (!variantIndex.containsKey(reprintKey)) {
@@ -700,7 +701,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     if (!variantIndex.containsKey(reprintKey)) {
                         String alias = aliases.get(reprintKey);
                         if (alias == null) {
-                            tui().errorf("Unable to find reprint of %s: %s (Reprint key: %s)", finalKey, reprint, reprintKey);
+                            tui().warnf("Unable to find reprint of %s: %s (Reprint key: %s)", finalKey, reprint, reprintKey);
+                            String item = String.format("|%s|", reprintKey.split("\\|")[1]);
+                            tui().warnf("%s is present", variantIndex.keySet().stream().filter(key -> key.contains(item))
+                                    .collect(Collectors.toSet()).toString());
                             return false;
                         }
                     }
