@@ -97,7 +97,7 @@ jobs:
             Data-Pf2eTools
           enableCrossOsArchive: true
 
-      - uses: graalvm/setup-graalvm@557ffcf459751b4d92319ee255bf3bec9b73964c # v1.2.5
+      - uses: graalvm/setup-graalvm@4a200f28cd70d1940b5e33bd00830b7dc71a7e2b # v1.2.6
         with:
           distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
