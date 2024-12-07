@@ -25,7 +25,8 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 >
 > - 🚜 [**Review the changelog**](CHANGELOG.md) for new capabilities (✨) and breaking changes (🔥💥).
 > - 🔮 Check out [**Conventions**](#conventions) and  [**Recommendations**](#recommendations-for-using-the-cli).
->
+
+
 > [!WARNING]
 > The 5eTools data repositories have been taken down. This tool will still work to create Obsidian notes for data in this JSON format (homebrew, for example).
 
