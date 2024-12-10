@@ -1,6 +1,7 @@
 package dev.ebullient.convert.io;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,11 +12,12 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -83,7 +85,7 @@ public class Tui {
     };
 
     public final static PrintWriter streamToWriter(PrintStream stream) {
-        return new PrintWriter(stream, true, Charset.forName("UTF-8"));
+        return new PrintWriter(stream, true, StandardCharsets.UTF_8);
     }
 
     public final static ObjectMapper MAPPER = initMapper(JsonMapper.builder()
@@ -229,7 +231,10 @@ public class Tui {
         if (log) {
             Path p = Path.of("ttrpg-convert.out.txt");
             try {
-                this.log = new PrintWriter(Files.newOutputStream(p));
+                BufferedWriter writer = Files.newBufferedWriter(p, StandardCharsets.UTF_8,
+                        StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+                this.log = new PrintWriter(writer, true);
+
                 VersionProvider vp = new VersionProvider();
                 List.of(vp.getVersion()).forEach(this.log::println);
             } catch (IOException e) {
