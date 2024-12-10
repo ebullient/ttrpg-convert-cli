@@ -11,7 +11,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -83,7 +83,7 @@ public class Tui {
     };
 
     public final static PrintWriter streamToWriter(PrintStream stream) {
-        return new PrintWriter(stream, true, Charset.forName("UTF-8"));
+        return new PrintWriter(stream, true, StandardCharsets.UTF_8);
     }
 
     public final static ObjectMapper MAPPER = initMapper(JsonMapper.builder()

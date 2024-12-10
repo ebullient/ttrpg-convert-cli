@@ -3,7 +3,7 @@ package dev.ebullient.convert;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -59,7 +59,7 @@ public class Pf2eDataConvertTest {
             Path filePath = testOutput.resolve(logFile);
             Files.move(logFile, filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String content = Files.readString(filePath, Charset.forName("UTF-8"));
+            String content = Files.readString(filePath, StandardCharsets.UTF_8);
             if (content.contains("Exception")) {
                 tui.errorf("Exception found in %s", filePath);
             }

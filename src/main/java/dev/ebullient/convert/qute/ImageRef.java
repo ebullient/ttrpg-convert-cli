@@ -1,7 +1,6 @@
 package dev.ebullient.convert.qute;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -215,12 +214,7 @@ public class ImageRef {
             sourceUrl = imageRoot.getFallbackPath(sourceUrl)
                     .replace('\\', '/');
 
-            try {
-                // Remove escaped characters here (inconsistent escaping in the source URL)
-                sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                Tui.instance().errorf("Error decoding image URL %s: %s", sourceUrl, e.getMessage());
-            }
+            sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8);
 
             boolean copyToVault = false;
 
@@ -277,7 +271,7 @@ public class ImageRef {
                 StringBuilder encodedPath = new StringBuilder();
                 for (char ch : path.toCharArray()) {
                     if (allowedCharacters.indexOf(ch) == -1) {
-                        byte[] bytes = String.valueOf(ch).getBytes("UTF-8");
+                        byte[] bytes = String.valueOf(ch).getBytes(StandardCharsets.UTF_8);
                         for (byte b : bytes) {
                             encodedPath.append(String.format("%%%02X", b));
                         }
@@ -294,14 +288,9 @@ public class ImageRef {
         }
 
         public static final String fixUrl(String sourceUrl) {
-            try {
-                // Remove escaped characters here (inconsistent escaping in the source URL)
-                sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8.name());
-                return escapeUrlImagePath(sourceUrl);
-            } catch (UnsupportedEncodingException e) {
-                Tui.instance().errorf("Error fixing URL %s: %s", sourceUrl, e.getMessage());
-                return sourceUrl;
-            }
+            // Remove escaped characters here (inconsistent escaping in the source URL)
+            sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8);
+            return escapeUrlImagePath(sourceUrl);
         }
     }
 }
