@@ -8,7 +8,6 @@ on:
 
 env:
   JAVA_VERSION: 17
-  NATIVE_VERSION: 22.3.2
   GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
   FAIL_ISSUE: 140
@@ -29,7 +28,8 @@ jobs:
       - name: Tools release cache key
         id: test-data-key
         run: |
-          LATEST_VERSION="v1.209.3"
+          LATEST_VERSION=$(curl -sLH 'Accept: application/json' https://api.github.com/repos/5etools-mirror-3/5etools-src/releases/latest | jq -r .tag_name)
+          echo $LATEST_VERSION
 
           echo "🔹 Use $LATEST_VERSION"
           echo "tools_version=${LATEST_VERSION}" >> $GITHUB_OUTPUT
@@ -53,23 +53,17 @@ jobs:
         run: |
           mkdir -p sources
 
-          # echo "🔹 Download $LATEST_VERSION"
-          # ARTIFACT_URL="https://github.com/5etools-mirror-2/5etools-mirror-2.github.io/archive/refs/tags/$LATEST_VERSION.tar.gz"
-          # VER=$(echo $LATEST_VERSION | cut -c 2-)
-          # ROOT="5etools-mirror-2.github.io-$VER"
+          echo "🔹 Download $LATEST_VERSION"
 
-          # curl -LsS -o 5etools.tar.gz $ARTIFACT_URL
-          # tar xzf 5etools.tar.gz ${ROOT}/data
-          # mv ${ROOT} sources/5etools-mirror-2.github.io
+          gh repo clone 5etools-mirror-3/5etools-src sources/5etools-src -- --depth=1 -c advice.detachedHead=false -b $LATEST_VERSION
+          gh repo clone 5etools-mirror-3/5etools-img sources/5etools-img -- --depth=1 -c advice.detachedHead=false -b $LATEST_VERSION
+          gh repo clone TheGiddyLimit/unearthed-arcana sources/5e-unearthed-arcana -- --depth=1
+          gh repo clone TheGiddyLimit/homebrew sources/5e-homebrew -- --depth=1
 
-          # gh repo clone 5etools-mirror-2/5etools-img sources/5etools-img -- --depth=1
-          # gh repo clone TheGiddyLimit/unearthed-arcana sources/5e-unearthed-arcana -- --depth=1
-          # gh repo clone TheGiddyLimit/homebrew sources/5e-homebrew -- --depth=1
-
-          # # Remove image contents. We just need the files to exist (linking)
-          # find sources -type f -type f \
-          #    \( -iname \*.jpg -o -iname \*.png -o -iname \*.webp \) \
-          #    | while read FILE; do echo > "$FILE"; done
+          # Remove image contents. We just need the files to exist (linking)
+          find sources -type f -type f \
+             \( -iname \*.jpg -o -iname \*.png -o -iname \*.webp \) \
+             | while read FILE; do echo > "$FILE"; done
 
           ls -al sources
 
@@ -134,24 +128,18 @@ jobs:
           distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.NATIVE_VERSION }}
           cache: 'maven'
-
-      - name: Build and run
-        id: mvn-build
-        run: |
-          ./mvnw -B -ntp -DskipFormat -DargLine="-Xmx6g" verify
 
       - if: runner.os == 'Windows'
         name: clean before native build
         shell: cmd
         run: |
-          ./mvnw -B -ntp -DskipFormat clean
+          ./mvnw -B -ntp -DskipTests -DskipFormat clean
 
-      - name: Build and run in native mode
+      - name: Build, run, and test in native mode
         id: mvn-native-build
         run: |
-          ./mvnw -B -ntp -Dnative -DskipTests -DskipFormat verify
+          ./mvnw -B -ntp -Dnative -DskipFormat verify
 
   report-native-build:
 
