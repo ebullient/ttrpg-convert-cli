@@ -25,7 +25,9 @@ import dev.ebullient.convert.config.UserConfig.VaultPaths;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.ParseState;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class CompendiumConfig {
 
     public enum DiceRoller {

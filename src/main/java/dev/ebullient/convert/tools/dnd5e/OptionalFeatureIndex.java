@@ -17,7 +17,9 @@ import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFields;
 import dev.ebullient.convert.tools.dnd5e.Tools5eHomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class OptionalFeatureIndex implements JsonSource {
     private final Map<String, OptionalFeatureType> optFeatureIndex = new HashMap<>();
     private final Tools5eIndex index;
