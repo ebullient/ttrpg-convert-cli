@@ -1,0 +1,70 @@
+name: Bug Report
+description: File a bug report
+title: "🐛 "
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Before you start
+
+        - [Check for updates](https://github.com/ebullient/ttrpg-convert-cli/releases) and make sure you're running the latest version.
+        - Look at existing bug reports to see if your issue has already been reported.
+        - Is this actually a bug?
+            - [Get Help](https://github.com/ebullient/ttrpg-convert-cli/tree/main#where-to-find-help) if you aren't confident you're doing things right.
+            - If this is something that you wish the tool could do, start a discussion or create a feature request instead.
+
+        > [!TIP]
+        >
+        > - 🚜 [**Review the changelog**](https://github.com/ebullient/ttrpg-convert-cli/blob/main/CHANGELOG.md) for new capabilities (✨) and breaking changes (🔥💥).
+        > - 🔮 Check out [**Conventions**](https://github.com/ebullient/ttrpg-convert-cli/blob/main/README.md#conventions) and  [**Recommendations**](https://github.com/ebullient/ttrpg-convert-cli/blob/main/README.md#recommendations-for-using-the-cli).
+        > - 🔥 Support for the 5e 2024 ruleset is [in progress](https://github.com/ebullient/ttrpg-convert-cli/discussions/586).
+        >      Messages you may see related to XPHB, XMM, XDMG, or HP formulas are all related to this change
+
+  - type: textarea
+    id: the-problem
+    attributes:
+      label: Describe the bug
+      description: |
+        A clear and concise summary of what the bug is.
+
+        Include an example and/or specific details about the resource in question.
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a log file.
+
+        Run the command that exibits this bug as you usually would, but add the `--log` option.
+        [Attach the `ttrpg-convert.out.txt` file](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files) that is created as a result.
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen instead?
+    validations:
+      required: true
+
+  - type: input
+    id: cli-version
+    attributes:
+      label: TTRPG CLI Version
+      description: Which version are you using? (paste the output of [`--version`](https://github.com/ebullient/ttrpg-convert-cli/tree/7650c2785f05051fa64d95ec1f49d664ce4c2805#convert-5etools-json-data))
+      placeholder: 2.3.18
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: operating-systems
+    attributes:
+      label: Which Operating Systems have you experienced this on?
+      description: You may select more than one.
+      options:
+        - label: Android
+        - label: iPhone/iPad
+        - label: Linux
+        - label: macOS
+        - label: Windows
