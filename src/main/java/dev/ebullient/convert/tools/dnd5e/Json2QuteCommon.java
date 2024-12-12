@@ -28,6 +28,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
@@ -101,7 +102,11 @@ public class Json2QuteCommon implements JsonSource {
     public List<String> getFluff(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
         List<String> text = new ArrayList<>();
         JsonNode fluffNode = null;
-        if (Tools5eFields.fluff.existsIn(rootNode)) {
+        if (TtrpgValue.indexFluffKey.existsIn(rootNode)) {
+            // Specific variant
+            String fluffKey = TtrpgValue.indexFluffKey.getTextOrEmpty(rootNode);
+            fluffNode = index.getOrigin(fluffKey);
+        } else if (Tools5eFields.fluff.existsIn(rootNode)) {
             fluffNode = Tools5eFields.fluff.getFrom(rootNode);
             JsonNode monsterFluff = Tools5eFields._monsterFluff.getFrom(fluffNode);
             if (monsterFluff != null) {

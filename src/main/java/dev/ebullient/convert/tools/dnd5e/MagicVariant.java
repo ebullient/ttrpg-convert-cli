@@ -140,6 +140,11 @@ public class MagicVariant implements JsonSource {
             index.addAlias(key, gvKey);
         }
 
+        String fluffKey = ItemField.hasFluff.booleanOrDefault(genericVariant, false)
+                || ItemField.hasFluffImages.booleanOrDefault(genericVariant, false)
+                        ? Tools5eIndexType.itemFluff.createKey(genericVariant)
+                        : null;
+
         for (JsonNode baseItem : baseItems) {
             if (ItemField.packContents.existsIn(baseItem)
                     || !editionMatch(baseItem, genericVariant)
@@ -152,6 +157,9 @@ public class MagicVariant implements JsonSource {
                 String newKey = Tools5eIndexType.item.createKey(specficVariant);
                 TtrpgValue.indexInputType.setIn(specficVariant, Tools5eIndexType.item.name());
                 TtrpgValue.indexKey.setIn(specficVariant, newKey);
+                if (fluffKey != null) {
+                    TtrpgValue.indexFluffKey.setIn(specficVariant, fluffKey);
+                }
                 Tools5eSources.constructSources(newKey, specficVariant);
                 if (spawnNewItems) {
                     variants.add(new Tuple(newKey, specficVariant));

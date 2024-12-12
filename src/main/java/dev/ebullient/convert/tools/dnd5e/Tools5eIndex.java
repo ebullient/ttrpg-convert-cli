@@ -890,6 +890,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 }
             }
         }
+        if (result == null) {
+            tui().debugf(Msg.UNRESOLVED, "No element found for %s",
+                    finalKey);
+        }
         return result;
     }
 

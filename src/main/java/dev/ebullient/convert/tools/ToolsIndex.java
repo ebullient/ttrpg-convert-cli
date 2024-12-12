@@ -19,7 +19,8 @@ public interface ToolsIndex {
         indexKey,
         indexInputType,
         indexBaseItem,
-        isHomebrew;
+        isHomebrew,
+        indexFluffKey,
     }
 
     static ToolsIndex createIndex() {

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.FontRef;
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
@@ -289,11 +290,15 @@ public class Tools5eSources extends CompendiumSources {
             }
             return String.join(" and ", bits);
         }
-        return sourceText;
+        return super.getSourceText();
     }
 
     public JsonNode findNode() {
-        return Tools5eIndex.getInstance().getOrigin(this.key);
+        JsonNode result = Tools5eIndex.getInstance().getNode(key);
+        if (result == null) {
+            result = Tools5eIndex.getInstance().getOrigin(this.key);
+        }
+        return result;
     }
 
     protected String findName(IndexType type, JsonNode jsonElement) {
@@ -310,6 +315,13 @@ public class Tools5eSources extends CompendiumSources {
     protected String findSourceText(IndexType type, JsonNode jsonElement) {
         if (type == Tools5eIndexType.syntheticGroup) {
             return this.key.replaceAll(".*\\|([^|]+)\\|", "$1");
+        }
+        if (type == Tools5eIndexType.reference) {
+            return "";
+        }
+        if (jsonElement == null) {
+            Tui.instance().logf(Msg.UNRESOLVED, "Resource %s has no jsonElement", this.key);
+            return "";
         }
         String srcText = super.findSourceText(type, jsonElement);
 
