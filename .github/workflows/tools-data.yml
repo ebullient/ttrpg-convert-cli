@@ -8,8 +8,9 @@ on:
 
 env:
   JAVA_VERSION: 17
-  GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
+  NATIVE_JAVA_VERSION: 21
+  GRAALVM_DIST: graalvm-community
   FAIL_ISSUE: 140
 
 permissions: read-all
@@ -126,7 +127,7 @@ jobs:
       - uses: graalvm/setup-graalvm@4a200f28cd70d1940b5e33bd00830b7dc71a7e2b # v1.2.6
         with:
           distribution: ${{ env.GRAALVM_DIST }}
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ env.NATIVE_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
 
