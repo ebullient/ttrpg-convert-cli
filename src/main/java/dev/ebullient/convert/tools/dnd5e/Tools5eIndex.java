@@ -301,6 +301,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         tui().progressf("Resolving copies and link sources");
 
+        // Find remaining/included base items
+        List<JsonNode> baseItems = nodeIndex.values().stream()
+                .filter(n -> TtrpgValue.indexBaseItem.booleanOrDefault(n, false))
+                .filter(n -> !ItemField.packContents.existsIn(n))
+                .toList();
+
+        Map<String, JsonNode> variants = new HashMap<>();
+
         // For each node: handle copies, link sources
         for (Entry<String, JsonNode> entry : nodeIndex.entrySet()) {
             String key = entry.getKey();
@@ -344,7 +352,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 default -> {
                 }
             }
+
+            // Reprints do follow specialized variants, so we need to find the variants
+            // now (and will filter them out based on rules later...)
+            if (type.hasVariants()) {
+                List<Tuple> variantList = findVariants(key, jsonSource, baseItems);
+                for (Tuple variant : variantList) {
+                    variants.put(variant.key, variant.node);
+                }
+            }
         } // end for each entry
+
+        nodeIndex.putAll(variants);
+        variants.clear();
 
         filteredIndex = new HashMap<>(nodeIndex.size());
 
@@ -362,7 +382,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         for (var e : nodeIndex.entrySet()) {
             String key = e.getKey();
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-            Tools5eSources sources = Tools5eSources.findSources(key);
+            // construct source if missing (which it may be for a variant)
+            Tools5eSources sources = Tools5eSources.constructSources(key, e.getValue());
             Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
 
             if (type.isFluffType()) {
@@ -386,26 +407,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // Follow inclusion of certain types to remove additional related elements
         tui().progressf("Removing dependent and dangling resources");
         filteredIndex.keySet().removeIf(k -> otherwiseExcluded(k));
-
-        // After we've removed reprints and otherwise excluded items,
-        // let's generate variants for monsters and magic items
-
-        tui().progressf("Populating variants");
-
-        // Find remaining/included base items
-        List<JsonNode> baseItems = filteredIndex.values().stream()
-                .filter(n -> TtrpgValue.indexBaseItem.booleanOrDefault(n, false))
-                .filter(n -> !ItemField.packContents.existsIn(n))
-                .toList();
-
-        // Find variant nodes (magic items, monsters)
-        List<Tuple> variantNodes = filteredIndex.entrySet().stream()
-                .filter(e -> Tools5eIndexType.getTypeFromKey(e.getKey()).hasVariants())
-                .flatMap(e -> findVariants(e.getKey(), e.getValue(), baseItems).stream())
-                .toList();
-
-        // Add the variants back into the index, which may replace the original
-        variantNodes.forEach(t -> filteredIndex.put(t.key, t.node));
 
         // Deities have their own glorious reprint mess, which we only need to deal with
         // when we aren't hoarding all the things.

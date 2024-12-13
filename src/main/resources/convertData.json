@@ -580,6 +580,7 @@
       "item|shield, +1|dmg": "item|+1 shield|dmg",
       "item|thieves tools|phb": "item|thieves' tools|phb",
       "item|wands of magic missiles|dmg": "item|wand of magic missiles|dmg",
+      "itemgroup|spell scroll|xphb": "itemgroup|spell scroll|xdmg",
       "spell|acid arrow|phb": "spell|melf's acid arrow|phb",
       "spell|bane spell|phb": "spell|bane|phb",
       "spell|ceremony|phb": "spell|ceremony|xge",
