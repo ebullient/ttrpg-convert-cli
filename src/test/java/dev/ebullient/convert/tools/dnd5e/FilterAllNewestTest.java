@@ -131,7 +131,6 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("monster|abjurer|vgm");
             commonTests.assert_Present("monster|alkilith|mpmm");
             commonTests.assert_MISSING("monster|alkilith|mtf");
-            commonTests.assert_Present("monster|animated object (5th-level spell)|xphb");
             commonTests.assert_MISSING("monster|animated object (huge)|phb");
             commonTests.assert_MISSING("monster|ape|mm");
             commonTests.assert_Present("monster|ape|xphb");
@@ -141,8 +140,8 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("monster|awakened shrub|xmm");
             commonTests.assert_MISSING("monster|beast of the land|tce");
             commonTests.assert_Present("monster|beast of the land|xphb");
-            commonTests.assert_MISSING("monster|bestial spirit (2nd-level spell)|tce");
-            commonTests.assert_Present("monster|bestial spirit (2nd-level spell)|xphb");
+            commonTests.assert_MISSING("monster|bestial spirit (air)|tce");
+            commonTests.assert_Present("monster|bestial spirit (air)|xphb");
             commonTests.assert_MISSING("monster|cat|mm");
             commonTests.assert_Present("monster|cat|xphb");
             commonTests.assert_Present("monster|derro savant|mpmm");
@@ -198,7 +197,7 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("subrace|genasi (air)|genasi|mpmm|mpmm");
             commonTests.assert_MISSING("subrace|human|human|phb|phb");
             commonTests.assert_Present("subrace|luma (sable)|luma|hwcs|hwcs");
-            commonTests.assert_MISSING("subrace|tiefling (zariel)|tiefling|phb|mtf");
+            commonTests.assert_Present("subrace|tiefling (zariel)|tiefling|phb|mtf");
             commonTests.assert_MISSING("subrace|tiefling|tiefling|phb|phb");
             commonTests.assert_Present("subrace|vampire (ixalan)|vampire|psz|psx");
             commonTests.assert_MISSING("trap|collapsing roof|dmg");

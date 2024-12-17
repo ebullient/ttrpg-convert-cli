@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemField;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources.SourceAttributes;
 
 public class MagicVariant implements JsonSource {
@@ -39,7 +38,7 @@ public class MagicVariant implements JsonSource {
 
     static final MagicVariant INSTANCE = new MagicVariant();
 
-    public static List<Tuple> findSpecificVariants(Tools5eIndex index, Tools5eIndexType type,
+    public static List<JsonNode> findSpecificVariants(Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode genericVariant, Tools5eJsonSourceCopier copier,
             List<JsonNode> baseItems) {
         return INSTANCE.findVariants(index, type, key, genericVariant, copier, baseItems);
@@ -114,10 +113,10 @@ public class MagicVariant implements JsonSource {
     }
 
     /** Update / replace item with variants (where appropriate) */
-    private List<Tuple> findVariants(Tools5eIndex index, Tools5eIndexType type,
+    private List<JsonNode> findVariants(Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode genericVariant, Tools5eJsonSourceCopier copier,
             List<JsonNode> baseItems) {
-        List<Tuple> variants = new ArrayList<>();
+        List<JsonNode> variants = new ArrayList<>();
         // baseItems.forEach((curBaseItem) => {
         //     ....
         //     genericVariants.forEach((curGenericVariant) => {
@@ -131,13 +130,17 @@ public class MagicVariant implements JsonSource {
         // We're looping the other way (variant is the outer loop / is passed in)
         boolean spawnNewItems = key.contains(" (*)");
 
+        ArrayNode specificVariantListNode = null;
         String gvKey = Tools5eIndexType.item.createKey(genericVariant);
         if (!spawnNewItems) {
             // Add generic variant to the list of variants as a regular item
             // Variations will be added to this item.
             TtrpgValue.indexInputType.setIn(genericVariant, Tools5eIndexType.item.name());
-            variants.add(new Tuple(gvKey, genericVariant));
+            TtrpgValue.indexKey.setIn(genericVariant, gvKey);
+            variants.add(genericVariant);
             index.addAlias(key, gvKey);
+            specificVariantListNode = ItemField._variants.ensureArrayIn(genericVariant);
+            ItemField._variants.setIn(genericVariant, specificVariantListNode);
         }
 
         String fluffKey = ItemField.hasFluff.booleanOrDefault(genericVariant, false)
@@ -162,7 +165,7 @@ public class MagicVariant implements JsonSource {
                 }
                 Tools5eSources.constructSources(newKey, specficVariant);
                 if (spawnNewItems) {
-                    variants.add(new Tuple(newKey, specficVariant));
+                    variants.add(specficVariant);
                     if (key.replace(" (*)", "").replace("magicvariant", "item").equals(newKey)) {
                         index.addAlias(key, newKey);
                     }
@@ -172,7 +175,7 @@ public class MagicVariant implements JsonSource {
                 } else {
                     // add variant to list of variants for this generic variant
                     // magic variant remains in index as a magic variant
-                    ItemField._variants.ensureArrayIn(genericVariant).add(specficVariant);
+                    specificVariantListNode.add(specficVariant);
                     index.addAlias(newKey, gvKey);
                 }
             }

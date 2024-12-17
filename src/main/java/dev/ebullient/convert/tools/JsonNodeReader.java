@@ -453,12 +453,16 @@ public interface JsonNodeReader {
         return target.withArray(this.nodeName());
     }
 
+    default JsonNode copyFrom(JsonNode source) {
+        return getFrom(source).deepCopy();
+    }
+
     /** Destructive! */
-    default void removeFrom(JsonNode target) {
+    default JsonNode removeFrom(JsonNode target) {
         if (target == null) {
-            return;
+            return null;
         }
-        ((ObjectNode) target).remove(this.nodeName());
+        return ((ObjectNode) target).remove(this.nodeName());
     }
 
     /** Destructive! */
@@ -496,5 +500,16 @@ public interface JsonNodeReader {
             return;
         }
         ((ObjectNode) target).set(this.nodeName(), getFrom(source));
+    }
+
+    /** Destructive! */
+    default void moveFrom(JsonNode source, JsonNode target) {
+        if (source == null || target == null) {
+            return;
+        }
+        JsonNode value = removeFrom(source);
+        if (value != null) {
+            ((ObjectNode) target).set(this.nodeName(), value);
+        }
     }
 }

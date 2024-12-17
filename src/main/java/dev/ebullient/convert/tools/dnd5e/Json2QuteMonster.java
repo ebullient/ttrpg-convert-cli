@@ -3,33 +3,30 @@ package dev.ebullient.convert.tools.dnd5e;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
+import dev.ebullient.convert.tools.JsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public class Json2QuteMonster extends Json2QuteCommon {
     public static boolean isNpc(JsonNode source) {
@@ -382,269 +379,146 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return Tools5eQuteBase.monsterPath(isNpc, creatureType);
     }
 
-    public static List<Tuple> findMonsterVariants(
+    public static List<JsonNode> findMonsterVariants(
             Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
-        if (MonsterFields.summonedBySpellLevel.existsIn(jsonSource)) {
-            return findConjuredMonsterVariants(index, type, key, jsonSource);
-        } else if (MonsterFields.type.existsIn(jsonSource)
-                && MonsterFields.type.existsIn(MonsterFields.type.getFrom(jsonSource))
-                && MonsterFields.type.getFrom(MonsterFields.type.getFrom(jsonSource)).has("choose")) {
-
-            List<Tuple> variants = new ArrayList<>();
-
-            // Produce a variant for each type
-            // "type": {
-            //   "type": {
-            //     "choose": [
-            //       "celestial",
-            //       "fiend"
-            //     ]
-            //   }
-            // },
-
-            JsonNode choose = MonsterFields.choose.getFrom(
-                    MonsterFields.type.getFrom(
-                            MonsterFields.type.getFrom(jsonSource)));
-
-            String name = SourceField.name.getTextOrEmpty(jsonSource);
-            for (JsonNode typeChoice : index.iterableElements(choose)) {
-                String variantName = String.format("%s (%s)", name, typeChoice.asText());
-                ObjectNode adjustedSource = (ObjectNode) index.copyNode(jsonSource);
-
-                adjustedSource.set("original", adjustedSource.get("name"));
-                adjustedSource.set("originalType", adjustedSource.get("type"));
-                adjustedSource.put("name", variantName);
-                adjustedSource.set("type", typeChoice);
-
-                String newKey = type.createKey(adjustedSource);
-                variants.add(new Tuple(newKey, adjustedSource));
-            }
-            return variants;
-        }
 
         if (key.contains("splugoth the returned") || key.contains("prophetess dran")) {
             MonsterFields.isNpc.setIn(jsonSource, true); // Fix.
         }
-        return List.of(new Tuple(key, jsonSource));
-    }
 
-    public static List<Tuple> findConjuredMonsterVariants(Tools5eIndex index, Tools5eIndexType type,
-            String key, JsonNode jsonSource) {
-        final Pattern variantPattern = Pattern.compile("(\\d+) \\((.*?)\\)");
-        int startLevel = MonsterFields.summonedBySpellLevel.intOrDefault(jsonSource, 0);
+        for (JsonNode variant : MonsterFields.variant.iterateArrayFrom(jsonSource)) {
+            // There is a code path that is only followed if a variant also has _version
+            // but it doesn't seem like there are any examples of this in the data.
+            if (MonsterFields._versions.existsIn(variant)) {
+                Tui.instance().warnf(Msg.SOMEDAY, "\"Variant for %s has versions: %s", key, variant);
+            }
+        }
 
-        String name = SourceField.name.getTextOrEmpty(jsonSource);
-        String hpString = MonsterFields.special.getTextOrEmpty(MonsterFields.hp.getFrom(jsonSource));
+        boolean summonedCreature = MonsterFields.summonedBySpellLevel.existsIn(jsonSource);
+        boolean hasVersions = MonsterFields._versions.existsIn(jsonSource);
 
-        JsonNode acNode = MonsterFields.ac.getFirstFromArray(jsonSource);
-        String acString = MonsterFields.special.existsIn(acNode)
-                ? MonsterFields.special.getTextOrEmpty(acNode)
-                : acNode.asText();
+        if (summonedCreature || hasVersions) {
+            List<JsonNode> versions = new ArrayList<>();
+            List<String> versionKeys = new ArrayList<>();
 
-        List<Tuple> variants = new ArrayList<>();
-        for (int i = startLevel; i < 10; i++) {
-            if (hpString.matches(" or \\d+") ||
-                    hpString.matches("(,\\s)?\\d+\\s\\([a-zA-Z ]+\\)")) {
-                String[] parts = {};
-                String[] variantGroups = {};
-                // "50 (Demon only) or 40 (Devil only) or 60 (Yugoloth only) + 15 for each spell
-                // level above 6th"
-                // "30 (Ghostly and Putrid only) or 20 (Skeletal only) + 10 for each spell level
-                // above 3rd"
-                if (hpString.matches(" or \\d+")) {
-                    parts = hpString.split(" \\+ ");
-                    variantGroups = parts[0].split(" or ");
-                } else if (hpString.matches("(,\\s)?\\d+\\s\\([a-zA-Z0-9_ ]+\\)")) {
-                    // 10 (Medium or smaller), 20 (Large), 40 (Huge)
-                    variantGroups = hpString.split(",\\s");
-                }
-                for (String group : variantGroups) {
-                    Matcher m = variantPattern.matcher(group);
-                    if (m.find()) {
-                        String amount = m.group(1);
-                        String variant = m.group(2);
-                        String hpText = amount;
-                        if (parts.length > 1) {
-                            hpText.concat(" + " + parts[1]);
-                        }
-
-                        if (variant.contains(" and ")) {
-                            for (String v : variant.split(" and ")) {
-                                String variantName = String.format("%s (%s, %s-Level Spell)",
-                                        name, v.replace(" only", ""), JsonSource.levelToString(i));
-                                createVariant(index, variants, jsonSource, type, variantName, i,
-                                        hpText, acString);
-                            }
-                        } else {
-                            String variantName = String.format("%s (%s, %s-Level Spell)",
-                                    name, variant.replace(" only", ""), JsonSource.levelToString(i));
-                            createVariant(index, variants, jsonSource, type, variantName, i,
-                                    hpText, acString);
-                        }
+            // Expand versions first
+            if (hasVersions) {
+                for (JsonNode vNode : MonsterFields._versions.iterateArrayFrom(jsonSource)) {
+                    if (MonsterFields._abstract.existsIn(vNode) && MonsterFields._implementations.existsIn(vNode)) {
+                        versions.addAll(getVersionsTemplate(vNode));
                     } else {
-                        index.tui().warnf(Msg.UNKNOWN, "Unknown HP variant from %s: %s", key, hpString);
+                        versions.add(getVersionsBasic(vNode));
                     }
                 }
-            } else {
-                String variantName = String.format("%s (%s-level Spell)", name, JsonSource.levelToString(i));
-                createVariant(index, variants, jsonSource, type, variantName, i, hpString, acString);
-            }
-        }
-        return variants;
-    }
 
-    static void createVariant(Tools5eIndex index, List<Tuple> variants,
-            JsonNode jsonSource, Tools5eIndexType type,
-            String variantName, int level, String hpString, String acString) {
-
-        ConjuredMonster fixed = new ConjuredMonster(level, variantName, hpString, acString, jsonSource);
-
-        ObjectNode adjustedSource = (ObjectNode) index.copyNode(jsonSource);
-        MonsterFields.original.setIn(adjustedSource, SourceField.name.getFrom(adjustedSource));
-        SourceField.name.setIn(adjustedSource, fixed.getName());
-        MonsterFields.ac.setIn(adjustedSource, fixed.getAc());
-        MonsterFields.hp.setIn(adjustedSource, fixed.getHp());
-
-        String newKey = type.createKey(adjustedSource);
-        variants.add(new Tuple(newKey, adjustedSource));
-    }
-
-    public static class ConjuredMonster {
-        final String name;
-        final MonsterAC monsterAc;
-        final MonsterHp monsterHp;
-
-        public ConjuredMonster(int level, String name, String hpString, String acString, JsonNode jsonSource) {
-            this.name = name;
-            this.monsterAc = new MonsterAC(level, acString);
-            this.monsterHp = new MonsterHp(level, hpString, jsonSource);
-        }
-
-        public JsonNode getName() {
-            return new TextNode(name);
-        }
-
-        public JsonNode getAc() {
-            MonsterAC[] result = new MonsterAC[] { monsterAc };
-            return Tui.MAPPER.valueToTree(result);
-        }
-
-        public JsonNode getHp() {
-            return Tui.MAPPER.valueToTree(monsterHp);
-        }
-    }
-
-    @RegisterForReflection
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class MonsterAC {
-        public final int ac;
-        public final String[] from;
-        public final String original;
-
-        // "ac": [
-        // {
-        // "ac": 19,
-        // "from": [
-        // "natural armor"
-        // ]
-        // }
-        // ],
-        public MonsterAC(int level, String acString) {
-            this.original = acString;
-            if (acString.contains(" + ")) {
-                String[] parts = acString.split(" \\+ ");
-                int value = Integer.parseInt(parts[0]);
-                String armor = null;
-                // "11 + the level of the spell (natural armor)"
-                // "13 + PB (natural armor)"
-                if (parts[1].contains("the level of the spell")) {
-                    value += level;
-                    armor = parts[1]
-                            .replace("the level of the spell", "")
-                            .replace("(", "")
-                            .replace(")", "")
-                            .trim();
-                } else if (parts[1].contains("PB")) {
-                    armor = parts[1]
-                            .replace("PB", "")
-                            .replace("(", "")
-                            .replace(")", "")
-                            .trim()
-                            + " + caster proficiency bonus";
+                // With each version...
+                for (JsonNode vNode : versions) {
+                    // DataUtil.generic._getVersion(...)
+                    String vKey = hydrateVersion(key, jsonSource, (ObjectNode) vNode, index);
+                    versionKeys.add(vKey);
                 }
-                this.ac = value;
-                this.from = armor == null ? null : new String[] { armor };
-            } else if (acString.matches("\\d+")) {
-                this.ac = Integer.parseInt(acString);
-                this.from = new String[] {};
-            } else {
-                throw new IllegalArgumentException("Unknown AC pattern: " + acString);
+                TtrpgValue.indexVersionKeys.setIn(jsonSource, Tui.MAPPER.valueToTree(versionKeys));
             }
+
+            // Add original after processing versions
+            versions.add(0, jsonSource);
+
+            return versions;
+        }
+
+        return List.of(jsonSource);
+    }
+
+    public static String hydrateVersion(String parentKey, JsonNode parentSource, ObjectNode version, Tools5eIndex index) {
+        // DataUtil.generic._hydrateVersion({key}, {source}, {version})
+        TtrpgValue.indexParentKey.setIn(version, parentKey);
+
+        Tools5eIndexType type = Tools5eIndexType.monster;
+        String versionKey = type.createKey(version);
+
+        ObjectNode parentCopy = (ObjectNode) parentSource.deepCopy();
+        MonsterFields._versions.removeFrom(parentCopy);
+        Tools5eFields.hasToken.removeFrom(parentCopy);
+        Tools5eFields.hasFluff.removeFrom(parentCopy);
+        Tools5eFields.hasFluffImages.removeFrom(parentCopy);
+
+        filterSources(Tools5eFields.additionalSources, parentCopy, SourceField.source.getTextOrNull(version));
+        filterSources(Tools5eFields.otherSources, parentCopy, SourceField.source.getTextOrNull(version));
+
+        index.copier.mergeNodes(type, parentKey, parentCopy, version);
+
+        Tools5eSources.constructSources(versionKey, version);
+        return versionKey;
+    }
+
+    private static void filterSources(JsonNodeReader field, ObjectNode parentCopy, String vesionSource) {
+        if (vesionSource == null) {
+            return;
+        }
+        JsonNode sources = field.ensureArrayIn(parentCopy);
+        Iterator<JsonNode> it = sources.elements();
+        while (it.hasNext()) {
+            JsonNode source = it.next();
+            if (vesionSource.equals(source.asText())) {
+                it.remove();
+            }
+        }
+        if (sources.isEmpty()) {
+            field.removeFrom(parentCopy);
         }
     }
 
-    @RegisterForReflection
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class MonsterHp {
-        static final Pattern hpPattern = Pattern
-                .compile("(\\d+) \\+ (\\d+) for each spell level above (\\d) ?\\(?(.*?)?\\)?");
+    public static JsonNode getVersionsBasic(JsonNode version) {
+        mutExpandCopy(version);
+        return version;
+    }
 
-        public final String special;
-        public final String original;
+    public static List<JsonNode> getVersionsTemplate(JsonNode version) {
+        // DataUtil.generic._getVersions_template({ver})
+        return MonsterFields._implementations.streamFrom(version)
+                .map(impl -> {
+                    JsonNode cpyTemplate = MonsterFields._abstract.copyFrom(version);
+                    mutExpandCopy(cpyTemplate);
 
-        // Want to go from:
-        // "40 + 10 for each spell level above 4th"
-        // "50 + 10 for each spell level above 5th (the dragon has a number of Hit Dice
-        // [d10s] equal to the level of the spell)"
-        // TO:
-        // "hp": {
-        // "average": 195,
-        // "formula": "17d12 + 85"
-        // },
-        // OR
-        // "hp": {
-        // "special": "195",
-        // },
-        public MonsterHp(int level, String hpString, JsonNode jsonSource) {
-            this.original = hpString;
+                    ObjectNode cpyImpl = impl.deepCopy();
+                    JsonNode _variables = MonsterFields._variables.removeFrom(cpyImpl);
+                    if (_variables != null) {
+                        Tui.instance().warnf(Msg.SOMEDAY, "Replace variables in templates. Templates: %s; Variables: %s",
+                                cpyImpl, _variables);
+                    }
+                    ((ObjectNode) cpyTemplate).setAll(cpyImpl);
+                    return cpyTemplate;
+                })
+                .toList();
+    }
 
-            Integer value = null;
-            if (hpString.contains("Constitution modifier")) {
-                // "equal the undead's Constitution modifier + your spellcasting ability
-                // modifier + ten times the spell's level"
-                int con = jsonSource.get("con").asInt();
-                value = con + (10 * level);
-            } else if (hpString.contains("half the hit point maximum of its summoner")) {
-                // nothing we can do
-            } else if (hpString.contains(" + ")) {
-                Matcher m = hpPattern.matcher(hpString);
-                if (m.find()) {
-                    value = Integer.parseInt(m.group(1));
-                    int scale = level - Integer.parseInt(m.group(3));
-                    value += Integer.parseInt(m.group(2)) * scale;
-                } else {
-                    // TODO: 20 (Air only) or 30 (Land and Water only) + 5 for each spell level above 2
-                    // nothing we can do right now
-                }
-            } else if (hpString.matches("^\\d+$")) {
-                value = Integer.parseInt(hpString);
-            } else if (hpString.matches("(\\d+\\s\\([a-zA-Z ]+\\),?\\s?)+")) {
-                // 10 (Medium or smaller), 20 (Large), 40 (Huge)
-                // nothing we can do right now
-            } else {
-                throw new IllegalArgumentException("Unknown HP pattern: " + hpString);
-            }
+    public static void mutExpandCopy(JsonNode node) {
+        JsonNode _copy = Tui.MAPPER.createObjectNode();
 
-            this.special = value == null ? "" : value + "";
+        // Move fields from the original node to the copy node
+        MetaFields._mod.moveFrom(node, _copy);
+
+        // Make sure a preserve element exists (which it will not if the original node is empty)
+        MetaFields._preserve.moveFrom(node, _copy);
+        if (!MetaFields._preserve.existsIn(_copy)) {
+            MetaFields._preserve.setIn(_copy, Tui.MAPPER.createObjectNode().put("*", true));
         }
+
+        // Copy the copy node back to the original node
+        MetaFields._copy.setIn(node, _copy);
     }
 
     enum MonsterFields implements JsonNodeReader {
+        _abstract,
+        _implementations,
+        _variables,
+        _versions,
         ac,
         alignment,
         alignmentPrefix,
         average,
+        choose,
         cr,
         creatureType, // object -- alternate to monster type
         daily,
@@ -668,7 +542,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         summonedBySpellLevel,
         trait,
         type,
+        variant,
         will,
-        choose,
     }
 }

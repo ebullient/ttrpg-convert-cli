@@ -307,7 +307,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .filter(n -> !ItemField.packContents.existsIn(n))
                 .toList();
 
-        Map<String, JsonNode> variants = new HashMap<>();
+        List<JsonNode> variants = new ArrayList<>();
 
         // For each node: handle copies, link sources
         for (Entry<String, JsonNode> entry : nodeIndex.entrySet()) {
@@ -356,14 +356,13 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             // Reprints do follow specialized variants, so we need to find the variants
             // now (and will filter them out based on rules later...)
             if (type.hasVariants()) {
-                List<Tuple> variantList = findVariants(key, jsonSource, baseItems);
-                for (Tuple variant : variantList) {
-                    variants.put(variant.key, variant.node);
-                }
+                variants.addAll(findVariants(key, jsonSource, baseItems));
             }
         } // end for each entry
 
-        nodeIndex.putAll(variants);
+        for (JsonNode variant : variants) {
+            nodeIndex.put(TtrpgValue.indexKey.getTextOrThrow(variant), variant);
+        }
         variants.clear();
 
         filteredIndex = new HashMap<>(nodeIndex.size());
@@ -474,14 +473,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         subraceIndex.clear();
     }
 
-    List<Tuple> findVariants(String key, JsonNode jsonSource, List<JsonNode> baseItems) {
+    List<JsonNode> findVariants(String key, JsonNode jsonSource, List<JsonNode> baseItems) {
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
         if (type == Tools5eIndexType.magicvariant) {
             return MagicVariant.findSpecificVariants(this, type, key, jsonSource, copier, baseItems);
         } else if (type == Tools5eIndexType.monster) {
             return Json2QuteMonster.findMonsterVariants(this, type, key, jsonSource);
         }
-        return List.of(new Tuple(key, jsonSource));
+        return List.of(jsonSource);
     }
 
     /**
@@ -552,6 +551,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                             continue;
                         }
                     }
+                    String lookupKey = finalKey.replace(sources.primarySource().toLowerCase(), "");
+                    String versionKey = TtrpgValue.indexVersionKeys.streamFrom(reprint)
+                            .map(x -> x.asText())
+                            .filter(x -> x.startsWith(lookupKey))
+                            .findFirst().orElse(null);
+                    if (versionKey != null) {
+                        reprintKey = versionKey; // more specific version/variant for redirect
+                    }
+
                     // Otherwise, we have a "newer" reprint that should be used instead
                     tui().logf(Msg.REPRINT, "(drop | reprinted) %s ==> %s", finalKey, reprintKey);
                     // 1) create an alias mapping the old key to the reprinted key

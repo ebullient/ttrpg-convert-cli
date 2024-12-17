@@ -85,17 +85,17 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
      * @param _copy Node containing metadata about the copy
      */
     protected void copyValues(T type, JsonNode copyFrom, ObjectNode copyTo, JsonNode _copy) {
-        JsonNode _preserve = MetaFields._preserve.getFromOrEmptyObjectNode(_copy);
+        JsonNode _preserve = MetaFields._preserve.getFrom(_copy); // null is ok
         // Copy required values from...
         for (Entry<String, JsonNode> from : iterableFields(copyFrom)) {
             String k = from.getKey();
             JsonNode copyToField = copyTo.get(k);
             if (copyToField != null && copyToField.isNull()) {
-                // copyToField exists as `null`. Remove the field.
+                // copyToField is present / exists as an intentional `null`. Remove the field.
                 copyTo.remove(k);
                 continue;
             }
-            if (copyToField == null) {
+            if (copyToField == null) { // undefined
                 // not already present in copyTo -- should we copyFrom?
                 // Do merge rules indicate the value should be preserved
                 if (mergePreserveKey(type, k)) {
@@ -166,7 +166,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             case setProps -> doSetProps(originKey, modInfo, prop, target);
             case prefixSuffixStringProp -> doPrefixSuffixStringProp(originKey, modInfo, prop, target);
             // Arrays
-            case prependArr, appendArr, replaceArr, replaceOrAppendArr, appendIfNotExistsArr, insertArr, removeArr ->
+            case prependArr, appendArr, renameArr, replaceArr, replaceOrAppendArr, appendIfNotExistsArr, insertArr, removeArr ->
                 doModArray(originKey, mode, modInfo, prop, target);
             // MATH
             case scalarAddProp -> doScalarAddProp(originKey, modInfo, prop, target);
@@ -444,7 +444,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         String propPath = nodePath(prop);
 
         switch (mode) {
-            case insertArr, removeArr, replaceArr -> {
+            case insertArr, removeArr, renameArr, replaceArr -> {
                 if (target.at(propPath).isMissingNode()) {
                     tui().errorf("Error (%s): Unable to %s; %s is not present: %s", originKey, mode, prop, target);
                     return;
@@ -464,6 +464,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
                     MetaFields.index.intFrom(modInfo).filter(n -> n >= 0).orElse(targetArray.size()),
                     items);
             case removeArr -> removeFromArray(originKey, modInfo, prop, targetArray);
+            case renameArr -> renameInArray(originKey, modInfo, targetArray);
             case replaceArr -> replaceArray(originKey, modInfo, targetArray, items);
             case replaceOrAppendArr -> {
                 boolean didReplace = !targetArray.isEmpty() && replaceArray(originKey, modInfo, targetArray, items);
@@ -553,6 +554,21 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             int index = findIndex(tgtArray, itemToRemove);
             if (index >= 0) {
                 tgtArray.remove(index);
+            }
+        }
+    }
+
+    protected void renameInArray(String originKey, JsonNode modInfo, ArrayNode tgtArray) {
+        JsonNode renames = ensureArray(MetaFields.renames.getFrom(modInfo));
+        if (renames == null || !renames.isArray()) {
+            return;
+        }
+
+        for (JsonNode renameNode : iterableElements(renames)) {
+            int index = findIndexByName(originKey, tgtArray, MetaFields.rename.getTextOrEmpty(renameNode));
+            if (index >= 0) {
+                JsonNode element = tgtArray.get(index);
+                SourceField.name.setIn(element, MetaFields.with.getFrom(renameNode));
             }
         }
     }
@@ -657,6 +673,8 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         props,
         range,
         regex,
+        rename,
+        renames,
         replace,
         root,
         scalar,
@@ -696,6 +714,7 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
 
         prependArr,
         appendArr,
+        renameArr,
         replaceArr,
         replaceOrAppendArr,
         appendIfNotExistsArr,

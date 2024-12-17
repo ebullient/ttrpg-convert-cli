@@ -136,7 +136,6 @@ public class FilterAllTest {
             commonTests.assert_Present("monster|abjurer|vgm");
             commonTests.assert_Present("monster|alkilith|mpmm");
             commonTests.assert_Present("monster|alkilith|mtf");
-            commonTests.assert_Present("monster|animated object (5th-level spell)|xphb");
             commonTests.assert_Present("monster|animated object (huge)|phb");
             commonTests.assert_Present("monster|ape|mm");
             commonTests.assert_Present("monster|ape|xphb");
@@ -146,8 +145,8 @@ public class FilterAllTest {
             commonTests.assert_Present("monster|awakened shrub|xmm");
             commonTests.assert_Present("monster|beast of the land|tce");
             commonTests.assert_Present("monster|beast of the land|xphb");
-            commonTests.assert_Present("monster|bestial spirit (2nd-level spell)|tce");
-            commonTests.assert_Present("monster|bestial spirit (2nd-level spell)|xphb");
+            commonTests.assert_Present("monster|bestial spirit (air)|tce");
+            commonTests.assert_Present("monster|bestial spirit (air)|xphb");
             commonTests.assert_Present("monster|cat|mm");
             commonTests.assert_Present("monster|cat|xphb");
             commonTests.assert_Present("monster|derro savant|mpmm");

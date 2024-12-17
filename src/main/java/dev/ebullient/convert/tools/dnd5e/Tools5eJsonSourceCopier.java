@@ -29,21 +29,24 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path");
 
     private static final List<String> _MERGE_REQUIRES_PRESERVE_BASE = List.of(
-            "_versions",
+            "page",
+            "otherSources",
+            "srd",
+            "srd52",
             "basicRules",
+            "freeRules2024",
+            "reprintedAs",
             "hasFluff",
             "hasFluffImages",
             "hasToken",
-            "indexInputType", // mine: do I have the usage right?
-            "indexKey", // mine: do I have the usage right?
-            "otherSources",
-            "page",
-            "reprintedAs",
-            "srd");
+            "_versions");
     private static final Map<Tools5eIndexType, List<String>> _MERGE_REQUIRES_PRESERVE = Map.of(
+            // Monster fields that must be preserved
             Tools5eIndexType.monster, List.of("legendaryGroup", "environment", "soundClip",
                     "altArt", "variant", "dragonCastingColor", "familiar"),
+            // Item fields that must be preserved
             Tools5eIndexType.item, List.of("lootTables", "tier"),
+            // Item Group fields that must be preserved
             Tools5eIndexType.itemGroup, List.of("lootTables", "tier"));
     private static final List<String> COPY_ENTRY_PROPS = List.of(
             "action", "bonus", "reaction", "trait", "legendary", "mythic", "variant", "spellcasting",
@@ -90,12 +93,14 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         ObjectNode copyFrom = (ObjectNode) copyNode(subraceNode);
         ObjectNode subraceOut = (ObjectNode) copyNode(raceNode);
 
-        List.of("name", "source", "srd", "basicRules")
+        List.of("name", "source", "srd", "srd52", "basicRules", "freeRules2024")
                 .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
-        List.of("subraces", "srd", "basicRules", "_versions", "hasFluff", "hasFluffImages", "_rawName")
+        List.of("subraces", "srd", "srd52", "basicRules", "freeRules2024",
+                "_versions", "hasFluff", "hasFluffImages",
+                "reprintedAs", "_rawName")
                 .forEach(subraceOut::remove);
 
-        copyFrom.remove("__prop"); // cleanup: we copy remainder later
+        copyFrom.remove("__prop"); // cleanup
 
         JsonNode overwrite = MetaFields.overwrite.getFrom(copyFrom);
 
@@ -194,7 +199,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
     // 	utils.js: static getCopy (impl, copyFrom, copyTo, templateData,...) {
     @Override
-    protected JsonNode mergeNodes(Tools5eIndexType type, String originKey, JsonNode copyFrom, ObjectNode target) {
+    public JsonNode mergeNodes(Tools5eIndexType type, String originKey, JsonNode copyFrom, ObjectNode target) {
         JsonNode _copy = MetaFields._copy.getFromOrEmptyObjectNode(target);
         normalizeMods(_copy);
 
@@ -320,6 +325,10 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
 
     protected void doModProp(
             String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target, ModFieldMode mode) {
+        if (mode == null) {
+            tui().errorf("Error (%s): Missing mode for modProp (add value to ModFieldMode): %s", originKey, modInfo);
+            return;
+        }
         switch (mode) {
             // Bestiary
             case addAllSaves, addAllSkills, addSaves -> mode.notSupported(tui(), originKey, modInfo);
