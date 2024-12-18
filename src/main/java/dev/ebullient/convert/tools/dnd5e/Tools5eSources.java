@@ -360,7 +360,11 @@ public class Tools5eSources extends CompendiumSources {
         if (srdText.isBlank() && basicRulesText.isBlank()) {
             return sourceText;
         }
-        String srdBasic = "Available in " + srdText + (srdText.isEmpty() ? "" : " and ") + basicRulesText;
+        String srdBasic = "Available in " + srdText;
+        if (!srdText.isEmpty() && !basicRulesText.isEmpty()) {
+            srdBasic += " and ";
+        }
+        srdBasic += basicRulesText;
         return sourceText.isEmpty()
                 ? srdBasic
                 : sourceText + ". " + srdBasic;
