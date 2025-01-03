@@ -50,7 +50,7 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.17.4</quarkus.platform.version>
         <!-- Libraries -->
-        <assertj.version>3.26.3</assertj.version>
+        <assertj.version>3.27.1</assertj.version>
         <evalex.version>3.4.0</evalex.version>
         <github-slugify.version>3.0.7</github-slugify.version>
         <icu4j.version>76.1</icu4j.version><!-- Optional dependency of Slugify -->
