@@ -8,20 +8,19 @@ on:
       - "src/**"
       - "ide-config"
 
+env:
+  JAVA_VERSION: 17
+  JAVA_DISTRO: temurin
+  NATIVE_JAVA_VERSION: 23
+  GRAALVM_DIST: graalvm-community
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+
 permissions:
   contents: read
   actions: read
 
-env:
-  JAVA_VERSION: 17
-  NATIVE_VERSION: 22.3.2
-  GRAALVM_DIST: graalvm-community
-  JAVA_DISTRO: temurin
-  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
-  GH_BOT_NAME: "GitHub Action"
-
 jobs:
-
   metadata:
     uses: ebullient/workflows/.github/workflows/java-snap-metadata.yml@main
 
@@ -76,6 +75,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
 
       - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         id: tools5e-cache
@@ -100,9 +101,8 @@ jobs:
       - uses: graalvm/setup-graalvm@4a200f28cd70d1940b5e33bd00830b7dc71a7e2b # v1.2.6
         with:
           distribution: ${{ env.GRAALVM_DIST }}
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ env.NATIVE_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.NATIVE_VERSION }}
           cache: 'maven'
 
       - name: Build and run in native mode

@@ -9,7 +9,7 @@ on:
 env:
   JAVA_VERSION: 17
   JAVA_DISTRO: temurin
-  NATIVE_JAVA_VERSION: 21
+  NATIVE_JAVA_VERSION: 23
   GRAALVM_DIST: graalvm-community
   FAIL_ISSUE: 140
 
@@ -111,7 +111,6 @@ jobs:
         os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
-
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 1
