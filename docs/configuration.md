@@ -354,7 +354,7 @@ This approach is ideal for content acquired in parts, like individual items from
 Content is often reprinted or updated in later sources or editions. This setting lets you control how reprinted or revised content is handled when generating notes.
 
 ``` json
-  "reprint": "newest"
+  "reprintBehavior": "newest"
 ```
 
 This setting has 3 possible values:
