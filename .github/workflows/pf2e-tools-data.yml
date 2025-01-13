@@ -8,14 +8,12 @@ on:
 
 env:
   JAVA_VERSION: 17
-  NATIVE_VERSION: 22.3.2
-  GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
+  NATIVE_JAVA_VERSION: 23
+  GRAALVM_DIST: graalvm-community
   FAIL_ISSUE: 141
 
-permissions:
-  contents: read
-  actions: read
+permissions: read-all
 
 jobs:
   cache-setup:
@@ -25,12 +23,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
 
       - name: Pf2e Tools release cache key
         id: test-data-key
         run: |
-          LATEST_RELEASE=$(curl -sLH 'Accept: application/json' https://api.github.com/repos/Pf2eToolsOrg/Pf2eTools/releases/latest)
-          LATEST_VERSION=$(echo $LATEST_RELEASE | grep tag_name | sed -e 's/.*"tag_name": "\([^"]*\)".*/\1/')
+          LATEST_VERSION=$(curl -sLH 'Accept: application/json' https://api.github.com/repos/Pf2eToolsOrg/Pf2eTools/releases/latest | jq -r .tag_name)
           echo $LATEST_VERSION
 
           echo "🔹 Use $LATEST_VERSION"
@@ -41,7 +40,7 @@ jobs:
         id: test-data-check
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
-          path: sources/Pf2eTools
+          path: sources
           key: ${{ steps.test-data-key.outputs.cache_key }}
           lookup-only: true
           enableCrossOsArchive: true
@@ -51,20 +50,20 @@ jobs:
         if: steps.test-data-check.outputs.cache-hit != 'true'
         env:
           LATEST_VERSION: ${{ steps.test-data-key.outputs.tools_version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔹 Download $LATEST_VERSION"
-          ARTIFACT_URL="https://github.com/Pf2eToolsOrg/Pf2eTools/archive/refs/tags/$LATEST_VERSION.tar.gz"
-          VER=$(echo $LATEST_VERSION | cut -c 2-)
-          ROOT="Pf2eTools-$VER"
-
-          curl -LsS -o Pf2eTools.tar.gz $ARTIFACT_URL
-          tar xzf Pf2eTools.tar.gz ${ROOT}/data ${ROOT}/img
-          # Remove image contents. We just need the files to exist (linking)
-          find ${ROOT}/img -type f | while read FILE; do echo > "$FILE"; done
-
           mkdir -p sources
-          rm -rf sources/Pf2eTools
-          mv ${ROOT} sources/Pf2eTools
+
+          echo "🔹 Download $LATEST_VERSION"
+
+          gh repo clone Pf2eToolsOrg/Pf2eTools sources/Pf2eTools -- --depth=1 -c advice.detachedHead=false -b $LATEST_VERSION
+
+          # Remove image contents. We just need the files to exist (linking)
+          find sources -type f -type f \
+             \( -iname \*.jpg -o -iname \*.png -o -iname \*.webp \) \
+             | while read FILE; do echo > "$FILE"; done
+
+          ls -al sources
 
   test-with-data:
 
@@ -74,11 +73,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
 
       - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         id: cache
         with:
-          path: sources/Pf2eTools
+          path: sources
           key: ${{ needs.cache-setup.outputs.cache_key }}
           fail-on-cache-miss: true
 
@@ -92,6 +93,7 @@ jobs:
       - name: Build with Maven
         id: mvn-build
         run: |
+          ls -al sources
           ./mvnw -B -ntp -DskipFormat verify
 
   native-test-with-data:
@@ -106,13 +108,14 @@ jobs:
         os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
-
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
 
       - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         id: cache
         with:
-          path: sources/Pf2eTools
+          path: sources
           key: ${{ needs.cache-setup.outputs.cache_key }}
           fail-on-cache-miss: true
           enableCrossOsArchive: true
@@ -120,30 +123,20 @@ jobs:
       - uses: graalvm/setup-graalvm@4a200f28cd70d1940b5e33bd00830b7dc71a7e2b # v1.2.6
         with:
           distribution: ${{ env.GRAALVM_DIST }}
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ env.NATIVE_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ env.NATIVE_VERSION }}
           cache: 'maven'
-
-      - name: Build and run
-        id: mvn-build
-        env:
-          MAVEN_OPTS: "-Xmx1g"
-        run: |
-          ./mvnw -B -ntp -DskipFormat verify
 
       - if: runner.os == 'Windows'
         name: clean before native build
         shell: cmd
         run: |
-          ./mvnw -B -ntp -DskipFormat clean
+          ./mvnw -B -ntp -DskipTests -DskipFormat clean
 
-      - name: Build and run in native mode
+      - name: Build, run, and test in native mode
         id: mvn-native-build
-        env:
-          MAVEN_OPTS: "-Xmx1g"
         run: |
-          ./mvnw -B -ntp -Dnative -DskipTests  -DskipFormat verify
+          ./mvnw -B -ntp -Dnative -DskipFormat verify
 
   report-native-build:
 
@@ -151,9 +144,14 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ failure() }}
     needs: [test-with-data, native-test-with-data]
+    permissions:
+      contents: read
+      issues: write
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
 
       - id: gh-issue
         env:
