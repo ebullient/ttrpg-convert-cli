@@ -1,0 +1,93 @@
+sources:
+  adventure:
+    - CM
+    - DC
+    - DIP
+    - FS
+    - GoS
+    - IDRotF
+    - LMoP
+    - LOX
+    - OoW
+    - PotA
+    - SDW
+    - SLW
+    - TftYP-AtG
+    - TftYP-DiT
+    - TftYP-TFoF
+    - TftYP-THSoT
+    - TftYP-TSC
+    - TftYP-ToH
+    - TftYP-WPM
+    - WBtW
+    - WDH
+    - WDMM
+  book:
+    - AAG
+    - AI
+    - BAM
+    - DMG
+    - DoD
+    - EGW
+    - FTD
+    - MaBJoV
+    - MM
+    - MPMM
+    - MTF
+    - PHB
+    - SCAG
+    - SCC
+    - TCE
+    - TDCSR
+    - VGM
+    - XGE
+  reference:
+    - AWM
+    - EEPC
+    - ESK
+    - TftYP
+    - SaF
+  homebrew:
+    - sources/5e-homebrew/collection/MCDM Productions; Strongholds and Followers.json
+
+paths:
+  compendium: /compendium/5e/
+  rules: /compendium/5e/rules/
+
+include:
+  - race|genasi|eepc
+  - racefluff|genasi|eepc
+  - subrace|air|genasi|eepc
+  - subrace|earth|genasi|eepc
+  - subrace|fire|genasi|eepc
+  - subrace|water|genasi|eepc
+
+excludePattern:
+  - race\|.*\|dmg
+
+exclude:
+  - monster|expert|dc
+  - monster|expert|sdw
+  - monster|expert|slw
+
+template:
+  background: examples/templates/tools5e/mixed/mixed-background2md.txt
+  class: examples/templates/tools5e/mixed/mixed-class2md.txt
+  deity: examples/templates/tools5e/mixed/mixed-deity2md.txt
+  feat: examples/templates/tools5e/mixed/mixed-feat2md.txt
+  hazard: examples/templates/tools5e/mixed/mixed-hazard2md.txt
+  item: examples/templates/tools5e/mixed/mixed-item2md.txt
+  monster: examples/templates/tools5e/mixed/mixed-monster2md.txt
+  object: examples/templates/tools5e/mixed/mixed-object2md.txt
+  race: examples/templates/tools5e/mixed/mixed-race2md.txt
+  reward: examples/templates/tools5e/mixed/mixed-reward2md.txt
+  spell: examples/templates/tools5e/mixed/mixed-spell2md.txt
+  subclass: examples/templates/tools5e/mixed/mixed-subclass2md.txt
+  vehicle: examples/templates/tools5e/mixed/mixed-vehicle2md.txt
+
+images:
+  copyInternal: true
+  internalRoot: sources/5etools-img
+
+useDiceRoller: true
+yamlStatblocks: false

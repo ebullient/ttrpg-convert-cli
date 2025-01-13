@@ -14,10 +14,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -30,6 +30,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.SourceAndPage;
 import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemField;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
@@ -125,7 +126,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.objectFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.optionalfeatureFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.rewardFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.subclassFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.trapFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.vehicleFluff.withArrayFrom(node, this::addToIndex);
 
@@ -288,9 +291,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         // Add missing/frequently-used aliases
         TtrpgConfig.addDefaultAliases(aliases);
+        TtrpgConfig.addReferenceEntries((n) -> addToIndex(Tools5eIndexType.reference, n));
 
-        tui().progressf("Importing homebrew sources");
         // Properly import homebrew sources
+        tui().progressf("Importing homebrew sources");
         homebrewIndex.importBrew(this::importHomebrewTree);
 
         tui().debugf("Preparing index using configuration:\n%s", Tui.jsonStringify(config));
@@ -306,6 +310,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .filter(n -> TtrpgValue.indexBaseItem.booleanOrDefault(n, false))
                 .filter(n -> !ItemField.packContents.existsIn(n))
                 .toList();
+
+        // Bring in parent adventures (before sources are created)
+        nodeIndex.values().stream()
+                .filter(n -> Tools5eFields.parentSource.existsIn(n))
+                .forEach(n -> {
+                    String source = SourceField.source.getTextOrEmpty(n);
+                    String parentSource = Tools5eFields.parentSource.getTextOrNull(n);
+                    if (TtrpgConfig.getConfig().sourceIncluded(source)) {
+                        // include the parent source if you include an adventure (related rules)
+                        tui().debugf(Msg.SOURCE, "including %s due to %s", parentSource, source);
+                        TtrpgConfig.includeAdditionalSource(parentSource);
+                    }
+                });
 
         List<JsonNode> variants = new ArrayList<>();
 
@@ -392,7 +409,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 filteredIndex.put(key, e.getValue());
             } else if (sources.includedByConfig()) {
                 filteredIndex.put(key, e.getValue());
-                logThis.accept(msgType, "(KEEP) " + key);
+                logThis.accept(msgType, "------ " + key);
             } else if (type.isOutputType()) {
                 logThis.accept(msgType, "(drop) " + key);
             }
@@ -406,6 +423,33 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // Follow inclusion of certain types to remove additional related elements
         tui().progressf("Removing dependent and dangling resources");
         filteredIndex.keySet().removeIf(k -> otherwiseExcluded(k));
+
+        // Populate classes and subclasses with related (included)
+        // features
+        for (var entry : filteredIndex.entrySet()) {
+            String entryKey = entry.getKey();
+            var type = Tools5eIndexType.getTypeFromKey(entryKey);
+            if (type == Tools5eIndexType.subclass
+                    || type == Tools5eIndexType.classfeature
+                    || type == Tools5eIndexType.subclassFeature) {
+                var parentType = switch (type) {
+                    case subclass -> Tools5eIndexType.classtype;
+                    case classfeature -> Tools5eIndexType.classtype;
+                    case subclassFeature -> Tools5eIndexType.subclass;
+                    default -> null;
+                };
+                ClassFields targetField = switch (type) {
+                    case subclass -> ClassFields.subclassKeys;
+                    case classfeature -> ClassFields.featureKeys;
+                    case subclassFeature -> ClassFields.featureKeys;
+                    default -> null;
+                };
+                String parentKey = getAliasOrDefault(parentType.fromChildKey(entryKey));
+                JsonNode parent = getOriginNoFallback(parentKey);
+                ArrayNode target = targetField.ensureArrayIn(parent);
+                target.add(entryKey);
+            }
+        }
 
         // Deities have their own glorious reprint mess, which we only need to deal with
         // when we aren't hoarding all the things.
@@ -593,34 +637,39 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
         return switch (type) {
-            case card -> removeIfParentExcluded(key, Tools5eIndexType.deck, Msg.DECK);
-            case classfeature, subclassFeature -> removeIfParentExcluded(key, Tools5eIndexType.classtype,
-                    Msg.CLASSES);
+            case card -> removeIfParentExcluded(key, type, Tools5eIndexType.deck, Msg.DECK);
+            case classfeature -> removeIfParentExcluded(key, type,
+                    Tools5eIndexType.classtype, Msg.CLASSES);
+            case subclassFeature -> removeIfParentExcluded(key, type,
+                    Tools5eIndexType.subclass, Msg.CLASSES)
+                    || removeIfParentExcluded(key, type,
+                            Tools5eIndexType.classtype, Msg.CLASSES);
             case optfeature, optionalFeatureTypes -> removeUnusedOptionalFeatures(type, key);
-            case subclass -> !sources.includedByConfig() || removeIfParentExcluded(key, Tools5eIndexType.classtype,
-                    Msg.CLASSES);
-            case subrace -> !sources.includedByConfig() || removeIfParentExcluded(key, Tools5eIndexType.race, Msg.RACES);
+            case subclass -> !sources.includedByConfig()
+                    || removeIfParentExcluded(key, type, Tools5eIndexType.classtype, Msg.CLASSES);
+            case subrace -> !sources.includedByConfig()
+                    || removeIfParentExcluded(key, type, Tools5eIndexType.race, Msg.RACES);
             default -> false; // does not have a parent
         };
     }
 
-    private boolean removeIfParentExcluded(String key, Tools5eIndexType parentType, Msg msg) {
+    private boolean removeIfParentExcluded(String key, Tools5eIndexType type, Tools5eIndexType parentType, Msg msg) {
         String parentKey = parentType.fromChildKey(key);
         Tools5eSources parentSources = Tools5eSources.findSources(parentKey);
         if (parentSources == null) {
-            tui().warnf(Msg.UNRESOLVED, "%35s :: unresolved parent of [%s]", parentKey, key);
             // allow for corrections (aliases), not reprints
             parentKey = getAliasOrDefault(parentKey, false);
             parentSources = Tools5eSources.findSources(parentKey);
             if (parentSources == null) {
+                tui().warnf(Msg.UNRESOLVED, "%35s :: unresolved parent of [%s]", parentKey, key);
                 return true; // has a parent, it is missing (dangling resource)
             }
         }
-        boolean included = parentSources.includedByConfig();
-        if (!included) {
+        boolean filterIncluded = filteredIndex.containsKey(parentKey);
+        if (!filterIncluded) {
             tui().debugf(msg, "(drop) %43s :: %s", parentKey, key);
         }
-        return !included;
+        return !filterIncluded;
     }
 
     private boolean removeUnusedOptionalFeatures(Tools5eIndexType type, String key) {
@@ -649,12 +698,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public boolean notPrepared() {
         return filteredIndex == null;
-    }
-
-    public List<JsonNode> classElementsMatching(Tools5eIndexType type, String className, String classSource) {
-        String pattern = String.format("%s\\|[^|]+\\|%s\\|%s\\|.*", type, className, classSource)
-                .toLowerCase();
-        return nodesMatching(pattern);
     }
 
     public List<JsonNode> elementsMatching(Tools5eIndexType type, String middle) {
@@ -747,59 +790,64 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return filteredIndex.get(finalKey);
     }
 
-    public ItemProperty findItemProperty(String fragment, Tools5eSources sources) {
-        if (fragment == null || fragment.isEmpty()) {
+    public JsonNode getHomebrewNode(Tools5eIndexType type, String finalKey, String currentSource) {
+        HomebrewMetaTypes meta = homebrewIndex.getHomebrewMetaTypes(currentSource);
+        if (meta == null) {
             return null;
         }
-        if (fragment.contains("|")) {
-            String finalKey = Tools5eIndexType.itemProperty.fromTagReference(fragment);
-            return ItemProperty.fromKey(finalKey, this);
-        }
-
-        // We could have a default property (phb), or we could have a homebrew property
-        ItemProperty property = homebrewIndex.findHomebrewProperty(fragment, sources);
-        if (property == null) {
-            // Then we'll try the default source
-            String key = Tools5eIndexType.itemProperty.fromTagReference(fragment);
-            return ItemProperty.fromKey(key, this);
-        }
-        return property;
+        String adaptKey = finalKey.replace(type.defaultSourceString().toLowerCase(), currentSource.toLowerCase());
+        return filteredIndex.get(adaptKey);
     }
 
-    public ItemType findItemType(String fragment, Tools5eSources sources) {
-        if (fragment == null || fragment.isEmpty()) {
+    public ItemProperty findItemProperty(String key, Tools5eSources activeSources) {
+        if (key == null || key.isEmpty()) {
             return null;
         }
-        if (fragment.contains("|")) {
-            String finalKey = Tools5eIndexType.itemType.fromTagReference(fragment);
-            return ItemType.fromKey(finalKey, this);
+        JsonNode propertyNode = findTypePropertyNode(key); // check alias & phb/xphb
+        if (propertyNode != null) {
+            return ItemProperty.fromNode(propertyNode);
         }
-        // We could have a default property (phb), or we could have a homebrew property
-        ItemType type = homebrewIndex.findHomebrewType(fragment, sources);
-        if (type == null) {
-            // Then we'll try the default source
-            String key = Tools5eIndexType.itemType.fromTagReference(fragment);
-            return ItemType.fromKey(key, this);
-        }
-        return type;
+        // try homebrew property
+        return homebrewIndex.findHomebrewProperty(key, activeSources);
     }
 
-    public ItemMastery findItemMastery(String fragment, Tools5eSources sources) {
-        if (fragment == null || fragment.isEmpty()) {
+    public ItemType findItemType(String key, Tools5eSources activeSources) {
+        if (key == null || key.isEmpty()) {
             return null;
         }
-        if (fragment.contains("|")) {
-            String finalKey = Tools5eIndexType.itemMastery.fromTagReference(fragment);
-            return ItemMastery.fromKey(finalKey, this);
+        JsonNode typeNode = findTypePropertyNode(key); // check alias & phb/xphb
+        if (typeNode != null) {
+            return ItemType.fromNode(typeNode);
         }
-        // We could have a default property, or we could have a homebrew property
-        ItemMastery mastery = homebrewIndex.findHomebrewMastery(fragment, sources);
-        if (mastery == null) {
-            // Then we'll try the default source
-            String key = Tools5eIndexType.itemMastery.fromTagReference(fragment);
-            return ItemMastery.fromKey(key, this);
+        // try homebrew property
+        return homebrewIndex.findHomebrewType(key, activeSources);
+    }
+
+    public ItemMastery findItemMastery(String key, Tools5eSources activeSources) {
+        if (key == null || key.isEmpty()) {
+            return null;
         }
-        return mastery;
+        JsonNode masteryNode = getNode(getAliasOrDefault(key));
+        if (masteryNode != null) {
+            return ItemMastery.fromNode(masteryNode);
+        }
+        // try homebrew property
+        return homebrewIndex.findHomebrewMastery(key, activeSources);
+    }
+
+    private JsonNode findTypePropertyNode(String key) {
+        String aliasKey = getAliasOrDefault(key);
+        JsonNode node = getNode(aliasKey);
+        if (node == null && aliasKey.endsWith("phb")) {
+            aliasKey = aliasKey.contains("|xphb")
+                    ? aliasKey.replace("|xphb", "|phb")
+                    : aliasKey.replace("|phb", "|xphb");
+            node = getNode(aliasKey);
+            if (node != null) {
+                addAlias(key, aliasKey);
+            }
+        }
+        return node;
     }
 
     public HomebrewMetaTypes getHomebrewMetaTypes(Tools5eSources sources) {
@@ -861,13 +909,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return Optional.empty();
     }
 
-    public List<JsonNode> originNodesMatching(Function<JsonNode, Boolean> filter) {
-        return nodeIndex.entrySet().stream()
-                .filter(e -> filter.apply(e.getValue()))
-                .map(Entry::getValue)
-                .collect(Collectors.toList());
-    }
-
     public JsonNode getOriginNoFallback(String finalKey) {
         JsonNode result = nodeIndex.get(finalKey);
         return result;
@@ -898,10 +939,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     result = nodeIndex.get(lookup);
                 }
             }
-        }
-        if (result == null) {
-            tui().debugf(Msg.UNRESOLVED, "No element found for %s",
-                    finalKey);
+            if (result == null) {
+                tui().log(new Exception("No element found for " + finalKey), false);
+            }
         }
         return result;
     }
@@ -962,7 +1002,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         });
     }
 
-    public boolean customRulesIncluded() {
+    public boolean customContentIncluded() {
         // The biggest hack of all time (not really).
         // I have some custom content for types/property/mastery that
         // should be included, but only if:
@@ -1004,20 +1044,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             throw new IllegalStateException("Index must be prepared before writing indexes");
         }
         return filteredIndex.entrySet();
-    }
-
-    public JsonNode resolveClassFeatureNode(String finalKey) {
-        JsonNode featureNode = getOrigin(finalKey);
-        if (featureNode == null) {
-            tui().debugf(Msg.UNRESOLVED, "unresolved class feature %s", finalKey);
-            return null; // skip this
-        }
-        return resolveClassFeatureNode(finalKey, featureNode);
-    }
-
-    public JsonNode resolveClassFeatureNode(String finalKey, JsonNode featureNode) {
-        // TODO: Handle copies or other fill-in / fluff?
-        return featureNode;
     }
 
     public Collection<String> classesForSpell(String spellKey) {
@@ -1132,6 +1158,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         // affiliated sources cache, too
         Tools5eSources.clear();
+        ItemMastery.clear();
+        ItemProperty.clear();
+        ItemType.clear();
     }
 
     static class Tuple {

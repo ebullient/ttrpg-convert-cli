@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.List;
+
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -19,8 +22,8 @@ public class QuteFeat extends Tools5eQuteBase {
 
     public QuteFeat(Tools5eSources sources, String name, String source,
             String prerequisite, String level,
-            String text, Tags tags) {
-        super(sources, name, source, text, tags);
+            List<ImageRef> images, String text, Tags tags) {
+        super(sources, name, source, images, text, tags);
         withTemplate("feat2md.txt"); // Feat and OptionalFeature
         this.level = level;
         this.prerequisite = prerequisite; // optional

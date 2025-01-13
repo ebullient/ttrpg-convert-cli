@@ -6,12 +6,24 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[focus](#focus), [hasSections](#hassections), [labeledSource](#labeledsource), [modes](#modes), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [typeOrder](#typeorder), [vaultPath](#vaultpath)
+[fluffImages](#fluffimages), [focus](#focus), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [modes](#modes), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [typeOrder](#typeorder), [vaultPath](#vaultpath)
 
+
+### fluffImages
+
+List of images as [ImageRef](../ImageRef.md) (optional)
 
 ### focus
 
 Psionic focus (string)
+
+### hasImages
+
+Return true if any images are present
+
+### hasMoreImages
+
+Return true if more than one image is present
 
 ### hasSections
 
@@ -32,6 +44,21 @@ Note name
 ### reprintOf
 
 List of content superceded by this note (as [Reprinted](../Reprinted.md))
+
+### showAllImages
+
+Return embedded wikilinks for all images
+If there is more than one, they will be displayed in a gallery.
+
+### showMoreImages
+
+Return embedded wikilinks for all but the first image
+If there is more than one, they will be displayed in a gallery.
+
+### showPortraitImage
+
+Return an embedded wikilink to the first image
+Will have the "right" anchor tag.
 
 ### source
 

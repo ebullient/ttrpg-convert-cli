@@ -30,6 +30,16 @@
           "type": "entries",
           "name": "Attunement",
           "edition": "classic",
+          "source": "DMG",
+          "page": 136,
+          "basicRules": true,
+          "srd": true,
+          "reprintedAs": [
+            {
+              "tag": "reference",
+              "uid": "Attunement|XPHB"
+            }
+          ],
           "entries": [
             "Some magic items require a creature to form a bond with them before their magical properties can be used. This bond is called attunement, and certain items have a prerequisite for it. If the prerequisite is a class, a creature must be a member of that class to attune to the item. (If the class is a spellcasting class, a monster qualifies if it has spell slots and uses that class's spell list.) If the prerequisite is to be a spellcaster, a creature qualifies if it can cast at least one spell using its traits or features, not using a magic item or the like.",
             "Without becoming attuned to an item that requires attunement, a creature gains only its nonmagical benefits, unless its description states otherwise. For example, a magic shield that requires attunement provides the benefits of a normal shield to a creature not attuned to it, but none of its magical properties.",
@@ -59,6 +69,8 @@
           "source": "XPHB",
           "page": 232,
           "id": "717",
+          "freerules2024": true,
+          "srd52": true,
           "entries": [
             "Some magic items require a creature to form a bond\u2014called Attunement\u2014with them before the creature can use an item's magical properties. Without becoming attuned to an item that requires Attunement, you gain only its nonmagical benefits unless its description states otherwise. For example, a magic Shield that requires Attunement provides the benefits of a normal Shield if you aren't attuned to it, but none of its magical properties.",
             {
@@ -107,7 +119,9 @@
         {
           "name": "General and Weapon Properties",
           "srd": true,
+          "srd52": true,
           "basicRules": true,
+          "freeRules2024": true,
           "entries": [
           ]
         },
@@ -118,6 +132,12 @@
           "page": 147,
           "srd": true,
           "basicRules": true,
+          "reprintedAs": [
+            {
+              "tag": "reference",
+              "uid": "Improvised Weapons|XPHB"
+            }
+          ],
           "entries": [
             "Sometimes characters don't have their weapons and have to attack with whatever is close at hand. An improvised weapon includes any object you can wield in one or two hands, such as broken glass, a table leg, a frying pan, a wagon wheel, or a dead goblin.",
             "In many cases, an improvised weapon is similar to an actual weapon and can be treated as such. For example, a table leg is akin to a club. At the DM's option, a character proficient with a weapon can use a similar object as if it were that weapon and use his or her proficiency bonus.",
@@ -174,6 +194,13 @@
           "name": "Cursed Items",
           "source": "DMG",
           "page": 138,
+          "basicRules": true,
+          "reprintedAs": [
+            {
+              "tag": "reference",
+              "uid": "Cursed Items|XDMG"
+            }
+          ],
           "entries": [
             "Some magic items bear curses that bedevil their users, sometimes long after a user has stopped using an item. Most methods of identifying items, including the identify spell, fail to reveal the presence of a curse, although lore might hint at it.",
             "Attunement to a cursed item can't be ended voluntarily unless the curse is broken first, such as with the {@spell remove curse} spell."
@@ -181,9 +208,27 @@
         },
         {
           "type": "entries",
+          "name": "Cursed Items",
+          "source": "XDMG",
+          "page": 220,
+          "freeRules2024": true,
+          "entries": [
+            "A magic item’s description specifies whether it bears a curse. Most methods of identifying items, including the Identify spell, fail to reveal such a curse.",
+            "Attunement to a cursed item can't be ended voluntarily unless the curse is broken first, such as with the {@spell Remove Curse} spell."
+          ]
+        },
+        {
+          "type": "entries",
           "name": "Poison",
           "source": "DMG",
           "page": 257,
+          "srd": true,
+          "reprintedAs": [
+            {
+              "tag": "reference",
+              "uid": "Poison|XDMG"
+            }
+          ],
           "entries": [
             "Given their insidious and deadly nature, poisons are illegal in most societies but are a favorite tool among assassins, drow, and other evil creatures.",
             "Poisons come in the following four types.",
@@ -224,6 +269,59 @@
               "id": "2fc"
             }
           ]
+        },
+        {
+          "name": "Poison",
+          "source": "XDMG",
+					"page": 90,
+					"entries": [
+						"Given their insidious and deadly nature, poisons are a favorite tool among assassins and evil creatures.",
+						"Poisons come in the following four types:",
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "Contact",
+									"entry": "Contact poison can be smeared on an object and remains potent until it is touched or washed off. A creature that touches contact poison with exposed skin suffers its effects."
+								},
+								{
+									"type": "item",
+									"name": "Ingested",
+									"entry": "A creature must swallow an entire dose of ingested poison to suffer its effects. The dose can be delivered in food or a liquid. You may decide that a partial dose has a reduced effect, such as allowing {@variantrule Advantage|XPHB} on the saving throw or dealing only half as much damage on a failed save."
+								},
+								{
+									"type": "item",
+									"name": "Inhaled",
+									"entry": "Poisonous powders and gases take effect when inhaled. Blowing the powder or releasing the gas subjects creatures in a 5-foot {@variantrule Cube [Area of Effect]|XPHB|Cube} to its effect. The resulting cloud dissipates immediately afterward. Holding one's breath is ineffective against inhaled poisons, as they affect nasal membranes, tear ducts, and other parts of the body."
+								},
+								{
+									"type": "item",
+									"name": "Injury",
+									"entry": "Injury poison can be applied as a Bonus Action to a weapon, a piece of ammunition, or similar object. The poison remains potent until delivered through a wound or washed off. A creature that takes Piercing or Slashing damage from an object coated with the poison is exposed to its effects."
+								}
+							]
+						},
+						{
+							"type": "entries",
+							"name": "Purchasing Poison",
+							"page": 90,
+							"id": "1be",
+							"entries": [
+								"In some settings, laws prohibit the possession and use of poison, but an illicit dealer or unscrupulous apothecary might keep a hidden stash. Characters with criminal contacts might be able to acquire poison easily. Other characters might have to make extensive inquiries and pay bribes before they acquire the poison they seek."
+							]
+						},
+						{
+							"type": "entries",
+							"name": "Harvesting Poison",
+							"page": 90,
+							"id": "1bf",
+							"entries": [
+								"A character can attempt to harvest poison from a venomous creature that is dead or has the {@condition Incapacitated|XPHB} condition. The effort takes {@dice 1d6} minutes, after which the character makes a {@dc 20} Intelligence ({@skill Nature|XPHB}) check using a {@item Poisoner's Kit|XPHB}. On a successful check, the character harvests enough poison for a single dose, and no additional poison can be harvested from that creature. On a failed check, the character is unable to extract any poison. If the character fails the check by 5 or more, the character is subjected to the creature's poison."
+							]
+						}
+					]
         }
       ]
     },
@@ -565,6 +663,7 @@
     "aliases": {
       "item|alchemist's tools|phb": "item|alchemist's supplies|phb",
       "item|alchemists' supplies|phb": "item|alchemist's supplies|phb",
+      "item|arrow of slaying (generic)|dmg": "item|arrow of slaying|dmg",
       "item|backpack|dmg": "item|backpack|phb",
       "item|breastplate|dmg": "item|breastplate|phb",
       "item|caltrops (20)|phb": "item|caltrops (bag of 20)|phb",
@@ -589,6 +688,7 @@
       "spell|deception|phb": "skill|deception|phb",
       "spell|detect good and evil|phb": "spell|detect evil and good|phb",
       "spell|enlarge|phb": "spell|enlarge/reduce|phb",
+      "spell|fire wall|phb": "spell|wall of fire|phb",
       "spell|frostbite|phb": "spell|frostbite|xge",
       "spell|history|phb": "skill|history|phb",
       "spell|infestation|phb": "spell|infestation|xge",
@@ -605,52 +705,6 @@
       "trap|quicksand|dmg": "hazard|quicksand|dmg"
     },
     "fixes": {
-      "adventure/adventure-lr.json": [
-        {
-          "match": " \\(see the \\\"\\{@condition Bluerot\\|GoS}\\\" sidebar\\)",
-          "replace": ""
-        }
-      ],
-      "adventure/adventure-rot.json": [
-        {
-          "match": "\\{@i \\{@i The Rise of Tiamat}.}",
-          "replace": "{@i The Rise of Tiamat}."
-        }
-      ],
-      "class/class-artificer.json": [
-        {
-          "match": "(\"page\":\\s*\\d+,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"Alchemist)",
-          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Alchemical Formula\", \"featureType\": [ \"AF\" ] } ],$2$3"
-        }
-      ],
-      "class/class-bard.json": [
-        {
-          "match": "(\"isReprinted\": true,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"College of Swords)",
-          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Fighting Style\", \"featureType\": [ \"FS:B\" ], \"progression\": { \"3\": 1 } } ],$2$3"
-        },
-        {
-          "match": "(\"page\":\\s*\\d+,)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"College of Swords)",
-          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Fighting Style\", \"featureType\": [ \"FS:B\" ], \"progression\": { \"3\": 1 } } ],$2$3"
-        }
-      ],
-      "class/class-wizard.json": [
-        {
-          "match": "(\\],)([\\r\\n\\s]+)(\"subclassFeatures\": \\[[\\s\\r\\n]+\"Onomancy)",
-          "replace": "$1$2\"optionalfeatureProgression\": [ { \"name\": \"Onomancy Resonant\", \"featureType\": [ \"OR\" ] } ],$2$3"
-        }
-      ],
-      "class/D&D Wiki; Swashbuckler.json": [
-        {
-          "match": "\t\t\t\t\"MB\"",
-          "replace": "\t\t\t\t\"TB\""
-        }
-      ],
-      "deities.json": [
-        {
-          "match": "deities/TDCSR/StormLord.webp",
-          "replace": "deities/TDCSR/Stormlord.webp"
-        }
-      ]
     },
     "sources": [
       "actions.json",
@@ -663,6 +717,7 @@
       "books.json",
       "class",
       "conditionsdiseases.json",
+      "cultsboons.json",
       "decks.json",
       "deities.json",
       "feats.json",
@@ -671,6 +726,7 @@
       "fluff-conditionsdiseases.json",
       "fluff-feats.json",
       "fluff-items.json",
+      "fluff-languages.json",
       "fluff-objects.json",
       "fluff-optionalfeatures.json",
       "fluff-races.json",
@@ -680,6 +736,7 @@
       "generated/gendata-tables.json",
       "items-base.json",
       "items.json",
+      "languages.json",
       "magicvariants.json",
       "objects.json",
       "optionalfeatures.json",

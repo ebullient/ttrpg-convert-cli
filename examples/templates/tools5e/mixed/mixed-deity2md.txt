@@ -1,0 +1,36 @@
+---
+obsidianUIMode: preview
+cssclasses: json5e-deity
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"{#each resource.altNames}, "{it}"{/each}]
+---
+# {resource.name}
+{#if resource.image}
+{resource.image.getEmbeddedLink("symbol")}{/if}
+
+{#if resource.altNames }
+- **Alternate Names**: {#each resource.altNames}{it}{#if it_hasNext}, {/if}{/each}
+{/if}{#if resource.alignment }
+- **Alignment**: {resource.alignment}
+{/if}{#if resource.category }
+- **Category**: {resource.category}
+{/if}{#if resource.domains }
+- **Domains**: {resource.domains}
+{/if}{#if resource.pantheon }
+- **Pantheon**: {resource.pantheon}
+{/if}{#if resource.province }
+- **Province**: {resource.province}
+{/if}{#if resource.symbol }
+- **Symbol**: {resource.symbol}
+{/if}
+
+{resource.text}{#if resource.source }
+
+## Sources
+
+*{resource.source}*{/if}

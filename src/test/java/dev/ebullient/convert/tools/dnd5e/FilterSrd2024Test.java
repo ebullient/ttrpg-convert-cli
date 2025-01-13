@@ -49,6 +49,7 @@ public class FilterSrd2024Test {
             commonTests.assert_MISSING("background|sage|phb");
             commonTests.assert_Present("background|sage|xphb");
             commonTests.assert_MISSING("background|baldur's gate acolyte|bgdia");
+            commonTests.assert_MISSING("classtype|artificer|tce");
             commonTests.assert_MISSING("classtype|bard|phb");
             commonTests.assert_Present("classtype|bard|xphb");
             commonTests.assert_MISSING("condition|blinded|phb");

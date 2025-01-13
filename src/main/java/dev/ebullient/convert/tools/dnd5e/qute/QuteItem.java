@@ -1,11 +1,11 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toAnchorTag;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
@@ -22,19 +22,16 @@ public class QuteItem extends Tools5eQuteBase {
     /** Detailed information about this item as {@link dev.ebullient.convert.tools.dnd5e.qute.QuteItem.Variant} */
     public final Variant rootVariant;
 
-    /** List of images for this item as {@link dev.ebullient.convert.qute.ImageRef} */
-    public final List<ImageRef> fluffImages;
     /** List of magic item variants as {@link dev.ebullient.convert.tools.dnd5e.qute.QuteItem.Variant}. Optional. */
     public final List<Variant> variants;
 
     public QuteItem(Tools5eSources sources, String source,
-            Variant rootVariant, String text, List<ImageRef> images,
-            List<Variant> variants, Tags tags) {
-        super(sources, rootVariant.name, source, text, tags);
+            Variant rootVariant, List<Variant> variants, List<ImageRef> images,
+            String text, Tags tags) {
+        super(sources, rootVariant.name, source, images, text, tags);
         withTemplate("item2md.txt");
 
         this.rootVariant = rootVariant;
-        this.fluffImages = images == null ? List.of() : images;
         this.variants = variants == null ? List.of() : variants;
     }
 
@@ -130,7 +127,7 @@ public class QuteItem extends Tools5eQuteBase {
             return "";
         }
         return variants.stream()
-                .map(x -> String.format("- [%s](#%s)", x.name, Tui.toAnchorTag(x.name)))
+                .map(x -> String.format("- [%s](#%s)", x.name, toAnchorTag(x.name)))
                 .collect(Collectors.joining("\n"));
     }
 

@@ -39,7 +39,7 @@ public class QuteDeity extends Tools5eQuteBase {
             String title, String cateogry, String domains,
             String province, String symbol, ImageRef symbolImg,
             String text, Tags tags) {
-        super(sources, name, source, text, tags);
+        super(sources, name, source, List.of(), text, tags);
         this.altNames = altNames;
         this.pantheon = pantheon;
         this.alignment = alignment;

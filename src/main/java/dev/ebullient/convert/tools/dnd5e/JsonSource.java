@@ -292,7 +292,7 @@ public interface JsonSource extends JsonTextReplacement {
             return; // skipped or not found
         }
         if (parseState().featureTypeDepth() > 2) {
-            tui().errorf("Cycle in class or subclass features found in %s", cf.cfSources);
+            tui().errorf("Cycle in class or subclass features found in %s", cf.cfSources());
             // this is within an existing feature description. Emit as a link
             cf.appendLink(this, text, parseState().getSource(featureType));
         } else if (parseState().inList()) {
@@ -648,7 +648,7 @@ public interface JsonSource extends JsonTextReplacement {
             }
         } else {
             text.add(link);
-            tui().warnf(Msg.UNRESOLVED, "unable to find statblock target: %s", entry);
+            tui().warnf(Msg.UNRESOLVED, "unable to find statblock target %s from %s", entry, getSources());
         }
     }
 
@@ -961,7 +961,7 @@ public interface JsonSource extends JsonTextReplacement {
         };
     }
 
-    default int levelToPb(int level) {
+    static int levelToPb(int level) {
         // 2 + (¼ * (Level – 1))
         return 2 + ((int) (.25 * (level - 1)));
     }
@@ -1284,6 +1284,7 @@ public interface JsonSource extends JsonTextReplacement {
         number, // speed
         optionalfeature,
         otherSources,
+        parentSource,
         prop, // statblock
         race,
         regionalEffects, // legendary group

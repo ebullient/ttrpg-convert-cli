@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.toAnchorTag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemTag;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 
@@ -41,23 +43,22 @@ public record ItemType(
 
         boolean included = isPresent(indexKey)
                 ? index.isIncluded(indexKey)
-                : index.customRulesIncluded();
+                : index.customContentIncluded();
 
         return included
                 ? "[%s](%sitem-types.md#%s)".formatted(
-                        linkText, index.rulesVaultRoot(), Tui.toAnchorTag(name))
+                        linkText, index.rulesVaultRoot(), toAnchorTag(name))
                 : linkText;
     }
 
     public static final Map<String, ItemType> typeMap = new HashMap<>();
 
-    public static ItemType fromKey(String key, Tools5eIndex index) {
-        String finalKey = index.getAliasOrDefault(key);
-        JsonNode node = index.getNode(finalKey);
-        return node == null ? null : fromNode(finalKey, node);
-    }
-
-    public static ItemType fromNode(String typeKey, JsonNode typeNode) {
+    public static ItemType fromNode(JsonNode typeNode) {
+        String typeKey = TtrpgValue.indexKey.getTextOrEmpty(typeNode);
+        if (typeKey.isEmpty()) {
+            Tui.instance().warnf(Msg.NOT_SET.wrap("Index key not found for property %s"), typeNode);
+            return null;
+        }
         // Create the ItemType object once
         return typeMap.computeIfAbsent(typeKey, k -> {
             String abbreviation = Tools5eFields.abbreviation.getTextOrEmpty(typeNode);
@@ -159,6 +160,10 @@ public record ItemType(
                 yield ItemTypeGroup.gear;
             }
         };
+    }
+
+    public static void clear() {
+        typeMap.clear();
     }
 }
 

@@ -228,15 +228,19 @@ public class Json2QuteCompose extends Json2QuteCommon {
         final JsonNode srdEntries = TtrpgConfig.activeGlobalConfig("srdEntries").get("properties");
 
         for (JsonNode srdEntry : iterableElements(srdEntries)) {
-            // FIXME: "edition" test for srd entries
-            currentSources = Tools5eSources.findOrTemporary(srdEntry);
+            String finalKey = TtrpgValue.indexKey.getTextOrEmpty(srdEntry);
+            if (index().isExcluded(finalKey)) {
+                continue;
+            }
+            currentSources = Tools5eSources.findSources(finalKey);
+
             boolean p2 = parseState().push(srdEntry);
             try {
-                String name = srdEntry.get("name").asText();
+                String name = currentSources.getName();
 
                 maybeAddBlankLine(text);
                 text.add("## " + name);
-                if (!srdEntry.has("srd")) {
+                if (!currentSources.isSrdOrFreeRules()) {
                     text.add(getLabeledSource(srdEntry));
                 }
                 text.add("");
@@ -254,10 +258,15 @@ public class Json2QuteCompose extends Json2QuteCommon {
                         }
                         maybeAddBlankLine(text);
                         text.add("### " + propName);
-                        if (!property.has("srd")) {
+                        if (!Tools5eSources.isSrd(property)) {
                             text.add(getLabeledSource(property));
                         }
-                        appendToText(text, SourceField.entries.getFrom(property), null);
+                        List<String> inner = new ArrayList<>();
+                        appendToText(inner, SourceField.entries.getFrom(property), null);
+                        if (!inner.isEmpty()) {
+                            inner.set(0, inner.get(0).replaceAll("^\\*\\*.*?\\.\\*\\* ", ""));
+                            text.addAll(inner);
+                        }
                     }
                 } else {
                     appendToText(text, SourceField.entries.getFrom(srdEntry), "###");

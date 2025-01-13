@@ -15,9 +15,7 @@ aliases:
 ---
 # {resource.name}
 {#if resource.detail }*{resource.detail}*  
-{/if}{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-{first.getEmbeddedLink("right")}  
-{/let}{/if}
+{/if}{#if resource.hasImages }{resource.showPortraitImage}{/if}
 
 {#if resource.prerequisite}
 - **Prerequisites**: {resource.prerequisite}
@@ -44,12 +42,10 @@ aliases:
 {/if}{#if resource.text }
 
 {resource.text}
-{/if}
-{#if resource.fluffImages.size > 1 }
+{/if}{#if resource.hasMoreImages }
 
-{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
- 
-{/if}{/each}
+{resource.showMoreImages}
+
 {/if}{#if resource.variants }
 
 **Variants**:

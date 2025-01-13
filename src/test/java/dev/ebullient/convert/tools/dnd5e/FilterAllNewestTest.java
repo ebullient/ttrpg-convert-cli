@@ -40,8 +40,8 @@ public class FilterAllNewestTest {
     public void testKeyIndex() throws Exception {
         commonTests.testKeyIndex(outputPath);
 
-        // All sources, but reprints will be followed.
-        // PHB elements should be missing/replaced by XPHB equivalents (e.g.)
+        // All sources, but things that have been reprinted will be replaced by the newest version
+        // e.g. PHB elements should be missing/replaced by XPHB equivalents
         if (commonTests.dataPresent) {
             commonTests.assert_MISSING("action|attack|phb");
             commonTests.assert_Present("action|attack|xphb");
@@ -51,6 +51,7 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("background|sage|phb");
             commonTests.assert_Present("background|sage|xphb");
             commonTests.assert_Present("background|baldur's gate acolyte|bgdia");
+            commonTests.assert_Present("classtype|artificer|tce");
             commonTests.assert_MISSING("classtype|bard|phb");
             commonTests.assert_Present("classtype|bard|xphb");
             commonTests.assert_MISSING("condition|blinded|phb");
@@ -197,7 +198,7 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("subrace|genasi (air)|genasi|mpmm|mpmm");
             commonTests.assert_MISSING("subrace|human|human|phb|phb");
             commonTests.assert_Present("subrace|luma (sable)|luma|hwcs|hwcs");
-            commonTests.assert_Present("subrace|tiefling (zariel)|tiefling|phb|mtf");
+            commonTests.assert_MISSING("subrace|tiefling (zariel)|tiefling|phb|mtf");
             commonTests.assert_MISSING("subrace|tiefling|tiefling|phb|phb");
             commonTests.assert_Present("subrace|vampire (ixalan)|vampire|psz|psx");
             commonTests.assert_MISSING("trap|collapsing roof|dmg");

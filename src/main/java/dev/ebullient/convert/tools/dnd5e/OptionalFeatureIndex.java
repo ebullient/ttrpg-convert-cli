@@ -127,10 +127,13 @@ public class OptionalFeatureIndex implements JsonSource {
      * This is included in all-index.json
      */
     static class OptionalFeatureType {
+
+        @JsonIgnore
+        final HomebrewMetaTypes homebrewMeta;
+
         final String lookupKey;
         final String featureTypeKey;
         final String abbreviation;
-        final HomebrewMetaTypes homebrewMeta;
         final String title;
         final String source;
         final List<String> features = new ArrayList<>();

@@ -54,8 +54,6 @@ public class QuteVehicle extends Tools5eQuteBase {
 
     /** Token image as {@link dev.ebullient.convert.qute.ImageRef} */
     public final ImageRef token;
-    /** List of {@link dev.ebullient.convert.qute.ImageRef} related to the creature */
-    public final List<ImageRef> fluffImages;
 
     public QuteVehicle(CompendiumSources sources, String name, String source,
             String vehicleType, String terrain,
@@ -64,9 +62,8 @@ public class QuteVehicle extends Tools5eQuteBase {
             ShipCrewCargoPace shipCrewCargoPace,
             List<ShipSection> shipSections,
             Collection<NamedText> action,
-            ImageRef token, List<ImageRef> fluffImages,
-            String text, Tags tags) {
-        super(sources, name, source, text, tags);
+            ImageRef token, List<ImageRef> images, String text, Tags tags) {
+        super(sources, name, source, images, text, tags);
 
         this.vehicleType = vehicleType;
         this.terrain = terrain;
@@ -81,7 +78,6 @@ public class QuteVehicle extends Tools5eQuteBase {
         this.action = action;
 
         this.token = token;
-        this.fluffImages = fluffImages;
     }
 
     /** True if this vehicle is a Ship */

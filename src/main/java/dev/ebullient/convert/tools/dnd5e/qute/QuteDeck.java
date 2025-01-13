@@ -25,7 +25,7 @@ public class QuteDeck extends Tools5eQuteBase {
 
     public QuteDeck(CompendiumSources sources, String name, String source,
             ImageRef cardBack, List<Card> cards, String text, Tags tags) {
-        super(sources, name, source, text, tags);
+        super(sources, name, source, List.of(), text, tags);
         this.cardBack = cardBack;
         this.cards = cards;
     }

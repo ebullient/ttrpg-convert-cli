@@ -1,0 +1,65 @@
+---
+obsidianUIMode: preview
+cssclasses: json5e-object
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+
+{#if resource.text }
+{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
+{first.getEmbeddedLink("right")}  
+{/let}{/if}
+{resource.text}
+{#each resource.fluffImages}{#if it_index != 0}
+{it.getEmbeddedLink()} 
+{/if}{/each}
+{#else}
+{#each resource.fluffImages}
+{it.getEmbeddedLink()}  
+{/each}
+{/if}{#if resource.hasSections }
+## Statblock
+
+{/if}
+```ad-statblock
+title: {resource.name}{#if resource.token}
+![{resource.token.title}]({resource.token.vaultPath}#token){/if}
+*{resource.size} {resource.objectType}{#if resource.creatureType } ({resource.creatureType}){/if}*
+
+- **Armor Class** {#if resource.ac }{resource.ac} {/if}{#if resource.acText }({resource.acText}){/if}
+- **Hit Points** {resource.hp or ' '} {#if resource.hpText }({resource.hpText}){/if}
+- **Speed** {resource.speed}
+
+|STR|DEX|CON|INT|WIS|CHA|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|{resource.scores}|
+
+{#if resource.senses }
+- **Senses** {resource.senses}
+{/if}{#if resource.vulnerable }
+- **Damage Vulnerabilities** {resource.vulnerable}
+{/if}{#if resource.resist}
+- **Damage Resistances** {resource.resist}
+{/if}{#if resource.immune}
+- **Damage Immunities** {resource.immune}
+{/if}{#if resource.conditionImmune}
+- **Condition Immunities** {resource.conditionImmune}
+{/if}
+{#if resource.action}
+
+## Actions
+{#for action in resource.action}
+
+{#if action.name }***{action.name}.*** {/if}{action.desc}
+{/for}{/if}
+```
+^statblock{#if resource.source }
+
+## Sources
+
+*{resource.source}*{/if}

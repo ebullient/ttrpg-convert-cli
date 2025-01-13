@@ -36,15 +36,13 @@ public class QuteBastion extends Tools5eQuteBase {
     public final String type;
     /** Formatted text listing other prerequisite conditions (optional) */
     public final String prerequisite;
-    /** List of images for this bastion (as {@link dev.ebullient.convert.qute.ImageRef}, optional) */
-    public final List<ImageRef> fluffImages;
 
     public QuteBastion(Tools5eSources sources, String name, String source,
             List<Hireling> hirelings, String level, List<String> orders,
             String prerequisite, List<Space> space, String type,
             String text, List<ImageRef> images, Tags tags) {
-        super(sources, name, source, text, tags);
-        this.fluffImages = images; // optional
+        super(sources, name, source, images, text, tags);
+
         this.hirelings = hirelings; // optional
         this.level = level; // optional
         this.orders = orders; // optional

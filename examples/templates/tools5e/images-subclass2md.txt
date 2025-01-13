@@ -1,0 +1,31 @@
+---
+obsidianUIMode: preview
+cssclasses: json5e-class
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+*{resource.parentClassLink}{#if resource.subclassTitle}: {resource.subclassTitle}{/if}*  
+*Source: {resource.source}*  
+
+{#if resource.classProgression }
+{resource.classProgression}
+
+{/if}
+{#if resource.text }
+{#if resource.hasImages }{resource.showPortraitImage}
+
+{/if}
+{resource.text}
+{#if resource.hasMoreImages }
+
+{resource.showMoreImages}
+{/if}
+{#else if resource.hasImages}
+{resource.showAllImages}
+{/if}

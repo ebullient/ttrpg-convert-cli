@@ -33,6 +33,12 @@ public interface QuteUtil {
         }
     }
 
+    default void maybeAddBlankLine(List<String> content) {
+        if (content.size() > 0 && !content.get(content.size() - 1).isBlank()) {
+            content.add("");
+        }
+    }
+
     /** Remove leading '+' */
     default Map<String, Integer> mapOfNumbers(Map<String, String> map) {
         Map<String, Integer> result = new HashMap<>();

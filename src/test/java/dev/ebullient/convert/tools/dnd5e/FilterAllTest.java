@@ -56,6 +56,7 @@ public class FilterAllTest {
             commonTests.assert_Present("background|sage|phb");
             commonTests.assert_Present("background|sage|xphb");
             commonTests.assert_Present("background|baldur's gate acolyte|bgdia");
+            commonTests.assert_Present("classtype|artificer|tce");
             commonTests.assert_Present("classtype|bard|phb");
             commonTests.assert_Present("classtype|bard|xphb");
             commonTests.assert_Present("condition|blinded|phb");

@@ -49,6 +49,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     itemType,
     itemTypeAdditionalEntries,
     language,
+    languageFluff,
     legendaryGroup,
     magicvariant,
     monster,
@@ -75,6 +76,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     status,
     subclass,
     subclassFeature,
+    subclassFluff,
     subrace("race"),
     table,
     tableGroup,
@@ -381,7 +383,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     public String decoratedName(String name, JsonNode entry) {
         Tools5eSources sources = Tools5eSources.findOrTemporary(entry);
         if (sources.isPrimarySource("DMG")
-                && !sources.type.defaultSourceString().equalsIgnoreCase("DMG")
+                && !sources.getType().defaultSourceString().equalsIgnoreCase("DMG")
                 && !name.contains("(DMG)")) {
             return name + " (DMG)";
         }
@@ -620,16 +622,18 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     boolean isFluffType() {
         return switch (this) {
             case backgroundFluff,
-                    facilityFluff,
                     classFluff,
                     conditionFluff,
+                    facilityFluff,
                     featFluff,
                     itemFluff,
+                    languageFluff,
                     monsterFluff,
                     objectFluff,
                     optionalfeatureFluff,
                     raceFluff,
                     rewardFluff,
+                    subclassFluff,
                     trapFluff,
                     vehicleFluff ->
                 true;

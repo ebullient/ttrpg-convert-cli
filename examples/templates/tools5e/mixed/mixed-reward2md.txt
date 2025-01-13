@@ -1,0 +1,24 @@
+---
+obsidianUIMode: preview
+cssclasses: json5e-reward
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+{#if resource.detail }*{resource.detail}*  
+{/if}{#if resource.signatureSpells }
+
+- **Signature Spells**: {resource.signatureSpells}
+{/if}{#if resource.text }
+
+{resource.text}
+{/if}{#if resource.source }
+
+## Sources
+
+*{resource.source}*{/if}

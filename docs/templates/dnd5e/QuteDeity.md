@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[alignment](#alignment), [altNames](#altnames), [category](#category), [domains](#domains), [hasSections](#hassections), [image](#image), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [province](#province), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [symbol](#symbol), [tags](#tags), [text](#text), [title](#title), [vaultPath](#vaultpath)
+[alignment](#alignment), [altNames](#altnames), [category](#category), [domains](#domains), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [image](#image), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [province](#province), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [symbol](#symbol), [tags](#tags), [text](#text), [title](#title), [vaultPath](#vaultpath)
 
 
 ### alignment
@@ -24,6 +24,18 @@ Category of this deity: Lesser Idols, Prime Deities
 ### domains
 
 Category of this deity: Nature, Tempest
+
+### fluffImages
+
+List of images as [ImageRef](../ImageRef.md) (optional)
+
+### hasImages
+
+Return true if any images are present
+
+### hasMoreImages
+
+Return true if more than one image is present
 
 ### hasSections
 
@@ -52,6 +64,21 @@ Province of this deity: Discovery, Luck, Storms, Travel, ...
 ### reprintOf
 
 List of content superceded by this note (as [Reprinted](../Reprinted.md))
+
+### showAllImages
+
+Return embedded wikilinks for all images
+If there is more than one, they will be displayed in a gallery.
+
+### showMoreImages
+
+Return embedded wikilinks for all but the first image
+If there is more than one, they will be displayed in a gallery.
+
+### showPortraitImage
+
+Return an embedded wikilink to the first image
+Will have the "right" anchor tag.
 
 ### source
 

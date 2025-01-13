@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[armorClass](#armorclass), [cost](#cost), [costCp](#costcp), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasSections](#hassections), [labeledSource](#labeledsource), [mastery](#mastery), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [reprintOf](#reprintof), [rootVariant](#rootvariant), [source](#source), [sourceAndPage](#sourceandpage), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tags](#tags), [text](#text), [variantAliases](#variantaliases), [variantSectionLinks](#variantsectionlinks), [variants](#variants), [vaultPath](#vaultpath), [weight](#weight)
+[armorClass](#armorclass), [cost](#cost), [costCp](#costcp), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [mastery](#mastery), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [reprintOf](#reprintof), [rootVariant](#rootvariant), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tags](#tags), [text](#text), [variantAliases](#variantaliases), [variantSectionLinks](#variantsectionlinks), [variants](#variants), [vaultPath](#vaultpath), [weight](#weight)
 
 
 ### armorClass
@@ -35,7 +35,15 @@ Formatted string of item details. Will include some combination of tier, rarity,
 
 ### fluffImages
 
-List of images for this item as [ImageRef](../../ImageRef.md)
+List of images as [ImageRef](../../ImageRef.md) (optional)
+
+### hasImages
+
+Return true if any images are present
+
+### hasMoreImages
+
+Return true if more than one image is present
 
 ### hasSections
 
@@ -72,6 +80,21 @@ List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 ### rootVariant
 
 Detailed information about this item as [Variant](Variant.md)
+
+### showAllImages
+
+Return embedded wikilinks for all images
+If there is more than one, they will be displayed in a gallery.
+
+### showMoreImages
+
+Return embedded wikilinks for all but the first image
+If there is more than one, they will be displayed in a gallery.
+
+### showPortraitImage
+
+Return an embedded wikilink to the first image
+Will have the "right" anchor tag.
 
 ### source
 

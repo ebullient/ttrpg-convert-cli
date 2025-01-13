@@ -1,7 +1,11 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
@@ -17,13 +21,18 @@ public class Json2QuteFeat extends Json2QuteCommon {
         Tags tags = new Tags(getSources());
         tags.add("feat");
 
+        List<ImageRef> images = new ArrayList<>();
+        List<String> text = getFluff(Tools5eIndexType.featFluff, "##", images);
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
+
         // TODO: update w/ category, ability, additionalSpells
         return new QuteFeat(sources,
                 type.decoratedName(rootNode),
                 getSourceText(sources),
                 listPrerequisites(rootNode),
                 null, // Level coming someday..
-                getText("##"),
+                images,
+                String.join("\n", text),
                 tags);
     }
 

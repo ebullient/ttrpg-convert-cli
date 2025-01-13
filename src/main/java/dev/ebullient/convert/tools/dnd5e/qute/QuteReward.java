@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.List;
+
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
@@ -23,8 +26,8 @@ public class QuteReward extends Tools5eQuteBase {
 
     public QuteReward(CompendiumSources sources, String name, String source,
             String ability, String detail, String signatureSpells,
-            String text, Tags tags) {
-        super(sources, name, source, text, tags);
+            List<ImageRef> images, String text, Tags tags) {
+        super(sources, name, source, images, text, tags);
         withTemplate("reward2md.txt");
         this.ability = ability;
         this.detail = detail;
