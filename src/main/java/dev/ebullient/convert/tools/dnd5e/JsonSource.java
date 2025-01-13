@@ -745,7 +745,7 @@ public interface JsonSource extends JsonTextReplacement {
                 }
                 if (!caption.isBlank()) {
                     table.add(0, "");
-                    table.add(0, "**" + caption + "**");
+                    table.add(0, "**" + replaceText(caption) + "**");
                 }
             } finally {
                 parseState().pop(pushTable);
