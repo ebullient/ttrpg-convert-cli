@@ -339,7 +339,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@h}", "*Hit:* ") // render.js Renderer.tag
-                        .replaceAll("\\{@m}", "*Miss:* ") // render.js Renderer.tag
+                        .replaceAll("\\{@m}", "*Miss:* ")
+                        .replaceAll("\\{@hom}", "*Hit or Miss:* ")// render.js Renderer.tag
                         .replaceAll("\\{@actSaveFail}", "*Failure:*") // render.js Renderer.tag
                         .replaceAll("\\{@actSaveSuccess}", "*Success:*") // render.js Renderer.tag
                         .replaceAll("\\{@actSaveSuccessOrFail}", "*Failure or Success:*") // render.js Renderer.tag
