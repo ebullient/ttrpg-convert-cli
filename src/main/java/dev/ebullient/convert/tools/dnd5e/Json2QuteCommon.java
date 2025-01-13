@@ -95,27 +95,35 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     public String getFluffDescription(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
-        List<String> text = getFluff(fluffType, heading, images);
+        return getFluffDescription(rootNode, fluffType, heading, images);
+    }
+
+    public String getFluffDescription(JsonNode fromNode, Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
+        List<String> text = getFluff(fromNode, fluffType, heading, images);
         return text.isEmpty() ? null : String.join("\n", text);
     }
 
     public List<String> getFluff(Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
+        return getFluff(rootNode, fluffType, heading, images);
+    }
+
+    public List<String> getFluff(JsonNode fromNode, Tools5eIndexType fluffType, String heading, List<ImageRef> images) {
         List<String> text = new ArrayList<>();
         JsonNode fluffNode = null;
-        if (TtrpgValue.indexFluffKey.existsIn(rootNode)) {
+        if (TtrpgValue.indexFluffKey.existsIn(fromNode)) {
             // Specific variant
-            String fluffKey = TtrpgValue.indexFluffKey.getTextOrEmpty(rootNode);
+            String fluffKey = TtrpgValue.indexFluffKey.getTextOrEmpty(fromNode);
             fluffNode = index.getOrigin(fluffKey);
-        } else if (Tools5eFields.fluff.existsIn(rootNode)) {
-            fluffNode = Tools5eFields.fluff.getFrom(rootNode);
+        } else if (Tools5eFields.fluff.existsIn(fromNode)) {
+            fluffNode = Tools5eFields.fluff.getFrom(fromNode);
             JsonNode monsterFluff = Tools5eFields._monsterFluff.getFrom(fluffNode);
             if (monsterFluff != null) {
                 String fluffKey = fluffType.createKey(monsterFluff);
                 fluffNode = index.getOrigin(fluffKey);
             }
-        } else if (Tools5eFields.hasFluff.booleanOrDefault(rootNode, false)
-                || Tools5eFields.hasFluffImages.booleanOrDefault(rootNode, false)) {
-            String fluffKey = fluffType.createKey(rootNode);
+        } else if (Tools5eFields.hasFluff.booleanOrDefault(fromNode, false)
+                || Tools5eFields.hasFluffImages.booleanOrDefault(fromNode, false)) {
+            String fluffKey = fluffType.createKey(fromNode);
             fluffNode = index.getOrigin(fluffKey);
         }
 

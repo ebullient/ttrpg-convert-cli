@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.toAnchorTag;
 
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -664,16 +665,19 @@ public interface JsonTextConverter<T extends IndexType> {
         return StreamSupport.stream(iterableFieldNames(source).spliterator(), false);
     }
 
+    default Stream<Entry<String, JsonNode>> streamProps(JsonNode source) {
+        return streamPropsExcluding(source, (JsonNodeReader[]) null);
+    }
+
     default Stream<Entry<String, JsonNode>> streamPropsExcluding(JsonNode source, JsonNodeReader... excludingKeys) {
         if (source == null || !source.isObject()) {
             return Stream.of();
         }
+        if (excludingKeys == null || excludingKeys.length == 0) {
+            return source.properties().stream();
+        }
         return source.properties().stream()
                 .filter(e -> Arrays.stream(excludingKeys).noneMatch(s -> e.getKey().equalsIgnoreCase(s.name())));
-    }
-
-    default String toAnchorTag(String x) {
-        return Tui.toAnchorTag(x);
     }
 
     /** {@link #createLink(String, Path, String, String)} with an empty title */

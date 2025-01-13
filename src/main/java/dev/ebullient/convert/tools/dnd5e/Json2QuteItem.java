@@ -57,9 +57,9 @@ public class Json2QuteItem extends Json2QuteCommon {
         return new QuteItem(sources,
                 getSourceText(sources),
                 rootVariant,
-                text,
-                fluffImages,
                 variants,
+                fluffImages,
+                text,
                 tags);
     }
 

@@ -49,6 +49,7 @@ public class FilterSubset2014Test {
             commonTests.assert_Present("background|sage|phb");
             commonTests.assert_MISSING("background|sage|xphb");
             commonTests.assert_MISSING("background|baldur's gate acolyte|bgdia");
+            commonTests.assert_Present("classtype|artificer|tce");
             commonTests.assert_Present("classtype|bard|phb");
             commonTests.assert_MISSING("classtype|bard|xphb");
             commonTests.assert_Present("condition|blinded|phb");

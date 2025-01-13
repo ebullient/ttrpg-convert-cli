@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.Collection;
+import java.util.List;
 
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.CompendiumSources;
@@ -25,7 +26,7 @@ public class QutePsionic extends Tools5eQuteBase {
     public QutePsionic(CompendiumSources sources, String name, String source,
             String typeOrder, String focus, Collection<NamedText> modes,
             String text, Tags tags) {
-        super(sources, name, source, text, tags);
+        super(sources, name, source, List.of(), text, tags);
         this.typeOrder = typeOrder;
         this.focus = focus;
         this.modes = modes;

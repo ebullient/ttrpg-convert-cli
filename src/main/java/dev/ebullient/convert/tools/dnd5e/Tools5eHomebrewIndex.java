@@ -62,8 +62,7 @@ public class Tools5eHomebrewIndex implements JsonSource {
         if (meta != null) {
             JsonNode homebrewNode = meta.getItemProperty(fragment);
             if (homebrewNode != null) {
-                String key = Tools5eIndexType.itemType.createKey(homebrewNode);
-                return ItemType.fromNode(key, homebrewNode);
+                return ItemType.fromNode(homebrewNode);
             }
         }
         return null;
@@ -74,8 +73,7 @@ public class Tools5eHomebrewIndex implements JsonSource {
         if (meta != null) {
             JsonNode homebrewNode = meta.getItemMastery(fragment);
             if (homebrewNode != null) {
-                String key = Tools5eIndexType.itemMastery.createKey(homebrewNode);
-                return ItemMastery.fromNode(key, homebrewNode);
+                return ItemMastery.fromNode(homebrewNode);
             }
         }
         return null;
@@ -86,8 +84,7 @@ public class Tools5eHomebrewIndex implements JsonSource {
         if (meta != null) {
             JsonNode homebrewNode = meta.getItemProperty(fragment);
             if (homebrewNode != null) {
-                String key = Tools5eIndexType.itemProperty.createKey(homebrewNode);
-                return ItemProperty.fromNode(key, homebrewNode);
+                return ItemProperty.fromNode(homebrewNode);
             }
         }
         return null;

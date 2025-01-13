@@ -14,16 +14,13 @@ import io.quarkus.qute.TemplateData;
  */
 @TemplateData
 public class QuteBackground extends Tools5eQuteBase {
-    /** List of images for this background (as {@link dev.ebullient.convert.qute.ImageRef}) */
-    public final List<ImageRef> fluffImages;
     /** Formatted text listing other prerequisite conditions (optional) */
     public final String prerequisite;
 
     public QuteBackground(Tools5eSources sources, String name, String source,
             String prerequisite,
-            String text, List<ImageRef> images, Tags tags) {
-        super(sources, name, source, text, tags);
-        this.fluffImages = images;
+            List<ImageRef> images, String text, Tags tags) {
+        super(sources, name, source, images, text, tags);
         this.prerequisite = prerequisite; // optional
     }
 }

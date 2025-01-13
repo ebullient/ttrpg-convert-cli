@@ -33,7 +33,7 @@ public class Json2QuteBastion extends Json2QuteCommon {
 
         List<ImageRef> fluffImages = new ArrayList<>();
         List<String> text = getFluff(Tools5eIndexType.facilityFluff, "##", fluffImages);
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
+        appendToText(text, rootNode, "##");
 
         String type = BastionFields.facilityType.getTextOrThrow(rootNode);
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteReward;
@@ -23,8 +24,11 @@ public class Json2QuteReward extends Json2QuteCommon {
             tags.add("reward", type);
         }
 
-        List<String> details = new ArrayList<>();
+        List<ImageRef> images = new ArrayList<>();
+        List<String> text = getFluff(Tools5eIndexType.rewardFluff, "##", images);
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
+        List<String> details = new ArrayList<>();
         String type = RewardField.type.getTextOrNull(rootNode);
         if (type != null) {
             details.add(type);
@@ -41,7 +45,8 @@ public class Json2QuteReward extends Json2QuteCommon {
                 RewardField.ability.transformTextFrom(rootNode, "\n", index),
                 getSources().getName().startsWith(detail) ? "" : detail,
                 RewardField.signaturespells.transformTextFrom(rootNode, "\n", index),
-                getText("##"),
+                images,
+                String.join("\n", text),
                 tags);
     }
 

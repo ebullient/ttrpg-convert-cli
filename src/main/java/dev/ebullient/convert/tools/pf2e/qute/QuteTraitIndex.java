@@ -1,12 +1,13 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.toAnchorTag;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
 import dev.ebullient.convert.tools.pf2e.Pf2eSources;
 import io.quarkus.qute.TemplateData;
@@ -43,7 +44,7 @@ public class QuteTraitIndex extends Pf2eQuteNote {
     /** List of category anchor links */
     public List<String> getCategoryLinks() {
         return categoryToTraits.keySet().stream()
-                .map(x -> "[" + x + "](#" + Tui.toAnchorTag(x) + ")")
+                .map(x -> "[" + x + "](#" + toAnchorTag(x) + ")")
                 .toList();
     }
 

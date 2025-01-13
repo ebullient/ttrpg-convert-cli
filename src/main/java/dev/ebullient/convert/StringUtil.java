@@ -373,6 +373,20 @@ public class StringUtil {
         }
     }
 
+    public static String toAnchorTag(String x) {
+        return x.replace(" ", "%20")
+                .replace(":", "")
+                .replace(".", "")
+                .replace('‑', '-');
+    }
+
+    // markdown link to href
+    public static String markdownLinkToHtml(String x) {
+        return x.replaceAll("\\[([^\\]]+)\\]\\(([^\\s)]+)(?:\\s\"[^\"]*\")?\\)",
+                "<a href=\"$2\">$1</a>");
+
+    }
+
     /**
      * A {@link java.util.stream.Collector} which converts the elements to strings, and joins the non-empty, non-null
      * strings into a single string. Allows providing an optional final delimiter that will be inserted before the

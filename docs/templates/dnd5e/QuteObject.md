@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [books](#books), [conditionImmune](#conditionimmune), [creatureType](#creaturetype), [fluffImages](#fluffimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [name](#name), [objectType](#objecttype), [reprintOf](#reprintof), [resist](#resist), [scores](#scores), [senses](#senses), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [token](#token), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
+[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [books](#books), [conditionImmune](#conditionimmune), [creatureType](#creaturetype), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [name](#name), [objectType](#objecttype), [reprintOf](#reprintof), [resist](#resist), [scores](#scores), [senses](#senses), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [tags](#tags), [text](#text), [token](#token), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
 
 
 ### 5eInitiativeYaml
@@ -50,7 +50,15 @@ Creature type (lowercase); optional
 
 ### fluffImages
 
-List of [ImageRef](../ImageRef.md) related to the creature
+List of images as [ImageRef](../ImageRef.md) (optional)
+
+### hasImages
+
+Return true if any images are present
+
+### hasMoreImages
+
+Return true if more than one image is present
 
 ### hasSections
 
@@ -107,6 +115,21 @@ Object ability scores as [AbilityScores](AbilityScores.md))
 ### senses
 
 Comma-separated string of object senses (if present).
+
+### showAllImages
+
+Return embedded wikilinks for all images
+If there is more than one, they will be displayed in a gallery.
+
+### showMoreImages
+
+Return embedded wikilinks for all but the first image
+If there is more than one, they will be displayed in a gallery.
+
+### showPortraitImage
+
+Return an embedded wikilink to the first image
+Will have the "right" anchor tag.
 
 ### size
 

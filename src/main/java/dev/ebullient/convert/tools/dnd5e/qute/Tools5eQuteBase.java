@@ -1,11 +1,13 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
@@ -24,12 +26,76 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class Tools5eQuteBase extends QuteBase {
 
+    /** List of images as {@link dev.ebullient.convert.qute.ImageRef} (optional) */
+    public final List<ImageRef> fluffImages;
+
     String targetPath;
     String filename;
     String template;
 
-    public Tools5eQuteBase(CompendiumSources sources, String name, String source, String text, Tags tags) {
+    public Tools5eQuteBase(CompendiumSources sources, String name, String source, List<ImageRef> fluffImages, String text,
+            Tags tags) {
         super(sources, name, source, text, tags);
+        this.fluffImages = isPresent(fluffImages) ? fluffImages : List.of();
+    }
+
+    /**
+     * Return true if any images are present
+     */
+    public boolean getHasImages() {
+        return !fluffImages.isEmpty();
+    }
+
+    /**
+     * Return true if more than one image is present
+     */
+    public boolean getHasMoreImages() {
+        return fluffImages.size() > 1;
+    }
+
+    /**
+     * Return an embedded wikilink to the first image
+     * Will have the "right" anchor tag.
+     */
+    public String getShowPortraitImage() {
+        if (fluffImages.isEmpty()) {
+            return "";
+        }
+        return fluffImages.get(0).getEmbeddedLink("right");
+    }
+
+    /**
+     * Return embedded wikilinks for all images
+     * If there is more than one, they will be displayed in a gallery.
+     */
+    public String getShowAllImages() {
+        return createImageLinks(false);
+    }
+
+    /**
+     * Return embedded wikilinks for all but the first image
+     * If there is more than one, they will be displayed in a gallery.
+     */
+    public String getShowMoreImages() {
+        return createImageLinks(true);
+    }
+
+    private String createImageLinks(boolean omitFirst) {
+        if (fluffImages.isEmpty()) {
+            return "";
+        }
+        if (fluffImages.size() == 1 && !omitFirst) {
+            return fluffImages.get(0).getEmbeddedLink("center");
+        }
+        if (fluffImages.size() == 2 && omitFirst) {
+            return fluffImages.get(1).getEmbeddedLink("center");
+        }
+        List<String> lines = new ArrayList<>();
+        lines.add("> [!gallery]");
+        for (int i = omitFirst ? 1 : 0; i < fluffImages.size(); i++) {
+            lines.add(fluffImages.get(i).getEmbeddedLink("")); // no anchor
+        }
+        return String.join("\n", lines);
     }
 
     public static String fixFileName(String name, Tools5eSources sources) {

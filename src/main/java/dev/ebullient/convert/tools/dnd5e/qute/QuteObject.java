@@ -45,8 +45,6 @@ public class QuteObject extends Tools5eQuteBase {
 
     /** Token image as {@link dev.ebullient.convert.qute.ImageRef} */
     public final ImageRef token;
-    /** List of {@link dev.ebullient.convert.qute.ImageRef} related to the creature */
-    public final List<ImageRef> fluffImages;
 
     public QuteObject(CompendiumSources sources,
             String name, String source,
@@ -57,9 +55,9 @@ public class QuteObject extends Tools5eQuteBase {
             String senses,
             ImmuneResist immuneResist,
             Collection<NamedText> actions,
-            ImageRef tokenImage, List<ImageRef> fluffImages,
+            ImageRef tokenImage, List<ImageRef> images,
             String text, Tags tags) {
-        super(sources, name, source, text, tags);
+        super(sources, name, source, images, text, tags);
         this.isNpc = isNpc;
         this.size = size;
         this.creatureType = creatureType;
@@ -74,7 +72,6 @@ public class QuteObject extends Tools5eQuteBase {
         this.action = actions;
 
         this.token = tokenImage;
-        this.fluffImages = fluffImages;
     }
 
     /** List of source books (abbreviated name). Fantasy statblock uses this list. */

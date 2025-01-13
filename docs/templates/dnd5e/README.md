@@ -15,7 +15,7 @@ This data object provides a default mechanism for creating
 a marked up string based on the attributes that are present.
 - [QuteBackground](QuteBackground.md): 5eTools background attributes (`background2md.txt`).
 - [QuteBastion](QuteBastion/README.md): 5eTools background attributes (`bastion2md.txt`).
-- [QuteClass](QuteClass.md): 5eTools class attributes (`class2md.txt`)
+- [QuteClass](QuteClass/README.md): 5eTools class attributes (`class2md.txt`)
 
 Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 - [QuteDeck](QuteDeck/README.md): 5eTools deck attributes (`deck2md.txt`)

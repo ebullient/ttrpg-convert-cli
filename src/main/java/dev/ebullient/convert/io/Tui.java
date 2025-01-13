@@ -173,13 +173,6 @@ public class Tui {
         return slugifier().slugify(s);
     }
 
-    public static String toAnchorTag(String x) {
-        return x.replace(" ", "%20")
-                .replace(":", "")
-                .replace(".", "")
-                .replace('‑', '-');
-    }
-
     static final boolean picocliDebugEnabled = "DEBUG".equalsIgnoreCase(System.getProperty("picocli.trace"));
 
     Ansi ansi;
@@ -324,6 +317,12 @@ public class Tui {
         }
     }
 
+    public void log(Throwable t, boolean keepException) {
+        if (log != null) {
+            log.println(captureStackTrace(t, keepException));
+        }
+    }
+
     public void logf(String output, Object... params) {
         logf(Msg.NOOP, output, params);
     }
@@ -380,7 +379,7 @@ public class Tui {
                 .replace("java.nio.file.NoSuchFileException: ", "File not found: "));
         errLine(message, colors.errorText(message));
         if (ex != null && log != null) {
-            ex.printStackTrace(log);
+            log.println(captureStackTrace(ex, true));
         }
     }
 
@@ -505,7 +504,6 @@ public class Tui {
     public boolean readFile(Path p, List<Fix> fixes, BiConsumer<String, JsonNode> callback) {
         inputRoot.add(p.getParent().toAbsolutePath());
         try {
-            progressf("Reading %s", p);
             File f = p.toFile();
             String contents = Files.readString(p);
             for (Fix fix : fixes) {
@@ -643,5 +641,25 @@ public class Tui {
 
     public static String jsonStringify(Object o) {
         return Tui.MAPPER.valueToTree(o).toPrettyString();
+    }
+
+    public static String captureStackTrace(Throwable t, boolean keepException) {
+        var stackTrace = t.getStackTrace();
+        if (stackTrace == null || stackTrace.length == 0) {
+            return keepException ? t.toString() : "";
+        }
+        StringBuilder sb = new StringBuilder();
+        if (keepException) {
+            sb.append(Msg.DEBUG.wrap(t.toString())).append("\n");
+        } else {
+            sb.append(Msg.DEBUG.wrap(t.getMessage())).append("\n");
+        }
+        for (StackTraceElement e : stackTrace) {
+            if (e.getClassName().startsWith("picocli")) {
+                break;
+            }
+            sb.append("\tat ").append(e.toString()).append("\n");
+        }
+        return sb.toString();
     }
 }

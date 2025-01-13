@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.List;
+
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.Tags;
 import io.quarkus.qute.TemplateData;
@@ -17,8 +20,8 @@ public class QuteHazard extends Tools5eQuteBase {
 
     public QuteHazard(CompendiumSources sources, String name, String source,
             String hazardType,
-            String text, Tags tags) {
-        super(sources, name, source, text, tags);
+            List<ImageRef> images, String text, Tags tags) {
+        super(sources, name, source, images, text, tags);
         this.hazardType = hazardType;
         withTemplate("hazard2md.txt"); // not trap or hazard (types)
     }

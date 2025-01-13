@@ -6,12 +6,20 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[fluffImages](#fluffimages), [hasSections](#hassections), [hirelingDescription](#hirelingdescription), [hirelings](#hirelings), [labeledSource](#labeledsource), [level](#level), [name](#name), [orders](#orders), [prerequisite](#prerequisite), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [space](#space), [spaceDescription](#spacedescription), [tags](#tags), [text](#text), [type](#type), [vaultPath](#vaultpath)
+[fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hirelingDescription](#hirelingdescription), [hirelings](#hirelings), [labeledSource](#labeledsource), [level](#level), [name](#name), [orders](#orders), [prerequisite](#prerequisite), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [space](#space), [spaceDescription](#spacedescription), [tags](#tags), [text](#text), [type](#type), [vaultPath](#vaultpath)
 
 
 ### fluffImages
 
-List of images for this bastion (as [ImageRef](../../ImageRef.md), optional)
+List of images as [ImageRef](../../ImageRef.md) (optional)
+
+### hasImages
+
+Return true if any images are present
+
+### hasMoreImages
+
+Return true if more than one image is present
 
 ### hasSections
 
@@ -49,6 +57,21 @@ Formatted text listing other prerequisite conditions (optional)
 ### reprintOf
 
 List of content superceded by this note (as [Reprinted](../../Reprinted.md))
+
+### showAllImages
+
+Return embedded wikilinks for all images
+If there is more than one, they will be displayed in a gallery.
+
+### showMoreImages
+
+Return embedded wikilinks for all but the first image
+If there is more than one, they will be displayed in a gallery.
+
+### showPortraitImage
+
+Return an embedded wikilink to the first image
+Will have the "right" anchor tag.
 
 ### source
 

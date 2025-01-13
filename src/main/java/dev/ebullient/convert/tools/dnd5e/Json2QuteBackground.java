@@ -56,8 +56,8 @@ public class Json2QuteBackground extends Json2QuteCommon {
                 backgroundName,
                 getSourceText(sources),
                 listPrerequisites(rootNode),
-                String.join("\n", text),
                 images,
+                String.join("\n", text),
                 tags);
     }
 }

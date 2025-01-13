@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.List;
+
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -11,7 +14,6 @@ import io.quarkus.qute.TemplateData;
  */
 @TemplateData
 public class QuteSubclass extends Tools5eQuteBase {
-
     /** Name of the parent class */
     public final String parentClass;
     /** Markdown link to the parent class */
@@ -30,9 +32,8 @@ public class QuteSubclass extends Tools5eQuteBase {
             String parentClassSource,
             String subclassTitle,
             String classProgression,
-            String text, Tags tags) {
-        super(sources, name, source, text, tags);
-
+            String text, List<ImageRef> images, Tags tags) {
+        super(sources, name, source, images, text, tags);
         this.parentClass = parentClass;
         this.parentClassLink = parentClassLink;
         this.parentClassSource = parentClassSource;

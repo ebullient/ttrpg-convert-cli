@@ -29,14 +29,12 @@ public class QuteRace extends Tools5eQuteBase {
     public final String traits;
     /** Formatted text describing the race. Optional. Same as {resource.text} */
     public final String description;
-    /** List of images for this race (as {@link dev.ebullient.convert.qute.ImageRef}) */
-    public final List<ImageRef> fluffImages;
 
     public QuteRace(Tools5eSources sources, String name, String source,
             String ability, String type, String size, String speed,
             String spellcasting, String traits, String description,
             List<ImageRef> images, Tags tags) {
-        super(sources, name, source, description, tags);
+        super(sources, name, source, images, description, tags);
         this.ability = ability;
         this.type = type;
         this.size = size;
@@ -44,6 +42,5 @@ public class QuteRace extends Tools5eQuteBase {
         this.spellcasting = spellcasting;
         this.traits = traits;
         this.description = description;
-        this.fluffImages = images;
     }
 }

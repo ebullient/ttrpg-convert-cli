@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[ability](#ability), [detail](#detail), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [signatureSpells](#signaturespells), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[ability](#ability), [detail](#detail), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [signatureSpells](#signaturespells), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 
 ### ability
@@ -16,6 +16,18 @@ Description of special ability granted by this reward, if defined separately. Th
 ### detail
 
 Reward detail string (similar to item detail). May include the reward type and rarity if either are defined.
+
+### fluffImages
+
+List of images as [ImageRef](../ImageRef.md) (optional)
+
+### hasImages
+
+Return true if any images are present
+
+### hasMoreImages
+
+Return true if more than one image is present
 
 ### hasSections
 
@@ -32,6 +44,21 @@ Note name
 ### reprintOf
 
 List of content superceded by this note (as [Reprinted](../Reprinted.md))
+
+### showAllImages
+
+Return embedded wikilinks for all images
+If there is more than one, they will be displayed in a gallery.
+
+### showMoreImages
+
+Return embedded wikilinks for all but the first image
+If there is more than one, they will be displayed in a gallery.
+
+### showPortraitImage
+
+Return an embedded wikilink to the first image
+Will have the "right" anchor tag.
 
 ### signatureSpells
 

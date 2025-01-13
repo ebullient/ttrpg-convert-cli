@@ -1,0 +1,44 @@
+---
+obsidianUIMode: preview
+cssclasses: json5e-class
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+
+{#if resource.classProgression }
+{resource.classProgression}
+
+{/if}
+## Hit Points
+
+{#if resource.hitDice }
+- **Hit Dice**: 1d{resource.hitDice} per {resource.name} level
+- **Hit Points at First Level:** {resource.hitDice} + CON
+- **Hit Points at Higher Levels:** add {resource.hitRollAverage} OR 1d{resource.hitDice} + CON  (minimum of 1)
+{#else}
+- **Hit Dice**: *x* = hit dice specified in the sidekick's statblock (human, gnome, kobold, etc.)
+- **Hit Points at First Level:** *x* + CON
+- **Hit Points at Higher Levels:** add 1d*x* + CON (minimum of 1)
+{/if}
+
+## Starting a {resource.name}
+
+{resource.startingEquipment}
+
+{#if resource.multiclassing }
+## Multiclassing {resource.name}
+
+{resource.multiclassing}
+{/if}
+
+{resource.text}{#if resource.source }
+
+## Sources
+
+*{resource.source}*{/if}

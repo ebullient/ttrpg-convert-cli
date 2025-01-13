@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.toAnchorTag;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 
 public record ItemMastery(
         String name,
@@ -32,24 +34,19 @@ public record ItemMastery(
 
         boolean included = isPresent(indexKey)
                 ? index.isIncluded(indexKey)
-                : index.customRulesIncluded();
+                : index.customContentIncluded();
 
         return included
                 ? "[%s](%sitem-mastery.md#%s)".formatted(
-                        linkText, index.rulesVaultRoot(), Tui.toAnchorTag(name))
+                        linkText, index.rulesVaultRoot(), toAnchorTag(name))
                 : linkText;
     }
 
     public static final Comparator<ItemMastery> comparator = Comparator.comparing(ItemMastery::name);
     private static final Map<String, ItemMastery> masteryMap = new HashMap<>();
 
-    public static ItemMastery fromKey(String key, Tools5eIndex index) {
-        String finalKey = index.getAliasOrDefault(key);
-        JsonNode node = index.getNode(finalKey);
-        return node == null ? null : fromNode(finalKey, node);
-    }
-
-    public static ItemMastery fromNode(String key, JsonNode mastery) {
+    public static ItemMastery fromNode(JsonNode mastery) {
+        String key = TtrpgValue.indexKey.getTextOrEmpty(mastery);
         // Create the ItemType object once
         return masteryMap.computeIfAbsent(key, k -> {
             String name = SourceField.name.getTextOrEmpty(mastery);
@@ -68,5 +65,9 @@ public record ItemMastery(
         return itemMasteries.stream()
                 .map(ItemMastery::linkify)
                 .toList();
+    }
+
+    public static void clear() {
+        masteryMap.clear();
     }
 }

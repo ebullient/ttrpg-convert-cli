@@ -186,15 +186,15 @@ public class Tools5eSources extends CompendiumSources {
         return "true".equalsIgnoreCase(name) ? null : name;
     }
 
-    final boolean srd;
-    final boolean basicRules;
-    final boolean srd52;
-    final boolean freeRules2024;
-    final Tools5eIndexType type;
-    final String edition;
+    private final boolean srd;
+    private final boolean basicRules;
+    private final boolean srd52;
+    private final boolean freeRules2024;
+    private final Tools5eIndexType type;
+    private final String edition;
 
-    boolean filterRule;
-    boolean cfgIncluded;
+    private boolean filterRule;
+    private boolean cfgIncluded;
 
     private Tools5eSources(Tools5eIndexType type, String key, JsonNode jsonElement) {
         super(type, key, jsonElement);
@@ -205,6 +205,10 @@ public class Tools5eSources extends CompendiumSources {
         this.srd52 = SourceAttributes.srd52.coerceBooleanOrDefault(jsonElement, false);
         this.edition = SourceAttributes.edition.getTextOrEmpty(jsonElement);
         testSourceRules();
+    }
+
+    public boolean isSrdOrFreeRules() {
+        return srd || basicRules || srd52 || freeRules2024;
     }
 
     /**

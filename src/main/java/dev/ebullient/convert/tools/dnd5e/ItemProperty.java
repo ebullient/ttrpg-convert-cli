@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.toAnchorTag;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemTag;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 
@@ -37,12 +39,12 @@ record ItemProperty(
 
         boolean included = isPresent(indexKey)
                 ? index.isIncluded(indexKey)
-                : index.customRulesIncluded();
+                : index.customContentIncluded();
 
         return included
                 ? "[%s](%sitem-properties.md#%s)".formatted(
                         linkText, index.rulesVaultRoot(),
-                        Tui.toAnchorTag(isPresent(sectionName) ? sectionName : name))
+                        toAnchorTag(isPresent(sectionName) ? sectionName : name))
                 : linkText;
     }
 
@@ -53,13 +55,12 @@ record ItemProperty(
     public static final ItemProperty SILVERED = ItemProperty.customProperty("Silvered", "Silvered Weapons", "=");
     public static final ItemProperty POISON = ItemProperty.customProperty("Poison", "=");
 
-    public static ItemProperty fromKey(String key, Tools5eIndex index) {
-        String finalKey = index.getAliasOrDefault(key);
-        JsonNode node = index.getNode(finalKey);
-        return node == null ? null : ItemProperty.fromNode(finalKey, node);
-    }
-
-    public static ItemProperty fromNode(String key, JsonNode property) {
+    public static ItemProperty fromNode(JsonNode property) {
+        String key = TtrpgValue.indexKey.getTextOrEmpty(property);
+        if (key.isEmpty()) {
+            Tui.instance().warnf(Msg.NOT_SET.wrap("Index key not found for property %s"), property);
+            return null;
+        }
         // Create the ItemType object once
         return ItemProperty.propertyMap.computeIfAbsent(key, k -> {
             String abbreviation = Tools5eFields.abbreviation.getTextOrEmpty(property);
@@ -137,6 +138,10 @@ record ItemProperty(
      */
     public static ItemProperty customProperty(String name, String abbreviation) {
         return ItemProperty.customProperty(name, name, abbreviation);
+    }
+
+    public static void clear() {
+        propertyMap.clear();
     }
 }
 

@@ -186,10 +186,16 @@ public interface JsonNodeReader {
 
     default List<String> getListOfStrings(JsonNode source, Tui tui) {
         JsonNode target = getFrom(source);
-        if (target == null) {
+        if (target == null || target.isNull()) {
             return List.of();
-        } else if (target.isTextual()) {
+        }
+        if (target.isTextual()) {
             return List.of(target.asText());
+        }
+        if (target.isObject()) {
+            throw new IllegalArgumentException(
+                    "Unexpected object when creating list of strings: %s".formatted(
+                            source));
         }
         List<String> list = fieldFromTo(source, Tui.LIST_STRING, tui);
         return list == null ? List.of() : list;
@@ -197,8 +203,13 @@ public interface JsonNodeReader {
 
     default Map<String, String> getMapOfStrings(JsonNode source, Tui tui) {
         JsonNode target = getFrom(source);
-        if (target == null) {
+        if (target == null || target.isNull()) {
             return Map.of();
+        }
+        if (target.isTextual() || target.isArray()) {
+            throw new IllegalArgumentException(
+                    "Unexpected text or array when creating map of strings: %s".formatted(
+                            source));
         }
         Map<String, String> map = fieldFromTo(source, Tui.MAP_STRING_STRING, tui);
         return map == null ? Map.of() : map;
@@ -387,10 +398,6 @@ public interface JsonNodeReader {
             return name();
         }
 
-        default String toAnchorTag(String x) {
-            return Tui.toAnchorTag(x);
-        }
-
         default boolean isValueOfField(JsonNode source, JsonNodeReader field) {
             return matches(field.getTextOrEmpty(source));
         }
@@ -450,7 +457,7 @@ public interface JsonNodeReader {
         if (target == null) {
             return Tui.MAPPER.createArrayNode();
         }
-        return target.withArray(this.nodeName());
+        return target.withArrayProperty(this.nodeName());
     }
 
     default JsonNode copyFrom(JsonNode source) {

@@ -30,7 +30,7 @@ public class Json2QuteObject extends Json2QuteMonster {
         }
 
         List<ImageRef> fluffImages = new ArrayList<>();
-        List<String> text = getFluff(Tools5eIndexType.monsterFluff, "##", fluffImages);
+        List<String> text = getFluff(Tools5eIndexType.objectFluff, "##", fluffImages);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         return new QuteObject(sources,

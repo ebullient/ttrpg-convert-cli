@@ -1,7 +1,11 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteHazard;
@@ -22,11 +26,16 @@ public class Json2QuteHazard extends Json2QuteCommon {
             tags.add("hazard", hazardType);
         }
 
+        List<ImageRef> images = new ArrayList<>();
+        List<String> text = getFluff(Tools5eIndexType.trapFluff, "##", images);
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
+
         return new QuteHazard(getSources(),
                 getSources().getName(),
                 getSourceText(getSources()),
                 getHazardType(hazardType),
-                getText("##"),
+                images,
+                String.join("\n", text),
                 tags);
     }
 

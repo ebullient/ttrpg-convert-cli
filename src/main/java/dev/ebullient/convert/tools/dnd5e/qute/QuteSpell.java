@@ -32,14 +32,12 @@ public class QuteSpell extends Tools5eQuteBase {
     public final String duration;
     /** String: rendered list of links to classes that can use this spell. May be incomplete or empty. */
     public final String classes;
-    /** List of images for this spell (as {@link dev.ebullient.convert.qute.ImageRef}) */
-    public final List<ImageRef> fluffImages;
 
     public QuteSpell(Tools5eSources sources, String name, String source, String level,
             String school, boolean ritual, String time, String range,
             String components, String duration,
-            String classes, String text, List<ImageRef> fluffImages, Tags tags) {
-        super(sources, name, source, text, tags);
+            String classes, List<ImageRef> images, String text, Tags tags) {
+        super(sources, name, source, images, text, tags);
 
         this.level = level;
         this.school = school;
@@ -49,7 +47,6 @@ public class QuteSpell extends Tools5eQuteBase {
         this.components = components;
         this.duration = duration;
         this.classes = classes;
-        this.fluffImages = fluffImages;
     }
 
     /** List of class names that can use this spell. May be incomplete or empty. */

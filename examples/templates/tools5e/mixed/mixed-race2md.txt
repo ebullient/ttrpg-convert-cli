@@ -1,0 +1,46 @@
+---
+obsidianUIMode: preview
+cssclasses: json5e-race
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}
+{/if}
+aliases: ["{resource.name}"]
+---
+# {resource.name}
+
+{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
+{first.getEmbeddedLink("right")}  
+{/let}{/if}
+
+- **Ability Scores**: {resource.ability}
+{#if resource.type}
+- **Type**: {resource.type}
+{/if}
+- **Size**: {resource.size}
+- **Speed**: {resource.speed}
+{#if resource.spellcasting}
+- **Spellcasting**: {resource.spellcasting}
+{/if}
+
+## Traits
+
+{resource.traits}
+{#if resource.description}
+
+## Description
+
+{resource.description}
+
+{/if}
+{#if resource.fluffImages.size > 1 }
+
+{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
+{/if}{/each}
+{/if}{#if resource.source }
+
+## Sources
+
+*{resource.source}*{/if}

@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -113,6 +114,15 @@ public class TtrpgConfig {
         for (Entry<String, String> entry : config.sourceIdAlias.entrySet()) {
             if (entry.getValue().equals(src)) {
                 config.addSource(entry.getKey());
+            }
+        }
+    }
+
+    public static void addReferenceEntries(Consumer<JsonNode> callback) {
+        if (datasource == Datasource.tools5e) {
+            JsonNode srdEntries = TtrpgConfig.activeGlobalConfig("srdEntries");
+            for (JsonNode property : ConfigKeys.properties.iterateArrayFrom(srdEntries)) {
+                callback.accept(property);
             }
         }
     }

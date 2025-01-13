@@ -91,8 +91,6 @@ public class QuteMonster extends Tools5eQuteBase {
     public final String environment;
     /** Token image as {@link dev.ebullient.convert.qute.ImageRef} */
     public final ImageRef token;
-    /** List of {@link dev.ebullient.convert.qute.ImageRef} related to the creature */
-    public final List<ImageRef> fluffImages;
 
     public QuteMonster(Tools5eSources sources, String name, String source, boolean isNpc, String size, String type,
             String subtype, String alignment,
@@ -105,9 +103,9 @@ public class QuteMonster extends Tools5eQuteBase {
             Collection<NamedText> legendary,
             Collection<NamedText> legendaryGroup, String legendaryGroupLink,
             List<Spellcasting> spellcasting, String description, String environment,
-            ImageRef tokenImage, List<ImageRef> fluffImages, Tags tags) {
+            ImageRef tokenImage, List<ImageRef> images, Tags tags) {
 
-        super(sources, name, source, description, tags);
+        super(sources, name, source, images, description, tags);
 
         this.isNpc = isNpc;
         this.size = size;
@@ -137,7 +135,6 @@ public class QuteMonster extends Tools5eQuteBase {
         this.description = description;
         this.environment = environment;
         this.token = tokenImage;
-        this.fluffImages = fluffImages;
     }
 
     @Override

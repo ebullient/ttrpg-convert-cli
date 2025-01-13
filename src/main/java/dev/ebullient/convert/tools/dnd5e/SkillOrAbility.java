@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +17,8 @@ public interface SkillOrAbility {
     static final CustomSkillOrAbility special = new CustomSkillOrAbility("Special");
 
     String value();
+
+    String source();
 
     int ordinal();
 
@@ -53,22 +57,30 @@ public interface SkillOrAbility {
         final String name;
         final String lower;
         final String key;
+        final String source;
 
         public CustomSkillOrAbility(String name) {
             this.name = name;
             this.lower = name.toLowerCase();
             this.key = null;
+            this.source = "";
         }
 
         public CustomSkillOrAbility(JsonNode skill) {
-            this.name = SourceField.name.getTextOrEmpty(skill);
+            this.name = toTitleCase(SourceField.name.getTextOrEmpty(skill));
             this.lower = this.name.toLowerCase();
             this.key = Tools5eIndexType.skill.createKey(skill);
+            this.source = SourceField.source.getTextOrEmpty(skill);
         }
 
         @Override
         public String value() {
             return name;
+        }
+
+        @Override
+        public String source() {
+            return source;
         }
 
         public int ordinal() {
@@ -119,6 +131,10 @@ public interface SkillOrAbility {
 
         public String value() {
             return longValue;
+        }
+
+        public String source() {
+            return Tools5eIndexType.skill.defaultSourceString();
         }
     }
 }

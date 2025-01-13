@@ -293,7 +293,7 @@ public class Tools5eDataConvertTest {
     }
 
     @Test
-    void testCommand_5eBookAdventureInJson(QuarkusMainLauncher launcher) {
+    void testLiveData_5eBookAdventureInJson(QuarkusMainLauncher launcher) {
         testOutput = rootTestOutput.resolve("json-book-adventure");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             TestUtils.deleteDir(testOutput);
@@ -340,7 +340,7 @@ public class Tools5eDataConvertTest {
     }
 
     @Test
-    void testCommand_5eBookAdventureMinimalYaml(QuarkusMainLauncher launcher) {
+    void testLiveData_5eBookAdventureMinimalYaml(QuarkusMainLauncher launcher) {
         testOutput = rootTestOutput.resolve("yaml-adventure");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             TestUtils.deleteDir(testOutput);
@@ -363,6 +363,25 @@ public class Tools5eDataConvertTest {
             dirs.forEach(d -> {
                 assertThat(d).isDirectory();
             });
+        }
+    }
+
+    @Test
+    void testLiveData_Sample(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("sample");
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+
+            TestUtils.deleteDir(testOutput);
+
+            Tui.instance().infof("--- Sample content ----- ");
+
+            LaunchResult result = launcher.launch("--log", "--index",
+                    "-o", testOutput.toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sample.yaml").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
         }
     }
 }
