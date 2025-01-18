@@ -42,7 +42,7 @@ public class SourceAndPage {
             }
             return book;
         }
-        return null;
+        return "";
     }
 
     @Override

@@ -74,13 +74,6 @@ public class QuteObject extends Tools5eQuteBase {
         this.token = tokenImage;
     }
 
-    /** List of source books (abbreviated name). Fantasy statblock uses this list. */
-    public final List<String> getBooks() {
-        return getSourceAndPage().stream()
-                .map(x -> x.source)
-                .toList();
-    }
-
     /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#hp} */
     public String getHp() {
         return acHp.getHp();
