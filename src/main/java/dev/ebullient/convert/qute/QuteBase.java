@@ -1,5 +1,6 @@
 package dev.ebullient.convert.qute;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -59,12 +60,54 @@ public class QuteBase implements QuteUtil {
         return sources.getSourceAndPage();
     }
 
+    /**
+     * List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
+     */
+    public final List<String> getBooks() {
+        return getSourceAndPage().stream()
+                .map(x -> x.source)
+                .toList();
+    }
+
     /** List of content superceded by this note (as {@link dev.ebullient.convert.qute.Reprinted}) */
     public Collection<Reprinted> getReprintOf() {
         if (sources == null) {
             return List.of();
         }
         return sources.getReprints();
+    }
+
+    /**
+     * Get Sources as a footnote.
+     *
+     * Calling this method will return an italicised string with the primary source
+     * followed by a footnote listing all other sources. Useful for types
+     * that tend to have many sources.
+     */
+    public String getSourcesWithFootnote() {
+        if (sources == null) {
+            return "";
+        }
+        if (sources.getSources().size() == 1) {
+            SourceAndPage sp = sources.getSourceAndPage().iterator().next();
+            String txt = sp.toString();
+            if (!txt.isEmpty()) {
+                return "_Source: " + txt + "_";
+            }
+        }
+        String primary = null;
+        List<String> srcTxt = new ArrayList<>();
+        for(var sp : sources.getSourceAndPage()) {
+            String txt = sp.toString();
+            if (!txt.isEmpty()) {
+                if (primary == null) {
+                    primary = txt;
+                } else {
+                    srcTxt.add(txt);
+                }
+            }
+        }
+        return "_Source: %s_ ^[%s]".formatted(primary, String.join(", ", srcTxt));
     }
 
     /** True if the content (text) contains sections */
