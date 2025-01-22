@@ -163,7 +163,10 @@ public class MagicVariant implements JsonSource {
                 if (fluffKey != null) {
                     TtrpgValue.indexFluffKey.setIn(specficVariant, fluffKey);
                 }
-                Tools5eSources.constructSources(newKey, specficVariant);
+                Tools5eSources variantSources = Tools5eSources.constructSources(newKey, specficVariant);
+                variantSources.amendHomebrewSources(baseItem);
+                variantSources.amendHomebrewSources(genericVariant);
+
                 if (spawnNewItems) {
                     variants.add(specficVariant);
                     if (key.replace(" (*)", "").replace("magicvariant", "item").equals(newKey)) {
@@ -506,6 +509,11 @@ public class MagicVariant implements JsonSource {
         // TODO:
         // Renderer.item._createSpecificVariants_mergeVulnerableResistImmune({specificVariant, inherits});
 
+        // Carry over any homebrew sources from the base or GV item
+        // so that any  properties or types can be rendered properly
+        if (TtrpgValue.homebrewSource.existsIn(genericVariant)) {
+            TtrpgValue.homebrewSource.copy(genericVariant, specificVariant);
+        }
         return specificVariant;
     }
 

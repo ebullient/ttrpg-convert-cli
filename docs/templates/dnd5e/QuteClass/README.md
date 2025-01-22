@@ -6,8 +6,12 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[classProgression](#classprogression), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hitDice](#hitdice), [hitPointDie](#hitpointdie), [hitRollAverage](#hitrollaverage), [labeledSource](#labeledsource), [multiclassing](#multiclassing), [name](#name), [primaryAbility](#primaryability), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [startingEquipment](#startingequipment), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[books](#books), [classProgression](#classprogression), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hitDice](#hitdice), [hitPointDie](#hitpointdie), [hitRollAverage](#hitrollaverage), [labeledSource](#labeledsource), [multiclassing](#multiclassing), [name](#name), [primaryAbility](#primaryability), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [startingEquipment](#startingequipment), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### classProgression
 
@@ -85,6 +89,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### startingEquipment
 

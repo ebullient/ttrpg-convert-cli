@@ -10,12 +10,16 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[action](#action), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [immuneResist](#immuneresist), [isCreature](#iscreature), [isObject](#isobject), [isShip](#isship), [isSpelljammer](#isspelljammer), [isWarMachine](#iswarmachine), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [scores](#scores), [shipCrewCargoPace](#shipcrewcargopace), [shipSections](#shipsections), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [sizeDimension](#sizedimension), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [terrain](#terrain), [text](#text), [token](#token), [vaultPath](#vaultpath), [vehicleType](#vehicletype)
+[action](#action), [books](#books), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [immuneResist](#immuneresist), [isCreature](#iscreature), [isObject](#isobject), [isShip](#isship), [isSpelljammer](#isspelljammer), [isWarMachine](#iswarmachine), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [scores](#scores), [shipCrewCargoPace](#shipcrewcargopace), [shipSections](#shipsections), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [sizeDimension](#sizedimension), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [terrain](#terrain), [text](#text), [token](#token), [vaultPath](#vaultpath), [vehicleType](#vehicletype)
 
 
 ### action
 
 List of vehicle actions as a collection of [NamedText](../../NamedText.md)
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### fluffImages
 
@@ -109,6 +113,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### tags
 

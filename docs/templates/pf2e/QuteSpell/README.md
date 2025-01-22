@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [amp](#amp), [castDuration](#castduration), [components](#components), [cost](#cost), [domains](#domains), [duration](#duration), [formattedComponents](#formattedcomponents), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [reprintOf](#reprintof), [requirements](#requirements), [save](#save), [source](#source), [sourceAndPage](#sourceandpage), [spellLists](#spelllists), [spellType](#spelltype), [subclass](#subclass), [tags](#tags), [targeting](#targeting), [text](#text), [traditions](#traditions), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[aliases](#aliases), [amp](#amp), [books](#books), [castDuration](#castduration), [components](#components), [cost](#cost), [domains](#domains), [duration](#duration), [formattedComponents](#formattedcomponents), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [reprintOf](#reprintof), [requirements](#requirements), [save](#save), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [spellLists](#spelllists), [spellType](#spelltype), [subclass](#subclass), [tags](#tags), [targeting](#targeting), [text](#text), [traditions](#traditions), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 
 ### aliases
@@ -16,6 +16,10 @@ Aliases for this note
 ### amp
 
 Psi amp behavior as [QuteSpellAmp](QuteSpellAmp.md)
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### castDuration
 
@@ -87,6 +91,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### spellLists
 

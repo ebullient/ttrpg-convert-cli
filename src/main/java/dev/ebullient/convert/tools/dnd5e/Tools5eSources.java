@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +57,18 @@ public class Tools5eSources extends CompendiumSources {
         }
         return SourceAttributes.freeRules2024.coerceBooleanOrDefault(jsonElement, false)
                 || freeRulesKeys.contains(key);
+    }
+
+    public static boolean has2024Content() {
+        // return true if any of the 2024 core sources are enabled
+        return List.of("XPHB", "XDMG", "XMM", "srd52", "freerules2024")
+                .stream().anyMatch(TtrpgConfig.getConfig()::sourceIncluded);
+    }
+
+    public static boolean has2014Content() {
+        // return true if any of the 2024 core sources are enabled
+        return List.of("PHB", "DMG", "MM", "srd", "basicRules")
+                .stream().anyMatch(TtrpgConfig.getConfig()::sourceIncluded);
     }
 
     public static boolean includedByConfig(String key) {
@@ -204,7 +218,16 @@ public class Tools5eSources extends CompendiumSources {
         this.srd = SourceAttributes.srd.coerceBooleanOrDefault(jsonElement, false);
         this.srd52 = SourceAttributes.srd52.coerceBooleanOrDefault(jsonElement, false);
         this.edition = SourceAttributes.edition.getTextOrEmpty(jsonElement);
+        addBrewSource(TtrpgValue.homebrewSource, jsonElement);
+        addBrewSource(TtrpgValue.homebrewBaseSource, jsonElement);
         testSourceRules();
+    }
+
+    private void addBrewSource(JsonNodeReader field, JsonNode jsonElement) {
+        String source = field.getTextOrNull(jsonElement);
+        if (isPresent(source)) {
+            this.sources.add(source);
+        }
     }
 
     public boolean isSrdOrFreeRules() {
@@ -453,6 +476,17 @@ public class Tools5eSources extends CompendiumSources {
     public void amendSources(Tools5eSources otherSources) {
         this.sources.addAll(otherSources.sources);
         this.bookRef.addAll(otherSources.bookRef);
+        testSourceRules();
+    }
+
+    public void amendSources(Set<String> brewSources) {
+        this.sources.addAll(brewSources);
+        testSourceRules();
+    }
+
+    public void amendHomebrewSources(JsonNode homebrewElement) {
+        addBrewSource(TtrpgValue.homebrewBaseSource, homebrewElement);
+        addBrewSource(TtrpgValue.homebrewSource, homebrewElement);
         testSourceRules();
     }
 

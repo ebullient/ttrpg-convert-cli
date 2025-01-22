@@ -752,7 +752,7 @@
       "vehicles.json"
     ],
     "indexes": {
-      "spell-source": "generated/gendata-spell-source-lookup.json"
+      "spell-source": "spells/sources.json"
     }
   },
   "configPf2e": {

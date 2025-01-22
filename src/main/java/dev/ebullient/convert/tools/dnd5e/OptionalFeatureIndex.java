@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,9 +16,8 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
+import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFields;
-import dev.ebullient.convert.tools.dnd5e.Tools5eHomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -28,40 +30,44 @@ public class OptionalFeatureIndex implements JsonSource {
         this.index = index;
     }
 
-    public void addOptionalFeature(String finalKey, JsonNode optFeatureNode, HomebrewMetaTypes homebrew) {
-        String lookup = null;
-        for (String ft : toListOfStrings(optFeatureNode.get("featureType"))) {
-            try {
-                boolean homebrewType = homebrew != null && homebrew.getOptionalFeatureType(ft) != null;
-                // scope the optional feature key (homebrew may conflict)
-                String featKey = (homebrewType ? ft + "-" + homebrew.jsonKey : ft).toLowerCase();
-
-                optFeatureIndex.computeIfAbsent(featKey, k -> new OptionalFeatureType(ft, k, homebrew, index())).add(finalKey);
-                lookup = lookup == null ? featKey : lookup;
-            } catch (IllegalArgumentException e) {
-                tui().errorf(e, "Unable to define optional feature");
-            }
+    public OptionalFeatureType addOptionalFeatureType(String featureType, HomebrewMetaTypes homebrew) {
+        // scope the optional feature key (homebrew may conflict)
+        try {
+            var oft = optFeatureIndex.computeIfAbsent(featureType.toLowerCase(),
+                    k -> new OptionalFeatureType(featureType, homebrew, index()));
+            oft.addHomebrewMeta(homebrew);
+            return oft;
+        } catch (IllegalArgumentException e) {
+            tui().errorf(e, "Unable to define optional feature");
         }
-        if (lookup != null) {
-            OftFields.oftLookup.setIn(optFeatureNode, lookup);
-            OftFields.oftIndexKey.setIn(optFeatureNode, optFeatureIndex.get(lookup).getKey());
+        return null;
+    }
+
+    public void addOptionalFeature(String finalKey, JsonNode optFeatureNode, HomebrewMetaTypes homebrew) {
+        for (String ft : OftFields.featureType.getListOfStrings(optFeatureNode, tui())) {
+            var oft = addOptionalFeatureType(ft, homebrew);
+            if (oft != null) {
+                oft.addFeature(finalKey);
+            }
         }
     }
 
-    public void amendSources(String key, JsonNode jsonSource, Tools5eHomebrewIndex homebrewIndex) {
+    public void amendSources(String key, JsonNode jsonSource) {
         Tools5eSources sources = Tools5eSources.findSources(key);
         if (sources.getType() == Tools5eIndexType.optfeature) {
-            OptionalFeatureType oft = get(jsonSource);
-            if (oft == null) {
-                tui().warnf(Msg.UNRESOLVED, "OptionalFeatureType %s not found for %s", jsonSource, key);
-            } else {
-                oft.amendSources(sources);
+            for (String featureType : OftFields.featureType.getListOfStrings(jsonSource, tui())) {
+                OptionalFeatureType oft = get(featureType);
+                if (oft == null) {
+                    tui().warnf(Msg.UNRESOLVED, "OptionalFeatureType %s not found for %s", jsonSource, key);
+                } else {
+                    oft.amendSources(sources);
+                }
             }
         } else {
             for (JsonNode ofp : ClassFields.optionalfeatureProgression.iterateArrayFrom(jsonSource)) {
                 for (String featureType : Tools5eFields.featureType.getListOfStrings(ofp, tui())) {
                     // class/subclass source matters for homebrew scope (if necessary)
-                    OptionalFeatureType oft = get(featureType, sources.primarySource(), homebrewIndex);
+                    OptionalFeatureType oft = get(featureType);
                     if (oft == null) {
                         tui().warnf(Msg.UNRESOLVED, "OptionalFeatureType %s not found for %s",
                                 featureType, key);
@@ -74,45 +80,32 @@ public class OptionalFeatureIndex implements JsonSource {
         }
     }
 
-    public OptionalFeatureType get(Tools5eIndexType type, String key) {
-        return switch (type) {
-            case optfeature -> {
-                JsonNode ofNode = index().getOrigin(key);
-                String oftKey = OftFields.oftIndexKey.getTextOrNull(ofNode);
-                JsonNode oftNode = index().getOrigin(oftKey);
-                yield get(oftNode);
+    public void removeUnusedOptionalFeatures(
+            Function<String, Boolean> testInUse,
+            Consumer<String> remove) {
+        for (var oft : optFeatureIndex.values()) {
+            // Test to see if any of the features using this type are still active.
+            if (oft.testFeaturesInUse(testInUse) || oft.testConsumersInUse(testInUse)) {
+                continue;
             }
-            case optionalFeatureTypes -> {
-                JsonNode node = index().getOrigin(key);
-                yield get(node);
-            }
-            default -> null;
-        };
+
+            // Remove the feature type
+            remove.accept(oft.getKey());
+            // Remove all features associated with this type
+            oft.features.forEach(remove);
+        }
     }
 
     public OptionalFeatureType get(JsonNode node) {
         if (node == null) {
             return null;
         }
-        String lookup = OftFields.oftLookup.getTextOrNull(node);
-        return lookup == null ? null : optFeatureIndex.get(lookup);
+        String lookup = SourceField.name.getTextOrEmpty(node);
+        return lookup == null ? null : optFeatureIndex.get(lookup.toLowerCase());
     }
 
-    public OptionalFeatureType get(String ft, String source, Tools5eHomebrewIndex homebrewIndex) {
-        HomebrewMetaTypes metaTypes = homebrewIndex.getHomebrewMetaTypes(source);
-        String homebrewType = metaTypes == null
-                ? null
-                : metaTypes.getOptionalFeatureType(ft);
-
-        OptionalFeatureType oft = optFeatureIndex.get(ft.toLowerCase());
-        if (homebrewType != null) {
-            String homebrewScoped = ft + "-" + metaTypes.jsonKey;
-            OptionalFeatureType homebrewOft = optFeatureIndex.get(homebrewScoped.toLowerCase());
-            return homebrewOft == null
-                    ? oft
-                    : homebrewOft;
-        }
-        return oft;
+    public OptionalFeatureType get(String featureType) {
+        return optFeatureIndex.get(featureType.toLowerCase());
     }
 
     public void clear() {
@@ -128,83 +121,49 @@ public class OptionalFeatureIndex implements JsonSource {
      */
     static class OptionalFeatureType {
 
-        @JsonIgnore
-        final HomebrewMetaTypes homebrewMeta;
-
-        final String lookupKey;
         final String featureTypeKey;
         final String abbreviation;
-        final String title;
-        final String source;
+        final Tools5eSources sources;
         final List<String> features = new ArrayList<>();
         final List<String> consumers = new ArrayList<>();
 
         @JsonIgnore
         final ObjectNode featureTypeNode;
 
-        OptionalFeatureType(String abbreviation, String scopedAbv, HomebrewMetaTypes homebrewMeta, Tools5eIndex index) {
+        @JsonIgnore
+        final Map<String, HomebrewMetaTypes> homebrewMeta = new HashMap<>();
+
+        OptionalFeatureType(String abbreviation, HomebrewMetaTypes homebrewMeta, Tools5eIndex index) {
             this.abbreviation = abbreviation;
-            this.lookupKey = scopedAbv;
-            this.homebrewMeta = homebrewMeta;
-            String tmpTitle = null;
-            if (homebrewMeta != null) {
-                tmpTitle = homebrewMeta.getOptionalFeatureType(abbreviation);
-            }
-            if (tmpTitle == null) {
-                tmpTitle = switch (abbreviation) {
-                    case "AI" -> "Artificer Infusion";
-                    case "ED" -> "Elemental Discipline";
-                    case "EI" -> "Eldritch Invocation";
-                    case "MM" -> "Metamagic";
-                    case "MV" -> "Maneuver";
-                    case "MV:B" -> "Maneuver, Battle Master";
-                    case "MV:C2-UA" -> "Maneuver, Cavalier V2 (UA)";
-                    case "AS:V1-UA" -> "Arcane Shot, V1 (UA)";
-                    case "AS:V2-UA" -> "Arcane Shot, V2 (UA)";
-                    case "AS" -> "Arcane Shot";
-                    case "OTH" -> "Other";
-                    case "FS:F" -> "Fighting Style, Fighter";
-                    case "FS:B" -> "Fighting Style, Bard";
-                    case "FS:P" -> "Fighting Style, Paladin";
-                    case "FS:R" -> "Fighting Style, Ranger";
-                    case "PB" -> "Pact Boon";
-                    case "OR" -> "Onomancy Resonant";
-                    case "RN" -> "Rune Knight Rune";
-                    case "AF" -> "Alchemical Formula";
-                    case "TT" -> "Traveler's Trick";
-                    default -> null;
-                };
-            }
-            if (tmpTitle == null) {
-                index.tui().warnf(Msg.NOT_SET.wrap("Missing title for OptionalFeatureType in %s from %s"),
-                        abbreviation,
-                        homebrewMeta == null ? "unknown/core" : homebrewMeta.filename);
-                tmpTitle = abbreviation;
-            }
-            title = tmpTitle;
-            source = getSource(homebrewMeta);
+            String primarySource = getSource(homebrewMeta);
 
             featureTypeNode = Tui.MAPPER.createObjectNode();
-            featureTypeNode.put("name", scopedAbv);
-            featureTypeNode.put("source", source);
-            OftFields.oftLookup.setIn(featureTypeNode, lookupKey);
+            featureTypeNode.put("name", abbreviation);
+            featureTypeNode.put("source", primarySource);
 
             if (inSRD(abbreviation)) {
                 featureTypeNode.put("srd", true);
+                featureTypeNode.put("srd52", true);
             }
             // KNOCK-ON: Add to index
+            this.featureTypeKey = Tools5eIndexType.optionalFeatureTypes.createKey(featureTypeNode);
             index.addToIndex(Tools5eIndexType.optionalFeatureTypes, featureTypeNode);
-            featureTypeKey = TtrpgValue.indexKey.getTextOrThrow(featureTypeNode);
-            Tools5eSources.constructSources(featureTypeKey, featureTypeNode);
+            this.sources = Tools5eSources.constructSources(featureTypeKey, featureTypeNode);
         }
 
         public void amendSources(Tools5eSources otherSources) {
             // Update sources from those of a consuming/using class or subclass
             // Optional features will always add to sources of types
-            Tools5eSources mySources = Tools5eSources.findSources(featureTypeNode);
             if (otherSources.getType() == Tools5eIndexType.optfeature
-                    || otherSources.contains(mySources)) {
-                mySources.amendSources(otherSources);
+                    || otherSources.contains(this.sources)) {
+                this.sources.amendSources(otherSources);
+            }
+        }
+
+        public void addHomebrewMeta(HomebrewMetaTypes homebrew) {
+            if (homebrew != null) {
+                homebrewMeta.put(homebrew.primary, homebrew);
+                this.sources.amendSources(homebrew.sourceKeys);
             }
         }
 
@@ -212,29 +171,69 @@ public class OptionalFeatureIndex implements JsonSource {
             consumers.add(key);
         }
 
-        public void add(String key) {
+        public void addFeature(String key) {
             features.add(key);
         }
 
         public String getFilename() {
-            return "list-" + Tools5eQuteBase.fixFileName(title, source, Tools5eIndexType.optionalFeatureTypes);
+            return Tools5eQuteBase.getOptionalFeatureTypeResource(abbreviation);
         }
 
         public Tools5eSources getSources() {
             return Tools5eSources.findSources(featureTypeKey);
         }
 
-        public boolean inUse() {
-            return features.stream()
-                    .map(k -> Tools5eSources.includedByConfig(k))
+        public boolean testConsumersInUse(Function<String, Boolean> test) {
+            return consumers.stream()
+                    .map(k -> test.apply(k))
                     .reduce(Boolean::logicalOr)
                     .orElse(false);
         }
 
+        public boolean testFeaturesInUse(Function<String, Boolean> test) {
+            return features.stream()
+                    .map(k -> test.apply(k))
+                    .reduce(Boolean::logicalOr)
+                    .orElse(false);
+        }
+
+        public String getTitle() {
+            return switch (abbreviation) {
+                case "AI" -> "Artificer Infusion";
+                case "ED" -> "Elemental Discipline";
+                case "EI" -> "Eldritch Invocation";
+                case "MM" -> "Metamagic";
+                case "MV" -> "Maneuver";
+                case "MV:B" -> "Maneuver, Battle Master";
+                case "MV:C2-UA" -> "Maneuver, Cavalier V2 (UA)";
+                case "AS:V1-UA" -> "Arcane Shot, V1 (UA)";
+                case "AS:V2-UA" -> "Arcane Shot, V2 (UA)";
+                case "AS" -> "Arcane Shot";
+                case "OTH" -> "Other";
+                case "FS:F" -> "Fighting Style, Fighter";
+                case "FS:B" -> "Fighting Style, Bard";
+                case "FS:P" -> "Fighting Style, Paladin";
+                case "FS:R" -> "Fighting Style, Ranger";
+                case "PB" -> "Pact Boon";
+                case "OR" -> "Onomancy Resonant";
+                case "RN" -> "Rune Knight Rune";
+                case "AF" -> "Alchemical Formula";
+                case "TT" -> "Traveler's Trick";
+                default -> {
+                    if (!homebrewMeta.isEmpty()) {
+                        yield homebrewMeta.values().stream()
+                                .map(hb -> hb.getOptionalFeatureType(abbreviation))
+                                .distinct()
+                                .collect(Collectors.joining("; "));
+                    }
+                    Tui.instance().warnf(Msg.NOT_SET, "Missing title for OptionalFeatureType in %s",
+                            abbreviation);
+                    yield abbreviation;
+                }
+            };
+        }
+
         private String getSource(HomebrewMetaTypes homebrewMeta) {
-            if (homebrewMeta != null) {
-                return homebrewMeta.jsonKey;
-            }
             return switch (abbreviation) {
                 case "AF" -> "UAA";
                 case "AI", "RN" -> "TCE";
@@ -243,7 +242,13 @@ public class OptionalFeatureIndex implements JsonSource {
                 case "AS:V2-UA" -> "UARSC";
                 case "MV:C2-UA" -> "UARCO";
                 case "OR" -> "UACDW";
-                default -> "PHB";
+                case "TT" -> "HWCS";
+                default -> {
+                    if (homebrewMeta != null) {
+                        yield homebrewMeta.primary;
+                    }
+                    yield "PHB";
+                }
             };
         }
 
@@ -276,7 +281,7 @@ public class OptionalFeatureIndex implements JsonSource {
     }
 
     enum OftFields implements JsonNodeReader {
-        oftLookup,
-        oftIndexKey,
+        featureType,
+        optionalFeatureTypes,
     }
 }

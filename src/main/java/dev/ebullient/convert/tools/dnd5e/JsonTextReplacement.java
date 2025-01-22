@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
+import static dev.ebullient.convert.StringUtil.valueOrDefault;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern linkifyPattern = Pattern.compile("\\{@("
             + "|action|background|card|class|condition|creature|deck|deity|disease|facility"
             + "|feat|hazard|item|itemMastery|itemProperty|itemType|legroup|object|psionic|race|reward"
-            + "|sense|skill|spell|status|table|variantrule|vehicle"
+            + "|sense|skill|spell|status|subclass|table|variantrule|vehicle"
             + "|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
     static final Pattern fontPattern = Pattern.compile("\\{@font ([^}]+)}");
@@ -274,9 +275,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 return parts[0];
             });
 
-            result = linkifyPattern.matcher(result)
-                    .replaceAll(this::linkify);
-
             result = fontPattern.matcher(result).replaceAll((match) -> {
                 String[] parts = match.group(1).split("\\|");
                 String fontFamily = Tools5eSources.getFontReference(parts[1]);
@@ -459,7 +457,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String[] score = parts[0].split(" ");
 
         boolean abilityCheck = match.group(1).equals("ability");
-        String text = parts.length > 1 && !parts[1].isBlank() ? parts[1] : null;
+        String text = valueOrDefault(parts, 1, null);
 
         SkillOrAbility ability = index().findSkillOrAbility(score[0], getSources());
 
@@ -491,9 +489,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String[] parts = match.group(1).split("\\|");
         String[] score = parts[0].split(" ");
         SkillOrAbility skill = index().findSkillOrAbility(score[0], getSources());
-        String text = parts.length > 1 && !parts[1].isBlank()
-                ? parts[1]
-                : linkifyRules(Tools5eIndexType.skill, skill.value(), "skills");
+        String text = valueOrDefault(parts, 1,
+                linkifyRules(Tools5eIndexType.skill, skill.value(), "skills"));
 
         String dice = score[1];
         if (score[1].matches("\\d+")) {
@@ -524,8 +521,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
         String[] parts = text.split("\\|");
         String name = parts[0];
-        String source = parts.length > 1 ? parts[1] : type.defaultSourceString();
-        String linkText = parts.length > 2 ? parts[2] : name;
+        String source = valueOrDefault(parts, 1, type.defaultSourceString());
+        String linkText = valueOrDefault(parts, 2, name);
 
         if (name.isBlank()) {
             return "[%s](%s%s.md)".formatted(linkText, index().rulesVaultRoot(), rules);
@@ -639,7 +636,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             case skill -> linkifyRules(type, s, "skills");
             case itemMastery, itemProperty, itemType -> linkifyItemAttribute(type, s);
             case monster -> linkifyCreature(s);
-            case subclass, classtype -> linkifyClass(s);
+            case subclass -> linkifySubclass(s); // RARE!!
+            case classtype -> linkifyClass(s);
             case deity -> linkifyDeity(s);
             case card -> linkifyCardType(s);
             case classfeature -> linkifyClassFeature(s);
@@ -663,8 +661,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
     default String linkifyType(Tools5eIndexType type, String match) {
         String[] parts = match.split("\\|");
-        String source = parts.length > 1 && !parts[1].isBlank() ? parts[1] : type.defaultSourceString();
-        String linkText = parts.length > 2 ? parts[2] : parts[0];
+        String source = valueOrDefault(parts, 1, type.defaultSourceString());
+        String linkText = valueOrDefault(parts, 2, parts[0]);
 
         String key = index().getAliasOrDefault(type.createKey(parts[0].trim(), source));
         return linkifyType(type, key, linkText, match);
@@ -674,17 +672,14 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String dirName = type.getRelativePath();
         JsonNode jsonSource = index().getNode(aliasKey); // filtered
         if (jsonSource == null) {
-            jsonSource = index().getHomebrewNode(type, aliasKey, parseState().getSource());
-            if (jsonSource == null) {
-                if (index().getOrigin(aliasKey) == null) {
-                    // sources can be excluded, that's fine.. but if this is something that doesn't
-                    // exist at all..
-                    tui().debugf(Msg.UNRESOLVED, "unresolvable {@%s %s}   as [%s]   from %s",
-                            type, match, aliasKey, parseState().getSource());
-                    // log a stack trace of how we got here
-                }
-                return linkText;
+            if (index().getOrigin(aliasKey) == null) {
+                // sources can be excluded, that's fine.. but if this is something that doesn't
+                // exist at all..
+                tui().debugf(Msg.UNRESOLVED, "unresolvable {@%s %s}   as [%s]   from %s",
+                        type, match, aliasKey, parseState().getSource());
+                // log a stack trace of how we got here
             }
+            return linkText;
         }
         Tools5eSources linkSource = Tools5eSources.findSources(jsonSource);
         return linkOrText(linkText, aliasKey, dirName,
@@ -698,7 +693,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String[] parts = match.split("\\|");
         String cardName = parts[0];
         String deckName = parts[1];
-        String source = parts.length < 3 || parts[2].isBlank() ? Tools5eIndexType.card.defaultSourceString() : parts[2];
+        String source = valueOrDefault(parts, 2, Tools5eIndexType.card.defaultSourceString());
 
         String key = index().getAliasOrDefault(Tools5eIndexType.deck.createKey(deckName, source));
         if (index().isExcluded(key)) {
@@ -718,19 +713,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // {@deity Ioun|dawn war|dmg|and optional link text added with another pipe}.",
         String[] parts = match.split("\\|");
         String deity = parts[0];
-        String source = "phb";
-        String linkText = deity;
-        String pantheon = "Faerûnian";
-
-        if (parts.length > 3) {
-            linkText = parts[3];
-        }
-        if (parts.length > 2) {
-            source = parts[2];
-        }
-        if (parts.length > 1) {
-            pantheon = parts[1];
-        }
+        String pantheon = valueOrDefault(parts, 1, "Forotten Realms");
+        String source = valueOrDefault(parts, 2, Tools5eIndexType.deity.defaultSourceString());
+        String linkText = valueOrDefault(parts, 3, deity);
         String key = index().getAliasOrDefault(Tools5eIndexType.deity.createKey(parts[0], source));
         return linkOrText(linkText, key,
                 Tools5eIndexType.deity.getRelativePath(),
@@ -748,10 +733,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // {@class Fighter|phb|Samurai|Samurai|xge}
         String[] parts = match.split("\\|");
         String className = parts[0];
-        String classSource = parts.length < 2 || parts[1].isEmpty() ? "phb" : parts[1];
-        String linkText = parts.length < 3 || parts[2].isEmpty() ? className : parts[2];
-        String subclass = parts.length < 4 || parts[3].isEmpty() ? null : parts[3];
-        String subclassSource = parts.length < 5 || parts[4].isEmpty() ? classSource : parts[4];
+        String classSource = valueOrDefault(parts, 1, Tools5eIndexType.classtype.defaultSourceString());
+        String linkText = valueOrDefault(parts, 2, className);
+        String subclass = valueOrDefault(parts, 3, null);
+        String subclassSource = valueOrDefault(parts, 4, Tools5eIndexType.classtype.defaultSourceString());
 
         String relativePath = Tools5eIndexType.classtype.getRelativePath();
         if (subclass != null) {
@@ -759,16 +744,40 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     .getAliasOrDefault(
                             Tools5eIndexType.getSubclassKey(className, classSource, subclass, subclassSource));
             // "subclass|path of wild magic|barbarian|phb|"
-            int first = key.indexOf('|');
-            int second = key.indexOf('|', first + 1);
-            subclass = key.substring(first + 1, second);
+            Tools5eSources scSources = Tools5eSources.findSources(key);
             return linkOrText(linkText, key, relativePath,
-                    Tools5eQuteBase.getSubclassResource(subclass, className, classSource, subclassSource));
+                    Tools5eQuteBase.getSubclassResource(
+                            scSources == null ? subclass : scSources.getName(),
+                            className, classSource, subclassSource));
         } else {
             String key = index().getAliasOrDefault(Tools5eIndexType.classtype.createKey(className, classSource));
             return linkOrText(linkText, key, relativePath,
                     Tools5eQuteBase.getClassResource(className, classSource));
         }
+    }
+
+    default String linkifySubclass(String match) {
+        // Only used in homebrew (so far)
+        // "Subclasses:{@subclass Berserker|Barbarian},
+        // {@subclass Berserker|Barbarian},
+        // {@subclass Ancestral Guardian|Barbarian||XGE},
+        // {@subclass Artillerist|Artificer|TCE|TCE}.
+        // Class and subclass source is assumed to be PHB."
+        String[] parts = match.split("\\|");
+        String scShortName = parts[0];
+        String className = parts[1];
+        String classSource = valueOrDefault(parts, 2, Tools5eIndexType.classtype.defaultSourceString());
+        String scSource = valueOrDefault(parts, 3, Tools5eIndexType.subclass.defaultSourceString());
+        String linkText = valueOrDefault(parts, 4, scShortName);
+
+        // "subclass|path of wild magic|barbarian|phb|phb"
+        String key = index()
+                .getAliasOrDefault(
+                        Tools5eIndexType.getSubclassKey(className, classSource, scShortName, scSource));
+        Tools5eSources scSources = Tools5eSources.findSources(key);
+        return linkOrText(linkText, key,
+                Tools5eIndexType.classtype.getRelativePath(),
+                Tools5eQuteBase.getSubclassResource(scSources.getName(), className, classSource, scSource));
     }
 
     default String linkifyClassFeature(String match) {
@@ -823,7 +832,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             featureSource = parseState().getSource();
         }
 
-        OptionalFeatureType oft = index().getOptionalFeatureType(featureType, featureSource);
+        OptionalFeatureType oft = index().getOptionalFeatureType(featureType);
         if (oft == null) {
             return linkText;
         }
@@ -935,8 +944,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // {@creature cow|vgm} can have sources added with a pipe,
         // {@creature cow|vgm|and optional link text added with another pipe}.",
         String[] parts = match.trim().split("\\|");
-        String source = parts.length > 1 && !parts[1].isBlank() ? parts[1] : indexType.defaultSourceString();
-        String linkText = parts.length > 2 ? parts[2] : parts[0];
+        String source = valueOrDefault(parts, 1, indexType.defaultSourceString());
+        String linkText = valueOrDefault(parts, 2, parts[0]);
 
         String key = index().getAliasOrDefault(indexType.createKey(parts[0], source));
         if (index().isExcluded(key)) {
@@ -959,7 +968,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // "fromVariant": "Action Options",
         // "fromVariant": "Spellcasting|XGE",
         String[] parts = variant.trim().split("\\|");
-        String source = parts.length > 1 ? parts[1] : Tools5eIndexType.variantrule.defaultSourceString();
+        String source = valueOrDefault(parts, 1, Tools5eIndexType.variantrule.defaultSourceString());
         if (!index().sourceIncluded(source)) {
             return "<span title=\"%s\">%s</span>".formatted(TtrpgConfig.sourceToLongName(source), parts[0]);
         } else {
@@ -970,48 +979,29 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String linkifyItemAttribute(Tools5eIndexType type, String s) {
-        String parts[] = s.split("\\|");
-        String source = parts.length > 1 ? parts[1] : type.defaultSourceString();
-        String linkText = parts.length > 2 ? parts[2] : parts[0];
-        String lookup = "%s|%s".formatted(parts[0], source);
-        if (missingKeys.contains(lookup)) {
-            return linkText;
-        }
+        String[] parts = s.split("\\|");
+        String name = parts[0];
+        String linkText = valueOrDefault(parts, 2, name);
         return switch (type) {
-            case itemType -> {
-                String key = Tools5eIndexType.itemType.fromTagReference(lookup);
-                ItemType itemType = index().findItemType(key, getSources());
-                if (itemType == null) {
-                    if (missingKeys.add(lookup) && index().isIncluded(key)) {
-                        tui().warnf(Msg.UNRESOLVED, "Item type %s not found from %s", s, getSources().getKey());
-                    }
-                    yield linkText;
-                }
-                yield itemType.linkify(linkText);
+            case itemMastery -> {
+                ItemMastery mastery = index().findItemMastery(s, getSources());
+                yield mastery == null
+                        ? linkText
+                        : mastery.linkify(linkText);
             }
             case itemProperty -> {
-                String key = Tools5eIndexType.itemProperty.fromTagReference(lookup);
-                ItemProperty itemProperty = index().findItemProperty(key, getSources());
-                if (itemProperty == null) {
-                    if (missingKeys.add(lookup) && index().isIncluded(key)) {
-                        tui().warnf(Msg.UNRESOLVED, "Item property %s not found from %s", s, getSources().getKey());
-                    }
-                    yield linkText;
-                }
-                yield itemProperty.linkify(linkText);
+                ItemProperty property = index().findItemProperty(s, getSources());
+                yield property == null
+                        ? linkText
+                        : property.linkify(linkText);
             }
-            case itemMastery -> {
-                String key = Tools5eIndexType.itemMastery.fromTagReference(lookup);
-                ItemMastery itemMastery = index().findItemMastery(key, getSources());
-                if (itemMastery == null) {
-                    if (missingKeys.add(lookup) && index().isIncluded(key)) {
-                        tui().warnf(Msg.UNRESOLVED, "Item mastery %s not found from %s", s, getSources().getKey());
-                    }
-                    yield linkText;
-                }
-                yield itemMastery.linkify(linkText);
+            case itemType -> {
+                ItemType itemType = index().findItemType(s, getSources());
+                yield itemType == null
+                        ? linkText
+                        : itemType.linkify(linkText);
             }
-            default -> linkify(type, s); // should never happen
+            default -> linkText;
         };
     }
 

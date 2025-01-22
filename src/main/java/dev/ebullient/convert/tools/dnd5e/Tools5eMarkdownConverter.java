@@ -78,6 +78,13 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             }
         }
 
+        if (types.contains(Tools5eIndexType.spell) || types.contains(Tools5eIndexType.spellIndex)) {
+            // We're doing this one a different way:
+            // Too many different variations of spell list
+            var spellIndexParent = new Json2QuteSpellIndex(index);
+            queue.noteCompendium.addAll(spellIndexParent.buildNotes());
+        }
+
         writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium);
         writer.writeFiles(index.rulesFilePath(), queue.baseRules);
 
@@ -190,7 +197,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             case optionalFeatureTypes -> {
                 OptionalFeatureType oft = index.getOptionalFeatureType(node);
                 if (oft == null) {
-                    index.tui().errorf("Unable to find optional feature type for %s", key);
+                    index.tui().errorf(Msg.UNRESOLVED, "Unable to find optional feature type for %s", key);
                     return;
                 }
                 QuteNote converted = new Json2QuteOptionalFeatureType(index, node, oft).buildNote();

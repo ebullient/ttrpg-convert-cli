@@ -6,12 +6,16 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[armorClass](#armorclass), [cost](#cost), [costCp](#costcp), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [mastery](#mastery), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [reprintOf](#reprintof), [rootVariant](#rootvariant), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tags](#tags), [text](#text), [variantAliases](#variantaliases), [variantSectionLinks](#variantsectionlinks), [variants](#variants), [vaultPath](#vaultpath), [weight](#weight)
+[armorClass](#armorclass), [books](#books), [cost](#cost), [costCp](#costcp), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [mastery](#mastery), [name](#name), [prerequisite](#prerequisite), [properties](#properties), [range](#range), [reprintOf](#reprintof), [rootVariant](#rootvariant), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tags](#tags), [text](#text), [variantAliases](#variantaliases), [variantSectionLinks](#variantsectionlinks), [variants](#variants), [vaultPath](#vaultpath), [weight](#weight)
 
 
 ### armorClass
 
 Changes to armor class provided by the item, if applicable
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### cost
 
@@ -103,6 +107,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### stealthPenalty
 

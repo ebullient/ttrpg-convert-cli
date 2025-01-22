@@ -6,12 +6,16 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [casting](#casting), [checks](#checks), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [reprintOf](#reprintof), [requirements](#requirements), [ritualType](#ritualtype), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [targeting](#targeting), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [books](#books), [casting](#casting), [checks](#checks), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [reprintOf](#reprintof), [requirements](#requirements), [ritualType](#ritualtype), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [targeting](#targeting), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
 
 Aliases for this note
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### casting
 
@@ -64,6 +68,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### tags
 

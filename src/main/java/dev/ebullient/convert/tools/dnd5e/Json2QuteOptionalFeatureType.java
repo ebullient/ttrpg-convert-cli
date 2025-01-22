@@ -12,13 +12,13 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
 
-    final OptionalFeatureType optionalFeatures;
+    final OptionalFeatureType oft;
     final String title;
 
-    Json2QuteOptionalFeatureType(Tools5eIndex index, JsonNode node, OptionalFeatureType optionalFeatures) {
+    Json2QuteOptionalFeatureType(Tools5eIndex index, JsonNode node, OptionalFeatureType optionalFeatureType) {
         super(index, Tools5eIndexType.optionalFeatureTypes, node);
-        this.optionalFeatures = optionalFeatures;
-        this.title = optionalFeatures.title;
+        this.oft = optionalFeatureType;
+        this.title = optionalFeatureType.getTitle();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
 
     @Override
     protected Tools5eQuteNote buildQuteNote() {
-        List<String> featureKeys = optionalFeatures.features;
+        List<String> featureKeys = oft.features;
         List<JsonNode> nodes = featureKeys.stream()
                 .map(index::getAliasOrDefault)
                 .map(index::getNode)
@@ -45,7 +45,8 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
         List<String> text = new ArrayList<>();
 
         for (JsonNode entry : nodes) {
-            text.add("- " + linkify(Tools5eIndexType.optfeature, Tools5eIndexType.optfeature.toTagReference(entry)));
+            Tools5eIndexType type = Tools5eIndexType.getTypeFromNode(entry);
+            text.add("- " + type.linkify(index, entry));
         }
         if (text.isEmpty()) {
             return null;
@@ -53,7 +54,7 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
 
         String sourceText = super.sources.getSourceText(index().srdOnly());
         return new Tools5eQuteNote(title, sourceText, text, tags)
-                .withTargetFile(optionalFeatures.getFilename())
+                .withTargetFile(oft.getFilename())
                 .withTargetPath(Tools5eIndexType.optionalFeatureTypes.getRelativePath());
     }
 }

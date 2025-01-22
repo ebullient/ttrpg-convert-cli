@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.PsionicType.PsionicTypeEnum;
-import dev.ebullient.convert.tools.dnd5e.Tools5eHomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.qute.QutePsionic;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -39,13 +39,21 @@ public class Json2QutePsionicTalent extends Json2QuteCommon {
 
     String getPsionicTypeOrder() {
         String order = PsionicFields.order.replaceTextFrom(rootNode, this);
-        HomebrewMetaTypes meta = index.getHomebrewMetaTypes(sources);
+        Collection<HomebrewMetaTypes> metas = index.getHomebrewMetaTypes(sources);
 
         String typeName = PsionicFields.type.getTextOrDefault(rootNode, "\u2014");
         PsionicType type = switch (typeName) {
             case "D" -> PsionicTypeEnum.Discipline;
             case "T" -> PsionicTypeEnum.Talent;
-            default -> meta.getPsionicType(typeName);
+            default -> {
+                for (var meta : metas) {
+                    var t = meta.getPsionicType(typeName);
+                    if (t != null) {
+                        yield t;
+                    }
+                }
+                yield null;
+            }
         };
 
         return type == null ? order : type.combineWith(order);

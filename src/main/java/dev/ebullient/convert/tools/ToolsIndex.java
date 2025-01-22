@@ -23,6 +23,8 @@ public interface ToolsIndex {
         indexParentKey,
         indexVersionKeys,
         isHomebrew,
+        homebrewSource,
+        homebrewBaseSource,
     }
 
     static ToolsIndex createIndex() {

@@ -76,6 +76,13 @@ public interface JsonTextConverter<T extends IndexType> {
         }
     }
 
+    default boolean isEmpty(JsonNode node) {
+        return node == null || node.isNull()
+                || (node.isTextual() && node.asText().isBlank()
+                        || (node.isArray() && node.size() == 0)
+                        || (node.isObject() && node.size() == 0));
+    }
+
     default boolean isArrayNode(JsonNode node) {
         return node != null && node.isArray();
     }

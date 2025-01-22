@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.toOrdinal;
 
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -359,7 +360,7 @@ public class Json2QuteCommon implements JsonSource {
             tui().errorf("levelPrereq: Array parameter");
 
         if (levelPrereq.isNumber()) {
-            return levelToText(levelPrereq.asText());
+            return toOrdinal(levelPrereq.asInt());
         }
 
         String level = Tools5eFields.level.getTextOrThrow(levelPrereq);
@@ -368,7 +369,7 @@ public class Json2QuteCommon implements JsonSource {
 
         // neither class nor subclass is defined
         if (classNode == null && subclassNode == null) {
-            return levelToText(level);
+            return toOrdinal(level);
         }
 
         boolean isLevelVisible = !"1".equals(level); // hide implied first level
@@ -388,7 +389,7 @@ public class Json2QuteCommon implements JsonSource {
         }
 
         return String.format("%s%s",
-                isLevelVisible ? levelToText(level) : "",
+                isLevelVisible ? toOrdinal(level) : "",
                 isClassVisible ? " " + classPart : "");
     }
 

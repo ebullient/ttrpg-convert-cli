@@ -6,12 +6,16 @@ Extension of [Pf2eQuteNote](../Pf2eQuteNote.md)
 
 ## Attributes
 
-[aliases](#aliases), [category](#category), [effect](#effect), [hasSections](#hassections), [isEmbedded](#isembedded), [labeledSource](#labeledsource), [level](#level), [maxDuration](#maxduration), [name](#name), [notes](#notes), [onset](#onset), [reprintOf](#reprintof), [savingThrow](#savingthrow), [source](#source), [sourceAndPage](#sourceandpage), [stages](#stages), [tags](#tags), [temptedCurse](#temptedcurse), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[aliases](#aliases), [books](#books), [category](#category), [effect](#effect), [hasSections](#hassections), [isEmbedded](#isembedded), [labeledSource](#labeledsource), [level](#level), [maxDuration](#maxduration), [name](#name), [notes](#notes), [onset](#onset), [reprintOf](#reprintof), [savingThrow](#savingthrow), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [stages](#stages), [tags](#tags), [temptedCurse](#temptedcurse), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### aliases
 
 Aliases for this note. Only populated if not embedded.
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### category
 
@@ -69,6 +73,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### stages
 

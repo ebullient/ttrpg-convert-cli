@@ -37,6 +37,12 @@ public class StringUtil {
         return value == null || value.isEmpty() ? fallback : value;
     }
 
+    public static String valueOrDefault(String[] parts, int index, String fallback) {
+        return index < 0 || index >= parts.length
+                ? fallback
+                : valueOrDefault(parts[index], fallback);
+    }
+
     public static String uppercaseFirst(String value) {
         return value == null || value.isEmpty() ? value : Character.toUpperCase(value.charAt(0)) + value.substring(1);
     }

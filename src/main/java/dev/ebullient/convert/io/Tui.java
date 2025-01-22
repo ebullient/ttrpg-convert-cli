@@ -330,6 +330,9 @@ public class Tui {
     public void logf(Msg msg, String output, Object... params) {
         if (log != null) {
             output = format(msg.wrap(output), params);
+            if (msg == Msg.UNKNOWN || msg == Msg.UNRESOLVED) {
+                log(new Exception(output), false);
+            }
             log.println(output);
         }
     }

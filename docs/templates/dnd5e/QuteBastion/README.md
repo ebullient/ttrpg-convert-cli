@@ -6,8 +6,12 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hirelingDescription](#hirelingdescription), [hirelings](#hirelings), [labeledSource](#labeledsource), [level](#level), [name](#name), [orders](#orders), [prerequisite](#prerequisite), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [space](#space), [spaceDescription](#spacedescription), [tags](#tags), [text](#text), [type](#type), [vaultPath](#vaultpath)
+[books](#books), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hirelingDescription](#hirelingdescription), [hirelings](#hirelings), [labeledSource](#labeledsource), [level](#level), [name](#name), [orders](#orders), [prerequisite](#prerequisite), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [space](#space), [spaceDescription](#spacedescription), [tags](#tags), [text](#text), [type](#type), [vaultPath](#vaultpath)
 
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### fluffImages
 
@@ -80,6 +84,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### space
 
