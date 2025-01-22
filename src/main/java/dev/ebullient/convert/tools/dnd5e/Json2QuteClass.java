@@ -5,6 +5,7 @@ import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.markdownLinkToHtml;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
+import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 import static dev.ebullient.convert.StringUtil.uppercaseFirst;
 
@@ -192,22 +193,22 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
 
         String relativePath = Tools5eIndexType.optionalFeatureTypes.getRelativePath();
-        String source = SourceField.source.getTextOrDefault(optionalFeatureProgression, primarySource);
 
         maybeAddBlankLine(text);
         text.add("## Optional Features");
         for (JsonNode ofp : iterableElements(optionalFeatureProgression)) {
             for (String featureType : Tools5eFields.featureType.getListOfStrings(ofp, tui())) {
-                OptionalFeatureType oft = index.getOptionalFeatureType(featureType, source);
+                OptionalFeatureType oft = index.getOptionalFeatureType(featureType);
                 if (oft != null) {
                     maybeAddBlankLine(text);
-                    text.add("> [!example]- " + oft.title);
+                    String title = oft.getTitle(); // this could be long if homebrew mixed
+                    text.add("> [!example]- Optional Features: " + title);
                     text.add(String.format("> ![%s](%s%s/%s.md#%s)",
-                            oft.title,
+                            title,
                             index().compendiumVaultRoot(), relativePath,
                             oft.getFilename(),
-                            toAnchorTag(oft.title)));
-                    text.add("^list-" + slugify(oft.title));
+                            toAnchorTag(title)));
+                    text.add("^list-optfeature-" + slugify(oft.abbreviation));
                 } else {
                     tui().errorf(
                             Msg.UNRESOLVED, "Can not find optional feature type %s for progression. Source: %s; Reference: %s",
@@ -560,13 +561,13 @@ public class Json2QuteClass extends Json2QuteCommon {
     String armorToLink(String armor) {
         return armor
                 .replaceAll("^light", linkify(Tools5eIndexType.itemType,
-                        sources.isClassic() ? "la|PHB|light armor" : "la|XPHB|Light armor"))
+                        sources.isClassic() ? "la|phb|light armor" : "la|xphb|Light armor"))
                 .replaceAll("^medium", linkify(Tools5eIndexType.itemType,
-                        sources.isClassic() ? "ma|PHB|medium armor" : "ma|XPHB|Medium armor"))
+                        sources.isClassic() ? "ma|phb|medium armor" : "ma|xphb|Medium armor"))
                 .replaceAll("^heavy", linkify(Tools5eIndexType.itemType,
-                        sources.isClassic() ? "ha|PHB|heavy armor" : "ha|XPHB|Heavy armor"))
+                        sources.isClassic() ? "ha|phb|heavy armor" : "ha|xphb|Heavy armor"))
                 .replaceAll("^shields?", linkify(Tools5eIndexType.item,
-                        sources.isClassic() ? "shield|PHB|shields" : "shield|XPHB|Shields"));
+                        sources.isClassic() ? "shield|phb|shields" : "shield|xphb|Shields"));
     }
 
     String skillChoices(Collection<String> skills, int numSkills) {
@@ -841,7 +842,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         List<String> spellSlots = new ArrayList<>();
 
         LevelProgression(int level) {
-            this.level = JsonSource.levelToString(level);
+            this.level = toOrdinal(level);
             this.pb = "+" + JsonSource.levelToPb(level);
         }
 

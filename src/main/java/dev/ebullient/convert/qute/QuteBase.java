@@ -97,7 +97,7 @@ public class QuteBase implements QuteUtil {
         }
         String primary = null;
         List<String> srcTxt = new ArrayList<>();
-        for(var sp : sources.getSourceAndPage()) {
+        for (var sp : sources.getSourceAndPage()) {
             String txt = sp.toString();
             if (!txt.isEmpty()) {
                 if (primary == null) {

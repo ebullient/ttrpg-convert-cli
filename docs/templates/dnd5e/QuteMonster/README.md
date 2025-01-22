@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [alignment](#alignment), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [legendaryGroupLink](#legendarygrouplink), [name](#name), [passive](#passive), [pb](#pb), [reaction](#reaction), [reprintOf](#reprintof), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
+[5eInitiativeYaml](#5einitiativeyaml), [5eStatblockYaml](#5estatblockyaml), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [alignment](#alignment), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [legendaryGroupLink](#legendarygrouplink), [name](#name), [passive](#passive), [pb](#pb), [reaction](#reaction), [reprintOf](#reprintof), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
 
 
 ### 5eInitiativeYaml
@@ -46,7 +46,7 @@ Creature bonus actions as a list of [NamedText](../../NamedText.md)
 
 ### books
 
-List of source books (abbreviated name). Fantasy statblock uses this list.
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### conditionImmune
 
@@ -202,6 +202,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### speed
 

@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[access](#access), [activate](#activate), [aliases](#aliases), [ammunition](#ammunition), [armor](#armor), [category](#category), [contract](#contract), [craftReq](#craftreq), [duration](#duration), [group](#group), [hands](#hands), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [onset](#onset), [price](#price), [reprintOf](#reprintof), [shield](#shield), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [usage](#usage), [variants](#variants), [vaultPath](#vaultpath), [weapons](#weapons)
+[access](#access), [activate](#activate), [aliases](#aliases), [ammunition](#ammunition), [armor](#armor), [books](#books), [category](#category), [contract](#contract), [craftReq](#craftreq), [duration](#duration), [group](#group), [hands](#hands), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [onset](#onset), [price](#price), [reprintOf](#reprintof), [shield](#shield), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [traits](#traits), [usage](#usage), [variants](#variants), [vaultPath](#vaultpath), [weapons](#weapons)
 
 
 ### access
@@ -28,6 +28,10 @@ Formatted string. Ammunition required
 ### armor
 
 Item armor attributes as [QuteItemArmorData](QuteItemArmorData.md)
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### category
 
@@ -92,6 +96,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### tags
 

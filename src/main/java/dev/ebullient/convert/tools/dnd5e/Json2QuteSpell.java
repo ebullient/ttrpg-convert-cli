@@ -1,17 +1,17 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.SpellEntry.SpellReference;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -26,20 +26,28 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
     @Override
     protected Tools5eQuteBase buildQuteResource() {
-        boolean ritual = spellIsRitual();
-        SpellSchool school = getSchool();
-        String level = SpellFields.level.getTextOrEmpty(rootNode);
+        SpellEntry spellEntry = index().getSpellIndex().getSpellEntry(getSources().getKey());
 
         Tags tags = new Tags(getSources());
 
-        tags.add("spell", "school", school.name());
-        tags.add("spell", "level", (level.equals("0") ? "cantrip" : level));
-        if (ritual) {
+        tags.add("spell", "school", spellEntry.school.name());
+        tags.add("spell", "level", JsonSource.spellLevelToText(spellEntry.level));
+        if (spellEntry.ritual) {
             tags.add("spell", "ritual");
         }
 
-        Set<String> classes = indexedSpellClasses(tags);
-        classes.addAll(spellClasses(school, tags)); // legacy
+        // 🔧 Spell: spell|fireball|phb,
+        //    references: {subclass|destruction domain|cleric|phb|vss=subclass|destruction domain|cleric|phb|vss;c:5;s:null;null, ...}
+        //    expanded: {subclass|the fiend|warlock|phb|phb=subclass|the fiend|warlock|phb|phb;c:null;s:3;null, ...}
+        List<String> referenceLinks = new ArrayList<>();
+        Set<SpellReference> allRefs = new TreeSet<>(Comparator.comparing(x -> x.refererKey));
+        allRefs.addAll(spellEntry.references.values());
+        allRefs.addAll(spellEntry.expandedList.values());
+
+        for (var r : allRefs) {
+            tags.addRaw(r.tagifyReference());
+            referenceLinks.add(r.linkifyReference());
+        }
 
         List<String> text = new ArrayList<>();
         appendToText(text, rootNode, "##");
@@ -52,14 +60,14 @@ public class Json2QuteSpell extends Json2QuteCommon {
         return new QuteSpell(sources,
                 decoratedName,
                 getSourceText(sources),
-                levelToText(level),
-                school.name(),
-                ritual,
+                JsonSource.spellLevelToText(spellEntry.level),
+                spellEntry.school.name(),
+                spellEntry.ritual,
                 spellCastingTime(),
                 spellRange(),
                 spellComponents(),
                 spellDuration(),
-                String.join(", ", classes),
+                referenceLinks,
                 getFluffImages(Tools5eIndexType.spellFluff),
                 String.join("\n", text),
                 tags);
@@ -97,6 +105,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
                         list.add(replaceText(f.getValue().asText()));
                     }
                 }
+                case "r" -> list.add("R"); // Royalty. Acquisitions Incorporated
             }
         }
         return String.join(", ", list);
@@ -185,103 +194,6 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 SpellFields.unit.getTextOrEmpty(time));
     }
 
-    // FIXME: spell lists are pretty broken.
-    Set<String> indexedSpellClasses(Tags tags) {
-        Collection<String> list = index().classesForSpell(this.sources.getKey());
-        if (list == null) {
-            // tui().debugf("No classes found for %s", this.sources.getKey());
-            return new TreeSet<>();
-        }
-
-        return list.stream()
-                .filter(k -> index().isIncluded(k))
-                .map(k -> {
-                    Tools5eSources sources = Tools5eSources.findSources(k);
-                    Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(k);
-                    if (type == Tools5eIndexType.subclass) {
-                        JsonNode subclassNode = index().getOrigin(k);
-                        String subclassName = sources.getName();
-                        String className = SpellFields.className.getTextOrEmpty(subclassNode).trim();
-                        String classSource = SpellFields.classSource.getTextOrEmpty(subclassNode).trim();
-                        return getSubclass(tags, className, classSource, subclassName, sources.primarySource(), k);
-                    }
-                    String className = sources.getName();
-                    return getClass(tags, className, sources.primarySource(), k);
-                })
-                .collect(Collectors.toCollection(TreeSet::new));
-    }
-
-    Set<String> spellClasses(SpellSchool school, Tags tags) {
-        JsonNode classesNode = SpellFields.classes.getFrom(rootNode);
-        if (classesNode == null || classesNode.isNull()) {
-            return Set.of();
-        }
-        Set<String> classes = new TreeSet<>();
-        classesNode.withArray("fromClassList").forEach(c -> {
-            String className = SourceField.name.getTextOrEmpty(c);
-            String classSource = SourceField.source.getTextOrEmpty(c);
-            String finalKey = Tools5eIndexType.classtype.createKey(className, classSource);
-            if (index().isIncluded(finalKey)) {
-                classes.add(getClass(tags, className, classSource, finalKey));
-            }
-        });
-        classesNode.withArray("fromClassListVariant").forEach(c -> {
-            String definedInSource = SpellFields.definedInSource.getTextOrEmpty(c);
-            String className = SourceField.name.getTextOrEmpty(c);
-            String classSource = SourceField.source.getTextOrEmpty(c);
-            String finalKey = Tools5eIndexType.classtype.createKey(className, classSource);
-            if (index.sourceIncluded(definedInSource) && index().isIncluded(finalKey)) {
-                classes.add(getClass(tags, className, classSource, finalKey));
-            }
-        });
-        classesNode.withArray("fromSubclass").forEach(s -> {
-            String className = s.get("class").get("name").asText().trim();
-            String classSource = s.get("class").get("source").asText();
-            String subclassName = s.get("subclass").get("name").asText();
-            String subclassSource = s.get("subclass").get("source").asText();
-            String finalKey = Tools5eIndexType.getSubclassKey(className.trim(), classSource.trim(), subclassName.trim(),
-                    subclassSource.trim());
-            if (index().isIncluded(finalKey)) {
-                classes.add(getSubclass(tags, className, classSource, subclassName, subclassSource, finalKey));
-            }
-        });
-        if (classes.contains("Wizard")) {
-            // FIXME. Spell schools are busted (PHB/XPHB for these two)
-            if (school == SpellSchool.SchoolEnum.Abjuration || school == SpellSchool.SchoolEnum.Evocation) {
-                String finalKey = Tools5eIndexType.getSubclassKey("Fighter", "PHB", "Eldritch Knight", "PHB");
-                if (index().isIncluded(finalKey)) {
-                    classes.add(getSubclass(tags, "Fighter", "PHB", "Eldritch Knight", "PHB", finalKey));
-                }
-            }
-            if (school == SpellSchool.SchoolEnum.Enchantment || school == SpellSchool.SchoolEnum.Illusion) {
-                String finalKey = Tools5eIndexType.getSubclassKey("Rogue", "PHB", "Arcane Trickster", "PHB");
-                if (index().isIncluded(finalKey)) {
-                    classes.add(getSubclass(tags, "Rogue", "PHB", "Arcane Trickster", "PHB", finalKey));
-                }
-            }
-        }
-        return classes;
-    }
-
-    private String getClass(Tags tags, String className, String classSource, String classKey) {
-        tags.add("spell", "class", className);
-        return linkOrText(
-                className,
-                classKey,
-                Tools5eIndexType.classtype.getRelativePath(),
-                Tools5eQuteBase.getClassResource(className, classSource));
-    }
-
-    private String getSubclass(Tags tags, String className, String classSource, String subclassName,
-            String subclassSource, String subclassKey) {
-        tags.add("spell", "class", className, subclassName);
-        return linkOrText(
-                String.format("%s (%s)", className, subclassName),
-                subclassKey,
-                Tools5eIndexType.classtype.getRelativePath(),
-                Tools5eQuteBase.getSubclassResource(subclassName, className, classSource, subclassSource));
-    }
-
     enum SpellFields implements JsonNodeReader {
         amount,
         className,
@@ -306,5 +218,6 @@ public class Json2QuteSpell extends Json2QuteCommon {
         unit,
         unlimited,
         definedInSource,
+        spellAttack,
     }
 }

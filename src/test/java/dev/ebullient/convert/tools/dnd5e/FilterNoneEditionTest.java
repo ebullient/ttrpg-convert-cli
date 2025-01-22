@@ -192,7 +192,7 @@ public class FilterNoneEditionTest {
             commonTests.assert_MISSING("status|surprised|phb");
             commonTests.assert_Present("status|surprised|xphb");
             commonTests.assert_Present("subclass|thief|rogue|phb|phb");
-            commonTests.assert_Present("subclass|thief|rogue|xphb|phb");
+            commonTests.assert_MISSING("subclass|thief|rogue|xphb|phb");
             commonTests.assert_Present("subclass|thief|rogue|xphb|xphb");
             commonTests.assert_MISSING("subrace|genasi (air)|genasi|eepc|eepc");
             commonTests.assert_MISSING("subrace|genasi (air)|genasi|mpmm|mpmm");

@@ -40,19 +40,21 @@ public interface PsionicType {
 
     enum PsionicTypeEnum implements PsionicType {
 
-        Discipline("Discipline", "D"),
-        Talent("Talent", "T");
+        Discipline("D"),
+        Talent("T");
 
-        private String fullName;
         private String shortName;
 
-        PsionicTypeEnum(String fullName, String shortName) {
-            this.fullName = fullName;
+        PsionicTypeEnum(String shortName) {
             this.shortName = shortName;
         }
 
         public String getFullName() {
-            return fullName;
+            return name();
+        }
+
+        public String getShortName() {
+            return shortName;
         }
 
         public boolean isAltDisplay() {

@@ -95,6 +95,14 @@ public class Tools5eDataConvertTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
+                return errors;
+            });
         }
     }
 
@@ -114,6 +122,14 @@ public class Tools5eDataConvertTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
+                return errors;
+            });
         }
     }
 
@@ -131,9 +147,18 @@ public class Tools5eDataConvertTest {
                     TestUtils.TEST_RESOURCES.resolve("5e/sources-subset.json").toString(),
                     TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
+
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
+                return errors;
+            });
         }
     }
 
@@ -234,7 +259,8 @@ public class Tools5eDataConvertTest {
             assertThat(testOutput.resolve("compendium/books/hamunds-herbalism-handbook")).isDirectory();
             assertThat(testOutput.resolve("compendium/books/plane-shift-amonkhet")).isDirectory();
 
-            assertThat(testOutput.resolve("compendium/backgrounds/cook-variant-dndwiki-bestbackgrounds.md")).isRegularFile();
+            assertThat(testOutput.resolve("compendium/backgrounds/cook-variant-dndwiki-bestbackgrounds.md"))
+                    .isRegularFile();
             assertThat(testOutput.resolve("compendium/classes/alchemist-dynamo-engineer-vss.md")).isRegularFile();
 
             TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
@@ -265,11 +291,14 @@ public class Tools5eDataConvertTest {
                     TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana - Quick Characters.json").toString(),
                     TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana - Traps Revisited.json").toString(),
                     TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana - When Armies Clash.json").toString(),
-                    TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2022 - Character Origins.json").toString(),
-                    TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2022 - Expert Classes.json").toString(),
-                    TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2022 - The Cleric and Revised Species.json")
+                    TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2022 - Character Origins.json")
                             .toString(),
-                    TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2023 - Bastions and Cantrips.json").toString(),
+                    TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2022 - Expert Classes.json").toString(),
+                    TestUtils.PATH_5E_UA
+                            .resolve("collection/Unearthed Arcana 2022 - The Cleric and Revised Species.json")
+                            .toString(),
+                    TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2023 - Bastions and Cantrips.json")
+                            .toString(),
                     TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2023 - Druid & Paladin.json").toString(),
                     TestUtils.PATH_5E_UA.resolve("collection/Unearthed Arcana 2023 - Player's Handbook Playtest 5.json")
                             .toString(),

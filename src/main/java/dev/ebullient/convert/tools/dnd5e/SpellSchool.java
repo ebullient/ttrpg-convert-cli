@@ -4,19 +4,41 @@ public interface SpellSchool {
 
     String name();
 
-    record CustomSpellSchool(String name) implements SpellSchool {
+    String code();
+
+    record CustomSpellSchool(String code, String name) implements SpellSchool {
+        @Override
+        public String code() {
+            return code;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
     }
 
     enum SchoolEnum implements SpellSchool {
-        Abjuration,
-        Conjuration,
-        Divination,
-        Enchantment,
-        Evocation,
-        Illusion,
-        Necromancy,
-        Transmutation,
-        None
+        Abjuration("A"),
+        Conjuration("C"),
+        Divination("D"),
+        Enchantment("E"),
+        Evocation("V"),
+        Illusion("I"),
+        Necromancy("N"),
+        Transmutation("T"),
+        Psychic("P"),
+        None("_");
+
+        private final String code;
+
+        SchoolEnum(String abbreviation) {
+            this.code = abbreviation;
+        }
+
+        public String code() {
+            return code;
+        }
     }
 
     static SpellSchool fromEncodedValue(String v) {

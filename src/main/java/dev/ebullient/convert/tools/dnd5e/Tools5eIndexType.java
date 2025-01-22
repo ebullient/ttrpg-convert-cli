@@ -90,6 +90,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     note, // qute data type
     reference, // made up
     syntheticGroup, // qute data type
+    spellIndex, // made up
     ;
 
     final String templateName;
@@ -273,7 +274,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                         this.name(),
                         parts[0].trim(),
                         parts[1].trim(),
-                        parts.length > 2 ? parts[2] : defaultSourceString())
+                        valueOrDefault(parts, 2, defaultSourceString()))
                         .toLowerCase();
             }
             case classfeature -> {
@@ -286,17 +287,48 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     Tui.instance().errorf("Badly formed Class Feature key (not enough segments): %s", crossRef);
                     yield null;
                 }
-                String classSource = valueOrDefault(parts[2], "phb");
-                String featureSource = parts.length > 4 ? parts[4] : classSource;
-                yield getClassFeatureKey(
-                        parts[0], featureSource,
-                        parts[1], classSource,
-                        parts[3]);
+                String classSource = valueOrDefault(parts, 2, Tools5eIndexType.classtype.defaultSourceString());
+                String featureSource = valueOrDefault(parts, 4, classSource);
+                yield "%s|%s|%s|%s|%s|%s".formatted(this.name(),
+                        parts[0],
+                        parts[1],
+                        classSource,
+                        parts[3],
+                        featureSource)
+                        .toLowerCase();
             }
-            case itemMastery, itemProperty, itemType -> {
-                // utils.js: itemType.unpackUid, itemProperty.unpackUid
-                String source = parts.length > 1 ? parts[1] : defaultSourceString();
-                yield "%s|%s|%s".formatted(this.name(), parts[0], source).toLowerCase();
+            case itemProperty -> {
+                String source = valueOrDefault(parts, 1, ItemProperty.defaultItemSource(parts[0]));
+                yield "%s|%s|%s".formatted(
+                        this.name(),
+                        parts[0],
+                        source).toLowerCase();
+            }
+            case itemType -> {
+                String source = valueOrDefault(parts, 1, ItemType.defaultItemSource(parts[0]));
+                yield "%s|%s|%s".formatted(
+                        this.name(),
+                        parts[0],
+                        source).toLowerCase();
+            }
+            case subclass -> {
+                // Homebrew and reprint tags
+                // {@subclass Artillerist|Artificer|TCE|TCE}
+                // 0    subclassShortName,
+                // 1    IndexFields.className.getTextOrEmpty(x),
+                // 2    classSource || "phb",
+                // 3    subClassSource || "phb"
+                if (parts.length < 2) {
+                    Tui.instance().errorf("Badly formed Subclass key (not enough segments): %s", crossRef);
+                    yield null;
+                }
+                String scName = parts[0];
+                String className = parts[1];
+                String classSource = valueOrDefault(parts, 2, "phb");
+                String subClassSource = valueOrDefault(parts, 3, "phb");
+                yield getSubclassKey(
+                        className, classSource,
+                        scName, subClassSource);
             }
             case subclassFeature -> {
                 // 0    name,
@@ -311,15 +343,25 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     yield null;
                 }
                 String classSource = valueOrDefault(parts[2], "phb");
-                String subClassSource = valueOrDefault(parts[4], "phb");
-                String featureSource = parts.length > 6 ? parts[6] : subClassSource;
-                yield getSubclassFeatureKey(
-                        parts[0], featureSource,
-                        parts[1], classSource,
-                        parts[3], subClassSource,
-                        parts[5]);
+                String scSource = valueOrDefault(parts[4], "phb");
+                String featureSource = parts.length > 6 ? parts[6] : scSource;
+                yield "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
+                        Tools5eIndexType.subclassFeature,
+                        parts[0],
+                        parts[1],
+                        classSource,
+                        parts[3],
+                        scSource,
+                        parts[5],
+                        featureSource)
+                        .toLowerCase();
             }
-            default -> "%s|%s".formatted(this.name(), crossRef).toLowerCase();
+            default -> {
+                // 0    name,
+                // 1    source
+                yield createKey(parts[0],
+                        parts.length > 1 ? parts[1] : defaultSourceString());
+            }
         };
     }
 
@@ -334,11 +376,13 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     name,
                     IndexFields.deck.getTextOrEmpty(entry),
                     source);
-            // {@class Fighter|phb|Samurai|Samurai|xge}
-            case subclass -> Tools5eIndexType.getSubclassTextReference(
+            // {@subclass Artillerist|Artificer|TCE|TCE}
+            case subclass -> "%s|%s|%s|%s|%s".formatted(
+                    name,
                     IndexFields.className.getTextOrEmpty(entry),
                     IndexFields.classSource.getTextOrEmpty(entry),
-                    name, source, linkText);
+                    source,
+                    linkText);
             // {@subclassFeature Blessed Strikes|Cleric|PHB|Twilight|TCE|8|TCE}
             case subclassFeature -> "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
                     name,
@@ -391,57 +435,14 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     }
 
     public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
-        if (classSource == null || classSource.isEmpty()) {
-            // phb remains in the subclass text reference (match allowed sources)
-            classSource = "phb";
-        }
+        classSource = valueOrDefault(classSource, Tools5eIndexType.classtype.defaultSourceString());
+        subclassSource = valueOrDefault(subclassSource, Tools5eIndexType.subclass.defaultSourceString());
         return "%s|%s|%s|%s|%s".formatted(
                 Tools5eIndexType.subclass,
                 subclassName,
                 className,
                 classSource,
                 subclassSource)
-                .toLowerCase();
-    }
-
-    public static String getSubclassTextReference(String className, String classSource, String subclassName,
-            String subclassSource, String text) {
-        if (classSource == null || classSource.isEmpty()) {
-            // phb remains in the subclass text reference (match allowed sources)
-            classSource = "phb";
-        }
-        // {@class Fighter|phb|Samurai|Samurai|xge}
-        return "%s|%s|%s|%s|%s".formatted(
-                className,
-                classSource,
-                valueOrDefault(text, subclassName),
-                subclassName,
-                subclassSource);
-    }
-
-    public static String getClassFeatureKey(String name, String featureSource, String className, String classSource,
-            String level) {
-        return "%s|%s|%s|%s|%s|%s".formatted(
-                Tools5eIndexType.classfeature,
-                name,
-                className,
-                classSource,
-                level,
-                featureSource)
-                .toLowerCase();
-    }
-
-    public static String getSubclassFeatureKey(String name, String featureSource, String className, String classSource,
-            String scShortName, String scSource, String level) {
-        return "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
-                Tools5eIndexType.subclassFeature,
-                name,
-                className,
-                classSource,
-                scShortName,
-                scSource,
-                level,
-                featureSource)
                 .toLowerCase();
     }
 
@@ -478,6 +479,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     itemMastery,
                     sense,
                     skill,
+                    spellIndex,
                     status,
                     syntheticGroup ->
                 true;
@@ -524,6 +526,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     optionalFeatureTypes,
                     sense,
                     skill,
+                    spellIndex,
                     status,
                     table,
                     tableGroup,
@@ -564,7 +567,8 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case legendaryGroup -> "bestiary/legendary-group";
             case magicvariant -> "items";
             case monster -> "bestiary";
-            case optfeature, optionalFeatureTypes -> "optional-features";
+            case optfeature -> "optional-features";
+            case optionalFeatureTypes, spellIndex -> "lists";
             case race, subrace -> "races";
             case subclass, classtype -> "classes";
             case table, tableGroup -> "tables";
@@ -647,7 +651,6 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         return switch (this) {
             case card,
                     classfeature,
-                    optfeature,
                     optionalFeatureTypes,
                     subclass,
                     subclassFeature,
@@ -687,5 +690,9 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         if (node.has(field)) {
             node.withArray(field).forEach(x -> callback.accept(this, x));
         }
+    }
+
+    boolean isKey(String crossRef) {
+        return crossRef != null && crossRef.startsWith(name());
     }
 }

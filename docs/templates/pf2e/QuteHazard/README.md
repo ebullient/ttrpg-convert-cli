@@ -13,7 +13,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[abilities](#abilities), [actions](#actions), [attacks](#attacks), [complexity](#complexity), [defenses](#defenses), [disable](#disable), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [perception](#perception), [reprintOf](#reprintof), [reset](#reset), [routine](#routine), [routineAdmonition](#routineadmonition), [source](#source), [sourceAndPage](#sourceandpage), [stealth](#stealth), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[abilities](#abilities), [actions](#actions), [attacks](#attacks), [books](#books), [complexity](#complexity), [defenses](#defenses), [disable](#disable), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [perception](#perception), [reprintOf](#reprintof), [reset](#reset), [routine](#routine), [routineAdmonition](#routineadmonition), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [stealth](#stealth), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### abilities
@@ -46,6 +46,10 @@ ability. Example:
 
 The attacks available to the hazard, as a list of
 [QuteInlineAttack](../QuteInlineAttack/README.md)
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### complexity
 
@@ -96,6 +100,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### stealth
 

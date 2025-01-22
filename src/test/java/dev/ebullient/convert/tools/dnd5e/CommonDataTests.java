@@ -587,7 +587,7 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer)
-                    .writeFiles(Tools5eIndexType.spell);
+                    .writeFiles(List.of(Tools5eIndexType.spell, Tools5eIndexType.spellIndex));
 
             TestUtils.assertDirectoryContents(spellDir, tui);
         }

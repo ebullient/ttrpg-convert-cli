@@ -10,6 +10,7 @@
       "src/test/resources/5e/psion.json",
       "src/test/resources/5e/ermis-bg.json",
       "sources/5e-homebrew/adventure/Anthony Joyce; The Blood Hunter Adventure.json",
+      "sources/5e-homebrew/adventure/Arcanum Worlds; Odyssey of the Dragonlords.json",
       "sources/5e-homebrew/adventure/JVC Parry; Call from the Deep.json",
       "sources/5e-homebrew/adventure/Kobold Press; Book of Lairs.json",
       "sources/5e-homebrew/background/D&D Wiki; Featured Quality Backgrounds.json",
@@ -28,18 +29,20 @@
       "sources/5e-homebrew/collection/Keith Baker; Exploring Eberron.json",
       "sources/5e-homebrew/collection/Kobold Press; Deep Magic 14 Elemental Magic.json",
       "sources/5e-homebrew/collection/Kobold Press; Deep Magic.json",
+      "sources/5e-homebrew/collection/Loot Tavern; Heliana's Guide To Monster Hunting.json",
       "sources/5e-homebrew/collection/MCDM Productions; The Talent and Psionics Open Playtest Round 2.json",
       "sources/5e-homebrew/collection/Mage Hand Press; Valda's Spire of Secrets.json",
       "sources/5e-homebrew/creature/Dragonix; Monster Manual Expanded III.json",
       "sources/5e-homebrew/creature/Kobold Press; Creature Codex.json",
-      "sources/5e-homebrew/creature/Kobold Press; Tome of Beasts.json",
       "sources/5e-homebrew/creature/Kobold Press; Tome of Beasts 2.json",
+      "sources/5e-homebrew/creature/Kobold Press; Tome of Beasts.json",
       "sources/5e-homebrew/creature/MCDM Productions; Flee, Mortals! preview.json",
       "sources/5e-homebrew/creature/MCDM Productions; Flee, Mortals!.json",
       "sources/5e-homebrew/creature/Nerzugal Role-Playing; Nerzugal's Extended Bestiary.json",
       "sources/5e-homebrew/deity/Frog God Games; The Lost Lands.json",
-      "sources/5e-homebrew/collection/Loot Tavern; Heliana's Guide To Monster Hunting.json",
-      "sources/5e-homebrew/race/Middle Finger of Vecna; Archon.json"
+      "sources/5e-homebrew/optionalfeature/laserllama; Laserllama's Exploit Compendium.json",
+      "sources/5e-homebrew/race/Middle Finger of Vecna; Archon.json",
+      "sources/5e-homebrew/subclass/LaserLlama; Druid Circles.json"
     ]
   },
   "from": [

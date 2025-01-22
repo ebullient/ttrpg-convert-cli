@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
+import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
@@ -357,7 +358,7 @@ public class QuteMonster extends Tools5eQuteBase {
      */
     @TemplateData
     @RegisterForReflection
-    public static class Spellcasting {
+    public static class Spellcasting implements QuteUtil {
         /** Name: "Spellcasting" or "Innate Spellcasting" */
         public String name;
         /** Formatted text that should be printed before the list of spells */
@@ -445,25 +446,6 @@ public class QuteMonster extends Tools5eQuteBase {
             }
             maybeAddBlankLine(text);
             text.add(String.format("**%s**: %s", title, String.join(", ", spells)));
-        }
-
-        void maybeAddBlankLine(List<String> text) {
-            if (text.size() > 0 && !text.get(text.size() - 1).isBlank()) {
-                text.add("");
-            }
-        }
-
-        String levelToString(String level) {
-            switch (level) {
-                case "1":
-                    return "1st";
-                case "2":
-                    return "2nd";
-                case "3":
-                    return "3rd";
-                default:
-                    return level + "th";
-            }
         }
     }
 

@@ -10,6 +10,7 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
+import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
@@ -109,6 +110,7 @@ public class Tools5eQuteBase extends QuteBase {
                     Tools5eFields.className.getTextOrEmpty(node),
                     Tools5eFields.classSource.getTextOrEmpty(node),
                     primarySource);
+            case optionalFeatureTypes -> getOptionalFeatureTypeResource(name);
             default -> fixFileName(name, primarySource, type);
         };
     }
@@ -120,6 +122,9 @@ public class Tools5eQuteBase extends QuteBase {
                 || type == Tools5eIndexType.bookData
                 || type == Tools5eIndexType.tableGroup) {
             return Tui.slugify(name); // file name is based on chapter, etc.
+        }
+        if (type == Tools5eIndexType.optionalFeatureTypes) {
+            return getOptionalFeatureTypeResource(name);
         }
         return Tui.slugify(name.replaceAll(" \\(\\*\\)", "-gv")
                 + sourceIfNotDefault(source, type));
@@ -176,6 +181,32 @@ public class Tools5eQuteBase extends QuteBase {
             }
         }
         return pantheon + "-" + name + suffix;
+    }
+
+    public static String getOptionalFeatureTypeResource(String name) {
+        return Tui.slugify("list-optfeaturetype-" + name);
+    }
+
+    public static String getClassSpellList(String className) {
+        return "list-spells-%s-%s".formatted(
+                Tools5eIndexType.classtype.getRelativePath(),
+                className.toLowerCase());
+    }
+
+    public static String getClassSpellList(JsonNode classNode) {
+        return "list-spells-%s-%s".formatted(
+                Tools5eIndexType.classtype.getRelativePath(),
+                SourceField.name.getTextOrEmpty(classNode).toLowerCase());
+    }
+
+    public static String getSpellList(String name, Tools5eSources sources) {
+        Tools5eIndexType type = sources.getType();
+        JsonNode node = sources.findNode();
+        if (type == Tools5eIndexType.classtype) {
+            return getClassSpellList(node);
+        }
+        final String fileResource = fixFileName(name, sources);
+        return "list-spells-%s-%s".formatted(type.getRelativePath(), fileResource);
     }
 
     public Tools5eQuteBase withTargetFile(String filename) {

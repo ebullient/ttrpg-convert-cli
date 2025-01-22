@@ -8,11 +8,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemTag;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 
 /**
@@ -56,7 +56,7 @@ public record ItemType(
     public static ItemType fromNode(JsonNode typeNode) {
         String typeKey = TtrpgValue.indexKey.getTextOrEmpty(typeNode);
         if (typeKey.isEmpty()) {
-            Tui.instance().warnf(Msg.NOT_SET.wrap("Index key not found for property %s"), typeNode);
+            Tui.instance().warnf(Msg.NOT_SET.wrap("Index key not found for type %s"), typeNode);
             return null;
         }
         // Create the ItemType object once
@@ -165,6 +165,22 @@ public record ItemType(
     public static void clear() {
         typeMap.clear();
     }
+
+    public static String defaultItemSource(String code) {
+        boolean xphbAvailable = TtrpgConfig.getConfig().sourceIncluded("XPHB");
+        boolean xdmgAvailable = TtrpgConfig.getConfig().sourceIncluded("XDMG");
+        return switch (code) {
+            case "$", "$A", "$G" -> "DMG"; // treasure
+            case "AF", "EXP" -> "DMG"; // ammunition, explosives
+            case "AIR", "SC", "SHP" -> xphbAvailable ? "XPHB" : "DMG"; // airship
+            case "GV", "RD", "RG", "WD" -> "DMG"; // generic variant / magic item
+            case "IDG" -> "TDCSR"; // illegal drug
+            case "SPC" -> "AAG"; // spelljammer
+            case "TB" -> "XDMG";
+            case "TG" -> xdmgAvailable ? "XDMG" : "PHB"; // trade good
+            default -> "PHB";
+        };
+    }
 }
 
 // Parser.ITM_TYP_ABV__TREASURE = "$";
@@ -199,6 +215,7 @@ public record ItemType(
 // Parser.ITM_TYP_ABV__VEHICLE_SPACE = "SPC";
 // Parser.ITM_TYP_ABV__TOOL = "T";
 // Parser.ITM_TYP_ABV__TACK_AND_HARNESS = "TAH";
+// Parser.ITM_TYP_ABV__TRADE_BAR = "TB";
 // Parser.ITM_TYP_ABV__TRADE_GOOD = "TG";
 // Parser.ITM_TYP_ABV__VEHICLE_LAND = "VEH";
 // Parser.ITM_TYP_ABV__WAND = "WD";
@@ -267,6 +284,7 @@ public record ItemType(
 // Parser.ITM_TYP__ODND_VEHICLE_WATER = "SHP|XPHB";
 // Parser.ITM_TYP__ODND_TOOL = "T|XPHB";
 // Parser.ITM_TYP__ODND_TACK_AND_HARNESS = "TAH|XPHB";
+// Parser.ITM_TYP__ODND_TRADE_BAR = "TB|XDMG";
 // Parser.ITM_TYP__ODND_TRADE_GOOD = "TG|XDMG";
 // Parser.ITM_TYP__ODND_VEHICLE_LAND = "VEH|XPHB";
 // Parser.ITM_TYP__ODND_WAND = "WD|XDMG";

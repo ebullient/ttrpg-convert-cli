@@ -21,6 +21,7 @@ public enum Msg {
     REPRINT(Character.toString(0x1F4F0)), // 📰
     SOMEDAY(Character.toString(0x1F6A7)), // 🚧
     SOURCE(Character.toString(0x1F4D8)), // 📘
+    SPELL(Character.toString(0x1F4AB)), // 💫
     TARGET(Character.toString(0x1F3AF)), // 🎯
     UNKNOWN(Character.toString(0x1F47B)), // 👻
     UNRESOLVED(Character.toString(0x1FAE3)), // 🫣

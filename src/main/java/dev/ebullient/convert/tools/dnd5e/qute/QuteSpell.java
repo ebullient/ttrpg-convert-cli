@@ -1,7 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
@@ -32,11 +32,13 @@ public class QuteSpell extends Tools5eQuteBase {
     public final String duration;
     /** String: rendered list of links to classes that can use this spell. May be incomplete or empty. */
     public final String classes;
+    /** List of links to resources (classes, subclasses, feats, etc.) that have access to this spell */
+    public final List<String> references;
 
     public QuteSpell(Tools5eSources sources, String name, String source, String level,
             String school, boolean ritual, String time, String range,
             String components, String duration,
-            String classes, List<ImageRef> images, String text, Tags tags) {
+            List<String> references, List<ImageRef> images, String text, Tags tags) {
         super(sources, name, source, images, text, tags);
 
         this.level = level;
@@ -46,14 +48,18 @@ public class QuteSpell extends Tools5eQuteBase {
         this.range = range;
         this.components = components;
         this.duration = duration;
-        this.classes = classes;
+        this.references = references;
+        this.classes = references.stream()
+                .filter(s -> s.contains("class"))
+                .collect(Collectors.joining("; "));
     }
 
-    /** List of class names that can use this spell. May be incomplete or empty. */
+    /** List of class names (not links) that can use this spell. */
     public List<String> getClassList() {
-        return classes == null || classes.isEmpty()
+        return references == null || references.isEmpty()
                 ? List.of()
-                : Stream.of(classes.split(",\\s*"))
+                : references.stream()
+                        .filter(s -> s.contains("class"))
                         .map(s -> s.replaceAll("\\[(.*?)\\].*", "$1"))
                         .toList();
     }

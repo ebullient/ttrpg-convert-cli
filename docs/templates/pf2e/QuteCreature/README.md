@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[abilities](#abilities), [abilityMods](#abilitymods), [aliases](#aliases), [attacks](#attacks), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [reprintOf](#reprintof), [ritualCasting](#ritualcasting), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[abilities](#abilities), [abilityMods](#abilitymods), [aliases](#aliases), [attacks](#attacks), [books](#books), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [reprintOf](#reprintof), [ritualCasting](#ritualcasting), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### abilities
@@ -25,6 +25,10 @@ Aliases for this note (optional)
 ### attacks
 
 The creature's attacks, as a list of [QuteInlineAttack](../QuteInlineAttack/README.md)
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### defenses
 
@@ -85,6 +89,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### speed
 

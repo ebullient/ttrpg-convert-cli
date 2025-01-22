@@ -6,11 +6,15 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[benefits](#benefits), [dedicationLevel](#dedicationlevel), [feats](#feats), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[benefits](#benefits), [books](#books), [dedicationLevel](#dedicationlevel), [feats](#feats), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
 
 ### benefits
 
+
+### books
+
+List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
 
 ### dedicationLevel
 
@@ -41,6 +45,14 @@ String describing the content's source(s)
 ### sourceAndPage
 
 Book sources as list of [SourceAndPage](../SourceAndPage.md)
+
+### sourcesWithFootnote
+
+Get Sources as a footnote.
+
+Calling this method will return an italicised string with the primary source
+followed by a footnote listing all other sources. Useful for types
+that tend to have many sources.
 
 ### tags
 

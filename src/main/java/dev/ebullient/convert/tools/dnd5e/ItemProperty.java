@@ -15,7 +15,6 @@ import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemTag;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 
 record ItemProperty(
@@ -142,6 +141,15 @@ record ItemProperty(
 
     public static void clear() {
         propertyMap.clear();
+    }
+
+    public static String defaultItemSource(String code) {
+        // reprint will handle PHB -> XPHB, DMG -> XDMG, etc.
+        return switch (code) {
+            case "AF", "BF", "RLD" -> "DMG";
+            case "ER", "Vst" -> "TDCSR";
+            default -> "PHB";
+        };
     }
 }
 
