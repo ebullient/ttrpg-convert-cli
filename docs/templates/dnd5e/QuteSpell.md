@@ -15,7 +15,7 @@ List of source books using abbreviated name. Fantasy statblocks uses this list f
 
 ### classList
 
-List of resource names (not links) that can use this spell.
+List of class names (not links) that can use this spell.
 
 ### classes
 
