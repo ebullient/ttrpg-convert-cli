@@ -2,7 +2,7 @@ name: Pf2e Tools Data
 on:
   schedule:
     # At 09:07 on Saturday (because why not)
-    - cron: "7 9 * * 6"
+    - cron: "7 9 * * */5"
 
   workflow_dispatch:
 
