@@ -25,7 +25,6 @@ I use [Obsidian](https://obsidian.md) to keep track of my campaign notes. This p
 >
 > - 🚜 [**Review the changelog**](CHANGELOG.md) for new capabilities (✨) and breaking changes (🔥💥).
 > - 🔮 Check out [**Conventions**](#conventions) and  [**Recommendations**](#recommendations-for-using-the-cli).
-> - 🔥 Support for the 5e 2024 ruleset is [in progress](https://github.com/ebullient/ttrpg-convert-cli/discussions/586).  
 
 ## Using the Command Line
 
