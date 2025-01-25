@@ -135,7 +135,7 @@ public class ExportDocsTest {
         tools5Config.paths.compendium = "/compendium/";
         tools5Config.paths.rules = "/compendium/rules/";
 
-        tools5Config.excludePattern.add("race|.*|dmg");
+        tools5Config.excludePattern.add("race\\|.*\\|dmg");
         tools5Config.exclude.addAll(List.of(
                 "monster|expert|dc",
                 "monster|expert|sdw",
@@ -167,7 +167,7 @@ public class ExportDocsTest {
 
         pf2eConfig.include.add("ability|buck|b1");
         pf2eConfig.exclude.add("background|insurgent|apg");
-        pf2eConfig.excludePattern.add("background|.*|lowg");
+        pf2eConfig.excludePattern.add("background\\|.*\\|lowg");
         pf2eConfig.template.put("ability", "../path/to/ability2md.txt");
 
         pf2eConfig.tagPrefix = "ttrpg-cli";

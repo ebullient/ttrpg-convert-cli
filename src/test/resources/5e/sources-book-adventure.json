@@ -28,6 +28,6 @@
     "monster|expert|slw"
   ],
   "excludePattern": [
-    "race|.*|dmg"
+    "race\\|.*\\|dmg"
   ]
 }

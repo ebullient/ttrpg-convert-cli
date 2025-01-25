@@ -60,7 +60,7 @@
     "monster|expert|slw"
   ],
   "excludePattern": [
-    "race|.*|dmg"
+    "race\\|.*\\|dmg"
   ],
   "template": {
     "background": "examples/templates/tools5e/images-background2md.txt",

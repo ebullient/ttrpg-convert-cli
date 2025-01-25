@@ -316,13 +316,24 @@ The CLI `--index` option compiles two lists of data keys:
 
 ### Excluding content matching an `excludePattern`
 
-This option allows you to exclude data entries based on matching patterns.
+This option allows you to exclude data entries based on regular expression matching patterns.
 
-```json
-"excludePattern": [
-    "race|.*|dmg"
-]
-```
+Note: A pipe (`|`) is a special character in regular expressions, and must be escaped.
+
+- JSON
+
+    ```json
+    "excludePattern": [
+        "race\\|.*\\|dmg"
+    ]
+    ```
+
+- YAML
+
+    ```yaml
+    excludePattern:
+      - race\|.*\|dmg
+    ```
 
 ### Excluding specific content with `exclude`
 

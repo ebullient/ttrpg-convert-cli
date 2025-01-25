@@ -7,39 +7,45 @@
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
-> [!NOTE]
-> ***If you generated content with an earlier verson of the CLI (1.x, 2.0.x, 2.1.x)***, you can use [a templater script](https://github.com/ebullient/ttrpg-convert-cli/blob/main/migration/ttrpg-cli-renameFiles-5e-2.1.0.md) to **rename files in your vault before merging** with freshly generated content. View the contents of the template before running it, and adjust parameters at the top to match your Vault.
->
-> To run the template: Use 'Templater: Open Insert Template Modal' with an existing note or 'Templater: Create new note from Template' to create a new note, and choose the migration template from the list.
-
 ## 🔥✨ 3.0.0: Moving the things
 
-- The `-s` option is no more. All sources must be specified in config files.
-- There have been some changes to how dice strings are rendered.
-- `from` and `full-source` have been merged. The [`sources` key](./docs/configuration.md#specify-content-with-the-sources-key) now defines all types of source: `reference` for reference-only, `book`/`adventure` for complete source text, and `homebrew` for homebrew.
+Support for the 2024 ruleset caused a lot of ripples. There is nothing small about this release.
 
-    ```json
-    {
-        "sources": {
-            "adventure": [
-                ...
-            ],
-            "book": [
-                ...
-            ],
-            "homebrew": [
-                ...
-            ],
-            "reference": [
-                ...
-            ]
-        },
-    }
-    ```
+- *Specifying Sources*
+    - Removed `-s` option. Sources must be specified in config files.
+    - The [Source Map](./docs/sourceMap.md) for 5e sources now includes `book` or `adventure` status
+    - Combined `from` and `full-source` into unified `sources` key with four types:
 
-- The [Source Map](./docs/sourceMap.md) for 5e sources now indicates if the source is a `book` or `adventure`.
-- The Players Handbook directory has changed from `players-handbook` to `players-handbook-2014`
-- **Reprint behavior** has always been knd of obscure, but it really matters now. The CLI will always default to one-note-per-thing, perferring the most recent version of said thing. This means that the 2024 PHB content will be preferred if you have that source available. Use [`include` and `exclude` configuration](docs/configuration.md#refine-content-choices) to tweak that behavior.
+        ```json
+        {
+            "sources": {
+                "reference": [...],  // Reference-only content
+                "book": [...],       // Complete book content
+                "adventure": [...],  // Complete adventure content 
+                "homebrew": [...]    // Custom content
+            }
+        }
+        ```
+
+    - *Reprint handling*: CLI will default to the most recent version available for your selected sources.
+        - Use `include`/`exclude` config to override.
+        - For SRD/Basic rules for 2014 content, use: "srd", "basicrules"
+        - For SRD/Basic rules for 2024 content, use: "srd52", "freerules2024"
+- *Generated content*
+    - Changed Players Handbook directory to `players-handbook-2014`
+    - Dice roller uses the `|text` flag to make text more consistent
+      and readable (dice roll occurs on hover)
+    - Added a `lists` folder in the compendium:
+        - Lists of optional features
+        - Lists of spells by class, school, subclass, background, feat...
+- **5e Template updates**
+    - All templates:
+        - Added `books`: Abbreviated source book list
+        - Added `sourcesWithFootnote`: Primary source with additional sources as footnotes
+    - Added Bastion template (2024 rules)
+    - Spells: Added `references` list linking to related content
+
+Note: Path changes may affect existing content links. All path updates support dual-edition content structure.
 
 ## 🔖 ✨ 2.3.14: Improvements to Pathfinder rendering
 
