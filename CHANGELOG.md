@@ -42,7 +42,20 @@ Support for the 2024 ruleset caused a lot of ripples. There is nothing small abo
     - All templates:
         - Added `books`: Abbreviated source book list
         - Added `sourcesWithFootnote`: Primary source with additional sources as footnotes
-    - Added Bastion template (2024 rules)
+        - Image display (see [image examples](examples/templates/tools5e))
+            - hasImages - true if any images are present
+            - hasMoreImages - true if more than one image is present
+            - showAllImages - rendered wikilinks for all images. If there is more than one, they will be shown as a gallery.
+            - showMoreImages - rendered wikilinks for all but the first image. If there is more than one, they will be shown as a gallery.
+            - showPortraitImage - rendered wikilink for the first image with the '#right' anchor tag to float it to the right side.
+    - Added [Bastion template](docs/templates/dnd5e/QuteBastion/) (2024 rules)
+    - Class updates:
+        - Unified class progression tables
+        - [Hit Point Die](docs/templates/dnd5e/QuteClass/HitPointDie.md)
+        - [Starting Equipment](docs/templates/dnd5e/QuteClass/StartingEquipment.md)
+        - Improved [Multiclassing](docs/templates/dnd5e/QuteClass/Multiclassing.md)
+        - isClassic/classic: true if 2014 class
+        - isSidekick/sidekick: true if sidekick class
     - Spells: Added `references` list linking to related content
 
 Note: Path changes may affect existing content links. All path updates support dual-edition content structure.
