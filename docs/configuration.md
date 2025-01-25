@@ -106,7 +106,7 @@ Here's a more comprehensive `config.json` file.
         "rules": "/compendium/rules/"
     },
     "excludePattern": [
-        "race|.*|dmg"
+        "race\\|.*\\|dmg"
     ],
     "exclude": [
         "monster|expert|dc",

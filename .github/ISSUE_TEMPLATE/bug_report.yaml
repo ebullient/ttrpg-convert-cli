@@ -18,8 +18,6 @@ body:
         >
         > - 🚜 [**Review the changelog**](https://github.com/ebullient/ttrpg-convert-cli/blob/main/CHANGELOG.md) for new capabilities (✨) and breaking changes (🔥💥).
         > - 🔮 Check out [**Conventions**](https://github.com/ebullient/ttrpg-convert-cli/blob/main/README.md#conventions) and  [**Recommendations**](https://github.com/ebullient/ttrpg-convert-cli/blob/main/README.md#recommendations-for-using-the-cli).
-        > - 🔥 Support for the 5e 2024 ruleset is [in progress](https://github.com/ebullient/ttrpg-convert-cli/discussions/586).
-        >      Messages you may see related to XPHB, XMM, XDMG, or HP formulas are all related to this change
 
   - type: textarea
     id: the-problem
