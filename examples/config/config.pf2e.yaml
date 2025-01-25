@@ -14,7 +14,7 @@ include:
 exclude:
 - "background|insurgent|apg"
 excludePattern:
-- "background|.*|lowg"
+- "background\\|.*\\|lowg"
 reprintBehavior: "newest"
 template:
   ability: "../path/to/ability2md.txt"

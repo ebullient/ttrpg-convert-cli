@@ -21,7 +21,7 @@ exclude:
 - "monster|expert|sdw"
 - "monster|expert|slw"
 excludePattern:
-- "race|.*|dmg"
+- "race\\|.*\\|dmg"
 reprintBehavior: "newest"
 template:
   background: "examples/templates/tools5e/images-background2md.txt"

@@ -20,7 +20,7 @@
     "background|insurgent|apg"
   ],
   "excludePattern" : [
-    "background|.*|lowg"
+    "background\\|.*\\|lowg"
   ],
   "reprintBehavior" : "newest",
   "template" : {
