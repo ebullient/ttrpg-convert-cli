@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -102,7 +103,11 @@ public class Json2QuteClass extends Json2QuteCommon {
     public List<QuteSubclass> buildSubclasses() {
         List<QuteSubclass> quteSc = new ArrayList<>();
 
-        for (String scKey : ClassFields.subclassKeys.getListOfStrings(rootNode, tui())) {
+        // List of subclasses may include duplicates
+        // See recovery for included subclass features that get abandoned
+        // over edition crossing
+        Set<String> subclassKeys = index.findSubclasses(getSources().getKey());
+        for (String scKey : subclassKeys) {
             JsonNode scNode = index.getNode(scKey);
             Tools5eSources scSources = Tools5eSources.findSources(scKey);
             String scName = scSources.getName();
@@ -128,6 +133,14 @@ public class Json2QuteClass extends Json2QuteCommon {
                 List<ImageRef> images = new ArrayList<>();
                 List<String> text = getFluff(scNode, Tools5eIndexType.subclassFluff, "##", images);
 
+                if (scSources.isClassic() && !getSources().isClassic()) {
+                    // insert warning about mixed edition content
+                    text.add(0,
+                            "> This subclass is from a different game edition. You will need to do some adjustment to resolve differences.");
+                    text.add(0, "> [!caution] Mixed edition content");
+                }
+
+                maybeAddBlankLine(text);
                 text.add("## Class Features");
                 for (ClassFeature scf : scFeatures) {
                     scf.appendText(this, text, scSources.primarySource());
@@ -748,10 +761,10 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     // Unpack a subclass key
     static class SubclassKeyData implements KeyData {
-        final String scName;
-        final String className;
-        final String classSource;
-        final String scSource;
+        String scName;
+        String className;
+        String classSource;
+        String scSource;
 
         public SubclassKeyData(String key) {
             String[] parts = key.split("\\|");
@@ -789,13 +802,13 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     // Unpack a subclass feature key
     static class SubclassFeatureKeyData implements KeyData {
-        final String scfName;
-        final String className;
-        final String classSource;
-        final String scName;
-        final String scSource;
-        final String level;
-        final String scfSource;
+        String scfName;
+        String className;
+        String classSource;
+        String scName;
+        String scSource;
+        String level;
+        String scfSource;
 
         public SubclassFeatureKeyData(String key) {
             String[] parts = key.split("\\|");
@@ -831,6 +844,32 @@ public class Json2QuteClass extends Json2QuteCommon {
         @Override
         public String itemSource() {
             return scfSource;
+        }
+
+        public String toKey() {
+            return String.join("|",
+                    Tools5eIndexType.subclassFeature.name(),
+                    scfName,
+                    className, classSource,
+                    scName, scSource,
+                    level, scfSource)
+                    .toLowerCase();
+        }
+
+        public String toSubclassKey() {
+            return String.join("|",
+                    Tools5eIndexType.subclass.name(),
+                    scName,
+                    className, classSource,
+                    scSource)
+                    .toLowerCase();
+        }
+
+        public String toClassKey() {
+            return String.join("|",
+                    Tools5eIndexType.classtype.name(),
+                    className, classSource)
+                    .toLowerCase();
         }
     }
 
@@ -961,7 +1000,6 @@ public class Json2QuteClass extends Json2QuteCommon {
         count,
         defaultEquipment("default"), // default is a reserved word
         faces,
-        featureKeys,
         from,
         full,
         gainSubclassFeature,
@@ -988,7 +1026,6 @@ public class Json2QuteClass extends Json2QuteCommon {
         startingProficiencies,
         subclassFeature,
         subclassFeatures,
-        subclassKeys,
         subclassShortName,
         subclassSource,
         subclassTableGroups,

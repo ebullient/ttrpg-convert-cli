@@ -519,4 +519,13 @@ public interface JsonNodeReader {
             ((ObjectNode) target).set(this.nodeName(), value);
         }
     }
+
+    /** Destructive! */
+    default void appendToArray(JsonNode target, String value) {
+        if (target == null) {
+            return;
+        }
+        ArrayNode array = ensureArrayIn(target).add(value);
+        setIn(target, array);
+    }
 }

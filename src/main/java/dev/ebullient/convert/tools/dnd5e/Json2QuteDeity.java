@@ -12,7 +12,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import dev.ebullient.convert.config.ReprintBehavior;
 import dev.ebullient.convert.config.TtrpgConfig;
+import dev.ebullient.convert.io.Msg;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
@@ -82,18 +85,23 @@ public class Json2QuteDeity extends Json2QuteCommon {
         return null;
     }
 
-    public static Iterable<String> findDeitiesToRemove(List<Tuple> allDeities) {
+    public static Iterable<String> findDeities(List<Tuple> allDeities) {
+        var config = TtrpgConfig.getConfig();
+        if (config.reprintBehavior() == ReprintBehavior.all) {
+            return allDeities.stream()
+                    .filter(t -> Tools5eSources.includedByConfig(t.key))
+                    .peek(t -> Tui.instance().logf(Msg.DEITY, " ----  %s", t.key))
+                    .map(t -> t.key)
+                    .toList();
+        }
+
         final Comparator<String> byDate = Comparator
                 .comparing(k -> TtrpgConfig.sourcePublicationDate(k));
 
         Function<Tuple, String> deityKey = n -> {
-            String reprintAlias = DeityField.reprintAlias.getTextOrNull(n.node);
-            if (reprintAlias == null) {
-                String pantheon = DeityField.pantheon.getTextOrEmpty(n.node);
-                String name = SourceField.name.getTextOrEmpty(n.node);
-                return name + "-" + pantheon;
-            }
-            return reprintAlias;
+            String name = DeityField.reprintAlias.getTextOrDefault(n.node, SourceField.name.getTextOrEmpty(n.node));
+            String pantheon = DeityField.pantheon.getTextOrEmpty(n.node);
+            return (name + "-" + pantheon).toLowerCase();
         };
 
         // Group by source
@@ -106,26 +114,38 @@ public class Json2QuteDeity extends Json2QuteCommon {
                 .toList();
 
         Map<String, Tuple> keepers = new HashMap<>();
-        List<String> keysToRemove = new ArrayList<>();
         // Iterate over groups of deities in order of publication.
         // Keep the first deity of each name, add others to the remove pile.
         for (String book : sourcesByDate) {
             List<Tuple> deities = deityBySource.remove(book);
 
             if (keepers.isEmpty()) { // most recent bucket. Keep all.
-                deities.forEach(t -> keepers.put(deityKey.apply(t), t));
+                deities.forEach(tuple -> {
+                    String key = deityKey.apply(tuple);
+                    if (Tools5eSources.includedByConfig(tuple.key)) {
+                        Tui.instance().logf(Msg.DEITY, " ----  %60s :: %s", tuple.key, key);
+                        keepers.put(key, tuple);
+                    } else {
+                        Tui.instance().logf(Msg.DEITY, "(drop) %s", tuple.key);
+                    }
+                });
                 continue;
             }
-            for (Tuple deity : deities) {
-                String key = deityKey.apply(deity);
-                if (keepers.containsKey(key)) {
-                    keysToRemove.add(deity.key);
+            for (Tuple tuple : deities) {
+                String key = deityKey.apply(tuple);
+                if (Tools5eSources.includedByConfig(tuple.key)) {
+                    if (keepers.containsKey(key)) {
+                        Tui.instance().logf(Msg.DEITY, "(drop | superseded) %47s => %s", tuple.key, key);
+                    } else {
+                        keepers.put(key, tuple);
+                        Tui.instance().logf(Msg.DEITY, " ----  %60s :: %s", tuple.key, key);
+                    }
                 } else {
-                    keepers.put(key, deity);
+                    Tui.instance().logf(Msg.DEITY, "(drop) %s", tuple.key);
                 }
             }
         }
-        return keysToRemove;
+        return keepers.entrySet().stream().map(e -> e.getValue().key).toList();
     }
 
     enum DeityField implements JsonNodeReader {

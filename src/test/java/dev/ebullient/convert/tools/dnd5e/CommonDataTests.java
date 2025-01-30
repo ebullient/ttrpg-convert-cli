@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
@@ -33,6 +35,7 @@ public class CommonDataTests {
 
     public final Tools5eIndex index;
     public final TestInput variant;
+    public final CompendiumConfig config;
 
     enum TestInput {
         all,
@@ -43,10 +46,11 @@ public class CommonDataTests {
         srd2024,
         subset2014,
         subset2024,
+        subsetMixed,
         ;
     }
 
-    public CommonDataTests(TestInput variant, Path toolsData) throws Exception {
+    public CommonDataTests(TestInput variant, String config, Path toolsData) throws Exception {
         this.toolsData = toolsData;
         dataPresent = toolsData.toFile().exists();
 
@@ -68,97 +72,22 @@ public class CommonDataTests {
 
         if (dataPresent) {
             templates.setCustomTemplates(TtrpgConfig.getConfig());
-            var additional = new ArrayList<>(List.of("adventures.json", "books.json"));
 
-            switch (variant) {
-                case none -> {
-                    // do nothing. SRD content.. newest of all editions (so 2024)
-                }
-                case noneEdition -> {
-                    // no content specified (just SRD)
-                    // Do not follow reprints across editions
-                    var o = Tui.MAPPER.createObjectNode()
-                            .put("reprintBehavior", "edition");
-                    configurator.readConfigIfPresent(o);
-                }
-                case srd2014 -> {
-                    // only 2014
-                    var o = Tui.MAPPER.createObjectNode()
-                            .set("sources", Tui.MAPPER.createObjectNode()
-                                    .set("reference", Tui.MAPPER.createArrayNode()
-                                            .add("srd").add("basicrules")));
-                    configurator.readConfigIfPresent(o);
-                }
-                case srd2024 -> {
-                    // only 2024
-                    var o = Tui.MAPPER.createObjectNode()
-                            .set("sources", Tui.MAPPER.createObjectNode()
-                                    .set("reference", Tui.MAPPER.createArrayNode()
-                                            .add("srd52").add("freerules2024")));
-                    configurator.readConfigIfPresent(o);
-                }
-                case subset2014 -> {
-                    var o = Tui.MAPPER.createObjectNode()
-                            .set("sources", Tui.MAPPER.createObjectNode()
-                                    .set("reference", Tui.MAPPER.createArrayNode()
-                                            .add("mm").add("tce").add("xge")));
-                    configurator.readConfigIfPresent(o);
+            JsonNode configNode = Tui.MAPPER.readTree(config);
+            configurator.readConfigIfPresent(configNode);
 
-                    additional.addAll(List.of(
-                            "adventure/adventure-lmop.json",
-                            "book/book-dmg.json",
-                            "book/book-mm.json",
-                            "book/book-phb.json"));
-                }
-                case subset2024 -> {
-                    var o = Tui.MAPPER.createObjectNode()
-                            .set("sources", Tui.MAPPER.createObjectNode()
-                                    .set("reference", Tui.MAPPER.createArrayNode()
-                                            .add("mpmm")));
-                    configurator.readConfigIfPresent(o);
+            // var additional = List.of(
+            //         "adventures.json",
+            //         "books.json");
 
-                    additional.addAll(List.of(
-                            "adventure/adventure-dsotdq.json",
-                            "book/book-tdcsr.json",
-                            "book/book-xphb.json",
-                            "book/book-xdmg.json"));
-                }
-                case allNewest -> {
-                    // default behavior: newest only
-                    configurator.addSources(List.of("*"));
-                    additional.addAll(List.of(
-                            "adventure/adventure-wdh.json",
-                            "adventure/adventure-pota.json",
-                            "book/book-vgm.json",
-                            "book/book-phb.json", "book/book-xphb.json",
-                            "book/book-dmg.json", "book/book-xdmg.json"));
-                }
-                case all -> {
-                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("paths.json"));
-                    // add book/adventure (beyond reference material)
-                    configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("5e/sources.json"));
-                    configurator.addSources(List.of("*"));
-
-                    additional.addAll(List.of(
-                            "adventure/adventure-wdh.json", "adventure/adventure-pota.json",
-                            "book/book-vgm.json",
-                            "book/book-phb.json", "book/book-xphb.json",
-                            "book/book-dmg.json", "book/book-xdmg.json"));
-
-                    // Literally all. Ignore reprints
-                    var o = Tui.MAPPER.createObjectNode()
-                            .put("reprintBehavior", "all");
-                    configurator.readConfigIfPresent(o);
-                }
-            }
-
-            for (String x : additional) {
-                tui.readFile(toolsData.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
-            }
-
+            // for (String x : additional) {
+            //     tui.readFile(toolsData.resolve(x), TtrpgConfig.getFixes(x), index::importTree);
+            // }
             tui.readToolsDir(toolsData, index::importTree);
+            index.resolveSources(toolsData);
             index.prepare();
         }
+        this.config = TtrpgConfig.getConfig();
     }
 
     public void afterEach() throws Exception {
