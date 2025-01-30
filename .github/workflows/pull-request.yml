@@ -59,6 +59,7 @@ jobs:
       - name: Build with Maven
         id: mvn-build
         run: |
+          mkdir -p sources
           ls -al sources
           ./mvnw -B -ntp -DskipFormat verify
 

@@ -285,6 +285,19 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     @Override
+    public boolean includedBy(Set<String> sources) {
+        CompendiumConfig config = TtrpgConfig.getConfig();
+        if (config.noSources()) {
+            return this.srd || this.basicRules || this.srd52 || this.freeRules2024;
+        }
+        return super.includedBy(sources) ||
+                (this.basicRules && sources.contains("basicrules")) ||
+                (this.srd && sources.contains("srd")) ||
+                (this.srd52 && sources.contains("srd52")) ||
+                (this.freeRules2024 && sources.contains("freerules2024"));
+    }
+
+    @Override
     public Tools5eIndexType getType() {
         return type;
     }
@@ -488,16 +501,6 @@ public class Tools5eSources extends CompendiumSources {
         addBrewSource(TtrpgValue.homebrewBaseSource, homebrewElement);
         addBrewSource(TtrpgValue.homebrewSource, homebrewElement);
         testSourceRules();
-    }
-
-    @Override
-    public boolean includedBy(Set<String> sources) {
-        return super.includedBy(sources) ||
-                (this.basicRules && sources.contains("basicrules")) ||
-                (this.srd && sources.contains("srd")) ||
-                (this.srd52 && sources.contains("srd52")) ||
-                (this.freeRules2024 && sources.contains("freerules2024")) ||
-                (TtrpgConfig.getConfig().noSources() && (this.srd || this.basicRules));
     }
 
     public boolean contains(Tools5eSources sources) {

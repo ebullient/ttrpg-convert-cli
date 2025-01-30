@@ -880,10 +880,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String subclassKey = Tools5eIndexType.subclass.fromChildKey(featureKey);
 
         // look up alias for subclass so link is correct, but don't follow reprints
-        // "subclass|redemption|paladin|phb|" : "subclass|oath of
-        // redemption|paladin|phb|",
-        // "subclass|twilight|cleric|phb|tce" : "subclass|twilight
-        // domain|cleric|phb|tce"
+        // "subclass|redemption|paladin|phb|"
+        //    : "subclass|oath of redemption|paladin|phb|",
+        // "subclass|twilight|cleric|phb|tce"
+        //    : "subclass|twilight domain|cleric|phb|tce"
         subclassKey = index().getAliasOrDefault(subclassKey, false);
 
         JsonNode subclassNode = index().getNode(subclassKey);
@@ -897,13 +897,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 return linkText;
             }
             // Examine new subclass node's features, to see if there is a match
-            // e.g. for "subclassfeature|primal companion|ranger|phb|beast
-            // master|phb|3|tce",
-            // consider "subclassfeature|primal companion|ranger|xphb|beast
-            // master|xphb|3|xphb"
+            // e.g. for
+            //   "subclassfeature|primal companion|ranger|phb|beast master|phb|3|tce",
+            // consider
+            //   "subclassfeature|primal companion|ranger|xphb|beast master|xphb|3|xphb"
             String test = featureKey.replaceAll(subclassFeatureMask, "$1-$2");
             boolean found = false;
-            for (String fkey : Tools5eFields.classFeatureKeys.getListOfStrings(subclassNode, tui())) {
+            for (String fkey : index().findClassFeatures(subclassKey)) {
                 String compare = fkey.replaceAll(subclassFeatureMask, "$1-$2");
                 if (test.equals(compare)) {
                     featureKey = fkey;

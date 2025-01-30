@@ -649,12 +649,10 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         // These types are not directly filtered.
         // Special rules are applied after the parent item is filtered
         return switch (this) {
-            case card,
-                    classfeature,
+            case classfeature,
                     optionalFeatureTypes,
                     subclass,
-                    subclassFeature,
-                    subrace ->
+                    subclassFeature ->
                 true;
             default -> false;
         };

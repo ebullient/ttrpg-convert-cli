@@ -15,10 +15,10 @@ import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class FilterAllNewestTest {
 
+public class FilterSubsetMixedTest {
     static CommonDataTests commonTests;
-    static final TestInput testInput = TestInput.allNewest;
+    static final TestInput testInput = TestInput.subsetMixed;
     static final Path outputPath = TestUtils.OUTPUT_5E_DATA.resolve(testInput.name());
 
     @BeforeAll
@@ -27,10 +27,29 @@ public class FilterAllNewestTest {
         String config = """
                 {
                     "sources": {
+                        "book": [
+                            "XDMG",
+                            "XPHB"
+                        ],
+                        "adventure": [
+                            "PaBTSO",
+                            "OotA"
+                        ],
                         "reference": [
-                            "*"
+                            "MM",
+                            "MPMM",
+                            "SCAG",
+                            "TCE",
+                            "XGE"
+                        ],
+                        "homebrew": [
+                            "sources/5e-homebrew/collection/Keith Baker; Exploring Eberron.json",
+                            "sources/5e-homebrew/class/Matthew Mercer; Blood Hunter (2022).json"
                         ]
                     },
+                    "include": [
+                      "subclass|death domain|cleric|phb|dmg"
+                    ],
                     "images": {
                         "copyInternal": false
                     }
@@ -53,21 +72,29 @@ public class FilterAllNewestTest {
     public void testKeyIndex() throws Exception {
         commonTests.testKeyIndex(outputPath);
 
-        // All sources, but things that have been reprinted will be replaced by the newest version
-        // e.g. PHB elements should be missing/replaced by XPHB equivalents
         if (commonTests.dataPresent) {
             var config = commonTests.config;
 
-            assertThat(config.sourceIncluded("srd")).isTrue();
-            assertThat(config.sourceIncluded("basicrules")).isTrue();
-            assertThat(config.sourceIncluded("srd52")).isTrue();
-            assertThat(config.sourceIncluded("freerules2024")).isTrue();
+            assertThat(config.sourceIncluded("srd")).isFalse();
+            assertThat(config.sourceIncluded("basicrules")).isFalse();
+            assertThat(config.sourceIncluded("srd52")).isFalse();
+            assertThat(config.sourceIncluded("freerules2024")).isFalse();
 
-            assertThat(config.sourceIncluded("DMG")).isTrue();
-            assertThat(config.sourceIncluded("PHB")).isTrue();
+            assertThat(config.sourceIncluded("DMG")).isFalse();
+            assertThat(config.sourceIncluded("PHB")).isFalse();
 
             assertThat(config.sourceIncluded("XDMG")).isTrue();
             assertThat(config.sourceIncluded("XPHB")).isTrue();
+
+            assertThat(config.sourceIncluded("MM")).isTrue();
+            assertThat(config.sourceIncluded("MPMM")).isTrue();
+            assertThat(config.sourceIncluded("SCAG")).isTrue();
+            assertThat(config.sourceIncluded("TCE")).isTrue();
+            assertThat(config.sourceIncluded("XGE")).isTrue();
+
+            assertThat(config.sourceIncluded("PaBTSO")).isTrue();
+            assertThat(config.sourceIncluded("OotA")).isTrue();
+            assertThat(config.sourceIncluded("LMOP")).isFalse();
 
             commonTests.assert_MISSING("action|attack|phb");
             commonTests.assert_Present("action|attack|xphb");
@@ -84,7 +111,7 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("feat|moderately armored|phb");
             commonTests.assert_Present("feat|moderately armored|xphb");
 
-            commonTests.assert_Present("variantrule|facing|dmg");
+            commonTests.assert_MISSING("variantrule|facing|dmg");
             commonTests.assert_MISSING("variantrule|falling|xge");
             commonTests.assert_Present("variantrule|familiars|mm");
             commonTests.assert_MISSING("variantrule|simultaneous effects|xge");
@@ -92,26 +119,26 @@ public class FilterAllNewestTest {
 
             commonTests.assert_MISSING("background|sage|phb");
             commonTests.assert_Present("background|sage|xphb");
-            commonTests.assert_Present("background|baldur's gate acolyte|bgdia");
+            commonTests.assert_MISSING("background|baldur's gate acolyte|bgdia");
 
             commonTests.assert_MISSING("condition|blinded|phb");
             commonTests.assert_Present("condition|blinded|xphb");
 
             commonTests.assert_Present("deity|auril|faerûnian|scag");
-            commonTests.assert_Present("deity|auril|forgotten realms|phb");
-            commonTests.assert_Present("deity|chemosh|dragonlance|dsotdq");
+            commonTests.assert_MISSING("deity|auril|forgotten realms|phb");
+            commonTests.assert_MISSING("deity|chemosh|dragonlance|dsotdq");
             commonTests.assert_MISSING("deity|chemosh|dragonlance|phb");
             commonTests.assert_MISSING("deity|ehlonna|greyhawk|phb");
             commonTests.assert_Present("deity|ehlonna|greyhawk|xdmg");
-            commonTests.assert_Present("deity|gruumsh|dawn war|dmg"); // different pantheon
-            commonTests.assert_MISSING("deity|gruumsh|exandria|egw"); // different pantheon
-            commonTests.assert_Present("deity|gruumsh|nonhuman|phb"); // superseded
-            commonTests.assert_MISSING("deity|gruumsh|orc|scag"); // superseded
-            commonTests.assert_Present("deity|gruumsh|orc|vgm"); // keep this one
-            commonTests.assert_Present("deity|the traveler|eberron|erlw");
+            commonTests.assert_MISSING("deity|gruumsh|dawn war|dmg");
+            commonTests.assert_MISSING("deity|gruumsh|exandria|egw");
+            commonTests.assert_MISSING("deity|gruumsh|nonhuman|phb");
+            commonTests.assert_Present("deity|gruumsh|orc|scag");
+            commonTests.assert_MISSING("deity|gruumsh|orc|vgm");
+            commonTests.assert_MISSING("deity|the traveler|eberron|erlw");
             commonTests.assert_MISSING("deity|the traveler|eberron|phb");
             commonTests.assert_MISSING("deity|the traveler|exandria|egw");
-            commonTests.assert_Present("deity|the traveler|exandria|tdcsr");
+            commonTests.assert_MISSING("deity|the traveler|exandria|tdcsr");
 
             commonTests.assert_MISSING("disease|cackle fever|dmg");
             commonTests.assert_Present("disease|cackle fever|xdmg");
@@ -138,8 +165,8 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("itemproperty|2h|xphb");
             commonTests.assert_MISSING("itemproperty|bf|dmg");
             commonTests.assert_Present("itemproperty|bf|xdmg");
-            commonTests.assert_Present("itemproperty|er|tdcsr");
-            commonTests.assert_Present("itemproperty|s|phb");
+            commonTests.assert_MISSING("itemproperty|er|tdcsr");
+            commonTests.assert_MISSING("itemproperty|s|phb");
 
             commonTests.assert_MISSING("itemtype|$c|phb");
             commonTests.assert_Present("itemtype|$c|xphb");
@@ -156,7 +183,7 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("item|acid (vial)|phb");
             commonTests.assert_Present("item|acid absorbing tattoo|tce");
             commonTests.assert_Present("item|acid|xphb");
-            commonTests.assert_Present("item|alchemist's doom|scc");
+            commonTests.assert_MISSING("item|alchemist's doom|scc");
             commonTests.assert_MISSING("item|alchemist's fire (flask)|phb");
             commonTests.assert_Present("item|alchemist's fire|xphb");
             commonTests.assert_MISSING("item|alchemist's supplies|phb");
@@ -172,7 +199,7 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("item|automatic rifle|xdmg");
             commonTests.assert_MISSING("item|ball bearings (bag of 1,000)|phb");
             commonTests.assert_Present("item|ball bearings|xphb");
-            commonTests.assert_Present("item|ball bearing|phb");
+            commonTests.assert_MISSING("item|ball bearing|phb");
             commonTests.assert_MISSING("item|chain (10 feet)|phb");
             commonTests.assert_Present("item|chain|xphb");
 
@@ -185,15 +212,15 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("monster|ape|xphb");
             commonTests.assert_MISSING("monster|ash zombie|lmop");
             commonTests.assert_Present("monster|ash zombie|pabtso");
-            commonTests.assert_MISSING("monster|awakened shrub|mm");
-            commonTests.assert_Present("monster|awakened shrub|xmm");
+            commonTests.assert_Present("monster|awakened shrub|mm");
+            commonTests.assert_MISSING("monster|awakened shrub|xmm");
             commonTests.assert_MISSING("monster|beast of the land|tce");
             commonTests.assert_Present("monster|beast of the land|xphb");
             commonTests.assert_MISSING("monster|bestial spirit (air)|tce");
             commonTests.assert_Present("monster|bestial spirit (air)|xphb");
             commonTests.assert_MISSING("monster|cat|mm");
             commonTests.assert_Present("monster|cat|xphb");
-            commonTests.assert_Present("monster|derro savant|mpmm");
+            commonTests.assert_Present("monster|derro savant|mpmm"); // supersedes both mtf & oota
             commonTests.assert_MISSING("monster|derro savant|mtf");
             commonTests.assert_MISSING("monster|derro savant|oota");
             commonTests.assert_Present("monster|sibriex|mpmm");
@@ -215,7 +242,7 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("reward|boon of dimensional travel|dmg");
             commonTests.assert_MISSING("reward|boon of fate|dmg");
             commonTests.assert_MISSING("reward|boon of fortitude|dmg");
-            commonTests.assert_Present("reward|boon of high magic|dmg");
+            commonTests.assert_MISSING("reward|boon of high magic|dmg");
 
             commonTests.assert_MISSING("sense|blindsight|phb");
             commonTests.assert_Present("sense|blindsight|xphb");
@@ -243,9 +270,9 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("trap|falling net|xdmg");
             commonTests.assert_MISSING("trap|pits|dmg");
             commonTests.assert_MISSING("trap|poison darts|dmg");
+            commonTests.assert_Present("trap|poisoned darts|xdmg");
             commonTests.assert_Present("trap|poison needle trap|xge");
             commonTests.assert_MISSING("trap|poison needle|dmg");
-            commonTests.assert_Present("trap|poisoned darts|xdmg");
             commonTests.assert_MISSING("trap|rolling sphere|dmg");
             commonTests.assert_Present("trap|rolling stone|xdmg");
 
@@ -295,8 +322,6 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("subclassfeature|thief's reflexes|rogue|phb|thief|phb|17|phb");
             commonTests.assert_Present("subclassfeature|thief's reflexes|rogue|xphb|thief|xphb|17|xphb");
 
-            // Races and subraces
-
             commonTests.assert_MISSING("race|bugbear|erlw");
             commonTests.assert_Present("race|bugbear|mpmm");
             commonTests.assert_MISSING("race|bugbear|vgm");
@@ -304,17 +329,22 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("race|human|xphb");
             commonTests.assert_MISSING("race|tiefling|phb");
             commonTests.assert_Present("race|tiefling|xphb");
-            commonTests.assert_Present("race|warforged|erlw");
+            commonTests.assert_MISSING("race|warforged|erlw");
             commonTests.assert_MISSING("race|yuan-ti pureblood|vgm");
             commonTests.assert_Present("race|yuan-ti|mpmm");
 
             commonTests.assert_MISSING("subrace|genasi (air)|genasi|eepc|eepc");
             commonTests.assert_Present("subrace|genasi (air)|genasi|mpmm|mpmm");
             commonTests.assert_MISSING("subrace|human|human|phb|phb");
-            commonTests.assert_Present("subrace|luma (sable)|luma|hwcs|hwcs");
-            commonTests.assert_Present("subrace|tiefling (zariel)|tiefling|phb|mtf");
+            commonTests.assert_MISSING("subrace|luma (sable)|luma|hwcs|hwcs");
+            commonTests.assert_MISSING("subrace|tiefling (zariel)|tiefling|phb|mtf");
             commonTests.assert_MISSING("subrace|tiefling|tiefling|phb|phb");
-            commonTests.assert_Present("subrace|vampire (ixalan)|vampire|psz|psx");
+            commonTests.assert_MISSING("subrace|vampire (ixalan)|vampire|psz|psx");
         }
+    }
+
+    @Test
+    public void testClassList() {
+        commonTests.testClassList(outputPath);
     }
 }

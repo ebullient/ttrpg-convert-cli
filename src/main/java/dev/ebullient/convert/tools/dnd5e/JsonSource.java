@@ -148,7 +148,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         // entriesOtherSource handled here.
         if (!source.isEmpty() && !cfg().sourceIncluded(source)) {
-            if (!cfg().sourceIncluded(getSources())) {
+            if (!getSources().includedByConfig()) {
                 return;
             }
         }
@@ -1252,7 +1252,6 @@ public interface JsonSource extends JsonTextReplacement {
         by,
         className,
         classSource,
-        classFeatureKeys, // ELH: keys for related class/subclass features
         condition, // speed, ac
         count,
         cr,

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +18,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -32,7 +32,7 @@ import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewFields;
 import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewMetaTypes;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFields;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.SubclassFeatureKeyData;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemField;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
@@ -57,16 +57,20 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     final CompendiumConfig config;
 
     // Initialization
-    private final Map<String, JsonNode> nodeIndex = new HashMap<>();
-    private final Map<String, Set<JsonNode>> subraceIndex = new HashMap<>();
-    private final Map<SourceAndPage, List<JsonNode>> tableIndex = new HashMap<>();
-
+    private final Map<String, JsonNode> nodeIndex = new TreeMap<>(); // --index
     private Map<String, JsonNode> filteredIndex = null;
 
-    private final Map<String, String> aliases = new HashMap<>();
-    private final Map<String, String> reprints = new HashMap<>();
-    private final Map<String, String> subraceMap = new HashMap<>();
+    private final Map<String, Set<JsonNode>> subraceIndex = new HashMap<>(); // --index
+    private final Map<SourceAndPage, List<JsonNode>> tableIndex = new HashMap<>();
+
+    private final Map<String, String> aliases = new TreeMap<>(); // --index
+    private final Map<String, String> reprints = new TreeMap<>(); // --index
+    private final Map<String, String> subraceMap = new TreeMap<>(); // --index
     private final Map<String, String> nameToLink = new HashMap<>();
+
+    // Class feature, Subclass, and Subclass Feature nonsense
+    private final Map<String, Set<String>> classFeatures = new TreeMap<>(); // --index
+    private final Map<String, Set<String>> subclassMap = new TreeMap<>(); // --index
 
     private final Set<String> srdKeys = new HashSet<>();
 
@@ -255,6 +259,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                         Tools5eFields.shortName.getTextOrEmpty(node),
                         SourceField.source.getTextOrEmpty(node));
                 addAlias(lookupKey, key);
+                classFeatures.put(key, new HashSet<>());
             }
             case table, tableGroup -> {
                 SourceAndPage sp = new SourceAndPage(node);
@@ -271,6 +276,12 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 if (!id.equals(source) && type == Tools5eIndexType.book) {
                     // adventures can be subdivided from books. Don't map source/id for those
                     TtrpgConfig.sourceToIdMapping(source, id);
+                }
+                String parentSource = Tools5eFields.parentSource.getTextOrNull(node);
+                if (parentSource != null && TtrpgConfig.getConfig().sourceIncluded(source)) {
+                    // include the parent source if you include an adventure (related rules)
+                    tui().debugf(Msg.SOURCE, "including %s due to %s", parentSource, source);
+                    TtrpgConfig.includeAdditionalSource(parentSource);
                 }
             }
             case itemGroup -> {
@@ -300,11 +311,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         tui().debugf("Preparing index using configuration:\n%s", Tui.jsonStringify(config));
 
-        tui().progressf("Adding subraces (2014)");
         // Add subraces to index
         defineSubraces();
 
-        tui().progressf("Resolving copies and link sources");
+        tui().progressf("Resolving copies and linking sources");
 
         // Find remaining/included base items
         List<JsonNode> baseItems = nodeIndex.values().stream()
@@ -312,81 +322,57 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 .filter(n -> !ItemField.packContents.existsIn(n))
                 .toList();
 
-        // Bring in parent adventures (before sources are created)
-        nodeIndex.values().stream()
-                .filter(n -> Tools5eFields.parentSource.existsIn(n))
-                .forEach(n -> {
-                    String source = SourceField.source.getTextOrEmpty(n);
-                    String parentSource = Tools5eFields.parentSource.getTextOrNull(n);
-                    if (TtrpgConfig.getConfig().sourceIncluded(source)) {
-                        // include the parent source if you include an adventure (related rules)
-                        tui().debugf(Msg.SOURCE, "including %s due to %s", parentSource, source);
-                        TtrpgConfig.includeAdditionalSource(parentSource);
-                    }
-                });
-
-        List<JsonNode> variants = new ArrayList<>();
+        List<String> keys = new ArrayList<>(nodeIndex.keySet());
+        List<Tuple> deities = new ArrayList<>();
 
         // For each node: handle copies, link sources
-        for (Entry<String, JsonNode> entry : nodeIndex.entrySet()) {
-            String key = entry.getKey();
-            JsonNode jsonSource = entry.getValue();
+        for (String key : keys) {
+            JsonNode jsonSource = nodeIndex.get(key);
 
             // check for / manage copies first.
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
             jsonSource = copier.handleCopy(type, jsonSource);
+            nodeIndex.put(key, jsonSource); // update value with resolved/copied node
 
             // Pre-creation of sources..
-            if (type == Tools5eIndexType.adventureData || type == Tools5eIndexType.bookData) {
-                // changes name and things used when constructing sources
-                linkSources(type, jsonSource);
+            switch (type) {
+                case adventureData, bookData -> linkSources(type, jsonSource);
+                default -> {
+                }
             }
 
             Tools5eSources.constructSources(key, jsonSource);
-            entry.setValue(jsonSource); // update with resolved copy
+
+            if (type == Tools5eIndexType.deity) {
+                deities.add(new Tuple(key, jsonSource));
+                continue; // deal with these later.
+            }
+
+            // Reprints follow specialized variants, so we need to find the variants
+            // now (and will filter them out based on rules later...)
+            if (type.hasVariants()) {
+                List<JsonNode> variants = findVariants(key, jsonSource, baseItems);
+                for (JsonNode variant : variants) {
+                    String variantKey = TtrpgValue.indexKey.getTextOrThrow(variant);
+                    Tools5eSources.constructSources(variantKey, variant);
+                    JsonNode old = nodeIndex.put(variantKey, variant);
+                    if (old != null && !old.equals(variant)) {
+                        tui().errorf("Duplicate key: %s%nold: %s%nnew: %s", variantKey, old, variant);
+                    }
+                }
+            }
 
             // Post-creation of sources..
             switch (type) {
                 case classtype, subclass -> optFeatureIndex.amendSources(key, jsonSource);
                 case optfeature -> optFeatureIndex.amendSources(key, jsonSource);
-                case classfeature -> {
-                    String classKey = Tools5eIndexType.classtype.fromChildKey(key);
-                    JsonNode classNode = nodeIndex.get(classKey);
-                    if (classNode != null) {
-                        JsonNode featureKeys = Tools5eFields.classFeatureKeys.ensureArrayIn(classNode).add(key);
-                        Tools5eFields.classFeatureKeys.setIn(jsonSource, featureKeys);
-                    }
-                }
-                case subclassFeature -> {
-                    // don't follow reprints, just go from shortname to subclass name
-                    String scKey = Tools5eIndexType.subclass.fromChildKey(key);
-                    scKey = getAliasOrDefault(scKey, false);
-                    JsonNode scNode = nodeIndex.get(scKey);
-                    if (scNode != null) {
-                        JsonNode featureKeys = Tools5eFields.classFeatureKeys.ensureArrayIn(scNode).add(key);
-                        Tools5eFields.classFeatureKeys.setIn(jsonSource, featureKeys);
-                    }
-                }
                 default -> {
                 }
             }
-
-            // Reprints do follow specialized variants, so we need to find the variants
-            // now (and will filter them out based on rules later...)
-            if (type.hasVariants()) {
-                variants.addAll(findVariants(key, jsonSource, baseItems));
-            }
         } // end for each entry
 
-        for (JsonNode variant : variants) {
-            String variantKey = TtrpgValue.indexKey.getTextOrThrow(variant);
-            nodeIndex.put(variantKey, variant);
-        }
-        variants.clear();
-
-        filteredIndex = new HashMap<>(nodeIndex.size());
-
         tui().progressf("Applying source filters");
+        filteredIndex = new HashMap<>(nodeIndex.size());
 
         BiConsumer<Msg, String> logThis = (msgType, msg) -> {
             if (msgType == Msg.TARGET) {
@@ -396,37 +382,78 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         };
 
-        // Apply include/exclude rules & source filters
+        // Let's create a list of interesting keys
+        List<String> interestingKeys = new ArrayList<>(nodeIndex.size());
         for (var e : nodeIndex.entrySet()) {
             String key = e.getKey();
+            JsonNode jsonSource = e.getValue();
             Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-            // construct source if missing (which it may be for a variant)
-            Tools5eSources sources = Tools5eSources.constructSources(key, e.getValue());
+            if (false
+                    // Fluff types can continue to live only in the origin/nodeIndex
+                    || type.isFluffType()
+                    // Checking for reprints has aliasing knock-ons.
+                    || isReprinted(key, jsonSource)
+                    // While Deities are interesting, their handling is unique and done later
+                    || type == Tools5eIndexType.deity
+                    // Subclasses are also handled backwards (filled in by subclass features)
+                    || type == Tools5eIndexType.subclass) {
+                // Theses are uninteresting.
+            } else {
+                interestingKeys.add(key);
+            }
+        }
+
+        // Apply include/exclude rules & source filters
+        // to add included elements to the filter index
+        for (String key : interestingKeys) {
+            JsonNode jsonSource = getOriginNoFallback(key);
+            Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
+            Tools5eSources sources = Tools5eSources.findSources(key);
+            if (sources == null) {
+                // This is programmer error.
+                tui().logf(Msg.SOURCE, "No sources found for %s", key);
+                continue;
+            }
             Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
 
-            if (type.isFluffType()) {
-                // no-op
-            } else if (type.isDependentType() && msgType != Msg.TARGET) {
-                // keep dependent types unless there is a specific rule
-                filteredIndex.put(key, e.getValue());
+            if (type.isDependentType()) {
+                // dependent types: don't keep if parent is excluded/missing
+                if (processDependentType(key)) {
+                    logThis.accept(msgType, " ----  " + key);
+                    filteredIndex.put(key, jsonSource);
+                } else {
+                    logThis.accept(msgType, "(drop) " + key);
+                }
             } else if (sources.includedByConfig()) {
-                filteredIndex.put(key, e.getValue());
-                logThis.accept(msgType, "------ " + key);
-            } else if (type.isOutputType()) {
+                // key is included (by a specific rule, or because the source is included)
+                filteredIndex.put(key, jsonSource);
+                logThis.accept(msgType, " ----  " + key);
+
+                if (type == Tools5eIndexType.spell) {
+                    // Create a spell entry for included spell
+                    spellIndex.addSpell(key, jsonSource);
+                }
+            } else {
+                // source is not included, item is dropped
                 logThis.accept(msgType, "(drop) " + key);
             }
         }
 
-        // Remove reprints based on included sources (and reprint behavior)
-        // If someone includes MM, but not MPMM, you want the MM version
-        tui().progressf("Resolving reprints");
-        filteredIndex.entrySet().removeIf(e -> isReprinted(e.getKey(), e.getValue()));
+        // classFeatures contains both features and subclass features
+        for (var entry : classFeatures.entrySet()) {
+            String scKey = entry.getKey();
+            if (scKey.startsWith("subclass")) {
+                if (entry.getValue().isEmpty()) {
+                    // no features associated with this subclass
+                    logThis.accept(Msg.CLASSES, "(drop | no subclass features) " + scKey);
+                } else {
+                    logThis.accept(Msg.CLASSES, " ----  " + scKey);
+                    filteredIndex.put(scKey, nodeIndex.get(scKey));
+                }
+            }
+        }
 
-        // Follow inclusion of certain types to remove additional related elements
-        tui().progressf("Removing dependent and dangling resources");
-        filteredIndex.keySet().removeIf(k -> otherwiseExcluded(k));
-
-        // Use the OptionalFeature index to remove unused optional features
+        // Remove unused optional features from the optional feature index
         optFeatureIndex.removeUnusedOptionalFeatures(
                 (k) -> filteredIndex.containsKey(k),
                 (k) -> {
@@ -438,82 +465,13 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     filteredIndex.remove(k);
                 });
 
-        // Bubble-up: enabled subclasses, class features, and subclass features
-        // add themselves to their parents
-        for (var entry : filteredIndex.entrySet()) {
-            String entryKey = entry.getKey();
-
-            var type = Tools5eIndexType.getTypeFromKey(entryKey);
-            if (type == Tools5eIndexType.subclass
-                    || type == Tools5eIndexType.classfeature
-                    || type == Tools5eIndexType.subclassFeature) {
-                var parentType = switch (type) {
-                    case subclass -> Tools5eIndexType.classtype;
-                    case classfeature -> Tools5eIndexType.classtype;
-                    case subclassFeature -> Tools5eIndexType.subclass;
-                    default -> null;
-                };
-                ClassFields targetField = switch (type) {
-                    case subclass -> ClassFields.subclassKeys;
-                    case classfeature -> ClassFields.featureKeys;
-                    case subclassFeature -> ClassFields.featureKeys;
-                    default -> null;
-                };
-                String parentKey = getAliasOrDefault(parentType.fromChildKey(entryKey));
-                JsonNode parent = getOriginNoFallback(parentKey);
-                ArrayNode target = targetField.ensureArrayIn(parent);
-                target.add(entryKey);
-                targetField.setIn(parent, target);
-            } else if (type == Tools5eIndexType.spell) {
-                // Create a spell entry for included spell
-                spellIndex.addSpell(entryKey, entry.getValue());
-            }
-        }
-
-        // One last pass through to remove more orphans
-        filteredIndex.entrySet().removeIf(e -> {
-            String key = e.getKey();
-            Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-            // These are unreachable; they have no features or subclasses
-            // Have no explicit aliases, and no way to detect what could or
-            // should be aliased to them. Often |xphb|phb or |phb|xphb variants
-            if (type == Tools5eIndexType.classtype) {
-                JsonNode subclasses = ClassFields.subclassKeys.getFrom(e.getValue());
-                JsonNode features = ClassFields.featureKeys.getFrom(e.getValue());
-                if (isEmpty(subclasses) && isEmpty(features)) {
-                    // UNLIKELY
-                    tui().logf(Msg.CLASSES, "(drop | no features or subclasses) %s", key);
-                    return true;
-                }
-            } else if (type == Tools5eIndexType.subclass) {
-                JsonNode features = ClassFields.featureKeys.getFrom(e.getValue());
-                if (isEmpty(features)) {
-                    // These are abandoned |xphb|phb or |phb|xphb mixed classes that
-                    // are naturally skipped when resolving aliases above.
-                    // Remove them so they don't also mess with spells
-                    tui().logf(Msg.CLASSES, "(drop | no subclass features) %s", key);
-                    return true;
-                }
-            }
-            return false;
-        });
-
         // Deities have their own glorious reprint mess, which we only need to deal with
         // when we aren't hoarding all the things.
-        if (config.reprintBehavior() != ReprintBehavior.all) {
-            tui().progressf("Dealing with deities");
-
-            List<Tuple> allDeities = filteredIndex.entrySet().stream()
-                    .filter(e -> Tools5eIndexType.getTypeFromKey(e.getKey()) == Tools5eIndexType.deity)
-                    .map(e -> new Tuple(e.getKey(), e.getValue()))
-                    .toList();
-
-            // Remove deities that should be removed (superceded)
-            Json2QuteDeity.findDeitiesToRemove(allDeities).forEach(k -> {
-                tui().logf(Msg.DEITY, "(drop | superseded) %s", k);
-                filteredIndex.remove(k);
-            });
-        }
+        tui().progressf("Dealing with deities");
+        // Find deities that have not been superceded by a reprint
+        Json2QuteDeity.findDeities(deities).forEach(k -> {
+            filteredIndex.put(k, nodeIndex.get(k));
+        });
 
         // And finally, create an index of classes/subclasses/feats for spells
         // based on included sources & avaiable spells.
@@ -521,6 +479,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     private void defineSubraces() {
+        tui().progressf("Adding subraces");
         for (Entry<String, Set<JsonNode>> entry : subraceIndex.entrySet()) {
             String raceKey = entry.getKey();
             JsonNode jsonSource = nodeIndex.get(raceKey);
@@ -656,7 +615,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     }
 
                     // Otherwise, we have a "newer" reprint that should be used instead
-                    tui().logf(Msg.REPRINT, "(drop | reprinted) %s ==> %s", finalKey, reprintKey);
+                    tui().logf(Msg.REPRINT, "(--->| reprinted) %s ==> %s", finalKey, reprintKey);
                     // 1) create an alias mapping the old key to the reprinted key
                     reprints.put(finalKey, reprintKey);
                     // 2) add the sources of the reprint to the sources of the original (for later linking)
@@ -666,8 +625,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         }
         if (SourceField.isReprinted.booleanOrDefault(jsonSource, false)) {
-            tui().logf(Msg.REPRINT, "(drop | isReprint) %s", finalKey);
-            return true; // the reprint will be used instead of this one.
+            tui().logf(Msg.REPRINT, "(--->| isReprint) %s", finalKey);
+            return true; // this is a reprint, but we have no alias..
         }
         return false; // keep
     }
@@ -675,51 +634,109 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     /**
      * Filter sub-resources based on the inclusion of the parent resource.
      *
-     * @return true if resource has a parent, and that parent is excluded
+     * @return true if resource should be kept (not used in a filter)
      */
-    private boolean otherwiseExcluded(String key) {
-        // If a class is excluded, specific classfeatures, optional features,
-        // subclasses, and subclassfeatures should also be removed
-        // (unless a specific rule says otherwise).
-        Tools5eSources sources = Tools5eSources.findSources(key);
-        if (sources.filterRuleApplied()) {
-            return false; // keep because a rule says so (we already logged these)
-        }
-
+    private boolean processDependentType(final String key) {
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-        return switch (type) {
-            case card -> removeIfParentExcluded(key, type, Tools5eIndexType.deck, Msg.DECK);
-            case classfeature -> removeIfParentExcluded(key, type,
-                    Tools5eIndexType.classtype, Msg.CLASSES);
-            case subclassFeature -> removeIfParentExcluded(key, type,
-                    Tools5eIndexType.subclass, Msg.CLASSES)
-                    || removeIfParentExcluded(key, type,
-                            Tools5eIndexType.classtype, Msg.CLASSES);
-            case subclass -> !sources.includedByConfig()
-                    || removeIfParentExcluded(key, type, Tools5eIndexType.classtype, Msg.CLASSES);
-            case subrace -> !sources.includedByConfig()
-                    || removeIfParentExcluded(key, type, Tools5eIndexType.race, Msg.RACES);
-            default -> false; // does not have a parent
-        };
-    }
+        switch (type) {
+            case optionalFeatureTypes -> {
+                // optionalFeatureTypes are always included
+                return true;
+            }
+            case classfeature -> {
+                // classfeature is reliably tied to the class
+                //   classfeature|ability score improvement|barbarian|phb|8|phb
+                //   classfeature|ability score improvement|barbarian|xphb|12|xphb
+                String classKey = Tools5eIndexType.classtype.fromChildKey(key);
+                boolean reprinted = reprints.containsKey(classKey);
+                if (!reprinted && Tools5eSources.includedByConfig(classKey)) {
+                    // Only keep the class feature if the parent class is not a reprint.
+                    classFeatures.computeIfAbsent(classKey, k -> new HashSet<>()).add(key);
+                    return true; // keep it
+                }
+            }
+            case subclassFeature -> {
+                // This is where things go sideways
+                // For example, these two versions of a subclass feature exists:
+                //   subclassfeature|zealous presence|barbarian|phb|zealot|xge|10|xge
+                //   subclassfeature|zealous presence|barbarian|xphb|zealot|xphb|10|xphb
+                // usually reachable through the matching subclass
+                //   subclass|path of the zealot|barbarian|phb|xge
+                //   subclass|path of the zealot|barbarian|xphb|xphb
+                // which relies on reprint behavior to resolve, if xphb is around
+                //   subclass|path of the zealot|barbarian|phb|xge -> subclass|path of the zealot|barbarian|xphb|xphb
+                //   subclass|path of the zealot|barbarian|xphb|xge -> subclass|path of the zealot|barbarian|xphb|xphb
+                String scfKey = key;
+                SubclassFeatureKeyData keyData = new SubclassFeatureKeyData(key);
 
-    private boolean removeIfParentExcluded(String key, Tools5eIndexType type, Tools5eIndexType parentType, Msg msg) {
-        String parentKey = parentType.fromChildKey(key);
-        Tools5eSources parentSources = Tools5eSources.findSources(parentKey);
-        if (parentSources == null) {
-            // allow for corrections (aliases), not reprints
-            parentKey = getAliasOrDefault(parentKey, false);
-            parentSources = Tools5eSources.findSources(parentKey);
-            if (parentSources == null) {
-                tui().warnf(Msg.UNRESOLVED, "%35s :: unresolved parent of [%s]", parentKey, key);
-                return true; // has a parent, it is missing (dangling resource)
+                // does the subclass exist or is it a reprint
+                String scKey = getSubclassKey(keyData.toSubclassKey());
+                boolean scIncluded = Tools5eSources.includedByConfig(scKey);
+                boolean scReprint = reprints.containsKey(scKey);
+
+                if (scReprint) {
+                    // the subclass (including its features) was reprinted.
+                    return false; // remove it
+                }
+
+                // does the parent class exist or is it a reprint
+                String classKey = keyData.toClassKey();
+                boolean classIncluded = Tools5eSources.includedByConfig(classKey);
+                String classReprint = reprints.get(classKey);
+
+                tui().debugf(Msg.CLASSES, "%s\n\t(%5s) %s -> %s\n\t(%5s) %s -> %s", key,
+                        classReprint, classKey, classReprint,
+                        scReprint, scKey, reprints.get(scKey));
+
+                if (classReprint != null) {
+                    // This is the most common case: PHB -> XPHB
+                    // the reprint behavior will handle this
+                    Tools5eSources altSources = Tools5eSources.findSources(classReprint);
+                    classIncluded = altSources != null && altSources.includedByConfig();
+                    if (!classIncluded) {
+                        return false; // remove it, can't fix it
+                    }
+
+                    // We found the class reprint.
+                    // The reprinted class is the new resource anchor for generated notes
+                    // Change the class source for the subclass feature
+                    keyData.classSource = altSources.primarySource();
+
+                    // is there a subclass key with this new class source?
+                    var altScKey = getSubclassKey(keyData.toSubclassKey());
+                    boolean altScPresent = Tools5eSources.includedByConfig(altScKey);
+                    if (altScPresent) {
+                        // This is the sometimes-covered case:
+                        //   subclass|path of wild magic|barbarian|xphb|tce
+                        // reset all the things to hit the happy path below
+                        tui().debugf("subclassFeature subclass: %s -> %s", scKey, altScKey);
+                        scfKey = keyData.toKey();
+                        scKey = altScKey;
+                        classKey = classReprint;
+                        scIncluded = altScPresent;
+                    } else {
+                        // There are times this case is not covered, especially in homebrew, for example:
+                        //   subclassfeature|adamantine hide|druid|phb|forged|exploringeberron|10|exploringeberron
+                        // this subclassfeature is included, but there is no mapping to an xphb version of the subclass.
+                        //
+                        // The reset classKey will force the issue. If the subclass is also present/included,
+                        // then it will be added to the adjusted class.
+                        tui().debugf("subclassFeature oddball: %s -> %s", scKey, altScKey);
+                    }
+                }
+
+                if (classIncluded && scIncluded) {
+                    // keep the subclass feature if both the class and subclass are included
+                    subclassMap.computeIfAbsent(classKey, k -> new HashSet<>()).add(scKey);
+                    classFeatures.computeIfAbsent(scKey, k -> new HashSet<>()).add(scfKey);
+                    return true;
+                }
+            }
+            default -> {
+                // no-op
             }
         }
-        boolean filterIncluded = filteredIndex.containsKey(parentKey);
-        if (!filterIncluded) {
-            tui().logf(msg, "(drop) %43s :: %s", parentKey, key);
-        }
-        return !filterIncluded;
+        return false; // remove it!
     }
 
     public boolean notPrepared() {
@@ -763,6 +780,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (old != null && !old.equals(alias)) {
             tui().warnf("Oops! Duplicate simple key: %s; old: %s; new: %s", key, old, alias);
         }
+    }
+
+    public String getSubclassKey(String targetKey) {
+        // short name to long name without following reprints.
+        return getAliasOrDefault(targetKey, false);
     }
 
     public List<String> getAliasesFor(String targetKey) {
@@ -914,6 +936,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return school;
     }
 
+    public Set<String> findSubclasses(String classKey) {
+        return subclassMap.getOrDefault(classKey, Set.of());
+    }
+
+    public Set<String> findClassFeatures(String classOrSubclassKey) {
+        return classFeatures.getOrDefault(classOrSubclassKey, Set.of());
+    }
+
     public JsonNode findTable(SourceAndPage sourceAndPage, String rowData) {
         List<JsonNode> tables = tableIndex.get(sourceAndPage);
         if (tables != null) {
@@ -1035,11 +1065,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     public boolean customContentIncluded() {
         // The biggest hack of all time (not really).
         // I have some custom content for types/property/mastery that
-        // should be included, but only if:
-        // 1. No content is included (srdOnly)
-        // 2. Some combination of basic rules and/or phb/dmg is included
-        return srdOnly() ||
-                config.sourcesIncluded(List.of(
+        // should be included, but only if some combination of
+        // basic/free rules, srd, phb or dmg is included
+        return config.noSources()
+                || config.sourcesIncluded(List.of(
                         "srd", "basicRules", "phb", "dmg",
                         "srd52", "freerules2024", "xphb", "xdmg"));
     }
@@ -1092,13 +1121,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (notPrepared()) {
             throw new IllegalStateException("Index must be prepared before writing indexes");
         }
-        Map<String, Object> allKeys = new TreeMap<>();
-        allKeys.put("keys", new TreeSet<>(nodeIndex.keySet()));
-        allKeys.put("mapping", new TreeMap<>(aliases));
-        allKeys.put("reprints", new TreeMap<>(reprints));
-        allKeys.put("srdKeys", new TreeSet<>(srdKeys));
-        allKeys.put("subraceMap", new TreeMap<>(subraceMap));
+        Map<String, Object> allKeys = new LinkedHashMap<>();
+        allKeys.put("keys", nodeIndex.keySet());
+        allKeys.put("mapping", aliases);
+        allKeys.put("reprints", reprints);
+        allKeys.put("subraceMap", subraceMap);
+        allKeys.put("subclassMap", subclassMap);
+        allKeys.put("classFeatures", classFeatures);
         allKeys.put("optionalFeatures", optFeatureIndex.getMap());
+        allKeys.put("srdKeys", srdKeys);
         tui().writeJsonFile(outputFile, allKeys);
     }
 
