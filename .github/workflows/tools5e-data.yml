@@ -1,23 +1,18 @@
-name: PR Maven Build
+name: 5e Tools Test
 on:
-  pull_request:
-    paths:
-      - "**.xml"
-      - "*.yml"
-      - "src/**"
-      - "ide-config"
+  schedule:
+    - cron: "7 9 * * */5"
+
+  workflow_dispatch:
 
 env:
   JAVA_VERSION: 17
   JAVA_DISTRO: temurin
   NATIVE_JAVA_VERSION: 23
   GRAALVM_DIST: graalvm-community
-  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
-  GH_BOT_NAME: "GitHub Action"
+  FAIL_ISSUE: 140
 
-permissions:
-  contents: read
-  actions: read
+permissions: read-all
 
 jobs:
   metadata:
@@ -25,9 +20,6 @@ jobs:
 
   tools5e_cache:
     uses: ./.github/workflows/tools5e-data-cache.yml
-
-  pf2e_cache:
-    uses: ./.github/workflows/pf2e-data-cache.yml
 
   build:
     runs-on: ubuntu-latest
@@ -44,15 +36,7 @@ jobs:
           restore-keys: |
             Data-5etools-
             Data-5etools
-
-      - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        id: pf2e-cache-load
-        with:
-          path: sources/Pf2eTools
-          key: Data-Pf2eTools-
-          restore-keys: |
-            Data-Pf2eTools-
-            Data-Pf2eTools
+          fail-on-cache-miss: true
 
       - name: Build with Maven
         uses: ebullient/workflows/.github/actions/maven-build@main
@@ -79,15 +63,7 @@ jobs:
           restore-keys: |
             Data-5etools-
             Data-5etools
-
-      - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
-        id: pf2e-cache-load
-        with:
-          path: sources/Pf2eTools
-          key: Data-Pf2eTools-
-          restore-keys: |
-            Data-Pf2eTools-
-            Data-Pf2eTools
+          fail-on-cache-miss: true
 
       - name: Native build with Maven
         uses: ebullient/workflows/.github/actions/native-build@main
@@ -98,3 +74,24 @@ jobs:
           distribution: ${{ env.GRAALVM_DIST }}
           matrix-os: ubuntu-latest
 
+  report-native-build:
+
+    name: Report errors
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    needs: [build, native-build]
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - id: gh-issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ env.FAIL_ISSUE }} --body "[Maven build failed: ${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          gh issue reopen ${{ env.FAIL_ISSUE }}

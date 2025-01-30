@@ -1,0 +1,69 @@
+name: Pf2eTools Data Cache
+on:
+  schedule:
+    - cron: "7 9 * * */5"
+
+  workflow_call:
+    outputs:
+      cache_key:
+        description: "Cache key for current version"
+        value: ${{ jobs.pf2e_cache.outputs.cache_key }}
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  pf2e_cache:
+    runs-on: ubuntu-latest
+    outputs:
+      cache_key: ${{ steps.test_data_key.outputs.cache_key }}
+    concurrency:
+      group: pf2e-data
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - name: Pf2e Tools release cache key
+        id: test_data_key
+        run: |
+          LATEST_VERSION=$(curl -sLH 'Accept: application/json' https://api.github.com/repos/Pf2eToolsOrg/Pf2eTools/releases/latest | jq -r .tag_name)
+          echo $LATEST_VERSION
+
+          echo "🔹 Use $LATEST_VERSION"
+          echo "tools_version=${LATEST_VERSION}" >> $GITHUB_OUTPUT
+          echo "cache_key=Data-Pf2eTools-${LATEST_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Check Cache Data
+        id: test_data_check
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: sources
+          key: ${{ steps.test_data_key.outputs.cache_key }}
+          lookup-only: true
+          enableCrossOsArchive: true
+
+      - name: Download Test Data
+        id: test-data-download
+        if: steps.test_data_check.outputs.cache-hit != 'true'
+        env:
+          LATEST_VERSION: ${{ steps.test_data_key.outputs.tools_version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔹 Download $LATEST_VERSION"
+
+          # sparse clone of src
+          mkdir -p sources/Pf2eTools
+          git clone --quiet --depth=1 -b ${LATEST_VERSION} -c advice.detachedHead=false --no-checkout https://github.com/Pf2eToolsOrg/Pf2eTools.git sources/Pf2eTools
+          pushd sources/Pf2eTools
+            git sparse-checkout init
+            git sparse-checkout set data img
+            git checkout ${LATEST_VERSION}
+            rm -rf .git
+            find img -type f | while read FILE; do echo > "$FILE"; done
+          popd
+
+          ls -al sources/Pf2eTools
+          du -sh sources/Pf2eTools
+

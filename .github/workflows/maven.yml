@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Main Maven build
 
 on:
   workflow_dispatch:
@@ -15,49 +15,131 @@ on:
 
 env:
   JAVA_VERSION: 17
-  GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
+  NATIVE_JAVA_VERSION: 23
+  GRAALVM_DIST: graalvm-community
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
 
 permissions: read-all
 
 jobs:
-  main-root:
+  main_root:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'
+    outputs:
+      is_main: ${{ steps.is_main_root.outputs.is_main }}
     steps:
       - name: Echo a message
-        id: is-main-root
-        run: echo "This is the main branch of 'ebullient/ttrpg-convert-cli'"
+        id: is_main_root
+        if: github.ref == 'refs/heads/main' && github.repository == 'ebullient/ttrpg-convert-cli'
+        run: |
+          echo "This is the main branch of 'ebullient/ttrpg-convert-cli'"
+          echo "is_main=true" >> $GITHUB_OUTPUT
 
   metadata:
     uses: ebullient/workflows/.github/workflows/java-snap-metadata.yml@main
 
+  tools5e_cache:
+    uses: ./.github/workflows/tools5e-data-cache.yml
+
+  pf2e_cache:
+    uses: ./.github/workflows/pf2e-data-cache.yml
+
   build:
-    uses: ebullient/workflows/.github/workflows/java-snap-build.yml@main
-    needs: [metadata]
+    runs-on: ubuntu-latest
+    needs: [main_root, metadata, tools5e_cache, pf2e_cache]
     permissions:
       contents: write
       actions: write
-    with:
-      artifact: ${{ needs.metadata.outputs.artifact }}
-      snapshot: ${{ needs.metadata.outputs.snapshot }}
-      push: "README.md README-WINDOWS.md docs"
-    secrets: inherit
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          fetch-tags: false
+
+      - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        id: tools5e-cache-load
+        with:
+          path: sources
+          key: ${{ needs.tools5e_cache.outputs.cache_key }}
+          restore-keys: |
+            Data-5etools-
+            Data-5etools
+
+      - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        id: pf2e-cache-load
+        with:
+          path: sources/Pf2eTools
+          key: Data-Pf2eTools-
+          restore-keys: |
+            Data-Pf2eTools-
+            Data-Pf2eTools
+
+      - name: Build with Maven
+        uses: ebullient/workflows/.github/actions/maven-build@main
+        with:
+          artifact: ${{ needs.metadata.outputs.artifact }}
+          version: ${{ needs.metadata.outputs.snapshot }}
+          java-version: ${{ env.JAVA_VERSION }}
+          java-distribution: ${{ env.JAVA_DISTRO }}
+
+      - name: Push changes to files
+        if: needs.main_root.outputs.is_main
+        uses: ebullient/workflows/.github/actions/push-changes@main
+        with:
+          files: "README.md README-WINDOWS.md docs"
 
   native-build:
-    needs: [metadata, build]
-    uses: ebullient/workflows/.github/workflows/java-release-native-binaries.yml@main
+    needs: [metadata, tools5e_cache, pf2e_cache, build]
+    name: Build ${{ matrix.os }} binary
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [macos-13, macos-latest, windows-latest, ubuntu-latest]
     permissions:
       contents: read
       actions: write
-    with:
-      version: ${{ needs.metadata.outputs.snapshot }}
-    secrets: inherit
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        id: tools5e-cache-load
+        with:
+          path: sources
+          key: ${{ needs.tools5e_cache.outputs.cache_key }}
+          restore-keys: |
+            Data-5etools-
+            Data-5etools
+          enableCrossOsArchive: true
+
+      - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        id: pf2e-cache-load
+        with:
+          path: sources/Pf2eTools
+          key: Data-Pf2eTools-
+          restore-keys: |
+            Data-Pf2eTools-
+            Data-Pf2eTools
+          enableCrossOsArchive: true
+
+      - name: Native build with Maven
+        uses: ebullient/workflows/.github/actions/native-build@main
+        with:
+          artifact: ${{ needs.metadata.outputs.artifact }}
+          version: ${{ needs.metadata.outputs.snapshot }}
+          native-java-version: ${{ env.NATIVE_JAVA_VERSION }}
+          distribution: ${{ env.GRAALVM_DIST }}
+          matrix-os: ${{ matrix.os }}
 
   snap-release:
-    needs: [main-root, metadata, build, native-build]
+    needs: [main_root, metadata, build, native-build]
+    if: needs.main_root.outputs.is_main
     uses: ebullient/workflows/.github/workflows/java-snapshot.yml@main
     permissions:
       contents: write
