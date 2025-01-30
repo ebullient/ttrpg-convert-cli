@@ -411,7 +411,7 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default boolean prependField(String name, List<String> inner) {
-        if (name != null) {
+        if (isPresent(name)) {
             name = replaceText(name.trim());
             if (inner.isEmpty()) {
                 inner.add(name);

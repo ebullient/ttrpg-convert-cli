@@ -94,7 +94,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
             } else if (entry.has("table")) {
                 appendTable(name, entry, text);
             } else {
-                appendToText(text, entry, "###");
+                appendToText(text, entry, null);
             }
 
             if (type == Tools5eIndexType.itemType && abbreviation != null) {
