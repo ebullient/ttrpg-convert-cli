@@ -237,9 +237,9 @@ public interface JsonTextConverter<T extends IndexType> {
 
     default String diceFormula(String diceRoll, String displayText, boolean average) {
         // needs to be escaped: \\ to escape the \\ so it is preserved in the output
-        String noform = parseState().inMarkdownTable() ? "\\\\|noform" : "|noform";
-        String avg = parseState().inMarkdownTable() ? "\\\\|avg" : "|avg";
-        String dtxt = parseState().inMarkdownTable() ? "\\\\|text(" : "|text(";
+        String noform = parseState().inMarkdownTable() ? "\\|noform" : "|noform";
+        String avg = parseState().inMarkdownTable() ? "\\|avg" : "|avg";
+        String dtxt = parseState().inMarkdownTable() ? "\\|text(" : "|text(";
         String textValue = displayText == null ? "" : displayText.replace("`", "");
 
         // Only a dice formula in the roll part. May also have display text.
@@ -256,7 +256,7 @@ public interface JsonTextConverter<T extends IndexType> {
     // reduce dice strings.. when parsing tags, we can't see leadng average
     default String simplifyFormattedDiceText(String text) {
         DiceFormulaState formulaState = parseState().diceFormulaState();
-        String dtxt = parseState().inMarkdownTable() ? "\\\\|text(" : "|text(";
+        String dtxt = parseState().inMarkdownTable() ? "\\|text(" : "|text(";
 
         // 26 (`dice:1d20+8|noform|text(+8)`) --> `dice:1d20+8|noform|text(26)` (`+8`)
         text = textAverageRoll.matcher(text).replaceAll((match) -> {
