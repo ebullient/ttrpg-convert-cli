@@ -70,11 +70,12 @@ jobs:
           gh release download ${LATEST_VERSION} -D sources/5etools-img -R 5etools-mirror-3/5etools-img
           pushd sources/5etools-img
             zip -FF img-${LATEST_VERSION}.zip --out fixed.zip
-            unzip -q fixed.zip -d .
-            du -sh .
+            unzip -q fixed.zip
             rm *.z*
+            du -sh .
             # replace all images w/ empty files. We don't care about image content for test purposes
             find img -type f | while read FILE; do echo > "$FILE"; done
+            mv img/* .
             du -sh .
           popd
 

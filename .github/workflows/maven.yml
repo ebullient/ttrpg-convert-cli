@@ -71,7 +71,7 @@ jobs:
         id: pf2e-cache-load
         with:
           path: sources/Pf2eTools
-          key: Data-Pf2eTools-
+          key: ${{ needs.pf2e_cache.outputs.cache_key }}
           restore-keys: |
             Data-Pf2eTools-
             Data-Pf2eTools
@@ -122,7 +122,7 @@ jobs:
         id: pf2e-cache-load
         with:
           path: sources/Pf2eTools
-          key: Data-Pf2eTools-
+          key: ${{ needs.pf2e_cache.outputs.cache_key }}
           restore-keys: |
             Data-Pf2eTools-
             Data-Pf2eTools
