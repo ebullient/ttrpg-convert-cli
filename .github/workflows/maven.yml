@@ -94,6 +94,9 @@ jobs:
     needs: [metadata, tools5e_cache, pf2e_cache, build]
     name: Build ${{ matrix.os }} binary
     runs-on: ${{ matrix.os }}
+    concurrency:
+      group: native-${{ matrix.os }}-${{ github.ref }}
+      cancel-in-progress: true
     strategy:
       fail-fast: false
       max-parallel: 3
