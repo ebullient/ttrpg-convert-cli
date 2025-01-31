@@ -354,7 +354,8 @@ public class TestUtils {
     }
 
     public static String dump(LaunchResult result) {
-        return "\n" + result.getOutput() + "\nSystem err:\n" + result.getErrorOutput();
+        return "\nSystem out:\n" + result.getOutput()
+                + "\nSystem err:\n" + result.getErrorOutput();
     }
 
     public static void deleteDir(Path path) {

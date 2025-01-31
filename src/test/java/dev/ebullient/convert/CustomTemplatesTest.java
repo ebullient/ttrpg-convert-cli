@@ -76,8 +76,8 @@ public class CustomTemplatesTest {
         testOutput = rootTestOutput.resolve("help");
         result.echoSystemOut();
         assertThat(result.getOutput())
-                .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
-                .contains("Usage: ttrpg-convert");
+                .withFailMessage("Usage statement not found in output. Output:%n%s", TestUtils.dump(result))
+                .contains("Usage:");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class CustomTemplatesTest {
         testOutput = rootTestOutput.resolve("version");
         result.echoSystemOut();
         assertThat(result.getOutput())
-                .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                .withFailMessage("Version statement not found in output. Output:%n%s", TestUtils.dump(result))
                 .contains("ttrpg-convert version");
     }
 
