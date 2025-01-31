@@ -219,6 +219,18 @@ public class TextReplacementTest implements JsonSource {
         assertThat(result).isEqualTo(" `dice:2d6|avg|noform|text(7)` (`2d6`)");
     }
 
+    @Test
+    void testSimplifyTable() {
+        boolean pushed = parseState().pushMarkdownTable(true);
+        try {
+            String example = " 7 (`dice:2d6|avg|noform` (`2d6`))";
+            String result = this.simplifyFormattedDiceText(example);
+            assertThat(result).isEqualTo(" `dice:2d6\\|avg\\|noform\\|text(7)` (`2d6`)");
+        } finally {
+            parseState().pop(pushed);
+        }
+    }
+
     @Override
     public Tools5eIndex index() {
         return index;
