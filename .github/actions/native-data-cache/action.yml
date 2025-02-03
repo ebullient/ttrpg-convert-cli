@@ -1,0 +1,21 @@
+name: 'Fetch Tools data cache'
+description: 'Fetch cache using known key'
+
+inputs:
+  cache_key:
+    description: Key for data cache
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - id: cache_restore
+      uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      with:
+        path: sources
+        key: ${{ inputs.cache_key }}
+        fail-on-cache-miss: true
+        enableCrossOsArchive: true
+        restore-keys: |
+          "TestData-"
