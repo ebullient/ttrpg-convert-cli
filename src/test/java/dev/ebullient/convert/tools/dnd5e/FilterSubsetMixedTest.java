@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.dnd5e;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.AfterAll;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
+import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -340,11 +342,50 @@ public class FilterSubsetMixedTest {
             commonTests.assert_MISSING("subrace|tiefling (zariel)|tiefling|phb|mtf");
             commonTests.assert_MISSING("subrace|tiefling|tiefling|phb|phb");
             commonTests.assert_MISSING("subrace|vampire (ixalan)|vampire|psz|psx");
+
+            // specific for this combination of features (homebrew)
+            var dirgeSinger = "subclass|college of the dirge singer|bard|phb|exploringeberron";
+            commonTests.assert_Present(dirgeSinger);
+
+            // homebrew subclass should be moved to xphb class version (as xphb is present)
+
+            // the phb version of the subclass should not be present in this configuration
+            var subclasses = commonTests.index.findSubclasses("classtype|bard|phb");
+            assertThat(subclasses).isNotNull();
+            assertThat(subclasses).isEmpty();
+
+            // the xphb version should be present
+            subclasses = commonTests.index.findSubclasses("classtype|bard|xphb");
+            assertThat(subclasses).isNotNull();
+            assertThat(subclasses).isNotEmpty();
+            assertThat(subclasses).contains(dirgeSinger);
+
+            // dirge singer should have features
+            var features = commonTests.index.findClassFeatures(dirgeSinger);
+            assertThat(features).isNotNull();
+            assertThat(features).isNotEmpty();
         }
     }
 
     @Test
-    public void testClassList() {
+    public void testClassList() throws IOException {
+        if (!commonTests.dataPresent) {
+            return;
+        }
+
         commonTests.testClassList(outputPath);
+
+        String filename = Tools5eQuteBase.getSubclassResource(
+                "college of the dirge singer", "bard", "xphb", "exploringeberron")
+                + ".md";
+
+        Path dirgeSinger = outputPath
+                .resolve(commonTests.index.compendiumFilePath())
+                .resolve(Tools5eIndexType.classtype.getRelativePath())
+                .resolve(filename);
+        assertThat(dirgeSinger).exists();
+
+        String content = Files.readString(dirgeSinger);
+        assertThat(content).contains("Mixed edition content");
     }
 }

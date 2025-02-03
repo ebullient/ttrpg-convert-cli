@@ -46,14 +46,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return instance;
     }
 
-    // classfeature|ability score improvement|monk|phb|12
-    static final String classFeature_1 = "classfeature\\|[^|]+\\|[^|]+\\|";
-    static final String classFeature_2 = "\\|\\d+\\|?";
-    // subclassfeature|blessed strikes|cleric|phb|death|dmg|8|uaclassfeaturevariants
-    static final String subclassFeature_1 = "subclassfeature\\|[^|]+\\|[^|]+\\|";
-    static final String subclassFeature_2 = "\\|[^|]+\\|";
-    static final String subclassFeature_3 = "\\|\\d+\\|?";
-
     final CompendiumConfig config;
 
     // Initialization
@@ -685,7 +677,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 String classReprint = reprints.get(classKey);
 
                 tui().debugf(Msg.CLASSES, "%s\n\t(%5s) %s -> %s\n\t(%5s) %s -> %s", key,
-                        classReprint, classKey, classReprint,
+                        classReprint != null, classKey, classReprint,
                         scReprint, scKey, reprints.get(scKey));
 
                 if (classReprint != null) {
@@ -699,6 +691,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
                     // We found the class reprint.
                     // The reprinted class is the new resource anchor for generated notes
+                    classKey = classReprint;
+
                     // Change the class source for the subclass feature
                     keyData.classSource = altSources.primarySource();
 

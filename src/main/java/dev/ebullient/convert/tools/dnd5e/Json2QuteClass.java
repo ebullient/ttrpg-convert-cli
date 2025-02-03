@@ -25,6 +25,7 @@ import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass.HitPointDie;
@@ -133,7 +134,13 @@ public class Json2QuteClass extends Json2QuteCommon {
                 List<ImageRef> images = new ArrayList<>();
                 List<String> text = getFluff(scNode, Tools5eIndexType.subclassFluff, "##", images);
 
-                if (scSources.isClassic() && !getSources().isClassic()) {
+                // A bit hacky, but the isClassic setting won't always be present for homebrew
+                // Homebrew based on the phb is considered classic
+                boolean scIsClassic = scSources.isClassic()
+                        || (TtrpgValue.isHomebrew.booleanOrDefault(scNode, false)
+                                && Tools5eFields.classSource.getTextOrDefault(scNode, "phb").equalsIgnoreCase("phb"));
+
+                if (scIsClassic && !getSources().isClassic()) {
                     // insert warning about mixed edition content
                     text.add(0,
                             "> This subclass is from a different game edition. You will need to do some adjustment to resolve differences.");
