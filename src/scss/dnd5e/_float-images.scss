@@ -1,3 +1,5 @@
+@use "float-images-mixin" as *;
+
 .json5e-background,
 .json5e-class,
 .json5e-deck,
@@ -13,37 +15,7 @@
 .json5e-reward,
 .json5e-spell,
 .json5e-vehicle {
-  div,
-  img {
-    &[src$="#center"] {
-      text-align: center;
-    }
-    &[src$="#card"],
-    &[src$="#symbol"],
-    &[src$="#portrait"],
-    &[src$="#token"],
-    &[src$="#right"] {
-      float: right;
-      padding-left: 5px;
-    }
-    &[src$="#center"],
-    &[src$="#right"] {
-      img {
-        max-height: 60vh;
-      }
-    }
-    &[src$="#right"] {
-      max-width: 50%;
-    }
-    &[src$="#card"],
-    &[src$="#token"] {
-      width: 150px;
-    }
-    &[src$="#symbol"],
-    &[src$="#portrait"] {
-      width: 200px;
-    }
-  }
+  @include floatBySrcAnchor();
 }
 /* For decks of cards, ensure images don't overlap */
 .json5e-deck {

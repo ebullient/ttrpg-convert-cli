@@ -1,0 +1,33 @@
+@mixin floatBySrcAnchor() {
+  div,
+  span {
+    &[src$="#center"] {
+      text-align: center;
+    }
+    &[src$="#card"],
+    &[src$="#symbol"],
+    &[src$="#portrait"],
+    &[src$="#token"],
+    &[src$="#right"] {
+      float: right;
+      padding-left: 5px;
+    }
+    &[src$="#center"],
+    &[src$="#right"] {
+      img {
+        max-height: 60vh;
+      }
+    }
+    &[src$="#right"] {
+      max-width: 50%;
+    }
+    &[src$="#card"],
+    &[src$="#token"] {
+      width: 150px;
+    }
+    &[src$="#symbol"],
+    &[src$="#portrait"] {
+      width: 200px;
+    }
+  }
+}
