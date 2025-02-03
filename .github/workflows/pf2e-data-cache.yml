@@ -8,15 +8,22 @@ on:
       cache_key:
         description: "Cache key for current version"
         value: ${{ jobs.pf2e_cache.outputs.cache_key }}
+      restore_key:
+        description: "Cache recovery keys"
+        value: |
+          ${{ jobs.pf2e_cache.outputs.cache_key_prefix }}
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
+  actions: read
 
 jobs:
   pf2e_cache:
     runs-on: ubuntu-latest
     outputs:
       cache_key: ${{ steps.test_data_key.outputs.cache_key }}
+      cache_key_prefix: ${{ steps.test_data_key.outputs.cache_key_prefix }}
     concurrency:
       group: pf2e-data
 
@@ -33,6 +40,7 @@ jobs:
 
           echo "🔹 Use $LATEST_VERSION"
           echo "tools_version=${LATEST_VERSION}" >> $GITHUB_OUTPUT
+          echo "cache_key_prefix=Data-Pf2eTools-" >> $GITHUB_OUTPUT
           echo "cache_key=Data-Pf2eTools-${LATEST_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Check Cache Data

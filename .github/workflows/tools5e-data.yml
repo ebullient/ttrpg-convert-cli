@@ -33,9 +33,7 @@ jobs:
         with:
           path: sources
           key: ${{ needs.tools5e_cache.outputs.cache_key }}
-          restore-keys: |
-            Data-5etools-
-            Data-5etools
+          restore-keys: ${{ needs.tools5e_cache.outputs.restore_key }}
           fail-on-cache-miss: true
 
       - name: Build with Maven
@@ -60,9 +58,7 @@ jobs:
         with:
           path: sources
           key: ${{ needs.tools5e_cache.outputs.cache_key }}
-          restore-keys: |
-            Data-5etools-
-            Data-5etools
+          restore-keys: ${{ needs.tools5e_cache.outputs.restore_key }}
           fail-on-cache-miss: true
 
       - name: Native build with Maven

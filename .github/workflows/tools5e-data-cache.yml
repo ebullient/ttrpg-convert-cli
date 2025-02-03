@@ -8,15 +8,22 @@ on:
       cache_key:
         description: "Cache key for current version"
         value: ${{ jobs.tools5e_cache.outputs.cache_key }}
+      restore_key:
+        description: "Cache recovery keys"
+        value: |
+          ${{ jobs.tools5e_cache.outputs.cache_key_prefix }}
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
+  actions: read
 
 jobs:
   tools5e_cache:
     runs-on: ubuntu-latest
     outputs:
       cache_key: ${{ steps.test_data_key.outputs.cache_key }}
+      cache_key_prefix: ${{ steps.test_data_key.outputs.cache_key_prefix }}
     concurrency:
       group: 5etools-data
 
@@ -33,6 +40,7 @@ jobs:
 
           echo "🔹 Use $LATEST_VERSION"
           echo "tools_version=${LATEST_VERSION}" >> $GITHUB_OUTPUT
+          echo "cache_key_prefix=Data-5etools-" >> $GITHUB_OUTPUT
           echo "cache_key=Data-5etools-${LATEST_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Check Cache Data
