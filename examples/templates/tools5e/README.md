@@ -1,5 +1,11 @@
 # Templates for 5eTools
 
+- [5eTools default templates](#5etools-default-templates)
+- [5eTools templates with images](#5etools-templates-with-images)
+- [5eTools alternate monster templates](#5etools-alternate-monster-templates)
+<!-- -->
+- See also: [5eTools mixed templates](mixed/README.md)
+
 ## 5eTools default templates
 
 [5eTools default templates](../../../src/main/resources/templates/tools5e/)
@@ -37,6 +43,34 @@ Some 5eTools data types have fluff images.  These templates include those images
 
 ## 5eTools alternate monster templates
 
+- ***Fantasy Statblock* `statblock` in the body**
+    - Monsters, objects, and vehicles that have `statblock: inline` will populate the *Fantasy Statblock* bestiary.
+    - [monster2md-yamlStatblock-body.txt](monster2md-yamlStatblock-body.txt)
+    - [object2md-yamlStatblock-body.txt](object2md-yamlStatblock-body.txt)
+
+    The important frontmatter elements of this example:
+
+    ```yaml
+    statblock: inline
+    ```
+
+    In the body of the note:
+
+    ````markdown
+    ```statblock
+    {resource.5eStatblockYaml}
+    ```
+    ````
+
+    > [!TIP]
+    > If you're using the Fantasy Statblock plugin to render statblocks
+    > and you use the Dice Roller plugin, you'll want to set *two* config values:
+    >
+    > ```json
+    > "useDiceRoller" : true,
+    > "yamlStatblocks" : true,
+    > ```
+
 - **Markdown statblock with minimal YAML frontmatter** for use with *Fantasy Statblock* and *Initiative Tracker* plugins
     - Monsters, objects, and vehicles that have `statblock: true` will populate the *Fantasy Statblock* bestiary.
     - *Initiative Tracker* only needs a few elements from the statblock for encounter building. `{resource.5eInitiativeYaml}` will emit only those elements.
@@ -59,25 +93,6 @@ Some 5eTools data types have fluff images.  These templates include those images
     ...statblock content...
     ```
     ^statblock
-    ````
-
-- ***Fantasy Statblock* `statblock` in the body**
-    - Monsters, objects, and vehicles that have `statblock: inline` will populate the *Fantasy Statblock* bestiary.
-    - [monster2md-yamlStatblock-body.txt](monster2md-yamlStatblock-body.txt)
-    - [object2md-yamlStatblock-body.txt](object2md-yamlStatblock-body.txt)
-
-    The important frontmatter elements of this example:
-
-    ```yaml
-    statblock: inline
-    ```
-
-    In the body of the note:
-
-    ````markdown
-    ```statblock
-    {resource.5eStatblockYaml}
-    ```
     ````
 
 - **Markdown statblock, alternate score display** - [monster2md-scores.txt](monster2md-scores.txt) (similar will work for objects)
