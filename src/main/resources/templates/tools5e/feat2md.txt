@@ -16,6 +16,10 @@ aliases: ["{resource.name}"]
 {#if resource.prerequisite}
 **Prerequisite**: {resource.prerequisite}
 {/if}
+
+{#if resource.ability}
+{resource.ability}
+{/if}
 {#if resource.level}
 **Level**: {resource.level}
 {/if}
