@@ -31,6 +31,7 @@ import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex.Tuple;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist;
@@ -1010,6 +1011,36 @@ public class Json2QuteCommon implements JsonSource {
         }
     }
 
+    // List<String> getAbilityIncreaseOrOptions(JsonNode abilityNode) {
+    //     ArrayNode elements = ensureArray(abilityNode);
+
+    //     List<Map.Entry<List<String>, Integer>> abilityIncreases = new ArrayList<>();
+
+    //     for (JsonNode entry : elements) {
+    //         if (entry.has("choose")) {
+    //             Map increaseGroup = new HashMap<>();
+
+    //             List<String> abilities = new ArrayList<>();
+
+    //             for (JsonNode ability : entry.get("choose").get("from")) {
+    //                 abilities.add());
+    //             }
+
+    //             tui().debugf("choose from %s", String.join(", ", abilities));
+    //             abilityIncreases.add(new Map.Entry<List<String>, Integer>(abilities, entry.get("amount")));
+    //         } else {
+    //             abilitiesString = "**Ability Score Increase**: ";
+
+    //             for (Entry<String, JsonNode> ability : iterableFields(entry)) {
+    //                 abilitiesString += String.format("%s +%n", ability.getKey(), ability.getValue().asInt());
+    //             }
+    //         }
+    //     }
+
+    //     tui().infof("ability: %s", "");
+    //     return abilitiesString;
+    // }
+
     public final Tools5eQuteBase build() {
         boolean pushed = parseState().push(getSources(), rootNode);
         try {
@@ -1098,5 +1129,14 @@ public class Json2QuteCommon implements JsonSource {
             }
         }
         return PrereqFields.unknown;
+    }
+
+    enum AbilityFields implements JsonNodeReader {
+        str,
+        dex,
+        con,
+        // int,
+        wis,
+        cha,
     }
 }
