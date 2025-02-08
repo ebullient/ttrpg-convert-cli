@@ -29,13 +29,33 @@ public class Json2QuteFeat extends Json2QuteCommon {
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         /* void abilityIncreases = */
-        List<AbilityIncrease> increases = abilityScoreIncreases(rootNode.get("ability"));
+        // List<AbilityIncrease> increases = abilityScoreIncreases(rootNode.get("ability"));
 
-        String ability = "";
+        // String ability = "";
 
-        for (AbilityIncrease ai : increases) {
-            ability += "\n" + abilityScoreOptions(ai.names, ai.amount);
-        }
+        // for (AbilityIncrease ai : increases) {
+        //     ability += "\n" + abilityScoreOptions(ai.names, ai.amount);
+        // }
+
+        // List<String> abilityOptions = new ArrayList<>();
+
+        JsonNode abilityNode = FeatFields.ability.getFrom(rootNode);
+        // JsonNode a = abilityNode.findValue("from");
+        // if (a == null) {
+        //     tui().debugf("from wasn't found");
+        // }
+
+        // String ability = String.join(", ", this.toListOfStrings(a));
+        // tui().infof("ability: %s", ability);
+
+        // for (JsonNode abilityIncrease : abilityNode) {
+        //     if (abilityIncrease.hasNonNull("choose") && abilityIncrease.get("choose").hasNonNull("from")) {
+        //         tui().infof("assigning ability...");
+        //         ability = String.join(", ", FeatFields.ability.getListOfStrings(abilityIncrease, tui()));
+        //     }
+        // }
+
+        // tui().debugf("Generated ability: %s", ability);
 
         // TODO: update w/ category, additionalSpells
         QuteFeat feat = new QuteFeat(sources,
@@ -46,7 +66,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 images,
                 String.join("\n", text),
                 tags,
-                ability);
+                getAbilityScoreIncreases(abilityNode));
 
         tui().debugf("output: %s", feat.toString());
 
@@ -112,5 +132,65 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 .toList();
 
         return "**Ability Score Increase**: Increase your %s %s".formatted(joinConjunct(" or ", formatted), numAbilities);
+    }
+
+    public String getAbilityScoreIncreases(JsonNode abilityNode) {
+        List<String> abilityIncreases = new ArrayList<>();
+
+        JsonNode entries = ensureArray(abilityNode);
+
+        for (JsonNode entry : entries) {
+            JsonNode choice = AbilityScoreIncrease.choose.getFrom(entry);
+            JsonNode amount = entry.findValue("amount");
+            JsonNode max = AbilityScoreIncrease.max.getFrom(entry);
+
+            if (choice != null) {
+                List<String> options = choice.findValuesAsText("from");
+                tui().infof(options.toString());
+                // collect this group of options
+                if (options.size() == 6) {
+                    abilityIncreases.add(
+                            String.format("Increase one ability score of your choice by %s%s.",
+                                    amount != null ? amount : 1,
+                                    max != null ? String.format(", to a maximum of %s", max) : ""));
+                    continue;
+                }
+
+                abilityIncreases.add(
+                        String.format("Increase your %s by %s%s.",
+                                // TODO: Fix this to get list of strings
+                                String.join(", ", options),
+                                amount != null ? amount.asInt() : "1",
+                                max != null ? String.format(", to a maximum of %s", max) : ""));
+
+                continue;
+            }
+
+            // Otherwise look for named ability increase
+            for (AbilityScoreIncrease a : AbilityScoreIncrease.values()) {
+                JsonNode b = a.getFrom(entry);
+                if (b != null)
+                    abilityIncreases.add(String.format("Increase %s by %s", a.toString(), b.asInt()));
+                break;
+            }
+        }
+
+        if (abilityIncreases.size() == 0)
+            return null;
+
+        tui().infof("generated ability increases: %s", abilityIncreases);
+
+        return String.join("\n- ", abilityIncreases);
+    }
+
+    enum AbilityScoreIncrease implements JsonNodeReader {
+        choose,
+        str,
+        dex,
+        con,
+        intl,
+        wis,
+        cha,
+        max
     }
 }
