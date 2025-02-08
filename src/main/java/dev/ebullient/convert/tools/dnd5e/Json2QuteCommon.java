@@ -1099,4 +1099,26 @@ public class Json2QuteCommon implements JsonSource {
         }
         return PrereqFields.unknown;
     }
+
+    enum AbilityScoreIncreaseFields implements JsonNodeReader {
+        str,
+        dex,
+        con,
+        intel,
+        wis,
+        cha,
+        choose,
+        unknown // catcher for unknown attributes (see #fromString())
+    }
+
+    static AbilityScoreIncreaseFields abilityScoreIncreaseFieldFromString(String name) {
+        for (AbilityScoreIncreaseFields field : AbilityScoreIncreaseFields.values()) {
+            if (field.name().equals(name))
+                return field;
+
+            if (name == "int")
+                return AbilityScoreIncreaseFields.intel;
+        }
+        return AbilityScoreIncreaseFields.unknown;
+    }
 }

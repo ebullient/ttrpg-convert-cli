@@ -2,10 +2,7 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
-import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -34,14 +31,5 @@ public class QuteFeat extends Tools5eQuteBase {
         this.level = level;
         this.prerequisite = prerequisite; // optional
         this.ability = ability; // optional
-    }
-
-    public void abilityScoreIncreases(JsonNode abilityNode) {
-        if (abilityNode.has("choose.from")) {
-            Tui.instance().debugf("has options");
-
-            return;
-        }
-
     }
 }
