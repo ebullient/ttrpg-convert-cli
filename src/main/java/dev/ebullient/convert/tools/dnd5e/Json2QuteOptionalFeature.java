@@ -27,8 +27,6 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
         List<String> text = getFluff(Tools5eIndexType.optionalfeatureFluff, "##", images);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
-        String ability = "";
-
         return new QuteFeat(getSources(),
                 getSources().getName(),
                 getSourceText(sources),
@@ -37,6 +35,6 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
                 images,
                 String.join("\n", text),
                 tags,
-                ability);
+                null);
     }
 }
