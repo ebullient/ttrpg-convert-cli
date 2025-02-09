@@ -17,6 +17,12 @@
 
 ## Recommended Obsidian plugin configuration
 
+- [Admonitions](#admonitions)
+- [Force note view mode by front matter](#force-note-view-mode-by-front-matter)
+- [Fantasy Statblocks](#fantasy-statblocks)
+- [Initiative Tracker](#initiative-tracker)
+- [Working with Dataview](#working-with-dataview)
+
 ### Admonitions
 
 The [Admonition plugin](https://github.com/javalent/admonitions) provides additional support for codeblock-style admonitions in addition to callouts.
@@ -36,7 +42,7 @@ Ensure the plugin has the following options enabled (for the most consistent and
 - *"Ignore force view when not in front matter"*: the plugin will only change the view mode if `obsidianUIMode` is defined in the front matter.
 - *"Ignore open files"*: the plugin won't try to change the view mode if the file is already open.
 
-## Fantasy Statblocks
+### Fantasy Statblocks
 
 [Fantasy Statblocks](https://github.com/javalent/fantasy-statblocks) maintains a bestiary of monsters. It has its own (handlebars-based) templates for monster statblocks.
 
@@ -50,7 +56,7 @@ To populate *Fantasy Statblocks* from your notes, use the following settings:
 
 You also need to generate content using [templates][5eTools templates] that will populate the bestiary.
 
-## Initiative Tracker
+### Initiative Tracker
 
 The [Initiative Tracker](https://github.com/javalent/initiative-tracker) plugin for Obsidian allows you to keep track of initiative and turn order during combat encounters in tabletop role-playing games.
 
