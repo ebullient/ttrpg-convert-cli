@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
@@ -58,8 +59,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
         JsonNode scoreIncreases = ensureArray(abilityNode);
 
         for (JsonNode scoreIncrease : scoreIncreases) {
-            JsonNode choice = AbilityScoreIncrease.choose.getFrom(scoreIncrease);
-            Integer max = Optional.ofNullable(AbilityScoreIncrease.max.getFrom(scoreIncrease))
+            Integer max = Optional.ofNullable(scoreIncrease.findValue("max"))
                     .map(value -> value.asInt())
                     .orElse(null);
             Boolean hasMaxValue = max != null;
@@ -102,19 +102,17 @@ public class Json2QuteFeat extends Json2QuteCommon {
                             AbilityScoreIncreaseFields.cha.getFrom(scoreIncrease)));
 
                     case choose -> abilityScoreIncreases
-                            .add(getAbilityScoreIncreaseWithOptions(choice, hasMaxValue ? max : null));
-
-                    default -> tui().warnf("Unknown ability score increase type: %s", field);
+                            .add(getAbilityScoreIncreaseWithOptions(
+                                    AbilityScoreIncreaseFields.choose.getFrom(scoreIncrease),
+                                    hasMaxValue ? max : null));
+                    default -> {
+                    }
                 }
-
-                break;
             }
         }
 
         if (abilityScoreIncreases.size() == 0)
             return null;
-
-        tui().infof("generated ability increases: %s", abilityScoreIncreases);
 
         return String.join("\n- ", abilityScoreIncreases);
     }
@@ -124,12 +122,17 @@ public class Json2QuteFeat extends Json2QuteCommon {
             return null;
         }
 
+        JsonNode entry = chooseNode.findValue("entry");
+
+        if (entry != null) {
+            return entry.asText();
+        }
+
         List<String> options = toListOfStrings(chooseNode.get("from"));
         Integer amount = Optional.ofNullable(
                 chooseNode.get("amount")).map(x -> x.asInt()).orElse(1);
         Boolean hasMaxValue = max != null;
 
-        tui().infof("amount: ", amount);
         if (options.size() == 6) {
             return String.format("Increase one ability score of your choice by %s%s.",
                     amount,
@@ -141,17 +144,5 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 joinConjunct(", ", " or ", options),
                 amount,
                 hasMaxValue ? String.format(", to a maximum of %s", max) : "");
-    }
-
-    enum AbilityScoreIncrease implements JsonNodeReader {
-        choose,
-        str,
-        dex,
-        con,
-        intl,
-        wis,
-        cha,
-        max,
-        unknown
     }
 }

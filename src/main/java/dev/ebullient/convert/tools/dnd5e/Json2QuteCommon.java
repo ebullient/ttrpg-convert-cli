@@ -1119,6 +1119,7 @@ public class Json2QuteCommon implements JsonSource {
             if (name == "int")
                 return AbilityScoreIncreaseFields.intel;
         }
+
         return AbilityScoreIncreaseFields.unknown;
     }
 }
