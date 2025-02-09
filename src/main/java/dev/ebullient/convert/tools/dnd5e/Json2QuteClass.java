@@ -592,18 +592,12 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     String skillChoices(Collection<String> skills, int numSkills) {
-        // tui().debugf("%s", skills);
         if (skills.isEmpty() || skills.size() >= 18) {
             String link = "||skill%s".formatted(numSkills == 1 ? "" : "s");
-            tui().debugf("inside guard\n  length: %n \n  %s", skills.size(), skills);
             String linkToSkills = linkifyRules(Tools5eIndexType.skill, link, "skills");
-            String returnValue = sources.isClassic()
+            return sources.isClassic()
                     ? "choose any %s %s".formatted(numSkills, linkToSkills)
                     : "Choose %s %s".formatted(numSkills, linkToSkills);
-
-            tui().debugf("%s\n", returnValue);
-
-            return returnValue;
         }
 
         List<String> formatted = skills.stream().map(x -> index.findSkillOrAbility(x, getSources()))
@@ -611,17 +605,11 @@ public class Json2QuteClass extends Json2QuteCommon {
                 .sorted(SkillOrAbility.comparator)
                 .map(x -> linkifySkill(x))
                 .toList();
-
-        tui().debugf("After guard\n%s", formatted);
-
-        String returnValue = sources.isClassic()
+        return sources.isClassic()
                 ? "choose %s from %s".formatted(numSkills,
                         joinConjunct(" and ", formatted))
                 : "*Choose %s:* %s".formatted(numSkills,
                         joinConjunct(" or ", formatted));
-
-        tui().debugf("isClassic: %b\n%s", sources.isClassic(), returnValue);
-        return returnValue;
     }
 
     String equipmentDescription(JsonNode startingEquipment) {

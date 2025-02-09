@@ -32,7 +32,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
         JsonNode abilityNode = FeatFields.ability.getFrom(rootNode);
 
         // TODO: update w/ category, additionalSpells
-        QuteFeat feat = new QuteFeat(sources,
+        return new QuteFeat(sources,
                 type.decoratedName(rootNode),
                 getSourceText(sources),
                 listPrerequisites(rootNode),
@@ -41,10 +41,6 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 String.join("\n", text),
                 tags,
                 getAbilityScoreIncreases(abilityNode));
-
-        tui().debugf("output: %s", feat.toString());
-
-        return feat;
     }
 
     enum FeatFields implements JsonNodeReader {
