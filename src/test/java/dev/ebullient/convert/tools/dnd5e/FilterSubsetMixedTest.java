@@ -211,7 +211,7 @@ public class FilterSubsetMixedTest {
             commonTests.assert_MISSING("monster|alkilith|mtf");
             commonTests.assert_MISSING("monster|animated object (huge)|phb");
             commonTests.assert_MISSING("monster|ape|mm");
-            commonTests.assert_Present("monster|ape|xphb");
+            commonTests.assert_Present("monster|ape|xmm");
             commonTests.assert_MISSING("monster|ash zombie|lmop");
             commonTests.assert_Present("monster|ash zombie|pabtso");
             commonTests.assert_Present("monster|awakened shrub|mm");
@@ -221,7 +221,7 @@ public class FilterSubsetMixedTest {
             commonTests.assert_MISSING("monster|bestial spirit (air)|tce");
             commonTests.assert_Present("monster|bestial spirit (air)|xphb");
             commonTests.assert_MISSING("monster|cat|mm");
-            commonTests.assert_Present("monster|cat|xphb");
+            commonTests.assert_Present("monster|cat|xmm");
             commonTests.assert_Present("monster|derro savant|mpmm"); // supersedes both mtf & oota
             commonTests.assert_MISSING("monster|derro savant|mtf");
             commonTests.assert_MISSING("monster|derro savant|oota");
@@ -338,7 +338,6 @@ public class FilterSubsetMixedTest {
             commonTests.assert_MISSING("subrace|genasi (air)|genasi|eepc|eepc");
             commonTests.assert_Present("subrace|genasi (air)|genasi|mpmm|mpmm");
             commonTests.assert_MISSING("subrace|human|human|phb|phb");
-            commonTests.assert_MISSING("subrace|luma (sable)|luma|hwcs|hwcs");
             commonTests.assert_MISSING("subrace|tiefling (zariel)|tiefling|phb|mtf");
             commonTests.assert_MISSING("subrace|tiefling|tiefling|phb|phb");
             commonTests.assert_MISSING("subrace|vampire (ixalan)|vampire|psz|psx");

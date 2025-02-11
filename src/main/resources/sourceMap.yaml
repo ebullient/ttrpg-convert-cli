@@ -151,6 +151,9 @@ config5e:
       name: "Honor Among Thieves: Legendary Magic Items"
     HAT-TG:
       name: "Honor Among Thieves: Thieves' Gallery"
+    HBTD:
+      name: "Hold Back The Dead"
+      date: "2025-02-07"
     HF:
       name: "Heroes' Feast"
       date: "2020-10-27"

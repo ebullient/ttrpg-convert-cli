@@ -676,7 +676,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 boolean classIncluded = Tools5eSources.includedByConfig(classKey);
                 String classReprint = reprints.get(classKey);
 
-                tui().debugf(Msg.CLASSES, "%s\n\t(%5s) %s -> %s\n\t(%5s) %s -> %s", key,
+                tui().logf(Msg.CLASSES, "%s\n\t(%5s) %s -> %s\n\t(%5s) %s -> %s", key,
                         classReprint != null, classKey, classReprint,
                         scReprint, scKey, reprints.get(scKey));
 
@@ -703,7 +703,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                         // This is the sometimes-covered case:
                         //   subclass|path of wild magic|barbarian|xphb|tce
                         // reset all the things to hit the happy path below
-                        tui().debugf("subclassFeature subclass: %s -> %s", scKey, altScKey);
                         scfKey = keyData.toKey();
                         scKey = altScKey;
                         classKey = classReprint;
@@ -715,7 +714,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                         //
                         // The reset classKey will force the issue. If the subclass is also present/included,
                         // then it will be added to the adjusted class.
-                        tui().debugf("subclassFeature oddball: %s -> %s", scKey, altScKey);
                     }
                 }
 

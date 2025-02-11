@@ -190,7 +190,7 @@ public class FilterSubset2014Test {
             commonTests.assert_MISSING("monster|alkilith|mtf");
             commonTests.assert_Present("monster|animated object (huge)|phb");
             commonTests.assert_Present("monster|ape|mm");
-            commonTests.assert_MISSING("monster|ape|xphb");
+            commonTests.assert_MISSING("monster|ape|xmm");
             commonTests.assert_Present("monster|ash zombie|lmop");
             commonTests.assert_MISSING("monster|ash zombie|pabtso");
             commonTests.assert_Present("monster|awakened shrub|mm");
@@ -200,7 +200,7 @@ public class FilterSubset2014Test {
             commonTests.assert_Present("monster|bestial spirit (air)|tce");
             commonTests.assert_MISSING("monster|bestial spirit (air)|xphb");
             commonTests.assert_Present("monster|cat|mm");
-            commonTests.assert_MISSING("monster|cat|xphb");
+            commonTests.assert_MISSING("monster|cat|xmm");
             commonTests.assert_MISSING("monster|derro savant|mpmm");
             commonTests.assert_MISSING("monster|derro savant|mtf");
             commonTests.assert_MISSING("monster|derro savant|oota");
@@ -319,7 +319,6 @@ public class FilterSubset2014Test {
             commonTests.assert_MISSING("subrace|genasi (air)|genasi|eepc|eepc");
             commonTests.assert_MISSING("subrace|genasi (air)|genasi|mpmm|mpmm");
             commonTests.assert_Present("subrace|human|human|phb|phb");
-            commonTests.assert_MISSING("subrace|luma (sable)|luma|hwcs|hwcs");
             commonTests.assert_MISSING("subrace|tiefling (zariel)|tiefling|phb|mtf");
             commonTests.assert_Present("subrace|tiefling|tiefling|phb|phb");
             commonTests.assert_MISSING("subrace|vampire (ixalan)|vampire|psz|psx");

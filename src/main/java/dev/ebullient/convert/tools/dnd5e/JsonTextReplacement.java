@@ -2,6 +2,8 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
+import static dev.ebullient.convert.StringUtil.toOrdinal;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
 import static dev.ebullient.convert.StringUtil.valueOrDefault;
 
 import java.util.ArrayList;
@@ -48,6 +50,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str
                                                                                                      // 20}
     static final Pattern savingThrowPattern = Pattern.compile("\\{@actSave ([^}]+)}");
+    static final Pattern actSaveFailPattern = Pattern.compile("\\{@actSaveFail ?([^}]+)?}");
+    static final Pattern actResponse = Pattern.compile("\\{@actResponse ?([^}]+)?}");
     static final Pattern attackPattern = Pattern.compile("\\{@atkr? ([^}]+)}");
     static final Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+)}"); // {@skillCheck animal_handling
                                                                                          // 5}
@@ -205,6 +209,15 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             result = abilitySavePattern.matcher(result).replaceAll(this::replaceSkillOrAbility);
             result = skillCheckPattern.matcher(result).replaceAll(this::replaceSkillCheck);
             result = savingThrowPattern.matcher(result).replaceAll(this::replaceSavingThrow);
+            result = actSaveFailPattern.matcher(result).replaceAll(this::replaceActSaveFail);
+            result = actResponse.matcher(result).replaceAll((match) -> {
+                // {@actResponse}
+                // {@actResponse d}*Wisdom
+                // textStack[0] += `<i>Response${text.includes("d") ? "\u2014" : ":"}</i>`;
+                String param = match.group(1);
+                // use underscores here, it often bumps directly against other italic text
+                return "_Response%s_".formatted(param != null && param.contains("d") ? "—" : ":");
+            });
 
             result = superscriptCitationPattern.matcher(result).replaceAll((match) -> {
                 // {@sup {@cite Casting Times|FleeMortals|A}}
@@ -352,7 +365,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@h}", "*Hit:* ") // render.js Renderer.tag
                         .replaceAll("\\{@m}", "*Miss:* ")
                         .replaceAll("\\{@hom}", "*Hit or Miss:* ")// render.js Renderer.tag
-                        .replaceAll("\\{@actSaveFail}", "*Failure:*") // render.js Renderer.tag
                         .replaceAll("\\{@actSaveSuccess}", "*Success:*") // render.js Renderer.tag
                         .replaceAll("\\{@actSaveSuccessOrFail}", "*Failure or Success:*") // render.js Renderer.tag
                         .replaceAll("\\{@actResponse}", "Response:") // render.js Renderer.tag
@@ -446,6 +458,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         SkillOrAbility ability = index().findSkillOrAbility(key, getSources());
 
         return String.format("*%s Saving Throw:*", ability.value());
+    }
+
+    default String replaceActSaveFail(MatchResult match) {
+        // format: {@actSaveFail 1}
+        String ordinal = match.group(1) == null ? null : match.group(1);
+        if (ordinal == null) {
+            return "*Failure:*";
+        }
+
+        if (ordinal.contains("\\|")) {
+            ordinal = ordinal.split("\\|")[0];
+        }
+        return "*%s Failure:*".formatted(toTitleCase(toOrdinal(ordinal)));
+        // const [ordinal] = Renderer.splitTagByPipe(text);
+        // if (ordinal) textStack[0] += `*${Parser.numberToText(ordinal, {isOrdinalForm: true}).toTitleCase()} Failure:*`;
+        // else textStack[0] += `*Failure:*`;
     }
 
     default String replaceSkillOrAbility(MatchResult match) {

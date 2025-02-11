@@ -67,12 +67,13 @@ _Support content creators. Only use or include sources that you own._
 | GotSF | Giants of the Star Forge | adventure |
 | HAT-LMI | Honor Among Thieves: Legendary Magic Items | reference |
 | HAT-TG | Honor Among Thieves: Thieves' Gallery | book |
+| HBTD | Hold Back The Dead | adventure |
 | HF | Heroes' Feast | book |
 | HFDoMM | Heroes' Feast: The Deck of Many Morsels | reference |
 | HFFotM | Heroes' Feast Flavors of the Multiverse | book |
 | HFStCM | Heroes' Feast: Saving the Children's Menu | adventure |
-| HWAitW | Humblewood: Adventure in the Wood | adventure |
-| HWCS | Humblewood Campaign Setting | book |
+| HWAitW | Humblewood: Adventure in the Wood | reference |
+| HWCS | Humblewood Campaign Setting | reference |
 | HftT | Hunt for the Thessalhydra | adventure |
 | HoL | The House of Lament | adventure |
 | HotDQ | Hoard of the Dragon Queen | adventure |
