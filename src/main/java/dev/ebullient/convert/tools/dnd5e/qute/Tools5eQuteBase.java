@@ -12,6 +12,7 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteDeity.DeityField;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
@@ -105,7 +106,7 @@ public class Tools5eQuteBase extends QuteBase {
         String primarySource = sources.primarySource();
         return switch (type) {
             case background -> fixFileName(type.decoratedName(node), primarySource, type);
-            case deity -> Tui.slugify(getDeityResourceName(name, primarySource, node.get("pantheon").asText()));
+            case deity -> getDeityResourceName(name, primarySource, DeityField.pantheon.getTextOrEmpty(node));
             case subclass -> getSubclassResource(name,
                     Tools5eFields.className.getTextOrEmpty(node),
                     Tools5eFields.classSource.getTextOrEmpty(node),
@@ -180,7 +181,7 @@ public class Tools5eQuteBase extends QuteBase {
                 suffix = sourceIfNotDefault(source, Tools5eIndexType.deity);
             }
         }
-        return pantheon + "-" + name + suffix;
+        return Tui.slugify(pantheon + "-" + name) + suffix;
     }
 
     public static String getOptionalFeatureTypeResource(String name) {

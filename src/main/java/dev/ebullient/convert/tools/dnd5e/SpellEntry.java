@@ -321,7 +321,11 @@ public class SpellEntry {
                 String className = Tools5eIndexType.classtype.decoratedName(classNode);
                 name = "%s (%s)".formatted(className, name);
             }
-            return "[%s](%s)".formatted(name, resource);
+            Tools5eIndexType.spellIndex.defaultSourceString();
+            return "[%s](%s%s/%s.md)".formatted(name,
+                    Tools5eIndex.getInstance().compendiumVaultRoot(),
+                    Tools5eIndexType.spellIndex.getRelativePath(),
+                    resource);
         }
 
         public String describe() {

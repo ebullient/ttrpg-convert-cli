@@ -148,7 +148,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
         return keepers.entrySet().stream().map(e -> e.getValue().key).toList();
     }
 
-    enum DeityField implements JsonNodeReader {
+    public enum DeityField implements JsonNodeReader {
         altNames,
         category,
         pantheon,
