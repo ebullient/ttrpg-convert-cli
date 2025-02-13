@@ -11,7 +11,8 @@ aliases: ["{resource.name}"]
 ---
 # {resource.name}
 {#if resource.detail }*{resource.detail}*  
-{/if}{#if resource.signatureSpells }
+{/if}{#if resource.hasImages }{resource.showPortraitImage}{/if}
+{#if resource.signatureSpells }
 
 - **Signature Spells**: {resource.signatureSpells}
 {/if}{#if resource.text }

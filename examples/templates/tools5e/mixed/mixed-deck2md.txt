@@ -10,7 +10,6 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-*Source: {resource.source}*  
 
 {resource.text}
 
@@ -21,4 +20,8 @@ aliases: ["{resource.name}"]
 {card.face.getEmbeddedLink("card")}{/if}
 {card.text}
 
-{/for}
+{/for}{#if resource.source }
+
+## Sources
+
+*{resource.source}*{/if}

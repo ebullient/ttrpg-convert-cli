@@ -11,9 +11,12 @@ aliases: ["{resource.name}"]
 ---
 # {resource.name}
 {#if resource.hazardType }*{resource.hazardType}*  
-{/if}{#if resource.text }
+{/if}{#if resource.hasImages }{resource.showPortraitImage}{/if}{#if resource.text }
 
 {resource.text}
+{#else if resource.hasMoreImages }
+
+{resource.showMoreImages}
 {/if}{#if resource.source }
 
 ## Sources

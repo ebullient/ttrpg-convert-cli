@@ -10,6 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name} 
+{#if resource.hasImages }{resource.showPortraitImage}{/if}
 
 {#if resource.level || resource.prerequisite}
 {#if resource.prerequisite}
@@ -20,7 +21,10 @@ aliases: ["{resource.name}"]
 {/if}
 
 {/if}
-{resource.text}{#if resource.source }
+{resource.text}{#if resource.hasMoreImages }
+
+{resource.showMoreImages}
+{/if}{#if resource.source }
 
 ## Sources
 

@@ -10,15 +10,11 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-{first.getEmbeddedLink("right")}  
-{/let}{/if}
+{#if resource.hasImages }{resource.showPortraitImage}{/if}
 
-{resource.text}
-{#if resource.fluffImages.size > 1 }
+{resource.text}{#if resource.hasMoreImages }
 
-{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
-{/if}{/each}
+{resource.showMoreImages}
 {/if}{#if resource.source }
 
 ## Sources

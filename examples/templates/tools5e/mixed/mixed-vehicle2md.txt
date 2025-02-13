@@ -12,20 +12,16 @@ aliases: ["{resource.name}"]
 %%-- Embedded content starts on the next line. --%%
 *Source: {resource.source}*  
 {#if resource.text && !resource.isObject }{! ----- Fluff for non-OBJECT vehicles ----- !}
-{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-{first.getEmbeddedLink("right")}   
-{/let}{/if}
+{#if resource.hasImages }{resource.showPortraitImage}{/if}
 
 {resource.text}
-{#if resource.fluffImages.size > 1 }
+{#if resource.hasMoreImages }
 
-{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
-{/if}{/each}{/if}
-{#else}{! ----- Fluff images for OBJECT vehicles (or no text) ----- !}
+{resource.showMoreImages}
+{/if}
+{#else if resource.hasImages }{! ----- Fluff images for OBJECT vehicles (or no text) ----- !}
 
-{#each resource.fluffImages}
-{it.getEmbeddedLink} 
-{/each}
+{resource.showAllImages}
 
 {/if}{#if !resource.isObject && resource.hasSections }
 ## Statblock

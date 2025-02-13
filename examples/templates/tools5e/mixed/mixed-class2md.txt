@@ -16,6 +16,7 @@ aliases: ["{resource.name}"]
 
 {/if}
 ## Hit Points
+{#if resource.hasImages }{resource.showPortraitImage}{/if}
 
 {#if resource.hitDice }
 - **Hit Dice**: 1d{resource.hitDice} per {resource.name} level
@@ -25,6 +26,9 @@ aliases: ["{resource.name}"]
 - **Hit Dice**: *x* = hit dice specified in the sidekick's statblock (human, gnome, kobold, etc.)
 - **Hit Points at First Level:** *x* + CON
 - **Hit Points at Higher Levels:** add 1d*x* + CON (minimum of 1)
+{/if}{#if resource.hasMoreImages }
+
+{resource.showMoreImages}
 {/if}
 
 ## Starting a {resource.name}

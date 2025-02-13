@@ -16,6 +16,7 @@ aliases: ["{resource.name}"]
 {resource.classProgression}
 
 {/if}
+{#if resource.hasImages }{resource.showPortraitImage}{/if}
 
 {resource.text}{#if resource.source }
 

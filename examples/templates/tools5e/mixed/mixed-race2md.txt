@@ -10,10 +10,7 @@ tags:
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
-
-{#if resource.fluffImages && resource.fluffImages.size > 0 }{#let first=resource.fluffImages.get(0)}
-{first.getEmbeddedLink("right")}  
-{/let}{/if}
+{#if resource.hasImages }{resource.showPortraitImage}{/if}
 
 - **Ability Scores**: {resource.ability}
 {#if resource.type}
@@ -34,11 +31,9 @@ aliases: ["{resource.name}"]
 
 {resource.description}
 
-{/if}
-{#if resource.fluffImages.size > 1 }
+{/if}{#if resource.hasMoreImages }
 
-{#each resource.fluffImages}{#if it_index != 0}{it.getEmbeddedLink}
-{/if}{/each}
+{resource.showMoreImages}
 {/if}{#if resource.source }
 
 ## Sources
