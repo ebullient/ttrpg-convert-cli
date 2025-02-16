@@ -314,7 +314,9 @@ body {
 .json5e-spell span[src$="#center"],
 .json5e-vehicle div[src$="#center"],
 .json5e-vehicle span[src$="#center"] {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .json5e-background div[src$="#card"], .json5e-background div[src$="#symbol"], .json5e-background div[src$="#portrait"], .json5e-background div[src$="#token"], .json5e-background div[src$="#right"],
 .json5e-background span[src$="#card"],

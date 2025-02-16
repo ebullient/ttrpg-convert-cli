@@ -2,7 +2,9 @@
   div,
   span {
     &[src$="#center"] {
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     &[src$="#card"],
     &[src$="#symbol"],
