@@ -238,7 +238,7 @@ public interface JsonTextConverter<T extends IndexType> {
     default String diceFormula(String diceRoll, String displayText, boolean average) {
         // don't escape the dice formula here.
         // see simplifyFormattedDiceText (called consistently from replaceText)
-        String noform = "|noform";
+        String noform = "|noform|noparens";
         String avg = "|avg";
         String dtxt = "|text(";
         String textValue = displayText == null ? "" : displayText.replace("`", "");

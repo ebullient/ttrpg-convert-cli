@@ -151,21 +151,21 @@ public class TextReplacementTest implements JsonSource {
         }
 
         List<String> enabled = List.of(
-                "Spells cast from the spell gem have a save DC of 15 and an attack bonus of `dice:1d20+9|noform|text(+9)`.",
-                "It has a Strength of `dice:1d20+8|noform|text(26)` (`+8`) and a Dexterity of `dice:1d20+0|noform|text(10)` (`+0`)",
-                "`dice:1d2-2+2d3+5|noform|avg` (`1d2-2+2d3+5`) for regular dice rolls",
-                "`dice:1d6|noform|avg|text(1d6)` or `dice:2d6|noform|avg|text(2d6)` for multiple options;",
+                "Spells cast from the spell gem have a save DC of 15 and an attack bonus of `dice:1d20+9|noform|noparens|text(+9)`.",
+                "It has a Strength of `dice:1d20+8|noform|noparens|text(26)` (`+8`) and a Dexterity of `dice:1d20+0|noform|noparens|text(10)` (`+0`)",
+                "`dice:1d2-2+2d3+5|noform|noparens|avg` (`1d2-2+2d3+5`) for regular dice rolls",
+                "`dice:1d6|noform|noparens|avg|text(1d6)` or `dice:2d6|noform|noparens|avg|text(2d6)` for multiple options;",
                 "<span title='default=123, min=1'>`1d6 + [Number]`</span> for input prompts)",
-                "with extended `dice:1d20+2|noform|avg|text(display text)` (`+2`) and `dice:1d20+2|noform|avg|text(display text)` (`+2`)",
-                "a special 'hit' version which assumes a d20 is to be rolled `dice:1d20+7|noform|text(+7)`",
-                "There's also `dice:1d12+3|noform|avg` (`1d12+3`) and `dice:1d20-4|noform|text(-4)`",
-                "scaledamage: `dice:1d6|noform|avg|text(1d6)`, scaledice: `dice:1d6|noform|avg|text(extra amount)` (`1d6`)",
+                "with extended `dice:1d20+2|noform|noparens|avg|text(display text)` (`+2`) and `dice:1d20+2|noform|noparens|avg|text(display text)` (`+2`)",
+                "a special 'hit' version which assumes a d20 is to be rolled `dice:1d20+7|noform|noparens|text(+7)`",
+                "There's also `dice:1d12+3|noform|noparens|avg` (`1d12+3`) and `dice:1d20-4|noform|noparens|text(-4)`",
+                "scaledamage: `dice:1d6|noform|noparens|avg|text(1d6)`, scaledice: `dice:1d6|noform|noparens|avg|text(extra amount)` (`1d6`)",
                 "Strength (5), Strength (`dice: d20+5|text(+5)`), and [Animal Handling](rules/skills.md#Animal%20Handling) (`dice: d20+5|text(+5)`)",
-                "with an Intelligence of `dice:1d20+3|noform|text(+3)` (`16`), a Wisdom of `dice:1d20+0|noform|text(+0)` (`10`), and a Charisma of `dice:1d20+4|noform|text(+4)` (`18`)",
-                "`+3 plus PB` to hit;  *Hit:* `dice:1d6+4|noform|avg|text(7)` (`1d6 + 4`) piercing damage plus `dice:2d6|noform|avg|text(7)` (`2d6`) poison damage.",
-                "Perception (`dice:1d20+2|noform|text(+2)`) Perception (`dice:1d20-2|noform|text(-2)`)",
+                "with an Intelligence of `dice:1d20+3|noform|noparens|text(+3)` (`16`), a Wisdom of `dice:1d20+0|noform|noparens|text(+0)` (`10`), and a Charisma of `dice:1d20+4|noform|noparens|text(+4)` (`18`)",
+                "`+3 plus PB` to hit;  *Hit:* `dice:1d6+4|noform|noparens|avg|text(7)` (`1d6 + 4`) piercing damage plus `dice:2d6|noform|noparens|avg|text(7)` (`2d6`) poison damage.",
+                "Perception (`dice:1d20+2|noform|noparens|text(+2)`) Perception (`dice:1d20-2|noform|noparens|text(-2)`)",
                 "hit display text: +3 to hit",
-                "*Melee Weapon Attack:* `dice:1d20+9|noform|text(+9)` to hit, reach 5 ft., one target. *Hit:* `dice:1d8+5|noform|avg|text(9)` (`1d8 + 5`) piercing damage plus `dice:2d6|noform|avg|text(7)` (`2d6`) necrotic damage.");
+                "*Melee Weapon Attack:* `dice:1d20+9|noform|noparens|text(+9)` to hit, reach 5 ft., one target. *Hit:* `dice:1d8+5|noform|noparens|avg|text(9)` (`1d8 + 5`) piercing damage plus `dice:2d6|noform|noparens|avg|text(7)` (`2d6`) necrotic damage.");
 
         configurator.setUseDiceRoller(DiceRoller.enabled);
         for (int i = 0; i < example.size(); i++) {
