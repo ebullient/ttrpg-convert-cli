@@ -605,8 +605,8 @@ public class Tui {
         yamlMapper().writer().writeValue(outputFile.toFile(), obj);
     }
 
-    public String renderEmbedded(QuteUtil resource) {
-        return templates.renderInlineEmbedded(resource);
+    public String renderEmbedded(QuteUtil resource, boolean asYamlStatblock) {
+        return templates.renderInlineEmbedded(resource, asYamlStatblock);
     }
 
     public <T> T readJsonValue(JsonNode node, TypeReference<T> targetRef) {

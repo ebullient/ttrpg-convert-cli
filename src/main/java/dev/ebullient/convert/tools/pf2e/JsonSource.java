@@ -3,12 +3,8 @@ package dev.ebullient.convert.tools.pf2e;
 import static dev.ebullient.convert.StringUtil.join;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -17,30 +13,11 @@ import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
-import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.Json2QuteItem.Pf2eItem;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteBase;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
 
 public interface JsonSource extends JsonTextReplacement {
-
-    /**
-     * Collect and linkify traits from the specified node.
-     *
-     * @param tags The tags to populate while collecting traits. If null, then don't populate any tags.
-     *
-     * @return an empty or sorted/linkified list of traits (never null)
-     */
-    default Set<String> collectTraitsFrom(JsonNode sourceNode, Tags tags) {
-        return Field.traits.getListOfStrings(sourceNode, tui()).stream()
-                .peek(tags == null ? t -> {
-                } : t -> tags.add("trait", t))
-                .sorted()
-                .map(s -> linkify(Pf2eIndexType.trait, s))
-                .collect(Collectors.toCollection(TreeSet::new));
-    }
 
     /**
      * External (and recursive) entry point for content parsing.
@@ -115,8 +92,10 @@ public interface JsonSource extends JsonTextReplacement {
                     case quote -> appendQuote(text, node);
 
                     // special inline types
-                    case ability -> appendRenderable(text, Pf2eAbility.createEmbeddedAbility(node, this));
-                    case affliction -> appendAffliction(text, node);
+                    case ability -> appendRenderable(text,
+                        new Json2QuteAbility(index(), node, true).buildQuteNote());
+                    case affliction -> appendRenderable(text,
+                        new Json2QuteAffliction(index(), Pf2eIndexType.affliction, node, true).buildQuteNote());
                     case attack -> appendRenderable(text, Pf2eJsonNodeReader.Pf2eAttack.getAttack(node, this));
                     case data -> embedData(text, node);
                     case lvlEffect -> appendLevelEffect(text, node);
@@ -297,11 +276,6 @@ public interface JsonSource extends JsonTextReplacement {
         inner.forEach(x -> text.add(parseState().getListIndent()
                 + (x.isBlank() ? ">" : "> ")
                 + x));
-    }
-
-    /** Internal */
-    default void appendAffliction(List<String> text, JsonNode node) {
-        appendRenderable(text, Pf2eAffliction.createInlineAffliction(node, this));
     }
 
     /** Internal */
@@ -555,14 +529,14 @@ public interface JsonSource extends JsonTextReplacement {
         // (This might be the case anyway, but we know it probably is the case with these).
         // So try to get the renderable embedded object first, and then add the collapsed
         // tag to the outermost admonition.
-        QuteUtil.Renderable renderable = switch (dataType) {
-            case ability -> Pf2eAbility.createEmbeddedAbility(data, this);
-            case affliction, curse, disease -> Pf2eAffliction.createInlineAffliction(data, this);
+        Json2QuteBase json2Renderable = switch (dataType) {
+            case ability -> new Json2QuteAbility(index(), data, true);
+            case affliction, curse, disease -> new Json2QuteAffliction(index(), dataType, data, true);
             default -> null;
         };
-        if (renderable != null) {
+        if (json2Renderable != null) {
             List<String> renderedData = new ArrayList<>();
-            appendRenderable(renderedData, renderable);
+            appendRenderable(renderedData, (QuteUtil.Renderable) json2Renderable.buildQuteNote());
             // Make the outermost admonition collapsed, if there is one
             int[] adIndices = outerAdmonitionIndices(renderedData);
             if (adIndices != null) {
@@ -577,9 +551,9 @@ public interface JsonSource extends JsonTextReplacement {
         // and add the collapsible admonition ourselves
         Pf2eQuteBase converted = dataType.convertJson2QuteBase(index(), data);
         if (converted != null) {
-            renderEmbeddedTemplate(text, converted, tag,
-                    List.of(String.format("title: %s", converted.title()),
-                            "collapse: closed"));
+            renderEmbeddedTemplate(text, converted, tag, false,
+                "title: %s".formatted(converted.title()),
+                "collapse: closed");
         } else {
             tui().errorf("Unable to process data for %s: %s", tag, dataNode.toString());
         }
@@ -608,9 +582,7 @@ public interface JsonSource extends JsonTextReplacement {
             text.add("title: " + title);
 
             // Add traits
-            Tags tags = new Tags();
-            Collection<String> traits = collectTraitsFrom(data, tags);
-            text.add(join("  ", traits) + "  ");
+            text.add(join("  ", getTraits(data)) + "  ");
             maybeAddBlankLine(text);
 
             // Add rendered sections
