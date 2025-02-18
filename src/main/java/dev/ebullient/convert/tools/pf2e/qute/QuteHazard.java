@@ -26,8 +26,8 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteHazard extends Pf2eQuteBase {
 
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
 
     public final String level;
     public final String disable;
@@ -83,7 +83,7 @@ public class QuteHazard extends Pf2eQuteBase {
     public final QuteDataGenericStat perception;
 
     public QuteHazard(Pf2eSources sources, List<String> text, Tags tags,
-            Collection<String> traits, String level, String disable,
+            Collection<QuteDataRef> traits, String level, String disable,
             String reset, String routine, QuteDataDefenses defenses,
             List<QuteInlineAttack> attacks, List<QuteAbility> abilities, List<QuteAbilityOrAffliction> actions,
             QuteHazardStealth stealth, QuteDataGenericStat perception) {
@@ -102,7 +102,7 @@ public class QuteHazard extends Pf2eQuteBase {
     }
 
     public String getComplexity() {
-        if (traits == null || traits.stream().noneMatch(t -> t.contains("complex"))) {
+        if (traits == null || traits.stream().noneMatch(ref -> ref.displayText().equalsIgnoreCase("complex"))) {
             return "Simple";
         }
         return "Complex";

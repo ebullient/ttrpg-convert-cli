@@ -1,5 +1,9 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.formatAsModifier;
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.valueOrDefault;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,8 +23,8 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteItem extends Pf2eQuteBase {
 
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Aliases for this note */
     public final List<String> aliases;
     /**
@@ -66,7 +70,7 @@ public class QuteItem extends Pf2eQuteBase {
     public final List<QuteItemVariant> variants;
 
     public QuteItem(Pf2eSources sources, List<String> text, Tags tags,
-            Collection<String> traits, List<String> aliases, QuteItemActivate activate,
+            Collection<QuteDataRef> traits, List<String> aliases, QuteItemActivate activate,
             String price, String ammunition, String level, String onset, String access,
             String duration, String category, String group,
             String hands, Collection<NamedText> usage, Collection<NamedText> contract,
@@ -167,41 +171,38 @@ public class QuteItem extends Pf2eQuteBase {
     }
 
     /**
-     * Pf2eTools item armor attributes
+     * Armor statistics
+     * <blockquote>
+     *     <b>AC Bonus</b> +2; <b>Dex Cap</b> +0; <b>Check Penalty</b> -3; <b>Speed Penalty</b> -10 ft; <b>Strength</b> 14
+     * </blockquote>
      *
      * This data object provides a default mechanism for creating
      * a marked up string based on the attributes that are present.
      * To use it, reference it directly: `{resource.armor}`.
+     *
+     * @param acBonus AC bonus granted by the armor as a {@link QuteDataArmorClass}. Never null.
+     * @param dexCap The dex modifier cap that applies while wearing this armor, or null.
+     * @param strengthReq The strength requirement to reduce some penalties while wearing the armor, or null.
+     * @param checkPenalty The penalty to Strength-and-Dex-based skill checks that apply if the strength requirement is not met.
+     *                     Integer, always negative or 0.
+     * @param speedPenalty The penalty to speed that applies when wearing this armor. Integer, always negative or 0.
      */
     @TemplateData
-    public static class QuteItemArmorData implements QuteUtil {
-        /** {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass Item armor class details} */
-        public QuteDataArmorClass ac;
-        /** Formatted string. Dex cap */
-        public String dexCap;
-        /** Formatted string. Armor strength */
-        public String strength;
-        /** Formatted string. Check penalty */
-        public String checkPenalty;
-        /** Formatted string. Speed penalty */
-        public String speedPenalty;
-
+    public record QuteItemArmorData(
+        QuteDataArmorClass acBonus,
+        Integer dexCap,
+        Integer strengthReq,
+        int checkPenalty,
+        int speedPenalty
+    ) implements QuteUtil {
+        @Override
         public String toString() {
-            List<String> parts = new ArrayList<>();
-            parts.add("**AC Bonus** " + ac.bonus());
-            if (isPresent(dexCap)) {
-                parts.add("**Dex Cap** " + dexCap);
-            }
-            if (isPresent(strength)) {
-                parts.add("**Strength** " + strength);
-            }
-            if (isPresent(checkPenalty)) {
-                parts.add("**Check Penalty** " + checkPenalty);
-            }
-            if (isPresent(speedPenalty)) {
-                parts.add("**Speed Penalty** " + speedPenalty);
-            }
-            return "- " + String.join("; ", parts);
+            return join("; ",
+                "**AC Bonus** " + acBonus.bonus(),
+                "**Dex Cap** " + valueOrDefault(formatAsModifier(dexCap), "—"),
+                "**Check Penalty** " + (checkPenalty != 0 ? formatAsModifier(checkPenalty) : "—"),
+                "**Speed Penalty** " + (speedPenalty != 0 ? (formatAsModifier(speedPenalty) + " ft.") : "—"),
+                "**Strength** " + valueOrDefault(strengthReq, "—"));
         }
     }
 
@@ -231,8 +232,8 @@ public class QuteItem extends Pf2eQuteBase {
     public static class QuteItemWeaponData implements QuteUtil {
         /** Formatted string. Weapon type */
         public String type;
-        /** Formatted string. List of traits (links) */
-        public Collection<String> traits;
+        /** Traits as a {@link QuteDataTraits} */
+        public QuteDataTraits traits;
         public Collection<NamedText> ranged;
         public String damage;
         public String group;

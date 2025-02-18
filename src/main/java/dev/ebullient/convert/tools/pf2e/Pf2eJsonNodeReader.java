@@ -7,26 +7,24 @@ import static dev.ebullient.convert.StringUtil.toTitleCase;
 import static java.util.Objects.requireNonNullElse;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAbility.Pf2eAbility;
-import dev.ebullient.convert.tools.pf2e.Json2QuteAffliction.Pf2eAffliction;
 import dev.ebullient.convert.tools.pf2e.JsonSource.AppendTypeValue;
 import dev.ebullient.convert.tools.pf2e.qute.QuteAbilityOrAffliction;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataArmorClass;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDefenses;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataDuration;
@@ -35,6 +33,7 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataGenericStat.QuteDataNamedBonus;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataHpHardnessBt;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataRange;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataSpeed;
 import dev.ebullient.convert.tools.pf2e.qute.QuteDataTimedDuration;
 import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
@@ -42,16 +41,6 @@ import dev.ebullient.convert.tools.pf2e.qute.QuteInlineAttack;
 /** A utility class which extends {@link JsonNodeReader} with PF2e-specific functionality. */
 public interface Pf2eJsonNodeReader extends JsonNodeReader {
 
-    /**
-     * Return alignments as a list of formatted strings from this field in the given node.
-     * Returns an empty list if we couldn't get alignments.
-     */
-    default List<String> getAlignmentsFrom(JsonNode alignNode, JsonSource convert) {
-        return streamFrom(alignNode)
-                .map(JsonNode::asText)
-                .map(a -> a.length() > 2 ? a : convert.linkifyTrait(a.toUpperCase()))
-                .toList();
-    }
 
     /** Return a {@link QuteDataSpeed} read from this field of the {@code source} node, or null. */
     default QuteDataSpeed getSpeedFrom(JsonNode source, JsonSource convert) {
@@ -106,7 +95,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
      * traits from these activation components to {@code traits}. Return an empty list if we couldn't get activation
      * components.
      */
-    default List<String> getActivationComponentsFrom(JsonNode source, Set<String> traits, JsonSource convert) {
+    default List<String> getActivationComponentsFrom(JsonNode source, Collection<QuteDataRef> traits, JsonSource convert) {
         List<String> rawComponents = getListOfStrings(source, convert.tui()).stream()
                 .map(s -> s.replaceFirst("^\\((%s)\\)$", "\1")) // remove parens
                 .toList();
@@ -124,6 +113,7 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                     return Stream.of();
                 }).distinct()
                 .map(convert::linkifyTrait)
+                .map(QuteDataRef::fromMarkdownLink)
                 .forEach(traits::add);
 
         return rawComponents.stream().map(convert::replaceText).toList();
@@ -133,14 +123,15 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
     default List<QuteAbilityOrAffliction> getAbilityOrAfflictionsFrom(JsonNode source, JsonSource convert) {
         return streamFrom(source)
                 .map(n -> switch (requireNonNullElse(AppendTypeValue.getBlockType(n), AppendTypeValue.ability)) {
-                    case affliction -> (QuteAbilityOrAffliction) Pf2eAffliction.createInlineAffliction(n, convert);
-                    case ability -> Pf2eAbility.createEmbeddedAbility(n, convert);
+                    case affliction -> new Json2QuteAffliction(convert.index(), Pf2eIndexType.affliction, n, true);
+                    case ability -> new Json2QuteAbility(convert.index(), n, true);
                     default -> {
                         convert.tui().debugf("Unexpected block type in %s", source.toPrettyString());
                         yield null;
                     }
                 })
                 .filter(Objects::nonNull)
+                .map(json2Qute -> (QuteAbilityOrAffliction) json2Qute.buildNote())
                 .toList();
     }
 
@@ -518,26 +509,21 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
          */
         private static QuteDataActivity getActivity(JsonNode node, JsonSource convert) {
             String actionType = unit.getTextOrNull(node);
-            Pf2eActivity activity = switch (actionType) {
-                case "single", "action", "free", "reaction" ->
-                    Pf2eActivity.toActivity(actionType, number.intOrThrow(node));
-                case "varies" -> Pf2eActivity.varies;
-                case "day", "minute", "hour", "round" -> Pf2eActivity.timed;
-                default -> null;
-            };
-
-            if (activity == null) {
-                throw new IllegalArgumentException("Can't parse activity from: %s".formatted(node));
-            }
 
             String extra = entry.getTextFrom(node)
-                    .filter(s -> !s.toLowerCase().contains("varies"))
-                    .filter(Predicate.not(String::isBlank))
-                    .map(convert::replaceText).map(StringUtil::parenthesize)
-                    .orElse("");
+                .filter(s -> !s.toLowerCase().contains("varies"))
+                .filter(Predicate.not(String::isBlank))
+                .map(convert::replaceText).map(StringUtil::parenthesize)
+                .orElse("");
 
-            return activity.toQuteActivity(
-                    convert, activity == Pf2eActivity.timed ? join(" ", number.intOrThrow(node), actionType, extra) : extra);
+            return switch (actionType) {
+                case "single", "action", "free", "reaction", "varies" ->
+                    Pf2eActivity.toQuteActivity(convert, actionType, number.intOrDefault(node, 0), extra);
+                case "day", "minute", "hour", "round" ->
+                    Pf2eActivity.toQuteActivity(
+                        convert, Activity.timed, join(" ", number.intOrThrow(node), actionType, extra));
+                default -> throw new IllegalArgumentException("Can't parse activity from: %s".formatted(node));
+            };
         }
 
         /**
@@ -565,9 +551,8 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
                 return null;
             }
             // The activity is more specific unless we have a custom display. Otherwise, fall back to the timed duration
-            return Optional.ofNullable(Pf2eActivity.toActivity(unitText, timedDuration.value()))
-                    .map(a -> (QuteDataDuration) a.toQuteActivity(convert, null))
-                    .orElse(timedDuration);
+            return requireNonNullElse(
+                Pf2eActivity.toQuteActivity(convert, unitText, timedDuration.value(), null), timedDuration);
         }
 
         /**
@@ -677,12 +662,12 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             return new QuteInlineAttack(
                     name.replaceTextFrom(node, convert),
                     Optional.ofNullable(activity.getActivityFrom(node, convert))
-                            .orElse(Pf2eActivity.single.toQuteActivity(convert, "")),
+                            .orElse(Pf2eActivity.toQuteActivity(convert, Activity.single, "")),
                     QuteInlineAttack.AttackRangeType.valueOf(range.getTextOrDefault(node, "Melee").toUpperCase()),
                     attack.intOrNull(node),
                     formattedDamage,
                     types.replaceTextFromList(node, convert),
-                    convert.collectTraitsFrom(node, null),
+                    convert.getTraits(node),
                     hasMultilineEffect ? List.of() : attackEffects,
                     hasMultilineEffect ? String.join("\n", attackEffects) : null,
                     noMAP.booleanOrDefault(node, false) ? List.of() : List.of("no multiple attack penalty"),
@@ -729,10 +714,11 @@ public interface Pf2eJsonNodeReader extends JsonNodeReader {
             return new QuteDataNamedBonus(
                     displayName,
                     std.intOrThrow(source),
-                    convert.streamPropsExcluding(source, std, note)
+                    convert.streamPropsExcluding(source, std, note, abilities, notes)
                             .collect(Collectors.toMap(e -> convert.replaceText(e.getKey()), e -> e.getValue().asInt())),
-                    note.getTextFrom(source).map(convert::replaceText).map(List::of)
-                            .orElse((abilities.existsIn(source) ? abilities : notes).replaceTextFromList(source, convert)));
+                    Stream.of(abilities, note, notes)
+                        .flatMap(field -> field.replaceTextFromList(source, convert).stream())
+                        .toList());
         }
     }
 

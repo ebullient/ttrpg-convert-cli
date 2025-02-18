@@ -2,18 +2,16 @@ package dev.ebullient.convert.tools.pf2e;
 
 import static dev.ebullient.convert.StringUtil.join;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteCreature;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
 
 public class Json2QuteCreature extends Json2QuteBase {
 
@@ -23,7 +21,7 @@ public class Json2QuteCreature extends Json2QuteBase {
 
     @Override
     protected QuteCreature buildQuteResource() {
-        return Pf2eCreature.create(rootNode, this);
+        return Pf2eCreature.create(this);
     }
 
     /**
@@ -59,14 +57,14 @@ public class Json2QuteCreature extends Json2QuteBase {
     enum Pf2eCreature implements Pf2eJsonNodeReader {
         abilities,
         abilityMods,
-        alignment,
+        alignment,  // unused in the data but defined in the schema
         alias,
         attacks,
         defenses,
         description,
         entries,
         hasImages,
-        inflicts, // not actually present in any of the entries
+        inflicts, // unused in the data but defined in the schema
         isNpc,
         items,
         languages,
@@ -83,15 +81,9 @@ public class Json2QuteCreature extends Json2QuteBase {
         std,
         traits;
 
-        private static QuteCreature create(JsonNode node, JsonSource convert) {
-            Tags tags = new Tags(convert.getSources());
-            Collection<String> traits = convert.collectTraitsFrom(node, tags);
-            traits.addAll(alignment.getAlignmentsFrom(node, convert));
-
-            return new QuteCreature(convert.getSources(),
-                    entries.transformTextFrom(node, "\n", convert, "##"),
-                    tags,
-                    traits,
+        private static QuteCreature create(Json2QuteCreature convert) {
+            JsonNode node = convert.rootNode;
+            return new QuteCreature(convert.sources, convert.entries, convert.tags, convert.traits,
                     alias.replaceTextFromList(node, convert),
                     description.replaceTextFrom(node, convert),
                     level.intOrNull(node),
@@ -290,7 +282,8 @@ public class Json2QuteCreature extends Json2QuteBase {
                 String spellName = name.getTextOrThrow(node);
                 return new QuteCreature.CreatureSpellReference(
                         spellName,
-                        convert.linkify(Pf2eIndexType.spell, join("|", spellName, source.getTextOrNull(node))),
+                        QuteDataRef.fromMarkdownLink(
+                            convert.linkify(Pf2eIndexType.spell, join("|", spellName, source.getTextOrNull(node)))),
                         amount.getTextFrom(node)
                                 .filter(s -> s.equalsIgnoreCase("at will"))
                                 .map(unused -> 0)

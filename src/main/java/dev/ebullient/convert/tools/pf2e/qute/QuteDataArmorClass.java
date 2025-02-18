@@ -48,12 +48,17 @@ public record QuteDataArmorClass(
     }
 
     @Override
+    public String formattedNotes() {
+        return flatJoin(", ", List.of(formattedAlternates(false)), notes, abilities);
+    }
+
+    @Override
     public String bonus() {
         return join(" ", QuteDataGenericStat.super.bonus(), formattedAlternates(true));
     }
 
     @Override
     public String toString() {
-        return flatJoin(" ", List.of("**AC**", value, formattedAlternates(false)), notes, abilities);
+        return join(" ", value, formattedNotes());
     }
 }
