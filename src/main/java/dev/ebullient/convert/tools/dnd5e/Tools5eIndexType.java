@@ -592,6 +592,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     disease,
                     hazard,
                     item,
+                    itemGroup,
                     magicvariant,
                     object,
                     reward,
