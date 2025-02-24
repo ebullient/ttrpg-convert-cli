@@ -272,7 +272,7 @@ public enum Pf2eIndexType implements IndexType, JsonNodeReader {
             case ability, creature, creatureTemplate -> DefaultSource.b1;
             case action, adventure, ancestry, archetype, background, book, classFeature, classtype, companion, companionAbility,
                     condition, deity, domain, familiarAbility, feat, group, hazard, item, language, ritual, skill, spell,
-                    subclassFeature, table, trait, trap, bookReference ->
+                    subclassFeature, table, trait, trap, bookReference, syntheticGroup ->
                 DefaultSource.crb;
             case affliction, curse, disease, nation, place, plane, relicGift, settlement, variantrule, vehicle ->
                 DefaultSource.gmg;
