@@ -86,19 +86,18 @@ body {
     --callout-color: transparent;
     --callout-border-width: 0;
     .callout-content {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-
       p {
-        display: none;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-content: center;
       }
 
+      span[src$="#gallery"],
       div[src$="#gallery"] {
         max-width: 49%;
         img {
-          max-height: 60vh;
+          max-height: 40vh;
         }
       }
     }
