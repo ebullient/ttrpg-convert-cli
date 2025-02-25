@@ -34,7 +34,7 @@ aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
 {/if}{#if resource.shield }
 {resource.shield}
 {/if}{#if resource.armor }
-{resource.armor}
+- {resource.armor}
 {/if}{#if resource.weapons }
 {#each resource.weapons}{it}
 {/each}{/if}{#if resource.hands }

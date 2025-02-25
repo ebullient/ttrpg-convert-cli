@@ -1,13 +1,14 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
+import static dev.ebullient.convert.StringUtil.formatIfPresent;
 import static dev.ebullient.convert.StringUtil.formatMap;
 import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.joinWithPrefix;
 import static dev.ebullient.convert.StringUtil.joiningNonEmpty;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import dev.ebullient.convert.qute.QuteUtil;
@@ -50,20 +51,37 @@ public record QuteDataDefenses(
         Map<String, QuteDataGenericStat> resistances,
         Map<String, QuteDataGenericStat> weaknesses) implements QuteUtil {
 
+    @SuppressWarnings("unused")  // for template use
+    public String getAdditionalHp() {
+        return additionalHpHardnessBt.entrySet().stream()
+            .filter(e -> e.getValue().hp() != null)
+            .map(e -> "__%s HP__ %s".formatted(e.getKey(), e.getValue().hp()))
+            .collect(Collectors.joining("; "));
+    }
+
+    @SuppressWarnings("unused")  // for template use
+    public String getAdditionalHardness() {
+        return additionalHpHardnessBt.entrySet().stream()
+            .filter(e -> e.getValue().hardness() != null)
+            .map(e -> "__%s Hardness__ %s".formatted(e.getKey(), e.getValue().hardness()))
+            .collect(Collectors.joining("; "));
+    }
+
     @Override
     public String toString() {
         return join("\n",
                 // - **AC** 21; **Fort** +15, **Ref** +12, **Will** +10
-                joinWithPrefix("; ", "- ", ac, savingThrows),
+                formatIfPresent("- %s",
+                    join("; ", formatIfPresent("**AC** %s", ac), savingThrows)),
                 // - **Hardness** 18, **HP (BT)** 10; **Immunities** critical hits; **Resistances** fire 5
-                joinWithPrefix("; ", "- ",
+                formatIfPresent("- %s", join("; ",
                         hpHardnessBt,
                         join("; ", formatMap(additionalHpHardnessBt, (k, v) -> v.toStringWithName(k))),
-                        joinWithPrefix(", ", "**Immunities** ", immunities),
+                        formatIfPresent("**Immunities** %s", join(", ", immunities)),
                         formatMap(resistances, (k, v) -> join(" ", k, v)).stream().sorted()
                                 .collect(joiningNonEmpty(", ", "**Resistances** ")),
                         formatMap(weaknesses, (k, v) -> join(" ", k, v)).stream().sorted()
-                                .collect(joiningNonEmpty(", ", "**Weaknesses** "))));
+                                .collect(joiningNonEmpty(", ", "**Weaknesses** ")))));
     }
 
     /**
@@ -83,6 +101,12 @@ public record QuteDataDefenses(
     public record QuteSavingThrows(
             QuteDataNamedBonus fort, QuteDataNamedBonus ref, QuteDataNamedBonus will,
             List<String> abilities) implements QuteUtil {
+
+        /** Return the saves as a list of {@link QuteDataGenericStat.QuteDataNamedBonus}. */
+        public List<QuteDataNamedBonus> getSaves() {
+            return List.of(fort, ref, will);
+        }
+
         /** Returns all abilities as a formatted, comma-separated string. */
         public String formattedAbilities() {
             return join(", ", abilities);
