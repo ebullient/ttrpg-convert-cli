@@ -22,8 +22,8 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteFeat extends Pf2eQuteBase {
 
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Aliases for this note */
     public final List<String> aliases;
 
@@ -51,7 +51,7 @@ public class QuteFeat extends Pf2eQuteBase {
     public final boolean embedded;
 
     public QuteFeat(Pf2eSources sources, List<String> text, Tags tags,
-            Collection<String> traits, List<String> aliases,
+            Collection<QuteDataRef> traits, List<String> aliases,
             String level, String access, QuteDataFrequency frequency, QuteDataActivity activity, String trigger,
             String cost, String requirements, String prerequisites, String special, String note,
             List<String> leadsTo, boolean embedded) {

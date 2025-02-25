@@ -1,7 +1,5 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
-import static dev.ebullient.convert.StringUtil.join;
-import static dev.ebullient.convert.StringUtil.parenthesize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.Collection;
@@ -46,8 +44,8 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
      */
     public final Collection<String> damageTypes;
 
-    /** Any traits associated with the attack (collection of decorated links) */
-    public final Collection<String> traits;
+    /** Traits associated with the attack as a {@link QuteDataTraits} */
+    public final QuteDataTraits traits;
 
     /**
      * Any additional effects associated with the attack e.g. grab (list of strings). Effects listed here
@@ -66,7 +64,7 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     public QuteInlineAttack(
             String name, QuteDataActivity activity, AttackRangeType rangeType, Integer attackBonus, String damage,
-            Collection<String> damageTypes, Collection<String> traits, List<String> effects, String multilineEffect,
+            Collection<String> damageTypes, QuteDataTraits traits, List<String> effects, String multilineEffect,
             List<String> notes, JsonTextConverter<?> converter) {
         this.name = name;
         this.activity = activity;
@@ -83,7 +81,7 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     public QuteInlineAttack(
             String name, QuteDataActivity activity, AttackRangeType rangeType, String damage,
-            Collection<String> damageTypes, Collection<String> traits, String note,
+            Collection<String> damageTypes, QuteDataTraits traits, String note,
             JsonTextConverter<?> converter) {
         this(
                 name, activity, rangeType, null,
@@ -108,17 +106,12 @@ public final class QuteInlineAttack implements QuteDataGenericStat, QuteUtil.Ren
 
     @Override
     public String render() {
-        return _converter.renderInlineTemplate(this, null);
+        return _converter.renderEmbeddedTemplate(this, null);
     }
 
     @Override
     public String toString() {
         return render();
-    }
-
-    /** Return traits formatted as a single string, e.g. {@code (agile, trip, finesse)} */
-    public String formattedTraits() {
-        return parenthesize(join(", ", traits));
     }
 
     public enum AttackRangeType {

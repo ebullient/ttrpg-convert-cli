@@ -20,8 +20,8 @@ public class QuteAction extends Pf2eQuteBase {
     public final String trigger;
     /** Aliases for this note */
     public final List<String> aliases;
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Situational requirements for performing this action */
     public final String requirements;
     /** Prerequisite trait or characteristic for performing this action */
@@ -39,7 +39,7 @@ public class QuteAction extends Pf2eQuteBase {
     public final QuteDataActivity activity;
 
     public QuteAction(Pf2eSources sources, List<String> text, Tags tags,
-            String cost, String trigger, List<String> aliases, Collection<String> traits,
+            String cost, String trigger, List<String> aliases, Collection<QuteDataRef> traits,
             String prerequisites, String requirements, QuteDataFrequency frequency,
             QuteDataActivity activity, ActionType actionType) {
         super(sources, text, tags);

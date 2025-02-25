@@ -605,11 +605,10 @@ public interface JsonSource extends JsonTextReplacement {
                         .withTargetFile(embedFileName)
                         .withTargetPath(relativePath));
             } else {
-                List<String> prepend = new ArrayList<>(List.of(
-                        "title: " + name,
-                        "collapse: closed",
-                        existingNode == null ? "" : "%% See " + type.linkify(this, data) + " %%"));
-                renderEmbeddedTemplate(text, qs, type.name(), prepend);
+                renderEmbeddedTemplate(text, qs, type.name(),
+                    "title: " + name,
+                    "collapse: closed",
+                    existingNode == null ? "" : "%% See " + type.linkify(this, data) + " %%");
             }
         }
     }

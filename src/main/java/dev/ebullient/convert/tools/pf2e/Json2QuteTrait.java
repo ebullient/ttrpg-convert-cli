@@ -2,10 +2,8 @@ package dev.ebullient.convert.tools.pf2e;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.Pf2eQuteNote;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTrait;
 import dev.ebullient.convert.tools.pf2e.qute.QuteTraitIndex;
@@ -18,8 +16,6 @@ public class Json2QuteTrait extends Json2QuteBase {
 
     @Override
     protected QuteTrait buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
         List<String> categories = new ArrayList<>();
 
         Field.categories.getListOfStrings(rootNode, tui()).forEach(c -> {
@@ -28,7 +24,7 @@ public class Json2QuteTrait extends Json2QuteBase {
             JsonNode implied = TraitField.implies.getFrom(rootNode);
             if (implied != null) {
                 implied.fieldNames().forEachRemaining(n -> {
-                    if ("spell".equals(n.toLowerCase())) {
+                    if ("spell".equalsIgnoreCase(n)) {
                         String school = implied.get(n).get("_fSchool").asText();
                         tags.add("trait", "category", "spell", school);
                         categories.add(String.format("%s (%s)", c, school));
@@ -41,9 +37,7 @@ public class Json2QuteTrait extends Json2QuteBase {
             }
         });
 
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
-        return new QuteTrait(sources, text, tags, List.of(), categories);
+        return new QuteTrait(sources, entries, tags, List.of(), categories);
     }
 
     static Pf2eQuteNote buildIndex(Pf2eIndex index) {

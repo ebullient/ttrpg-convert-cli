@@ -1,12 +1,10 @@
 package dev.ebullient.convert.tools.pf2e;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.qute.QuteFeat;
 
 public class Json2QuteFeat extends Json2QuteBase {
@@ -17,18 +15,12 @@ public class Json2QuteFeat extends Json2QuteBase {
 
     @Override
     protected QuteFeat buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
-
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
         List<String> leadsTo = Pf2eFeat.leadsTo.getListOfStrings(rootNode, tui())
                 .stream()
                 .map(x -> linkify(Pf2eIndexType.feat, x))
                 .collect(Collectors.toList());
 
-        return new QuteFeat(sources, text, tags,
-                collectTraitsFrom(rootNode, tags),
+        return new QuteFeat(sources, entries, tags, traits,
                 Field.alias.replaceTextFromList(rootNode, this),
                 Pf2eFeat.level.getTextOrDefault(rootNode, "1"),
                 Pf2eFeat.access.transformTextFrom(rootNode, ", ", this),
@@ -44,21 +36,16 @@ public class Json2QuteFeat extends Json2QuteBase {
 
     public QuteFeat buildArchetype(String archetypeName, String dedicationLevel) {
         String featLevel = Pf2eFeat.level.getTextOrDefault(rootNode, "1");
-        List<String> text = new ArrayList<>();
-        Tags tags = new Tags();
 
         String note = null;
-        if (dedicationLevel != featLevel) {
+        if (!Objects.equals(dedicationLevel, featLevel)) {
             note = String.format(
                     "> [!pf2-note] This version of %s is intended for use with the %s Archetype. Its level has been changed accordingly.",
                     index.linkify(this.type, String.join("|", List.of(sources.getName(), sources.primarySource()))),
                     archetypeName);
         }
 
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-
-        return new QuteFeat(sources, text, tags,
-                collectTraitsFrom(rootNode, tags),
+        return new QuteFeat(sources, entries, tags, traits,
                 List.of(),
                 dedicationLevel,
                 Pf2eFeat.access.transformTextFrom(rootNode, ", ", this),
