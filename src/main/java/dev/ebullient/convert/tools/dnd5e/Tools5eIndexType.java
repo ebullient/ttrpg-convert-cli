@@ -503,6 +503,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     optfeature,
                     psionic,
                     race,
+                    subrace,
                     reward,
                     spell,
                     trap,
