@@ -346,7 +346,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                             rootNode.get("detail1").asText());
                 }
                 if (rootNode.has("resist")) {
-                    entriesTemplate = entriesTemplate.replaceAll("\\{\\{item.resist}}",
+                    entriesTemplate = entriesTemplate.replaceAll("\\{\\{.*item.resist}}",
                             joinAndReplace(rootNode, "resist"));
                 }
                 appendToText(text, mapper().readTree(entriesTemplate), "##");

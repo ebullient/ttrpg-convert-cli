@@ -130,9 +130,9 @@ public class SpellEntry {
                 case "s" -> list.add("S");
                 case "m" -> {
                     if (f.getValue().isObject()) {
-                        list.add(SpellIndexFields.text.replaceTextFrom(f.getValue(), converter));
+                        list.add("M (" + SpellIndexFields.text.replaceTextFrom(f.getValue(), converter) + ")");
                     } else {
-                        list.add(converter.replaceText(f.getValue()));
+                        list.add("M (" + converter.replaceText(f.getValue()) + ")");
                     }
                 }
                 case "r" -> list.add("R"); // Royalty. Acquisitions Incorporated

@@ -100,9 +100,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 case "s" -> list.add("S");
                 case "m" -> {
                     if (f.getValue().isObject()) {
-                        list.add(replaceText(SpellFields.text.getTextOrEmpty(f.getValue())));
+                        list.add("M (" + replaceText(SpellFields.text.getTextOrEmpty(f.getValue())) + ")");
                     } else {
-                        list.add(replaceText(f.getValue().asText()));
+                        list.add("M (" + replaceText(f.getValue().asText()) + ")");
                     }
                 }
                 case "r" -> list.add("R"); // Royalty. Acquisitions Incorporated
@@ -122,7 +122,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
             result.append(", ");
             String type = SpellFields.type.getTextOrEmpty(ends);
             if ("timed".equals(type)) {
-                result.append(" up to ");
+                result.append("up to ");
             }
             addDuration(ends, result);
         }
@@ -145,9 +145,13 @@ public class Json2QuteSpell extends Json2QuteCommon {
                     result.append("Concentration, up to ");
                 }
                 JsonNode duration = element.get("duration");
-                result.append(SpellFields.amount.getTextOrEmpty(duration))
+                String amount = SpellFields.amount.getTextOrEmpty(duration);
+                result.append(amount)
                         .append(" ")
                         .append(SpellFields.type.getTextOrEmpty(duration));
+                if (amount != "1") {
+                    result.append("s");
+                }
             }
             default -> tui().errorf("What is this? %s", element.toPrettyString());
         }
@@ -163,14 +167,19 @@ public class Json2QuteSpell extends Json2QuteCommon {
             String amount = SpellFields.amount.getTextOrEmpty(distance);
 
             switch (type) {
-                case "cube", "cone", "hemisphere", "line", "radius", "sphere" -> // Self (xx-foot yy)
+                case "cube", "cone", "emanation", "hemisphere", "line", "radius", "sphere" -> {// Self (xx-foot yy)
+                    if ("feet".equals(distanceType)) {
+                        distanceType = "foot";
+                    }
                     result.append("Self (")
                             .append(amount)
                             .append("-")
                             .append(distanceType)
                             .append(" ")
-                            .append(type)
+                            .append(type.substring(0, 1).toUpperCase())
+                            .append(type.substring(1))
                             .append(")");
+                }
                 case "point" -> {
                     switch (distanceType) {
                         case "self", "sight", "touch", "unlimited" ->
@@ -188,10 +197,26 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellCastingTime() {
+        StringBuilder result = new StringBuilder();
         JsonNode time = rootNode.withArray("time").get(0);
-        return String.format("%s %s",
-                SpellFields.number.getTextOrEmpty(time),
-                SpellFields.unit.getTextOrEmpty(time));
+        String number = SpellFields.number.getTextOrEmpty(time);
+        String unit = SpellFields.unit.getTextOrEmpty(time);
+        result.append(number).append(" ");
+        switch (unit) {
+            case "action", "reaction" ->
+                result.append(unit.substring(0, 1).toUpperCase())
+                        .append(unit.substring(1));
+            case "bonus" ->
+                result.append(unit.substring(0, 1).toUpperCase())
+                        .append(unit.substring(1))
+                        .append(" Action");
+            default ->
+                result.append(unit);
+        }
+        if (number != "1") {
+            result.append("s");
+        }
+        return result.toString();
     }
 
     enum SpellFields implements JsonNodeReader {

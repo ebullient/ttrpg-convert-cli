@@ -326,7 +326,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 } else if (match.group(1).contains("p")) {
                     method = "Power ";
                 }
-                return "*%s%sAttack:*".formatted(String.join("or ", type), method);
+
+                if (method == "") { // This is a little crude
+                    return "*%sAttack Roll:*".formatted(String.join("or ", type));
+                } else {
+                    return "*%s%sAttack:*".formatted(String.join("or ", type), method);
+                }
             });
 
             try {

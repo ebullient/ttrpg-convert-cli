@@ -459,7 +459,8 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         // Move everything into a callout box
         text.replaceAll(s -> "> " + s);
-        text.add("^class-progession");
+        text.add("");
+        text.add("^class-progression");
         return text;
     }
 
@@ -905,9 +906,8 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
 
         String toHtmlLink(String x, String level) {
-            return String.format("<a href='#%s'>%s</a>",
-                    toAnchorTag(x + " (Level " + level + ")"),
-                    x);
+            return String.format("<a href='#%s'class=\"internal-link\">%s</a>",
+                    x + " (Level " + level + ")", x);
         }
     }
 
