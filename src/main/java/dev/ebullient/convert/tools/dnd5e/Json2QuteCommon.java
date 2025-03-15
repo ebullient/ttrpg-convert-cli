@@ -1113,7 +1113,7 @@ public class Json2QuteCommon implements JsonSource {
 
     static AbilityScoreIncreaseFields abilityScoreIncreaseFieldFromString(String name) {
         for (AbilityScoreIncreaseFields field : AbilityScoreIncreaseFields.values()) {
-            if (field.name().equals(name))
+            if (field.name().equalsIgnoreCase(name))
                 return field;
 
             if (name == "int")
