@@ -84,8 +84,8 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
                     case intel -> abilityScoreIncreases.add(String.format(
                             "Increase %s by %s.",
-                            field,
-                            AbilityScoreIncreaseFields.intel.getFrom(scoreIncrease)));
+                            "int",
+                            scoreIncrease.get("int")));
 
                     case wis -> abilityScoreIncreases.add(String.format(
                             "Increase %s by %s.",
@@ -127,18 +127,18 @@ public class Json2QuteFeat extends Json2QuteCommon {
         List<String> options = toListOfStrings(chooseNode.get("from"));
         Integer amount = Optional.ofNullable(
                 chooseNode.get("amount")).map(x -> x.asInt()).orElse(1);
-        Boolean hasMaxValue = max != null;
+
+        Integer maximumScore = max != null ? max : 20;
 
         if (options.size() == 6) {
-            return String.format("Increase one ability score of your choice by %s%s.",
+            return String.format("Increase one ability score of your choice by %s, to a maximum of %s.",
                     amount,
-                    hasMaxValue ? String.format(", to a maximum of %s", max) : "");
-
+                    maximumScore);
         }
 
-        return String.format("Increase your %s by %s%s.",
+        return String.format("Increase your %s by %d, to a maximum of %s.",
                 joinConjunct(", ", " or ", options),
                 amount,
-                hasMaxValue ? String.format(", to a maximum of %s", max) : "");
+                maximumScore);
     }
 }
