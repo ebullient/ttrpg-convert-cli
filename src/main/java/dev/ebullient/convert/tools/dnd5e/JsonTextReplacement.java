@@ -327,7 +327,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     method = "Power ";
                 }
 
-                if (method == "") { // This is a little crude
+                if (method.isBlank()) {
                     return "*%sAttack Roll:*".formatted(String.join("or ", type));
                 } else {
                     return "*%s%sAttack:*".formatted(String.join("or ", type), method);

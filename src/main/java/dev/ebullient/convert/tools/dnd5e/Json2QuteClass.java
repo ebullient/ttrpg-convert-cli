@@ -906,7 +906,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
 
         String toHtmlLink(String x, String level) {
-            return String.format("<a href='#%s'class=\"internal-link\">%s</a>",
+            return String.format("<a href='#%s' class='internal-link'>%s</a>",
                     x + " (Level " + level + ")", x);
         }
     }
