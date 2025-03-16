@@ -169,3 +169,23 @@ Parsing is based on a hierarchy of interfaces with default methods
 - Pf2e: `JsonTextConverter` <- `JsonTextReplacement` <- `JsonSource`<- `Pf2eTypeReader` <- `Json2QuteBase` <- `Json2QuteBackground`
 
 Fields in these Json objects are also read through an enum type hierarchy. These enums allow fields to be defined and typed once (no finger checks) without requiring strict object typing (given union types). This is the preferred practice (for this project), but is not uniformly followed on the (older) 5e side. As I go through things, I'm trying to clean up the 5e side to match the Pf2e side. It's a bit of a mess, but it's a mess that's getting better.
+
+## Commits and pull requests
+
+- Rebase your commits (no merge commits)
+- Use one or more [gitmoji](https://gitmoji.dev/) (the actual emoji, not text) at the beginning of your commits.
+    There are gitmoji plugins/extensions for vscode and intellij, and those help with "pick the right emoji for this commit" prompting. 
+
+    ```
+    🔥🤯 Support 2024 rule changes💥
+    🤖 update generated content
+    🚚 Rename pf2e/JsonSourceCopier to Pf2eJsonSourceCopier
+    🐛✨💥 Make spell durations and cast durations rich data objects
+    ```
+
+    - I'm strict/careful about bugs (🐛), new/shiny things (✨), refactoring (♻️), and CI/build things (👷).
+    - Do not use lipstick; use 🎨 instead.
+    - Use sparkles (✨) if you are adding something new that should be noted in the [CHANGELOG](./CHANGELOG.md)
+    - Use something fiery (🔥💥) if the commit includes breaking changes that should be noted in the [CHANGELOG](./CHANGELOG.md)
+
+    
