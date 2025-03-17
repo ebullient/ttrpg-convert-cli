@@ -12,4 +12,4 @@
 - **Pf2eTools config examples**: [config.pf2e.json](config.pf2e.json), [config.pf2e.yaml](config.pf2e.yaml)
 
 > [!NOTE]
-> See [configuration.md](..\docs\configuration.md) for more information on setting up config files.
+> See [configuration.md](../../docs/configuration.md) for more information on setting up config files.
