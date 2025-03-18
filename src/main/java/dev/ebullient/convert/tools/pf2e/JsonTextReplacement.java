@@ -3,12 +3,13 @@ package dev.ebullient.convert.tools.pf2e;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
+import static dev.ebullient.convert.tools.pf2e.Pf2eActivity.linkifyActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-
+import java.util.stream.Collector;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -17,9 +18,11 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonTextConverter;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity.Activity;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataRef;
+import dev.ebullient.convert.tools.pf2e.qute.QuteDataTraits;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
-
     enum Field implements Pf2eJsonNodeReader {
         alias,
         auto,
@@ -66,11 +69,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         return index().cfg();
     }
 
-    default String replaceText(String input) {
-        return replaceTokens(input, (s, b) -> this._replaceTokenText(s, b));
-    }
-
-    default String _replaceTokenText(String input, boolean nested) {
+    @Override
+    default String replaceTokenText(String input, boolean nested) {
         if (input == null || input.isEmpty()) {
             return input;
         }
@@ -193,31 +193,29 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     }
 
     default String replaceActionAs(MatchResult match) {
-        final Pf2eActivity type;
-        switch (match.group(1).toLowerCase()) {
-            case "1":
-            case "a":
-                type = Pf2eActivity.single;
-                break;
-            case "2":
-            case "d":
-                type = Pf2eActivity.two;
-                break;
-            case "3":
-            case "t":
-                type = Pf2eActivity.three;
-                break;
-            case "f":
-                type = Pf2eActivity.free;
-                break;
-            case "r":
-                type = Pf2eActivity.reaction;
-                break;
-            default:
-                type = Pf2eActivity.varies;
-                break;
-        }
-        return type.linkify(index().rulesVaultRoot());
+        Activity type = switch (match.group(1).toLowerCase()) {
+            case "1", "a" -> Activity.single;
+            case "2", "d" -> Activity.two;
+            case "3", "t" -> Activity.three;
+            case "f" -> Activity.free;
+            case "r" -> Activity.reaction;
+            default -> Activity.varies;
+        };
+        return linkifyActivity(type, index().rulesVaultRoot());
+    }
+
+    /**
+     * Collect and linkify traits from the specified node.
+     *
+     * @return a {@link QuteDataTraits} which may be empty (never null)
+     */
+    default QuteDataTraits getTraits(JsonNode sourceNode) {
+        return Field.traits.getListOfStrings(sourceNode, tui()).stream()
+            .map(s -> QuteDataRef.fromMarkdownLink(linkify(Pf2eIndexType.trait, s)))
+            .collect(Collector.of(QuteDataTraits::new, QuteDataTraits::add, (a, b) -> {
+                a.addAll(b);
+                return b;
+            }));
     }
 
     default String linkifyRuneItem(MatchResult match) {
@@ -361,6 +359,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     default String linkifyTrait(JsonNode traitNode, String linkText) {
         if (traitNode != null) {
             String source = SourceField.source.getTextOrEmpty(traitNode);
+            // Some traits are surrounded in square brackets. Strip this out to avoid messing up link rendering.
+            linkText = linkText.replaceFirst("^\\[(.*)]$", "$1");
 
             return "[%s](%s/%s%s.md \"%s\")".formatted(
                     linkText,

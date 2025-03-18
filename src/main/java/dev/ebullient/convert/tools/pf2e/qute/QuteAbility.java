@@ -29,10 +29,10 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     /** A formatted string which is a link to the base ability that this ability references. Embedded only. */
     public final String reference;
     /**
-     * Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection.
-     * See [traitList](#traitlist) or [bareTraitList](#baretraitlist).
+     * Collection of trait links as {@link QuteDataRef}. Use `{#for}` or `{#each}` to iterate over the collection.
+     * See {@link QuteAbility#getBareTraitList()}.
      */
-    public final Collection<String> traits;
+    public final Collection<QuteDataRef> traits;
     /** {@link QuteDataRange}. The targeting range for this ability. */
     public final QuteDataRange range;
     /** List of formatted strings. Activation components for this ability, e.g. command, envision */
@@ -65,8 +65,8 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     // Internal only.
     private final JsonSource _converter;
 
-    public QuteAbility(Pf2eSources sources, String name, String reference, String text, Tags tags,
-            Collection<String> traits, QuteDataActivity activity, QuteDataRange range,
+    public QuteAbility(Pf2eSources sources, String name, String reference, List<String> text, Tags tags,
+            Collection<QuteDataRef> traits, QuteDataActivity activity, QuteDataRange range,
             List<String> components, String requirements, String prerequisites,
             String cost, String trigger, QuteDataFrequency frequency, String special, String note,
             boolean embedded, JsonSource converter) {
@@ -88,38 +88,29 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
         this._converter = converter;
     }
 
-    /** True if an activity (with text), components, or traits are present. */
-    public boolean getHasActivity() {
-        return activity != null || isPresent(components) || isPresent(traits);
-    }
-
     /**
-     * True if hasActivity is true, hasEffect is true or cost is present.
-     * In other words, this is true if a list of attributes could have been rendered.
+     * True if we have any details other than an activity, an effect, and components. e.g. if we have a cost, range,
+     * requirements, prerequisites, trigger, frequency, or special.
      *
-     * Use this to test for the end of those attributes (add whitespace or a special
-     * character ahead of ability text)
+     * <p>Use this to test for the end of those attributes (e.g. to add whitespace or a special
+     * character ahead of ability text)</p>
      */
     public boolean getHasAttributes() {
-        return getHasActivity() || getHasEffect() || isPresent(cost);
+        return isPresent(range) || isPresent(requirements) || isPresent(prerequisites) || isPresent(cost)
+            || isPresent(trigger) || isPresent(frequency) || isPresent(special) || isPresent(note);
     }
 
     /**
-     * True if the ability is a short, one-line name and description.
+     * False if the ability is a short, one-line name and description.
      * Use this to test to choose between a detailed or simple rendering.
      */
     public boolean getHasDetails() {
-        return getHasAttributes() || isPresent(special) || text.contains("\n") || text.split(" ").length > 5;
+        return getHasAttributes() || text.contains("\n") || text.split(" ").length > 5;
     }
 
     @Deprecated
     public boolean getHasBullets() {
         return getHasAttributes();
-    }
-
-    /** True if frequency, trigger, and requirements are present. In other words, this is true if the ability has an effect. */
-    public boolean getHasEffect() {
-        return isPresent(frequency) || isPresent(trigger) || isPresent(requirements);
     }
 
     /** Return a comma-separated list of de-styled trait links (no title attributes) */
@@ -128,7 +119,7 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
             return "";
         }
         return traits.stream()
-                .map(x -> x.replaceAll(" \".*\"", ""))
+                .map(QuteDataRef::withoutTitle)
                 .collect(Collectors.joining(", "));
     }
 
@@ -143,7 +134,7 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     }
 
     @Override
-    public String render() {
-        return _converter.renderEmbeddedTemplate(this, null);
+    public String render(boolean asYamlStatblock) {
+        return _converter.renderEmbeddedTemplate(this, null, asYamlStatblock);
     }
 }

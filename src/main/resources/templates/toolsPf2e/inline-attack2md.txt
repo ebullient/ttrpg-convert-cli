@@ -1,13 +1,28 @@
-{#let r=resource}
-{#if r.multilineEffect}
+{#with resource}
+{#if asYamlStatblock}
+- name: ___{rangeType}___ {activity.unicodeGlyphOrText} {name}
+  {#if traits}
+  desc: ({traits.formattedWithoutTitles})
+  {/if}
+  bonus: {attackBonus}
+  {#if multilineEffect}
+  damage: >
+    {damage}; {multilineEffect.unfoldNewlines indent "    "}
+  {#else}
+  damage: {damage.quoted}
+  {/if}
+{#else}
+{#if multilineEffect}
 ```ad-inline-attack
-title: {r.rangeType} {r.activity} {r.name.capitalized}{r.bonus.prefixSpace}{r.formattedTraits.prefixSpace}
-{#if r.damage}
-**Damage** {r.damage}  
-{/if}{#if r.multilineEffect}
-**Effect** {r.multilineEffect}  
+title: {rangeType} {activity} {name.capitalized}{bonus.prefixSpace}{#if traits} ({traits}){/if}
+{#if damage}
+**Damage** {damage}  
+{/if}{#if multilineEffect}
+**Effect** {multilineEffect}  
 {/if}
 ```
 {#else}
-- **{r.rangeType}** {r.activity} {r.name}{r.bonus.prefixSpace}{r.formattedTraits.prefixSpace}{#if r.damage}, **Damage** {r.damage}{/if}
+- **{rangeType}** {activity} {name}{bonus.prefixSpace}{#if traits} ({traits}){/if}{#if damage}, **Damage** {damage}{/if}
 {/if}
+{/if}
+{/with}

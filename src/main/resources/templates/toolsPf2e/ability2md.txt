@@ -26,9 +26,8 @@ aliases: ["{resource.name}"]
 - **Requirements**: {resource.requirements}
 {/if}{#if resource.prerequisites}
 - **Prerequisites**: {resource.prerequisites}
-{/if}{#if resource.hasAttributes}
+{/if}{#if resource.activity || resource.hasAttributes}
 
-{/if}{#if resource.hasEffect}
 **Effect** {/if}{resource.text}
 {#if resource.special}
 

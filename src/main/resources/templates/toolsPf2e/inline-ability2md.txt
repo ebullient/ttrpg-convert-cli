@@ -1,36 +1,57 @@
-```ad-embed-ability
-{#if resource.hasDetails }
-title: **{#if resource.reference}{resource.reference}{#else}{resource.name}{/if}** {resource.activity}{resource.components.join(", ").prefixSpace}{#if resource.traits} ({resource.bareTraitList}){/if}
-{#if resource.note}
-> [!pf2-note] 
-> {resource.note}
-{/if}{#if resource.range}
-- **Range**: {resource.range}
-{/if}{#if resource.cost}
-- **Cost**: {resource.cost}
-{/if}{#if resource.frequency}
-- **Frequency**: {resource.frequency}
-{/if}{#if resource.trigger}
-- **Trigger**: {resource.trigger}
-{/if}{#if resource.requirements}
-- **Requirements**: {resource.requirements}
-{/if}{#if resource.prerequisites}
-- **Prerequisites**: {resource.prerequisites}
-{/if}{#if resource.hasAttributes}
-
-{/if}{#if resource.hasEffect}
-**Effect** {/if}{resource.text}  
-{#if resource.special}
-
-**Special**: {resource.special}  
-{/if}{#if resource.source || resource.tags}
-%%
-{#if resource.source}
-Source: {resource.source}*  
+{#with resource}
+{#let componentsTraits = (components.join(", ") + (components && traits ? " " : "") + (traits ? (str:format("(%s)", bareTraitList)) : ""))}
+{#if asYamlStatblock}
+- name: {reference.or(name).quoted}
+{#if hasDetails && hasAttributes}
+  desc: >{#if activity || componentsTraits}
+    {activity.unicodeGlyphOrText ?: ""}{activity && componentsTraits ? " " : ""}{componentsTraits}{#if components && !traits};{/if}{/if}{#if range}
+    **Range** {range};{/if}{#if cost}
+    **Cost** {cost};{/if}{#if frequency}
+    **Frequency** {frequency};{/if}{#if trigger}
+    **Trigger** {trigger};{/if}{#if requirements}
+    **Requirements** {requirements};{/if}{#if prerequisites}
+    **Prerequisites** {prerequisites};{/if}
+    **Effect** {text.unfoldNewlines indent "    "}{#if special}; **Special** {special}{/if}
+{#else if hasDetails}
+  desc: >
+    {activity.unicodeGlyphOrText ?: ""}{activity && componentsTraits ? " " : ""}{#if activity || componentsTraits && text}{componentsTraits}{#if components && !traits};{/if} {/if}{text.unfoldNewlines indent "    "}
+{#else}
+  desc: "{activity.unicodeGlyphOrText ?: ""}{activity && componentsTraits ? " " : ""}{componentsTraits}{#if activity || componentsTraits && text}{componentsTraits}{#if components && !traits};{/if} {/if}{text}"
 {/if}
-{#each resource.tags} #{it} {/each}
+{#else}
+{#if hasDetails}
+title: **{reference ?: name}**{#if activity} {activity}{/if}{componentsTraits.prefixSpace}
+{#if note}
+> [!pf2-note] 
+> {note}
+{/if}{#if range}
+- **Range**: {range}
+{/if}{#if cost}
+- **Cost**: {cost}
+{/if}{#if frequency}
+- **Frequency**: {frequency}
+{/if}{#if trigger}
+- **Trigger**: {trigger}
+{/if}{#if requirements}
+- **Requirements**: {requirements}
+{/if}{#if prerequisites}
+- **Prerequisites**: {prerequisites}
+{/if}{#if hasAttributes}
+
+**Effect** {/if}{text}  
+{#if special}
+
+**Special**: {special}  
+{/if}{#if source || tags}
+%%
+{#if source}
+Source: {source}*  
+{/if}
+{#each tags} #{it} {/each}
 %%{/if}
 {#else}
-title: **{resource.name}** {resource.text}
+title: **{reference ?: name}**{#if activity} {activity}{/if}{componentsTraits.prefixSpace}{#if componentsTraits};{/if} {text}
 {/if}
 ```
+{/if}
+{/with}

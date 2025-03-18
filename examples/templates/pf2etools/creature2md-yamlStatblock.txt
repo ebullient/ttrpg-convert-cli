@@ -1,0 +1,174 @@
+{#with resource}
+---
+obsidianUIMode: preview
+cssclasses: pf2e,pf2e-creature
+statblock: inline
+{#if tags}
+tags:
+{#each tags}
+- {it}
+{/each}
+{/if}
+{#if aliases}
+aliases:
+{#each aliases}
+- {it}
+{/each}
+{/if}
+---
+# {name} *Creature {level}*  
+{traits join " "}
+
+```statblock
+layout: Pathfinder 2e Creature Layout
+source: {sources.primarySource.quoted}
+sourcebook: {source.quoted}
+name: {name.quoted}
+level: Creature {level}
+
+{#let alignment=traits.getFirst("Alignment") rarity=traits.getFirst("Rarity") size=traits.getFirst("Size") genericTraits=traits.genericTraits}
+{#if alignment}
+alignment: {alignment.withoutTitle.quoted}
+{/if}{#if rarity}
+rarity: {rarity.withoutTitle.quoted}
+{/if}{#if size}
+size: {size.withoutTitle.quoted}
+{/if}{#if genericTraits}
+traits:
+  {#each genericTraits}
+  - {it.withoutTitle.quoted}
+  {/each}
+{/if}
+{/let}
+
+{#if perception}
+modifier: {perception}
+{/if}{#if senses}
+senses: {senses.join(", ").quoted}
+{/if}{#if languages}
+languages: {languages.quoted}
+{/if}{#if skills}
+skills:
+  {#for skill in skills.skills}
+  - {skill.name.quoted}: {skill.value}
+    {#each skill.otherBonuses}
+    {it.key.quoted}: {it.value}
+    {/each}
+    {#if skill.notes}
+    note: {skill.formattedNotes}
+    {/if}
+  {/for}
+  {#if skills.notes}
+  - note: {skills.notes.join(", ").quoted}
+  {/if}
+{/if}{#if abilityMods}
+attributes:
+  {#each abilityMods}
+  - {it.key}: {it.value}
+  {/each} 
+{/if}{#if speed}
+speed: {speed.quoted}
+{/if}
+
+{#if defenses}
+{#if defenses.ac}
+ac: {defenses.ac.value}
+{#if defenses.ac.formattedNotes}
+acNote: {defenses.ac.formattedNotes.quoted}
+{/if}
+{/if}
+{#if defenses.savingThrows}
+saves:
+  {#for save in defenses.savingThrows.saves}
+  - {save.name.toLowerCase().quoted}: {save.value}
+    {#each save.otherBonuses}
+    {it.key.quoted}: {it.value}
+    {/each}
+    {#if save.notes}
+    note: {save.formattedNotes}
+    {/if}
+  {/for}
+  {#if defenses.savingThrows.abilities}
+  - note: {defenses.savingThrows.abilities.join(", ").quoted}
+  {/if}
+{/if}
+{#if defenses.hpHardnessBt}
+{#if defenses.hpHardnessBt.hp}
+hp: {defenses.hpHardnessBt.hp.value}
+{/if}
+{#if defenses.hpHardnessBt.hp.formattedNotes || defenses.additionalHp}
+hpNote: "{defenses.hpHardnessBt.hp.formattedNotes}{#if defenses.additionalHp}; {defenses.additionalHp}{/if}"
+{/if}{#if defenses.additionalHardness}
+hardness: "{#if defenses.hpHardnessBt.hardness}{defenses.hpHardnessBt.hardness}; {/if}{defenses.additionalHardness}"
+{#else if defenses.hpHardnessBt.hardness}
+hardness: {defenses.hpHardnessBt.hardness}
+{/if}
+{/if}
+{#if defenses.immunities}
+immunities: "{#each defenses.immunities}{it.withoutTitle}{#if it_hasNext}, {/if}{/each}"
+{/if}{#if defenses.resistances}
+resistances: "{#each defenses.resistances}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
+{/if}{#if defenses.weaknesses}
+weaknesses: "{#each defenses.weaknesses}{it.key} {it.value}{#if it_hasNext}, {/if}{/each}"
+{/if}
+{/if}
+
+{#if items}
+items: {items.join(", ").quoted}
+{/if}
+
+{#for abilitySet in abilities.abilityMap.orEmpty}
+{#if abilitySet.value}
+abilities_{abilitySet.key}:
+  {#each abilitySet.value}
+  {it.renderAsYamlStatblock indent "  "}
+  {/each}
+{/if}
+{/for}
+
+{#if attacks}
+attacks:
+{#each attacks}
+  {it.renderAsYamlStatblock indent "  "}
+{/each}
+{/if}
+
+{#if spellcasting}
+spellcasting:
+{#for spells in spellcasting}
+  - name: {spells.name.quoted}
+    {#if spells.dc}
+    dc: {spells.dc}
+    {/if}{#if spells.attackBonus}
+    bonus: {spells.attackBonus}
+    {/if}{#if spells.focusPoints}
+    fp: {spells.focusPoints}
+    {/if}
+    desc: >
+      {#if spells.notes}{spells.notes join ", "}; {/if}{#if spells.ranks}{spells.ranks join "; "};{/if}
+      {#each spells.constantRanks}
+      **Constant ({it.rank})** {it.spells join ", "}{#if it_hasNext}; {/if}
+      {/each}
+{/for}
+{#for rituals in ritualCasting}
+  - name: {rituals.name.quoted}
+    {#if rituals.dc}
+    dc: {rituals.dc}
+    {/if}
+    desc: >
+      {rituals.ranks.join("; ")}
+{/for}
+{/if}
+```
+^statblock
+
+{#if hasSections && description}
+## Summary
+{/if}{#if description}
+{description}
+{/if}{#if text}
+{text}
+{/if}
+
+*Source: {source}*
+{/with}
