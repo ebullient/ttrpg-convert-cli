@@ -25,16 +25,24 @@ import java.util.stream.Collectors;
  */
 public class StringUtil {
 
+    /** Return the number with prefixed with the appropriate sign (+ or -), or an empty string if null. */
+    public static String formatAsModifier(Integer n) {
+        if (n == null) {
+            return "";
+        }
+        return (n < 0 ? "-" : "+") + Math.abs(n);
+    }
+
     /**
      * Return {@code formatString} formatted with {@code o} as the first parameter.
      * If {@code o} is null, then return an empty string.
      */
-    public static String format(String formatString, Object val) {
-        return val == null || (val instanceof String && ((String) val).isBlank()) ? "" : formatString.formatted(val);
+    public static String formatIfPresent(String formatString, Object val) {
+        return val == null || val.toString().isBlank() ? "" : formatString.formatted(val);
     }
 
-    public static String valueOrDefault(String value, String fallback) {
-        return value == null || value.isEmpty() ? fallback : value;
+    public static String valueOrDefault(Object value, String fallback) {
+        return value == null || value.toString().isEmpty() ? fallback : value.toString();
     }
 
     public static String valueOrDefault(String[] parts, int index, String fallback) {
@@ -80,33 +88,6 @@ public class StringUtil {
      */
     public static String flatJoin(String joiner, Collection<?>... lists) {
         return join(joiner, Arrays.stream(lists).flatMap(Collection::stream).toList());
-    }
-
-    /**
-     * Like {@link #joinWithPrefix(String, String, Collection)} but accept vararg inputs. This is mostly to get around
-     * being unable to pass null values to {@code List.of}.
-     *
-     * @see #joinWithPrefix(String, String, Collection)
-     * @see #join(String, Object, Object...)
-     */
-    public static String joinWithPrefix(String joiner, String prefix, Object o1, Object... rest) {
-        List<Object> args = new ArrayList<>();
-        args.add(o1);
-        args.addAll(Arrays.asList(rest));
-        return joinWithPrefix(joiner, prefix, args);
-    }
-
-    /**
-     * Like {@link #join(String, Collection)} but add a prefix to the resulting string if it's non-empty.
-     *
-     * @see #join(String, Collection)
-     */
-    public static String joinWithPrefix(String joiner, String prefix, Collection<?> list) {
-        String s = join(joiner, list);
-        if (s.isEmpty()) {
-            return "";
-        }
-        return isPresent(prefix) ? prefix + s : s;
     }
 
     /**

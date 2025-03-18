@@ -1,7 +1,7 @@
 package dev.ebullient.convert.tools.pf2e.qute;
 
 import static dev.ebullient.convert.StringUtil.flatJoin;
-import static dev.ebullient.convert.StringUtil.format;
+import static dev.ebullient.convert.StringUtil.formatIfPresent;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.parenthesize;
 import static dev.ebullient.convert.StringUtil.pluralize;
@@ -11,9 +11,7 @@ import static dev.ebullient.convert.StringUtil.toTitleCase;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.JavadocVerbatim;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
@@ -30,8 +28,8 @@ public class QuteCreature extends Pf2eQuteBase {
 
     /** Aliases for this note (optional) */
     public final List<String> aliases;
-    /** Collection of traits (decorated links, optional) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Short creature description (optional) */
     public final String description;
     /** Creature level (number, optional) */
@@ -70,8 +68,8 @@ public class QuteCreature extends Pf2eQuteBase {
     public final List<CreatureRitualCasting> ritualCasting;
 
     public QuteCreature(
-            Pf2eSources sources, String text, Tags tags,
-            Collection<String> traits, List<String> aliases,
+            Pf2eSources sources, List<String> text, Tags tags,
+            Collection<QuteDataRef> traits, List<String> aliases,
             String description, Integer level, Integer perception,
             QuteDataDefenses defenses, CreatureLanguages languages, CreatureSkills skills,
             List<CreatureSense> senses, Map<String, Integer> abilityMods,
@@ -252,8 +250,8 @@ public class QuteCreature extends Pf2eQuteBase {
         @JavadocVerbatim
         public String formattedStats() {
             return join(", ",
-                    format("DC %d", dc),
-                    format("attack %+d", attackBonus),
+                    formatIfPresent("DC %d", dc),
+                    formatIfPresent("attack %+d", attackBonus),
                     focusPoints == null ? "" : focusPoints + " Focus " + pluralize("Point", focusPoints));
         }
     }
@@ -301,9 +299,9 @@ public class QuteCreature extends Pf2eQuteBase {
         @Override
         public String toString() {
             return join(" ",
-                    format("**%s**", rank()),
+                    formatIfPresent("**%s**", rank()),
                     join(", ", spells),
-                    format("(%d slots)", slots));
+                    formatIfPresent("(%d slots)", slots));
         }
     }
 
@@ -315,7 +313,7 @@ public class QuteCreature extends Pf2eQuteBase {
      * ```
      *
      * @param name The name of the spell
-     * @param link A formatted link to the spell's note, or just the spell's name if we couldn't get a link.
+     * @param spellRef A {@link QuteDataRef} to the spell's note, or null if we couldn't find a note
      * @param amount The number of casts available for this spell. A value of 0 represents an at will spell. Use
      *        {@link QuteCreature.CreatureSpellReference#formattedAmount()} to get this as a formatted string.
      * @param notes Any notes associated with this spell, e.g. "at will only"
@@ -323,22 +321,23 @@ public class QuteCreature extends Pf2eQuteBase {
     @TemplateData
     public record CreatureSpellReference(
             String name,
-            String link,
+            QuteDataRef spellRef,
             Integer amount,
-            List<String> notes) {
+            List<String> notes) implements QuteDataGenericStat {
+
+        @Override
+        public Integer value() {
+            return amount;
+        }
 
         /** The number of casts as a formatted string, e.g. "(at will)" or "(×2)". Empty when the amount is 1. */
         public String formattedAmount() {
             return amount == 1 ? "" : parenthesize(amount == 0 ? "at will" : "×" + amount);
         }
 
-        public String formattedNotes() {
-            return notes.stream().map(StringUtil::parenthesize).collect(Collectors.joining(" "));
-        }
-
         @Override
         public String toString() {
-            return join(" ", link, formattedAmount(), formattedNotes());
+            return join(" ", spellRef == null ? name : spellRef, formattedAmount(), formattedNotes());
         }
     }
 }

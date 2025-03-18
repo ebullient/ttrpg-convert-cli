@@ -26,8 +26,8 @@ public class QuteSpell extends Pf2eQuteBase {
     public final String level;
     /** Type: spell, cantrip, or focus */
     public final String spellType;
-    /** Collection of traits (decorated links) */
-    public final Collection<String> traits;
+    /** Collection of traits (collection of {@link QuteDataRef}) */
+    public final Collection<QuteDataRef> traits;
     /** Aliases for this note */
     public final List<String> aliases;
     /**
@@ -71,7 +71,7 @@ public class QuteSpell extends Pf2eQuteBase {
     public final Collection<NamedText> heightened;
 
     public QuteSpell(Pf2eSources sources, List<String> text, Tags tags,
-            String level, String spellType, Collection<String> traits, List<String> aliases,
+            String level, String spellType, Collection<QuteDataRef> traits, List<String> aliases,
             QuteDataDuration castDuration, List<String> components, String cost, String trigger, String requirements,
             QuteSpellTarget targeting, QuteSpellSave save, QuteSpellDuration duration,
             List<String> domains, List<String> traditions, List<String> spellLists,

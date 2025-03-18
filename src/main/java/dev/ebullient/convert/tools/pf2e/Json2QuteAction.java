@@ -19,11 +19,7 @@ public class Json2QuteAction extends Json2QuteBase {
 
     @Override
     protected QuteAction buildQuteResource() {
-        Tags tags = new Tags(sources);
-        List<String> text = new ArrayList<>();
-
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
-        appendToText(text, Pf2eAction.info.getFrom(rootNode), null);
+        entries.addAll(Pf2eAction.info.transformListFrom(rootNode, this));
 
         ActionType actionType = Pf2eAction.actionType.fieldFromTo(rootNode, ActionType.class, tui());
 
@@ -33,12 +29,11 @@ public class Json2QuteAction extends Json2QuteBase {
             actionType.addTags(this, tags);
         }
 
-        return new QuteAction(
-                getSources(), text, tags,
+        return new QuteAction(sources, entries, tags,
                 Pf2eAction.cost.transformTextFrom(rootNode, ", ", this),
                 Pf2eAction.trigger.transformTextFrom(rootNode, ", ", this),
                 Field.alias.replaceTextFromList(rootNode, this),
-                collectTraitsFrom(rootNode, tags),
+                traits,
                 Pf2eAction.prerequisites.transformTextFrom(rootNode, ", ", this),
                 Field.requirements.replaceTextFrom(rootNode, this),
                 Pf2eAction.frequency.getFrequencyFrom(rootNode, this),

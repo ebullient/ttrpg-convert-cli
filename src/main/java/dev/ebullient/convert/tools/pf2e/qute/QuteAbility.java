@@ -29,10 +29,10 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     /** A formatted string which is a link to the base ability that this ability references. Embedded only. */
     public final String reference;
     /**
-     * Collection of trait links. Use `{#for}` or `{#each}` to iterate over the collection.
-     * See [traitList](#traitlist) or [bareTraitList](#baretraitlist).
+     * Collection of trait links as {@link QuteDataRef}. Use `{#for}` or `{#each}` to iterate over the collection.
+     * See {@link QuteAbility#getBareTraitList()}.
      */
-    public final Collection<String> traits;
+    public final Collection<QuteDataRef> traits;
     /** {@link QuteDataRange}. The targeting range for this ability. */
     public final QuteDataRange range;
     /** List of formatted strings. Activation components for this ability, e.g. command, envision */
@@ -65,8 +65,8 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
     // Internal only.
     private final JsonSource _converter;
 
-    public QuteAbility(Pf2eSources sources, String name, String reference, String text, Tags tags,
-            Collection<String> traits, QuteDataActivity activity, QuteDataRange range,
+    public QuteAbility(Pf2eSources sources, String name, String reference, List<String> text, Tags tags,
+            Collection<QuteDataRef> traits, QuteDataActivity activity, QuteDataRange range,
             List<String> components, String requirements, String prerequisites,
             String cost, String trigger, QuteDataFrequency frequency, String special, String note,
             boolean embedded, JsonSource converter) {
@@ -128,7 +128,7 @@ public final class QuteAbility extends Pf2eQuteNote implements QuteUtil.Renderab
             return "";
         }
         return traits.stream()
-                .map(x -> x.replaceAll(" \".*\"", ""))
+                .map(ref -> new QuteDataRef(ref.displayText(), ref.notePath(), null).toString())
                 .collect(Collectors.joining(", "));
     }
 
