@@ -99,16 +99,19 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 case "v" -> list.add("V");
                 case "s" -> list.add("S");
                 case "m" -> {
-                    if (f.getValue().isObject()) {
-                        list.add("M (" + replaceText(SpellFields.text.getTextOrEmpty(f.getValue())) + ")");
-                    } else {
-                        list.add("M (" + replaceText(f.getValue().asText()) + ")");
-                    }
+                    list.add(materialComponents(f.getValue()));
                 }
                 case "r" -> list.add("R"); // Royalty. Acquisitions Incorporated
             }
         }
         return String.join(", ", list);
+    }
+
+    String materialComponents(JsonNode source) {
+        return "M (%s)".formatted(
+                source.isObject()
+                        ? SpellFields.text.getTextOrEmpty(source)
+                        : source.asText());
     }
 
     String spellDuration() {
