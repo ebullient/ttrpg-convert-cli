@@ -111,10 +111,10 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String materialComponents(JsonNode source) {
-        return "M (%s)".formatted(
+        return "M (%s)".formatted(replaceText(
                 source.isObject()
-                        ? SpellFields.text.getTextOrEmpty(source)
-                        : source.asText());
+                    ? SpellFields.text.getTextOrEmpty(source)
+                    : source.asText()));
     }
 
     String spellDuration() {
