@@ -341,13 +341,13 @@ public class Json2QuteItem extends Json2QuteCommon {
         } else if (index.sourceIncluded(ref.get("source").asText())) {
             try {
                 String entriesTemplate = mapper().writeValueAsString(ref.get("entriesTemplate"));
-                if (rootNode.has("detail1")) {
+                if (ItemField.detail1.existsIn(rootNode)) {
                     entriesTemplate = entriesTemplate.replaceAll("\\{\\{item.detail1}}",
-                            rootNode.get("detail1").asText());
+                            ItemField.detail1.getTextOrEmpty(rootNode));
                 }
-                if (rootNode.has("resist")) {
+                if (ItemField.resist.existsIn(rootNode)) {
                     entriesTemplate = entriesTemplate.replaceAll("\\{\\{(getFullImmRes\\s)?item.resist}}",
-                            joinAndReplace(rootNode, "resist"));
+                            joinAndReplace(ItemField.resist.readArrayFrom(rootNode)));
                 }
                 appendToText(text, mapper().readTree(entriesTemplate), "##");
             } catch (JsonProcessingException e) {
@@ -442,6 +442,7 @@ public class Json2QuteItem extends Json2QuteCommon {
         attunement,
         baseItem,
         curse,
+        detail1,
         firearm,
         focus,
         hasFluff,
@@ -456,6 +457,7 @@ public class Json2QuteItem extends Json2QuteCommon {
         rarity,
         reqAttune,
         reqAttuneAlt,
+        resist,
         scfType,
         sentient,
         staff,

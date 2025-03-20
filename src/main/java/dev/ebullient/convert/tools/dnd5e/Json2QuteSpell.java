@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.pluralize;
+import static dev.ebullient.convert.StringUtil.uppercaseFirst;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -151,10 +154,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
                 String amount = SpellFields.amount.getTextOrEmpty(duration);
                 result.append(amount)
                         .append(" ")
-                        .append(SpellFields.type.getTextOrEmpty(duration));
-                if (amount != "1") {
-                    result.append("s");
-                }
+                        .append(pluralize(
+                                SpellFields.type.getTextOrEmpty(duration),
+                                Integer.valueOf(amount)));
             }
             default -> tui().errorf("What is this? %s", element.toPrettyString());
         }
@@ -171,23 +173,18 @@ public class Json2QuteSpell extends Json2QuteCommon {
 
             switch (type) {
                 case "cube", "cone", "emanation", "hemisphere", "line", "radius", "sphere" -> {// Self (xx-foot yy)
-                    if ("feet".equals(distanceType)) {
-                        distanceType = "foot";
-                    }
                     result.append("Self (")
                             .append(amount)
                             .append("-")
-                            .append(distanceType)
+                            .append(pluralize(distanceType, 1))
                             .append(" ")
-                            .append(type.substring(0, 1).toUpperCase())
-                            .append(type.substring(1))
+                            .append(uppercaseFirst(type))
                             .append(")");
                 }
                 case "point" -> {
                     switch (distanceType) {
                         case "self", "sight", "touch", "unlimited" ->
-                            result.append(distanceType.substring(0, 1).toUpperCase())
-                                    .append(distanceType.substring(1));
+                            result.append(uppercaseFirst(distanceType));
                         default -> result.append(amount)
                                 .append(" ")
                                 .append(distanceType);
@@ -207,19 +204,14 @@ public class Json2QuteSpell extends Json2QuteCommon {
         result.append(number).append(" ");
         switch (unit) {
             case "action", "reaction" ->
-                result.append(unit.substring(0, 1).toUpperCase())
-                        .append(unit.substring(1));
+                result.append(uppercaseFirst(unit));
             case "bonus" ->
-                result.append(unit.substring(0, 1).toUpperCase())
-                        .append(unit.substring(1))
+                result.append(uppercaseFirst(unit))
                         .append(" Action");
             default ->
                 result.append(unit);
         }
-        if (number != "1") {
-            result.append("s");
-        }
-        return result.toString();
+        return pluralize(result.toString(), Integer.valueOf(number));
     }
 
     enum SpellFields implements JsonNodeReader {
