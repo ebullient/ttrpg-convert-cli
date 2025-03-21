@@ -129,16 +129,19 @@ public class SpellEntry {
                 case "v" -> list.add("V");
                 case "s" -> list.add("S");
                 case "m" -> {
-                    if (f.getValue().isObject()) {
-                        list.add(SpellIndexFields.text.replaceTextFrom(f.getValue(), converter));
-                    } else {
-                        list.add(converter.replaceText(f.getValue()));
-                    }
+                    list.add(materialComponents(f.getValue(), converter));
                 }
                 case "r" -> list.add("R"); // Royalty. Acquisitions Incorporated
             }
         }
         return list;
+    }
+
+    String materialComponents(JsonNode source, JsonSource converter) {
+        return "M (%s)".formatted(
+                source.isObject()
+                        ? SpellIndexFields.text.replaceTextFrom(source, converter)
+                        : converter.replaceText(source));
     }
 
     private List<String> spellAttack(JsonNode spellNode) {

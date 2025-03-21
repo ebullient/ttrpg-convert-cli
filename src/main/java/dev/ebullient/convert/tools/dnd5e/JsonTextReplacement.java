@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
@@ -326,7 +327,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 } else if (match.group(1).contains("p")) {
                     method = "Power ";
                 }
-                return "*%s%sAttack:*".formatted(String.join("or ", type), method);
+
+                if (method.isBlank()) {
+                    return String.format("*%sAttack Roll:*", joinConjunct(", ", "or ", type));
+                } else {
+                    return String.format("*%s%sAttack:*", joinConjunct(", ", "or ", type), method);
+                }
             });
 
             try {
