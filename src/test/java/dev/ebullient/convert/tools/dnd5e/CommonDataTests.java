@@ -347,7 +347,11 @@ public class CommonDataTests {
                 }
 
                 try {
-                    Tui.plainYaml().load(String.join("\n", frontmatter));
+                    String yamlContent = String.join("\n", frontmatter);
+                    Tui.quotedYaml().load(yamlContent);
+                    if (yamlContent.contains("Allip") && yamlContent.matches("\"Allip \\(.*?\\)\"")) {
+                        errors.add(String.format("resource.5eInitiativeYamlNoSource contains source with the name", p));
+                    }
                 } catch (Exception e) {
                     errors.add(String.format("File %s contains invalid yaml: %s", p, e));
                 }
@@ -404,7 +408,11 @@ public class CommonDataTests {
                 }
 
                 try {
-                    Tui.quotedYaml().load(String.join("\n", statblock));
+                    String yamlContent = String.join("\n", statblock);
+                    Tui.quotedYaml().load(yamlContent);
+                    if (yamlContent.contains("Allip") && yamlContent.contains("\"Allip\"")) {
+                        errors.add(String.format("resource.5eStatblockYaml does not contain source with the name", p));
+                    }
                 } catch (Exception e) {
                     errors.add(String.format("File %s contains invalid yaml: %s", p, e));
                 }

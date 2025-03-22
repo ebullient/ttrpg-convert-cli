@@ -233,10 +233,26 @@ public class QuteMonster extends Tools5eQuteBase {
     /**
      * A minimal YAML snippet containing monster attributes required by the
      * Initiative Tracker plugin. Use this in frontmatter.
+     *
+     * The source book will not be included in the monster name.
+     */
+    public String get5eInitiativeYamlNoSource() {
+        return get5eInitiativeYaml(false);
+    }
+
+    /**
+     * A minimal YAML snippet containing monster attributes required by the
+     * Initiative Tracker plugin. Use this in frontmatter.
+     *
+     * The source book will be included in the name if it isn't the default monster source ("MM").
      */
     public String get5eInitiativeYaml() {
+        return get5eInitiativeYaml(true);
+    }
+
+    private String get5eInitiativeYaml(boolean withSource) {
         Map<String, Object> map = new LinkedHashMap<>();
-        addUnlessEmpty(map, "name", name + yamlMonsterName());
+        addUnlessEmpty(map, "name", name + yamlMonsterName(withSource));
         addIntegerUnlessEmpty(map, "ac", acHp.ac);
         addIntegerUnlessEmpty(map, "hp", acHp.hp);
         addUnlessEmpty(map, "hit_dice", acHp.hitDice);
@@ -250,10 +266,29 @@ public class QuteMonster extends Tools5eQuteBase {
      * Complete monster attributes in the format required by the Fantasy statblock plugin.
      * Uses double-quoted syntax to deal with a variety of characters occuring in
      * trait descriptions. Usable in frontmatter or Fantasy Statblock code blocks.
+     *
+     * The source book will not be included in the monster name.
+     */
+    public String get5eStatblockYamlNoSource() {
+        return render5eStatblockYaml(false);
+    }
+
+    /**
+     * Complete monster attributes in the format required by the Fantasy statblock plugin.
+     * Uses double-quoted syntax to deal with a variety of characters occuring in
+     * trait descriptions. Usable in frontmatter or Fantasy Statblock code blocks.
+     *
+     * The source book will be included in the name if it isn't the default monster source ("MM").
      */
     public String get5eStatblockYaml() {
+        return render5eStatblockYaml(true);
+    }
+
+    private String render5eStatblockYaml(boolean withSource) {
+        // Map our types to the fields and values that Fantasy Statblock expects
+
         Map<String, Object> map = new LinkedHashMap<>();
-        addUnlessEmpty(map, "name", name + yamlMonsterName());
+        addUnlessEmpty(map, "name", name + yamlMonsterName(withSource));
         addUnlessEmpty(map, "size", size);
         addUnlessEmpty(map, "type", type);
         addUnlessEmpty(map, "subtype", subtype);
@@ -316,13 +351,14 @@ public class QuteMonster extends Tools5eQuteBase {
                 .replaceAll("\\*([^*]+)\\*", "$1"); // bold em
     }
 
-    public String yamlMonsterName() {
-        String source = getBooks().get(0);
-        if (Tools5eIndexType.monster.defaultSourceString().equalsIgnoreCase(source)) {
-            return "";
-        } else {
-            return " (" + source + ")";
+    private String yamlMonsterName(boolean withSource) {
+        if (withSource) {
+            String source = getBooks().get(0);
+            if (!Tools5eIndexType.monster.defaultSourceString().equalsIgnoreCase(source)) {
+                return " (" + source + ")";
+            }
         }
+        return "";
     }
 
     Collection<NamedText> spellcastingToTraits() {

@@ -9,7 +9,7 @@ tags:
 {/if}
 statblock: true
 statblock-link: "#^statblock"
-{resource.5eInitiativeYaml}
+{resource.5eInitiativeYamlNoSource}
 aliases: ["{resource.name}"]
 ---
 # {resource.name}
