@@ -182,8 +182,8 @@ public class FilterNoneEditionTest {
             commonTests.assert_MISSING("monster|alkilith|mpmm");
             commonTests.assert_MISSING("monster|alkilith|mtf");
             commonTests.assert_MISSING("monster|animated object (huge)|phb");
-            commonTests.assert_Present("monster|ape|mm");
-            commonTests.assert_MISSING("monster|ape|xmm");
+            commonTests.assert_MISSING("monster|ape|mm");
+            commonTests.assert_Present("monster|ape|xmm");
             commonTests.assert_MISSING("monster|ash zombie|lmop");
             commonTests.assert_MISSING("monster|ash zombie|pabtso");
             commonTests.assert_Present("monster|awakened shrub|mm");
@@ -192,8 +192,8 @@ public class FilterNoneEditionTest {
             commonTests.assert_MISSING("monster|beast of the land|xphb");
             commonTests.assert_MISSING("monster|bestial spirit (air)|tce");
             commonTests.assert_MISSING("monster|bestial spirit (air)|xphb");
-            commonTests.assert_Present("monster|cat|mm");
-            commonTests.assert_MISSING("monster|cat|xmm");
+            commonTests.assert_MISSING("monster|cat|mm");
+            commonTests.assert_Present("monster|cat|xmm");
             commonTests.assert_MISSING("monster|derro savant|mpmm");
             commonTests.assert_MISSING("monster|derro savant|mtf");
             commonTests.assert_MISSING("monster|derro savant|oota");
