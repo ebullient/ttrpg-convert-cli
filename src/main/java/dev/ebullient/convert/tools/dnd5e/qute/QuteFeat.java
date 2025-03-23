@@ -24,8 +24,8 @@ public class QuteFeat extends Tools5eQuteBase {
     public final String ability;
 
     public QuteFeat(Tools5eSources sources, String name, String source,
-            String prerequisite, String level,
-            List<ImageRef> images, String text, Tags tags, String ability) {
+            String prerequisite, String level, String ability,
+            List<ImageRef> images, String text, Tags tags) {
         super(sources, name, source, images, text, tags);
         withTemplate("feat2md.txt"); // Feat and OptionalFeature
         this.level = level;

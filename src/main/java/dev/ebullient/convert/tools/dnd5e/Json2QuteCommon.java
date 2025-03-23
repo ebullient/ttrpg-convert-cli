@@ -31,6 +31,7 @@ import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
+import dev.ebullient.convert.tools.dnd5e.SkillOrAbility.SkillOrAbilityEnum;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist;
@@ -1100,26 +1101,50 @@ public class Json2QuteCommon implements JsonSource {
         return PrereqFields.unknown;
     }
 
-    enum AbilityScoreIncreaseFields implements JsonNodeReader {
-        str,
-        dex,
-        con,
-        intel,
-        wis,
-        cha,
-        choose,
-        unknown // catcher for unknown attributes (see #fromString())
-    }
-
     static AbilityScoreIncreaseFields abilityScoreIncreaseFieldFromString(String name) {
         for (AbilityScoreIncreaseFields field : AbilityScoreIncreaseFields.values()) {
-            if (field.name().equalsIgnoreCase(name))
+            if (field.name().equalsIgnoreCase(name) || field.nodeName().equalsIgnoreCase(name)) {
                 return field;
-
-            if (name == "int")
-                return AbilityScoreIncreaseFields.intel;
+            }
         }
 
         return AbilityScoreIncreaseFields.unknown;
+    }
+
+    enum AbilityScoreIncreaseFields implements JsonNodeReader {
+        str(SkillOrAbilityEnum.STR),
+        dex(SkillOrAbilityEnum.DEX),
+        con(SkillOrAbilityEnum.CON),
+        intel(SkillOrAbilityEnum.INT, "int"),
+        wis(SkillOrAbilityEnum.WIS),
+        cha(SkillOrAbilityEnum.CHA),
+        choose,
+        unknown // catcher for unknown attributes (see #fromString())
+        ;
+
+        private final SkillOrAbilityEnum ability;
+        private final String altName;
+
+        AbilityScoreIncreaseFields() {
+            this(null, null);
+        }
+
+        AbilityScoreIncreaseFields(SkillOrAbilityEnum ability) {
+            this(ability, null);
+        }
+
+        AbilityScoreIncreaseFields(SkillOrAbilityEnum ability, String altName) {
+            this.ability = ability;
+            this.altName = altName;
+        }
+
+        @Override
+        public String nodeName() {
+            return altName == null ? name() : altName;
+        }
+
+        public String longName() {
+            return ability == null ? nodeName() : ability.value();
+        }
     }
 }

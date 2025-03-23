@@ -32,9 +32,9 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
                 getSourceText(sources),
                 listPrerequisites(rootNode),
                 null,
+                null,
                 images,
                 String.join("\n", text),
-                tags,
-                null);
+                tags);
     }
 }

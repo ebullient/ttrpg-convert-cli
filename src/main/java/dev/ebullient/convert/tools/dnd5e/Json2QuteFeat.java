@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
@@ -37,17 +36,10 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 getSourceText(sources),
                 listPrerequisites(rootNode),
                 null, // Level coming someday..
+                getAbilityScoreIncreases(abilityNode),
                 images,
                 String.join("\n", text),
-                tags,
-                getAbilityScoreIncreases(abilityNode));
-    }
-
-    enum FeatFields implements JsonNodeReader {
-        ability,
-        additionalSpells,
-        category,
-        ;
+                tags);
     }
 
     public String getAbilityScoreIncreases(JsonNode abilityNode) {
@@ -58,7 +50,8 @@ public class Json2QuteFeat extends Json2QuteCommon {
             Integer max = Optional.ofNullable(scoreIncrease.findValue("max"))
                     .map(value -> value.asInt())
                     .orElse(null);
-            Boolean hasMaxValue = max != null;
+
+            Integer maximumScore = max != null ? max : 20;
 
             List<String> keys = streamOfFieldNames(scoreIncrease).toList();
 
@@ -68,39 +61,15 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
             for (AbilityScoreIncreaseFields field : fields) {
                 switch (field) {
-                    case str -> abilityScoreIncreases.add(String.format(
-                            "Increase %s by %s.",
-                            field,
-                            AbilityScoreIncreaseFields.str.getFrom(scoreIncrease)));
-                    case dex -> abilityScoreIncreases.add(String.format(
-                            "Increase %s by %s.",
-                            field,
-                            AbilityScoreIncreaseFields.dex.getFrom(scoreIncrease)));
-
-                    case con -> abilityScoreIncreases.add(String.format(
-                            "Increase %s by %s.",
-                            field,
-                            AbilityScoreIncreaseFields.con.getFrom(scoreIncrease)));
-
-                    case intel -> abilityScoreIncreases.add(String.format(
-                            "Increase %s by %s.",
-                            "int",
-                            scoreIncrease.get("int")));
-
-                    case wis -> abilityScoreIncreases.add(String.format(
-                            "Increase %s by %s.",
-                            field,
-                            AbilityScoreIncreaseFields.wis.getFrom(scoreIncrease)));
-
-                    case cha -> abilityScoreIncreases.add(String.format(
-                            "Increase %s by %s.",
-                            field,
-                            AbilityScoreIncreaseFields.cha.getFrom(scoreIncrease)));
-
+                    case str, dex, con, intel, wis, cha -> {
+                        String increase = field.getTextOrEmpty(scoreIncrease);
+                        abilityScoreIncreases.add("Increase your %s by %s, to a maximum of %s."
+                                .formatted(field.longName(), increase, maximumScore));
+                    }
                     case choose -> abilityScoreIncreases
                             .add(getAbilityScoreIncreaseWithOptions(
                                     AbilityScoreIncreaseFields.choose.getFrom(scoreIncrease),
-                                    hasMaxValue ? max : null));
+                                    maximumScore));
                     default -> {
                     }
                 }
@@ -113,13 +82,12 @@ public class Json2QuteFeat extends Json2QuteCommon {
         return String.join("\n- ", abilityScoreIncreases);
     }
 
-    public String getAbilityScoreIncreaseWithOptions(JsonNode chooseNode, Integer max) {
+    public String getAbilityScoreIncreaseWithOptions(JsonNode chooseNode, Integer maximumScore) {
         if (chooseNode == null) {
             return null;
         }
 
         JsonNode entry = chooseNode.findValue("entry");
-
         if (entry != null) {
             return entry.asText();
         }
@@ -128,17 +96,22 @@ public class Json2QuteFeat extends Json2QuteCommon {
         Integer amount = Optional.ofNullable(
                 chooseNode.get("amount")).map(x -> x.asInt()).orElse(1);
 
-        Integer maximumScore = max != null ? max : 20;
-
         if (options.size() == 6) {
             return String.format("Increase one ability score of your choice by %s, to a maximum of %s.",
                     amount,
                     maximumScore);
         }
 
-        return String.format("Increase your %s by %d, to a maximum of %s.",
+        return String.format("Increase your %s by %s, to a maximum of %s.",
                 joinConjunct(", ", " or ", options),
                 amount,
                 maximumScore);
+    }
+
+    enum FeatFields implements JsonNodeReader {
+        ability,
+        additionalSpells,
+        category,
+        ;
     }
 }
