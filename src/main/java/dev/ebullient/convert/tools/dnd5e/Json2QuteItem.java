@@ -74,13 +74,30 @@ public class Json2QuteItem extends Json2QuteCommon {
 
             String damage = null;
             String damage2h = null;
-            if (variantNode.has("dmgType")) {
-                String dmg1 = getTextOrDefault(variantNode, "dmg1", null);
-                String dmg2 = getTextOrDefault(variantNode, "dmg2", null);
-                String dmgType = getTextOrDefault(variantNode, "dmgType", null);
-                damage = dmg1 + " " + dmgType;
+            String typeText = null;
+            if (ItemField.dmgType.existsIn(variantNode)) {
+                String dmg1 = ItemField.dmg1.getTextOrDefault(variantNode, null);
+                String dmg2 = ItemField.dmg2.getTextOrDefault(variantNode, null);
+                String dmgType = ItemField.dmgType.getTextOrDefault(variantNode, null);
+                switch (dmgType) {
+                    case "B" -> typeText = "Bludgeoning";
+                    case "P" -> typeText = "Piercing";
+                    case "S" -> typeText = "Slashing";
+                    case "A" -> typeText = "Acid";
+                    case "C" -> typeText = "Cold";
+                    case "F" -> typeText = "Fire";
+                    case "I" -> typeText = "Poison";
+                    case "L" -> typeText = "Lightning";
+                    case "N" -> typeText = "Necrotic";
+                    case "O" -> typeText = "Force";
+                    case "R" -> typeText = "Radiant";
+                    case "T" -> typeText = "Thunder";
+                    case "Y" -> typeText = "Psychic";
+                    default -> typeText = null;
+                }
+                damage = dmg1 + " " + typeText;
                 if (dmg2 != null && !dmg2.isBlank()) {
-                    damage2h = dmg2 + " " + dmgType;
+                    damage2h = dmg2 + " " + typeText;
                 }
             }
 
@@ -443,6 +460,9 @@ public class Json2QuteItem extends Json2QuteCommon {
         baseItem,
         curse,
         detail1,
+        dmg1,
+        dmg2,
+        dmgType,
         firearm,
         focus,
         hasFluff,
