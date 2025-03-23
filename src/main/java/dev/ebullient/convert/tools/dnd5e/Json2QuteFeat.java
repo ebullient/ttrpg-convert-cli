@@ -25,12 +25,13 @@ public class Json2QuteFeat extends Json2QuteCommon {
         List<String> text = getFluff(Tools5eIndexType.featFluff, "##", images);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
-        // TODO: update w/ category, ability, additionalSpells
+        // TODO: update w/ category, additionalSpells
         return new QuteFeat(sources,
                 type.decoratedName(rootNode),
                 getSourceText(sources),
                 listPrerequisites(rootNode),
                 null, // Level coming someday..
+                SkillOrAbility.getAbilityScoreIncreases(FeatFields.ability.getFrom(rootNode)),
                 images,
                 String.join("\n", text),
                 tags);

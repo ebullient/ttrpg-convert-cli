@@ -322,9 +322,9 @@ public class Json2QuteClass extends Json2QuteCommon {
             JsonNode reqNode = ClassFields.requirements.getFrom(multiclassing);
             JsonNode orNode = ClassFields.or.getFrom(reqNode);
             if (orNode == null) {
-                reqContents.add("**Ability Score Minimum:**" + abilityRequirements(reqNode, ", "));
+                reqContents.add("**Ability Score Minimum:** " + abilityRequirements(reqNode, ", "));
             } else {
-                reqContents.add("**Ability Score Minimum:**" + streamOf(orNode)
+                reqContents.add("**Ability Score Minimum:** " + streamOf(orNode)
                         .map(n -> abilityRequirements(n, " or "))
                         .collect(Collectors.joining("; ")));
             }

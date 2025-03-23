@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +17,7 @@ import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteFeat.FeatFields;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteRace;
 
 public class Json2QuteRace extends Json2QuteCommon {
@@ -123,42 +126,10 @@ public class Json2QuteRace extends Json2QuteCommon {
             return "Choose any +2, choose any other +1";
         }
 
-        JsonNode ability = rootNode.withArray("ability");
-        if (ability.isEmpty()) {
-            return "None";
-        }
-
-        List<String> list = new ArrayList<>();
-        ability.elements().forEachRemaining(skillBonus -> {
-            List<String> inner = new ArrayList<>();
-            skillBonus.fields().forEachRemaining(f -> {
-                if (f.getKey().equals("choose")) {
-                    inner.add(skillChoices(f.getValue()));
-                } else {
-                    inner.add(String.format("%s %s",
-                            SkillOrAbility.format(f.getKey(), index(), getSources()),
-                            decoratedAmount(f.getValue().asInt())));
-                }
-            });
-            list.add(String.join(", ", inner));
-        });
-        return String.join("; or ", list);
-    }
-
-    String skillChoices(JsonNode skillBonus) {
-        int count = skillBonus.has("count")
-                ? skillBonus.get("count").asInt()
-                : 1;
-        int amount = skillBonus.has("amount")
-                ? skillBonus.get("amount").asInt()
-                : 1;
-        ArrayNode from = skillBonus.withArray("from");
-        List<String> choices = new ArrayList<>();
-        from.forEach(s -> choices.add(SkillOrAbility.format(s.asText(), index(), getSources())));
-        return String.format("Apply %s to %s of %s",
-                decoratedAmount(amount),
-                count == 1 ? "one" : count + " (distinct)",
-                String.join(", ", choices));
+        String ability = SkillOrAbility.getAbilityScore(FeatFields.ability.getFrom(rootNode));
+        return isPresent(ability)
+                ? ability
+                : "None";
     }
 
     String decoratedAmount(int amount) {

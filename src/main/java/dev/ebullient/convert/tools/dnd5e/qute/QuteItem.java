@@ -114,7 +114,7 @@ public class QuteItem extends Tools5eQuteBase {
             return "";
         }
         return variants.stream()
-                .map(x -> String.format("- \"%s\"", x.name))
+                .map(x -> String.format("- \"%s\"", x.name.replace("\"", "\\\"")))
                 .collect(Collectors.joining("\n"));
     }
 

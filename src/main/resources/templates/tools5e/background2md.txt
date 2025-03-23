@@ -11,9 +11,12 @@ aliases: ["{resource.name}"]
 ---
 # {resource.name}
 *Source: {resource.source}*  
+{#if resource.ability}
 
-{#if resource.prerequisite}
+**Ability Score Increase**: {resource.ability}
+{/if}{#if resource.prerequisite}
+
 ***Prerequisites*** {resource.prerequisite}
-
 {/if}
+
 {resource.text}
