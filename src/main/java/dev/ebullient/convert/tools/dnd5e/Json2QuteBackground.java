@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteFeat.FeatFields;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteBackground;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -56,6 +57,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
                 backgroundName,
                 getSourceText(sources),
                 listPrerequisites(rootNode),
+                SkillOrAbility.getAbilityScoreIncreases(FeatFields.ability.getFrom(rootNode)),
                 images,
                 String.join("\n", text),
                 tags);

@@ -188,6 +188,14 @@ public class StringUtil {
         return s != null && !s.isBlank();
     }
 
+    public static String asModifier(double value) {
+        return (value >= 0 ? "+" : "") + value;
+    }
+
+    public static String asModifier(int value) {
+        return (value >= 0 ? "+" : "") + value;
+    }
+
     /**
      * Return the given string pluralized or singularized based on the input number. Use {@code assumeSingular} to
      * correctly format non-plural inputs which end in 's' (e.g. "walrus").
