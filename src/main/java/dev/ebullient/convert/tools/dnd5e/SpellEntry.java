@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
+import static dev.ebullient.convert.StringUtil.join;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -183,7 +184,11 @@ public class SpellEntry {
         Tools5eSources sources = Tools5eSources.findSources(spellNode);
         String name = Tools5eIndexType.spell.decoratedName(spellNode);
         String resource = Tools5eQuteBase.fixFileName(name, sources);
-        return "[%s](%s \"%s\")".formatted(name, resource, sources.primarySource());
+        return "[%s](%s%s/%s.md \"%s\")".formatted(name,
+                Tools5eIndex.getInstance().compendiumVaultRoot(),
+                Tools5eIndexType.spell.getRelativePath(),
+                resource,
+                sources.primarySource());
     }
 
     @Override
@@ -314,21 +319,33 @@ public class SpellEntry {
         }
 
         public String linkifyReference() {
+            List<String> linkSources = new ArrayList<>();
             Tools5eSources sources = Tools5eSources.findSources(refererNode);
             Tools5eIndex index = Tools5eIndex.getInstance();
             String name = refererType.decoratedName(refererNode);
             String resource = Tools5eQuteBase.getSpellList(name, sources);
+
             if (refererType == Tools5eIndexType.subclass) {
                 String classKey = Tools5eIndexType.classtype.fromChildKey(refererKey);
                 JsonNode classNode = index.getOriginNoFallback(classKey);
                 String className = Tools5eIndexType.classtype.decoratedName(classNode);
                 name = "%s (%s)".formatted(className, name);
+                linkSources.add(sourceString(refererType, sources.primarySource()));
+                linkSources.add(sourceString(Tools5eIndexType.classtype, SourceField.source.getTextOrEmpty(classNode)));
             }
-            Tools5eIndexType.spellIndex.defaultSourceString();
-            return "[%s](%s%s/%s.md)".formatted(name,
+            linkSources.removeIf(String::isEmpty);
+            return "[%s](%s%s/%s.md%s)".formatted(name,
                     Tools5eIndex.getInstance().compendiumVaultRoot(),
                     Tools5eIndexType.spellIndex.getRelativePath(),
-                    resource);
+                    resource,
+                    linkSources.isEmpty() ? "" : " \"%s\"".formatted(join(";", linkSources)));
+        }
+
+        private String sourceString(Tools5eIndexType type, String value) {
+            if (!isPresent(value) || type.defaultSourceString().equals(value)) {
+                return "";
+            }
+            return type.templateName() + "=" + value;
         }
 
         public String describe() {

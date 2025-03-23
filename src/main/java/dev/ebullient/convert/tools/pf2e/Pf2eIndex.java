@@ -230,7 +230,7 @@ public class Pf2eIndex implements ToolsIndex, JsonSource {
     private void createTraitReference(String key, JsonNode node, Pf2eSources sources) {
         // Precreate category mapping for traits
         String name = SourceField.name.getTextOrEmpty(node);
-        String traitLink = linkifyTrait(node, name);
+        String traitLink = linkifyTrait(node, name, name);
 
         Field.categories.getListOfStrings(node, tui()).stream()
                 .filter(c -> !c.equalsIgnoreCase("_alignAbv"))

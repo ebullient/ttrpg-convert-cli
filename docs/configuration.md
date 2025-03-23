@@ -371,15 +371,22 @@ Content is often reprinted or updated in later sources or editions. This setting
 This setting has 3 possible values:
 
 - **`newest`** (default): Only includes notes for the most recent version of reprinted content.
-- **`edition`**: Focuses on consolidating content for compatible editions (especially for 5e rules).
-Example: Combines 2014 and 2024 item updates, while preserving edition-specific class and subclass definitions.
+- **`edition`**: Focuses on preserving content across incompatible editions (especially for 5e rules).
+
+    Example: The edition check will preserve 2014 edition-specific class and subclass definitions. Other resources (that are not different across editions) will follow the reprints to include new content.
+
 - **`all`**: Includes notes for all reprinted versions from enabled sources
 
-Troubleshooting:
+In most cases, you will get the most recent version of the resource that is included, as most resources do not have substantial changes across editions.
 
-- If the behavior isn’t what you expect, run with the --log option and check the log file.
+For example, `trap|pits|dmg` is reprinted as `trap|hidden pit|xdmg`. If both versions are included by your configuration, you will only get a note for the `XDMG` version unless `reprintBehavior` is set to `all` or you have an explicit include rule that preserves the `DMG` version (in which case, you'll get both).
+
+### Troubleshooting reprint behavior
+
+If the behavior isn’t what you expect, run with the --log option and check the log file.
 The log will show whether a specific key was kept or dropped and explain why.
-- To ensure a specific resource is included, add its key to the [`include` filter](#including-specific-content-with-include) instead of relying on reprint behavior.
+
+To ensure a specific resource is included, add its key to the [`include` filter](#including-specific-content-with-include) instead of relying on reprint behavior.
 
 ## Use the dice roller plugin
 

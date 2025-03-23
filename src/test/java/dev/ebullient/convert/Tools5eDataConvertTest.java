@@ -144,7 +144,6 @@ public class Tools5eDataConvertTest {
             LaunchResult result = launcher.launch("--log", "--index",
                     "-o", testOutput.toString(),
                     "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-2024-srd.yaml").toString(),
-                    TestUtils.TEST_RESOURCES.resolve("5e/sources-subset.json").toString(),
                     TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
 

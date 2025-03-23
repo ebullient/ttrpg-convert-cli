@@ -711,6 +711,9 @@ configPf2e:
     HPD:
       name: "Hero Point Deck"
       date: "2021-11-10"
+    HotW:
+      name: "Howl of the Wild"
+      date: "2024-05-22"
     HStR:
       name: "Head-Shot the Rot"
       date: "2021-10-21"
@@ -789,6 +792,9 @@ configPf2e:
     PC1:
       name: "Player Core"
       date: "2023-11-15"
+    PC2:
+      name: "Player Core 2"
+      date: "2024-08-01"
     PFUM:
       name: "PATHFINDER: FUMBUS!"
       date: "2021-11-11"
@@ -864,6 +870,9 @@ configPf2e:
     SoT6:
       name: "Strength of Thousands #6: Shadows of the Ancients"
       date: "2021-07-26"
+    SW0:
+      name: "Spore War Player's Guide"
+      date: "2024-12-18"
     TEC:
       name: "The Enmity Cycle"
       date: "2023-05-24"

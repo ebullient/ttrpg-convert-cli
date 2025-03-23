@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -46,11 +47,24 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return instance;
     }
 
-    final CompendiumConfig config;
+    public static boolean isSrdBasicFreeOnly() {
+        if (instance == null || !instance.prepared.get()) {
+            throw new IllegalStateException("Programmer error: Called isSrdBasicFreeOnly while indexing");
+        }
+
+        if (instance.isSrdBasicFreeOnly == null) {
+            CompendiumConfig config = TtrpgConfig.getConfig();
+            instance.isSrdBasicFreeOnly = config.noSources()
+                    || config.onlySources(List.of("srd", "basicrules", "srd52", "freerules2024"));
+        }
+        return instance.isSrdBasicFreeOnly;
+    }
+
+    private Boolean isSrdBasicFreeOnly;
+    protected final AtomicBoolean prepared = new AtomicBoolean(false);
 
     // Initialization
     private final Map<String, JsonNode> nodeIndex = new TreeMap<>(); // --index
-    private Map<String, JsonNode> filteredIndex = null;
 
     private final Map<String, Set<JsonNode>> subraceIndex = new HashMap<>(); // --index
     private final Map<SourceAndPage, List<JsonNode>> tableIndex = new HashMap<>();
@@ -66,12 +80,15 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     private final Set<String> srdKeys = new HashSet<>();
 
+    final CompendiumConfig config;
     final Tools5eJsonSourceCopier copier = new Tools5eJsonSourceCopier(this);
     final OptionalFeatureIndex optFeatureIndex = new OptionalFeatureIndex(this);
     final HomebrewIndex homebrewIndex = new HomebrewIndex(this);
     final SpellIndex spellIndex = new SpellIndex(this);
 
-    // index state
+    private Map<String, JsonNode> filteredIndex = null;
+
+    // transitory index state
     volatile HomebrewMetaTypes homebrew = null;
 
     public Tools5eIndex(CompendiumConfig config) {
@@ -291,6 +308,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return;
         }
 
+        // we're finished with discovery of official/homebrew sources
+        prepared.set(true);
+
         tui().progressf("Adding default aliases");
 
         // Add missing/frequently-used aliases
@@ -298,8 +318,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         TtrpgConfig.addReferenceEntries((n) -> addToIndex(Tools5eIndexType.reference, n));
 
         // Properly import homebrew sources
-        tui().progressf("Importing homebrew sources");
+        tui().infof(Msg.BREW, "Importing homebrew sources");
         homebrewIndex.importBrew(this::importHomebrewTree);
+        tui().infof(Msg.BREW, "Finished with homebrew sources");
 
         tui().debugf("Preparing index using configuration:\n%s", Tui.jsonStringify(config));
 
@@ -383,7 +404,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             if (false
                     // Fluff types can continue to live only in the origin/nodeIndex
                     || type.isFluffType()
-                    // Checking for reprints has aliasing knock-ons.
+                    // Checking for reprints / aliasing knock-ons.
                     || isReprinted(key, jsonSource)
                     // While Deities are interesting, their handling is unique and done later
                     || type == Tools5eIndexType.deity
@@ -407,7 +428,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 continue;
             }
             Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
-
             if (type.isDependentType()) {
                 // dependent types: don't keep if parent is excluded/missing
                 if (processDependentType(key)) {
@@ -448,6 +468,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // Remove unused optional features from the optional feature index
         optFeatureIndex.removeUnusedOptionalFeatures(
                 (k) -> filteredIndex.containsKey(k),
+                (k) -> logThis.accept(Msg.FEATURETYPE, " ----  " + k),
                 (k) -> {
                     Tools5eSources sources = Tools5eSources.findSources(k);
                     if (sources.filterRuleApplied()) {
@@ -524,6 +545,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (type == Tools5eIndexType.magicvariant) {
             return MagicVariant.findSpecificVariants(this, type, key, jsonSource, copier, baseItems);
         } else if (type == Tools5eIndexType.monster) {
+            // monster variants will always replace the original
+            nodeIndex.remove(key);
             return Json2QuteMonster.findMonsterVariants(this, type, key, jsonSource);
         }
         return List.of(jsonSource);
@@ -1059,14 +1082,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // I have some custom content for types/property/mastery that
         // should be included, but only if some combination of
         // basic/free rules, srd, phb or dmg is included
-        return config.noSources()
-                || config.sourcesIncluded(List.of(
-                        "srd", "basicRules", "phb", "dmg",
-                        "srd52", "freerules2024", "xphb", "xdmg"));
-    }
-
-    public boolean srdOnly() {
-        return config.noSources();
+        return Tools5eIndex.isSrdBasicFreeOnly()
+                || config.sourcesIncluded(List.of("phb", "dmg", "xphb", "xdmg"));
     }
 
     public boolean sourceIncluded(String source) {

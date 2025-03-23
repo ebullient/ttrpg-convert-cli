@@ -16,7 +16,6 @@ import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
-import dev.ebullient.convert.tools.JsonNodeReader.FieldValue;
 import dev.ebullient.convert.tools.JsonTextConverter;
 
 public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
@@ -323,11 +322,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
     default String linkifyTrait(String match) {
         // {@trait fire} does not require sources for official sources,
         // {@trait brutal|b2} can have sources added with a pipe in case of homebrew or duplicate trait names,
-        // {@trait agile||and optional link text added with another pipe}.",
+        // {@trait agile||and optional link text added with another pipe}."
+        // {@trait LN}
 
         String[] parts = match.split("\\|");
         String traitName = parts[0];
-        String linkText = parts.length > 2 ? parts[2] : traitName;
+        String linkText = valueOrDefault(parts, 2, traitName);
 
         if (parts.length < 2 && linkText.contains("<")) {
             traitName = traitName.split(" ")[0];
@@ -356,19 +356,19 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         String source = parts.length > 1 ? parts[1] : index().traitToSource(traitName);
         String key = Pf2eIndexType.trait.createKey(traitName, source);
         JsonNode traitNode = index().getIncludedNode(key);
-        return linkifyTrait(traitNode, linkText);
+        return linkifyTrait(traitNode, traitName, linkText);
     }
 
-    default String linkifyTrait(JsonNode traitNode, String linkText) {
+    default String linkifyTrait(JsonNode traitNode, String traitName, String linkText) {
         if (traitNode != null) {
             String source = SourceField.source.getTextOrEmpty(traitNode);
 
             return "[%s](%s/%s%s.md \"%s\")".formatted(
                     linkText,
                     Pf2eIndexType.trait.relativeRepositoryRoot(index()),
-                    slugify(linkText),
+                    slugify(traitName),
                     Pf2eIndexType.trait.isDefaultSource(source) ? "" : "-" + slugify(source),
-                    join(" ", SourceField.name.getTextOrEmpty(traitNode), traitTitle(traitNode), "Trait"));
+                    join(" ", traitName, traitTitle(traitNode), "Trait"));
         }
         return linkText;
     }
@@ -483,7 +483,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
         }
 
         static Pf2eAlignmentValue valueFrom(String value) {
-            return FieldValue.valueFrom(value, Pf2eAlignmentValue.class);
+            for (Pf2eAlignmentValue v : values()) {
+                if (v.name().equalsIgnoreCase(value)) {
+                    return v;
+                }
+            }
+            return null;
         }
     }
 }

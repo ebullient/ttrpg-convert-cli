@@ -272,6 +272,7 @@ public class FilterAllTest {
             commonTests.assert_Present("trap|falling net|dmg");
             commonTests.assert_Present("trap|falling net|xdmg");
             commonTests.assert_Present("trap|pits|dmg");
+            commonTests.assert_Present("trap|hidden pit|xdmg");
             commonTests.assert_Present("trap|poison darts|dmg");
             commonTests.assert_Present("trap|poison needle trap|xge");
             commonTests.assert_Present("trap|poison needle|dmg");
@@ -400,23 +401,29 @@ public class FilterAllTest {
 
         // "requires":[{"type":"HA"},{"type":"MA"}], "excludes": {"name": "Hide Armor" }
         JsonNode adamantineArmor = commonTests.index.getOrigin("magicvariant|adamantine armor|dmg");
+        assertThat(adamantineArmor).isNotNull();
 
         // "requires":[{"type":"M"}],"excludes":{"property":"2H"}
         JsonNode armBlade = commonTests.index.getOrigin("magicvariant|armblade|erlw");
+        assertThat(armBlade).isNotNull();
 
         // "requires":[{"type":"R"},{"type":"T"}],
         JsonNode arrowSlaying = commonTests.index.getOrigin("magicvariant|arrow of slaying (*)|dmg");
+        assertThat(arrowSlaying).isNotNull();
 
         // "requires":[{"sword":true}]
         JsonNode luckBlade = commonTests.index.getOrigin("magicvariant|luck blade|dmg");
+        assertThat(luckBlade).isNotNull();
 
         // "requires":[{"type":"SCF","scfType":"arcane"}],
         // "excludes":{"name":["Staff","Rod","Wand"]}
         JsonNode orbOfShielding = commonTests.index.getOrigin("magicvariant|orb of shielding (irian quartz)|erlw");
+        assertThat(orbOfShielding).isNotNull();
 
         // "requires":[{"type":"R"},{"property":"T"}],
         // "excludes":{"net":true}
         JsonNode oceanicWeapon = commonTests.index.getOrigin("magicvariant|oceanic weapon|tdcsr");
+        assertThat(oceanicWeapon).isNotNull();
 
         JsonNode x;
 

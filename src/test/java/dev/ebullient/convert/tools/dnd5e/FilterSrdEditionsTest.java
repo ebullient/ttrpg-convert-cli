@@ -15,10 +15,10 @@ import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-public class FilterNoneEditionTest {
+public class FilterSrdEditionsTest {
 
     static CommonDataTests commonTests;
-    static final TestInput testInput = TestInput.noneEdition;
+    static final TestInput testInput = TestInput.srdEdition;
     static final Path outputPath = TestUtils.OUTPUT_5E_DATA.resolve(testInput.name());
 
     @BeforeAll
@@ -26,6 +26,9 @@ public class FilterNoneEditionTest {
         outputPath.toFile().mkdirs();
         String config = """
                 {
+                    "sources": {
+                        "reference": ["srd", "basicrules", "srd52", "freerules2024"]
+                    },
                     "reprintBehavior": "edition",
                     "images": {
                         "copyInternal": false
@@ -56,18 +59,21 @@ public class FilterNoneEditionTest {
         if (commonTests.dataPresent) {
             var config = commonTests.config;
 
-            assertThat(config.noSources()).isTrue();
+            assertThat(config.noSources()).isFalse();
+            assertThat(Tools5eIndex.isSrdBasicFreeOnly()).isTrue();
 
-            assertThat(config.sourceIncluded("srd")).isFalse();
-            assertThat(config.sourceIncluded("basicrules")).isFalse();
-            assertThat(config.sourceIncluded("srd52")).isFalse();
-            assertThat(config.sourceIncluded("freerules2024")).isFalse();
+            assertThat(config.sourceIncluded("srd")).isTrue();
+            assertThat(config.sourceIncluded("basicrules")).isTrue();
+            assertThat(config.sourceIncluded("srd52")).isTrue();
+            assertThat(config.sourceIncluded("freerules2024")).isTrue();
 
             assertThat(config.sourceIncluded("DMG")).isFalse();
             assertThat(config.sourceIncluded("PHB")).isFalse();
+            assertThat(config.sourceIncluded("MM")).isFalse();
 
             assertThat(config.sourceIncluded("XDMG")).isFalse();
             assertThat(config.sourceIncluded("XPHB")).isFalse();
+            assertThat(config.sourceIncluded("XMM")).isFalse();
 
             commonTests.assert_MISSING("action|attack|phb");
             commonTests.assert_Present("action|attack|xphb");
@@ -207,7 +213,7 @@ public class FilterNoneEditionTest {
             commonTests.assert_MISSING("optfeature|ambush|xphb");
             commonTests.assert_Present("optfeature|dueling|phb");
             commonTests.assert_MISSING("optfeature|investment of the chain master|tce");
-            commonTests.assert_MISSING("optfeature|investment of the chain master|xphb");
+            commonTests.assert_Present("optfeature|investment of the chain master|xphb");
 
             commonTests.assert_MISSING("reward|blessing of weapon enhancement|dmg");
             commonTests.assert_MISSING("reward|blessing of weapon enhancement|xdmg");
@@ -239,20 +245,22 @@ public class FilterNoneEditionTest {
             commonTests.assert_MISSING("status|surprised|phb");
             commonTests.assert_Present("status|surprised|xphb");
 
-            commonTests.assert_Present("trap|collapsing roof|dmg");
-            commonTests.assert_MISSING("trap|collapsing roof|xdmg");
-            commonTests.assert_Present("trap|falling net|dmg");
-            commonTests.assert_MISSING("trap|falling net|xdmg");
-            commonTests.assert_Present("trap|pits|dmg");
-            commonTests.assert_Present("trap|poison darts|dmg");
-            commonTests.assert_MISSING("trap|poisoned darts|xdmg");
+            commonTests.assert_MISSING("trap|collapsing roof|dmg");
+            commonTests.assert_Present("trap|collapsing roof|xdmg"); // freerules2024
+            commonTests.assert_MISSING("trap|falling net|dmg");
+            commonTests.assert_Present("trap|falling net|xdmg"); // freerules2024
+            commonTests.assert_MISSING("trap|pits|dmg");
+            commonTests.assert_Present("trap|hidden pit|xdmg"); // freerules2024
+            commonTests.assert_MISSING("trap|poison darts|dmg");
+            commonTests.assert_Present("trap|poisoned darts|xdmg"); // freerules2024
             commonTests.assert_MISSING("trap|poison needle trap|xge");
-            commonTests.assert_Present("trap|poison needle|dmg");
-            commonTests.assert_Present("trap|rolling sphere|dmg");
-            commonTests.assert_MISSING("trap|rolling stone|xdmg");
+            commonTests.assert_MISSING("trap|poison needle|dmg");
+            commonTests.assert_Present("trap|poisoned needle|xdmg"); // freerules2024
+            commonTests.assert_MISSING("trap|rolling sphere|dmg");
+            commonTests.assert_Present("trap|rolling stone|xdmg"); // freerules2024
 
-            commonTests.assert_Present("vehicle|apparatus of kwalish|dmg");
-            commonTests.assert_MISSING("vehicle|apparatus of kwalish|xdmg");
+            commonTests.assert_Present("vehicle|apparatus of kwalish|dmg"); // srd (as aparatus of the crab)
+            commonTests.assert_MISSING("vehicle|apparatus of kwalish|xdmg"); // not srd52 or freeRules2024
 
             // Classes, subclasses, class features, and subclass features
 

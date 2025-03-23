@@ -41,7 +41,7 @@ public class CommonDataTests {
         all,
         allNewest,
         none,
-        noneEdition,
+        srdEdition,
         srd2014,
         srd2024,
         subset2014,

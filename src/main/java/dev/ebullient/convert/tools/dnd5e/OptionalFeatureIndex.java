@@ -82,10 +82,12 @@ public class OptionalFeatureIndex implements JsonSource {
 
     public void removeUnusedOptionalFeatures(
             Function<String, Boolean> testInUse,
+            Consumer<String> keep,
             Consumer<String> remove) {
         for (var oft : optFeatureIndex.values()) {
             // Test to see if any of the features using this type are still active.
             if (oft.testFeaturesInUse(testInUse) || oft.testConsumersInUse(testInUse)) {
+                keep.accept(oft.getKey());
                 continue;
             }
 
@@ -123,7 +125,6 @@ public class OptionalFeatureIndex implements JsonSource {
 
         final String featureTypeKey;
         final String abbreviation;
-        final Tools5eSources sources;
         final List<String> features = new ArrayList<>();
         final List<String> consumers = new ArrayList<>();
 
@@ -132,6 +133,8 @@ public class OptionalFeatureIndex implements JsonSource {
 
         @JsonIgnore
         final Map<String, HomebrewMetaTypes> homebrewMeta = new HashMap<>();
+
+        Tools5eSources sources; // deferred initialization
 
         OptionalFeatureType(String abbreviation, HomebrewMetaTypes homebrewMeta, Tools5eIndex index) {
             this.abbreviation = abbreviation;
@@ -148,23 +151,31 @@ public class OptionalFeatureIndex implements JsonSource {
             // KNOCK-ON: Add to index
             this.featureTypeKey = Tools5eIndexType.optionalFeatureTypes.createKey(featureTypeNode);
             index.addToIndex(Tools5eIndexType.optionalFeatureTypes, featureTypeNode);
-            this.sources = Tools5eSources.constructSources(featureTypeKey, featureTypeNode);
+            // wait to construct sources
         }
 
         public void amendSources(Tools5eSources otherSources) {
+            var mySources = mySources();
             // Update sources from those of a consuming/using class or subclass
             // Optional features will always add to sources of types
             if (otherSources.getType() == Tools5eIndexType.optfeature
-                    || otherSources.contains(this.sources)) {
-                this.sources.amendSources(otherSources);
+                    || otherSources.contains(mySources)) {
+                mySources.amendSources(otherSources);
             }
         }
 
         public void addHomebrewMeta(HomebrewMetaTypes homebrew) {
             if (homebrew != null) {
                 homebrewMeta.put(homebrew.primary, homebrew);
-                this.sources.amendSources(homebrew.sourceKeys);
+                mySources().amendSources(homebrew.sourceKeys);
             }
+        }
+
+        private Tools5eSources mySources() {
+            if (this.sources == null) {
+                this.sources = Tools5eSources.constructSources(featureTypeKey, featureTypeNode);
+            }
+            return this.sources;
         }
 
         public void addConsumer(String key) {

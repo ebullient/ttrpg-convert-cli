@@ -89,7 +89,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String getSourceText(Tools5eSources currentSource) {
-        return currentSource.getSourceText(index().srdOnly());
+        return currentSource.getSourceText();
     }
 
     default String getLabeledSource(JsonNode node) {

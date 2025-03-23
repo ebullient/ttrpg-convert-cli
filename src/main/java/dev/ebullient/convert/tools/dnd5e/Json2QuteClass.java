@@ -159,7 +159,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         scName,
                         getSourceText(scSources),
                         getName(), // parentClassName
-                        String.format("[%s](%s.md)", decoratedClassName,
+                        String.format("[%s](./%s.md)", decoratedClassName, // peer/sibling
                                 Tools5eQuteBase.getClassResource(getName(), getSources().primarySource())),
                         getSources().primarySource(),
                         subclassTitle,
@@ -768,7 +768,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     }
 
     // Unpack a subclass key
-    static class SubclassKeyData implements KeyData {
+    public static class SubclassKeyData implements KeyData {
         String scName;
         String className;
         String classSource;
@@ -942,7 +942,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             if (armorMatcher.find()) {
                 armor = uppercaseFirst(armorMatcher.group());
                 if (humanoidClause.contains("shields")) {
-                    armor += "; and shields if [humanoid](%s)".formatted(toAnchorTag("Bonus Progression (Level 1)"));
+                    armor += "; and shields if [humanoid](#%s)".formatted(toAnchorTag("Bonus Proficiencies (Level 1)"));
                 }
             }
 
@@ -959,17 +959,17 @@ public class Json2QuteClass extends Json2QuteCommon {
             // Only present in the humanoid clause
             Matcher toolMatcher = sidekickTools.matcher(humanoidClause);
             if (toolMatcher.find()) {
-                tools = "%s if [humanoid](%s)".formatted(
+                tools = "%s if [humanoid](#%s)".formatted(
                         uppercaseFirst(toolMatcher.group()),
-                        toAnchorTag("Bonus Progression (Level 1)"));
+                        toAnchorTag("Bonus Proficiencies (Level 1)"));
             }
 
             // Only present in the humanoid clause
             Matcher weaponsMatcher = sidekickWeapons.matcher(humanoidClause);
             if (weaponsMatcher.find()) {
-                weapons = "%s if [humanoid](%s)".formatted(
+                weapons = "%s if [humanoid](#%s)".formatted(
                         uppercaseFirst(weaponsMatcher.group()),
-                        toAnchorTag("Bonus Progression (Level 1)"));
+                        toAnchorTag("Bonus Proficiencies (Level 1)"));
             }
         }
 

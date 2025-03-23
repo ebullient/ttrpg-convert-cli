@@ -287,6 +287,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | GW3 | Gatewalkers #3: Dreamers of the Nameless Spires |
 | HPD | Hero Point Deck |
 | HStR | Head-Shot the Rot |
+| HotW | Howl of the Wild |
 | LOACLO | Lost Omens: Absalom, City of Lost Omens |
 | LOAG | Lost Omens: Ancestry Guide |
 | LOCG | Lost Omens: Character Guide |
@@ -312,6 +313,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | OoA2 | Outlaws of Alkenstar #2: Cradle of Quartz |
 | OoA3 | Outlaws of Alkenstar #3: The Smoking Gun |
 | PC1 | Player Core |
+| PC2 | Player Core 2 |
 | PFUM | PATHFINDER: FUMBUS! |
 | POS1 | Pathfinder One-Shot: Sundered Waves |
 | QFF0 | Quest for the Frozen Flame Player's Guide |
@@ -322,6 +324,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | Rust | Rusthenge |
 | SF0 | Stolen Fate Player's Guide |
 | SKT0 | Sky King's Tomb Player's Guide |
+| SW0 | Spore War Player's Guide |
 | SaS | Shadows at Sundown |
 | Sli | The Slithering |
 | SoG0 | Season of Ghosts Player's Guide |

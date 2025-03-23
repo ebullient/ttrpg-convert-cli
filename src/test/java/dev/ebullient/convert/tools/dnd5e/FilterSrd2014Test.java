@@ -238,6 +238,7 @@ public class FilterSrd2014Test {
             commonTests.assert_Present("trap|falling net|dmg");
             commonTests.assert_MISSING("trap|falling net|xdmg");
             commonTests.assert_Present("trap|pits|dmg");
+            commonTests.assert_MISSING("trap|hidden pit|xdmg");
             commonTests.assert_Present("trap|poison darts|dmg");
             commonTests.assert_MISSING("trap|poisoned darts|xdmg");
             commonTests.assert_MISSING("trap|poison needle trap|xge");

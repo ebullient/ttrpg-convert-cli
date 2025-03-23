@@ -78,18 +78,18 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             }
         }
 
-        if (types.contains(Tools5eIndexType.spell) || types.contains(Tools5eIndexType.spellIndex)) {
-            // We're doing this one a different way:
-            // Too many different variations of spell list
-            var spellIndexParent = new Json2QuteSpellIndex(index);
-            queue.noteCompendium.addAll(spellIndexParent.buildNotes());
-        }
-
         writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium);
         writer.writeFiles(index.rulesFilePath(), queue.baseRules);
 
         for (Json2QuteCommon value : queue.combinedDocs.values()) {
             append(value.type, value.buildNote(), queue.noteCompendium, queue.noteRules);
+        }
+
+        if (types.contains(Tools5eIndexType.spell) || types.contains(Tools5eIndexType.spellIndex)) {
+            // We're doing this one a different way:
+            // Too many different variations of spell list
+            var spellIndexParent = new Json2QuteSpellIndex(index);
+            queue.noteCompendium.addAll(spellIndexParent.buildNotes());
         }
 
         if (!Json2QuteBackground.traits.isEmpty()) {
