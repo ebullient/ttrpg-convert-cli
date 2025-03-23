@@ -74,10 +74,10 @@ public class Json2QuteItem extends Json2QuteCommon {
 
             String damage = null;
             String damage2h = null;
-            if (variantNode.has("dmgType")) {
-                String dmg1 = getTextOrDefault(variantNode, "dmg1", null);
-                String dmg2 = getTextOrDefault(variantNode, "dmg2", null);
-                String dmgType = getTextOrDefault(variantNode, "dmgType", null);
+            if (ItemField.dmgType.existsIn(variantNode)) {
+                String dmg1 = ItemField.dmg1.getTextOrEmpty(variantNode);
+                String dmg2 = ItemField.dmg2.getTextOrEmpty(variantNode);
+                String dmgType = damageTypeToFull(ItemField.dmgType.getTextOrEmpty(variantNode));
                 damage = dmg1 + " " + dmgType;
                 if (dmg2 != null && !dmg2.isBlank()) {
                     damage2h = dmg2 + " " + dmgType;
@@ -443,6 +443,9 @@ public class Json2QuteItem extends Json2QuteCommon {
         baseItem,
         curse,
         detail1,
+        dmg1,
+        dmg2,
+        dmgType,
         firearm,
         focus,
         hasFluff,

@@ -1136,7 +1136,10 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String damageTypeToFull(String dmgType) {
-        return switch (dmgType) {
+        if (!isPresent(dmgType)) {
+            return "";
+        }
+        return switch (dmgType.toUpperCase()) {
             case "A" -> "acid";
             case "B" -> "bludgeoning";
             case "C" -> "cold";
