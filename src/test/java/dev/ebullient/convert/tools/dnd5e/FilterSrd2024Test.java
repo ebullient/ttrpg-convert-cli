@@ -201,7 +201,7 @@ public class FilterSrd2024Test {
             commonTests.assert_MISSING("optfeature|ambush|tce");
             commonTests.assert_MISSING("optfeature|ambush|xphb");
             commonTests.assert_MISSING("optfeature|investment of the chain master|tce");
-            commonTests.assert_MISSING("optfeature|investment of the chain master|xphb");
+            commonTests.assert_Present("optfeature|investment of the chain master|xphb");
 
             commonTests.assert_MISSING("reward|blessing of weapon enhancement|dmg");
             commonTests.assert_MISSING("reward|blessing of weapon enhancement|xdmg");
@@ -234,16 +234,18 @@ public class FilterSrd2024Test {
             commonTests.assert_Present("status|surprised|xphb");
 
             commonTests.assert_MISSING("trap|collapsing roof|dmg");
-            commonTests.assert_MISSING("trap|collapsing roof|xdmg");
+            commonTests.assert_Present("trap|collapsing roof|xdmg"); // freeRules2024
             commonTests.assert_MISSING("trap|falling net|dmg");
-            commonTests.assert_MISSING("trap|falling net|xdmg");
+            commonTests.assert_Present("trap|falling net|xdmg"); // freeRules2024
             commonTests.assert_MISSING("trap|pits|dmg");
+            commonTests.assert_Present("trap|hidden pit|xdmg"); // freeRules2024
             commonTests.assert_MISSING("trap|poison darts|dmg");
-            commonTests.assert_MISSING("trap|poisoned darts|xdmg");
+            commonTests.assert_Present("trap|poisoned darts|xdmg"); // freeRules2024
             commonTests.assert_MISSING("trap|poison needle trap|xge");
             commonTests.assert_MISSING("trap|poison needle|dmg");
+            commonTests.assert_Present("trap|poisoned darts|xdmg"); // freeRules2024
             commonTests.assert_MISSING("trap|rolling sphere|dmg");
-            commonTests.assert_MISSING("trap|rolling stone|xdmg");
+            commonTests.assert_Present("trap|rolling stone|xdmg"); // freeRules2024
 
             commonTests.assert_MISSING("vehicle|apparatus of kwalish|dmg");
             commonTests.assert_MISSING("vehicle|apparatus of kwalish|xdmg");

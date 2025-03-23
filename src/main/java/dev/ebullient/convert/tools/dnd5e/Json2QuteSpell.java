@@ -5,6 +5,7 @@ import static dev.ebullient.convert.StringUtil.uppercaseFirst;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         // 🔧 Spell: spell|fireball|phb,
         //    references: {subclass|destruction domain|cleric|phb|vss=subclass|destruction domain|cleric|phb|vss;c:5;s:null;null, ...}
         //    expanded: {subclass|the fiend|warlock|phb|phb=subclass|the fiend|warlock|phb|phb;c:null;s:3;null, ...}
-        List<String> referenceLinks = new ArrayList<>();
+        Set<String> referenceLinks = new HashSet<>();
         Set<SpellReference> allRefs = new TreeSet<>(Comparator.comparing(x -> x.refererKey));
         allRefs.addAll(spellEntry.references.values());
         allRefs.addAll(spellEntry.expandedList.values());

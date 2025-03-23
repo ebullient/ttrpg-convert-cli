@@ -246,14 +246,16 @@ public class FilterSubset2014Test {
             commonTests.assert_MISSING("status|surprised|xphb");
 
             commonTests.assert_Present("trap|collapsing roof|dmg");
-            commonTests.assert_MISSING("trap|collapsing roof|xdmg");
+            commonTests.assert_MISSING("trap|collapsing roof|xdmg"); // freerules2024
             commonTests.assert_Present("trap|falling net|dmg");
-            commonTests.assert_MISSING("trap|falling net|xdmg");
+            commonTests.assert_MISSING("trap|falling net|xdmg"); // freerules2024
             commonTests.assert_Present("trap|pits|dmg");
-            commonTests.assert_Present("trap|poison darts|dmg");
-            commonTests.assert_MISSING("trap|poisoned darts|xdmg");
+            commonTests.assert_MISSING("trap|hidden pit|xdmg"); // freerules2024
+            commonTests.assert_Present("trap|poison darts|dmg"); // srd
+            commonTests.assert_MISSING("trap|poisoned darts|xdmg"); // freerules2024
             commonTests.assert_Present("trap|poison needle trap|xge");
             commonTests.assert_Present("trap|poison needle|dmg");
+            commonTests.assert_MISSING("trap|poisoned needle|xdmg"); // freerules2024
             commonTests.assert_Present("trap|rolling sphere|dmg");
             commonTests.assert_MISSING("trap|rolling stone|xdmg");
 

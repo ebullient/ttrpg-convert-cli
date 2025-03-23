@@ -87,8 +87,11 @@ public class MarkdownWriter {
                 .forEach((dir, value) -> {
                     String fileName = dir.getFileName().toString();
                     String title = fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
+                    List<IndexEntry> entries = value.stream()
+                            .map(fm -> new IndexEntry(fm.title, fm.fileName, "./" + fm.fileName)) // folder note
+                            .collect(Collectors.toList());
                     try {
-                        writeFile(new FileMap(title, fileName, dir, false), templates.renderIndex(title, value));
+                        writeFile(new FileMap(title, fileName, dir, false), templates.renderIndex(title, entries));
                     } catch (IOException ex) {
                         throw new UncheckedIOException(ex);
                     }
@@ -148,6 +151,15 @@ public class MarkdownWriter {
     }
 
     @TemplateData
+    public record IndexEntry(String title, String fileName, String relativePath) {
+
+        @Override
+        public String toString() {
+            return "IndexEntry [title=" + title + ", fileName=" + fileName + ", relativePath=" + relativePath + "]";
+        }
+    }
+
+    @TemplateData
     public static class FileMap {
 
         public final String title;
@@ -160,6 +172,11 @@ public class MarkdownWriter {
             this.fileName = Tui.slugify(fileName) + (fileName.endsWith(".md") ? "" : ".md");
             this.dir = dirName;
             this.renderIndex = renderIndex;
+        }
+
+        @Override
+        public String toString() {
+            return "FileMap [title=" + title + ", fileName=" + fileName + ", dir=" + dir + "]";
         }
 
         @Override

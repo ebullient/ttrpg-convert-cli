@@ -153,7 +153,6 @@ public class CustomTemplatesTest {
             List.of(
                     testOutput.resolve("compendium/backgrounds"),
                     testOutput.resolve("compendium/classes"),
-                    testOutput.resolve("compendium/deities"),
                     testOutput.resolve("compendium/feats"),
                     testOutput.resolve("compendium/items"),
                     testOutput.resolve("compendium/races"),

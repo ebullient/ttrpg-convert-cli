@@ -5,5 +5,5 @@ cssclasses: pf2e,pf2e-index
 # Index of {name}
 
 {#for mapping in resources}
-- [{mapping.title}]({mapping.fileName})
+- [{mapping.title}]({mapping.relativePath})
 {/for}

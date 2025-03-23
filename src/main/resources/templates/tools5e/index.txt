@@ -5,5 +5,5 @@ cssclasses: json5e-note
 # Index of {name}
 
 {#for mapping in resources}
-- [{mapping.title}]({mapping.fileName})
+- [{mapping.title}]({mapping.relativePath})
 {/for}

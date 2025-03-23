@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +33,7 @@ public class Pf2eMarkdown implements MarkdownConverter {
 
     @Override
     public Pf2eMarkdown writeImages() {
+        index.tui().progressf("Writing images and fonts");
         index.tui().copyImages(Pf2eSources.getImages());
         return this;
     }
@@ -43,121 +43,113 @@ public class Pf2eMarkdown implements MarkdownConverter {
         return writeFiles(List.of(type));
     }
 
+    static class WritingQueue {
+        List<Pf2eQuteBase> baseCompendium = new ArrayList<>();
+        List<Pf2eQuteBase> baseRules = new ArrayList<>();
+        List<QuteNote> noteCompendium = new ArrayList<>();
+        List<QuteNote> noteRules = new ArrayList<>();
+
+        // Some state for combining notes
+        Map<Pf2eIndexType, Json2QuteBase> combinedDocs = new HashMap<>();
+    }
+
     @Override
     public Pf2eMarkdown writeFiles(List<? extends IndexType> types) {
-        if (types == null) {
-        } else {
-            writePf2eQuteBase(types.stream()
-                    .map(x -> (Pf2eIndexType) x)
-                    .filter(x -> x.isOutputType() && !x.useQuteNote())
-                    .collect(Collectors.toList()));
-            writeNotesAndTables(types.stream()
-                    .filter(x -> ((Pf2eIndexType) x).useQuteNote())
-                    .collect(Collectors.toList()));
-        }
-        return this;
-    }
-
-    private void writePf2eQuteBase(List<? extends IndexType> types) {
-        if (types == null || types.isEmpty()) {
-            return;
-        }
-        index.tui().progressf("Converting data: %s", types);
-
-        List<Pf2eQuteBase> compendium = new ArrayList<>();
-        List<Pf2eQuteBase> rules = new ArrayList<>();
-
-        for (Entry<String, JsonNode> e : index.filteredEntries()) {
-            final String key = e.getKey();
-            final JsonNode node = e.getValue();
-
-            final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
-            if (types != null && !types.contains(type)) {
-                continue;
-            }
-
-            // Moved to index type -- also used by embedded rendering
-            Pf2eQuteBase converted = type.convertJson2QuteBase(index, node);
-            if (converted != null) {
-                append(type, converted, compendium, rules);
-            }
-        }
-
-        writer.writeFiles(index.compendiumFilePath(), compendium);
-        writer.writeFiles(index.rulesFilePath(), rules);
-    }
-
-    private Pf2eMarkdown writeNotesAndTables(List<? extends IndexType> types) {
         if (types == null || types.isEmpty()) {
             return this;
         }
         index.tui().progressf("Converting data: %s", types);
+        WritingQueue queue = new WritingQueue();
+        for (var entry : index.filteredEntries()) {
+            final String key = entry.getKey();
+            final JsonNode jsonSource = entry.getValue();
 
-        List<QuteNote> compendium = new ArrayList<>();
-        List<QuteNote> rules = new ArrayList<>();
-
-        Map<Pf2eIndexType, Json2QuteBase> combinedDocs = new HashMap<>();
-        for (Entry<String, JsonNode> e : index.filteredEntries()) {
-            final String key = e.getKey();
-            final JsonNode node = e.getValue();
-
-            final Pf2eIndexType type = Pf2eIndexType.getTypeFromKey(key);
-            if (types != null && !types.contains(type)) {
+            final Pf2eIndexType nodeType = Pf2eIndexType.getTypeFromKey(key);
+            if (!types.contains(nodeType)) {
                 continue;
             }
 
-            switch (type) {
-                case ability -> rules.add(new Json2QuteAbility(index, type, node).buildNote());
-                case affliction, curse, disease ->
-                    compendium.add(new Json2QuteAffliction(index, type, node).buildNote());
-                case book -> {
-                    index.tui().progressf("book %s", e.getKey());
-                    JsonNode data = index.getIncludedNode(key.replace("book|", "data|"));
-                    if (data == null) {
-                        index.tui().errorf("No data for %s", key);
-                    } else {
-                        List<Pf2eQuteNote> pages = new Json2QuteBook(index, type, node, data).buildBook();
-                        rules.addAll(pages);
-                    }
-                }
-                case condition -> {
-                    Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
-                            t -> new Json2QuteCompose(type, index, "Conditions"));
-                    conditions.add(node);
-                }
-                case domain -> {
-                    Json2QuteCompose domains = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
-                            t -> new Json2QuteCompose(type, index, "Domains"));
-                    domains.add(node);
-                }
-                case skill -> {
-                    Json2QuteCompose skills = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
-                            t -> new Json2QuteCompose(type, index, "Skills"));
-                    skills.add(node);
-                }
-                case table -> {
-                    Pf2eQuteNote table = new Json2QuteTable(index, node).buildNote();
-                    rules.add(table);
-                }
-                default -> {
-                }
+            if (nodeType.isOutputType() && !nodeType.useQuteNote()) {
+                writePf2eQuteBase(nodeType, key, jsonSource, queue);
+            } else if (nodeType.isOutputType() && nodeType.useQuteNote()) {
+                writeNotesAndTables(nodeType, key, jsonSource, queue);
             }
         }
 
-        for (Json2QuteBase value : combinedDocs.values()) {
-            append(value.type, value.buildNote(), compendium, rules);
+        writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium);
+        writer.writeFiles(index.rulesFilePath(), queue.baseRules);
+
+        for (Json2QuteBase value : queue.combinedDocs.values()) {
+            append(value.type, value.buildNote(), queue.noteCompendium, queue.noteRules);
         }
 
         // Custom indices
-        append(Pf2eIndexType.trait, Json2QuteTrait.buildIndex(index), compendium, rules);
+        append(Pf2eIndexType.trait, Json2QuteTrait.buildIndex(index), queue.noteCompendium, queue.noteRules);
 
-        writer.writeNotes(index.compendiumFilePath(), compendium, true);
-        writer.writeNotes(index.rulesFilePath(), rules, false);
+        writer.writeNotes(index.compendiumFilePath(), queue.noteCompendium, true);
+        writer.writeNotes(index.rulesFilePath(), queue.noteRules, false);
 
         // TODO: DOES THIS WORK RIGHT? shouldn't these be in the other image map?
         // List<ImageRef> images = rules.stream()
         //         .flatMap(s -> s.images().stream()).collect(Collectors.toList());
         // index.tui().copyImages(images, fallbackPaths);
+
+        return this;
+    }
+
+    private void writePf2eQuteBase(Pf2eIndexType type, String key, JsonNode node, WritingQueue queue) {
+        var compendium = queue.baseCompendium;
+        var rules = queue.baseRules;
+
+        // Moved to index type -- also used by embedded rendering
+        Pf2eQuteBase converted = type.convertJson2QuteBase(index, node);
+        if (converted != null) {
+            append(type, converted, compendium, rules);
+        }
+    }
+
+    private Pf2eMarkdown writeNotesAndTables(Pf2eIndexType type, String key, JsonNode node, WritingQueue queue) {
+        var compendium = queue.noteCompendium;
+        var rules = queue.noteRules;
+        var combinedDocs = queue.combinedDocs;
+
+        switch (type) {
+            case ability -> rules.add(new Json2QuteAbility(index, type, node).buildNote());
+            case affliction, curse, disease ->
+                compendium.add(new Json2QuteAffliction(index, type, node).buildNote());
+            case book -> {
+                index.tui().progressf("book %s", key);
+                JsonNode data = index.getIncludedNode(key.replace("book|", "data|"));
+                if (data == null) {
+                    index.tui().errorf("No data for %s", key);
+                } else {
+                    List<Pf2eQuteNote> pages = new Json2QuteBook(index, type, node, data).buildBook();
+                    rules.addAll(pages);
+                }
+            }
+            case condition -> {
+                Json2QuteCompose conditions = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
+                        t -> new Json2QuteCompose(type, index, "Conditions"));
+                conditions.add(node);
+            }
+            case domain -> {
+                Json2QuteCompose domains = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
+                        t -> new Json2QuteCompose(type, index, "Domains"));
+                domains.add(node);
+            }
+            case skill -> {
+                Json2QuteCompose skills = (Json2QuteCompose) combinedDocs.computeIfAbsent(type,
+                        t -> new Json2QuteCompose(type, index, "Skills"));
+                skills.add(node);
+            }
+            case table -> {
+                Pf2eQuteNote table = new Json2QuteTable(index, node).buildNote();
+                rules.add(table);
+            }
+            default -> {
+            }
+        }
+
         return this;
     }
 

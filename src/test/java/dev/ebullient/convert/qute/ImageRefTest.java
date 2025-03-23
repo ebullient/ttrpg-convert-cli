@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.Datasource;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
@@ -20,14 +21,14 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 public class ImageRefTest {
     protected static Tui tui;
-    protected static Tools5eIndex index;
+    protected static TestIndex index;
 
     @BeforeAll
     public static void prepare() {
         tui = Arc.container().instance(Tui.class).get();
         tui.init(null, true, false);
         TtrpgConfig.init(tui, Datasource.tools5e);
-        index = new Tools5eIndex(TtrpgConfig.getConfig());
+        index = new TestIndex(TtrpgConfig.getConfig());
     }
 
     @Test
@@ -88,5 +89,12 @@ public class ImageRefTest {
         assertThat(ref.url())
                 .isEqualTo(
                         "https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/bestiary/tokens/MM/Giant%20Owl.webp#token");
+    }
+
+    static class TestIndex extends Tools5eIndex {
+        public TestIndex(CompendiumConfig config) {
+            super(config);
+            prepared.set(true);
+        }
     }
 }

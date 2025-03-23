@@ -159,27 +159,27 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     // Aliases for consistency. Hard-coded for common types/corrections. Won't be fool-proof
     String mapType(String type) {
-        for (MonsterTypes t : MonsterTypes.values()) {
+        for (MonsterType t : MonsterType.values()) {
             if (type.toLowerCase().startsWith(t.name())) {
                 return t.name();
             }
         }
         switch (type.toLowerCase()) {
             case "abberation", "abberations" -> {
-                return MonsterTypes.aberration.name();
+                return MonsterType.aberration.name();
             }
             case "creature", "creatures" -> {
                 if (getName().toLowerCase().contains("zoblin")) {
-                    return MonsterTypes.undead.name();
+                    return MonsterType.undead.name();
                 }
                 if (getName().toLowerCase().contains("fandom")) {
-                    return MonsterTypes.humanoid.name();
+                    return MonsterType.humanoid.name();
                 }
-                return MonsterTypes.beast.name();
+                return MonsterType.beast.name();
             }
             case "golem", "golems" -> {
                 subtype = "golem";
-                return MonsterTypes.construct.name();
+                return MonsterType.construct.name();
             }
             default -> {
                 return type;
@@ -187,7 +187,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
     }
 
-    enum MonsterTypes {
+    public enum MonsterType {
         aberration,
         beast,
         celestial,
@@ -201,7 +201,26 @@ public class Json2QuteMonster extends Json2QuteCommon {
         monstrosity,
         ooze,
         plant,
-        undead
+        undead;
+
+        public static MonsterType fromString(String type) {
+            String compare = type.toLowerCase()
+                    .replace("abberation", "aberration"); // correct typo
+            for (MonsterType t : MonsterType.values()) {
+                if (compare.startsWith(t.name().toLowerCase())) {
+                    return t;
+                }
+            }
+            return null;
+        }
+
+        public static String toDirectory(String type) {
+            MonsterType t = fromString(type);
+            if (t == null) {
+                return Tui.slugify(type);
+            }
+            return t.name();
+        }
     }
 
     String monsterPb(String cr) {
@@ -401,6 +420,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
         if (summonedCreature || hasVersions) {
             List<JsonNode> versions = new ArrayList<>();
             List<String> versionKeys = new ArrayList<>();
+            boolean replacedPrimary = false;
+            final String origname = SourceField.name.getTextOrEmpty(jsonSource);
 
             // Expand versions first
             if (hasVersions) {
@@ -417,22 +438,25 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     // DataUtil.generic._getVersion(...)
                     String vKey = hydrateVersion(key, jsonSource, (ObjectNode) vNode, index);
                     versionKeys.add(vKey);
+                    String variantName = SourceField.name.getTextOrEmpty(vNode);
+                    if (variantName.equals(origname)) {
+                        replacedPrimary = true;
+                    }
                 }
                 TtrpgValue.indexVersionKeys.setIn(jsonSource, Tui.MAPPER.valueToTree(versionKeys));
             }
 
             // Add original after processing versions
-            versions.add(0, jsonSource);
-
+            if (!replacedPrimary) {
+                versions.add(0, jsonSource);
+            }
             return versions;
         }
-
         return List.of(jsonSource);
     }
 
     public static String hydrateVersion(String parentKey, JsonNode parentSource, ObjectNode version, Tools5eIndex index) {
         // DataUtil.generic._hydrateVersion({key}, {source}, {version})
-        TtrpgValue.indexParentKey.setIn(version, parentKey);
 
         Tools5eIndexType type = Tools5eIndexType.monster;
         String versionKey = type.createKey(version);
@@ -447,6 +471,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         filterSources(Tools5eFields.otherSources, parentCopy, SourceField.source.getTextOrNull(version));
 
         index.copier.mergeNodes(type, parentKey, parentCopy, version);
+        TtrpgValue.indexParentKey.setIn(version, parentKey);
 
         Tools5eSources.constructSources(versionKey, version);
         return versionKey;

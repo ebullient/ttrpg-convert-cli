@@ -204,6 +204,8 @@ public class Tools5eSources extends CompendiumSources {
     private final boolean basicRules;
     private final boolean srd52;
     private final boolean freeRules2024;
+    private final boolean includedWhenNoSource;
+
     private final Tools5eIndexType type;
     private final String edition;
 
@@ -217,6 +219,8 @@ public class Tools5eSources extends CompendiumSources {
         this.freeRules2024 = isFreeRules2024(key, jsonElement);
         this.srd = SourceAttributes.srd.coerceBooleanOrDefault(jsonElement, false);
         this.srd52 = SourceAttributes.srd52.coerceBooleanOrDefault(jsonElement, false);
+        this.includedWhenNoSource = this.srd52 || this.freeRules2024; // just 2024 when nothing specified
+
         this.edition = SourceAttributes.edition.getTextOrEmpty(jsonElement);
         addBrewSource(TtrpgValue.homebrewSource, jsonElement);
         addBrewSource(TtrpgValue.homebrewBaseSource, jsonElement);
@@ -228,6 +232,11 @@ public class Tools5eSources extends CompendiumSources {
         if (isPresent(source)) {
             this.sources.add(source);
         }
+    }
+
+    public boolean isHomebrew() {
+        JsonNode node = findNode();
+        return TtrpgValue.homebrewSource.existsIn(node) || TtrpgValue.homebrewBaseSource.existsIn(node);
     }
 
     public boolean isSrdOrFreeRules() {
@@ -267,34 +276,50 @@ public class Tools5eSources extends CompendiumSources {
             return true;
         }
         if (config.noSources()) {
-            return this.srd || this.basicRules || this.srd52 || this.freeRules2024;
+            return this.includedWhenNoSource;
+        } else if (Tools5eIndex.isSrdBasicFreeOnly()) {
+            return testSrdRules2014(config)
+                    || testSrdRules2024(config);
         }
-        if (type == Tools5eIndexType.background) {
-            // backgrounds don't nest. Check only primary source
-            return config.sourceIncluded(this.primarySource())
-                    || (config.sourceIncluded("srd") && this.srd)
-                    || (config.sourceIncluded("srd52") && this.srd52)
-                    || (config.sourceIncluded("basicrules") && this.basicRules)
+        return testSourceIncluded(config)
+                || testSrdRules2014(config)
+                || testSrdRules2024(config);
+    }
+
+    private boolean testSourceIncluded(CompendiumConfig config) {
+        // backgrounds don't nest. Check only primary source
+        return type == Tools5eIndexType.background
+                ? config.sourceIncluded(this.primarySource())
+                : config.sourceIncluded(this);
+    }
+
+    private boolean testSrdRules2014(CompendiumConfig config) {
+        if (has2014Content()) {
+            return (config.sourceIncluded("srd") && this.srd)
+                    || (config.sourceIncluded("basicrules") && this.basicRules);
+        }
+        return false;
+    }
+
+    private boolean testSrdRules2024(CompendiumConfig config) {
+        if (has2024Content()) {
+            return (config.sourceIncluded("srd52") && this.srd52)
                     || (config.sourceIncluded("freerules2024") && this.freeRules2024);
         }
-        return config.sourceIncluded(this)
-                || (config.sourceIncluded("srd") && this.srd)
-                || (config.sourceIncluded("srd52") && this.srd52)
-                || (config.sourceIncluded("basicrules") && this.basicRules)
-                || (config.sourceIncluded("freerules2024") && this.freeRules2024);
+        return false;
     }
 
     @Override
     public boolean includedBy(Set<String> sources) {
         CompendiumConfig config = TtrpgConfig.getConfig();
         if (config.noSources()) {
-            return this.srd || this.basicRules || this.srd52 || this.freeRules2024;
+            return this.includedWhenNoSource;
         }
-        return super.includedBy(sources) ||
-                (this.basicRules && sources.contains("basicrules")) ||
-                (this.srd && sources.contains("srd")) ||
-                (this.srd52 && sources.contains("srd52")) ||
-                (this.freeRules2024 && sources.contains("freerules2024"));
+        return super.includedBy(sources)
+                || (this.srd && sources.contains("srd"))
+                || (this.srd52 && sources.contains("srd52"))
+                || (this.basicRules && sources.contains("basicrules"))
+                || (this.freeRules2024 && sources.contains("freerules2024"));
     }
 
     @Override
@@ -315,8 +340,8 @@ public class Tools5eSources extends CompendiumSources {
         return "classic".equalsIgnoreCase(edition);
     }
 
-    public String getSourceText(boolean useSrd) {
-        if (useSrd) {
+    public String getSourceText() {
+        if (Tools5eIndex.isSrdBasicFreeOnly()) {
             List<String> bits = new ArrayList<>();
             if (srd) {
                 bits.add("SRD 5.1");
@@ -345,6 +370,14 @@ public class Tools5eSources extends CompendiumSources {
         if (type == Tools5eIndexType.syntheticGroup) {
             return this.key.replaceAll(".+?\\|([^|]+).*", "$1");
         }
+
+        if (Tools5eIndex.isSrdBasicFreeOnly() && Tools5eSources.isSrd(jsonElement)) {
+            String srdName = Tools5eSources.srdName(jsonElement);
+            if (srdName != null) {
+                return srdName;
+            }
+        }
+
         return SourceField.name.getTextOrDefault(jsonElement,
                 SourceField.abbreviation.getTextOrDefault(jsonElement,
                         TableFields.caption.getTextOrDefault(jsonElement,

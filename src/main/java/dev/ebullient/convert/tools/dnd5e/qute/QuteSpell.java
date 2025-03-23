@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,12 +34,12 @@ public class QuteSpell extends Tools5eQuteBase {
     /** String: rendered list of links to classes that can use this spell. May be incomplete or empty. */
     public final String classes;
     /** List of links to resources (classes, subclasses, feats, etc.) that have access to this spell */
-    public final List<String> references;
+    public final Collection<String> references;
 
     public QuteSpell(Tools5eSources sources, String name, String source, String level,
             String school, boolean ritual, String time, String range,
             String components, String duration,
-            List<String> references, List<ImageRef> images, String text, Tags tags) {
+            Collection<String> references, List<ImageRef> images, String text, Tags tags) {
         super(sources, name, source, images, text, tags);
 
         this.level = level;
@@ -61,6 +62,8 @@ public class QuteSpell extends Tools5eQuteBase {
                 : references.stream()
                         .filter(s -> s.contains("class"))
                         .map(s -> s.replaceAll("\\[(.*?)\\].*", "$1"))
+                        .distinct()
+                        .sorted()
                         .toList();
     }
 }

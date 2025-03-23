@@ -11,7 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import dev.ebullient.convert.config.CompendiumConfig;
-import dev.ebullient.convert.io.MarkdownWriter.FileMap;
+import dev.ebullient.convert.io.MarkdownWriter.IndexEntry;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.Engine;
@@ -92,7 +92,7 @@ public class Templates {
         }
     }
 
-    public String renderIndex(String name, Collection<FileMap> resources) {
+    public String renderIndex(String name, Collection<IndexEntry> resources) {
         Template tpl = customTemplateOrDefault("index.txt");
         try {
             return tpl

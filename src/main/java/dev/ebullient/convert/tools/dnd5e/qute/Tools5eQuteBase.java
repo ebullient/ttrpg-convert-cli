@@ -12,8 +12,11 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.SubclassKeyData;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteDeity.DeityField;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterType;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -104,6 +107,9 @@ public class Tools5eQuteBase extends QuteBase {
         Tools5eIndexType type = sources.getType();
         JsonNode node = sources.findNode();
         String primarySource = sources.primarySource();
+        if (Tools5eIndex.isSrdBasicFreeOnly() && sources.isSrdOrFreeRules()) {
+            name = sources.getName(); // SRD name may be different / generic
+        }
         return switch (type) {
             case background -> fixFileName(type.decoratedName(node), primarySource, type);
             case deity -> getDeityResourceName(name, primarySource, DeityField.pantheon.getTextOrEmpty(node));
@@ -146,11 +152,18 @@ public class Tools5eQuteBase extends QuteBase {
     }
 
     public static String monsterPath(boolean isNpc, String type) {
-        return Tools5eIndexType.monster.getRelativePath() + "/" + (isNpc ? "npc" : type);
+        return Tools5eIndexType.monster.getRelativePath() + "/" + (isNpc ? "npc" : MonsterType.toDirectory(type));
     }
 
     public static String getClassResource(String className, String classSource) {
         return fixFileName(className, classSource, Tools5eIndexType.classtype);
+    }
+
+    public static String getSubclassResource(String subclassKey) {
+        SubclassKeyData subclassData = new SubclassKeyData(subclassKey);
+        return getSubclassResource(subclassData.name(),
+                subclassData.parentName(), subclassData.parentSource(),
+                subclassData.itemSource());
     }
 
     public static String getSubclassResource(String subclass, String parentClass, String classSource, String subclassSource) {

@@ -1,4 +1,10 @@
 {
+  "sources": {
+    "reference": [
+      "srd",
+      "basicrules"
+    ]
+  },
   "template": {
     "background": "src/test/resources/other/background.txt",
     "class": "src/test/resources/other/class.txt",

@@ -114,6 +114,10 @@ public class CompendiumConfig {
         return allowedSources.isEmpty();
     }
 
+    public boolean onlySources(List<String> sources) {
+        return allowedSources.stream().allMatch(sources::contains);
+    }
+
     public String getAllowedSourcePattern() {
         return allSources ? "([^|]+)" : "(" + String.join("|", allowedSources) + ")";
     }

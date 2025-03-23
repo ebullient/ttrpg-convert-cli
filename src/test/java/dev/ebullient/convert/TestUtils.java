@@ -50,6 +50,8 @@ public class TestUtils {
 
     // Obnoxious regular expression because markdown links are complicated:
     // Matches: [link text](vaultPath "title")
+    //
+    //    [Enspelled (Level 6) Hooked Shortspear](#Enspelled%20(Level%206)%20Hooked%20Shortspear)
     // - link text is optional, and may contain parentheses. Use a negative lookahead for ](
     // - vaultPath is required.
     //   - Slugified file names will not contain spaces
@@ -57,11 +59,14 @@ public class TestUtils {
     //   - Stop matching the vaultPath if you encounter a space (precedes an optional title) or a following markdown link
     // - title is optional
     final static String nextLink = "(?!\\]\\()"; // negative lookahead for ](
+    final static String linkText = "([^\\]]*?)"; // optional link text as group
     final static String linkTitle = "( \".+?\")?"; // optional link title
-    final static String linkText = "(" + nextLink + ".)*?"; // any sequence of characters except ](
-    final static String vaultPath = "(" + nextLink + "[^ ])+"; // any sequence of characters except ]( or space
+
+    // Match the vault path.. which could have nested parenthesis
+    final static String vaultPath = "([^\\s\"\\(\\)]+(?:\\([^\\)]*\\)[^\\s\"\\(\\)]*)*?)";
+
     final static Pattern markdownLinkPattern = Pattern
-            .compile("\\[" + linkText + "\\]\\((" + vaultPath + ")" + linkTitle + "\\)");
+            .compile("\\[" + linkText + "\\]\\(" + vaultPath + linkTitle + "\\)");
     final static Pattern blockRefPattern = Pattern.compile("[^#\\[]+(\\^[^ ]+)");
 
     final static Map<Path, List<String>> pathHeadings = new HashMap<>();
@@ -104,18 +109,34 @@ public class TestUtils {
 
             if (hash == 0) {
                 anchor = path.substring(1);
+                path = "";
             } else if (hash > 0) {
                 anchor = path.substring(hash + 1);
-                path = path.substring(0, hash)
-                        .replace("%20", " ");
-                if (!p.toString().endsWith(path)) {
+                path = path.substring(0, hash);
+            }
+
+            if (!path.isBlank()) {
+                path = path.replace("%20", " ");
+                if (path.startsWith("./")) {
+                    Path parent = p.getParent();
+                    resource = parent.resolve(path);
+                } else {
                     resource = Path.of(baseDir, path);
                 }
 
+                if (path.contains("\\")) {
+                    e.add(String.format("Found backslash in path in %s: %s", p, m.group(0)));
+                }
+
                 if (!resource.toFile().exists()) {
+                    Path firstResource = resource;
                     resource = p.getParent().resolve(path);
                     if (!resource.toFile().exists()) {
-                        e.add(String.format("Unresolvable reference in %s: %s ", p, m.group(0)));
+                        System.out.println("💈 " + path
+                                + "\n\t    first:" + firstResource
+                                + "\n\t   second:" + resource
+                                + "\n\t   from p:" + p);
+                        e.add(String.format("Unresolvable path (%s) in %s: %s", path, p, m.group(0)));
                         return;
                     }
                 }

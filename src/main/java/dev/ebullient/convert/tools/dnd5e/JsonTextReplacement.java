@@ -28,6 +28,7 @@ import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonTextConverter;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType.IndexFields;
@@ -686,8 +687,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
     default String linkOrText(String linkText, String key, String dirName, String resourceName) {
         return index().isIncluded(key)
-                ? "[%s](%s%s/%s.md)".formatted(
-                        linkText, index().compendiumVaultRoot(), dirName, slugify(resourceName)
+                ? "[%s](%s%s/%s.md)".formatted(linkText,
+                        index().compendiumVaultRoot(),
+                        dirName,
+                        slugify(resourceName)
                                 .replace("-dmg-dmg", "-dmg")) // bad combo for some race names
                 : linkText;
     }
@@ -697,8 +700,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String source = valueOrDefault(parts, 1, type.defaultSourceString());
         String linkText = valueOrDefault(parts, 2, parts[0]);
 
+        // optfeature (2014) -> feat (2024), etc.
         String key = index().getAliasOrDefault(type.createKey(parts[0].trim(), source));
-        return linkifyType(type, key, linkText, match);
+        Tools5eIndexType aliasType = Tools5eIndexType.getTypeFromKey(key);
+        return linkifyType(aliasType, key, linkText, match);
     }
 
     default String linkifyType(Tools5eIndexType type, String aliasKey, String linkText, String match) {
@@ -715,6 +720,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return linkText;
         }
         Tools5eSources linkSource = Tools5eSources.findSources(jsonSource);
+        if (Tools5eIndex.isSrdBasicFreeOnly() && linkSource.isSrdOrFreeRules()) {
+            String srcName = SourceField.name.getTextOrEmpty(jsonSource);
+            if (linkText.equalsIgnoreCase(srcName)) {
+                linkText = linkSource.getName(); // SRD name may be different / generic
+            }
+        }
         return linkOrText(linkText, aliasKey, dirName,
                 Tools5eQuteBase.fixFileName(type.decoratedName(jsonSource), linkSource));
     }
@@ -736,7 +747,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         return "[%s](%s%s/%s.md#%s)".formatted(
                 cardName,
                 index().compendiumVaultRoot(), dirName,
-                resource, cardName.replace(" ", "%20"));
+                resource,
+                cardName.replace(" ", "%20"));
     }
 
     default String linkifyDeity(String match) {
@@ -773,19 +785,20 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
         String relativePath = Tools5eIndexType.classtype.getRelativePath();
         if (subclass != null) {
-            String key = index()
-                    .getAliasOrDefault(
-                            Tools5eIndexType.getSubclassKey(className, classSource, subclass, subclassSource));
+            String key = index().getAliasOrDefault(
+                    Tools5eIndexType.getSubclassKey(className, classSource, subclass, subclassSource));
             // "subclass|path of wild magic|barbarian|phb|"
-            Tools5eSources scSources = Tools5eSources.findSources(key);
-            return linkOrText(linkText, key, relativePath,
-                    Tools5eQuteBase.getSubclassResource(
-                            scSources == null ? subclass : scSources.getName(),
-                            className, classSource, subclassSource));
+            // refetch the class and class source: phb -> xphb for example
+            return linkOrText(linkText, key, relativePath, Tools5eQuteBase.getSubclassResource(key));
         } else {
             String key = index().getAliasOrDefault(Tools5eIndexType.classtype.createKey(className, classSource));
+            JsonNode node = index().getNode(key);
+            if (node == null) {
+                return linkText;
+            }
+            Tools5eSources classSources = Tools5eSources.findSources(key);
             return linkOrText(linkText, key, relativePath,
-                    Tools5eQuteBase.getClassResource(className, classSource));
+                    Tools5eQuteBase.getClassResource(classSources.getName(), classSources.primarySource()));
         }
     }
 
@@ -1000,15 +1013,48 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     default String linkifyVariant(String variant) {
         // "fromVariant": "Action Options",
         // "fromVariant": "Spellcasting|XGE",
+        Tools5eIndexType type = Tools5eIndexType.variantrule;
         String[] parts = variant.trim().split("\\|");
-        String source = valueOrDefault(parts, 1, Tools5eIndexType.variantrule.defaultSourceString());
-        if (!index().sourceIncluded(source)) {
-            return "<span title=\"%s\">%s</span>".formatted(TtrpgConfig.sourceToLongName(source), parts[0]);
-        } else {
-            return "[%s](%svariant-rules/%s.md)".formatted(
-                    parts[0], index().rulesVaultRoot(),
-                    Tools5eQuteBase.fixFileName(parts[0], source, Tools5eIndexType.variantrule));
+        String source = valueOrDefault(parts, 1, type.defaultSourceString());
+        String linkText = valueOrDefault(parts, 2, parts[0]);
+
+        String key = findKey(type, parts[0], source);
+        if (index().isExcluded(key)) {
+            return "<span title=\"%s\">%s</span>".formatted(TtrpgConfig.sourceToLongName(source), linkText);
         }
+
+        Tools5eSources rulesSources = Tools5eSources.findSources(key);
+        String name = rulesSources.getName();
+        return "[%s](%s%s/%s.md)".formatted(
+                linkText,
+                index().rulesVaultRoot(),
+                type.getRelativePath(),
+                Tools5eQuteBase.fixFileName(name, rulesSources));
+    }
+
+    /**
+     * Get alias or default, with fallback for missing homebrew source
+     *
+     * @param type Type of resource
+     * @param name Name of resource (from tag)
+     * @param source Source of resource (from tag); may be null
+     * @return Key for resource (original, alias, or homebrew fallback)
+     */
+    default String findKey(Tools5eIndexType type, String name, String source) {
+        String key = index().getAliasOrDefault(type.createKey(name, source));
+        JsonNode targetNode = index().getOrigin(key); // test for existence
+        if (targetNode == null
+                && getSources().isHomebrew()
+                && source.equals(type.defaultSourceString())) {
+            // the variant rule wasn't found using the default source, but it is homebrew,
+            // so we'll try again with the homebrew source
+            String homebrewKey = index().getAliasOrDefault(type.createKey(name, getSources().primarySource()));
+            targetNode = index().getOrigin(homebrewKey);
+            if (targetNode != null) {
+                key = homebrewKey;
+            }
+        }
+        return key;
     }
 
     default String linkifyItemAttribute(Tools5eIndexType type, String s) {
@@ -1073,16 +1119,16 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String getMonsterType(JsonNode node) {
-        if (node == null || !node.has("type")) {
+        if (!MonsterFields.type.existsIn(node)) {
             tui().warnf("Monster: Empty type for %s", getSources());
             return null;
         }
-        JsonNode typeNode = node.get("type");
+        JsonNode typeNode = MonsterFields.type.getFrom(node);
         if (typeNode.isTextual()) {
-            return typeNode.asText();
-        } else if (typeNode.has("type")) {
+            return replaceText(typeNode);
+        } else if (typeNode.isObject() && MonsterFields.type.existsIn(typeNode)) {
             // We have an object: type + tags
-            return typeNode.get("type").asText();
+            return MonsterFields.type.replaceTextFrom(typeNode, this);
         }
         return null;
     }
