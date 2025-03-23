@@ -1016,7 +1016,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         Tools5eIndexType type = Tools5eIndexType.variantrule;
         String[] parts = variant.trim().split("\\|");
         String source = valueOrDefault(parts, 1, type.defaultSourceString());
-        String linkText = valueOrDefault(parts, 2, parts[0]);
+        String linkText = valueOrDefault(parts, 2, parts[0])
+                .replaceAll("\\[.*\\]", "");
 
         String key = findKey(type, parts[0], source);
         if (index().isExcluded(key)) {
