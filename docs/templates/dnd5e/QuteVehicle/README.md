@@ -12,7 +12,6 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 [action](#action), [books](#books), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [immuneResist](#immuneresist), [isCreature](#iscreature), [isObject](#isobject), [isShip](#isship), [isSpelljammer](#isspelljammer), [isWarMachine](#iswarmachine), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [scores](#scores), [shipCrewCargoPace](#shipcrewcargopace), [shipSections](#shipsections), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [sizeDimension](#sizedimension), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [terrain](#terrain), [text](#text), [token](#token), [vaultPath](#vaultpath), [vehicleType](#vehicletype)
 
-
 ### action
 
 List of vehicle actions as a collection of [NamedText](../../NamedText.md)

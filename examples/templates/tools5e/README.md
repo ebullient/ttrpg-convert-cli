@@ -1,10 +1,14 @@
 # Templates for 5eTools
 
+See the [5eTools template reference](../../../docs/templates/dnd5e/README.md) for additional information.
+
 - [5eTools default templates](#5etools-default-templates)
 - [5eTools templates with images](#5etools-templates-with-images)
 - [5eTools alternate monster templates](#5etools-alternate-monster-templates)
 <!-- -->
-- See also: [5eTools mixed templates](mixed/README.md)
+See also:
+
+- [5eTools mixed templates](mixed/README.md)
 
 ## 5eTools default templates
 
@@ -43,6 +47,8 @@ Some 5eTools data types have fluff images.  These templates include those images
 
 ## 5eTools alternate monster templates
 
+See the [Monster template reference](../../../docs/templates/dnd5e/QuteMonster/README.md) for additional attributes.
+
 - ***Fantasy Statblock* `statblock` in the body**
     - Monsters, objects, and vehicles that have `statblock: inline` will populate the *Fantasy Statblock* bestiary.
     - [monster2md-yamlStatblock-body.txt](monster2md-yamlStatblock-body.txt)
@@ -61,6 +67,10 @@ Some 5eTools data types have fluff images.  These templates include those images
     {resource.5eStatblockYaml}
     ```
     ````
+
+    Use `{resource.5eStatblockYamlNoSource}` to remove the source qualifier on the monster name.
+    Note that you may have to choose from a list of otherwise identical Goblins (as an example)
+    when creating encounters without the source attribute in the name.
 
     > [!TIP]
     > If you're using the Fantasy Statblock plugin to render statblocks
@@ -94,6 +104,10 @@ Some 5eTools data types have fluff images.  These templates include those images
     ```
     ^statblock
     ````
+
+    Use `{resource.5eInitiativeYamlNoSource}` to remove the source qualifier on the monster name.
+    Note that you may have to choose from a list of otherwise identical Goblins (as an example)
+    when creating encounters without the source attribute in the name.
 
 - **Markdown statblock, alternate score display** - [monster2md-scores.txt](monster2md-scores.txt) (similar will work for objects)
 

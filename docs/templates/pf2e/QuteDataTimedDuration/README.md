@@ -13,7 +13,6 @@ Examples:
 
 [customDisplay](#customdisplay), [formattedNotes](#formattednotes), [notes](#notes), [unit](#unit), [value](#value)
 
-
 ### customDisplay
 
 The custom display used for this duration.

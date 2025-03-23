@@ -5,7 +5,6 @@
 
 [face](#face), [name](#name), [sourceAndPage](#sourceandpage), [suitValue](#suitvalue), [text](#text)
 
-
 ### face
 
 Image from the front of the card as [ImageRef](../../ImageRef.md) (optional)

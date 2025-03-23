@@ -5,5 +5,4 @@
 
 [declaringClass](#declaringclass)
 
-
 ### declaringClass

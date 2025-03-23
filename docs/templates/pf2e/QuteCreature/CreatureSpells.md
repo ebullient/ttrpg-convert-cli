@@ -14,7 +14,6 @@ A collection of spells with some additional information.
 
 [cantripRank](#cantriprank), [cantrips](#cantrips), [knownRank](#knownrank), [slots](#slots), [spells](#spells)
 
-
 ### cantripRank
 
 The rank that these spells are auto-heightened to. Present only for cantrips.

@@ -25,7 +25,6 @@ or, using `{#each}` instead:
 
 [craftReq](#craftreq), [entries](#entries), [level](#level), [price](#price), [variantType](#varianttype)
 
-
 ### craftReq
 
 

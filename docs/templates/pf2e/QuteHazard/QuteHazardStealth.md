@@ -9,7 +9,6 @@ a marked up string based on the attributes that are present.
 
 [dc](#dc), [minProf](#minprof), [notes](#notes), [value](#value)
 
-
 ### dc
 
 The DC which must be passed to see the hazard

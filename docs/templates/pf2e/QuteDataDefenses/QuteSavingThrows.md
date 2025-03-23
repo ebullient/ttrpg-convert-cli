@@ -11,7 +11,6 @@ all saves vs. magic
 
 [abilities](#abilities), [fort](#fort), [ref](#ref), [will](#will)
 
-
 ### abilities
 
 Any saving throw related abilities

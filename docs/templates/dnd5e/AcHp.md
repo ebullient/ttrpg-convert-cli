@@ -10,7 +10,6 @@ To use it, reference it directly.
 
 [ac](#ac), [acText](#actext), [hitDice](#hitdice), [hp](#hp), [hpDiceRoller](#hpdiceroller), [hpText](#hptext)
 
-
 ### ac
 
 Armor class (number)

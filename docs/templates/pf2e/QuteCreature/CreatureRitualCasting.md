@@ -6,7 +6,6 @@ Information about a type of ritual casting available to this creature.
 
 [dc](#dc), [ranks](#ranks), [tradition](#tradition)
 
-
 ### dc
 
 The spell save DC for these rituals

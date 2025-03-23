@@ -8,7 +8,6 @@ Use these functions to help render TTRPG data in Qute templates.
 
 [asBonus](#asbonus), [capitalized](#capitalized), [join](#join), [joinConjunct](#joinconjunct), [pluralizeLabel](#pluralizelabel), [prefixSpace](#prefixspace)
 
-
 ### asBonus
 
 Return the value formatted with a bonus with a +/- prefix. Example: `{perception.asBonus}`
@@ -38,4 +37,5 @@ Example: `{resource.name.pluralized(resource.components)}`
 ### prefixSpace
 
 Return the given object as a string, with a space prepended if it's non-empty and non-null.
+
 Example: `{resource.name.prefixSpace}`

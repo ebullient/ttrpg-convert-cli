@@ -6,7 +6,6 @@
 
 [lowerBound](#lowerbound), [slots](#slots), [spells](#spells)
 
-
 ### lowerBound
 
 Set if this represents a spell range (the associated key is the upper bound)

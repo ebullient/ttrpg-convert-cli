@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.casting}`.
 
 [cost](#cost), [duration](#duration), [secondaryCasters](#secondarycasters)
 
-
 ### cost
 
 Formatted string. Material cost of the spell

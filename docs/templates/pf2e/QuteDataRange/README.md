@@ -6,7 +6,6 @@ A range with a given value and unit of measurement for that value.
 
 [notes](#notes), [unit](#unit), [value](#value)
 
-
 ### notes
 
 Any associated notes, or an alternate rendering when the range can't be represented using just

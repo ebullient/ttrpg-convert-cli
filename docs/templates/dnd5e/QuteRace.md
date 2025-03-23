@@ -8,7 +8,6 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 [ability](#ability), [books](#books), [description](#description), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [type](#type), [vaultPath](#vaultpath)
 
-
 ### ability
 
 Ability scores associated with this race (comma-separated list of scores or choices)

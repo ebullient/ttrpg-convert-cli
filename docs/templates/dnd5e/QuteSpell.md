@@ -8,7 +8,6 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 [books](#books), [classList](#classlist), [classes](#classes), [components](#components), [duration](#duration), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [range](#range), [references](#references), [reprintOf](#reprintof), [ritual](#ritual), [school](#school), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
 
-
 ### books
 
 List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.

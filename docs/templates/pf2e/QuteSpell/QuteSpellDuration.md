@@ -11,7 +11,6 @@ Example default representations:
 
 [dismissable](#dismissable), [duration](#duration), [sustained](#sustained)
 
-
 ### dismissable
 
 Whether this spell can be dismissed, boolean. Not included in the default representation.

@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.actionType}`.
 
 [flavor](#flavor), [majorBoon](#majorboon), [majorCurse](#majorcurse), [minorBoon](#minorboon), [minorCurse](#minorcurse), [moderateBoon](#moderateboon), [moderateCurse](#moderatecurse), [source](#source)
 
-
 ### flavor
 
 

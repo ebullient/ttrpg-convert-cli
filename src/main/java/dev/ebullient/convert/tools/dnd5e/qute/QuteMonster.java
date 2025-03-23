@@ -75,9 +75,8 @@ public class QuteMonster extends Tools5eQuteBase {
     /** Creature legendary traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final Collection<NamedText> legendary;
     /**
-     * Map of grouped legendary traits (Lair Actions, Regional Effects, etc.). The key the group name, and the value is a list
-     * of
-     * {@link dev.ebullient.convert.qute.NamedText}.
+     * Map of grouped legendary traits (Lair Actions, Regional Effects, etc.).
+     * The key the group name, and the value is a list of {@link dev.ebullient.convert.qute.NamedText}.
      */
     public final Collection<NamedText> legendaryGroup;
     /**

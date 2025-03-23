@@ -25,7 +25,6 @@ or, using `{#each}` instead:
 
 [ability](#ability), [daily](#daily), [desc](#desc), [footerEntries](#footerentries), [headerEntries](#headerentries), [name](#name), [spells](#spells), [will](#will)
 
-
 ### ability
 
 

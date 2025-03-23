@@ -41,6 +41,7 @@ public class TtrpgTemplateExtension {
 
     /**
      * Return the given object as a string, with a space prepended if it's non-empty and non-null.
+     *
      * Example: `{resource.name.prefixSpace}`
      */
     @JavadocVerbatim

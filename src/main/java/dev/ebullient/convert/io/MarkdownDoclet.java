@@ -226,7 +226,7 @@ public class MarkdownDoclet implements Doclet {
             aggregator.add(members.keySet().stream()
                     .map(s -> String.format("[%s](#%s)", s, s.toLowerCase()))
                     .collect(Collectors.joining(", ")));
-            aggregator.add("\n\n");
+            aggregator.add("\n");
 
             Map<String, List<? extends DocTree>> recordContent = new HashMap<>();
             if (t.getKind() == ElementKind.RECORD) {
@@ -374,7 +374,13 @@ public class MarkdownDoclet implements Doclet {
         if (docCommentTree != null) {
             Aggregator aggregator = new Aggregator();
             aggregator.addAll(docCommentTree.getFirstSentence());
-            return ": " + aggregator.toString().replaceAll("#+ ", "").trim();
+            var value = aggregator.toString().replace("\n", "\n    ")
+                    .replaceAll("#+ ", "")
+                    .trim();
+            if (value.contains("\n")) {
+                value += "\n";
+            }
+            return ": " + value;
         }
         return "";
     }
@@ -545,7 +551,7 @@ public class MarkdownDoclet implements Doclet {
 
         void add(String text) {
             if (htmlEntity.isEmpty()) {
-                content.add(text.replaceAll(" +", " "));
+                content.add(text);
             } else {
                 htmlEntity.peek().add(text);
             }

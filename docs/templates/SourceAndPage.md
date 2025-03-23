@@ -7,7 +7,6 @@ itself nicely if you don't reference sub-attributes.
 
 [longName](#longname), [page](#page), [source](#source)
 
-
 ### longName
 
 Long source name

@@ -10,7 +10,6 @@ Pf2eTools item shield attributes. When referenced directly, provides a default f
 
 [ac](#ac), [hpHardnessBt](#hphardnessbt), [speedPenalty](#speedpenalty)
 
-
 ### ac
 
 AC bonus for the shield, as [QuteDataArmorClass](../QuteDataArmorClass.md)

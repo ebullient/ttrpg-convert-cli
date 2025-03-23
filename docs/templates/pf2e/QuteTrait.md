@@ -8,7 +8,6 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 [aliases](#aliases), [books](#books), [categories](#categories), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
-
 ### aliases
 
 Aliases for this note

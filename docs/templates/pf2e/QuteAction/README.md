@@ -8,7 +8,6 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 [actionType](#actiontype), [activity](#activity), [aliases](#aliases), [basic](#basic), [books](#books), [cost](#cost), [frequency](#frequency), [hasSections](#hassections), [item](#item), [labeledSource](#labeledsource), [name](#name), [prerequisites](#prerequisites), [reprintOf](#reprintof), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
-
 ### actionType
 
 Type of action (as [ActionType](ActionType.md))

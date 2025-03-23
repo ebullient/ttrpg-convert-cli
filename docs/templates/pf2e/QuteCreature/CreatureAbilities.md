@@ -9,7 +9,6 @@ will give you a pre-formatted ability according to the embedded template defined
 
 [bottom](#bottom), [middle](#middle), [top](#top)
 
-
 ### bottom
 
 Abilities which should be displayed in the bottom section of the statblock

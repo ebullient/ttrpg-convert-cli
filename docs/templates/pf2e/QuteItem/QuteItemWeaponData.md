@@ -25,7 +25,6 @@ or, using `{#each}` instead:
 
 [damage](#damage), [group](#group), [ranged](#ranged), [traits](#traits), [type](#type)
 
-
 ### damage
 
 

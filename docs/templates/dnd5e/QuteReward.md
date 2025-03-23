@@ -8,7 +8,6 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 [ability](#ability), [books](#books), [detail](#detail), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [signatureSpells](#signaturespells), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
-
 ### ability
 
 Description of special ability granted by this reward, if defined separately. This is usually included in reward text.

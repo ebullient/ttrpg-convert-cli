@@ -7,7 +7,6 @@ The languages and language features known by a creature. Example default output:
 
 [abilities](#abilities), [languages](#languages), [notes](#notes)
 
-
 ### abilities
 
 Language-related abilities (optional)

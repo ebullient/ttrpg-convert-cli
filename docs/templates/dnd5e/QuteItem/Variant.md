@@ -5,7 +5,6 @@
 
 [age](#age), [ammo](#ammo), [armorClass](#armorclass), [attunement](#attunement), [baseItem](#baseitem), [cost](#cost), [costCp](#costcp), [cursed](#cursed), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [firearm](#firearm), [focus](#focus), [focusType](#focustype), [mastery](#mastery), [masteryList](#masterylist), [name](#name), [poison](#poison), [poisonTypes](#poisontypes), [prerequisite](#prerequisite), [properties](#properties), [propertiesList](#propertieslist), [range](#range), [rarity](#rarity), [staff](#staff), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tattoo](#tattoo), [tier](#tier), [type](#type), [typeAlt](#typealt), [weaponCategory](#weaponcategory), [weight](#weight), [wondrous](#wondrous)
 
-
 ### age
 
 Age/Era of item. Optional. Known values: futuristic, industrial, modern, renaissance, victorian.

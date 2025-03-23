@@ -9,7 +9,6 @@ if you reference it directly: `{resource.amp}`.
 
 [ampEffects](#ampeffects), [text](#text)
 
-
 ### ampEffects
 
 Heightened amp effects as a list of [Traits](../../NamedText.md)

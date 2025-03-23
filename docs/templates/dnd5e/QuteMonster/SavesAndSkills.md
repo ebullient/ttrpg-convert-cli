@@ -6,7 +6,6 @@
 
 [saveMap](#savemap), [saves](#saves), [skillMap](#skillmap), [skills](#skills)
 
-
 ### saveMap
 
 Creature saving throws as a map of key-value pairs.

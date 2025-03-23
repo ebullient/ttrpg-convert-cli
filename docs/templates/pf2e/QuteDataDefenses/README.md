@@ -20,7 +20,6 @@ Example:
 
 [ac](#ac), [additionalHpHardnessBt](#additionalhphardnessbt), [hpHardnessBt](#hphardnessbt), [immunities](#immunities), [resistances](#resistances), [savingThrows](#savingthrows), [weaknesses](#weaknesses)
 
-
 ### ac
 
 The armor class as a [QuteDataArmorClass](../QuteDataArmorClass.md)

@@ -8,7 +8,6 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 [aliases](#aliases), [books](#books), [casting](#casting), [checks](#checks), [duration](#duration), [hasSections](#hassections), [heightened](#heightened), [labeledSource](#labeledsource), [level](#level), [name](#name), [reprintOf](#reprintof), [requirements](#requirements), [ritualType](#ritualtype), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [targeting](#targeting), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
-
 ### aliases
 
 Aliases for this note

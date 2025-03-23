@@ -8,7 +8,6 @@ This attribute will render itself as labeled elements if you reference it direct
 
 [category](#category), [desc](#desc), [key](#key), [name](#name), [nested](#nested), [text](#text), [value](#value)
 
-
 ### category
 
 Alternate accessor for the name

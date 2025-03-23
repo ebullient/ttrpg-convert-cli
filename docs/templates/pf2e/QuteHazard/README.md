@@ -15,7 +15,6 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 [abilities](#abilities), [actions](#actions), [attacks](#attacks), [books](#books), [complexity](#complexity), [defenses](#defenses), [disable](#disable), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [perception](#perception), [reprintOf](#reprintof), [reset](#reset), [routine](#routine), [routineAdmonition](#routineadmonition), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [stealth](#stealth), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
-
 ### abilities
 
 The hazard's abilities, as a list of

@@ -12,7 +12,6 @@ Default representation example:
 
 [abilities](#abilities), [alternateValues](#alternatevalues), [notes](#notes), [value](#value)
 
-
 ### abilities
 
 Any AC related abilities

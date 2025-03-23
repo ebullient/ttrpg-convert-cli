@@ -10,7 +10,6 @@ To use it, reference it directly.
 
 [acHp](#achp), [actions](#actions), [desc](#desc), [name](#name), [speed](#speed)
 
-
 ### acHp
 
 Armor class and hit points as [ShipAcHp](ShipAcHp.md)

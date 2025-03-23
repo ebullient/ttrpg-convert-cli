@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.actionType}`.
 
 [author](#author), [cover](#cover), [group](#group), [id](#id), [name](#name), [published](#published)
 
-
 ### author
 
 Author

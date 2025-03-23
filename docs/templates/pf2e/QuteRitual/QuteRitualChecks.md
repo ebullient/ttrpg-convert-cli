@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.checks}`.
 
 [primaryChecks](#primarychecks), [secondaryChecks](#secondarychecks)
 
-
 ### primaryChecks
 
 Formatted string. Links to skills for primary checks

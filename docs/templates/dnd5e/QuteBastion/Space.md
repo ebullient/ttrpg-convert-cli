@@ -5,7 +5,6 @@
 
 [cost](#cost), [description](#description), [name](#name), [prevSpace](#prevspace), [squares](#squares), [time](#time)
 
-
 ### cost
 
 Cost (GP) of building a bastion of this size

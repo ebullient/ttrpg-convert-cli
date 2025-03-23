@@ -10,7 +10,6 @@ To use it, reference it directly.
 
 [conditionImmune](#conditionimmune), [immune](#immune), [present](#present), [resist](#resist), [vulnerable](#vulnerable)
 
-
 ### conditionImmune
 
 Comma-separated string of creature condition immunities (if present).

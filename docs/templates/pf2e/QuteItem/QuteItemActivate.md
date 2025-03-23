@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.activate}`.
 
 [activity](#activity), [components](#components), [frequency](#frequency), [requirements](#requirements), [trigger](#trigger)
 
-
 ### activity
 
 Item [activity/activation details](../QuteDataActivity.md)

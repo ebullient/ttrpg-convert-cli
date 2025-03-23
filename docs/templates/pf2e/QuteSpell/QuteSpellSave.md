@@ -11,7 +11,6 @@ Example default representations:
 
 [basic](#basic), [hidden](#hidden), [saves](#saves)
 
-
 ### basic
 
 True if this is a basic save (boolean)

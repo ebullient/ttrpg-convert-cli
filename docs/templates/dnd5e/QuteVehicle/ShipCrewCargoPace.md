@@ -17,7 +17,6 @@ To use it, reference it directly:
 
 [acHp](#achp), [cargo](#cargo), [crew](#crew), [crewText](#crewtext), [keelBeam](#keelbeam), [passenger](#passenger), [shipPace](#shippace), [speedPace](#speedpace)
 
-
 ### acHp
 
 Spelljammer or Infernal War Machine HP/AC

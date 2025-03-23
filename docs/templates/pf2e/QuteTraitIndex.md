@@ -12,7 +12,6 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 [books](#books), [categoryLinks](#categorylinks), [categoryToTraits](#categorytotraits), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
-
 ### books
 
 List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.

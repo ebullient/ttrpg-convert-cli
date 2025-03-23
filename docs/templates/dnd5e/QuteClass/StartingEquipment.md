@@ -10,7 +10,6 @@ structured text describing starting proficiencies and equipment *2014* vs
 
 [armor](#armor), [armorString](#armorstring), [classic](#classic), [equipment](#equipment), [isClassic](#isclassic), [joinOrDefault](#joinordefault), [proficiencies](#proficiencies), [savingThrows](#savingthrows), [skills](#skills), [tools](#tools), [weapons](#weapons)
 
-
 ### armor
 
 List of armor as formatted strings (links)

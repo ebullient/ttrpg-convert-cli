@@ -8,7 +8,6 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 [access](#access), [activate](#activate), [aliases](#aliases), [ammunition](#ammunition), [armor](#armor), [books](#books), [category](#category), [contract](#contract), [craftReq](#craftreq), [duration](#duration), [group](#group), [hands](#hands), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [onset](#onset), [price](#price), [reprintOf](#reprintof), [shield](#shield), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [traits](#traits), [usage](#usage), [variants](#variants), [vaultPath](#vaultpath), [weapons](#weapons)
 
-
 ### access
 
 Formatted string. Item access attributes

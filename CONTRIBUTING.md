@@ -174,9 +174,9 @@ Fields in these Json objects are also read through an enum type hierarchy. These
 
 - Rebase your commits (no merge commits)
 - Use one or more [gitmoji](https://gitmoji.dev/) (the actual emoji, not text) at the beginning of your commits.
-    There are gitmoji plugins/extensions for vscode and intellij, and those help with "pick the right emoji for this commit" prompting. 
+    There are gitmoji plugins/extensions for vscode and intellij, and those help with "pick the right emoji for this commit" prompting.
 
-    ```
+    ```txt
     🔥🤯 Support 2024 rule changes💥
     🤖 update generated content
     🚚 Rename pf2e/JsonSourceCopier to Pf2eJsonSourceCopier
@@ -187,5 +187,3 @@ Fields in these Json objects are also read through an enum type hierarchy. These
     - Do not use lipstick; use 🎨 instead.
     - Use sparkles (✨) if you are adding something new that should be noted in the [CHANGELOG](./CHANGELOG.md)
     - Use something fiery (🔥💥) if the commit includes breaking changes that should be noted in the [CHANGELOG](./CHANGELOG.md)
-
-    

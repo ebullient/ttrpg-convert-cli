@@ -9,7 +9,6 @@ if you reference it directly: `{resource.targeting}`.
 
 [area](#area), [range](#range), [targets](#targets)
 
-
 ### area
 
 Formatted string describing the spell area of effect

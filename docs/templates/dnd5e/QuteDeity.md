@@ -8,7 +8,6 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 [alignment](#alignment), [altNames](#altnames), [books](#books), [category](#category), [domains](#domains), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [image](#image), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [province](#province), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [symbol](#symbol), [tags](#tags), [text](#text), [title](#title), [vaultPath](#vaultpath)
 
-
 ### alignment
 
 Alignment of this deity

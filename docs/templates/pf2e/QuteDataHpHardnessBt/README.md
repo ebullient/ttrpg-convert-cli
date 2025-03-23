@@ -24,7 +24,6 @@ Creature example with a name and ability:
 
 [brokenThreshold](#brokenthreshold), [hardness](#hardness), [hp](#hp)
 
-
 ### brokenThreshold
 
 Broken threshold as an integer (optional, not populated for creatures)

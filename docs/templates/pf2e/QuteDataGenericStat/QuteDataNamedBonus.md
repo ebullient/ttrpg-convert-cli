@@ -9,7 +9,6 @@ Example default representation:
 
 [name](#name), [notes](#notes), [otherBonuses](#otherbonuses), [value](#value)
 
-
 ### name
 
 The name of the skill

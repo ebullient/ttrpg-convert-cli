@@ -15,7 +15,6 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 [access](#access), [activity](#activity), [aliases](#aliases), [books](#books), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasSections](#hassections), [labeledSource](#labeledsource), [leadsTo](#leadsto), [level](#level), [name](#name), [note](#note), [prerequisites](#prerequisites), [reprintOf](#reprintof), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
-
 ### access
 
 

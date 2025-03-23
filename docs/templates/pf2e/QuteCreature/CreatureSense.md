@@ -6,7 +6,6 @@ A creature's senses. Example default output: `tremorsense (imprecise) 20ft`
 
 [name](#name), [range](#range), [type](#type)
 
-
 ### name
 
 The name of the sense (required, string)

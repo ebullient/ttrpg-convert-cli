@@ -10,7 +10,6 @@ Pf2eTools activity attributes. This attribute will render itself as a formatted 
 
 [glyph](#glyph), [rulesPath](#rulespath), [text](#text), [textGlyph](#textglyph)
 
-
 ### glyph
 
 icon/image representing this activity as a [ImageRef](../ImageRef.md)

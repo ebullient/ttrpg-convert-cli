@@ -9,7 +9,6 @@ formatted text describing multiclassing requirements and proficiencies.
 
 [armor](#armor), [classic](#classic), [isClassic](#isclassic), [primaryAbility](#primaryability), [requirements](#requirements), [requirementsSpecial](#requirementsspecial), [skills](#skills), [text](#text), [tools](#tools), [weapons](#weapons)
 
-
 ### armor
 
 Armor proficiencies gained as formatted string

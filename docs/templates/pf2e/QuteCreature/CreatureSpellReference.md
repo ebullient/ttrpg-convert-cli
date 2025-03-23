@@ -10,7 +10,6 @@ A spell known by the creature.
 
 [amount](#amount), [link](#link), [name](#name), [notes](#notes)
 
-
 ### amount
 
 The number of casts available for this spell. A value of 0 represents an at will spell. Use

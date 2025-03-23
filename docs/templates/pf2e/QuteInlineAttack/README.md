@@ -8,7 +8,6 @@ When used directly, renders according to `inline-attack2md.txt`
 
 [activity](#activity), [attackBonus](#attackbonus), [damage](#damage), [damageTypes](#damagetypes), [effects](#effects), [multilineEffect](#multilineeffect), [name](#name), [notes](#notes), [rangeType](#rangetype), [traits](#traits)
 
-
 ### activity
 
 Number/type of action cost ([QuteDataActivity](../QuteDataActivity.md))

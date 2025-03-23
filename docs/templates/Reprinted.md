@@ -6,7 +6,6 @@ A simple record to hold the name and source of a reprinted item.
 
 [name](#name), [source](#source)
 
-
 ### name
 
 Name of the reprinted item

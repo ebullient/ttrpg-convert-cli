@@ -9,7 +9,6 @@ formatted strings based on the class version (2024 or not).
 
 [average](#average), [classic](#classic), [face](#face), [isClassic](#isclassic), [isSidekick](#issidekick), [name](#name), [number](#number), [sidekick](#sidekick)
 
-
 ### average
 
 The average value of a hit dice roll

@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.actionType}`.
 
 [abilities](#abilities), [ability](#ability), [attacks](#attacks), [name](#name), [preface](#preface), [shield](#shield), [speed](#speed)
 
-
 ### abilities
 
 

@@ -15,7 +15,6 @@ Examples:
 
 [interval](#interval), [notes](#notes), [overcharge](#overcharge), [recurs](#recurs), [unit](#unit), [value](#value)
 
-
 ### interval
 
 The interval that the frequency is repeated for

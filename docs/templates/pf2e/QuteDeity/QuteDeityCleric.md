@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.actionType}`.
 
 [alternateDomains](#alternatedomains), [divineAbility](#divineability), [divineFont](#divinefont), [divineSkill](#divineskill), [domains](#domains), [favoredWeapon](#favoredweapon), [spells](#spells)
 
-
 ### alternateDomains
 
 

@@ -6,7 +6,6 @@ Information about a type of spellcasting available to this creature.
 
 [attackBonus](#attackbonus), [constantRanks](#constantranks), [customName](#customname), [dc](#dc), [focusPoints](#focuspoints), [formattedStats](#formattedstats), [name](#name), [notes](#notes), [preparation](#preparation), [ranks](#ranks), [tradition](#tradition)
 
-
 ### attackBonus
 
 The spell attack bonus for these spells (integer)

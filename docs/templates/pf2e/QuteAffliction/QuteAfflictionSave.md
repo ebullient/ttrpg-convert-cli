@@ -6,7 +6,6 @@ Affliction saving throw
 
 [notes](#notes), [save](#save), [value](#value)
 
-
 ### notes
 
 Any notes relating to the saving throw

@@ -10,7 +10,6 @@ To use it, reference this attribute directly: `{resource.actionType}`.
 
 [ancestry](#ancestry), [archetype](#archetype), [basic](#basic), [classType](#classtype), [heritage](#heritage), [item](#item), [skills](#skills), [subclass](#subclass), [variantrule](#variantrule), [versatileHeritage](#versatileheritage)
 
-
 ### ancestry
 
 List of ancestries associated with this action

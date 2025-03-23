@@ -10,7 +10,6 @@ To use it, reference it directly: `{resource.armor}`.
 
 [ac](#ac), [checkPenalty](#checkpenalty), [dexCap](#dexcap), [speedPenalty](#speedpenalty), [strength](#strength)
 
-
 ### ac
 
 [Item armor class details](../QuteDataArmorClass.md)

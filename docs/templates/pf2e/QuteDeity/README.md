@@ -15,7 +15,6 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 [aliases](#aliases), [alignment](#alignment), [anathema](#anathema), [areasOfConcern](#areasofconcern), [avatar](#avatar), [books](#books), [category](#category), [cleric](#cleric), [edicts](#edicts), [followerAlignment](#followeralignment), [hasSections](#hassections), [intercession](#intercession), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
-
 ### aliases
 
 Aliases for this note

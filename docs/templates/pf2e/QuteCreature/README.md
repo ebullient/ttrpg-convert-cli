@@ -8,7 +8,6 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 [abilities](#abilities), [abilityMods](#abilitymods), [aliases](#aliases), [attacks](#attacks), [books](#books), [defenses](#defenses), [description](#description), [hasSections](#hassections), [items](#items), [labeledSource](#labeledsource), [languages](#languages), [level](#level), [name](#name), [perception](#perception), [reprintOf](#reprintof), [ritualCasting](#ritualcasting), [senses](#senses), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
-
 ### abilities
 
 The creature's abilities, as a

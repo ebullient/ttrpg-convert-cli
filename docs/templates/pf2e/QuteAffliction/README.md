@@ -8,7 +8,6 @@ Extension of [Pf2eQuteNote](../Pf2eQuteNote.md)
 
 [aliases](#aliases), [books](#books), [category](#category), [effect](#effect), [hasSections](#hassections), [isEmbedded](#isembedded), [labeledSource](#labeledsource), [level](#level), [maxDuration](#maxduration), [name](#name), [notes](#notes), [onset](#onset), [reprintOf](#reprintof), [savingThrow](#savingthrow), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [stages](#stages), [tags](#tags), [temptedCurse](#temptedcurse), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
-
 ### aliases
 
 Aliases for this note. Only populated if not embedded.

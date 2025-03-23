@@ -15,7 +15,6 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 [activity](#activity), [bareTraitList](#baretraitlist), [books](#books), [components](#components), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasActivity](#hasactivity), [hasAttributes](#hasattributes), [hasDetails](#hasdetails), [hasEffect](#haseffect), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [note](#note), [prerequisites](#prerequisites), [range](#range), [reference](#reference), [reprintOf](#reprintof), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
-
 ### activity
 
 Ability ([activity/activation details](QuteDataActivity.md))

@@ -10,7 +10,6 @@ Using this directly will give the default representation for either object.
 
 [activity](#activity)
 
-
 ### activity
 
 Returns true if this duration is a [QuteDataActivity](QuteDataActivity.md).

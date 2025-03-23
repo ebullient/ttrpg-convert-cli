@@ -6,7 +6,6 @@ Hireling information. Either exact or min must be present.
 
 [description](#description), [exact](#exact), [max](#max), [min](#min), [space](#space)
 
-
 ### description
 
 Formatted string description of the hirelings for a Bastion

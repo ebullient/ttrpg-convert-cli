@@ -9,7 +9,6 @@ Examples:
 
 [abilities](#abilities), [notes](#notes), [otherSpeeds](#otherspeeds), [value](#value)
 
-
 ### abilities
 
 Any speed-related abilities

@@ -6,7 +6,6 @@ Pf2eTools affliction stage attributes.
 
 [duration](#duration), [text](#text)
 
-
 ### duration
 
 Formatted text. Affliction duration

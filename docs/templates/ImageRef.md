@@ -20,7 +20,6 @@ Anchor tags are used to position images within a page and are styled with CSS. E
 
 [embeddedLink](#embeddedlink), [shortTitle](#shorttitle), [title](#title), [vaultPath](#vaultpath)
 
-
 ### embeddedLink
 
 Return an embedded markdown link to the image, using an optional

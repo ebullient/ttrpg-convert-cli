@@ -7,7 +7,6 @@ HP value and associated notes. Referencing this directly provides a default repr
 
 [abilities](#abilities), [notes](#notes), [value](#value)
 
-
 ### abilities
 
 Any abilities associated with the HP

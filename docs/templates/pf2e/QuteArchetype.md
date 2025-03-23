@@ -8,7 +8,6 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 [benefits](#benefits), [books](#books), [dedicationLevel](#dedicationlevel), [feats](#feats), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
-
 ### benefits
 
 

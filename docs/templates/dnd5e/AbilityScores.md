@@ -14,7 +14,6 @@ For example:
 
 [cha](#cha), [chaMod](#chamod), [chaStat](#chastat), [con](#con), [conMod](#conmod), [conStat](#constat), [dex](#dex), [dexMod](#dexmod), [dexStat](#dexstat), [int](#int), [intMod](#intmod), [intStat](#intstat), [str](#str), [strMod](#strmod), [strStat](#strstat), [wis](#wis), [wisMod](#wismod), [wisStat](#wisstat)
 
-
 ### cha
 
 Charisma as an ability string: `10 (+0)`

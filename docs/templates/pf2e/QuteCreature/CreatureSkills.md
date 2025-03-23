@@ -10,7 +10,6 @@ Athletics +10, Cult Lore +10 (lore on their cult), Stealth +10 (+12 in forests);
 
 [notes](#notes), [skills](#skills)
 
-
 ### notes
 
 Notes for the creature's skills (list of strings, optional)
