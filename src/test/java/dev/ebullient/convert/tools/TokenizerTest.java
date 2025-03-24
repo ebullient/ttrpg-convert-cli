@@ -60,7 +60,6 @@ public class TokenizerTest {
         String expected = "%atk% %hit% to hit, reach 5 ft., one target. %h%4 (%damage%) bludgeoning damage, or 5 (%damage%) bludgeoning damage if used with two hands to make a melee attack.";
 
         assertThat(tokenizer.replaceTokens(input, (s, b) -> s.replaceAll("\\{@(\\w+).*?}", "%$1%"))).isEqualTo(expected);
-
     }
 
     @Test
@@ -75,5 +74,4 @@ public class TokenizerTest {
 
         assertThat(tokenizer.replaceTokens(input, (s, b) -> s.replaceAll("\\{@\\w+ (.*?)}", "^[$1]"))).isEqualTo(expected);
     }
-
 }

@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools;
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
+import static dev.ebullient.convert.StringUtil.valueOrDefault;
 
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -107,6 +108,16 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String replaceWithDiceRoller(String input) {
+        if (!isPresent(input)) {
+            return input;
+        }
+        if (input.equals("{@d20}")) {
+            // this is a weird case where the input is just a d20 roll
+            input = "{@dice d20}";
+        }
+
+        DiceFormulaState formulaState = parseState().diceFormulaState();
+
         Matcher m = dicePattern.matcher(input);
         if (!m.find()) {
             return input;
@@ -116,14 +127,12 @@ public interface JsonTextConverter<T extends IndexType> {
             return input;
         }
 
-        DiceFormulaState formulaState = parseState().diceFormulaState();
-
         String tag = m.group(1);
         String[] parts = m.group(2).split("\\|");
 
         String rollString = parts[0].trim();
-        String displayText = parts.length > 1 ? parts[1].trim() : null;
-        String scaleSkillName = parts.length > 2 ? parts[2].trim() : null;
+        String displayText = valueOrDefault(parts, 1, null);
+        String scaleSkillName = valueOrDefault(parts, 2, null);
 
         return switch (tag) {
             case "d20", "h", "hit", "initiative" -> {
@@ -165,6 +174,7 @@ public interface JsonTextConverter<T extends IndexType> {
                         ? formatDice(scaleSkillName, parts[4].trim(), formulaState, true, true)
                         : formatDice(scaleSkillName, codeString(scaleSkillName, formulaState), formulaState, true, false);
             }
+            // {@dice d20}
             // {@dice 1d2-2+2d3+5} for regular dice rolls
             // {@dice 1d6;2d6} for multiple options;
             // {@dice 1d6 + #$prompt_number:min=1,title=Enter a Number!,default=123$#} for input prompts
@@ -210,9 +220,11 @@ public interface JsonTextConverter<T extends IndexType> {
                     + " + your class level";
         } else if (displayText != null && displayText.contains("summonClassLevel")) {
             displayText = displayText.replace("summonClassLevel", "your class level");
+        } else if (displayText == null && diceRoll.matches("^1?d20$")) {
+            displayText = null;
         }
 
-        String dice = codeString(diceRoll.replace("1d20", ""), formulaState);
+        String dice = codeString(diceRoll, formulaState);
 
         if (diceRoll.matches(JsonTextConverter.DICE_FORMULA)) {
             String postText = appendFormula ? " (" + dice + ")" : "";
@@ -250,6 +262,9 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String codeString(String text, DiceFormulaState formulaState) {
+        if (text.matches("^1?d20$")) {
+            return formulaState.plainText() ? "d20" : "`d20`";
+        }
         text = text.replace("1d20", "");
         return formulaState.plainText() ? text : "`" + text + "`";
     }
@@ -269,6 +284,8 @@ public interface JsonTextConverter<T extends IndexType> {
 
         if (text.contains("reach levels")) {
             // don't look for averages here. This is spell progression
+        } else if (text.matches("^`dice:1?d20.*?` \\(`1?d20`\\)")) {
+            text = "`dice:1d20|noform|noparens|avg|text(d20)`";
         } else {
             // otherwise look for average rolls
             // 7 (`dice:1d6+4|noform|avg` (`1d6 + 4`)) --> `dice:1d6+4|noform|avg|text(7)` (`1d6 + 4`)

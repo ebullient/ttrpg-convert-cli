@@ -198,17 +198,21 @@ public class TextReplacementTest implements JsonSource {
                 "*Melee Weapon Attack:* +9 to hit, reach 5 ft., one target. *Hit:* 9 (1d8 + 5) piercing damage plus 7 (2d6) necrotic damage.");
 
         // Now we'll indicate that we're within a trait (for a statblock)
-        parseState().pushTrait();
-        for (int i = 0; i < example.size(); i++) {
-            String result = this.replaceText(example.get(i));
-            assertThat(result).isEqualTo(traits.get(i));
-        }
+        boolean pushed = parseState().pushTrait();
+        try {
+            for (int i = 0; i < example.size(); i++) {
+                String result = this.replaceText(example.get(i));
+                assertThat(result).isEqualTo(traits.get(i));
+            }
 
-        // We should get the same result for disabledUsingFS (no backticks)
-        configurator.setUseDiceRoller(DiceRoller.disabledUsingFS);
-        for (int i = 0; i < example.size(); i++) {
-            String result = this.replaceText(example.get(i));
-            assertThat(result).isEqualTo(traits.get(i));
+            // We should get the same result for disabledUsingFS (no backticks)
+            configurator.setUseDiceRoller(DiceRoller.disabledUsingFS);
+            for (int i = 0; i < example.size(); i++) {
+                String result = this.replaceText(example.get(i));
+                assertThat(result).isEqualTo(traits.get(i));
+            }
+        } finally {
+            parseState().pop(pushed);
         }
     }
 
@@ -226,6 +230,55 @@ public class TextReplacementTest implements JsonSource {
             String example = " 7 (`dice:2d6|avg|noform` (`2d6`))";
             String result = this.simplifyFormattedDiceText(example);
             assertThat(result).isEqualTo(" `dice:2d6\\|avg\\|noform\\|text(7)` (`2d6`)");
+        } finally {
+            parseState().pop(pushed);
+        }
+    }
+
+    @Test
+    void testPlainD20() {
+        Configurator configurator = new Configurator(tui);
+
+        String d20 = "{@dice d20}";
+        String oneD20 = "{@dice 1d20}";
+        String tag20 = "{@d20}";
+
+        assertThat(this.replaceText(d20)).isEqualTo("`d20`");
+        assertThat(this.replaceText(oneD20)).isEqualTo("`d20`");
+        assertThat(this.replaceText(tag20)).isEqualTo("`d20`");
+
+        configurator.setUseDiceRoller(DiceRoller.enabled);
+
+        assertThat(this.replaceText(d20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+        assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+        assertThat(this.replaceText(tag20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+
+        configurator.setUseDiceRoller(DiceRoller.enabledUsingFS);
+
+        assertThat(this.replaceText(d20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+        assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+        assertThat(this.replaceText(tag20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+
+        boolean pushed = parseState().pushMarkdownTable(true);
+        try {
+            assertThat(this.replaceText(d20)).isEqualTo("`dice:1d20\\|noform\\|noparens\\|avg\\|text(d20)`");
+            assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20\\|noform\\|noparens\\|avg\\|text(d20)`");
+            assertThat(this.replaceText(tag20)).isEqualTo("`dice:1d20\\|noform\\|noparens\\|avg\\|text(d20)`");
+        } finally {
+            parseState().pop(pushed);
+        }
+
+        pushed = parseState().pushTrait();
+        try {
+            assertThat(this.replaceText(d20)).isEqualTo("d20");
+            assertThat(this.replaceText(oneD20)).isEqualTo("d20");
+            assertThat(this.replaceText(tag20)).isEqualTo("d20");
+
+            configurator.setUseDiceRoller(DiceRoller.disabledUsingFS);
+
+            assertThat(this.replaceText(d20)).isEqualTo("d20");
+            assertThat(this.replaceText(oneD20)).isEqualTo("d20");
+            assertThat(this.replaceText(tag20)).isEqualTo("d20");
         } finally {
             parseState().pop(pushed);
         }
