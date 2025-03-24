@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -134,31 +133,6 @@ public class Json2QuteCommon implements JsonSource {
         return text;
     }
 
-    public void unpackFluffNode(Tools5eIndexType fluffType, JsonNode fluffNode, List<String> text, String heading,
-            List<ImageRef> images) {
-
-        boolean pushed = parseState().push(getSources(), fluffNode);
-        try {
-            if (fluffNode.isArray()) {
-                appendToText(text, fluffNode, heading);
-            } else {
-                appendToText(text, SourceField.entries.getFrom(fluffNode), heading);
-            }
-        } finally {
-            parseState().pop(pushed);
-        }
-
-        if (Tools5eFields.images.existsIn(fluffNode)) {
-            getImages(Tools5eFields.images.getFrom(fluffNode), images);
-        } else if (Tools5eFields.hasFluffImages.booleanOrDefault(fluffNode, false)) {
-            String fluffKey = fluffType.createKey(fluffNode);
-            fluffNode = index.getOrigin(fluffKey);
-            if (fluffNode != null) {
-                getImages(Tools5eFields.images.getFrom(fluffNode), images);
-            }
-        }
-    }
-
     public List<ImageRef> getFluffImages(Tools5eIndexType fluffType) {
         List<ImageRef> images = new ArrayList<>();
         if (Tools5eFields.hasFluffImages.booleanOrDefault(rootNode, false)) {
@@ -169,17 +143,6 @@ public class Json2QuteCommon implements JsonSource {
             }
         }
         return images;
-    }
-
-    public void getImages(JsonNode imageNode, List<ImageRef> images) {
-        if (imageNode != null && imageNode.isArray()) {
-            for (Iterator<JsonNode> i = imageNode.elements(); i.hasNext();) {
-                ImageRef ir = readImageRef(i.next());
-                if (ir != null) {
-                    images.add(ir);
-                }
-            }
-        }
     }
 
     // {"ability":[{"dex":13}]}

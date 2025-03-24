@@ -6,6 +6,7 @@ import static java.util.Map.entry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -629,10 +630,32 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void embedReference(List<String> text, JsonNode entry, Tools5eIndexType type, String heading) {
         String name = SourceField.name.getTextOrEmpty(entry);
+        String key = index().getAliasOrDefault(type.createKey(entry));
+        Tools5eSources sources = Tools5eSources.findSources(key);
+        if (key == null || sources == null) {
+            tui().debugf(Msg.UNKNOWN, "unable to find statblock target %s from %s in %s", key, entry, getSources());
+            return;
+        }
 
         if (type == Tools5eIndexType.charoption) {
-            // charoption is a special case, it is not a linkable type.
+            // charoption is not a linkable type.
             tui().debugf(Msg.SOMEDAY, "charoption is not yet an embeddable type: %s", entry);
+            return;
+        } else if (type.isFluffType()) {
+            // Fluff is not a linkable type, and is never added to the filtered index,
+            // so we need to check if the material is included in other ways
+            JsonNode fluffNode = index().getOrigin(key);
+            if (!sources.includedByConfig() || fluffNode == null) {
+                // do nothing if the source isn't included
+                return;
+            }
+            List<ImageRef> images = new ArrayList<>();
+            unpackFluffNode(type, fluffNode, text, null, images);
+            maybeAddBlankLine(text);
+            return;
+        } else if (type == Tools5eIndexType.reference) {
+            // reference is not a linkable type.
+            tui().debugf(Msg.SOMEDAY, "reference is not yet an embeddable type: %s", entry);
             return;
         }
 
@@ -648,8 +671,11 @@ public interface JsonSource extends JsonTextReplacement {
             }
         } else {
             text.add(link);
-            tui().warnf(Msg.UNRESOLVED, "unable to find statblock target %s from %s", entry, getSources());
         }
+        // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","prop":"subclass","source":"XUA2023PlayersHandbookP7","name":"Aberrant","className":"Sorcerer","classSource":"XUA2023PlayersHandbookP7","collapsed":true,"displayName":"Aberrant Sorcery","indexInputType":"reference","indexKey":"reference|aberrant|xua2023playershandbookp7"} from sources[book|book-xua2023playershandbookp7]
+        // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","prop":"subclass","source":"XUA2023PlayersHandbookP7","name":"Clockwork","className":"Sorcerer","classSource":"XUA2023PlayersHandbookP7","collapsed":true,"displayName":"Clockwork Sorcery","indexInputType":"reference","indexKey":"reference|clockwork|xua2023playershandbookp7"} from sources[book|book-xua2023playershandbookp7]
+        // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","name":"Shove","source":"PHB","page":206,"tag":"action","indexInputType":"reference","indexKey":"reference|shove|phb"} from sources[itemgroup|honor's last stand|tdcsr]
+        // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","tag":"variantrule","source":"ESK","name":"Sidekicks","page":66,"indexInputType":"reference","indexKey":"reference|sidekicks|esk"} from sources[adventure|adventure-dip]
     }
 
     default void appendTable(List<String> text, JsonNode tableNode) {
@@ -827,6 +853,42 @@ public interface JsonSource extends JsonTextReplacement {
             return link.matches("\\[.+]\\(.+\\)") ? "!" + link : null;
         }
         return null;
+    }
+
+    default void unpackFluffNode(Tools5eIndexType fluffType, JsonNode fluffNode, List<String> text, String heading,
+            List<ImageRef> images) {
+
+        boolean pushed = parseState().push(getSources(), fluffNode);
+        try {
+            if (fluffNode.isArray()) {
+                appendToText(text, fluffNode, heading);
+            } else {
+                appendToText(text, SourceField.entries.getFrom(fluffNode), heading);
+            }
+        } finally {
+            parseState().pop(pushed);
+        }
+
+        if (Tools5eFields.images.existsIn(fluffNode)) {
+            getImages(Tools5eFields.images.getFrom(fluffNode), images);
+        } else if (Tools5eFields.hasFluffImages.booleanOrDefault(fluffNode, false)) {
+            String fluffKey = fluffType.createKey(fluffNode);
+            fluffNode = index().getOrigin(fluffKey);
+            if (fluffNode != null) {
+                getImages(Tools5eFields.images.getFrom(fluffNode), images);
+            }
+        }
+    }
+
+    default void getImages(JsonNode imageNode, List<ImageRef> images) {
+        if (imageNode != null && imageNode.isArray()) {
+            for (Iterator<JsonNode> i = imageNode.elements(); i.hasNext();) {
+                ImageRef ir = readImageRef(i.next());
+                if (ir != null) {
+                    images.add(ir);
+                }
+            }
+        }
     }
 
     default ImageRef readImageRef(JsonNode imageNode) {

@@ -33,10 +33,12 @@ public class FilterAllTest {
                     "reprintBehavior": "all",
                     "sources": {
                         "book": [
-                            "XGE"
+                            "XGE",
+                            "XMM"
                         ],
                         "adventure": [
-                            "OotA"
+                            "OotA",
+                            "DIP"
                         ],
                         "reference": [
                             "*"
