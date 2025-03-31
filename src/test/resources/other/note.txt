@@ -1,7 +1,8 @@
 ---
 obsidianUIMode: preview
 cssclasses: json5e-note
-aliases: ["{resource.name}"]
+aliases:
+- {resource.name}
 tags: 
 - test
 ---

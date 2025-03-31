@@ -5,9 +5,9 @@ cssclasses: json5e-bastion
 tags:
 {#for tag in resource.tags}
 - {tag}
-{/for}
-{/if}
-aliases: ["{resource.name}"]
+{/for}{/if}
+aliases:
+- {resource.name}
 ---
 # {resource.name}
 *{#if resource.prerequisite}Level {resource.level} {/if}Bastion facility*  

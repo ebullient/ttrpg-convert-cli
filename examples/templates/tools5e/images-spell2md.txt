@@ -11,9 +11,9 @@ tags:
 classes:
 {#each resource.classList}
 - {it}
-{/each}
-{/if}
-aliases: ["{resource.name}"]
+{/each}{/if}
+aliases:
+- {resource.name}
 ---
 # {resource.name}
 %%-- Embedded content starts on the next line. --%%

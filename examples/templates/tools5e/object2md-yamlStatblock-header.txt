@@ -9,7 +9,8 @@ tags:
 statblock: true
 statblock-link: "#^statblock"
 {resource.5eInitiativeYaml}
-aliases: ["{resource.name}"]
+aliases:
+- {resource.name}
 ---
 # {resource.name}
 *Source: {resource.source}*  

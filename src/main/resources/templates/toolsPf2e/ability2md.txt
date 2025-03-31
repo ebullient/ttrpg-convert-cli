@@ -5,9 +5,9 @@ cssclasses: pf2e,pf2e-ability
 tags:
 {#each resource.tags}
 - {it}
-{/each}
-{/if}
-aliases: ["{resource.name}"]
+{/each}{/if}
+aliases:
+- {resource.name}
 ---
 # {resource.name} {resource.activity}
 {resource.traits join "  "}

@@ -6,9 +6,9 @@ statblock: inline
 tags:
 {#for tag in resource.tags}
 - {tag}
-{/for}
-{/if}
-aliases: ["{resource.name}"]
+{/for}{/if}
+aliases:
+- {resource.name}
 ---
 
 # {resource.name}

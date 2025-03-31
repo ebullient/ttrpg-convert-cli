@@ -9,7 +9,8 @@ tags:
 {#if resource.tags }{#for tag in resource.tags}
 - {tag}
 {/for}{/if}
-aliases: ["{resource.name}"]
+aliases:
+- {resource.name}
 ---
 # [{resource.name}]({resource.vaultPath})
 {#if resource.detail }*{resource.detail}*  {/if}

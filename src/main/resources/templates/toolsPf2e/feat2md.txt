@@ -5,9 +5,12 @@ cssclasses: pf2e,pf2e-feat
 tags:
 {#for tag in resource.tags}
 - {tag}
-{/for}
-{/if}
-aliases: ["{resource.name}"{#each resource.aliases}, "{it}"{/each}]
+{/for}{/if}
+aliases: 
+- {resource.name}
+{#if resource.aliases }{#each resource.aliases}
+- {it}
+{/each}{/if}
 ---
 # {resource.name} {#if resource.activity} {resource.activity}{/if} *Feat {resource.level}*  
 %%-- Embedded/inline feat starts on the next line. --%%
