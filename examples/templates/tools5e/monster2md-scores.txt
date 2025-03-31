@@ -7,7 +7,14 @@ tags:
 - {tag}
 {/for}
 {/if}
-aliases: ["{resource.name}"]
+aliases: 
+- {resource.name}
+{#if resource.conditionImmune}
+conditionImmunities:
+{#for condition in resource.conditionImmune.split(", ?")}
+- "{condition}"
+{/for}
+{/if}
 ---
 # {resource.name}
 *Source: {resource.source}*  

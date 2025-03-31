@@ -5,6 +5,7 @@ See the [5eTools template reference](../../../docs/templates/dnd5e/README.md) fo
 - [5eTools default templates](#5etools-default-templates)
 - [5eTools templates with images](#5etools-templates-with-images)
 - [5eTools alternate monster templates](#5etools-alternate-monster-templates)
+
 <!-- -->
 See also:
 
@@ -124,3 +125,14 @@ See the [Monster template reference](../../../docs/templates/dnd5e/QuteMonster/R
     ```
     ^statblock
     ````
+
+- **Split stings in frontmatter** - [monster2md-scores.txt](monster2md-scores.txt) (similar will work for objects)
+
+    ```yaml
+    {#if resource.conditionImmune}
+    conditionImmunities:
+    {#for condition in resource.conditionImmune.split(", ?")}
+    - "{condition}"
+    {/for}
+    {/if}
+    ```
