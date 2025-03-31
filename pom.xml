@@ -54,7 +54,7 @@
         <evalex.version>3.4.0</evalex.version>
         <github-slugify.version>3.0.7</github-slugify.version>
         <icu4j.version>77.1</icu4j.version><!-- Optional dependency of Slugify -->
-        <jsonschema-generator.version>4.37.0</jsonschema-generator.version>
+        <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
         <hebi-sass.version>1.0.3</hebi-sass.version>
         <!-- Packaging -->
         <quarkus.package.type>uber-jar</quarkus.package.type>
