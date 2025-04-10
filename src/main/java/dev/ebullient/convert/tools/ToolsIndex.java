@@ -58,6 +58,12 @@ public interface ToolsIndex {
     }
 
     default boolean resolveSources(Path toolsPath) {
+        // Check for a 'data' subdirectory
+        Path data = toolsPath.resolve("data");
+        if (data.toFile().isDirectory()) {
+            toolsPath = data;
+        }
+
         TtrpgConfig.setToolsPath(toolsPath);
         var allOk = true;
         for (String adventure : cfg().resolveAdventures()) {

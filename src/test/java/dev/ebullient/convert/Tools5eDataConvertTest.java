@@ -326,10 +326,11 @@ public class Tools5eDataConvertTest {
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             TestUtils.deleteDir(testOutput);
 
+            // Make sure we find the data directory if the src dir is provided
             LaunchResult result = launcher.launch("--log", "--index",
                     "-o", testOutput.toString(),
                     TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
-                    TestUtils.PATH_5E_TOOLS_DATA.toString(),
+                    TestUtils.PATH_5E_TOOLS_SRC.toString(),
                     TestUtils.TEST_RESOURCES.resolve("5e/sources-book-adventure.json").toString());
 
             assertThat(result.exitCode())

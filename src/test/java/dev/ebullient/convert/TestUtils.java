@@ -39,7 +39,8 @@ public class TestUtils {
     public final static Path TEST_RESOURCES = PROJECT_PATH.resolve("src/test/resources/");
 
     // for compile/test purposes. Must clone/sync separately.
-    public final static Path PATH_5E_TOOLS_DATA = PROJECT_PATH.resolve("sources/5etools-src/data");
+    public final static Path PATH_5E_TOOLS_SRC = PROJECT_PATH.resolve("sources/5etools-src");
+    public final static Path PATH_5E_TOOLS_DATA = PATH_5E_TOOLS_SRC.resolve("data");
     public final static Path PATH_5E_TOOLS_IMAGES = PROJECT_PATH.resolve("sources/5etools-img");
 
     public final static Path PATH_5E_HOMEBREW = PROJECT_PATH.resolve("sources/5e-homebrew");
