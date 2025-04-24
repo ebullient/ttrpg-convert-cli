@@ -290,6 +290,49 @@ public class TextReplacementTest implements JsonSource {
         }
     }
 
+
+    @Test
+    void testPlainD12() {
+        Configurator configurator = new Configurator(tui);
+
+        String d12 = "{@dice d12}";
+        String oneD12 = "{@dice 1d12}";
+
+        assertThat(this.replaceText(d12)).isEqualTo("`d12`");
+        assertThat(this.replaceText(oneD12)).isEqualTo("`d12`");
+
+        configurator.setUseDiceRoller(DiceRoller.enabled);
+
+        assertThat(this.replaceText(d12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
+        assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
+
+        configurator.setUseDiceRoller(DiceRoller.enabledUsingFS);
+
+        assertThat(this.replaceText(d12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
+        assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
+
+        boolean pushed = parseState().pushMarkdownTable(true);
+        try {
+            assertThat(this.replaceText(d12)).isEqualTo("`dice:1d12\\|noform\\|noparens\\|avg\\|text(d12)`");
+            assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12\\|noform\\|noparens\\|avg\\|text(d12)`");
+        } finally {
+            parseState().pop(pushed);
+        }
+
+        pushed = parseState().pushTrait();
+        try {
+            assertThat(this.replaceText(d12)).isEqualTo("d12");
+            assertThat(this.replaceText(oneD12)).isEqualTo("d12");
+
+            configurator.setUseDiceRoller(DiceRoller.disabledUsingFS);
+
+            assertThat(this.replaceText(d12)).isEqualTo("d12");
+            assertThat(this.replaceText(oneD12)).isEqualTo("d12");
+        } finally {
+            parseState().pop(pushed);
+        }
+    }
+
     @Override
     public Tools5eIndex index() {
         return index;

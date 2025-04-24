@@ -174,6 +174,7 @@ public interface JsonTextConverter<T extends IndexType> {
                         ? formatDice(scaleSkillName, parts[4].trim(), formulaState, true, true)
                         : formatDice(scaleSkillName, codeString(scaleSkillName, formulaState), formulaState, true, false);
             }
+            // {@dice d6}
             // {@dice d20}
             // {@dice 1d2-2+2d3+5} for regular dice rolls
             // {@dice 1d6;2d6} for multiple options;
@@ -197,43 +198,41 @@ public interface JsonTextConverter<T extends IndexType> {
         };
     }
 
-    default String formatDice(String diceRoll, String displayText, DiceFormulaState formulaState, boolean useAverage,
+    default String formatDice(String rollString, String displayText, DiceFormulaState formulaState, boolean useAverage,
             boolean appendFormula) {
-        if (diceRoll.contains(";")) {
+        if (rollString.contains(";")) {
             return displayText;
         }
-        if (diceRoll.contains("<span")) {
+        if (rollString.contains("<span")) {
             // There is (or was) an input prompt here.
-            Matcher m = dicePatternWithSpan.matcher(diceRoll);
+            Matcher m = dicePatternWithSpan.matcher(rollString);
             if (m.matches()) {
                 displayText = "%s%s%s".formatted(m.group(2), codeString(m.group(1) + m.group(3), formulaState), m.group(4));
             }
         }
-        if (displayText == null && diceRoll.contains("summonSpellLevel")) {
-            displayText = codeString(diceRoll.replace(" + summonSpellLevel", ""), formulaState)
+        if (displayText == null && rollString.contains("summonSpellLevel")) {
+            displayText = codeString(rollString.replace(" + summonSpellLevel", ""), formulaState)
                     + " + the spell's level";
         } else if (displayText != null && displayText.contains("summonSpellLevel")) {
             displayText = displayText.replace("summonSpellLevel", "the spell's level");
         }
-        if (displayText == null && diceRoll.contains("summonClassLevel")) {
-            displayText = codeString(diceRoll.replace(" + summonClassLevel", ""), formulaState)
+        if (displayText == null && rollString.contains("summonClassLevel")) {
+            displayText = codeString(rollString.replace(" + summonClassLevel", ""), formulaState)
                     + " + your class level";
         } else if (displayText != null && displayText.contains("summonClassLevel")) {
             displayText = displayText.replace("summonClassLevel", "your class level");
-        } else if (displayText == null && diceRoll.matches("^1?d20$")) {
-            displayText = null;
         }
 
-        String dice = codeString(diceRoll, formulaState);
+        String dice = codeString(rollString, formulaState);
 
-        if (diceRoll.matches(JsonTextConverter.DICE_FORMULA)) {
+        if (rollString.matches(JsonTextConverter.DICE_FORMULA)) {
             String postText = appendFormula ? " (" + dice + ")" : "";
             if (formulaState.noRoller()) {
                 return displayText == null
                         ? dice
                         : displayText + postText;
             }
-            return diceFormula(diceRoll.replace(" ", ""), displayText, useAverage) + postText;
+            return diceFormula(rollString.replace(" ", ""), displayText, useAverage) + postText;
         } else {
             // Most likely have display text here. (Prompt, spell level, class level most likely cause)
             return displayText == null
@@ -262,8 +261,9 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String codeString(String text, DiceFormulaState formulaState) {
-        if (text.matches("^1?d20$")) {
-            return formulaState.plainText() ? "d20" : "`d20`";
+        if (text.matches("^1?d\\d+$")) {
+            text = text.replace("1d", "d");
+            return formulaState.plainText() ? text : "`%s`".formatted(text);
         }
         text = text.replace("1d20", "");
         return formulaState.plainText() ? text : "`" + text + "`";
@@ -284,8 +284,9 @@ public interface JsonTextConverter<T extends IndexType> {
 
         if (text.contains("reach levels")) {
             // don't look for averages here. This is spell progression
-        } else if (text.matches("^`dice:1?d20.*?` \\(`1?d20`\\)")) {
-            text = "`dice:1d20|noform|noparens|avg|text(d20)`";
+        } else if (text.matches("^`dice:1?d\\d+\\|.*?` \\(`1?d\\d+`\\)")) {
+            text = text.replaceAll("^`dice:1?d(\\d+)\\|.*",
+                    "`dice:1d$1|noform|noparens|avg|text(d$1)`");
         } else {
             // otherwise look for average rolls
             // 7 (`dice:1d6+4|noform|avg` (`1d6 + 4`)) --> `dice:1d6+4|noform|avg|text(7)` (`1d6 + 4`)
