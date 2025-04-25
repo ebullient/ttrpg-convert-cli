@@ -240,7 +240,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
 
                 maybeAddBlankLine(text);
                 text.add("## " + name);
-                if (!currentSources.isSrdOrFreeRules()) {
+                if (!currentSources.isSrdOrBasicRules()) {
                     text.add(getLabeledSource(srdEntry));
                 }
                 text.add("");

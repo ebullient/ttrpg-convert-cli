@@ -720,7 +720,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return linkText;
         }
         Tools5eSources linkSource = Tools5eSources.findSources(jsonSource);
-        if (Tools5eIndex.isSrdBasicFreeOnly() && linkSource.isSrdOrFreeRules()) {
+        if (Tools5eIndex.isSrdBasicOnly() && linkSource.isSrdOrBasicRules()) {
             String srcName = SourceField.name.getTextOrEmpty(jsonSource);
             if (linkText.equalsIgnoreCase(srcName)) {
                 linkText = linkSource.getName(); // SRD name may be different / generic

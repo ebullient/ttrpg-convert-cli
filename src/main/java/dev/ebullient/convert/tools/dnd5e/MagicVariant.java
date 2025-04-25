@@ -419,7 +419,7 @@ public class MagicVariant implements JsonSource {
 
         // Magic variants apply their own SRD info; page info
         SourceAttributes.basicRules.removeFrom(specificVariant);
-        SourceAttributes.freeRules2024.removeFrom(specificVariant);
+        SourceAttributes.basicRules2024.removeFrom(specificVariant);
         SourceAttributes.srd.removeFrom(specificVariant);
         SourceAttributes.srd52.removeFrom(specificVariant);
         SourceField.page.removeFrom(specificVariant);

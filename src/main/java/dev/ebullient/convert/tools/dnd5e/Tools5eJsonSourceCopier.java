@@ -34,7 +34,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
             "srd",
             "srd52",
             "basicRules",
-            "freeRules2024",
+            "basicRules2024",
             "reprintedAs",
             "hasFluff",
             "hasFluffImages",
@@ -93,9 +93,9 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         ObjectNode copyFrom = (ObjectNode) copyNode(subraceNode);
         ObjectNode subraceOut = (ObjectNode) copyNode(raceNode);
 
-        List.of("name", "source", "srd", "srd52", "basicRules", "freeRules2024")
+        List.of("name", "source", "srd", "srd52", "basicRules", "basicRules2024")
                 .forEach(p -> subraceOut.set("_base" + toTitleCase(p), subraceOut.get(p)));
-        List.of("subraces", "srd", "srd52", "basicRules", "freeRules2024",
+        List.of("subraces", "srd", "srd52", "basicRules", "basicRules2024",
                 "_versions", "hasFluff", "hasFluffImages",
                 "reprintedAs", "_rawName")
                 .forEach(subraceOut::remove);

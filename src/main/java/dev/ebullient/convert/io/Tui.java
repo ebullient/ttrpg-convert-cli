@@ -554,9 +554,9 @@ public class Tui {
 
     public boolean readToolsDir(Path toolsBase, BiConsumer<String, JsonNode> callback) {
         Collection<String> inputs = TtrpgConfig.getFileSources();
-        Collection<String> markers = TtrpgConfig.getMarkerFiles();
+        Collection<String> sourceFiles = TtrpgConfig.getFileSources();
 
-        if (!markers.stream().allMatch(f -> toolsBase.resolve(f).toFile().exists())) {
+        if (!sourceFiles.stream().allMatch(f -> toolsBase.resolve(f).toFile().exists())) {
             // Common mistake is to point to the tools directory instead of the data directory
             Path data = toolsBase.resolve("data");
             if (data.toFile().isDirectory()) {

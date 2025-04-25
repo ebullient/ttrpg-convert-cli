@@ -39,7 +39,7 @@ public class Tools5eSources extends CompendiumSources {
     private static final Map<String, FontRef> fontSourceToRef = new HashMap<>();
     private static final Map<String, List<QuteBase>> keyToInlineNotes = new HashMap<>();
     private static final Set<String> basicRulesKeys = new HashSet<>();
-    private static final Set<String> freeRulesKeys = new HashSet<>();
+    private static final Set<String> basicRules2024Keys = new HashSet<>();
 
     private static boolean isBasicRules(String key, JsonNode jsonElement) {
         if (basicRulesKeys.isEmpty()) {
@@ -50,18 +50,18 @@ public class Tools5eSources extends CompendiumSources {
                 || basicRulesKeys.contains(key);
     }
 
-    private static boolean isFreeRules2024(String key, JsonNode jsonElement) {
-        if (freeRulesKeys.isEmpty()) {
-            final JsonNode freeRules = TtrpgConfig.activeGlobalConfig("freeRules2024");
-            freeRules.forEach(node -> freeRulesKeys.add(node.asText()));
+    private static boolean isBasicRules2024(String key, JsonNode jsonElement) {
+        if (basicRules2024Keys.isEmpty()) {
+            final JsonNode basicRules = TtrpgConfig.activeGlobalConfig("basicRules2024");
+            basicRules.forEach(node -> basicRules2024Keys.add(node.asText()));
         }
-        return SourceAttributes.freeRules2024.coerceBooleanOrDefault(jsonElement, false)
-                || freeRulesKeys.contains(key);
+        return SourceAttributes.basicRules2024.coerceBooleanOrDefault(jsonElement, false)
+                || basicRules2024Keys.contains(key);
     }
 
     public static boolean has2024Content() {
         // return true if any of the 2024 core sources are enabled
-        return List.of("XPHB", "XDMG", "XMM", "srd52", "freerules2024")
+        return List.of("XPHB", "XDMG", "XMM", "srd52", "basicRules2024")
                 .stream().anyMatch(TtrpgConfig.getConfig()::sourceIncluded);
     }
 
@@ -203,7 +203,7 @@ public class Tools5eSources extends CompendiumSources {
     private final boolean srd;
     private final boolean basicRules;
     private final boolean srd52;
-    private final boolean freeRules2024;
+    private final boolean basicRules2024;
     private final boolean includedWhenNoSource;
 
     private final Tools5eIndexType type;
@@ -216,10 +216,10 @@ public class Tools5eSources extends CompendiumSources {
         super(type, key, jsonElement);
         this.type = type;
         this.basicRules = isBasicRules(key, jsonElement);
-        this.freeRules2024 = isFreeRules2024(key, jsonElement);
+        this.basicRules2024 = isBasicRules2024(key, jsonElement);
         this.srd = SourceAttributes.srd.coerceBooleanOrDefault(jsonElement, false);
         this.srd52 = SourceAttributes.srd52.coerceBooleanOrDefault(jsonElement, false);
-        this.includedWhenNoSource = this.srd52 || this.freeRules2024; // just 2024 when nothing specified
+        this.includedWhenNoSource = this.srd52 || this.basicRules2024; // just 2024 when nothing specified
 
         this.edition = SourceAttributes.edition.getTextOrEmpty(jsonElement);
         addBrewSource(TtrpgValue.homebrewSource, jsonElement);
@@ -239,8 +239,8 @@ public class Tools5eSources extends CompendiumSources {
         return TtrpgValue.homebrewSource.existsIn(node) || TtrpgValue.homebrewBaseSource.existsIn(node);
     }
 
-    public boolean isSrdOrFreeRules() {
-        return srd || basicRules || srd52 || freeRules2024;
+    public boolean isSrdOrBasicRules() {
+        return srd || basicRules || srd52 || basicRules2024;
     }
 
     /**
@@ -277,7 +277,7 @@ public class Tools5eSources extends CompendiumSources {
         }
         if (config.noSources()) {
             return this.includedWhenNoSource;
-        } else if (Tools5eIndex.isSrdBasicFreeOnly()) {
+        } else if (Tools5eIndex.isSrdBasicOnly()) {
             return testSrdRules2014(config)
                     || testSrdRules2024(config);
         }
@@ -304,7 +304,7 @@ public class Tools5eSources extends CompendiumSources {
     private boolean testSrdRules2024(CompendiumConfig config) {
         if (has2024Content()) {
             return (config.sourceIncluded("srd52") && this.srd52)
-                    || (config.sourceIncluded("freerules2024") && this.freeRules2024);
+                    || (config.sourceIncluded("basicrules2024") && this.basicRules2024);
         }
         return false;
     }
@@ -319,7 +319,7 @@ public class Tools5eSources extends CompendiumSources {
                 || (this.srd && sources.contains("srd"))
                 || (this.srd52 && sources.contains("srd52"))
                 || (this.basicRules && sources.contains("basicrules"))
-                || (this.freeRules2024 && sources.contains("freerules2024"));
+                || (this.basicRules2024 && sources.contains("basicrules2024"));
     }
 
     @Override
@@ -341,14 +341,14 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     public String getSourceText() {
-        if (Tools5eIndex.isSrdBasicFreeOnly()) {
+        if (Tools5eIndex.isSrdBasicOnly()) {
             List<String> bits = new ArrayList<>();
             if (srd) {
                 bits.add("SRD 5.1");
             } else if (srd52) {
                 bits.add("SRD 5.2");
             }
-            if (freeRules2024) {
+            if (basicRules2024) {
                 bits.add("the Free Rules (2024)");
             } else if (basicRules) {
                 bits.add("the Basic Rules (2014)");
@@ -371,7 +371,7 @@ public class Tools5eSources extends CompendiumSources {
             return this.key.replaceAll(".+?\\|([^|]+).*", "$1");
         }
 
-        if (Tools5eIndex.isSrdBasicFreeOnly() && Tools5eSources.isSrd(jsonElement)) {
+        if (Tools5eIndex.isSrdBasicOnly() && Tools5eSources.isSrd(jsonElement)) {
             String srdName = Tools5eSources.srdName(jsonElement);
             if (srdName != null) {
                 return srdName;
@@ -398,10 +398,11 @@ public class Tools5eSources extends CompendiumSources {
         }
         String srcText = super.findSourceText(type, jsonElement);
 
-        JsonNode basicRules = jsonElement.get("basicRules");
-        JsonNode freeRules2024 = jsonElement.get("freeRules2024");
-        JsonNode srd52 = jsonElement.get("srd52");
-        JsonNode srd = jsonElement.get("srd");
+        JsonNode basicRules = SourceAttributes.basicRules.getFrom(jsonElement);
+        JsonNode basicRules2024 = SourceAttributes.basicRules2024.getFrom(jsonElement);
+
+        JsonNode srd = SourceAttributes.srd.getFrom(jsonElement);
+        JsonNode srd52 = SourceAttributes.srd52.getFrom(jsonElement);
 
         String srdText = "";
         if (srd52 != null) {
@@ -417,10 +418,10 @@ public class Tools5eSources extends CompendiumSources {
         }
 
         String basicRulesText = "";
-        if (freeRules2024 != null) {
+        if (basicRules2024 != null) {
             basicRulesText = "the Free Rules (2024)";
-            if (freeRules2024.isTextual()) {
-                basicRulesText += " (as \"" + freeRules2024.asText() + "\")";
+            if (basicRules2024.isTextual()) {
+                basicRulesText += " (as \"" + basicRules2024.asText() + "\")";
             }
         } else if (basicRules != null) {
             basicRulesText = "the Basic Rules (2014)";
@@ -545,7 +546,7 @@ public class Tools5eSources extends CompendiumSources {
         srd,
         basicRules,
         srd52,
-        freeRules2024,
+        basicRules2024,
         edition;
     }
 
@@ -555,7 +556,7 @@ public class Tools5eSources extends CompendiumSources {
         fontSourceToRef.clear();
         keyToInlineNotes.clear();
         basicRulesKeys.clear();
-        freeRulesKeys.clear();
+        basicRules2024Keys.clear();
     }
 
     public static boolean isClassicEdition(JsonNode baseItem) {

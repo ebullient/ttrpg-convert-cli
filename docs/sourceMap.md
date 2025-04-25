@@ -10,7 +10,7 @@ _Support content creators. Only use or include sources that you own._
 ## Source name mapping for 5etools
 
 - **2014** (sources/reference): "srd", "basicrules"
-- **2024** (sources/reference): "srd52", "freerules2024"
+- **2024** (sources/reference): "srd52", "basicRules2024"
 
 ### 5eTools Abbreviations to long name
 
@@ -217,6 +217,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | TYP_ToH | TftYP-ToHs |
 | TYP_WPM | TftYP-WPM |
 | UATheMysticClass | UATMC |
+| freeRules2024 | basicRules2024 |
 
 
 ## Source name mapping for Pf2eTools

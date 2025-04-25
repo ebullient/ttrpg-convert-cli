@@ -47,7 +47,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return instance;
     }
 
-    public static boolean isSrdBasicFreeOnly() {
+    public static boolean isSrdBasicOnly() {
         if (instance == null || !instance.prepared.get()) {
             throw new IllegalStateException("Programmer error: Called isSrdBasicFreeOnly while indexing");
         }
@@ -55,7 +55,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (instance.isSrdBasicFreeOnly == null) {
             CompendiumConfig config = TtrpgConfig.getConfig();
             instance.isSrdBasicFreeOnly = config.noSources()
-                    || config.onlySources(List.of("srd", "basicrules", "srd52", "freerules2024"));
+                    || config.onlySources(List.of("srd", "basicrules", "srd52", "basicrules2024"));
         }
         return instance.isSrdBasicFreeOnly;
     }
@@ -1082,7 +1082,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // I have some custom content for types/property/mastery that
         // should be included, but only if some combination of
         // basic/free rules, srd, phb or dmg is included
-        return Tools5eIndex.isSrdBasicFreeOnly()
+        return Tools5eIndex.isSrdBasicOnly()
                 || config.sourcesIncluded(List.of("phb", "dmg", "xphb", "xdmg"));
     }
 

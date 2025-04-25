@@ -29,7 +29,7 @@ public class FilterSubset2024Test {
                     "sources": {
                         "adventure": ["PaBTSO", "dsotdq"],
                         "book": ["tdcsr", "xdmg", "xphb"],
-                        "reference": ["srd52", "freerules2024", "mpmm"]
+                        "reference": ["srd52", "basicRules2024", "mpmm"]
                     },
                     "images": {
                         "copyInternal": false
@@ -59,7 +59,7 @@ public class FilterSubset2024Test {
             assertThat(config.sourceIncluded("srd")).isFalse();
             assertThat(config.sourceIncluded("basicrules")).isFalse();
             assertThat(config.sourceIncluded("srd52")).isTrue();
-            assertThat(config.sourceIncluded("freerules2024")).isTrue();
+            assertThat(config.sourceIncluded("basicRules2024")).isTrue();
 
             assertThat(config.sourceIncluded("DMG")).isFalse();
             assertThat(config.sourceIncluded("PHB")).isFalse();
@@ -195,7 +195,7 @@ public class FilterSubset2024Test {
             commonTests.assert_MISSING("monster|ash zombie|lmop");
             commonTests.assert_Present("monster|ash zombie|pabtso");
             commonTests.assert_MISSING("monster|awakened shrub|mm");
-            commonTests.assert_MISSING("monster|awakened shrub|xmm");
+            commonTests.assert_Present("monster|awakened shrub|xmm");
             commonTests.assert_MISSING("monster|beast of the land|tce");
             commonTests.assert_Present("monster|beast of the land|xphb");
             commonTests.assert_MISSING("monster|bestial spirit (air)|tce");

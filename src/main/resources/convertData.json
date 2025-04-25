@@ -69,7 +69,7 @@
           "source": "XPHB",
           "page": 232,
           "id": "717",
-          "freerules2024": true,
+          "basicRules2024": true,
           "srd52": true,
           "entries": [
             "Some magic items require a creature to form a bond\u2014called Attunement\u2014with them before the creature can use an item's magical properties. Without becoming attuned to an item that requires Attunement, you gain only its nonmagical benefits unless its description states otherwise. For example, a magic Shield that requires Attunement provides the benefits of a normal Shield if you aren't attuned to it, but none of its magical properties.",
@@ -121,7 +121,7 @@
           "srd": true,
           "srd52": true,
           "basicRules": true,
-          "freeRules2024": true,
+          "basicRules2024": true,
           "entries": []
         },
         {
@@ -210,7 +210,7 @@
           "name": "Cursed Items",
           "source": "XDMG",
           "page": 220,
-          "freeRules2024": true,
+          "basicRules2024": true,
           "entries": [
             "A magic item’s description specifies whether it bears a curse. Most methods of identifying items, including the Identify spell, fail to reveal such a curse.",
             "Attunement to a cursed item can't be ended voluntarily unless the curse is broken first, such as with the {@spell Remove Curse} spell."
@@ -434,7 +434,7 @@
       "subrace|halfling (stout)|halfling|phb|phb",
       "subrace|human (variant)|human|phb|phb"
     ],
-    "freeRules2024": [
+    "basicRules2024": [
       "action|attack|xphb",
       "action|dash|xphb",
       "action|disengage|xphb",
@@ -835,13 +835,6 @@
       "variantrule|weapon attack|xphb",
       "variantrule|weapon|xphb"
     ],
-    "markerFiles": [
-      "bestiary/bestiary-mm.json",
-      "cultsboons.json",
-      "book/book-phb.json",
-      "spells/spells-tce.json",
-      "class/class-sidekick.json"
-    ],
     "aliases": {
       "classtype|artificer|phb": "classtype|artificer|tce",
       "item|alchemist's tools|phb": "item|alchemist's supplies|phb",
@@ -887,8 +880,15 @@
       "spell|word of radiance|phb": "spell|word of radiance|xge",
       "trap|quicksand|dmg": "hazard|quicksand|dmg"
     },
-    "fixes": {},
-    "sources": [
+    "fixes": {
+      "vehicles.json": [
+        {
+          "match": "(?<=\\\"source\\\": \\\"XDMG\\\",\\s*\\\"page\\\": \\d+,\\s*)\\\"srd\\\":",
+          "replace": "\"srd52\":"
+        }
+      ]
+    },
+    "sourceFiles": [
       "actions.json",
       "adventures.json",
       "backgrounds.json",
@@ -959,11 +959,7 @@
       "spell",
       "trait"
     ],
-    "markerFiles": [
-      "archetypes.json",
-      "book/book-crb.json"
-    ],
-    "sources": [
+    "sourceFiles": [
       "ancestries",
       "backgrounds",
       "bestiary",

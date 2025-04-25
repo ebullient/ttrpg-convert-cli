@@ -107,7 +107,7 @@ public class Tools5eQuteBase extends QuteBase {
         Tools5eIndexType type = sources.getType();
         JsonNode node = sources.findNode();
         String primarySource = sources.primarySource();
-        if (Tools5eIndex.isSrdBasicFreeOnly() && sources.isSrdOrFreeRules()) {
+        if (Tools5eIndex.isSrdBasicOnly() && sources.isSrdOrBasicRules()) {
             name = sources.getName(); // SRD name may be different / generic
         }
         return switch (type) {

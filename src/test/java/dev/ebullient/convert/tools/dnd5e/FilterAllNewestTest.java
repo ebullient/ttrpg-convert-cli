@@ -61,7 +61,7 @@ public class FilterAllNewestTest {
             assertThat(config.sourceIncluded("srd")).isTrue();
             assertThat(config.sourceIncluded("basicrules")).isTrue();
             assertThat(config.sourceIncluded("srd52")).isTrue();
-            assertThat(config.sourceIncluded("freerules2024")).isTrue();
+            assertThat(config.sourceIncluded("basicRules2024")).isTrue();
 
             assertThat(config.sourceIncluded("DMG")).isTrue();
             assertThat(config.sourceIncluded("PHB")).isTrue();

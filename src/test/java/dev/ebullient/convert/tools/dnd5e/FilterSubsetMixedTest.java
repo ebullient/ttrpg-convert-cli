@@ -80,7 +80,7 @@ public class FilterSubsetMixedTest {
             assertThat(config.sourceIncluded("srd")).isFalse();
             assertThat(config.sourceIncluded("basicrules")).isFalse();
             assertThat(config.sourceIncluded("srd52")).isFalse();
-            assertThat(config.sourceIncluded("freerules2024")).isFalse();
+            assertThat(config.sourceIncluded("basicRules2024")).isFalse();
 
             assertThat(config.sourceIncluded("DMG")).isFalse();
             assertThat(config.sourceIncluded("PHB")).isFalse();

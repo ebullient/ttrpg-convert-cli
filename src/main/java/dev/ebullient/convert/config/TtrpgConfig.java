@@ -107,13 +107,13 @@ public class TtrpgConfig {
 
     public static void includeAdditionalSource(String src) {
         CompendiumConfig config = getConfig();
-        config.addSource(src);
+        config.allowSource(src);
         // Books and Adventures use an id in the file name that may not
         // match the source abbreviation. When we add a source this way,
         // see if that mapping exists, and allow both.
         for (Entry<String, String> entry : config.sourceIdAlias.entrySet()) {
             if (entry.getValue().equals(src)) {
-                config.addSource(entry.getKey());
+                config.allowSource(entry.getKey());
             }
         }
     }
@@ -240,14 +240,9 @@ public class TtrpgConfig {
         });
     }
 
-    public static Collection<String> getMarkerFiles() {
-        DatasourceConfig activeConfig = activeDSConfig();
-        return Collections.unmodifiableSet(activeConfig.markerFiles);
-    }
-
     public static Collection<String> getFileSources() {
         DatasourceConfig activeConfig = activeDSConfig();
-        return Collections.unmodifiableSet(activeConfig.sources);
+        return Collections.unmodifiableSet(activeConfig.sourceFiles);
     }
 
     public static void addDefaultAliases(Map<String, String> aliases) {
@@ -276,9 +271,9 @@ public class TtrpgConfig {
                 if (basicRules != null) {
                     datasourceConfig.data.put(ConfigKeys.basicRules.name(), basicRules);
                 }
-                JsonNode freeRules2024 = ConfigKeys.freeRules2024.getFrom(config5e);
-                if (freeRules2024 != null) {
-                    datasourceConfig.data.put(ConfigKeys.freeRules2024.name(), freeRules2024);
+                JsonNode basicRules2024 = ConfigKeys.basicRules2024.getFrom(config5e);
+                if (basicRules2024 != null) {
+                    datasourceConfig.data.put(ConfigKeys.basicRules2024.name(), basicRules2024);
                 }
                 readCommonSystemConfig(config5e);
             }
@@ -297,8 +292,7 @@ public class TtrpgConfig {
         datasourceConfig.reference.putAll(ConfigKeys.reference.getAsKeyLowerRefMap(source));
         datasourceConfig.longToAbv.putAll(ConfigKeys.longToAbv.getAsKeyLowerMap(source));
         datasourceConfig.fallbackImagePaths.putAll(ConfigKeys.fallbackImage.getAsMap(source));
-        datasourceConfig.markerFiles.addAll(ConfigKeys.markerFiles.getAsList(source));
-        datasourceConfig.sources.addAll(ConfigKeys.sources.getAsList(source));
+        datasourceConfig.sourceFiles.addAll(ConfigKeys.sourceFiles.getAsList(source));
         datasourceConfig.indexes.putAll(ConfigKeys.indexes.getAsKeyLowerMap(source));
         datasourceConfig.templateKeys.addAll(ConfigKeys.templateKeys.getAsList(source));
 
@@ -317,8 +311,7 @@ public class TtrpgConfig {
         final Map<String, String> fallbackImagePaths = new HashMap<>();
         final Map<String, List<Fix>> fixes = new HashMap<>();
         final Map<String, String> indexes = new HashMap<>();
-        final Set<String> sources = new HashSet<>();
-        final Set<String> markerFiles = new HashSet<>();
+        final Set<String> sourceFiles = new HashSet<>();
         final Set<String> templateKeys = new TreeSet<>();
 
         public List<Fix> findFixesFor(String filepath) {
@@ -383,7 +376,7 @@ public class TtrpgConfig {
         aliases,
         abvToName,
         basicRules, // 5e
-        freeRules2024, // 5e
+        basicRules2024, // 5e
         config5e,
         configPf2e,
         constants,
@@ -392,10 +385,9 @@ public class TtrpgConfig {
         fixes,
         indexes,
         longToAbv,
-        markerFiles,
         properties,
         reference,
-        sources,
+        sourceFiles,
         srdEntries,
         templateKeys,
         ;

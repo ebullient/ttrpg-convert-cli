@@ -526,6 +526,7 @@ config5e:
     TYP_ToH: "TftYP-ToHs"
     TYP_WPM: "TftYP-WPM"
     UATheMysticClass: "UATMC"
+    freeRules2024: "basicRules2024"
 configPf2e:
   reference:
     "7DfS0":

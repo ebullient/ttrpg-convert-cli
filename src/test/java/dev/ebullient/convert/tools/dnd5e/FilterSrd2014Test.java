@@ -57,7 +57,7 @@ public class FilterSrd2014Test {
             assertThat(config.sourceIncluded("srd")).isTrue();
             assertThat(config.sourceIncluded("basicrules")).isTrue();
             assertThat(config.sourceIncluded("srd52")).isFalse();
-            assertThat(config.sourceIncluded("freerules2024")).isFalse();
+            assertThat(config.sourceIncluded("basicRules2024")).isFalse();
 
             assertThat(config.sourceIncluded("DMG")).isFalse();
             assertThat(config.sourceIncluded("PHB")).isFalse();

@@ -27,7 +27,7 @@ public class FilterSrdEditionsTest {
         String config = """
                 {
                     "sources": {
-                        "reference": ["srd", "basicrules", "srd52", "freerules2024"]
+                        "reference": ["srd", "basicrules", "srd52", "basicRules2024"]
                     },
                     "reprintBehavior": "edition",
                     "images": {
@@ -60,12 +60,12 @@ public class FilterSrdEditionsTest {
             var config = commonTests.config;
 
             assertThat(config.noSources()).isFalse();
-            assertThat(Tools5eIndex.isSrdBasicFreeOnly()).isTrue();
+            assertThat(Tools5eIndex.isSrdBasicOnly()).isTrue();
 
             assertThat(config.sourceIncluded("srd")).isTrue();
             assertThat(config.sourceIncluded("basicrules")).isTrue();
             assertThat(config.sourceIncluded("srd52")).isTrue();
-            assertThat(config.sourceIncluded("freerules2024")).isTrue();
+            assertThat(config.sourceIncluded("basicRules2024")).isTrue();
 
             assertThat(config.sourceIncluded("DMG")).isFalse();
             assertThat(config.sourceIncluded("PHB")).isFalse();
@@ -83,9 +83,9 @@ public class FilterSrdEditionsTest {
 
             commonTests.assert_MISSING("feat|alert|phb");
             commonTests.assert_Present("feat|alert|xphb");
-            commonTests.assert_MISSING("feat|dueling|xphb");
-            commonTests.assert_Present("feat|grappler|phb");
-            commonTests.assert_MISSING("feat|grappler|xphb");
+            commonTests.assert_Present("feat|dueling|xphb");
+            commonTests.assert_MISSING("feat|grappler|phb");
+            commonTests.assert_Present("feat|grappler|xphb");
             commonTests.assert_MISSING("feat|mobile|phb");
             commonTests.assert_MISSING("feat|moderately armored|phb");
             commonTests.assert_MISSING("feat|moderately armored|xphb");
@@ -120,8 +120,8 @@ public class FilterSrdEditionsTest {
             commonTests.assert_MISSING("deity|the traveler|exandria|egw");
             commonTests.assert_MISSING("deity|the traveler|exandria|tdcsr");
 
-            commonTests.assert_Present("disease|cackle fever|dmg"); // part of basic rules
-            commonTests.assert_MISSING("disease|cackle fever|xdmg");
+            commonTests.assert_MISSING("disease|cackle fever|dmg"); // part of basic rules
+            commonTests.assert_Present("disease|cackle fever|xdmg");
 
             commonTests.assert_MISSING("hazard|quicksand pit|xdmg");
             commonTests.assert_MISSING("hazard|quicksand|dmg");
@@ -131,10 +131,10 @@ public class FilterSrdEditionsTest {
             commonTests.assert_MISSING("itemgroup|arcane focus|phb");
             commonTests.assert_MISSING("itemgroup|arcane focus|xphb");
             commonTests.assert_MISSING("itemgroup|carpet of flying|dmg");
-            commonTests.assert_MISSING("itemgroup|carpet of flying|xdmg");
+            commonTests.assert_Present("itemgroup|carpet of flying|xdmg");
             commonTests.assert_MISSING("itemgroup|ioun stone|dmg");
             commonTests.assert_MISSING("itemgroup|ioun stone|llk");
-            commonTests.assert_MISSING("itemgroup|ioun stone|xdmg");
+            commonTests.assert_Present("itemgroup|ioun stone|xdmg");
             commonTests.assert_MISSING("itemgroup|musical instrument|phb");
             commonTests.assert_MISSING("itemgroup|musical instrument|scag");
             commonTests.assert_Present("itemgroup|musical instrument|xphb");
@@ -172,8 +172,8 @@ public class FilterSrdEditionsTest {
             commonTests.assert_Present("item|amulet of health|xdmg");
             commonTests.assert_MISSING("item|amulet of proof against detection and location|dmg");
             commonTests.assert_Present("item|amulet of proof against detection and location|xdmg");
-            commonTests.assert_Present("item|armor of invulnerability|dmg");
-            commonTests.assert_MISSING("item|armor of invulnerability|xdmg");
+            commonTests.assert_MISSING("item|armor of invulnerability|dmg");
+            commonTests.assert_Present("item|armor of invulnerability|xdmg");
             commonTests.assert_MISSING("item|automatic pistol|dmg");
             commonTests.assert_MISSING("item|automatic rifle|dmg");
             commonTests.assert_MISSING("item|automatic rifle|xdmg");
@@ -192,8 +192,8 @@ public class FilterSrdEditionsTest {
             commonTests.assert_Present("monster|ape|xmm");
             commonTests.assert_MISSING("monster|ash zombie|lmop");
             commonTests.assert_MISSING("monster|ash zombie|pabtso");
-            commonTests.assert_Present("monster|awakened shrub|mm");
-            commonTests.assert_MISSING("monster|awakened shrub|xmm");
+            commonTests.assert_MISSING("monster|awakened shrub|mm");
+            commonTests.assert_Present("monster|awakened shrub|xmm");
             commonTests.assert_MISSING("monster|beast of the land|tce");
             commonTests.assert_MISSING("monster|beast of the land|xphb");
             commonTests.assert_MISSING("monster|bestial spirit (air)|tce");
@@ -211,7 +211,7 @@ public class FilterSrdEditionsTest {
 
             commonTests.assert_MISSING("optfeature|ambush|tce");
             commonTests.assert_MISSING("optfeature|ambush|xphb");
-            commonTests.assert_Present("optfeature|dueling|phb");
+            commonTests.assert_MISSING("optfeature|dueling|phb");
             commonTests.assert_MISSING("optfeature|investment of the chain master|tce");
             commonTests.assert_Present("optfeature|investment of the chain master|xphb");
 
@@ -246,21 +246,21 @@ public class FilterSrdEditionsTest {
             commonTests.assert_Present("status|surprised|xphb");
 
             commonTests.assert_MISSING("trap|collapsing roof|dmg");
-            commonTests.assert_Present("trap|collapsing roof|xdmg"); // freerules2024
+            commonTests.assert_Present("trap|collapsing roof|xdmg"); // basicRules2024
             commonTests.assert_MISSING("trap|falling net|dmg");
-            commonTests.assert_Present("trap|falling net|xdmg"); // freerules2024
+            commonTests.assert_Present("trap|falling net|xdmg"); // basicRules2024
             commonTests.assert_MISSING("trap|pits|dmg");
-            commonTests.assert_Present("trap|hidden pit|xdmg"); // freerules2024
+            commonTests.assert_Present("trap|hidden pit|xdmg"); // basicRules2024
             commonTests.assert_MISSING("trap|poison darts|dmg");
-            commonTests.assert_Present("trap|poisoned darts|xdmg"); // freerules2024
+            commonTests.assert_Present("trap|poisoned darts|xdmg"); // basicRules2024
             commonTests.assert_MISSING("trap|poison needle trap|xge");
             commonTests.assert_MISSING("trap|poison needle|dmg");
-            commonTests.assert_Present("trap|poisoned needle|xdmg"); // freerules2024
+            commonTests.assert_Present("trap|poisoned needle|xdmg"); // basicRules2024
             commonTests.assert_MISSING("trap|rolling sphere|dmg");
-            commonTests.assert_Present("trap|rolling stone|xdmg"); // freerules2024
+            commonTests.assert_Present("trap|rolling stone|xdmg"); // basicRules2024
 
-            commonTests.assert_Present("vehicle|apparatus of kwalish|dmg"); // srd (as aparatus of the crab)
-            commonTests.assert_MISSING("vehicle|apparatus of kwalish|xdmg"); // not srd52 or freeRules2024
+            commonTests.assert_MISSING("vehicle|apparatus of kwalish|dmg");
+            commonTests.assert_Present("vehicle|apparatus of kwalish|xdmg"); // rd52 and basicRules2024
 
             // Classes, subclasses, class features, and subclass features
 
@@ -313,7 +313,7 @@ public class FilterSrdEditionsTest {
             commonTests.assert_Present("race|human|phb");
             commonTests.assert_Present("race|human|xphb");
             commonTests.assert_Present("race|tiefling|phb"); // in srd
-            commonTests.assert_MISSING("race|tiefling|xphb");
+            commonTests.assert_Present("race|tiefling|xphb");
             commonTests.assert_MISSING("race|warforged|erlw");
             commonTests.assert_MISSING("race|yuan-ti pureblood|vgm");
             commonTests.assert_MISSING("race|yuan-ti|mpmm");

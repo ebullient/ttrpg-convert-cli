@@ -202,8 +202,9 @@ public class CompendiumConfig {
                         return b;
                     }
                     String bl = b.toLowerCase();
+                    allowSource(bl);
                     String id = sourceIdAlias.getOrDefault(bl, bl);
-                    addSources(List.of(id, bl));
+                    allowSource(id);
                     return "book/book-" + id + ".json";
                 })
                 .toList();
@@ -217,8 +218,9 @@ public class CompendiumConfig {
                         return a;
                     }
                     String al = a.toLowerCase();
+                    allowSource(al);
                     String id = sourceIdAlias.getOrDefault(al, al);
-                    addSources(List.of(id, al));
+                    allowSource(id);
                     return "adventure/adventure-" + id + ".json";
                 })
                 .toList();
@@ -240,20 +242,30 @@ public class CompendiumConfig {
     }
 
     /** Package private: add source */
-    void addSource(String source) {
-        addSources(List.of(source));
+    void allowSource(String source) {
+        if (source == null || source.isEmpty()) {
+            return;
+        }
+        String s = source.toLowerCase();
+        allowedSources.add("all".equals(s) ? "*" : s);
+        allSources = allowedSources.contains("*");
+
+        if (!allSources) {
+            // If this source maps to an abbreviation, include that, too
+            // This also handles source renames (freeRules2024 -> basicRules2024)
+            String abbv = TtrpgConfig.sourceToAbbreviation(s);
+            allowedSources.add(abbv);
+        }
     }
 
     /** Package private: add sources */
-    void addSources(List<String> sources) {
-        if (sources == null || sources.isEmpty()) {
+    void allowSources(List<String> sources) {
+        if (sources == null) {
             return;
         }
-        allowedSources.addAll(sources.stream()
-                .map(String::toLowerCase)
-                .map(s -> "all".equals(s) ? "*" : s)
-                .toList());
-        allSources = allowedSources.contains("*");
+        for (String s : sources) {
+            allowSource(s);
+        }
     }
 
     private void addExcludePattern(String value) {
@@ -297,15 +309,14 @@ public class CompendiumConfig {
             this(compendiumConfig.tui);
         }
 
+        public void allowSource(String src) {
+            CompendiumConfig cfg = TtrpgConfig.getConfig();
+            cfg.allowSource(src);
+        }
+
         public void setSourceIdAlias(String src, String id) {
             CompendiumConfig cfg = TtrpgConfig.getConfig();
             cfg.sourceIdAlias.put(src.toLowerCase(), id.toLowerCase());
-        }
-
-        /** 1.x sources from command line */
-        public void addSources(List<String> source) {
-            CompendiumConfig cfg = TtrpgConfig.getConfig();
-            cfg.addSources(source);
         }
 
         public void setTemplatePaths(TemplatePaths templatePaths) {
@@ -366,7 +377,7 @@ public class CompendiumConfig {
             config.books.addAll(input.books());
             config.adventures.addAll(input.adventures());
             config.homebrew.addAll(input.homebrew());
-            config.addSources(input.references());
+            config.allowSources(input.references());
 
             config.images = new ImageOptions(config.images, input.images);
             config.paths = new PathAttributes(config.paths, input.paths);
