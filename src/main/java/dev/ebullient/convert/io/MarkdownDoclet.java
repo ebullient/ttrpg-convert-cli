@@ -347,7 +347,8 @@ public class MarkdownDoclet implements Doclet {
 
     boolean isIgnored(Element element) {
         return element.getAnnotation(JavadocIgnore.class) != null
-                || element.getSimpleName().toString().contains("Builder");
+                || element.getSimpleName().toString().contains("Builder")
+                || element.getSimpleName().toString().contains("DeclaringClass");
     }
 
     boolean isIncludedVerbatim(Element element) {

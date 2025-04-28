@@ -2,7 +2,3 @@
 
 
 ## Attributes
-
-[declaringClass](#declaringclass)
-
-### declaringClass
