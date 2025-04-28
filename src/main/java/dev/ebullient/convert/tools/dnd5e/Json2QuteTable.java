@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteTable extends Json2QuteCommon {
@@ -25,7 +24,7 @@ public class Json2QuteTable extends Json2QuteCommon {
 
         Tags tags = new Tags(getSources());
         List<String> text = new ArrayList<>();
-        String targetDir = type.getRelativePath();
+        String targetDir = linkifier().getRelativePath(type);
         String targetFile = null;
 
         if (getName().equals("Damage Types")) {
@@ -40,7 +39,7 @@ public class Json2QuteTable extends Json2QuteCommon {
         } else if (type == Tools5eIndexType.tableGroup) {
             appendToText(text, Tools5eFields.tables.getFrom(rootNode), "##");
         } else {
-            targetFile = Tools5eQuteBase.fixFileName(getName(), getSources());
+            targetFile = linkifier().getTargetFileName(getName(), getSources());
             appendTable(text, rootNode);
         }
 

@@ -139,7 +139,7 @@ public class QuteMonster extends Tools5eQuteBase {
 
     @Override
     public String targetPath() {
-        return Tools5eQuteBase.monsterPath(isNpc, type);
+        return linkifier().monsterPath(isNpc, type);
     }
 
     /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#hp} */
@@ -353,7 +353,8 @@ public class QuteMonster extends Tools5eQuteBase {
     private String yamlMonsterName(boolean withSource) {
         if (withSource) {
             String source = getBooks().get(0);
-            if (!Tools5eIndexType.monster.defaultSourceString().equalsIgnoreCase(source)) {
+            String outputSource = Tools5eIndexType.monster.defaultOutputSource();
+            if (!outputSource.equalsIgnoreCase(source)) {
                 return " (" + source + ")";
             }
         }

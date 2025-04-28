@@ -205,7 +205,7 @@ public class Json2QuteCompose extends Json2QuteCommon {
         if (fromVariant != null) {
             maybeAddBlankLine(text);
             text.add("This action is an optional addition to the game, from the optional/variant rule "
-                    + linkifyVariant(fromVariant) + ".");
+                    + linkifyVariantRule(fromVariant) + ".");
         }
     }
 

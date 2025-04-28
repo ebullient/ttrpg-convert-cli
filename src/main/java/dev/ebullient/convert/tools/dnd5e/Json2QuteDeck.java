@@ -45,7 +45,7 @@ public class Json2QuteDeck extends Json2QuteCommon {
             if (cardKey != null) {
                 JsonNode cardNode = index.getNode(cardKey);
                 if (cardNode == null) {
-                    tui().errorf("Unable to find card %s referenced from %s", cardKey, sources.getKey());
+                    tui().errorf("Unable to find %s referenced from %s", cardKey, sources.getKey());
                 } else {
                     appendCard(hasCardArt, cards, cardNode);
                 }

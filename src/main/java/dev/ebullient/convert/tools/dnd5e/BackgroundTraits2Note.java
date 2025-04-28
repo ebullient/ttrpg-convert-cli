@@ -12,7 +12,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class BackgroundTraits2Note extends Json2QuteCommon {
 
-    final String targetDir = Tools5eIndexType.table.getRelativePath();
+    final String targetDir = linkifier().getRelativePath(Tools5eIndexType.table);
 
     public BackgroundTraits2Note(Tools5eIndex index) {
         super(index, Tools5eIndexType.syntheticGroup, null);

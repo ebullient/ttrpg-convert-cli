@@ -25,29 +25,6 @@
         "type" : "string"
       }
     },
-    "fullSource" : {
-      "type" : "object",
-      "properties" : {
-        "adventure" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "book" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "homebrew" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
     "images" : {
       "type" : "object",
       "properties" : {
@@ -112,6 +89,9 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "defaultSource" : {
+          "$ref" : "#/$defs/Map(String,String)"
         },
         "homebrew" : {
           "type" : "array",

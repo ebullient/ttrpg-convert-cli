@@ -29,7 +29,7 @@ public record ItemMastery(
     }
 
     public String linkify(String linkText) {
-        Tools5eIndex index = Tools5eIndex.getInstance();
+        Tools5eIndex index = Tools5eIndex.instance();
         linkText = isPresent(linkText) ? linkText : name;
 
         boolean included = isPresent(indexKey)
@@ -44,6 +44,13 @@ public record ItemMastery(
 
     public static final Comparator<ItemMastery> comparator = Comparator.comparing(ItemMastery::name);
     private static final Map<String, ItemMastery> masteryMap = new HashMap<>();
+
+    public static ItemMastery forKey(String key) {
+        if (!isPresent(key)) {
+            return null;
+        }
+        return masteryMap.get(key);
+    }
 
     public static ItemMastery fromNode(JsonNode mastery) {
         String key = TtrpgValue.indexKey.getTextOrEmpty(mastery);

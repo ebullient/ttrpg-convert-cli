@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
+import static dev.ebullient.convert.StringUtil.valueOrDefault;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public record ItemType(
     }
 
     public String linkify(String linkText) {
-        Tools5eIndex index = Tools5eIndex.getInstance();
+        Tools5eIndex index = Tools5eIndex.instance();
         linkText = isPresent(linkText) ? linkText : name;
 
         boolean included = isPresent(indexKey)
@@ -53,7 +54,17 @@ public record ItemType(
 
     public static final Map<String, ItemType> typeMap = new HashMap<>();
 
+    public static ItemType forKey(String key) {
+        if (!isPresent(key)) {
+            return null;
+        }
+        return typeMap.get(key);
+    }
+
     public static ItemType fromNode(JsonNode typeNode) {
+        if (typeNode == null) {
+            return null;
+        }
         String typeKey = TtrpgValue.indexKey.getTextOrEmpty(typeNode);
         if (typeKey.isEmpty()) {
             Tui.instance().warnf(Msg.NOT_SET.wrap("Index key not found for type %s"), typeNode);
@@ -166,19 +177,71 @@ public record ItemType(
         typeMap.clear();
     }
 
-    public static String defaultItemSource(String code) {
-        boolean xphbAvailable = TtrpgConfig.getConfig().sourceIncluded("XPHB");
-        boolean xdmgAvailable = TtrpgConfig.getConfig().sourceIncluded("XDMG");
-        return switch (code) {
-            case "$", "$A", "$G" -> "DMG"; // treasure
-            case "AF", "EXP" -> "DMG"; // ammunition, explosives
-            case "AIR", "SC", "SHP" -> xphbAvailable ? "XPHB" : "DMG"; // airship
-            case "GV", "RD", "RG", "WD" -> "DMG"; // generic variant / magic item
+    public static String refTagToKey(String text) {
+        String[] parts = text.split("\\|");
+        String abv = parts[0].trim();
+        String source = defaultItemSource(abv,
+                valueOrDefault(parts, 1, "PHB"));
+
+        return Tools5eIndexType.itemType.createKey(abv, source);
+    }
+
+    private static String defaultItemSource(String code, String source) {
+        boolean xphbAvailable = TtrpgConfig.getConfig().sourceIncluded("XPHB") || Tools5eSources.has2024basicSrd();
+        boolean xdmgAvailable = TtrpgConfig.getConfig().sourceIncluded("XDMG") || Tools5eSources.has2024basicSrd();
+        // reprints work mostly, but a few changed default between phb and dmg
+        return switch (code.toUpperCase()) {
+            // PHB <-> XPHB
+            case "$C", // coinage
+                    "A", // ammunition
+                    "AT", // artisan tool
+                    "FD", // food & drink
+                    "G", // adventuring gear
+                    "GS", // gaming set
+                    "HA", // heavy armor
+                    "INS", // instrument
+                    "LA", // light armor
+                    "M", // melee weapon
+                    "MA", // medium armor
+                    "MNT", // mount
+                    "P", // potion
+                    "R", // ranged weapon
+                    "S", // shield
+                    "SCF", // spellcasting focus
+                    "T", // tool
+                    "TAH", // tack & harness
+                    "VEH" // vehicle (land)
+                -> xphbAvailable ? "XPHB" : "PHB";
+
+            // PHB <-> XDMG
+            case "TG" // trade good
+                -> xdmgAvailable ? "XDMG" : "PHB";
+
+            // DMG <-> XDMG
+            case "$A", // art object
+                    "$G", // gemstone
+                    "AF", // ammunition (futuristic)
+                    "EXP" // explosive
+                -> xdmgAvailable ? "XDMG" : "DMG";
+
+            // DMG <-> XPHB
+            case "AIR", // air vehicle
+                    "SC", // scroll
+                    "SHP" // ship (water)
+                -> xphbAvailable ? "XPHB" : "DMG";
+
+            case "$", // treasure
+                    "GV", // generic variant
+                    "RD", // rod
+                    "RG", // ring
+                    "WD" // wand
+                -> "DMG"; //  (2014 only)
+
             case "IDG" -> "TDCSR"; // illegal drug
+            case "OTH" -> "PHB"; // other (2014 only)
             case "SPC" -> "AAG"; // spelljammer
-            case "TB" -> "XDMG";
-            case "TG" -> xdmgAvailable ? "XDMG" : "PHB"; // trade good
-            default -> "PHB";
+            case "TB" -> "XDMG"; // trade bar (2024 only)
+            default -> source;
         };
     }
 }

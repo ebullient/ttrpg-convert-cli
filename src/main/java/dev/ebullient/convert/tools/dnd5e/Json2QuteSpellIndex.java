@@ -13,7 +13,6 @@ import java.util.TreeSet;
 
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 /**
@@ -117,8 +116,8 @@ public class Json2QuteSpellIndex extends Json2QuteCommon {
         maybeAddBlankLine(text);
 
         return new Tools5eQuteNote(toTitleCase(className) + " Spells", "", text, tags)
-                .withTargetFile(Tools5eQuteBase.getClassSpellList(className))
-                .withTargetPath(Tools5eIndexType.spellIndex.getRelativePath());
+                .withTargetFile(linkifier().getClassSpellList(className))
+                .withTargetPath(linkifier().getRelativePath(Tools5eIndexType.spellIndex));
     }
 
     private QuteNote createSchoolList(SpellSchool spellSchool, SpellByLevel spellsByClass) {
@@ -147,7 +146,7 @@ public class Json2QuteSpellIndex extends Json2QuteCommon {
 
         return new Tools5eQuteNote(spellSchool.name() + " Spells", "", text, tags)
                 .withTargetFile("list-spells-school-" + spellSchool.name())
-                .withTargetPath(Tools5eIndexType.spellIndex.getRelativePath());
+                .withTargetPath(linkifier().getRelativePath(Tools5eIndexType.spellIndex));
     }
 
     private QuteNote createOtherList(String key, SpellRefByLevel spellsByOther) {
@@ -155,7 +154,7 @@ public class Json2QuteSpellIndex extends Json2QuteCommon {
             return null;
         }
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-        String name = type.decoratedName(spellsByOther.reference.refererNode);
+        String name = linkifier().decoratedName(type, spellsByOther.reference.refererNode);
 
         Tags tags = new Tags();
         tags.add("spell", "list", type.name(), name);
@@ -178,7 +177,7 @@ public class Json2QuteSpellIndex extends Json2QuteCommon {
 
         return new Tools5eQuteNote("Spells for " + name, "", text, tags)
                 .withTargetFile(spellsByOther.reference.listFileName())
-                .withTargetPath(Tools5eIndexType.spellIndex.getRelativePath());
+                .withTargetPath(linkifier().getRelativePath(Tools5eIndexType.spellIndex));
     }
 
     private class SpellRefByLevel extends SpellByLevel {

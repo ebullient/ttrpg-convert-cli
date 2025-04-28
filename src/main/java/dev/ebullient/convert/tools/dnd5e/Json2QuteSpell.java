@@ -20,12 +20,11 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteSpell;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteSpell extends Json2QuteCommon {
-
     final String decoratedName;
 
     Json2QuteSpell(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        decoratedName = type.decoratedName(jsonNode);
+        decoratedName = linkifier().decoratedName(type, jsonNode);
     }
 
     @Override

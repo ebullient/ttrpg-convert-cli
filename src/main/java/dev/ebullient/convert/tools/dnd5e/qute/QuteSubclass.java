@@ -43,7 +43,7 @@ public class QuteSubclass extends Tools5eQuteBase {
 
     @Override
     public String targetFile() {
-        return Tools5eQuteBase.getSubclassResource(name,
+        return linkifier().getSubclassResource(name,
                 parentClass, parentClassSource,
                 sources.primarySource());
     }

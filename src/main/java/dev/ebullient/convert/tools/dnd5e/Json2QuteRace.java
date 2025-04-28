@@ -34,7 +34,7 @@ public class Json2QuteRace extends Json2QuteCommon {
             tui().debugf("Skipping output of base race %s", sources.getKey());
             return null;
         }
-        String name = type.decoratedName(rootNode);
+        String name = linkifier().decoratedName(type, rootNode);
         Tags tags = new Tags(getSources());
 
         String[] split = name.split("\\(");

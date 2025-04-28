@@ -34,7 +34,7 @@ public class StringUtil {
     }
 
     public static String valueOrDefault(String value, String fallback) {
-        return value == null || value.isEmpty() ? fallback : value;
+        return value == null || value.isEmpty() ? fallback : value.trim();
     }
 
     public static String valueOrDefault(String[] parts, int index, String fallback) {

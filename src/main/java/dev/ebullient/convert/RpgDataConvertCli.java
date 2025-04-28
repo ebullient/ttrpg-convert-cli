@@ -175,7 +175,6 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         CompendiumConfig config = TtrpgConfig.getConfig();
 
         tui.printlnf(Msg.OK, "Finished reading config.");
-        tui.progressf("Writing markdown to %s.\n", output);
 
         ToolsIndex index = ToolsIndex.createIndex();
         Path toolsPath = null;
@@ -234,7 +233,7 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
                 }
             }
 
-            tui.progressf("💡 Writing files to %s", output);
+            tui.infof(Msg.WRITING, "Writing files to %s", output);
             tpl.setCustomTemplates(config);
 
             MarkdownWriter writer = new MarkdownWriter(output, tpl, tui);

@@ -280,7 +280,8 @@ public class Json2QuteItem extends Json2QuteCommon {
         List<String> focusTypes = new ArrayList<>();
         JsonNode focusNode = ItemField.focus.getFrom(variantNode);
         if (focusNode != null && focusNode.isArray()) {
-            focusNode.forEach(x -> focusTypes.add(linkifyClass(x.asText())));
+            focusNode.forEach(x -> focusTypes.add(
+                    linkify(Tools5eIndexType.classtype, x.asText())));
         }
         String scfType = ItemField.scfType.getTextOrEmpty(variantNode);
         return scfType

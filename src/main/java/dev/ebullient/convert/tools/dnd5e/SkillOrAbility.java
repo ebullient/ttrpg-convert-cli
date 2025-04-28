@@ -233,7 +233,7 @@ public interface SkillOrAbility {
 
         // _mergeAbilityIncrease_getText
         private String readFromChoice(JsonNode choiceNode, boolean increase) {
-            String entry = AsiChoiceFields.entry.replaceTextFrom(choiceNode, Tools5eIndex.getInstance());
+            String entry = AsiChoiceFields.entry.replaceTextFrom(choiceNode, Tools5eIndex.instance());
             if (isPresent(entry)) {
                 return entry;
             }

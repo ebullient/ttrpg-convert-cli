@@ -25,7 +25,8 @@ public enum Msg {
     TARGET(Character.toString(0x1F3AF)), // 🎯
     UNKNOWN(Character.toString(0x1F47B)), // 👻
     UNRESOLVED(Character.toString(0x1FAE3)), // 🫣
-    VERBOSE(Character.toString(0x1F539), "faint"),
+    VERBOSE(Character.toString(0x1F539) + " INFO|", "faint"),
+    WRITING(Character.toString(0x1F5A8)), // 🖨️
     WARN(Character.toString(0x1F538) + " WARN|"),
     NOOP("");
 

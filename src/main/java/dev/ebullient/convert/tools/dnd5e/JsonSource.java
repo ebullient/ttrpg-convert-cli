@@ -106,7 +106,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String getFileName() {
-        return Tools5eQuteBase.fixFileName(getName(), getSources());
+        return linkifier().getTargetFileName(getName(), getSources());
     }
 
     /**
@@ -593,8 +593,8 @@ public interface JsonSource extends JsonTextReplacement {
             if (type == Tools5eIndexType.monster) {
                 // Create a new monster document (header for initiative tracker)
                 String embedFileName = Tui.slugify(String.format("%s-%s-%s", getSources().getName(), type.name(), name));
-                String relativePath = getSources().getType().getRelativePath();
-                String vaultRoot = getSources().getType().vaultRoot(index());
+                String relativePath = linkifier().getRelativePath(getSources());
+                String vaultRoot = linkifier().vaultRoot(getSources());
 
                 maybeAddBlankLine(text);
                 text.add("> [!embed-monster]- " + name);

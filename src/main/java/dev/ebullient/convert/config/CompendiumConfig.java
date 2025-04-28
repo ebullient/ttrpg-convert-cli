@@ -78,6 +78,7 @@ public class CompendiumConfig {
     final Set<String> homebrew = new HashSet<>();
     final Set<String> adventures = new HashSet<>();
     final Set<String> books = new HashSet<>();
+    final Map<String, String> defaultSource = new HashMap<>();
     final Map<String, Path> customTemplates = new HashMap<>();
     final Map<String, String> sourceIdAlias = new HashMap<>();
 
@@ -374,10 +375,13 @@ public class CompendiumConfig {
             input.exclude.forEach(s -> config.excludedKeys.add(s.toLowerCase()));
             input.excludePattern.forEach(s -> config.addExcludePattern(s.toLowerCase()));
 
-            config.books.addAll(input.books());
-            config.adventures.addAll(input.adventures());
-            config.homebrew.addAll(input.homebrew());
-            config.allowSources(input.references());
+            config.allowSources(input.references()); // sources + from
+            config.books.addAll(input.sources.book);
+            config.adventures.addAll(input.sources.adventure);
+            config.homebrew.addAll(input.sources.homebrew);
+
+            // map: type to default source
+            config.defaultSource.putAll(input.sources.defaultSource);
 
             config.images = new ImageOptions(config.images, input.images);
             config.paths = new PathAttributes(config.paths, input.paths);

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.config.CompendiumConfig;
@@ -25,6 +26,11 @@ public class TextReplacementTest implements JsonSource {
             return true;
         }
     };
+
+    @BeforeEach
+    public void before() {
+        Tools5eLinkifier.instance().reset();
+    }
 
     @Test
     public void testToHitStr() {

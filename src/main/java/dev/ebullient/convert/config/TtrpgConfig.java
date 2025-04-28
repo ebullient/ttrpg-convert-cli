@@ -22,6 +22,7 @@ import dev.ebullient.convert.config.CompendiumConfig.Configurator;
 import dev.ebullient.convert.config.UserConfig.ImageOptions;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -70,6 +71,19 @@ public class TtrpgConfig {
 
     private static DatasourceConfig activeDSConfig() {
         return datasourceConfig;
+    }
+
+    /**
+     * Change what is considered the default source for the type.
+     * This only applies to the determination of file suffixes, not the
+     * default used for key/reference resolution.
+     */
+    public static String getDefaultOutputSource(IndexType type) {
+        return getConfig().defaultSource.getOrDefault(type.name(), type.defaultSourceString());
+    }
+
+    public static String getDefaultOutputSource(String key) {
+        return getConfig().defaultSource.get(key);
     }
 
     public static List<Fix> getFixes(String filepath) {

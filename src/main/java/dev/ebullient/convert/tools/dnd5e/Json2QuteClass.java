@@ -32,7 +32,6 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteClass.HitPointDie;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass.Multiclassing;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteClass.StartingEquipment;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteClass extends Json2QuteCommon {
 
@@ -50,7 +49,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     Json2QuteClass(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        decoratedClassName = type.decoratedName(jsonNode);
+        decoratedClassName = linkifier().decoratedName(type, jsonNode);
         classSource = jsonNode.get("source").asText();
         isSidekick = ClassFields.isSidekick.booleanOrDefault(jsonNode, false);
         subclassTitle = ClassFields.subclassTitle.getTextOrEmpty(jsonNode);
@@ -119,7 +118,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     ClassFields.subclassFeatures.ensureArrayIn(scNode),
                     ClassFields.subclassFeature);
 
-            filename = Tools5eQuteBase.fixFileName(scName, scSources);
+            filename = linkifier().getTargetFileName(scName, scSources);
             boolean pushed = parseState().push(scSources);
             try {
                 Tags tags = new Tags(scSources);
@@ -160,7 +159,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         getSourceText(scSources),
                         getName(), // parentClassName
                         String.format("[%s](./%s.md)", decoratedClassName, // peer/sibling
-                                Tools5eQuteBase.getClassResource(getName(), getSources().primarySource())),
+                                linkifier().getClassResource(getName(), getSources().primarySource())),
                         getSources().primarySource(),
                         subclassTitle,
                         String.join("\n", progression),
@@ -212,7 +211,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             return;
         }
 
-        String relativePath = Tools5eIndexType.optionalFeatureTypes.getRelativePath();
+        String relativePath = linkifier().getRelativePath(Tools5eIndexType.optionalFeatureTypes);
 
         maybeAddBlankLine(text);
         text.add("## Optional Features");
@@ -594,7 +593,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     String skillChoices(Collection<String> skills, int numSkills) {
         if (skills.isEmpty() || skills.size() >= 18) {
             String link = "||skill%s".formatted(numSkills == 1 ? "" : "s");
-            String linkToSkills = linkifyRules(Tools5eIndexType.skill, link, "skills");
+            String linkToSkills = linkifyRules(Tools5eIndexType.skill, link);
             return sources.isClassic()
                     ? "choose any %s %s".formatted(numSkills, linkToSkills)
                     : "Choose %s %s".formatted(numSkills, linkToSkills);
@@ -656,6 +655,10 @@ public class Json2QuteClass extends Json2QuteCommon {
         return feature;
     }
 
+    static ClassFeature getClassFeature(String featureKey) {
+        return keyToClassFeature.get(featureKey);
+    }
+
     static record ClassFeature(
             Tools5eIndexType cfType,
             JsonNode cfNode,
@@ -668,6 +671,10 @@ public class Json2QuteClass extends Json2QuteCommon {
                             : new SubclassFeatureKeyData(key));
         }
 
+        protected Tools5eLinkifier linkifier() {
+            return Tools5eLinkifier.instance();
+        }
+
         public String getName() {
             return cfSources.getName();
         }
@@ -678,14 +685,14 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         void appendLink(JsonSource converter, List<String> text, String pageSource) {
             converter.maybeAddBlankLine(text);
-            String x = converter.decoratedFeatureTypeName(cfSources, cfNode);
+            String x = linkifier().decoratedFeatureTypeName(cfSources, cfNode);
             text.add(String.format("[%s](#%s)", x, toAnchorTag(x + " (Level " + level() + ")")));
         }
 
         public void appendListItemText(JsonSource converter, List<String> text, String pageSource) {
             boolean pushed = converter.parseState().pushFeatureType();
             try {
-                text.add("**" + converter.decoratedFeatureTypeName(cfSources, cfNode) + "**");
+                text.add("**" + linkifier().decoratedFeatureTypeName(cfSources, cfNode) + "**");
                 if (!cfSources.primarySource().equalsIgnoreCase(pageSource)) {
                     text.add(converter.getLabeledSource(cfSources));
                 }
@@ -701,7 +708,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             boolean pushed = converter.parseState().pushFeatureType();
             try {
                 converter.maybeAddBlankLine(text);
-                text.add("### " + converter.decoratedFeatureTypeName(cfSources, cfNode) + " (Level " + level() + ")");
+                text.add("### " + linkifier().decoratedFeatureTypeName(cfSources, cfNode) + " (Level " + level() + ")");
                 if (!cfSources.primarySource().equalsIgnoreCase(primarySource)) {
                     text.add(converter.getLabeledSource(cfSources));
                 }

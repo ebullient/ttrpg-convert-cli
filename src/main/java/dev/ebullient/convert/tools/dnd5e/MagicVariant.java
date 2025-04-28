@@ -562,7 +562,7 @@ public class MagicVariant implements JsonSource {
 
     @Override
     public Tools5eIndex index() {
-        return Tools5eIndex.getInstance();
+        return Tools5eIndex.instance();
     }
 
     @Override

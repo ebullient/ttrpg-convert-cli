@@ -30,7 +30,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
     }
 
     public Tools5eMarkdownConverter writeImages() {
-        index.tui().progressf("Writing images and fonts");
+        index.tui().verbosef(Msg.WRITING, "Writing images and fonts");
         index.tui().copyImages(Tools5eSources.getImages());
         index.tui().copyFonts(Tools5eSources.getFonts());
         return this;
@@ -57,7 +57,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
         if (types == null || types.isEmpty()) {
             return this;
         }
-        index.tui().progressf("Converting data: %s", types);
+        index.tui().verbosef("Converting data: %s", types);
 
         WritingQueue queue = new WritingQueue();
         for (var entry : index.includedEntries()) {
@@ -141,7 +141,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
         var compendiumDocs = queue.noteCompendium;
         var ruleDocs = queue.noteRules;
         var combinedDocs = queue.combinedDocs;
-        final var vrDir = Tools5eIndexType.variantrule.getRelativePath();
+        final var vrDir = linkifier().getRelativePath(Tools5eIndexType.variantrule);
 
         switch (nodeType) {
             case action -> {
@@ -197,7 +197,6 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             case optionalFeatureTypes -> {
                 OptionalFeatureType oft = index.getOptionalFeatureType(node);
                 if (oft == null) {
-                    index.tui().errorf(Msg.UNRESOLVED, "Unable to find optional feature type for %s", key);
                     return;
                 }
                 QuteNote converted = new Json2QuteOptionalFeatureType(index, node, oft).buildNote();
@@ -244,5 +243,9 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                 rules.add(note);
             }
         }
+    }
+
+    private static Tools5eLinkifier linkifier() {
+        return Tools5eLinkifier.instance();
     }
 }

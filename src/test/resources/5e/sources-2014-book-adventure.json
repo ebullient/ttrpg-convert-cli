@@ -3,7 +3,7 @@
     "rules": "/ru les/",
     "compendium": "/compend ium/"
   },
-  "convert": {
+  "sources": {
     "adventure": [
       "WBtW",
       "MOT-NSS",
@@ -12,13 +12,13 @@
     "book": [
       "PHB",
       "MOT"
+    ],
+    "reference": [
+      "DMG",
+      "XGE",
+      "TCE"
     ]
   },
-  "from": [
-    "DMG",
-    "XGE",
-    "TCE"
-  ],
   "include": [
     "race|changeling|mpmm"
   ],

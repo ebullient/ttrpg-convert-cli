@@ -22,7 +22,6 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Templates;
 import dev.ebullient.convert.io.Tui;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.arc.Arc;
 
 public class CommonDataTests {
@@ -99,7 +98,7 @@ public class CommonDataTests {
     public void afterAll(Path outputPath) throws IOException {
         index.cleanup();
 
-        assertThat(Tools5eIndex.getInstance()).isNull();
+        assertThat(Tools5eIndex.instance()).isNull();
         tui.close();
         Path logFile = Path.of("ttrpg-convert.out.txt");
         if (Files.exists(logFile)) {
@@ -316,7 +315,7 @@ public class CommonDataTests {
             index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
-            Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
+            Path undead = out.resolve(index.compendiumFilePath()).resolve(linkifier().monsterPath(false, "undead"));
             assertThat(undead).exists();
 
             TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {
@@ -378,7 +377,7 @@ public class CommonDataTests {
             index.markdownConverter(writer)
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
-            Path undead = out.resolve(index.compendiumFilePath()).resolve(Tools5eQuteBase.monsterPath(false, "undead"));
+            Path undead = out.resolve(index.compendiumFilePath()).resolve(linkifier().monsterPath(false, "undead"));
             assertThat(undead).exists();
 
             TestUtils.assertDirectoryContents(undead, tui, (p, content) -> {
@@ -565,7 +564,7 @@ public class CommonDataTests {
     }
 
     Path deleteDir(Tools5eIndexType type, Path outputPath, Path vaultPath) {
-        final String relative = type.getRelativePath();
+        final String relative = linkifier().getRelativePath(type);
         final Path typeDir = outputPath.resolve(vaultPath).resolve(relative).normalize();
         TestUtils.deleteDir(typeDir);
         return typeDir;
@@ -592,5 +591,9 @@ public class CommonDataTests {
         assertThat(index.getOrigin(key))
                 .describedAs("Origin should contain " + key)
                 .isNotNull();
+    }
+
+    private static Tools5eLinkifier linkifier() {
+        return Tools5eLinkifier.instance();
     }
 }

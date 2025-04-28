@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -374,17 +373,21 @@ public class FilterSubsetMixedTest {
 
         commonTests.testClassList(outputPath);
 
-        String filename = Tools5eQuteBase.getSubclassResource(
+        String filename = linkifier().getSubclassResource(
                 "college of the dirge singer", "bard", "xphb", "exploringeberron")
                 + ".md";
 
         Path dirgeSinger = outputPath
                 .resolve(commonTests.index.compendiumFilePath())
-                .resolve(Tools5eIndexType.classtype.getRelativePath())
+                .resolve(linkifier().getRelativePath(Tools5eIndexType.classtype))
                 .resolve(filename);
         assertThat(dirgeSinger).exists();
 
         String content = Files.readString(dirgeSinger);
         assertThat(content).contains("Mixed edition content");
+    }
+
+    private static Tools5eLinkifier linkifier() {
+        return Tools5eLinkifier.instance();
     }
 }

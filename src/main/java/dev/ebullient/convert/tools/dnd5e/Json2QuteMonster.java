@@ -19,6 +19,7 @@ import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonSourceCopier.MetaFields;
+import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
@@ -86,10 +87,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 } else {
                     Tools5eSources lgSources = Tools5eSources.findSources(lgKey);
                     legendaryGroupText = legendaryGroup(lgNode);
-                    legendaryGroupLink = linkifyType(Tools5eIndexType.legendaryGroup,
-                            lgKey,
-                            lgSources.getName(),
-                            sources.getKey());
+                    legendaryGroupLink = linkifyLegendaryGroup(lgSources);
                 }
             } else {
                 tui().debugf(Msg.FILTER, "Legendary group source excluded: %s", lgKey);
@@ -97,7 +95,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
 
         return new QuteMonster(sources,
-                type.decoratedName(rootNode),
+                linkifier().decoratedName(type, rootNode),
                 getSourceText(sources),
                 isNpc,
                 size, creatureType, subtype, monsterAlignment(),
@@ -201,7 +199,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
         monstrosity,
         ooze,
         plant,
-        undead;
+        undead,
+        miscellaneous;
+
+        public String toDirectory() {
+            return name();
+        }
 
         public static MonsterType fromString(String type) {
             String compare = type.toLowerCase()
@@ -211,15 +214,29 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     return t;
                 }
             }
-            return null;
+            return miscellaneous;
+        }
+
+        public static MonsterType fromNode(JsonNode node, JsonTextConverter<?> converter) {
+            if (!MonsterFields.type.existsIn(node)) {
+                Tools5eSources sources = Tools5eSources.findSources(node);
+                Tui.instance().warnf("Monster: Empty type for %s", sources);
+                return miscellaneous;
+            }
+            JsonNode typeNode = MonsterFields.type.getFrom(node);
+            String text = null;
+            if (typeNode.isTextual()) {
+                text = converter.replaceText(typeNode.asText());
+            } else if (typeNode.isObject() && MonsterFields.type.existsIn(typeNode)) {
+                // We have an object: type + tags
+                text = MonsterFields.type.replaceTextFrom(typeNode, converter);
+            }
+            return text == null ? miscellaneous : fromString(text);
         }
 
         public static String toDirectory(String type) {
             MonsterType t = fromString(type);
-            if (t == null) {
-                return Tui.slugify(type);
-            }
-            return t.name();
+            return t.toDirectory();
         }
     }
 
@@ -395,7 +412,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         if (type != Tools5eIndexType.monster) {
             return super.getImagePath();
         }
-        return Tools5eQuteBase.monsterPath(isNpc, creatureType);
+        return linkifier().monsterPath(isNpc, creatureType);
     }
 
     public static List<JsonNode> findMonsterVariants(

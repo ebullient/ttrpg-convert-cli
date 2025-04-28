@@ -1,4 +1,4 @@
 sources:
   reference:
-    - "srd"
-    - "basicrules"
+    - srd
+    - basicrules

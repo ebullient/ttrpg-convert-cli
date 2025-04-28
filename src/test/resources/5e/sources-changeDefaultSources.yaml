@@ -1,0 +1,28 @@
+sources:
+  reference:
+    - phb
+    - xphb
+    - mm
+    - xmm
+    - dmg
+    - xdmg
+  defaultSource:
+    background: xphb
+    classtype: xphb
+    feat: xphb
+    optfeature: xphb
+    race: xphb
+    subrace: xphb
+    spell: xphb
+
+    deck: xdmg
+
+    item: xdmg
+    object: xdmg
+    reward: xdmg
+    table: xdmg
+    tableGroup: xdmg
+
+    monster: xmm
+
+

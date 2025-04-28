@@ -19,16 +19,12 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UserConfig {
 
+    @JsonAlias({ "convert", "full-source", "fullSource" })
     Sources sources = new Sources();
 
     @Deprecated
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     List<String> from = new ArrayList<>();
-
-    @Deprecated
-    @JsonAlias({ "convert", "full-source" })
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    FullSource fullSource = new FullSource();
 
     VaultPaths paths = new VaultPaths();
 
@@ -62,50 +58,24 @@ public class UserConfig {
         return reference;
     }
 
-    List<String> books() {
-        List<String> books = new ArrayList<>();
-        books.addAll(sources.book);
-        if (fullSource != null) {
-            books.addAll(fullSource.book);
-        }
-        return books;
-    }
-
-    List<String> adventures() {
-        List<String> adventures = new ArrayList<>();
-        adventures.addAll(sources.adventure);
-        if (fullSource != null) {
-            adventures.addAll(fullSource.adventure);
-        }
-        return adventures;
-    }
-
-    List<String> homebrew() {
-        List<String> homebrew = new ArrayList<>();
-        homebrew.addAll(sources.homebrew);
-        if (fullSource != null) {
-            homebrew.addAll(fullSource.homebrew);
-        }
-        return homebrew;
-    }
-
     enum ConfigKeys {
-        useDiceRoller,
+        defaultSource,
         exclude,
         excludePattern,
         fallbackPaths(List.of("fallback-paths")),
         from,
-        fullSource(List.of("convert", "full-source")),
         images,
         include,
         includeGroups,
         includePattern,
         paths,
         reprintBehavior,
-        sources,
-        yamlStatblocks,
+        sources(List.of("fullSource", "full-source", "convert")),
         tagPrefix,
-        template;
+        template,
+        useDiceRoller,
+        yamlStatblocks,
+        ;
 
         final List<String> aliases;
 
@@ -145,14 +115,7 @@ public class UserConfig {
         List<String> adventure = new ArrayList<>();
         List<String> book = new ArrayList<>();
         List<String> homebrew = new ArrayList<>();
-    }
-
-    @RegisterForReflection
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    static class FullSource {
-        List<String> adventure = new ArrayList<>();
-        List<String> book = new ArrayList<>();
-        List<String> homebrew = new ArrayList<>();
+        Map<String, String> defaultSource = new HashMap<>();
     }
 
     @RegisterForReflection

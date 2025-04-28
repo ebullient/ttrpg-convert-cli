@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteLegendaryGroup extends Json2QuteCommon {
@@ -54,7 +53,7 @@ public class Json2QuteLegendaryGroup extends Json2QuteCommon {
                 null,
                 String.join("\n", text),
                 tags)
-                .withTargetFile(Tools5eQuteBase.fixFileName(getName(), sources))
-                .withTargetPath(type.getRelativePath());
+                .withTargetFile(linkifier().getTargetFileName(getName(), sources))
+                .withTargetPath(linkifier().getRelativePath(type));
     }
 }

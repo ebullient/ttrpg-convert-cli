@@ -2,14 +2,16 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
-import static dev.ebullient.convert.StringUtil.toAnchorTag;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 import static dev.ebullient.convert.StringUtil.valueOrDefault;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -28,12 +30,8 @@ import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonTextConverter;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
-import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
-import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
-import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType.IndexFields;
+import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureCondition;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType> {
     static final Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
@@ -58,8 +56,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern skillCheckPattern = Pattern.compile("\\{@skillCheck ([^}]+)}"); // {@skillCheck animal_handling
                                                                                          // 5}
     static final Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]*)}");
-    static final Pattern featureTypePattern = Pattern.compile("(?:[Ff]eature )?[Tt]ype=([^|}]+)");
-    static final Pattern featureSourcePattern = Pattern.compile("source=([^|}]+)");
     static final Pattern superscriptCitationPattern = Pattern.compile("\\{@(sup|cite) ([^}]+)}");
     static final Pattern promptPattern = Pattern.compile("#\\$prompt_number(?::(.*?))?\\$#");
     static final String subclassFeatureMask = "subclassfeature\\|(.*)\\|.*?\\|.*?\\|.*?\\|.*?\\|(\\d+)\\|.*";
@@ -82,9 +78,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         return getSources().getType().useCompendiumBase();
     }
 
+    default Tools5eLinkifier linkifier() {
+        return Tools5eLinkifier.instance();
+    }
+
     default String getImagePath() {
         Tools5eIndexType type = getSources().getType();
-        return type.getRelativePath();
+        return linkifier().getRelativePath(type);
     }
 
     default List<String> findAndReplace(JsonNode jsonSource, String field) {
@@ -522,9 +522,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // or {@skillCheck animal_handling 5|Display Text|Roll Name Text}
         String[] parts = match.group(1).split("\\|");
         String[] score = parts[0].split(" ");
+
         SkillOrAbility skill = index().findSkillOrAbility(score[0], getSources());
-        String text = valueOrDefault(parts, 1,
-                linkifyRules(Tools5eIndexType.skill, skill.value(), "skills"));
+        String text = valueOrDefault(parts, 1, linkifySkill(skill));
 
         String dice = score[1];
         if (score[1].matches("\\d+")) {
@@ -542,12 +542,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String linkifySkill(SkillOrAbility skill) {
-        String source = skill.source();
-        return linkify(Tools5eIndexType.skill,
-                "%s|%s|%s".formatted(skill.value(), source, skill.value()));
+        String key = index().getAliasOrDefault(
+                Tools5eIndexType.skill.createKey(skill.value(), skill.source()));
+        return linkifier().link(skill.value(), key);
     }
 
-    default String linkifyRules(Tools5eIndexType type, String text, String rules) {
+    default String linkifyRules(Tools5eIndexType type, String text) {
         // {@condition stunned} assumes PHB by default,
         // {@condition stunned|PHB} can have sources added with a pipe (not that it's
         // ever useful),
@@ -559,25 +559,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String linkText = valueOrDefault(parts, 2, name);
 
         if (name.isBlank()) {
-            return "[%s](%s%s.md)".formatted(linkText, index().rulesVaultRoot(), rules);
+            return "[%s](%s%s.md)".formatted(linkText,
+                    index().rulesVaultRoot(),
+                    linkifier().getRelativePath(type));
         }
 
         String aliasKey = index().getAliasOrDefault(type.createKey(name, source));
-        if (index().isExcluded(aliasKey)) {
-            return linkText;
-        }
-        Tools5eIndexType aliasType = Tools5eIndexType.getTypeFromKey(aliasKey);
-        Tools5eSources rulesSources = Tools5eSources.findSources(aliasKey);
-        if (rulesSources != null) {
-            name = rulesSources.getName();
-        }
-        if (aliasType != type) {
-            // we've changed types.. so we need to linkify based on the new type
-            // typically phb -> xphb changes
-            return linkify(aliasType, "%s|%s|%s".formatted(name, source, linkText));
-        }
-        return "[%s](%s%s.md#%s)".formatted(
-                linkText, index().rulesVaultRoot(), rules, toAnchorTag(name));
+        return linkifier().link(linkText, aliasKey);
     }
 
     default String linkify(MatchResult match) {
@@ -647,11 +635,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@vehicle Galley|GoS|and optional link text added with another pipe}.",
             case background,
                     feat,
+                    classtype,
                     deck,
                     facility,
                     hazard,
                     item,
                     legendaryGroup,
+                    monster,
                     object,
                     optfeature,
                     psionic,
@@ -662,21 +652,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     tableGroup,
                     trap,
                     vehicle ->
-                linkifyType(type, s);
-            case action -> linkifyRules(type, s, "actions");
-            case condition, status -> linkifyRules(type, s, "conditions");
-            case disease -> linkifyRules(type, s, "diseases");
-            case sense -> linkifyRules(type, s, "senses");
-            case skill -> linkifyRules(type, s, "skills");
+                linkifyThreePart(type, s);
+            case card,
+                    deity ->
+                linkifyFourPart(type, s);
+            case action,
+                    condition,
+                    disease,
+                    sense,
+                    skill,
+                    status ->
+                linkifyRules(type, s);
             case itemMastery, itemProperty, itemType -> linkifyItemAttribute(type, s);
-            case monster -> linkifyCreature(s);
             case subclass -> linkifySubclass(s); // RARE!!
-            case classtype -> linkifyClass(s);
-            case deity -> linkifyDeity(s);
-            case card -> linkifyCardType(s);
             case classfeature -> linkifyClassFeature(s);
             case subclassFeature -> linkifySubclassFeature(s);
-            case variantrule -> linkifyVariant(s);
+            case variantrule -> linkifyVariantRule(s);
             default -> {
                 tui().debugf(Msg.UNKNOWN, "unknown tag/type {@%s %s} from %s",
                         type, s, parseState().getSource());
@@ -685,145 +676,30 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         };
     }
 
-    default String linkOrText(String linkText, String key, String dirName, String resourceName) {
-        return index().isIncluded(key)
-                ? "[%s](%s%s/%s.md)".formatted(linkText,
-                        index().compendiumVaultRoot(),
-                        dirName,
-                        slugify(resourceName)
-                                .replace("-dmg-dmg", "-dmg")) // bad combo for some race names
-                : linkText;
-    }
-
-    default String linkifyType(Tools5eIndexType type, String match) {
+    default String linkifyThreePart(Tools5eIndexType type, String match) {
+        // {@legroup balhannoth|MPMM|and optional link text added with another pipe}.",
         String[] parts = match.split("\\|");
-        String source = valueOrDefault(parts, 1, type.defaultSourceString());
         String linkText = valueOrDefault(parts, 2, parts[0]);
 
+        // the actual type might change. Work forward off the resolved key
         // optfeature (2014) -> feat (2024), etc.
-        String key = index().getAliasOrDefault(type.createKey(parts[0].trim(), source));
-        Tools5eIndexType aliasType = Tools5eIndexType.getTypeFromKey(key);
-        return linkifyType(aliasType, key, linkText, match);
+        String key = index().getAliasOrDefault(
+                type.fromTagReference(match));
+
+        return linkifier().link(linkText, key);
     }
 
-    default String linkifyType(Tools5eIndexType type, String aliasKey, String linkText, String match) {
-        String dirName = type.getRelativePath();
-        JsonNode jsonSource = index().getNode(aliasKey); // filtered
-        if (jsonSource == null) {
-            if (index().getOrigin(aliasKey) == null) {
-                // sources can be excluded, that's fine.. but if this is something that doesn't
-                // exist at all..
-                tui().debugf(Msg.UNRESOLVED, "unresolvable {@%s %s}   as [%s]   from %s",
-                        type, match, aliasKey, parseState().getSource());
-                // log a stack trace of how we got here
-            }
-            return linkText;
-        }
-        Tools5eSources linkSource = Tools5eSources.findSources(jsonSource);
-        if (Tools5eIndex.isSrdBasicOnly() && linkSource.isSrdOrBasicRules()) {
-            String srcName = SourceField.name.getTextOrEmpty(jsonSource);
-            if (linkText.equalsIgnoreCase(srcName)) {
-                linkText = linkSource.getName(); // SRD name may be different / generic
-            }
-        }
-        return linkOrText(linkText, aliasKey, dirName,
-                Tools5eQuteBase.fixFileName(type.decoratedName(jsonSource), linkSource));
-    }
-
-    default String linkifyCardType(String match) {
-        String dirName = Tools5eIndexType.card.getRelativePath();
-        // {@card The Fates|Deck of Many Things}
+    default String linkifyFourPart(Tools5eIndexType type, String match) {
         // {@card Donjon|Deck of Several Things|LLK}
         String[] parts = match.split("\\|");
-        String cardName = parts[0];
-        String deckName = parts[1];
-        String source = valueOrDefault(parts, 2, Tools5eIndexType.card.defaultSourceString());
+        String linkText = valueOrDefault(parts, 3, parts[0]);
+        String key = index().getAliasOrDefault(type.fromTagReference(match));
 
-        String key = index().getAliasOrDefault(Tools5eIndexType.deck.createKey(deckName, source));
-        if (index().isExcluded(key)) {
-            return cardName;
-        }
-        String resource = Tools5eQuteBase.fixFileName(deckName, source, Tools5eIndexType.card);
-        return "[%s](%s%s/%s.md#%s)".formatted(
-                cardName,
-                index().compendiumVaultRoot(), dirName,
-                resource,
-                cardName.replace(" ", "%20"));
+        return linkifier().link(linkText, key);
     }
 
-    default String linkifyDeity(String match) {
-        // "Deities: {@deity Gond} assumes PHB Forgotten Realms pantheon by default,
-        // {@deity Gruumsh|nonhuman} can have pantheons added with a pipe,
-        // {@deity Ioun|dawn war|dmg} can have sources added with another pipe,
-        // {@deity Ioun|dawn war|dmg|and optional link text added with another pipe}.",
-        String[] parts = match.split("\\|");
-        String deity = parts[0];
-        String pantheon = valueOrDefault(parts, 1, "Forotten Realms");
-        String source = valueOrDefault(parts, 2, Tools5eIndexType.deity.defaultSourceString());
-        String linkText = valueOrDefault(parts, 3, deity);
-        String key = index().getAliasOrDefault(Tools5eIndexType.deity.createKey(parts[0], source));
-        return linkOrText(linkText, key,
-                Tools5eIndexType.deity.getRelativePath(),
-                Tools5eQuteBase.getDeityResourceName(parts[0], source, pantheon));
-    }
-
-    default String linkifyClass(String match) {
-        // {@class fighter} assumes PHB by default,
-        // {@class artificer|uaartificer} can have sources added with a pipe,
-        // {@class fighter|phb|optional link text added with another pipe},
-        // {@class fighter|phb|subclasses added|Eldritch Knight} with another pipe,
-        // {@class fighter|phb|and class feature added|Eldritch Knight|phb|2-0} with
-        // another pipe
-        // {@class Barbarian|phb|Path of the Ancestral Guardian|Ancestral Guardian|xge}
-        // {@class Fighter|phb|Samurai|Samurai|xge}
-        String[] parts = match.split("\\|");
-        String className = parts[0];
-        String classSource = valueOrDefault(parts, 1, Tools5eIndexType.classtype.defaultSourceString());
-        String linkText = valueOrDefault(parts, 2, className);
-        String subclass = valueOrDefault(parts, 3, null);
-        String subclassSource = valueOrDefault(parts, 4, Tools5eIndexType.classtype.defaultSourceString());
-
-        String relativePath = Tools5eIndexType.classtype.getRelativePath();
-        if (subclass != null) {
-            String key = index().getAliasOrDefault(
-                    Tools5eIndexType.getSubclassKey(className, classSource, subclass, subclassSource));
-            // "subclass|path of wild magic|barbarian|phb|"
-            // refetch the class and class source: phb -> xphb for example
-            return linkOrText(linkText, key, relativePath, Tools5eQuteBase.getSubclassResource(key));
-        } else {
-            String key = index().getAliasOrDefault(Tools5eIndexType.classtype.createKey(className, classSource));
-            JsonNode node = index().getNode(key);
-            if (node == null) {
-                return linkText;
-            }
-            Tools5eSources classSources = Tools5eSources.findSources(key);
-            return linkOrText(linkText, key, relativePath,
-                    Tools5eQuteBase.getClassResource(classSources.getName(), classSources.primarySource()));
-        }
-    }
-
-    default String linkifySubclass(String match) {
-        // Only used in homebrew (so far)
-        // "Subclasses:{@subclass Berserker|Barbarian},
-        // {@subclass Berserker|Barbarian},
-        // {@subclass Ancestral Guardian|Barbarian||XGE},
-        // {@subclass Artillerist|Artificer|TCE|TCE}.
-        // Class and subclass source is assumed to be PHB."
-        String[] parts = match.split("\\|");
-        String scShortName = parts[0];
-        String className = parts[1];
-        String classSource = valueOrDefault(parts, 2, Tools5eIndexType.classtype.defaultSourceString());
-        String scSource = valueOrDefault(parts, 3, Tools5eIndexType.subclass.defaultSourceString());
-        String linkText = valueOrDefault(parts, 4, scShortName);
-
-        // "subclass|path of wild magic|barbarian|phb|phb"
-        String key = index()
-                .getAliasOrDefault(
-                        Tools5eIndexType.getSubclassKey(className, classSource, scShortName, scSource));
-        Tools5eSources scSources = Tools5eSources.findSources(key);
-        return linkOrText(linkText, key,
-                Tools5eIndexType.classtype.getRelativePath(),
-                Tools5eQuteBase.getSubclassResource(scSources.getName(), className, classSource, scSource));
+    default String linkifyLegendaryGroup(Tools5eSources lgSources) {
+        return linkifier().link(lgSources);
     }
 
     default String linkifyClassFeature(String match) {
@@ -834,57 +710,107 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // {@classFeature Survival Instincts|Barbarian||2|UAClassFeatureVariants},
         // {@classFeature Rage|Barbarian||1||optional display text}.
         String[] parts = match.split("\\|");
-        String linkText = parts[0];
-        if (parts.length < 4) {
-            tui().errorf("Bad Class Feature Link {@classFeature %s} in %s", match, getSources());
-            return linkText;
-        }
-        String className = parts[1];
-        String classSource = parts[2].isBlank() ? "phb" : parts[2];
-        String level = parts[3];
-        if (parts.length > 5) {
-            linkText = parts[5];
-            int pos = match.lastIndexOf("|");
-            match = match.substring(0, pos);
-        }
-        String classFeatureKey = index().getAliasOrDefault(Tools5eIndexType.classfeature.fromTagReference(match));
-        if (classFeatureKey == null || index().isExcluded(classFeatureKey)) {
-            return linkText;
-        }
+        String linkText = valueOrDefault(parts, 5, parts[0]);
 
-        JsonNode featureJson = index().getNode(classFeatureKey);
-        Tools5eSources featureSources = Tools5eSources.findSources(classFeatureKey);
-
-        String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
-        String resource = Tools5eQuteBase.getClassResource(className, classSource);
-
-        String relativePath = Tools5eIndexType.classtype.getRelativePath();
-        return "[%s](%s%s/%s.md#%s)".formatted(
-                linkText,
-                index().compendiumVaultRoot(), relativePath,
-                resource, toAnchorTag(headerName));
+        String classFeatureKey = index().getAliasOrDefault(
+                Tools5eIndexType.classfeature.fromTagReference(match));
+        return linkifier().link(linkText, classFeatureKey);
     }
 
     default String linkifyOptionalFeatureType(MatchResult match) {
+        // {@filter display text|page_without_file_extension|filter_name_1=filter_1_value_1;filter_1_value_2;...filter_1_value_n|...|filter_name_m=filter_m_value_1;filter_m_value_2;...}
         String linkText = match.group(1);
-        String conditions = match.group(2);
 
-        Matcher m = featureTypePattern.matcher(conditions);
-        String featureType = m.find() ? m.group(1) : null;
-
-        m = featureSourcePattern.matcher(conditions);
-        String featureSource = m.find() ? m.group(1) : null;
-        if (featureSource == null) {
-            featureSource = parseState().getSource();
+        Map<String, List<String>> conditions = new HashMap<>();
+        for (var condition : match.group(2).split("\\|")) {
+            String[] parts = condition.split("=");
+            if (parts.length > 2) {
+                tui().warnf(Msg.UNKNOWN, "Unable to parse condition of optional feature filter %s from %s", condition,
+                        match.group(2));
+                return linkText;
+            }
+            conditions.put(parts[0].toLowerCase(), List.of(parts[1].split("(,|;)")));
         }
 
-        OptionalFeatureType oft = index().getOptionalFeatureType(featureType);
-        if (oft == null) {
+        if (conditions.isEmpty()) {
             return linkText;
         }
-        return linkOrText(linkText, oft.getKey(),
-                Tools5eIndexType.optionalFeatureTypes.getRelativePath(),
-                oft.getFilename());
+
+        // Simple/common case: Single feature type as the only condition. Just link to it.
+        // Examples:
+        // {@filter Expanded Traits|optionalfeatures|Feature Type=ET}
+        // {@filter eldritch invocation|optionalfeatures|feature type=EI}
+        List<String> featureType = conditions.getOrDefault("feature type", List.of());
+        if (conditions.size() == 1 && featureType.size() == 1) {
+            return linkifier().linkOptionalFeature(linkText, featureType.get(0));
+        }
+
+        // The not-so-simple case: Multiple conditions, or multiple values for a single condition.
+        // Examples:
+        // {@filter here|optionalfeatures|source=SCoC|Feature Type=BB}
+        // {@filter Elemental Enhancement|optionalfeatures|feature type=Secret Art|level=weaveknight level 5|search=elemental}
+        // {@filter Transmute Armament Secret Art|optionalfeatures|feature type=Secret Art|level=weaveknight level 5;weaveknight level 9|search=transmute}
+        // Note:
+        // Should only split type by semicolon, but at least one homebrew uses a comma instead. Be generous.
+        // {@filter upgrade|optionalfeatures|Feature Type=IS:C;IS:F;IS:G;IS:I;IS:O;IS:P;IS:T;IS:Re;IS:Ru;IS:W}
+        // {@filter Optional Features|optionalfeatures|source=GH|feature type=BGT:Ac,BGT:Ar,BGT:Cl,BGT:CF,BGT:Cr,BGT:M,BGT:O,BGT:S}
+
+        List<OptionalFeatureCondition> conditionsList = new ArrayList<>();
+        for (var entry : conditions.entrySet()) {
+            String key = entry.getKey();
+            switch (key) {
+                case "feature type" -> {
+                    OptionalFeatureCondition types = new OptionalFeatureCondition(
+                            1, "from", entry.getValue(),
+                            type -> linkifier().linkOptionalFeature(type, type));
+                    conditionsList.add(types);
+                }
+                case "class" -> {
+                    OptionalFeatureCondition classes = new OptionalFeatureCondition(
+                            2, "for classes", entry.getValue(),
+                            classFilter -> classFilter);
+                    conditionsList.add(classes);
+                }
+                case "level" -> {
+                    OptionalFeatureCondition levels = new OptionalFeatureCondition(
+                            3, "at levels", entry.getValue(),
+                            level -> level);
+                    conditionsList.add(levels);
+                }
+                case "source" -> {
+                    OptionalFeatureCondition sources = new OptionalFeatureCondition(
+                            4, "defined in", entry.getValue(),
+                            src -> TtrpgConfig.sourceToLongName(src));
+                    conditionsList.add(sources);
+                }
+                default -> {
+                    tui().warnf(Msg.UNKNOWN, "Unknown condition %s in optional feature filter %s", key, match.group(2));
+                }
+            }
+        }
+
+        conditionsList.sort(Comparator.comparingInt(OptionalFeatureCondition::order));
+        return linkText + "^[Optional features "
+                + conditionsList.stream()
+                        .map(OptionalFeatureCondition::toString)
+                        .collect(Collectors.joining("; "))
+                + "]";
+    }
+
+    default String linkifySubclass(String match) {
+        // Only used in homebrew (so far)
+        // "Subclasses:{@subclass Berserker|Barbarian},
+        // {@subclass Berserker|Barbarian},
+        // {@subclass Ancestral Guardian|Barbarian||XGE},
+        // {@subclass Artillerist|Artificer|TCE|TCE}.
+        // Class and subclass source is assumed to be PHB."
+        String[] parts = match.split("\\|");
+        String linkText = valueOrDefault(parts, 4, parts[0]);
+
+        // "subclass|path of wild magic|barbarian|phb|phb"
+        String key = index().getAliasOrDefault(
+                Tools5eIndexType.subclass.fromTagReference(match));
+        return linkifier().link(linkText, key);
     }
 
     default String linkifySubclassFeature(String match) {
@@ -902,18 +828,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // Subclass source is assumed to be PHB.
         // Subclass feature source is assumed to be the same as subclass source.",
         String[] parts = match.split("\\|");
-        String linkText = parts[0];
-        if (parts.length < 6) {
-            tui().warnf("Bad Subclass Feature Link {@subclassFeature %s} in %s", match, getSources());
-            return linkText;
-        }
-
-        if (parts.length > 7) {
-            linkText = parts[7];
-            // trim optional display text
-            int pos = match.lastIndexOf("|");
-            match = match.substring(0, pos);
-        }
+        String linkText = valueOrDefault(parts, 7, parts[0]);
 
         // Get the right subclass feature key
         String featureKey = Tools5eIndexType.subclassFeature.fromTagReference(match);
@@ -966,56 +881,17 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
 
         JsonNode featureJson = index().getNode(featureKey);
-        Tools5eSources featureSources = Tools5eSources.findSources(featureKey);
-
-        String level = Tools5eFields.level.getTextOrEmpty(featureJson);
-        String headerName = decoratedFeatureTypeName(featureSources, featureJson) + " (Level " + level + ")";
-        String resource = slugify(Tools5eQuteBase.getSubclassResource(
-                SourceField.name.getTextOrEmpty(subclassNode),
-                IndexFields.className.getTextOrEmpty(subclassNode),
-                IndexFields.classSource.getTextOrEmpty(subclassNode),
-                SourceField.source.getTextOrEmpty(subclassNode)));
-        String relativePath = Tools5eIndexType.classtype.getRelativePath();
-        return "[%s](%s%s/%s.md#%s)".formatted(
-                linkText,
-                index().compendiumVaultRoot(), relativePath,
-                resource,
-                toAnchorTag(headerName));
+        return linkifier().linkSubclassFeature(linkText,
+                featureKey, featureJson,
+                subclassKey, subclassNode);
     }
 
-    default String linkifyCreature(String match) {
-        Tools5eIndexType indexType = Tools5eIndexType.monster;
-        // "Creatures:
-        // {@creature goblin} assumes MM by default,
-        // {@creature cow|vgm} can have sources added with a pipe,
-        // {@creature cow|vgm|and optional link text added with another pipe}.",
-        String[] parts = match.trim().split("\\|");
-        String source = valueOrDefault(parts, 1, indexType.defaultSourceString());
-        String linkText = valueOrDefault(parts, 2, parts[0]);
-
-        String key = index().getAliasOrDefault(indexType.createKey(parts[0], source));
-        if (index().isExcluded(key)) {
-            return linkText;
-        }
-        JsonNode jsonSource = index().getNode(key);
-        Tools5eSources sources = Tools5eSources.findSources(key);
-        String resourceName = indexType.decoratedName(jsonSource);
-        String creatureType = getMonsterType(jsonSource); // may be missing for partial index
-        if (creatureType == null) {
-            return linkText;
-        }
-        boolean isNpc = Json2QuteMonster.isNpc(jsonSource);
-        return linkOrText(linkText, key,
-                Tools5eQuteBase.monsterPath(isNpc, creatureType),
-                Tools5eQuteBase.fixFileName(resourceName, sources));
-    }
-
-    default String linkifyVariant(String variant) {
+    default String linkifyVariantRule(String variant) {
         // "fromVariant": "Action Options",
         // "fromVariant": "Spellcasting|XGE",
         Tools5eIndexType type = Tools5eIndexType.variantrule;
         String[] parts = variant.trim().split("\\|");
-        String source = valueOrDefault(parts, 1, type.defaultSourceString());
+        String source = valueOrDefault(parts, 1, Tools5eIndexType.variantrule.defaultSourceString());
         String linkText = valueOrDefault(parts, 2, parts[0])
                 .replaceAll("\\[.*\\]", "");
 
@@ -1024,13 +900,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             return "<span title=\"%s\">%s</span>".formatted(TtrpgConfig.sourceToLongName(source), linkText);
         }
 
-        Tools5eSources rulesSources = Tools5eSources.findSources(key);
-        String name = rulesSources.getName();
-        return "[%s](%s%s/%s.md)".formatted(
-                linkText,
-                index().rulesVaultRoot(),
-                type.getRelativePath(),
-                Tools5eQuteBase.fixFileName(name, rulesSources));
+        return linkifier().link(linkText, key);
     }
 
     /**
@@ -1115,74 +985,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         Optional<String> uaSource = sources.uaSource();
         if (uaSource.isPresent() && !name.contains("(UA")) {
             return name + " (" + uaSource.get() + ")";
-        }
-        return name;
-    }
-
-    default String getMonsterType(JsonNode node) {
-        if (!MonsterFields.type.existsIn(node)) {
-            tui().warnf("Monster: Empty type for %s", getSources());
-            return null;
-        }
-        JsonNode typeNode = MonsterFields.type.getFrom(node);
-        if (typeNode.isTextual()) {
-            return replaceText(typeNode);
-        } else if (typeNode.isObject() && MonsterFields.type.existsIn(typeNode)) {
-            // We have an object: type + tags
-            return MonsterFields.type.replaceTextFrom(typeNode, this);
-        }
-        return null;
-    }
-
-    default String decoratedFeatureTypeName(Tools5eSources valueSources, JsonNode value) {
-        String name = valueSources.getName();
-        String type = IndexFields.featureType.getTextOrEmpty(value);
-
-        if (!type.isEmpty()) {
-            switch (type) {
-                case "ED":
-                    return "Elemental Discipline: " + name;
-                case "EI":
-                    return "Eldritch Invocation: " + name;
-                case "MM":
-                    return "Metamagic: " + name;
-                case "MV":
-                case "MV:B":
-                case "MV:C2-UA":
-                    return "Maneuver: " + name;
-                case "FS:F":
-                case "FS:B":
-                case "FS:R":
-                case "FS:P":
-                    return "Fighting Style: " + name;
-                case "AS":
-                case "AS:V1-UA":
-                case "AS:V2-UA":
-                    return "Arcane Shot: " + name;
-                case "PB":
-                    return "Pact Boon: " + name;
-                case "AI":
-                    return "Artificer Infusion: " + name;
-                case "SHP:H":
-                case "SHP:M":
-                case "SHP:W":
-                case "SHP:F":
-                case "SHP:O":
-                    return "Ship Upgrade: " + name;
-                case "IWM:W":
-                    return "Infernal War Machine Variant: " + name;
-                case "IWM:A":
-                case "IWM:G":
-                    return "Infernal War Machine Upgrade: " + name;
-                case "OR":
-                    return "Onomancy Resonant: " + name;
-                case "RN":
-                    return "Rune Knight Rune: " + name;
-                case "AF":
-                    return "Alchemical Formula: " + name;
-                default:
-                    tui().errorf("Unknown feature type %s for class feature %s", type, name);
-            }
         }
         return name;
     }

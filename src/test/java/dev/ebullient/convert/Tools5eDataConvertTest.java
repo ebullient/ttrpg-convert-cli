@@ -23,6 +23,7 @@ import io.quarkus.test.junit.main.QuarkusMainTest;
 
 @QuarkusMainTest
 public class Tools5eDataConvertTest {
+
     static Path rootTestOutput;
     static Tui tui;
 
@@ -107,62 +108,7 @@ public class Tools5eDataConvertTest {
     }
 
     @Test
-    void testLiveData_2014Srd(QuarkusMainLauncher launcher) {
-        testOutput = rootTestOutput.resolve("srd-2014-index");
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
-            // SRD 2014
-            Tui.instance().infof("--- 2014 SRD ----- ");
-            TestUtils.deleteDir(testOutput);
-
-            LaunchResult result = launcher.launch("--log", "--index",
-                    "-o", testOutput.toString(),
-                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-2014-srd.yaml").toString(),
-                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
-                    TestUtils.PATH_5E_TOOLS_DATA.toString());
-            assertThat(result.exitCode())
-                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
-                    .isEqualTo(0);
-            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
-                List<String> errors = new ArrayList<>();
-                content.forEach(l -> {
-                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
-                    TestUtils.commonTests(p, l, errors);
-                });
-                return errors;
-            });
-        }
-    }
-
-    @Test
-    void testLiveData_2024Srd(QuarkusMainLauncher launcher) {
-        testOutput = rootTestOutput.resolve("srd-2024-index");
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
-            // SRD 2024
-            Tui.instance().infof("--- 2024 SRD ----- ");
-            TestUtils.deleteDir(testOutput);
-
-            LaunchResult result = launcher.launch("--log", "--index",
-                    "-o", testOutput.toString(),
-                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-2024-srd.yaml").toString(),
-                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
-                    TestUtils.PATH_5E_TOOLS_DATA.toString());
-
-            assertThat(result.exitCode())
-                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
-                    .isEqualTo(0);
-            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
-                List<String> errors = new ArrayList<>();
-                content.forEach(l -> {
-                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
-                    TestUtils.commonTests(p, l, errors);
-                });
-                return errors;
-            });
-        }
-    }
-
-    @Test
-    void testLiveData_5eAllSources(QuarkusMainLauncher launcher) {
+    void testLiveData_allSources(QuarkusMainLauncher launcher) {
         testOutput = rootTestOutput.resolve("all-index");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             // All, I mean it. Really for real.. ALL.
@@ -199,17 +145,17 @@ public class Tools5eDataConvertTest {
     }
 
     @Test
-    void testLiveData_5eOneSource(QuarkusMainLauncher launcher) {
-        testOutput = rootTestOutput.resolve("erlw");
+    void testLiveData_changeDefaultSources(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("change-default-sources");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             TestUtils.deleteDir(testOutput);
 
-            // No basics
             LaunchResult result = launcher.launch("--log", "--index",
                     "-o", testOutput.toString(),
-                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-single.yaml").toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-changeDefaultSources.yaml").toString(),
                     TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
+
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
@@ -219,9 +165,6 @@ public class Tools5eDataConvertTest {
                 content.forEach(l -> {
                     TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
                     TestUtils.commonTests(p, l, errors);
-                    if (l.matches(".*-ua[^.]\\.md.*$")) {
-                        errors.add(String.format("Found UA resources in %s: %s", p.toString(), l));
-                    }
                 });
                 return errors;
             });
@@ -229,7 +172,7 @@ public class Tools5eDataConvertTest {
     }
 
     @Test
-    void testLiveData_5eHomebrew(QuarkusMainLauncher launcher) {
+    void testLiveData_homebrew(QuarkusMainLauncher launcher) {
         testOutput = rootTestOutput.resolve("homebrew");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists() && TestUtils.PATH_5E_HOMEBREW.toFile().exists()) {
             TestUtils.deleteDir(testOutput);
@@ -320,9 +263,74 @@ public class Tools5eDataConvertTest {
         }
     }
 
+    // --- 2014 ---
+
     @Test
-    void testLiveData_5eBookAdventureInJson(QuarkusMainLauncher launcher) {
-        testOutput = rootTestOutput.resolve("json-book-adventure");
+    void testLiveData_2014_srd(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("2014-srd-index");
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+            // SRD 2014
+            Tui.instance().infof("--- 2014 SRD ----- ");
+            TestUtils.deleteDir(testOutput);
+
+            LaunchResult result = launcher.launch("--log", "--index",
+                    "-o", testOutput.toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-2014-srd.yaml").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
+                return errors;
+            });
+        }
+    }
+
+    @Test
+    void testLiveData_2014_adventureNoPHB(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("2014-adventure-no-phb");
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+            TestUtils.deleteDir(testOutput);
+
+            LaunchResult result = launcher.launch("--log", "--index",
+                    "-o", testOutput.toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-2014-no-phb.yaml").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+
+            List<Path> dirs = List.of(
+                    testOutput.resolve("compendium/adventures/lost-mine-of-phandelver"),
+                    testOutput.resolve("compendium/adventures/waterdeep-dragon-heist"),
+                    testOutput.resolve("compendium/books/volos-guide-to-monsters"));
+
+            dirs.forEach(d -> {
+                assertThat(d).isDirectory();
+            });
+
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
+                return errors;
+            });
+        }
+    }
+
+    @Test
+    void testLiveData_2014_bookAdventureInJson(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("2014-book-adventure");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             TestUtils.deleteDir(testOutput);
 
@@ -331,7 +339,7 @@ public class Tools5eDataConvertTest {
                     "-o", testOutput.toString(),
                     TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_SRC.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("5e/sources-book-adventure.json").toString());
+                    TestUtils.TEST_RESOURCES.resolve("5e/sources-2014-book-adventure.json").toString());
 
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
@@ -369,34 +377,37 @@ public class Tools5eDataConvertTest {
     }
 
     @Test
-    void testLiveData_5eBookAdventureMinimalYaml(QuarkusMainLauncher launcher) {
-        testOutput = rootTestOutput.resolve("yaml-adventure");
+    void testLiveData_2014_oneSource(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("erlw");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
             TestUtils.deleteDir(testOutput);
 
+            // No basics
             LaunchResult result = launcher.launch("--log", "--index",
                     "-o", testOutput.toString(),
-                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-no-phb.yaml").toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-single.yaml").toString(),
                     TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
                     TestUtils.PATH_5E_TOOLS_DATA.toString());
-
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
 
-            List<Path> dirs = List.of(
-                    testOutput.resolve("compendium/adventures/lost-mine-of-phandelver"),
-                    testOutput.resolve("compendium/adventures/waterdeep-dragon-heist"),
-                    testOutput.resolve("compendium/books/volos-guide-to-monsters"));
-
-            dirs.forEach(d -> {
-                assertThat(d).isDirectory();
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                    if (l.matches(".*-ua[^.]\\.md.*$")) {
+                        errors.add(String.format("Found UA resources in %s: %s", p.toString(), l));
+                    }
+                });
+                return errors;
             });
         }
     }
 
     @Test
-    void testLiveData_Sample(QuarkusMainLauncher launcher) {
+    void testLiveData_2014_sample(QuarkusMainLauncher launcher) {
         testOutput = rootTestOutput.resolve("sample");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
 
@@ -411,6 +422,63 @@ public class Tools5eDataConvertTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+        }
+    }
+
+    // --- 2024 ---
+
+    @Test
+    void testLiveData_2024_srd(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("2024-srd-index");
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+            // SRD 2024
+            Tui.instance().infof("--- 2024 SRD ----- ");
+            TestUtils.deleteDir(testOutput);
+
+            LaunchResult result = launcher.launch("--log", "--index",
+                    "-o", testOutput.toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-2024-srd.yaml").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
+                return errors;
+            });
+        }
+    }
+
+    @Test
+    void testLiveData_2024_subset(QuarkusMainLauncher launcher) {
+        testOutput = rootTestOutput.resolve("2024-subset");
+        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
+            TestUtils.deleteDir(testOutput);
+
+            LaunchResult result = launcher.launch("--log", "--index",
+                    "-o", testOutput.toString(),
+                    "-c", TestUtils.TEST_RESOURCES.resolve("5e/sources-2024-subset.yaml").toString(),
+                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
+                    TestUtils.PATH_5E_TOOLS_DATA.toString());
+
+            assertThat(result.exitCode())
+                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
+                    .isEqualTo(0);
+
+            TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
+                List<String> errors = new ArrayList<>();
+                content.forEach(l -> {
+                    TestUtils.checkMarkdownLink(testOutput.toString(), p, l, errors);
+                    TestUtils.commonTests(p, l, errors);
+                });
+                return errors;
+            });
         }
     }
 }

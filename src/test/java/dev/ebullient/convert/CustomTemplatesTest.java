@@ -17,6 +17,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import dev.ebullient.convert.io.Tui;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
+import dev.ebullient.convert.tools.dnd5e.Tools5eLinkifier;
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
 import io.quarkus.test.junit.main.QuarkusMainLauncher;
@@ -204,7 +206,8 @@ public class CustomTemplatesTest {
                     .isEqualTo(0);
 
             // test extra cp value attribute in yaml frontmatter
-            Path abacus = testOutput.resolve("compendium/items/abacus.md");
+            Path abacus = testOutput.resolve("compendium/items/%s.md".formatted(
+                    Tools5eLinkifier.instance().getTargetFileName("Abacus", "PHB", Tools5eIndexType.item)));
             assertThat(abacus).exists();
             assertThat(abacus).content().contains("cost: 200");
 

@@ -34,7 +34,10 @@ public class SpellIndex implements JsonSource {
 
     public SpellEntry getSpellEntry(String key) {
         key = index.getAliasOrDefault(key);
-        return spellsByKey.get(key);
+        // getOrigin will log unresolved once.
+        return index.getOrigin(key) != null
+                ? spellsByKey.computeIfAbsent(key, k -> new SpellEntry(k, index.getOrigin(k)))
+                : null;
     }
 
     /**
@@ -386,8 +389,6 @@ public class SpellIndex implements JsonSource {
         var spellEntry = getSpellEntry(spellKey);
         if (spellEntry != null) {
             spellEntry.addReference(refererKey, constraint, asLevel, expanded);
-        } else {
-            tui().logf(Msg.UNRESOLVED, "Missing spell reference: %s", spellKey);
         }
     }
 

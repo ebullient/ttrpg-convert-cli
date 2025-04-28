@@ -24,7 +24,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
 
     Json2QuteBackground(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
-        backgroundName = type.decoratedName(jsonNode);
+        backgroundName = linkifier().decoratedName(type, jsonNode);
     }
 
     @Override

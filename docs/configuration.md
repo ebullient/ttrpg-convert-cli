@@ -12,15 +12,17 @@ This guide introduces you to configuring data transformations using the Command 
     - [Basic configuration example](#basic-configuration-example)
     - [Advanced configuration example](#advanced-configuration-example)
 - [Source identifiers](#source-identifiers)
-- [Specify content with the `sources` key](#specify-content-with-the-sources-key)
+- [Specify content with `sources`](#specify-content-with-sources)
     - [Homebrew](#homebrew)
+        - [Additional notes about homebrew](#additional-notes-about-homebrew)
     - [Reporting content errors to 5eTools](#reporting-content-errors-to-5etools)
-- [Specify target paths( `paths` key)](#specify-target-paths-paths-key)
+- [Specify target vault paths (`paths`)](#specify-target-vault-paths-paths)
 - [Refine content choices](#refine-content-choices)
     - [Excluding content matching an `excludePattern`](#excluding-content-matching-an-excludepattern)
     - [Excluding specific content with `exclude`](#excluding-specific-content-with-exclude)
     - [Including specific content with `include`](#including-specific-content-with-include)
 - [Reprint behavior](#reprint-behavior)
+    - [Troubleshooting reprint behavior](#troubleshooting-reprint-behavior)
 - [Use the dice roller plugin](#use-the-dice-roller-plugin)
 - [Render with Fantasy Statblocks](#render-with-fantasy-statblocks)
 - [Tag prefix](#tag-prefix)
@@ -30,6 +32,7 @@ This guide introduces you to configuring data transformations using the Command 
     - [Copying internal images](#copying-internal-images)
     - [Copying external images](#copying-external-images)
     - [Fallback paths](#fallback-paths)
+- [Customizing the default source](#customizing-the-default-source)
 - [Migrating `from`, `full-source`, and `convert`](#migrating-from-full-source-and-convert)
 
 ## Overview
@@ -67,7 +70,7 @@ Below is a straightforward `config.json` file. In this format, settings are note
 This example performs two basic functions:
 
 1. **Select Input Sources:** The `sources` key lists the sources to be included, identified by their [source identifiers](#source-identifiers).
-2. **Define Vault Paths:** The [`paths`](#specify-target-paths-paths-key) key sets the destination paths for the `compendium` and `rules` content. These paths are relative to the output directory set in the CLI command with `-o`.
+2. **Define Vault Paths:** The [`paths`](#specify-target-vault-paths-paths) key sets the destination paths for the `compendium` and `rules` content. These paths are relative to the output directory set in the CLI command with `-o`.
 
 > [!WARNING]
 > **Windows Users**: Replace any `\` with `/` in paths in JSON or YAML files
@@ -128,8 +131,8 @@ Here's a more comprehensive `config.json` file.
 
 Additional capabilities:
 
-1. **Select input sources:** The [`sources`](#specify-content-with-the-sources-key) key is used to select included sources (full text from two adventures and a book, reference content from a slew of other official sources, and one [homebrew source](#homebrew)).
-2. **Define Vault Paths:** The [`path`](#specify-target-paths-paths-key) sets the vault path destination for `rules` content.
+1. **Select input sources:** The [`sources`](#specify-content-with-sources) key is used to select included sources (full text from two adventures and a book, reference content from a slew of other official sources, and one [homebrew source](#homebrew)).
+2. **Define Vault Paths:** The [`path`](#specify-target-vault-paths-paths) sets the vault path destination for `rules` content.
 3. **Targeted exclusion:** [`excludePattern`](#excluding-content-matching-an-excludepattern) and [`exclude`](#excluding-specific-content-with-exclude) leaves out specific content.
 4. **Targeted inclusion:** The [`include`](#including-specific-content-with-include) specifies content that is *always included*.
 5. **[Reprint behavior](#reprint-behavior):** Only the latest/newest version of a resource should be emitted (this is the default).
@@ -146,13 +149,13 @@ Additional capabilities:
 
 Sources in 5eTools and Pf2eTools are referenced by unique identifiers. Find the identifiers for your sources in the [Source Map](sourceMap.md).
 
-Content is classified as a `book` or `adventure` (shown as the third column in the source map). Use this classification when [specifying your sources](#specify-content-with-the-sources-key).
+Content is classified as a `book` or `adventure` (shown as the third column in the source map). Use this classification when [specifying your sources](#specify-content-with-sources).
 
 Some sources are split into multiple files, in which case, you will need to specify each identifier separately. For example, *Tales from the Yawning Portal* is split into seven files. Content appears using any one of the seven (`TftYP-*`), in addition to `TftYP` for common content. If you want to include all of them, you will need to specify each identifier separately.
 
 If you're expecting to see content from a book or adventure and it's not showing up, run the CLI with the `--index` option, and check the `all-index.json` file to see which source identifier you should be using.
 
-## Specify content with the `sources` key
+## Specify content with `sources`
 
 > 🔥 Version 3.x or SNAPSHOT ONLY. If you're using a 2.x version of the CLI, use [the legacy version](#migrating-from-full-source-and-convert)
 
@@ -276,7 +279,7 @@ Use the following form for your report.
 
 For that last part, you may need to do some digging. Do not report the error using CLI exception messages. Stick to the observed missing links or errors in the data.
 
-## Specify target paths( `paths` key)
+## Specify target vault paths (`paths`)
 
 The `paths` key specifies vault path for generated content.
 
@@ -504,11 +507,56 @@ Note:
 - The key (original path) must match what the Json source is specifying.
 - The value (replacement path) should be either: a valid path to a local file[^2] or a valid URL to a remote file[^3].
 
+## Customizing the default source
+
+> [!WARNING]
+> 🔥 You can truly make a mess with this setting. Change these values with care, and inspect the result carefully in a test vault.
+>
+> - This will change generated file names. It will break links.
+> - If you have content generated with a different defaultSource configuration,
+>   completely remove it before copying freshly generated content into your vault ^[You could also use something like rsync that will remove extraneous files].
+
+If you're only running 5e 2024 content (as an example), you may want to change the "default" source for items, etc. to be XPHB or XDMG or XMM, such that those files do not have the additional notations (e.g. the file name suffix, or the additional source designation in the monster name).
+
+Change the default source for an index type in the `sources` block:
+
+```json
+"sources": {
+    "defaultSource": {
+        "monster": "XMM"
+    }
+}
+```
+
+Create a map of a content type to the default source. In general, this is the same key you would use to assign a template. If you open up the [generated index](#source-identifiers), the first segment of a key is its type, for example, `trap|collapsing roof|dmg` is a `trap`. Some types are grouped because of tight inter-relationships, like cards and decks.
+
+| Emitted type          | Default Source | Includes (note) |
+|-----------------------|----------------|----------|
+| background            | PHB | |
+| classtype             | PHB | subclass, class feature, subclass feature |
+| deck                  | DMG | card |
+| deity                 | PHB | |
+| disease               | DMG | |
+| facility              | XDMG | (bastion) |
+| feat                  | PHB | |
+| item                  | DMG | item group, magic variant |
+| monster               | MM | legendary group (bestiary) |
+| object                | DMG | |
+| optfeature            | PHB | |
+| psionic               | UATheMysticClass |
+| race                  | PHB | subrace (species) |
+| reward                | DMG | |
+| spell                 | PHB | |
+| table                 | DMG | table group |
+| trap                  | DMG | hazard |
+| variantRule           | DMG | |
+| vehicle               | GoS | |
+
 ## Migrating `from`, `full-source`, and `convert`
 
-Older configurations looked a little different.
+Older configurations looked a little different. Updating to the new format should be straightforward.
 
-I've used the same values from the [example above](#specify-content-with-the-sources-key) in the following examples. It should be straight-forward to update your config to the new syntax.
+For comparison, the following examples of older configurations use the same values as the [example above](#specify-content-with-sources).
 
 ```json
 "from": [

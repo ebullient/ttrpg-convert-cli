@@ -59,15 +59,27 @@ public class Tools5eSources extends CompendiumSources {
                 || basicRules2024Keys.contains(key);
     }
 
+    public static boolean has2024basicSrd() {
+        // return true if any of the 2024 core sources are enabled
+        return List.of("srd52", "basicRules2024")
+                .stream().anyMatch(TtrpgConfig.getConfig()::sourceIncluded);
+    }
+
     public static boolean has2024Content() {
         // return true if any of the 2024 core sources are enabled
-        return List.of("XPHB", "XDMG", "XMM", "srd52", "basicRules2024")
+        return has2024basicSrd() || List.of("XPHB", "XDMG", "XMM")
+                .stream().anyMatch(TtrpgConfig.getConfig()::sourceIncluded);
+    }
+
+    public static boolean has2014basicSrd() {
+        // return true if any of the 2024 core sources are enabled
+        return List.of("srd", "basicRules")
                 .stream().anyMatch(TtrpgConfig.getConfig()::sourceIncluded);
     }
 
     public static boolean has2014Content() {
         // return true if any of the 2024 core sources are enabled
-        return List.of("PHB", "DMG", "MM", "srd", "basicRules")
+        return has2014basicSrd() || List.of("PHB", "DMG", "MM")
                 .stream().anyMatch(TtrpgConfig.getConfig()::sourceIncluded);
     }
 
@@ -258,6 +270,10 @@ public class Tools5eSources extends CompendiumSources {
         return filterRule;
     }
 
+    public String getDecoratedName() {
+        return Tools5eLinkifier.instance().decoratedName(this.name, findNode());
+    }
+
     private void testSourceRules() {
         CompendiumConfig config = TtrpgConfig.getConfig();
         Optional<Boolean> rulesSpecify = config.keyIsIncluded(key);
@@ -359,9 +375,9 @@ public class Tools5eSources extends CompendiumSources {
     }
 
     public JsonNode findNode() {
-        JsonNode result = Tools5eIndex.getInstance().getNode(key);
+        JsonNode result = Tools5eIndex.instance().getNode(key);
         if (result == null) {
-            result = Tools5eIndex.getInstance().getOrigin(this.key);
+            result = Tools5eIndex.instance().getOrigin(this.key);
         }
         return result;
     }

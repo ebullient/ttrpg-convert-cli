@@ -87,7 +87,7 @@ public class ConfiguratorTest {
         TtrpgConfig.init(tui, Datasource.tools5e);
         Configurator test = new Configurator(tui);
 
-        tui.readFile(TestUtils.TEST_RESOURCES.resolve("5e/sources-book-adventure.json"), List.of(), (f, node) -> {
+        tui.readFile(TestUtils.TEST_RESOURCES.resolve("5e/sources-2014-book-adventure.json"), List.of(), (f, node) -> {
             test.readConfigIfPresent(node);
             CompendiumConfig config = TtrpgConfig.getConfig();
 

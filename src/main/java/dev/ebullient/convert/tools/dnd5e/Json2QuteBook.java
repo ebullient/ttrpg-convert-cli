@@ -25,7 +25,7 @@ public class Json2QuteBook extends Json2QuteCommon {
         String key = getSources().getKey();
         final String basePath;
         if (key.contains("adventure-") || key.contains("book-")) {
-            basePath = type.getRelativePath();
+            basePath = linkifier().getRelativePath(type);
         } else {
             basePath = ".";
         }

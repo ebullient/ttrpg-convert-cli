@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.valueOrDefault;
 
 import java.util.function.BiConsumer;
@@ -7,6 +8,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.JsonNodeReader;
@@ -40,6 +42,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     feat,
     featFluff,
     hazard,
+    hazardFluff,
     item,
     itemEntry,
     itemFluff,
@@ -123,7 +126,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     }
 
     public static Tools5eIndexType getTypeFromKey(String key) {
-        if (key == null || key.isEmpty()) {
+        if (!isPresent(key)) {
             return null;
         }
         String typeKey = key.substring(0, key.indexOf("|"));
@@ -154,10 +157,10 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
         // With introduction of XPHB, etc., we are going to be explicit about sources
         // links will be adjusted to add assumed sources
-        switch (this) {
+        return switch (this) {
             case classfeature -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
-                return "%s|%s|%s|%s|%s|%s".formatted(
+                yield "%s|%s|%s|%s|%s|%s".formatted(
                         this.name(),
                         name,
                         IndexFields.className.getTextOrEmpty(x),
@@ -168,7 +171,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             }
             case card -> {
                 String set = IndexFields.set.getTextOrThrow(x).trim();
-                return "%s|%s|%s|%s".formatted(
+                yield "%s|%s|%s|%s".formatted(
                         this.name(),
                         name,
                         set,
@@ -176,7 +179,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                         .toLowerCase();
             }
             case deity -> {
-                return "%s|%s|%s|%s".formatted(
+                yield "%s|%s|%s|%s".formatted(
                         this.name(),
                         name,
                         IndexFields.pantheon.getTextOrEmpty(x).trim(),
@@ -186,31 +189,39 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case itemType, itemProperty -> {
                 source = SourceField.source.getTextOrDefault(x, "phb");
                 String abbreviation = IndexFields.abbreviation.getTextOrDefault(x, name).trim();
-                return "%s|%s|%s".formatted(
+                yield "%s|%s|%s".formatted(
                         this.name(),
                         abbreviation,
                         source)
                         .toLowerCase();
             }
             case itemEntry -> {
-                return "%s|%s|%s".formatted(
+                yield "%s|%s|%s".formatted(
                         this.name(),
                         name,
                         source)
                         .toLowerCase();
             }
             case optfeature -> {
-                return "%s|%s|%s".formatted(
+                yield "%s|%s|%s".formatted(
                         this.name(),
                         name,
                         source)
                         .toLowerCase();
             }
+            case reference -> {
+                if (!isPresent(source)) {
+                    source = Tools5eSources.has2024Content()
+                            ? "XPHB"
+                            : "PHB";
+                }
+                yield createKey(name, source);
+            }
             case subclass -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
                 String scSource = SourceField.source.getTextOrDefault(x, classSource);
                 // subclass|subclassName|className|classSource|subclassSource
-                return "%s|%s|%s|%s|%s".formatted(
+                yield "%s|%s|%s|%s|%s".formatted(
                         this.name(),
                         name,
                         IndexFields.className.getTextOrEmpty(x).trim(),
@@ -222,7 +233,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
                 String scSource = IndexFields.subclassSource.getTextOrDefault(x, "phb");
                 // scFeature|className|classSource|subclassShortName|subclassSource|level|source
-                return "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
+                yield "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
                         this.name(),
                         name,
                         IndexFields.className.getTextOrEmpty(x).trim(),
@@ -235,7 +246,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             }
             case subrace -> {
                 String raceSource = IndexFields.raceSource.getTextOrDefault(x, "phb");
-                return "%s|%s|%s|%s|%s".formatted(
+                yield "%s|%s|%s|%s|%s".formatted(
                         this.name(),
                         name,
                         IndexFields.raceName.getTextOrEmpty(x).trim(),
@@ -243,21 +254,23 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                         source)
                         .toLowerCase();
             }
-            default -> {
-                return createKey(name, source);
-            }
-        }
+            default -> createKey(name, source);
+        };
     }
 
     public String createKey(String name, String source) {
         if (source == null) {
             return String.format("%s|%s", this.name(), name).toLowerCase();
         }
-        if (this == book || this == adventure || this == bookData || this == adventureData) {
-            return String.format("%s|%s-%s", this.name(), name, source).toLowerCase();
-        }
-
-        return String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
+        return switch (this) {
+            case adventure,
+                    adventureData,
+                    book,
+                    bookData ->
+                String.format("%s|%s-%s", this.name(), name, source).toLowerCase();
+            default ->
+                String.format("%s|%s|%s", this.name(), name, source).toLowerCase();
+        };
     }
 
     public String fromTagReference(String crossRef) {
@@ -290,26 +303,44 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 String classSource = valueOrDefault(parts, 2, Tools5eIndexType.classtype.defaultSourceString());
                 String featureSource = valueOrDefault(parts, 4, classSource);
                 yield "%s|%s|%s|%s|%s|%s".formatted(this.name(),
-                        parts[0],
-                        parts[1],
+                        parts[0].trim(),
+                        parts[1].trim(),
                         classSource,
-                        parts[3],
+                        parts[3].trim(),
                         featureSource)
                         .toLowerCase();
             }
-            case itemProperty -> {
-                String source = valueOrDefault(parts, 1, ItemProperty.defaultItemSource(parts[0]));
-                yield "%s|%s|%s".formatted(
+            case classtype -> {
+                // A {@class} tag can reference either a class or a subclass.
+                // {@class fighter|phb|optional link text added with another pipe}
+                // {@class Fighter|phb|Samurai|Samurai|xge}
+                // {@subclass} tags have a different structure
+                if (parts.length < 5) {
+                    yield "%s|%s|%s".formatted(
+                            this.name(),
+                            parts[0].trim(),
+                            valueOrDefault(parts, 1, defaultSourceString()))
+                            .toLowerCase();
+                }
+                yield getSubclassKey(
+                        parts[0],
+                        valueOrDefault(parts, 1, defaultSourceString()),
+                        valueOrDefault(parts, 3, null),
+                        valueOrDefault(parts, 4, defaultSourceString()));
+            }
+            case deity -> {
+                yield "%s|%s|%s|%s".formatted(
                         this.name(),
                         parts[0],
-                        source).toLowerCase();
+                        valueOrDefault(parts, 1, "Forotten Realms"),
+                        valueOrDefault(parts, 2, defaultSourceString()))
+                        .toLowerCase();
+            }
+            case itemProperty -> {
+                yield ItemProperty.refTagToKey(crossRef);
             }
             case itemType -> {
-                String source = valueOrDefault(parts, 1, ItemType.defaultItemSource(parts[0]));
-                yield "%s|%s|%s".formatted(
-                        this.name(),
-                        parts[0],
-                        source).toLowerCase();
+                yield ItemType.refTagToKey(crossRef);
             }
             case subclass -> {
                 // Homebrew and reprint tags
@@ -326,6 +357,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 String className = parts[1];
                 String classSource = valueOrDefault(parts, 2, "phb");
                 String subClassSource = valueOrDefault(parts, 3, "phb");
+
                 yield getSubclassKey(
                         className, classSource,
                         scName, subClassSource);
@@ -342,17 +374,18 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     Tui.instance().errorf("Badly formed Subclass Feature key (not enough segments): %s", crossRef);
                     yield null;
                 }
-                String classSource = valueOrDefault(parts[2], "phb");
-                String scSource = valueOrDefault(parts[4], "phb");
-                String featureSource = parts.length > 6 ? parts[6] : scSource;
+                String classSource = valueOrDefault(parts, 2, "phb");
+                String scSource = valueOrDefault(parts, 4, "phb");
+                String featureSource = valueOrDefault(parts, 6, scSource);
+
                 yield "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
                         Tools5eIndexType.subclassFeature,
                         parts[0],
-                        parts[1],
+                        parts[1].trim(),
                         classSource,
-                        parts[3],
+                        parts[3].trim(),
                         scSource,
-                        parts[5],
+                        parts[5].trim(),
                         featureSource)
                         .toLowerCase();
             }
@@ -360,13 +393,13 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 // 0    name,
                 // 1    source
                 yield createKey(parts[0],
-                        parts.length > 1 ? parts[1] : defaultSourceString());
+                        valueOrDefault(parts, 1, defaultSourceString()));
             }
         };
     }
 
     public String toTagReference(JsonNode entry) {
-        String linkText = this.decoratedName(entry);
+        String linkText = Tools5eLinkifier.instance().decoratedName(this, entry);
         String name = SourceField.name.getTextOrEmpty(entry);
         String source = SourceField.source.getTextOrEmpty(entry);
 
@@ -407,33 +440,6 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         return convert.linkify(this, reference);
     }
 
-    public String decoratedName(JsonNode entry) {
-        String name = SourceField.name.getTextOrEmpty(entry);
-        switch (this) {
-            case background -> {
-                if (name.startsWith("Variant")) {
-                    name = name.replace("Variant ", "") + " (Variant)";
-                }
-            }
-            case race, subrace -> {
-                name = name.replace("Variant; ", "");
-            }
-            default -> {
-            }
-        }
-        return decoratedName(name, entry);
-    }
-
-    public String decoratedName(String name, JsonNode entry) {
-        Tools5eSources sources = Tools5eSources.findOrTemporary(entry);
-        if (sources.isPrimarySource("DMG")
-                && !sources.getType().defaultSourceString().equalsIgnoreCase("DMG")
-                && !name.contains("(DMG)")) {
-            return name + " (DMG)";
-        }
-        return name;
-    }
-
     public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
         classSource = valueOrDefault(classSource, Tools5eIndexType.classtype.defaultSourceString());
         subclassSource = valueOrDefault(subclassSource, Tools5eIndexType.subclass.defaultSourceString());
@@ -447,7 +453,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     }
 
     public String fromChildKey(String key) {
-        if (key == null || key.isEmpty()) {
+        if (!isPresent(key)) {
             return null;
         }
         return switch (this) {
@@ -554,37 +560,6 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         };
     }
 
-    public String getRelativePath() {
-        return switch (this) {
-            case adventureData -> "adventures";
-            case bookData -> "books";
-            case card, deck -> "decks";
-            case deity -> "deities";
-            case facility -> "bastions";
-            case item, itemGroup -> "items";
-            case itemType -> "item-types";
-            case itemMastery -> "item-mastery";
-            case itemProperty -> "item-properties";
-            case legendaryGroup -> "bestiary/legendary-group";
-            case magicvariant -> "items";
-            case monster -> "bestiary";
-            case optfeature -> "optional-features";
-            case optionalFeatureTypes, spellIndex -> "lists";
-            case race, subrace -> "races";
-            case subclass, classtype -> "classes";
-            case table, tableGroup -> "tables";
-            case trap, hazard -> "traps-hazards";
-            case variantrule -> "variant-rules";
-            default -> this.name() + 's';
-        };
-    }
-
-    public String vaultRoot(Tools5eIndex index) {
-        return useCompendiumBase()
-                ? index.compendiumVaultRoot()
-                : index.rulesVaultRoot();
-    }
-
     // render.js -- Tag*
     public String defaultSourceString() {
         return switch (this) {
@@ -612,9 +587,38 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case itemMastery -> "XPHB";
             case itemTypeAdditionalEntries -> "XGE";
             case psionic -> "UATheMysticClass";
-            case syntheticGroup -> null;
             case vehicle, vehicleUpgrade -> "GoS";
+            // ---
+            case syntheticGroup -> null;
+            case reference ->
+                Tools5eSources.has2024Content()
+                        ? "XPHB"
+                        : "PHB";
             default -> "PHB";
+        };
+    }
+
+    public String defaultOutputSource() {
+        return switch (this) {
+            case classtype, classfeature, subclass, subclassFeature ->
+                TtrpgConfig.getDefaultOutputSource(classtype);
+            case card, deck ->
+                TtrpgConfig.getDefaultOutputSource(deck);
+            case legendaryGroup, monster, monsterfeatures ->
+                TtrpgConfig.getDefaultOutputSource(monster);
+            case item, itemGroup, magicvariant ->
+                TtrpgConfig.getDefaultOutputSource(item);
+            case object ->
+                TtrpgConfig.getDefaultOutputSource(object);
+            case race, subrace ->
+                TtrpgConfig.getDefaultOutputSource(race);
+            case table, tableGroup ->
+                TtrpgConfig.getDefaultOutputSource(table);
+            case trap, hazard ->
+                TtrpgConfig.getDefaultOutputSource(trap);
+            case vehicle, vehicleUpgrade ->
+                TtrpgConfig.getDefaultOutputSource(vehicle);
+            default -> TtrpgConfig.getDefaultOutputSource(this);
         };
     }
 
@@ -632,6 +636,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     conditionFluff,
                     facilityFluff,
                     featFluff,
+                    hazardFluff,
                     itemFluff,
                     languageFluff,
                     monsterFluff,
@@ -651,7 +656,8 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         // These types are not directly filtered.
         // Special rules are applied after the parent item is filtered
         return switch (this) {
-            case classfeature,
+            case card,
+                    classfeature,
                     optionalFeatureTypes,
                     subclass,
                     subclassFeature ->

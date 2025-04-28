@@ -1,9 +1,14 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.join;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,12 +23,12 @@ import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFields;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class OptionalFeatureIndex implements JsonSource {
     private final Map<String, OptionalFeatureType> optFeatureIndex = new HashMap<>();
+    private final Set<String> unresolvedFeatureTypes = new HashSet<>();
     private final Tools5eIndex index;
 
     OptionalFeatureIndex(Tools5eIndex index) {
@@ -107,7 +112,11 @@ public class OptionalFeatureIndex implements JsonSource {
     }
 
     public OptionalFeatureType get(String featureType) {
-        return optFeatureIndex.get(featureType.toLowerCase());
+        OptionalFeatureType type = optFeatureIndex.get(featureType.toLowerCase());
+        if (type == null && unresolvedFeatureTypes.add(featureType)) {
+            tui().logf(Msg.UNRESOLVED, "OptionalFeatureType %s not found", featureType);
+        }
+        return type;
     }
 
     public void clear() {
@@ -116,6 +125,55 @@ public class OptionalFeatureIndex implements JsonSource {
 
     public Map<String, OptionalFeatureType> getMap() {
         return optFeatureIndex;
+    }
+
+    public static class OptionalFeatureCondition {
+        final int order;
+        final String name;
+        final List<String> includes = new ArrayList<>();
+        final List<String> includeConditions = new ArrayList<>();
+
+        final List<String> excludes = new ArrayList<>();
+        final List<String> excludeConditions = new ArrayList<>();
+
+        public OptionalFeatureCondition(int order, String name,
+                List<String> conditions,
+                Function<String, String> transform) {
+            this.order = order;
+            this.name = name;
+
+            for (String condition : conditions) {
+                if (condition.startsWith("!")) {
+                    String exclude = condition.substring(1);
+                    excludeConditions.add(exclude);
+                    excludes.add(transform.apply(exclude));
+                } else {
+                    includeConditions.add(condition);
+                    includes.add(transform.apply(condition));
+                }
+            }
+        }
+
+        public int order() {
+            return order;
+        }
+
+        public boolean isEmpty() {
+            return includes.isEmpty() && excludes.isEmpty();
+        }
+
+        @Override
+        public String toString() {
+            if (!includes.isEmpty() && !excludes.isEmpty()) {
+                return String.format("%s %s, excluding %s", name,
+                        joinConjunct(" or ", includes), join("and", excludes));
+            } else if (!includes.isEmpty()) {
+                return String.format("%s %s", name, joinConjunct(" or ", includes));
+            } else if (!excludes.isEmpty()) {
+                return String.format("%s excluding %s", name, joinConjunct("and", includes));
+            }
+            return "";
+        }
     }
 
     /**
@@ -187,7 +245,7 @@ public class OptionalFeatureIndex implements JsonSource {
         }
 
         public String getFilename() {
-            return Tools5eQuteBase.getOptionalFeatureTypeResource(abbreviation);
+            return linkifier().getOptionalFeatureTypeResource(abbreviation);
         }
 
         public Tools5eSources getSources() {
@@ -273,6 +331,10 @@ public class OptionalFeatureIndex implements JsonSource {
         @JsonIgnore
         String getKey() {
             return featureTypeKey;
+        }
+
+        Tools5eLinkifier linkifier() {
+            return Tools5eLinkifier.instance();
         }
     }
 

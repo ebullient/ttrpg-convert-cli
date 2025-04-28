@@ -27,7 +27,9 @@ public class Json2QuteHazard extends Json2QuteCommon {
         }
 
         List<ImageRef> images = new ArrayList<>();
-        List<String> text = getFluff(Tools5eIndexType.trapFluff, "##", images);
+        List<String> text = getFluff(type == Tools5eIndexType.trap
+                ? Tools5eIndexType.trapFluff
+                : Tools5eIndexType.hazardFluff, "##", images);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         return new QuteHazard(getSources(),

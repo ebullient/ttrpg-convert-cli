@@ -20,7 +20,6 @@ import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.dnd5e.SpellIndex.SpellIndexFields;
-import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class SpellEntry {
     final String level;
@@ -60,7 +59,7 @@ public class SpellEntry {
     }
 
     public String getName() {
-        return Tools5eIndexType.spell.decoratedName(spellNode);
+        return linkifier().decoratedName(Tools5eIndexType.spell, spellNode);
     }
 
     /**
@@ -123,7 +122,7 @@ public class SpellEntry {
     }
 
     private List<String> spellComponents(JsonNode spellNode) {
-        JsonSource converter = Tools5eIndex.getInstance();
+        JsonSource converter = Tools5eIndex.instance();
         List<String> list = new ArrayList<>();
         for (Entry<String, JsonNode> f : SpellIndexFields.components.iterateFieldsFrom(spellNode)) {
             switch (f.getKey().toLowerCase()) {
@@ -161,7 +160,7 @@ public class SpellEntry {
 
     private SpellSchool spellSchool(JsonNode spellNode) {
         String school = SpellIndexFields.school.getTextOrEmpty(spellNode);
-        return Tools5eIndex.getInstance().findSpellSchool(school, Tools5eSources.findSources(spellNode));
+        return Tools5eIndex.instance().findSpellSchool(school, Tools5eSources.findSources(spellNode));
     }
 
     public SpellReference getReference(String key) {
@@ -182,13 +181,7 @@ public class SpellEntry {
 
     public String linkify() {
         Tools5eSources sources = Tools5eSources.findSources(spellNode);
-        String name = Tools5eIndexType.spell.decoratedName(spellNode);
-        String resource = Tools5eQuteBase.fixFileName(name, sources);
-        return "[%s](%s%s/%s.md \"%s\")".formatted(name,
-                Tools5eIndex.getInstance().compendiumVaultRoot(),
-                Tools5eIndexType.spell.getRelativePath(),
-                resource,
-                sources.primarySource());
+        return linkifier().linkSpellEntry(sources);
     }
 
     @Override
@@ -262,8 +255,8 @@ public class SpellEntry {
                 this.spellLevel = null;
             }
             this.refererType = Tools5eIndexType.getTypeFromKey(key);
-            this.refererNode = Tools5eIndex.getInstance().getOriginNoFallback(key);
-            this.refererName = refererType.decoratedName(refererNode);
+            this.refererNode = Tools5eIndex.instance().getOriginNoFallback(key);
+            this.refererName = linkifier().decoratedName(refererType, refererNode);
         }
 
         boolean isSpecific() {
@@ -315,28 +308,29 @@ public class SpellEntry {
         }
 
         public String listFileName() {
-            return Tools5eQuteBase.getSpellList(refererName, Tools5eSources.findSources(refererNode));
+            return linkifier().getSpellList(refererName, Tools5eSources.findSources(refererNode));
         }
 
         public String linkifyReference() {
+            Tools5eIndex index = Tools5eIndex.instance();
+
             List<String> linkSources = new ArrayList<>();
             Tools5eSources sources = Tools5eSources.findSources(refererNode);
-            Tools5eIndex index = Tools5eIndex.getInstance();
-            String name = refererType.decoratedName(refererNode);
-            String resource = Tools5eQuteBase.getSpellList(name, sources);
+            String name = linkifier().decoratedName(refererType, refererNode);
+            String resource = linkifier().getSpellList(name, sources);
 
             if (refererType == Tools5eIndexType.subclass) {
                 String classKey = Tools5eIndexType.classtype.fromChildKey(refererKey);
                 JsonNode classNode = index.getOriginNoFallback(classKey);
-                String className = Tools5eIndexType.classtype.decoratedName(classNode);
+                String className = linkifier().decoratedName(Tools5eIndexType.classtype, classNode);
                 name = "%s (%s)".formatted(className, name);
                 linkSources.add(sourceString(refererType, sources.primarySource()));
                 linkSources.add(sourceString(Tools5eIndexType.classtype, SourceField.source.getTextOrEmpty(classNode)));
             }
             linkSources.removeIf(String::isEmpty);
             return "[%s](%s%s/%s.md%s)".formatted(name,
-                    Tools5eIndex.getInstance().compendiumVaultRoot(),
-                    Tools5eIndexType.spellIndex.getRelativePath(),
+                    Tools5eIndex.instance().compendiumVaultRoot(),
+                    linkifier().getRelativePath(Tools5eIndexType.spellIndex),
                     resource,
                     linkSources.isEmpty() ? "" : " \"%s\"".formatted(join(";", linkSources)));
         }
@@ -366,5 +360,9 @@ public class SpellEntry {
             }
             return String.join(", ", append);
         }
+    }
+
+    private static Tools5eLinkifier linkifier() {
+        return Tools5eLinkifier.instance();
     }
 }

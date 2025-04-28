@@ -70,6 +70,10 @@ public class Json2QuteCommon implements JsonSource {
         return this.sources.getName();
     }
 
+    public Tools5eLinkifier linkifier() {
+        return Tools5eLinkifier.instance();
+    }
+
     @Override
     public Tools5eSources getSources() {
         return sources;
@@ -308,9 +312,6 @@ public class Json2QuteCommon implements JsonSource {
             ItemProperty prop = index.findItemProperty(p.asText(), getSources());
             if (prop != null) {
                 props.add(prop.linkify());
-            } else {
-                tui().warnf(Msg.UNKNOWN, "unknown item property prereq %s from %s / %s",
-                        p.asText(), getSources().getKey(), parseState().getSource());
             }
         }
         return joinConjunct(" and ", props);
@@ -788,7 +789,7 @@ public class Json2QuteCommon implements JsonSource {
         }
 
         Path targetFile = Path.of(targetDir,
-                Tools5eQuteBase.fixFileName(slugify(filename), getSources()) + ext);
+                linkifier().getTargetFileName(slugify(filename), getSources()) + ext);
 
         return getSources().buildTokenImageRef(index, sourcePath, targetFile, true);
     }

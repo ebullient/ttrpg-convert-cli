@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex;
 import io.quarkus.test.junit.main.LaunchResult;
 
 public class TestUtils {
@@ -404,6 +405,26 @@ public class TestUtils {
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void readAllToolsData(Tools5eIndex index, Path toolsData, String... dirs) throws IOException {
+        // read the tools data
+        index.tui().readToolsDir(toolsData, index::importTree);
+
+        for (String dir : dirs) {
+            readOtherFiles(index, toolsData, dir);
+        }
+
+        // read extra books, etc
+        index.resolveSources(toolsData);
+    }
+
+    public static void readOtherFiles(Tools5eIndex index, Path toolsData, String more) throws IOException {
+        for (String file : TestUtils.getFilesFrom(toolsData.resolve(more))) {
+            Path fullInputPath = Path.of(file);
+            Path relativepath = toolsData.relativize(fullInputPath);
+            index.tui().readFile(Path.of(file), TtrpgConfig.getFixes(relativepath.toString()), index::importTree);
         }
     }
 }

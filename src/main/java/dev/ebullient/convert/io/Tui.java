@@ -301,18 +301,18 @@ public class Tui {
         }
     }
 
-    public void progressf(String output, Object... params) {
-        verboseMsg(Msg.PROGRESS, output, params);
+    public void verbosef(String output, Object... params) {
+        verbosef(Msg.NOOP, output, params);
     }
 
-    private void verboseMsg(Msg msgWrap, String output, Object... params) {
+    public void verbosef(Msg msg, String output, Object... params) {
         if (verboseOrLog) {
-            output = format(output, params);
+            output = format(msg.wrap(output), params);
             if (verbose) {
-                out.println(ansi.new Text(msgWrap.color(output), colors));
+                out.println(ansi.new Text(Msg.VERBOSE.color(output), colors));
             }
             if (log != null) {
-                log.println(msgWrap.wrap(output));
+                log.println(Msg.VERBOSE.wrap(output));
             }
         }
     }
@@ -330,11 +330,15 @@ public class Tui {
     public void logf(Msg msg, String output, Object... params) {
         if (log != null) {
             output = format(msg.wrap(output), params);
+            log.println(output);
             if (msg == Msg.UNKNOWN || msg == Msg.UNRESOLVED) {
                 log(new Exception(output), false);
             }
-            log.println(output);
         }
+    }
+
+    public void progressf(String output, Object... params) {
+        infof(Msg.PROGRESS, output, params);
     }
 
     public void infof(Msg msg, String output, Object... params) {
@@ -416,7 +420,7 @@ public class Tui {
             Path targetPath = output.resolve(Path.of("css-snippets", slugify(fontRef.fontFamily) + ".css"));
             targetPath.getParent().toFile().mkdirs();
 
-            progressf("Generating CSS snippet for %s", fontRef.sourcePath);
+            verbosef(Msg.WRITING, "Generating CSS snippet for %s", fontRef.sourcePath);
             if (fontRef.sourcePath.startsWith("http")) {
                 try (InputStream is = URI.create(fontRef.sourcePath.replace(" ", "%20")).toURL().openStream()) {
                     Files.writeString(targetPath, templates.renderCss(fontRef, is));
@@ -439,6 +443,8 @@ public class Tui {
     }
 
     public void copyImages(Collection<ImageRef> images) {
+        verbosef(Msg.PROGRESS, "Processing images");
+
         for (ImageRef image : images) {
             Path targetPath = image.targetFilePath() == null
                     ? null
@@ -660,6 +666,9 @@ public class Tui {
         for (StackTraceElement e : stackTrace) {
             if (e.getClassName().startsWith("picocli")) {
                 break;
+            }
+            if (e.getClassName().matches(".*(Tui|RpgDataConvertCli|writeAll).*")) {
+                continue;
             }
             sb.append("\tat ").append(e.toString()).append("\n");
         }

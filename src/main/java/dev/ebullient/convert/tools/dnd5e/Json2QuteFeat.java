@@ -27,7 +27,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
         // TODO: update w/ category, additionalSpells
         return new QuteFeat(sources,
-                type.decoratedName(rootNode),
+                linkifier().decoratedName(type, rootNode),
                 getSourceText(sources),
                 listPrerequisites(rootNode),
                 null, // Level coming someday..

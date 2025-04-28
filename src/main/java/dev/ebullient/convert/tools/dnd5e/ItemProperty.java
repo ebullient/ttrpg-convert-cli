@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.toAnchorTag;
+import static dev.ebullient.convert.StringUtil.valueOrDefault;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
@@ -33,7 +35,7 @@ record ItemProperty(
     }
 
     public String linkify(String linkText) {
-        Tools5eIndex index = Tools5eIndex.getInstance();
+        Tools5eIndex index = Tools5eIndex.instance();
         linkText = isPresent(linkText) ? linkText : name;
 
         boolean included = isPresent(indexKey)
@@ -54,7 +56,17 @@ record ItemProperty(
     public static final ItemProperty SILVERED = ItemProperty.customProperty("Silvered", "Silvered Weapons", "=");
     public static final ItemProperty POISON = ItemProperty.customProperty("Poison", "=");
 
+    public static ItemProperty forKey(String key) {
+        if (!isPresent(key)) {
+            return null;
+        }
+        return propertyMap.get(key);
+    }
+
     public static ItemProperty fromNode(JsonNode property) {
+        if (property == null) {
+            return null;
+        }
         String key = TtrpgValue.indexKey.getTextOrEmpty(property);
         if (key.isEmpty()) {
             Tui.instance().warnf(Msg.NOT_SET.wrap("Index key not found for property %s"), property);
@@ -143,12 +155,42 @@ record ItemProperty(
         propertyMap.clear();
     }
 
-    public static String defaultItemSource(String code) {
-        // reprint will handle PHB -> XPHB, DMG -> XDMG, etc.
-        return switch (code) {
-            case "AF", "BF", "RLD" -> "DMG";
-            case "ER", "Vst" -> "TDCSR";
-            default -> "PHB";
+    public static String refTagToKey(String text) {
+        String[] parts = text.split("\\|");
+        String abv = parts[0].trim();
+        String source = defaultItemSource(abv,
+                valueOrDefault(parts, 1, "PHB"));
+
+        return Tools5eIndexType.itemProperty.createKey(abv, source);
+    }
+
+    private static String defaultItemSource(String code, String source) {
+        boolean xphbAvailable = TtrpgConfig.getConfig().sourceIncluded("XPHB") || Tools5eSources.has2024basicSrd();
+        boolean xdmgAvailable = TtrpgConfig.getConfig().sourceIncluded("XDMG") || Tools5eSources.has2024basicSrd();
+        // reprints work mostly, but a few changed default between phb and dmg
+        return switch (code.toUpperCase()) {
+            // PHB <-> XPHB
+            case "2H", // two-handed
+                    "A", // ammunition
+                    "F", // finesse
+                    "H", // heavy
+                    "L", // light
+                    "LD", // loading
+                    "R", // reach
+                    "T", // thrown
+                    "V" // versatile
+                -> xphbAvailable ? "XPHB" : "PHB";
+
+            // DMG <-> XDMG
+            case "AF", // ammunition (futuristic)
+                    "BF", // burst fire
+                    "RLD" // reload
+                -> xdmgAvailable ? "XDMG" : "DMG";
+
+            case "ER" -> "TDCSR"; // extended reach
+            case "S" -> "PHB"; // special
+            case "VST" -> "TDCSR"; // vestige of divergence
+            default -> source;
         };
     }
 }

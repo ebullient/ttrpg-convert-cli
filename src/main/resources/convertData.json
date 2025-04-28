@@ -122,7 +122,9 @@
           "srd52": true,
           "basicRules": true,
           "basicRules2024": true,
-          "entries": []
+          "entries": [
+            "Many weapons have special properties related to their use, as shown in the Weapons table."
+          ]
         },
         {
           "name": "Improvised Weapons",
@@ -147,6 +149,8 @@
           "name": "Improvised Weapons",
           "edition": "one",
           "source": "XPHB",
+          "srd52": true,
+          "basicRules2024": true,
           "page": 213,
           "id": "645",
           "entries": [
@@ -156,9 +160,9 @@
         {
           "name": "Silvered Weapons",
           "srd": true,
+          "srd52": true,
           "basicRules": true,
-          "source": "PHB",
-          "page": 148,
+          "basicRules2024": true,
           "entries": [
             "Some monsters that have immunity or resistance to nonmagical weapons are susceptible to silver weapons, so cautious adventurers invest extra coin to plate their weapons with silver. You can silver a single weapon or ten pieces of ammunition for 100 gp. This cost represents not only the price of the silver, but the time and expertise needed to add silver to the weapon without making it less effective."
           ]
@@ -222,6 +226,7 @@
           "source": "DMG",
           "page": 257,
           "srd": true,
+          "basicRules": true,
           "reprintedAs": [
             {
               "tag": "reference",
@@ -273,6 +278,7 @@
           "name": "Poison",
           "source": "XDMG",
           "srd52": true,
+          "basicRules2024": true,
           "page": 90,
           "entries": [
             "Given their insidious and deadly nature, poisons are a favorite tool among assassins and evil creatures.",
@@ -501,6 +507,38 @@
       "feat|savage attacker|xphb",
       "feat|skilled|xphb",
       "feat|two-weapon fighting|xphb",
+      "itemproperty|2h|xphb",
+      "itemproperty|a|xphb",
+      "itemproperty|f|xphb",
+      "itemproperty|h|xphb",
+      "itemproperty|ld|xphb",
+      "itemproperty|l|xphb",
+      "itemproperty|rld|xdmg",
+      "itemproperty|r|xphb",
+      "itemproperty|t|xphb",
+      "itemproperty|v|xphb",
+      "itemtype|$c|xphb",
+      "itemtype|air|xphb",
+      "itemtype|at|xphb",
+      "itemtype|a|xphb",
+      "itemtype|fd|xphb",
+      "itemtype|gs|xphb",
+      "itemtype|g|xphb",
+      "itemtype|ha|xphb",
+      "itemtype|ins|xphb",
+      "itemtype|la|xphb",
+      "itemtype|ma|xphb",
+      "itemtype|mnt|xphb",
+      "itemtype|m|xphb",
+      "itemtype|p|xphb",
+      "itemtype|r|xphb",
+      "itemtype|scf|xphb",
+      "itemtype|sc|xphb",
+      "itemtype|shp|xphb",
+      "itemtype|s|xphb",
+      "itemtype|tah|xphb",
+      "itemtype|t|xphb",
+      "itemtype|veh|xphb",
       "monster|allosaurus|xmm",
       "monster|animated flying sword|xmm",
       "monster|ankylosaurus|xmm",
@@ -878,7 +916,9 @@
       "spell|thunderclap|phb": "spell|thunderclap|xge",
       "spell|toll the dead|phb": "spell|toll the dead|xge",
       "spell|word of radiance|phb": "spell|word of radiance|xge",
-      "trap|quicksand|dmg": "hazard|quicksand|dmg"
+      "trap|quicksand|dmg": "hazard|quicksand|dmg",
+      "trapfluff|green slime|xdmg": "hazardfluff|green slime|xdmg",
+      "trapfluff|webs|xdmg": "hazardfluff|webs|xdmg"
     },
     "fixes": {
       "vehicles.json": [
@@ -889,6 +929,8 @@
       ]
     },
     "sourceFiles": [
+      "generated/gendata-tables.json",
+      "generated/gendata-variantrules.json",
       "actions.json",
       "adventures.json",
       "backgrounds.json",
@@ -915,7 +957,6 @@
       "fluff-rewards.json",
       "fluff-trapshazards.json",
       "fluff-vehicles.json",
-      "generated/gendata-tables.json",
       "items-base.json",
       "items.json",
       "languages.json",
