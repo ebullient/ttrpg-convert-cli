@@ -307,12 +307,12 @@ public class Tui {
 
     public void verbosef(Msg msg, String output, Object... params) {
         if (verboseOrLog) {
-            output = format(msg.wrap(output), params);
+            output = format(Msg.VERBOSE.wrap(msg.wrap(output)), params);
             if (verbose) {
-                out.println(ansi.new Text(Msg.VERBOSE.color(output), colors));
+                out.println(ansi.new Text(output));
             }
             if (log != null) {
-                log.println(Msg.VERBOSE.wrap(output));
+                log.println(output);
             }
         }
     }
