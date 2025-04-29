@@ -724,7 +724,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         Map<String, List<String>> conditions = new HashMap<>();
         for (var condition : match.group(2).split("\\|")) {
             String[] parts = condition.split("=");
-            if (parts.length > 2) {
+            if (parts.length != 2) {
                 tui().warnf(Msg.UNKNOWN, "Unable to parse condition of optional feature filter %s from %s", condition,
                         match.group(2));
                 return linkText;
