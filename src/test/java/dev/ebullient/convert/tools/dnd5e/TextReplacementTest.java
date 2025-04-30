@@ -332,6 +332,17 @@ public class TextReplacementTest implements JsonSource {
         }
     }
 
+    @Test
+    public void testHitYourSpellAttack() {
+        String s = "{@hitYourSpellAttack} to hit,";
+        String result = this.replaceText(s);
+        assertThat(result).isEqualTo("your spell attack modifier to hit,");
+
+        s = "{@hitYourSpellAttack Bonus equals your spell attack modifier}";
+        result = this.replaceText(s);
+        assertThat(result).isEqualTo("Bonus equals your spell attack modifier");
+    }
+
     @Override
     public Tools5eIndex index() {
         return index;

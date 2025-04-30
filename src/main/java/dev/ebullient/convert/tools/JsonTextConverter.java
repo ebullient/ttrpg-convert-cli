@@ -118,6 +118,9 @@ public interface JsonTextConverter<T extends IndexType> {
 
         DiceFormulaState formulaState = parseState().diceFormulaState();
 
+        input = input.replaceAll("\\{@hitYourSpellAttack ([^}]+)}", "$1")
+                .replaceAll("\\{@hitYourSpellAttack}", "your spell attack modifier");
+
         Matcher m = dicePattern.matcher(input);
         if (!m.find()) {
             return input;

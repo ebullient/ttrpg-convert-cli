@@ -339,8 +339,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
 
             try {
                 result = result
-                        .replaceAll("\\{@hitYourSpellAttack ([^}]+)}", "$1")
-                        .replaceAll("\\{@hitYourSpellAttack}", "the summoner's spell attack modifier")
                         // "Internal links: {@5etools This Is Your Life|lifegen.html}",
                         // "External links: {@link https://discord.gg/5etools} or {@link
                         // Discord|https://discord.gg/5etools}"
