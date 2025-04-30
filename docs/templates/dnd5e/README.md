@@ -4,7 +4,7 @@ Qute templates for generating content from 5eTools data.
 
 ## References
 
-- [AbilityScores](AbilityScores.md): 5eTools Ability Score attributes.
+- [AbilityScores](AbilityScores/README.md): 5eTools Ability Score attributes.
 - [AcHp](AcHp.md): 5eTools armor class and hit points attributes
 
     This data object provides a default mechanism for creating

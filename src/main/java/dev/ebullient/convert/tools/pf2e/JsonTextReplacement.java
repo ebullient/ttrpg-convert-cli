@@ -428,7 +428,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
             classSource = parts[1];
         }
 
-        //tui().debugf("TODO CLASS found: %s", match);
         return linkText;
     }
 

@@ -251,9 +251,9 @@ public class Json2QuteClass extends Json2QuteCommon {
                             .map(x -> SkillOrAbility.format(x.getKey(), index(), getSources()))
                             .toList();
                 })
-                .map(l -> joinConjunct("and", l))
+                .map(l -> joinConjunct(" and ", l))
                 .toList();
-        return joinConjunct("or", abilities);
+        return joinConjunct(" or ", abilities);
     }
 
     HitPointDie buildHitDie() {
@@ -547,7 +547,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         }
                     }
 
-                    String allSkills = joinConjunct("and", baseSkills);
+                    String allSkills = joinConjunct(" and ", baseSkills);
                     if (baseSkills.size() > 0 && choose != null) {
                         return "%s; and %s".formatted(allSkills, choose);
                     }

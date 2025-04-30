@@ -1067,7 +1067,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default double crToNumber(String crValue) {
-        if (crValue.equals("Unknown") || crValue.equals("\u2014")) {
+        if (crValue == null || crValue.equals("Unknown") || crValue.equals("\u2014")) {
             return CR_UNKNOWN;
         }
         String[] parts = crValue.trim().split("/");
@@ -1303,6 +1303,30 @@ public interface JsonSource extends JsonTextReplacement {
             entry("28", 120000),
             entry("29", 135000),
             entry("30", 155000));
+
+    public enum AbilityScoreFields implements JsonNodeReader {
+        str(),
+        dex(),
+        con(),
+        intel("int"),
+        wis(),
+        cha(),
+        ;
+
+        private final String altName;
+
+        AbilityScoreFields() {
+            this(null);
+        }
+
+        AbilityScoreFields(String altName) {
+            this.altName = altName;
+        }
+
+        public String nodeName() {
+            return altName == null ? name() : altName;
+        }
+    }
 
     enum Tools5eFields implements JsonNodeReader {
         _monsterFluff,

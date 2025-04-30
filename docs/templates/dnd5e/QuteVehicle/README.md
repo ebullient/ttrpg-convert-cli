@@ -74,7 +74,7 @@ List of content superceded by this note (as [Reprinted](../../Reprinted.md))
 
 ### scores
 
-Object ability scores as [AbilityScores](../AbilityScores.md)
+Object ability scores as [AbilityScores](../AbilityScores/README.md)
 Used by Ship, Infernal War Machine, Creature, Object
 
 ### shipCrewCargoPace

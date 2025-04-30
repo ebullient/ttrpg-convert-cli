@@ -44,6 +44,22 @@ public class CompendiumConfig {
             return this == enabledUsingFS || this == disabledUsingFS;
         }
 
+        public boolean useDiceRolls(ParseState state) {
+            return switch (this) {
+                case disabledUsingFS, disabled -> false;
+                case enabled -> true;
+                case enabledUsingFS -> !state.inTrait();
+            };
+        }
+
+        public boolean decorate(ParseState state) {
+            return switch (this) {
+                case enabled -> false;
+                case disabled -> true;
+                case enabledUsingFS, disabledUsingFS -> !state.inTrait();
+            };
+        }
+
         static DiceRoller fromAttributes(Boolean useDiceRoller, Boolean yamlStatblocks) {
             yamlStatblocks = yamlStatblocks == null ? false : yamlStatblocks;
 

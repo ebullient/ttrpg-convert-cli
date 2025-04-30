@@ -574,22 +574,15 @@ public class Json2QuteCommon implements JsonSource {
                 collectImmunities(rootNode, VulnerabilityFields.conditionImmune));
     }
 
-    AbilityScores abilityScores() {
-        if (!rootNode.has("str")
-                && !rootNode.has("dex")
-                && !rootNode.has("con")
-                && !rootNode.has("int")
-                && !rootNode.has("wis")
-                && !rootNode.has("cha")) {
-            return AbilityScores.DEFAULT;
-        }
-        return new AbilityScores(
-                intOrDefault(rootNode, "str", 10),
-                intOrDefault(rootNode, "dex", 10),
-                intOrDefault(rootNode, "con", 10),
-                intOrDefault(rootNode, "int", 10),
-                intOrDefault(rootNode, "wis", 10),
-                intOrDefault(rootNode, "cha", 10));
+    AbilityScores abilityScores(JsonNode scoreNode) {
+        AbilityScores.Builder builder = new AbilityScores.Builder();
+        builder.setStrength(AbilityScoreFields.str.intOrDefault(rootNode, 10));
+        builder.setDexterity(AbilityScoreFields.dex.intOrDefault(rootNode, 10));
+        builder.setConstitution(AbilityScoreFields.con.intOrDefault(rootNode, 10));
+        builder.setIntelligence(AbilityScoreFields.intel.intOrDefault(rootNode, 10));
+        builder.setWisdom(AbilityScoreFields.wis.intOrDefault(rootNode, 10));
+        builder.setCharisma(AbilityScoreFields.cha.intOrDefault(rootNode, 10));
+        return builder.build();
     }
 
     String speed(JsonNode speedNode) {

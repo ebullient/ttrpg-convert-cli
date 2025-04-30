@@ -1,7 +1,6 @@
 package dev.ebullient.convert.qute;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,35 +37,13 @@ public interface QuteUtil {
         }
     }
 
-    /** Remove leading '+' */
-    default Map<String, Integer> mapOfNumbers(Map<String, String> map) {
-        Map<String, Integer> result = new HashMap<>();
-
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            int intVal = 0;
-            try {
-                intVal = Integer.parseInt(entry.getValue());
-            } catch (NumberFormatException e) {
-                // ignore
-            }
-            result.put(entry.getKey(), intVal);
-        }
-        return result;
-    }
-
     default void addUnlessEmpty(Map<String, Object> map, String key, String value) {
         if (value != null && !value.isBlank()) {
             map.put(key, value);
         }
     }
 
-    default void addUnlessEmpty(Map<String, Object> map, String key, Collection<NamedText> value) {
-        if (value != null && !value.isEmpty()) {
-            map.put(key, value);
-        }
-    }
-
-    default void addUnlessEmpty(Map<String, Object> map, String key, List<?> value) {
+    default void addUnlessEmpty(Map<String, Object> map, String key, Collection<?> value) {
         if (value != null && !value.isEmpty()) {
             map.put(key, value);
         }

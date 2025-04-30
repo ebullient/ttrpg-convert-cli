@@ -51,6 +51,29 @@ public class StringUtil {
         return o1 == null ? o2 == null : o1.equals(o2);
     }
 
+    public static int intOrDefault(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static int intOrDefault(String[] parts, int index, int defaultValue) {
+        if (index < 0 || index >= parts.length) {
+            return defaultValue;
+        }
+        return intOrDefault(parts[index], defaultValue);
+    }
+
+    public static String asModifier(double value) {
+        return (value >= 0 ? "+" : "") + value;
+    }
+
+    public static String asModifier(int value) {
+        return (value >= 0 ? "+" : "") + value;
+    }
+
     /**
      * {@link #join(String, Collection)} but with the ability to accept varargs.
      *
@@ -186,14 +209,6 @@ public class StringUtil {
     /** Returns true if the given string is non-null and non-blank. */
     public static boolean isPresent(String s) {
         return s != null && !s.isBlank();
-    }
-
-    public static String asModifier(double value) {
-        return (value >= 0 ? "+" : "") + value;
-    }
-
-    public static String asModifier(int value) {
-        return (value >= 0 ? "+" : "") + value;
     }
 
     /**

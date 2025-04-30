@@ -142,8 +142,8 @@ public class TextReplacementTest implements JsonSource {
                 "with extended display text (`+2`) and display text (`+2`)",
                 "a special 'hit' version which assumes a d20 is to be rolled `+7`",
                 "There's also `1d12+3` and `-4`",
-                "scaledamage: `1d6`, scaledice: extra amount (`1d6`)",
-                "Strength (5), Strength (+5), and [Animal Handling](rules/skills.md#Animal%20Handling) (+5)",
+                "scaledamage: `d6`, scaledice: extra amount (`d6`)",
+                "<span title='Strength'>`20` (`+5`)</span>, <span title='Strength'>`+5`</span>, and [Animal Handling](rules/skills.md#Animal%20Handling) (`+5`)",
                 "with an Intelligence of `+3` (`16`), a Wisdom of `+0` (`10`), and a Charisma of `+4` (`18`)",
                 "`+3 plus PB` to hit;  *Hit:* 7 (`1d6 + 4`) piercing damage plus 7 (`2d6`) poison damage.",
                 "Perception (`+2`) Perception (`-2`)",
@@ -165,8 +165,8 @@ public class TextReplacementTest implements JsonSource {
                 "with extended `dice:1d20+2|noform|noparens|avg|text(display text)` (`+2`) and `dice:1d20+2|noform|noparens|avg|text(display text)` (`+2`)",
                 "a special 'hit' version which assumes a d20 is to be rolled `dice:1d20+7|noform|noparens|text(+7)`",
                 "There's also `dice:1d12+3|noform|noparens|avg` (`1d12+3`) and `dice:1d20-4|noform|noparens|text(-4)`",
-                "scaledamage: `dice:1d6|noform|noparens|avg|text(1d6)`, scaledice: `dice:1d6|noform|noparens|avg|text(extra amount)` (`1d6`)",
-                "Strength (5), Strength (`dice: d20+5|text(+5)`), and [Animal Handling](rules/skills.md#Animal%20Handling) (`dice: d20+5|text(+5)`)",
+                "scaledamage: `dice:1d6|noform|noparens|avg|text(d6)`, scaledice: `dice:1d6|noform|noparens|avg|text(extra amount)` (`d6`)",
+                "<span title='Strength'>`20` (`dice:d20+5|noform|noparens|text(+5)`)</span>, <span title='Strength'>`dice:d20+5|noform|noparens|text(+5)`</span>, and [Animal Handling](rules/skills.md#Animal%20Handling) (`dice:1d20+5|noform|noparens|text(+5)`)",
                 "with an Intelligence of `dice:1d20+3|noform|noparens|text(+3)` (`16`), a Wisdom of `dice:1d20+0|noform|noparens|text(+0)` (`10`), and a Charisma of `dice:1d20+4|noform|noparens|text(+4)` (`18`)",
                 "`+3 plus PB` to hit;  *Hit:* `dice:1d6+4|noform|noparens|avg|text(7)` (`1d6 + 4`) piercing damage plus `dice:2d6|noform|noparens|avg|text(7)` (`2d6`) poison damage.",
                 "Perception (`dice:1d20+2|noform|noparens|text(+2)`) Perception (`dice:1d20-2|noform|noparens|text(-2)`)",
@@ -195,8 +195,8 @@ public class TextReplacementTest implements JsonSource {
                 "with extended display text (+2) and display text (+2)",
                 "a special 'hit' version which assumes a d20 is to be rolled +7",
                 "There's also 1d12+3 and -4",
-                "scaledamage: 1d6, scaledice: extra amount (1d6)",
-                "Strength (5), Strength (+5), and [Animal Handling](rules/skills.md#Animal%20Handling) (+5)",
+                "scaledamage: d6, scaledice: extra amount (d6)",
+                "<span title='Strength'>20 (+5)</span>, <span title='Strength'>+5</span>, and [Animal Handling](rules/skills.md#Animal%20Handling) (+5)",
                 "with an Intelligence of +3 (16), a Wisdom of +0 (10), and a Charisma of +4 (18)",
                 "+3 plus PB to hit;  *Hit:* 7 (1d6 + 4) piercing damage plus 7 (2d6) poison damage.",
                 "Perception (+2) Perception (-2)",
@@ -289,7 +289,6 @@ public class TextReplacementTest implements JsonSource {
             parseState().pop(pushed);
         }
     }
-
 
     @Test
     void testPlainD12() {

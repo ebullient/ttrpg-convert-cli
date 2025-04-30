@@ -4,26 +4,29 @@
 
 ## Attributes
 
-[saveMap](#savemap), [saves](#saves), [skillMap](#skillmap), [skills](#skills)
+[saveValues](#savevalues), [saves](#saves), [skillChoices](#skillchoices), [skillValues](#skillvalues), [skills](#skills)
 
-### saveMap
+### saveValues
 
-Creature saving throws as a map of key-value pairs.
-Iterate over all map entries to display the values:  
-
-`{#each resource.savesSkills.saveMap}**{it.key}** {it.value}{/each}`
+Saving throws as a list of maps (for YAML Statblock)
 
 ### saves
 
 Creature saving throws as a list: Constitution +6, Intelligence +8
 
-### skillMap
+### skillChoices
 
-Creature skills as a map of key-value pairs.
-Iterate over all map entries to display the values:  
+Sometimes creatures have choices (one of the following...)
+This is a list of lists of [SkillModifier](SkillModifier.md),
+where each sublist is a a group to choose from.
 
-`{#each resource.savesSkills.skillMap}**{it.key}** {it.value}{/each}`
+### skillValues
+
+Skill modifiers as a list of maps (for YAML Statblock)
 
 ### skills
 
-Creature skills as a list: History +12, Perception +12
+Creature skills as a list (with links)
+
+- `[History](..) +12, [Perception](...) +12`
+- `[History](..) +12; [Perception](...) +12; _One of_ [Athletics](...) +12 or [Acrobatics](...) +12`

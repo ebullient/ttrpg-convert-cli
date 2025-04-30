@@ -1,5 +1,9 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import static dev.ebullient.convert.StringUtil.asModifier;
+import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -12,6 +16,7 @@ import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
 import dev.ebullient.convert.qute.QuteUtil;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndex;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
@@ -64,6 +69,8 @@ public class QuteMonster extends Tools5eQuteBase {
     public final String cr;
     /** Proficiency bonus (modifier) */
     public final String pb;
+    /** Initiative bonus as {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Initiative} */
+    public final Initiative initiative;
     /** Creature traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final Collection<NamedText> trait;
     /** Creature actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
@@ -97,7 +104,7 @@ public class QuteMonster extends Tools5eQuteBase {
             AcHp acHp, String speed,
             AbilityScores scores, SavesAndSkills savesSkills, String senses, int passive,
             ImmuneResist immuneResist,
-            String languages, String cr, String pb,
+            String languages, String cr, String pb, Initiative initiative,
             Collection<NamedText> trait,
             Collection<NamedText> action, Collection<NamedText> bonusAction, Collection<NamedText> reaction,
             Collection<NamedText> legendary,
@@ -124,6 +131,7 @@ public class QuteMonster extends Tools5eQuteBase {
         this.languages = languages;
         this.cr = cr;
         this.pb = pb;
+        this.initiative = initiative;
         this.trait = trait;
         this.action = action;
         this.bonusAction = bonusAction;
@@ -205,12 +213,7 @@ public class QuteMonster extends Tools5eQuteBase {
         if (savesSkills == null) {
             return null;
         }
-        return savesSkills.saves;
-    }
-
-    @Deprecated
-    public Map<String, String> getSaveMap() {
-        return savesSkills.saveMap;
+        return savesSkills.getSaves();
     }
 
     /**
@@ -221,12 +224,7 @@ public class QuteMonster extends Tools5eQuteBase {
         if (savesSkills == null) {
             return null;
         }
-        return savesSkills.skills;
-    }
-
-    @Deprecated
-    public Map<String, String> getSkillMap() {
-        return savesSkills.skillMap;
+        return savesSkills.getSkills();
     }
 
     /**
@@ -254,6 +252,10 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "name", name + yamlMonsterName(withSource));
         addIntegerUnlessEmpty(map, "ac", acHp.ac);
         addIntegerUnlessEmpty(map, "hp", acHp.hp);
+        if (initiative != null) {
+            map.put("modifier", initiative.bonus);
+            // TODO: passive initiative
+        }
         addUnlessEmpty(map, "hit_dice", acHp.hitDice);
         addUnlessEmpty(map, "cr", cr);
         map.put("stats", scores.toArray()); // for initiative
@@ -298,14 +300,20 @@ public class QuteMonster extends Tools5eQuteBase {
         addIntegerUnlessEmpty(map, "hp", acHp.hp);
         addUnlessEmpty(map, "hit_dice", acHp.hitDice);
 
+        if (initiative != null) {
+            map.put("modifier", initiative.bonus);
+            // TODO: passive initiative
+        }
+
         map.put("stats", scores.toArray());
         addUnlessEmpty(map, "speed", speed);
+
         if (savesSkills != null) {
-            if (!savesSkills.saveMap.isEmpty()) {
-                map.put("saves", mapOfNumbers(savesSkills.saveMap));
+            if (isPresent(savesSkills.saves)) {
+                map.put("saves", savesSkills.getSaveValues());
             }
-            if (!savesSkills.skillMap.isEmpty()) {
-                map.put("skillsaves", mapOfNumbers(savesSkills.skillMap));
+            if (isPresent(savesSkills.skills) || isPresent(savesSkills.skillChoices)) {
+                map.put("skillsaves", savesSkills.getSkillValues());
             }
         }
         addUnlessEmpty(map, "damage_vulnerabilities", immuneResist.vulnerable);
@@ -489,7 +497,6 @@ public class QuteMonster extends Tools5eQuteBase {
      * 5eTools creature spell attributes (associated with a spell level)
      */
     @TemplateData
-    @RegisterForReflection
     public static class Spells {
         /** Available spell slots */
         public int slots;
@@ -500,29 +507,272 @@ public class QuteMonster extends Tools5eQuteBase {
     }
 
     /**
+     * Saving throw modifier.
+     *
+     * Usually an integer, but may be a "special" value (string, homebrew).
+     *
+     * @param ability Ability name, will be null if "special"
+     * @param modifier Modifier value. Will be 0 if unset or "special"
+     * @param special Either the "special" value or a non-numeric modifier value
+     */
+    @TemplateData
+    public record SavingThrow(String ability, int modifier, String special) implements QuteUtil {
+
+        public SavingThrow(String ability, String special) {
+            this("special".equalsIgnoreCase(ability) ? null : special,
+                    0, special);
+        }
+
+        public SavingThrow(String ability, int modifier) {
+            this("special".equalsIgnoreCase(ability) ? null : ability,
+                    modifier, null);
+        }
+
+        /** @return true if this saving throw has a "special" value */
+        public boolean isSpecial() {
+            return special != null;
+        }
+
+        public Object mapValue() {
+            return isSpecial() ? special : modifier;
+        }
+
+        @Override
+        public String toString() {
+            if (isSpecial()) {
+                return Tools5eIndex.instance().replaceText(special);
+            }
+            return "%s %s".formatted(ability, asModifier(modifier));
+        }
+    }
+
+    /**
+     * Skill modifier.
+     *
+     * Usually an integer, but may be a "special" value (string, homebrew).
+     *
+     * @param skill Skill name, will be null if "special"
+     * @param skillLink Skill name as a link, will be null if "special"
+     * @param modifier Modifier value. Will be 0 if unset or "special"
+     * @param special Either the "special" value or a non-numeric modifier value
+     */
+    @TemplateData
+    public record SkillModifier(String skill, String skillLink, int modifier, String special) {
+        public SkillModifier(String skill, String skillLink, String special) {
+            this(skill, skillLink, 0, special);
+        }
+
+        public SkillModifier(String skill, String skillLink, int modifier) {
+            this(skill, skillLink, modifier, null);
+        }
+
+        /** @return true if this saving throw has a "special" value */
+        public boolean isSpecial() {
+            return special != null;
+        }
+
+        public Object mapValue() {
+            return isSpecial() ? special : asModifier(modifier);
+        }
+
+        @Override
+        public String toString() {
+            if (isSpecial()) {
+                return Tools5eIndex.instance().replaceText(special);
+            }
+            return "%s %s".formatted(skillLink, asModifier(modifier));
+        }
+    }
+
+    /**
      * 5eTools creature saving throws and skill attributes.
      */
     @TemplateData
     @RegisterForReflection
-    public static class SavesAndSkills {
+    public static class SavesAndSkills implements QuteUtil {
         /**
-         * Creature saving throws as a map of key-value pairs.
-         * Iterate over all map entries to display the values:<br />
-         * `{#each resource.savesSkills.saveMap}**{it.key}** {it.value}{/each}`
+         * Creature saving throws as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavingThrow}.
          */
-        public Map<String, String> saveMap;
+        public List<SavingThrow> saves;
 
         /**
-         * Creature skills as a map of key-value pairs.
-         * Iterate over all map entries to display the values:<br />
-         * `{#each resource.savesSkills.skillMap}**{it.key}** {it.value}{/each}`
+         * Creature skill modifiers as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SkillModifier}.
          */
-        public Map<String, String> skillMap;
+        public List<SkillModifier> skills;
+
+        /**
+         * Sometimes creatures have choices (one of the following...)
+         * This is a list of lists of {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SkillModifier},
+         * where each sublist is a a group to choose from.
+         */
+        public List<List<SkillModifier>> skillChoices;
 
         /** Creature saving throws as a list: Constitution +6, Intelligence +8 */
-        public String saves;
+        public String getSaves() {
+            if (!isPresent(saves)) {
+                return "";
+            }
+            return saves.stream()
+                    .map(SavingThrow::toString)
+                    .collect(Collectors.joining(", "));
+        }
 
-        /** Creature skills as a list: History +12, Perception +12 */
-        public String skills;
+        /** Saving throws as a list of maps (for YAML Statblock) */
+        public List<Map<String, Object>> getSaveValues() {
+            if (!isPresent(saves)) {
+                return List.of();
+            }
+            return saves.stream()
+                    .map(s -> {
+                        Map<String, Object> map = new LinkedHashMap<>();
+                        if (s.isSpecial()) {
+                            String ability = s.ability();
+                            if (ability != null) {
+                                map.put("name", ability);
+                            }
+                            map.put("desc", s.mapValue());
+                        } else {
+                            map.put(s.ability().toLowerCase(), s.mapValue());
+                        }
+                        return map;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        /**
+         * Creature skills as a list (with links)
+         *
+         * - `[History](..) +12, [Perception](...) +12`
+         * - `[History](..) +12; [Perception](...) +12; _One of_ [Athletics](...) +12 or [Acrobatics](...) +12`
+         *
+         */
+        public String getSkills() {
+            if (!isPresent(skills) && !isPresent(skillChoices)) {
+                return "";
+            }
+            String separator = ", ";
+            List<String> text = new ArrayList<>();
+            if (isPresent(skills)) {
+                text.addAll(skills.stream()
+                        .map(SkillModifier::toString)
+                        .collect(Collectors.toList()));
+            }
+            List<String> choices = flattenChoices();
+            if (isPresent(choices)) {
+                text.addAll(choices);
+                separator = "; ";
+            }
+            return String.join(separator, text);
+        }
+
+        /** Skill modifiers as a list of maps (for YAML Statblock) */
+        public List<Map<String, Object>> getSkillValues() {
+            if (!isPresent(skills) && !isPresent(skillChoices)) {
+                return List.of();
+            }
+            List<Map<String, Object>> skillList = new ArrayList<>();
+            for (SkillModifier s : skills) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                String name = s.skillLink();
+                if (name != null) {
+                    map.put("name", name);
+                }
+                map.put("desc", s.mapValue());
+                skillList.add(map);
+            }
+            List<String> choices = flattenChoices();
+            if (isPresent(choices)) {
+                for (String choice : choices) {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("desc", choice);
+                    skillList.add(map);
+                }
+            }
+            return skillList;
+        }
+
+        public List<String> flattenChoices() {
+            if (skillChoices == null || skillChoices.isEmpty()) {
+                return List.of();
+            }
+            List<String> text = new ArrayList<>();
+            for (List<SkillModifier> chooseOneSkill : skillChoices) {
+                if (chooseOneSkill.isEmpty()) {
+                    continue;
+                }
+                List<String> inner = new ArrayList<>();
+                inner.addAll(chooseOneSkill.stream()
+                        .map(SkillModifier::toString)
+                        .collect(Collectors.toList()));
+                text.add("\n\nOne of " + joinConjunct(" or ", inner));
+            }
+            return text;
+        }
+    }
+
+    /**
+     * 5eTools creature initiative attributes.
+     *
+     * @param bonus Initiative modifier
+     * @param mode Initiative mode: "advantage", "disadvantage", or "none"
+     * @param passive Passive initiative value (number)
+     */
+    @TemplateData
+    public record Initiative(int bonus, InitiativeMode mode, int passive) {
+        public Initiative(int bonus) {
+            this(bonus, InitiativeMode.none, 10 + bonus);
+        }
+
+        public Initiative(int bonus, InitiativeMode mode) {
+            // const advDisMod = mon.initiative.advantageMode === "adv" ? 5 : mon.initiative.advantageMode === "dis" ? -5 : 0;
+            // return 10 + initBonus + advDisMod;
+            this(bonus, mode,
+                    10 + bonus +
+                            (mode == InitiativeMode.advantage
+                                    ? 5
+                                    : mode == InitiativeMode.disadvantage ? -5 : 0));
+        }
+
+        /** String representation of passive initiative value */
+        public String getPassiveInitiative() {
+            if (mode == InitiativeMode.none) {
+                return "`" + passive + "`";
+            } else {
+                return "<span title=\"This creature has %s on Initiative.\">`%s`</span>".formatted(
+                        toTitleCase(mode.name()), passive);
+            }
+        }
+
+        public String toString() {
+            var index = Tools5eIndex.instance();
+            return index.replaceText("{@initiative %s} (%s)".formatted(
+                    bonus,
+                    getPassiveInitiative()));
+        }
+    }
+
+    /**
+     * Initiative mode: "advantage", "disadvantage", or "none"
+     */
+    public enum InitiativeMode {
+        /** Creature rolls initiative with advantage */
+        advantage,
+        /** Creature rolls initiative with disadvantage */
+        disadvantage,
+        /** Creature rolls initiative normally (default) */
+        none;
+
+        public static InitiativeMode fromString(String string) {
+            if (string == null || string.isBlank()) {
+                return none;
+            }
+            var lower = string.toLowerCase();
+            if (lower.startsWith("adv")) {
+                return advantage;
+            } else if (lower.startsWith("dis")) {
+                return disadvantage;
+            }
+            return none;
+        }
     }
 }

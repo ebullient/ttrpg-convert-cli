@@ -40,7 +40,7 @@ public class Json2QuteObject extends Json2QuteMonster {
                 creatureType, objectType,
                 acHp,
                 speed(Tools5eFields.speed.getFrom(rootNode)),
-                abilityScores(),
+                abilityScores(rootNode),
                 joinAndReplace(rootNode, "senses"),
                 immuneResist(),
                 collectTraits("actionEntries"),

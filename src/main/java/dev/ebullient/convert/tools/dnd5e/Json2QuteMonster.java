@@ -2,10 +2,8 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -22,9 +20,14 @@ import dev.ebullient.convert.tools.JsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
+import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Initiative;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.InitiativeMode;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavingThrow;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SkillModifier;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
@@ -94,6 +97,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
+        AbilityScores abilityScores = abilityScores(rootNode);
+
         return new QuteMonster(sources,
                 linkifier().decoratedName(type, rootNode),
                 getSourceText(sources),
@@ -101,13 +106,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 size, creatureType, subtype, monsterAlignment(),
                 acHp,
                 speed(Tools5eFields.speed.getFrom(rootNode)),
-                abilityScores(),
+                abilityScores,
                 monsterSavesAndSkills(),
                 joinAndReplace(rootNode, "senses"),
                 intOrDefault(rootNode, "passive", 10),
                 immuneResist(),
                 joinAndReplace(rootNode, "languages"),
                 cr, pb,
+                initiative(abilityScores, cr),
                 collectTraits("trait"),
                 collectTraits("action"),
                 collectTraits("bonus"),
@@ -185,61 +191,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
     }
 
-    public enum MonsterType {
-        aberration,
-        beast,
-        celestial,
-        construct,
-        dragon,
-        elemental,
-        fey,
-        fiend,
-        giant,
-        humanoid,
-        monstrosity,
-        ooze,
-        plant,
-        undead,
-        miscellaneous;
-
-        public String toDirectory() {
-            return name();
-        }
-
-        public static MonsterType fromString(String type) {
-            String compare = type.toLowerCase()
-                    .replace("abberation", "aberration"); // correct typo
-            for (MonsterType t : MonsterType.values()) {
-                if (compare.startsWith(t.name().toLowerCase())) {
-                    return t;
-                }
-            }
-            return miscellaneous;
-        }
-
-        public static MonsterType fromNode(JsonNode node, JsonTextConverter<?> converter) {
-            if (!MonsterFields.type.existsIn(node)) {
-                Tools5eSources sources = Tools5eSources.findSources(node);
-                Tui.instance().warnf("Monster: Empty type for %s", sources);
-                return miscellaneous;
-            }
-            JsonNode typeNode = MonsterFields.type.getFrom(node);
-            String text = null;
-            if (typeNode.isTextual()) {
-                text = converter.replaceText(typeNode.asText());
-            } else if (typeNode.isObject() && MonsterFields.type.existsIn(typeNode)) {
-                // We have an object: type + tags
-                text = MonsterFields.type.replaceTextFrom(typeNode, converter);
-            }
-            return text == null ? miscellaneous : fromString(text);
-        }
-
-        public static String toDirectory(String type) {
-            MonsterType t = fromString(type);
-            return t.toDirectory();
-        }
-    }
-
     String monsterPb(String cr) {
         if (cr != null) {
             return "+" + crToPb(cr);
@@ -249,51 +200,106 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     SavesAndSkills monsterSavesAndSkills() {
         SavesAndSkills savesSkills = new SavesAndSkills();
-        savesSkills.saveMap = new HashMap<>();
-        savesSkills.saves = getModifiers("save", savesSkills.saveMap);
-        savesSkills.skillMap = new HashMap<>();
-        savesSkills.skills = getModifiers("skill", savesSkills.skillMap);
+
+        JsonNode saveNode = MonsterFields.save.getFrom(rootNode);
+        if (saveNode != null) {
+            savesSkills.saves = new ArrayList<>();
+            for (Entry<String, JsonNode> f : iterableFields(saveNode)) {
+                savesSkills.saves.add(getSavingThrow(f.getKey(), f.getValue()));
+            }
+        }
+
+        JsonNode skillNode = MonsterFields.skill.getFrom(rootNode);
+        if (skillNode != null) {
+            savesSkills.skills = new ArrayList<>();
+            for (var skill : iterableFields(skillNode)) {
+                String name = skill.getKey();
+                JsonNode value = skill.getValue();
+                if ("other".equalsIgnoreCase(name)) {
+                    savesSkills.skillChoices = new ArrayList<>();
+                    for (var item : ensureArray(value)) {
+                        JsonNode oneOf = MonsterFields.oneOf.getFrom(item);
+                        if (oneOf == null) {
+                            tui().errorf("What is this (from %s): %s", sources.getKey(), item);
+                            continue;
+                        }
+                        List<SkillModifier> choices = new ArrayList<>();
+                        for (var e : iterableFields(oneOf)) {
+                            choices.add(getModifier(e.getKey(), e.getValue()));
+                        }
+                        savesSkills.skillChoices.add(choices);
+                    }
+                } else {
+                    savesSkills.skills.add(getModifier(name, value));
+                }
+            }
+        }
         return savesSkills;
     }
 
-    String getModifiers(String field, Map<String, String> values) {
-        if (!rootNode.has(field)) {
-            return null;
+    SavingThrow getSavingThrow(String name, JsonNode value) {
+        SkillOrAbility save = SkillOrAbility.fromTextValue(name);
+        name = save == null ? name : save.value();
+        String text = value.asText();
+        if (text.matches("[+-]?\\d+")) {
+            return new SavingThrow(name, value.asInt());
+        } else {
+            return new SavingThrow(name, replaceText(text));
         }
-        List<String> text = new ArrayList<>();
-        StringBuilder separator = new StringBuilder();
-        rootNode.get(field).fields().forEachRemaining(f -> {
-            if (f.getKey().equals("other")) {
-                f.getValue().forEach(e -> {
-                    if (e.has("oneOf")) {
-                        List<String> nested = new ArrayList<>();
-                        e.get("oneOf").fields()
-                                .forEachRemaining(x -> nested.add(getModifier(x.getKey(), x.getValue(), values)));
-                        text.add("_One of_ " + String.join(", ", nested));
-                        if (separator.length() == 0) {
-                            separator.append("; ");
-                        }
-                    } else {
-                        tui().errorf("What is this (from %s): %s", sources.getKey());
-                    }
-                });
-            } else {
-                text.add(getModifier(f.getKey(), f.getValue(), values));
-            }
-        });
-        if (separator.length() == 0) {
-            separator.append(", ");
-        }
-        return String.join(separator.toString(), text);
     }
 
-    String getModifier(String key, JsonNode value, Map<String, String> values) {
-        String ability = SkillOrAbility.format(key, index(), getSources());
-        String modifier = replaceText(value.asText());
-        values.put(ability, modifier);
+    SkillModifier getModifier(String name, JsonNode value) {
+        SkillOrAbility skill = SkillOrAbility.fromTextValue(name);
+        name = skill == null ? name : skill.value();
+        String link = skill == null ? null : linkifySkill(skill);
+        String text = value.asText();
+        if (text.matches("[+-]?\\d+")) {
+            return new SkillModifier(name, link, value.asInt());
+        } else {
+            return new SkillModifier(name, link, replaceText(text));
+        }
+    }
 
-        return String.format("%s %s%s", ability,
-                value.isInt() && value.asInt() > 0 ? "+" : "", modifier);
+    // _getInitiativeBonus
+    Initiative initiative(AbilityScores abilityScores, String cr) {
+        JsonNode initiative = MonsterFields.initiative.getFrom(rootNode);
+        if (initiative == null) {
+            // if (mon.initiative == null && (mon.dex == null || mon.dex.special)) return null;
+            if (abilityScores.dexterity() == null || abilityScores.dexterity().isSpecial()) {
+                return null;
+            }
+            // if (mon.initiative == null) return Parser.getAbilityModNumber(mon.dex);
+            return new Initiative(abilityScores.dexterity().modifier());
+        }
+        // if (typeof mon.initiative === "number") return mon.initiative;
+        if (initiative.isNumber()) {
+            return new Initiative(initiative.asInt());
+        }
+        // if (typeof mon.initiative !== "object") return null;
+        if (!initiative.isObject()) {
+            return null;
+        }
+        // if (typeof mon.initiative.initiative === "number") return mon.initiative.initiative;
+        JsonNode value = MonsterFields.initiative.getFrom(initiative);
+        if (value != null && value.isNumber()) {
+            return new Initiative(value.asInt());
+        }
+        // if (mon.dex == null) return;
+        if (abilityScores.dexterity() == null) {
+            return null;
+        }
+        InitiativeMode advantageMode = InitiativeMode.fromString(
+                MonsterFields.advantageMode.getTextOrNull(initiative));
+        // 1 is proficient, 2 is expert
+        int profBonus = 0;
+        int profLevel = MonsterFields.proficiency.intOrDefault(initiative, 0);
+        double crValue = crToNumber(cr);
+        if (profLevel > 0 && crValue < CR_CUSTOM) {
+            profBonus = profLevel * crToPb(cr);
+        }
+        return new Initiative(
+                abilityScores.dexterity().modifier() + profBonus,
+                advantageMode);
     }
 
     String monsterAlignment() {
@@ -551,12 +557,68 @@ public class Json2QuteMonster extends Json2QuteCommon {
         MetaFields._copy.setIn(node, _copy);
     }
 
+    public enum MonsterType {
+        aberration,
+        beast,
+        celestial,
+        construct,
+        dragon,
+        elemental,
+        fey,
+        fiend,
+        giant,
+        humanoid,
+        monstrosity,
+        ooze,
+        plant,
+        undead,
+        miscellaneous;
+
+        public String toDirectory() {
+            return name();
+        }
+
+        public static MonsterType fromString(String type) {
+            String compare = type.toLowerCase()
+                    .replace("abberation", "aberration"); // correct typo
+            for (MonsterType t : MonsterType.values()) {
+                if (compare.startsWith(t.name().toLowerCase())) {
+                    return t;
+                }
+            }
+            return miscellaneous;
+        }
+
+        public static MonsterType fromNode(JsonNode node, JsonTextConverter<?> converter) {
+            if (!MonsterFields.type.existsIn(node)) {
+                Tools5eSources sources = Tools5eSources.findSources(node);
+                Tui.instance().warnf("Monster: Empty type for %s", sources);
+                return miscellaneous;
+            }
+            JsonNode typeNode = MonsterFields.type.getFrom(node);
+            String text = null;
+            if (typeNode.isTextual()) {
+                text = converter.replaceText(typeNode.asText());
+            } else if (typeNode.isObject() && MonsterFields.type.existsIn(typeNode)) {
+                // We have an object: type + tags
+                text = MonsterFields.type.replaceTextFrom(typeNode, converter);
+            }
+            return text == null ? miscellaneous : fromString(text);
+        }
+
+        public static String toDirectory(String type) {
+            MonsterType t = fromString(type);
+            return t.toDirectory();
+        }
+    }
+
     enum MonsterFields implements JsonNodeReader {
         _abstract,
         _implementations,
         _variables,
         _versions,
         ac,
+        advantageMode,
         alignment,
         alignmentPrefix,
         average,
@@ -569,11 +631,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
         from,
         headerEntries,
         hp,
+        initiative,
         isNamedCreature,
         isNpc,
         legendaryGroup,
         lower,
+        oneOf,
         original,
+        proficiency,
         save,
         senses,
         skill,

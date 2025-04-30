@@ -1,5 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e.qute;
 
+import static dev.ebullient.convert.StringUtil.asModifier;
+
+import dev.ebullient.convert.qute.QuteUtil;
 import io.quarkus.qute.TemplateData;
 
 /**
@@ -12,28 +15,34 @@ import io.quarkus.qute.TemplateData;
  *
  * For example:
  * `10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)|10 (+0)`.
+ *
+ * @param strength Strength score as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores.AbilityScore}
+ * @param dexterity Dexterity score as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores.AbilityScore}
+ * @param constitution Constitution score as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores.AbilityScore}
+ * @param intelligence Intelligence score as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores.AbilityScore}
+ * @param wisdom Wisdom score as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores.AbilityScore}
+ * @param charisma Charisma score as {@link dev.ebullient.convert.tools.dnd5e.qute.AbilityScores.AbilityScore}
  */
 @TemplateData
-public class AbilityScores {
-    public static final AbilityScores DEFAULT = new AbilityScores(10, 10, 10, 10, 10, 10);
+public record AbilityScores(
+        AbilityScore strength,
+        AbilityScore dexterity,
+        AbilityScore constitution,
+        AbilityScore intelligence,
+        AbilityScore wisdom,
+        AbilityScore charisma) implements QuteUtil {
 
-    final int strength;
-    final int dexterity;
-    final int constitution;
-    final int intelligence;
-    final int wisdom;
-    final int charisma;
+    public static final AbilityScore TEN = new AbilityScore(10, null);
+    public static final AbilityScores DEFAULT = new AbilityScores(TEN, TEN, TEN, TEN, TEN, TEN);
 
-    public AbilityScores(int strength, int dexterity, int constitution, int intelligence, int wisdom, int charisma) {
-        this.strength = strength;
-        this.dexterity = dexterity;
-        this.constitution = constitution;
-        this.intelligence = intelligence;
-        this.wisdom = wisdom;
-        this.charisma = charisma;
+    public static int getModifier(AbilityScore score) {
+        if (score.special != null) {
+            return 0;
+        }
+        return scoreToModifier(score.score);
     }
 
-    public static int getModifier(int score) {
+    public static int scoreToModifier(int score) {
         int mod = score - 10;
         if (mod % 2 != 0) {
             mod -= 1; // round down
@@ -41,166 +50,183 @@ public class AbilityScores {
         return mod / 2;
     }
 
-    private String toAbilityString(int value) {
-        int modifier = getModifier(value);
-        return String.format("%2s (%s)", value, padded(modifier));
-    }
-
     public int[] toArray() {
         return new int[] {
-                strength,
-                dexterity,
-                constitution,
-                intelligence,
-                wisdom,
-                charisma
+                strength.score(),
+                dexterity.score(),
+                constitution.score(),
+                intelligence.score(),
+                wisdom.score(),
+                charisma.score()
         };
     }
 
     /** Strength as an ability string: `10 (+0)` */
     public String getStr() {
-        return toAbilityString(strength);
+        return strength.toString();
     }
 
     /** Strength score as a number: 10 */
     public int getStrStat() {
-        return strength;
+        return strength.score();
     }
 
     /** Strength modifier: +1 or -2 */
     public String getStrMod() {
-        return padded(getModifier(strength));
+        return asModifier(getModifier(strength));
     }
 
     /** Dexterity as an ability string: `10 (+0)` */
     public String getDex() {
-        return toAbilityString(dexterity);
+        return dexterity.toString();
     }
 
     /** Dexterity score as a number: 10 */
     public int getDexStat() {
-        return dexterity;
+        return dexterity.score();
     }
 
     /** Dexterity modifier: +1 or -2 */
     public String getDexMod() {
-        return padded(getModifier(dexterity));
+        return asModifier(getModifier(dexterity));
     }
 
     /** Constitution as an ability string: `10 (+0)` */
     public String getCon() {
-        return toAbilityString(constitution);
+        return constitution.toString();
     }
 
     /** Constitution score as a number: 10 */
     public int getConStat() {
-        return constitution;
+        return constitution.score();
     }
 
     /** Constitution modifier: +1 or -2 */
     public String getConMod() {
-        return padded(getModifier(constitution));
+        return asModifier(getModifier(constitution));
     }
 
     /** Intelligence as an ability string: `10 (+0)` */
     public String getInt() {
-        return toAbilityString(intelligence);
+        return intelligence.toString();
     }
 
     /** Intelligence score as a number: 10 */
     public int getIntStat() {
-        return intelligence;
+        return intelligence.score();
     }
 
     /** Intelligence modifier: +1 or -2 */
     public String getIntMod() {
-        return padded(getModifier(intelligence));
+        return asModifier(getModifier(intelligence));
     }
 
     /** Wisdom as an ability string: `10 (+0)` */
     public String getWis() {
-        return toAbilityString(wisdom);
+        return wisdom.toString();
     }
 
     /** Wisdom score as a number: 10 */
     public int getWisStat() {
-        return wisdom;
+        return wisdom.score();
     }
 
     /** Wisdom modifier: +1 or -2 */
     public String getWisMod() {
-        return padded(getModifier(wisdom));
+        return asModifier(getModifier(wisdom));
     }
 
     /** Charisma as an ability string: `10 (+0)` */
     public String getCha() {
-        return toAbilityString(charisma);
+        return charisma.toString();
     }
 
     /** Charisma stat as a number: 10 */
     public int getChaStat() {
-        return charisma;
+        return charisma.score();
     }
 
     /** Charisma modifier: +1 or -2 */
     public String getChaMod() {
-        return padded(getModifier(charisma));
-    }
-
-    private String padded(int value) {
-        return String.format("%s%s",
-                value >= 0 ? "+" : "",
-                value);
+        return asModifier(getModifier(charisma));
     }
 
     @Override
     public String toString() {
-        return toAbilityString(strength)
-                + "|" + toAbilityString(dexterity)
-                + "|" + toAbilityString(constitution)
-                + "|" + toAbilityString(intelligence)
-                + "|" + toAbilityString(wisdom)
-                + "|" + toAbilityString(charisma);
+        return strength.toString()
+                + "|" + dexterity.toString()
+                + "|" + constitution.toString()
+                + "|" + intelligence.toString()
+                + "|" + wisdom.toString()
+                + "|" + charisma.toString();
+    }
+
+    /**
+     * Ability score. Usually an integer, but can be a special value (string) instead.
+     *
+     * @param score The ability score (integer).
+     * @param special The special value (string), or null if not applicable.
+     */
+    @TemplateData
+    public record AbilityScore(int score, String special) {
+
+        /** @return true if this score has a "special" value */
+        public boolean isSpecial() {
+            return special != null;
+        }
+
+        /** @return the modifier for this score as an integer */
+        public int modifier() {
+            return AbilityScores.getModifier(this);
+        }
+
+        @Override
+        public String toString() {
+            if (special != null) {
+                return special;
+            }
+            return String.format("%2s (%s)", score, asModifier(modifier()));
+        }
     }
 
     public static class Builder {
-        int strength;
-        int dexterity;
-        int constitution;
-        int intelligence;
-        int wisdom;
-        int charisma;
+        AbilityScore strength;
+        AbilityScore dexterity;
+        AbilityScore constitution;
+        AbilityScore intelligence;
+        AbilityScore wisdom;
+        AbilityScore charisma;
 
         public Builder() {
         }
 
         public Builder setStrength(int strength) {
-            this.strength = strength;
+            this.strength = new AbilityScore(strength, null);
             return this;
         }
 
         public Builder setDexterity(int dexterity) {
-            this.dexterity = dexterity;
+            this.dexterity = new AbilityScore(dexterity, null);
             return this;
         }
 
         public Builder setConstitution(int constitution) {
-            this.constitution = constitution;
+            this.constitution = new AbilityScore(constitution, null);
             return this;
         }
 
         public Builder setIntelligence(int intelligence) {
-            this.intelligence = intelligence;
+            this.intelligence = new AbilityScore(intelligence, null);
             return this;
         }
 
         public Builder setWisdom(int wisdom) {
-            this.wisdom = wisdom;
+            this.wisdom = new AbilityScore(wisdom, null);
             return this;
         }
 
         public Builder setCharisma(int charisma) {
-            this.charisma = charisma;
+            this.charisma = new AbilityScore(charisma, null);
             return this;
         }
 

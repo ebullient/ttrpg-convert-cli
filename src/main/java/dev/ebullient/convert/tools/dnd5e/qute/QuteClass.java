@@ -275,7 +275,7 @@ public class QuteClass extends Tools5eQuteBase {
                 for (int i = 0; i < armorLinks.size() - 1; i++) {
                     armorLinks.set(i, armorLinks.get(i).replace(" armor", ""));
                 }
-                String joined = joinConjunct("and", armorLinks);
+                String joined = joinConjunct(" and ", armorLinks);
                 armorLinks.clear();
                 armorLinks.add(joined);
             }

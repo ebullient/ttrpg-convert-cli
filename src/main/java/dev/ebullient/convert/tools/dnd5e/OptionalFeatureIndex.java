@@ -166,11 +166,11 @@ public class OptionalFeatureIndex implements JsonSource {
         public String toString() {
             if (!includes.isEmpty() && !excludes.isEmpty()) {
                 return String.format("%s %s, excluding %s", name,
-                        joinConjunct(" or ", includes), join("and", excludes));
+                        joinConjunct(" or ", includes), join(" and ", excludes));
             } else if (!includes.isEmpty()) {
                 return String.format("%s %s", name, joinConjunct(" or ", includes));
             } else if (!excludes.isEmpty()) {
-                return String.format("%s excluding %s", name, joinConjunct("and", includes));
+                return String.format("%s excluding %s", name, joinConjunct(" and ", includes));
             }
             return "";
         }

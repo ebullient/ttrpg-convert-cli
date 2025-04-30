@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.asModifier;
+import static dev.ebullient.convert.StringUtil.intOrDefault;
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
@@ -47,8 +49,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern quickRefPattern = Pattern.compile("\\{@quickref ([^}]+)}");
     static final Pattern notePattern = Pattern.compile("\\{@(note|tip) ([^}]+)}");
     static final Pattern footnotePattern = Pattern.compile("\\{@footnote ([^}]+)}");
-    static final Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str
-                                                                                                     // 20}
+    static final Pattern abilitySavePattern = Pattern.compile("\\{@(ability|savingThrow) ([^}]+)}"); // {@ability str 20}
     static final Pattern savingThrowPattern = Pattern.compile("\\{@actSave ([^}]+)}");
     static final Pattern actSaveFailPattern = Pattern.compile("\\{@actSaveFail ?([^}]+)?}");
     static final Pattern actResponse = Pattern.compile("\\{@actResponse ?([^}]+)?}");
@@ -330,9 +331,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 }
 
                 if (method.isBlank()) {
-                    return String.format("*%sAttack Roll:*", joinConjunct(", ", "or ", type));
+                    return String.format("*%sAttack Roll:*", joinConjunct(", ", " or ", type));
                 } else {
-                    return String.format("*%s%sAttack:*", joinConjunct(", ", "or ", type), method);
+                    return String.format("*%s%sAttack:*", joinConjunct(", ", " or ", type), method);
                 }
             });
 
@@ -488,35 +489,50 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         // or {@ability str 20|Display Text|Roll Name Text}
         // format: {@savingThrow str 5} or {@savingThrow str 5|Display Text}
         // or {@savingThrow str 5|Display Text|Roll Name Text}
-        String[] parts = match.group(2).split("\\|");
-        String[] score = parts[0].split(" ");
+        DiceRoller roller = cfg().useDiceRoller();
 
         boolean abilityCheck = match.group(1).equals("ability");
-        String text = valueOrDefault(parts, 1, null);
+        String[] parts = match.group(2).split("\\|");
+        int pos = parts[0].indexOf(' ');
+        String ability = parts[0].substring(0, pos);
+        String score = parts[0].substring(pos + 1);
 
-        SkillOrAbility ability = index().findSkillOrAbility(score[0], getSources());
+        SkillOrAbility abilityScore = index().findSkillOrAbility(ability, getSources());
 
-        if (!abilityCheck && !score[1].matches("\\+?\\d+")) { // saving throw with text, like +PB
-            return text == null
-                    ? ability.value() + " " + score[1]
-                    : text;
+        final String text;
+        if (!abilityCheck && !score.matches("[+-]?\\d+")) {
+            // Saving throws can have e.g. `+ PB`
+            text = valueOrDefault(parts, 1, score);
         } else {
-            int value = Integer.parseInt(score[1]);
+            String displayText = valueOrDefault(parts, 1, null);
+            int value = intOrDefault(score, 0);
             String mod = abilityCheck
-                    ? "" + AbilityScores.getModifier(value)
-                    : (value >= 0 ? "+" : "") + value;
+                    ? asModifier(AbilityScores.scoreToModifier(value))
+                    : asModifier(value);
 
-            DiceRoller roller = cfg().useDiceRoller();
-            boolean notSuppressed = roller == DiceRoller.enabledUsingFS && !parseState().inTrait();
-            if (!abilityCheck && (roller == DiceRoller.enabled || notSuppressed)) {
-                mod = "`dice: d20" + mod + "|text(" + mod + ")`";
+            if (abilityCheck) {
+                text = roller.useDiceRolls(parseState())
+                        ? (displayText == null
+                                ? "`%s` (`dice:d20%s|noform|noparens|text(%s)`)".formatted(value, mod, mod)
+                                : "`dice:d20%s|noform|noparens|text(%s)`".formatted(value, displayText))
+                        : (displayText == null
+                                ? (roller.decorate(parseState()) ? "`%s` (`%s`)" : "%s (%s)").formatted(value, mod)
+                                : displayText);
+            } else {
+                // saving throw
+                text = roller.useDiceRolls(parseState())
+                        ? "`dice:d20%s|noform|noparens|text(%s)`".formatted(mod, displayText == null ? mod : displayText)
+                        : (displayText == null
+                                ? (roller.decorate(parseState()) ? "`%s`" : "%s").formatted(mod)
+                                : displayText);
             }
-
-            return "%s (%s)".formatted(text == null ? ability.value() : text, mod);
         }
+        return "<span title='%s'>%s</span>".formatted(abilityScore.value(), text);
     }
 
     default String replaceSkillCheck(MatchResult match) {
+        DiceRoller roller = cfg().useDiceRoller();
+
         // format: {@skillCheck animal_handling 5} or {@skillCheck animal_handling
         // 5|Display Text}
         // or {@skillCheck animal_handling 5|Display Text|Roll Name Text}
@@ -529,13 +545,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String dice = score[1];
         if (score[1].matches("\\d+")) {
             int value = Integer.parseInt(score[1]);
-            dice = (value >= 0 ? "+" : "") + value;
+            dice = "%s%s".formatted(value >= 0 ? "+" : "", value);
         }
 
-        DiceRoller roller = cfg().useDiceRoller();
-        boolean notSuppressed = roller.useFantasyStatblocks() && !parseState().inTrait();
-        if (roller == DiceRoller.enabled || notSuppressed) {
-            dice = "`dice: d20" + dice + "|text(" + dice + ")`";
+        if (roller.useDiceRolls(parseState())) {
+            dice = "`dice:1d20%s|noform|noparens|text(%s)`".formatted(dice, dice);
+        } else if (roller.decorate(parseState())) {
+            dice = "`" + dice + "`";
         }
 
         return "%s (%s)".formatted(text, dice);

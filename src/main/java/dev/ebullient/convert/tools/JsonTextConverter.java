@@ -188,7 +188,7 @@ public interface JsonTextConverter<T extends IndexType> {
                 String[] alternatives = rollString.split(";");
                 if (displayText == null && alternatives.length > 1) {
                     for (int i = 0; i < alternatives.length; i++) {
-                        String coded = codeString(alternatives[i], formulaState);
+                        String coded = codeString(alternatives[i], formulaState, true);
                         alternatives[i] = formatDice(alternatives[i], coded, formulaState, true, false);
                     }
                     displayText = String.join(" or ", alternatives);
@@ -243,7 +243,7 @@ public interface JsonTextConverter<T extends IndexType> {
 
     default String diceFormula(String diceRoll) {
         // Only a dice formula in the roll part. May also have display text.
-        return "`dice: " + diceRoll + "`";
+        return "`dice:" + diceRoll + "`";
     }
 
     default String diceFormula(String diceRoll, String displayText, boolean average) {
@@ -261,8 +261,12 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String codeString(String text, DiceFormulaState formulaState) {
+        return codeString(text, formulaState, false);
+    }
+
+    default String codeString(String text, DiceFormulaState formulaState, boolean alternative) {
         if (text.matches("^1?d\\d+$")) {
-            text = text.replace("1d", "d");
+            text = alternative ? text : text.replace("1d", "d");
             return formulaState.plainText() ? text : "`%s`".formatted(text);
         }
         text = text.replace("1d20", "");
