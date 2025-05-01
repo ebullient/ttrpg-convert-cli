@@ -170,6 +170,19 @@ public class QuteItem extends Tools5eQuteBase {
      * @param staff True if this is a staff
      * @param tattoo True if this is a tattoo
      * @param wondrous True if this is a wondrous item
+     *
+     * @param bonusAc Bonus to armor class provided by the item. Optional.
+     * @param bonusWeapon Bonus to weapon attack and damage rolls provided by the item. Optional.
+     * @param bonusWeaponAttack Bonus to weapon attack rolls provided by the item. Optional.
+     * @param bonusWeaponDamage Bonus to weapon damage rolls provided by the item. Optional.
+     * @param bonusWeaponCritDamage Bonus to weapon critical damage rolls provided by the item. Optional.
+     * @param bonusSpellAttack Bonus to spell attack rolls provided by the item. Optional.
+     * @param bonusSpellDamage Bonus to spell damage rolls provided by the item. Optional.
+     * @param bonusSpellSaveDc Bonus to spell save DC provided by the item. Optional.
+     * @param bonusSavingThrow Bonus to saving throw rolls provided by the item. Optional.
+     * @param bonusAbilityCheck Bonus to ability check rolls provided by the item. Optional.
+     * @param bonusProficiencyBonus Bonus to proficiency bonus provided by the item. Optional.
+     * @param bonusSavingThrowConcentration Bonus to concentration saving throw rolls provided by the item. Optional.
      */
     @TemplateData
     public static record Variant(
@@ -208,7 +221,20 @@ public class QuteItem extends Tools5eQuteBase {
             String poisonTypes,
             boolean staff,
             boolean tattoo,
-            boolean wondrous) {
+            boolean wondrous,
+            // ---
+            String bonusAc,
+            String bonusWeapon,
+            String bonusWeaponAttack,
+            String bonusWeaponDamage,
+            String bonusWeaponCritDamage,
+            String bonusSpellAttack,
+            String bonusSpellDamage,
+            String bonusSpellSaveDc,
+            String bonusSavingThrow,
+            String bonusAbilityCheck,
+            String bonusProficiencyBonus,
+            String bonusSavingThrowConcentration) {
         /** Formatted string listing item's properties (with links to rules if the source is present) */
         public String getProperties() {
             return join(", ", propertiesList);

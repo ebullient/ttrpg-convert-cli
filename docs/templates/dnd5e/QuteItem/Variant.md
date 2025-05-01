@@ -3,7 +3,7 @@
 
 ## Attributes
 
-[age](#age), [ammo](#ammo), [armorClass](#armorclass), [attunement](#attunement), [baseItem](#baseitem), [cost](#cost), [costCp](#costcp), [cursed](#cursed), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [firearm](#firearm), [focus](#focus), [focusType](#focustype), [mastery](#mastery), [masteryList](#masterylist), [name](#name), [poison](#poison), [poisonTypes](#poisontypes), [prerequisite](#prerequisite), [properties](#properties), [propertiesList](#propertieslist), [range](#range), [rarity](#rarity), [staff](#staff), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tattoo](#tattoo), [tier](#tier), [type](#type), [typeAlt](#typealt), [weaponCategory](#weaponcategory), [weight](#weight), [wondrous](#wondrous)
+[age](#age), [ammo](#ammo), [armorClass](#armorclass), [attunement](#attunement), [baseItem](#baseitem), [bonusAbilityCheck](#bonusabilitycheck), [bonusAc](#bonusac), [bonusProficiencyBonus](#bonusproficiencybonus), [bonusSavingThrow](#bonussavingthrow), [bonusSavingThrowConcentration](#bonussavingthrowconcentration), [bonusSpellAttack](#bonusspellattack), [bonusSpellDamage](#bonusspelldamage), [bonusSpellSaveDc](#bonusspellsavedc), [bonusWeapon](#bonusweapon), [bonusWeaponAttack](#bonusweaponattack), [bonusWeaponCritDamage](#bonusweaponcritdamage), [bonusWeaponDamage](#bonusweapondamage), [cost](#cost), [costCp](#costcp), [cursed](#cursed), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [firearm](#firearm), [focus](#focus), [focusType](#focustype), [mastery](#mastery), [masteryList](#masterylist), [name](#name), [poison](#poison), [poisonTypes](#poisontypes), [prerequisite](#prerequisite), [properties](#properties), [propertiesList](#propertieslist), [range](#range), [rarity](#rarity), [staff](#staff), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tattoo](#tattoo), [tier](#tier), [type](#type), [typeAlt](#typealt), [weaponCategory](#weaponcategory), [weight](#weight), [wondrous](#wondrous)
 
 ### age
 
@@ -25,6 +25,54 @@ required).
 ### baseItem
 
 Markdown link to base item. Optional.
+
+### bonusAbilityCheck
+
+Bonus to ability check rolls provided by the item. Optional.
+
+### bonusAc
+
+Bonus to armor class provided by the item. Optional.
+
+### bonusProficiencyBonus
+
+Bonus to proficiency bonus provided by the item. Optional.
+
+### bonusSavingThrow
+
+Bonus to saving throw rolls provided by the item. Optional.
+
+### bonusSavingThrowConcentration
+
+Bonus to concentration saving throw rolls provided by the item. Optional.
+
+### bonusSpellAttack
+
+Bonus to spell attack rolls provided by the item. Optional.
+
+### bonusSpellDamage
+
+Bonus to spell damage rolls provided by the item. Optional.
+
+### bonusSpellSaveDc
+
+Bonus to spell save DC provided by the item. Optional.
+
+### bonusWeapon
+
+Bonus to weapon attack and damage rolls provided by the item. Optional.
+
+### bonusWeaponAttack
+
+Bonus to weapon attack rolls provided by the item. Optional.
+
+### bonusWeaponCritDamage
+
+Bonus to weapon critical damage rolls provided by the item. Optional.
+
+### bonusWeaponDamage
+
+Bonus to weapon damage rolls provided by the item. Optional.
 
 ### cost
 
