@@ -239,13 +239,35 @@ public interface JsonSource extends JsonTextReplacement {
         String ability = joinConjunct(" or ", abilities);
 
         if (type == AppendTypeValue.abilityDc) {
+            // {
+            //     "type": "abilityDc",
+            //     "name": "Spell",
+            //     "attributes": [
+            //         "cha"
+            //     ]
+            // },
+            String dcName = SourceField.name.replaceTextFrom(entry, this);
             text.add(spanWrap("abilityDc",
-                    "**Spell save DC**: 8 + your proficiency bonus + your %s modifier"
-                            .formatted(ability)));
+                    getSources().isClassic()
+                            ? "**%s save DC**: your proficiency bonus + your %s"
+                                    .formatted(dcName, ability)
+                            : "**%s save DC**: %s + Proficiency Bonus"
+                                    .formatted(dcName, ability)));
         } else if (type == AppendTypeValue.abilityAttackMod) {
+            // {
+            //     "type": "abilityAttackMod",
+            //     "name": "Spell",
+            //     "attributes": [
+            //         "cha"
+            //     ]
+            // }
+            String attackName = SourceField.name.replaceTextFrom(entry, this);
             text.add(spanWrap("abilityAttackMod",
-                    "**Spell attack modifier**: your proficiency bonus + your %s modifier"
-                            .formatted(ability)));
+                    getSources().isClassic()
+                            ? "**%s attack modifier**: your proficiency bonus + your %s"
+                                    .formatted(attackName, ability)
+                            : "**%s attack modifier**: %s + Proficiency Bonus"
+                                    .formatted(attackName, ability)));
         } else { // abilityGeneric
             List<String> inner = new ArrayList<>();
             String name = SourceField.name.replaceTextFrom(entry, this);
@@ -256,12 +278,9 @@ public interface JsonSource extends JsonTextReplacement {
                 Tools5eFields.text.replaceTextFrom(entry, this);
             }
             if (!abilities.isEmpty()) {
-                inner.add(ability + " modifier");
+                inner.add(ability);
             }
-
-            maybeAddBlankLine(text);
             text.add(spanWrap("abilityGeneric", String.join(" ", inner)));
-            maybeAddBlankLine(text);
         }
     }
 
