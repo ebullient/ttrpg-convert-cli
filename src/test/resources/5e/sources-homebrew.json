@@ -1,10 +1,10 @@
 {
-  "full-source": {
-    "book": [
-      "PSA"
-    ],
+  "sources": {
     "adventure": [
       "LMOP"
+    ],
+    "book": [
+      "PSA"
     ],
     "homebrew": [
       "src/test/resources/5e/psion.json",
@@ -43,14 +43,14 @@
       "sources/5e-homebrew/optionalfeature/laserllama; Laserllama's Exploit Compendium.json",
       "sources/5e-homebrew/race/Middle Finger of Vecna; Archon.json",
       "sources/5e-homebrew/subclass/LaserLlama; Druid Circles.json"
+    ],
+    "reference": [
+      "DMG",
+      "MM",
+      "PHB",
+      "TDCSR"
     ]
   },
-  "from": [
-    "DMG",
-    "MM",
-    "PHB",
-    "TDCSR"
-  ],
   "include": [
     "race|changeling|mpmm"
   ],

@@ -618,6 +618,14 @@ public class Tui {
         yamlMapper().writer().writeValue(outputFile.toFile(), obj);
     }
 
+    public void tryCopyFile(Path source, Path target) {
+        try {
+            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            errorf(e, "Unable to copy file %s to %s", source.toAbsolutePath(), target.toAbsolutePath());
+        }
+    }
+
     public String renderEmbedded(QuteUtil resource) {
         return templates.renderInlineEmbedded(resource);
     }

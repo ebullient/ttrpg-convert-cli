@@ -162,6 +162,9 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
             if (configPath.toFile().exists()) {
                 // Read configuration
                 allOk = configurator.readConfiguration(configPath);
+                if (writeIndex) {
+                    tui.tryCopyFile(configPath, output.resolve(configPath.getFileName()));
+                }
             } else {
                 tui.errorf("Specified config file does not exist: %s", configPath);
                 allOk = false;
