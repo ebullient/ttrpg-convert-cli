@@ -119,6 +119,9 @@ public class Tui {
             options.setDefaultScalarStyle(ScalarStyle.PLAIN);
             options.setDefaultFlowStyle(FlowStyle.AUTO);
             options.setPrettyFlow(true);
+            options.setIndent(4);
+            options.setIndicatorIndent(4);
+            options.setIndentWithIndicator(true);
 
             yamlMapper = initMapper(new ObjectMapper(new YAMLFactoryBuilder(new YAMLFactory())
                     .dumperOptions(options).build()))
@@ -160,6 +163,10 @@ public class Tui {
             DumperOptions options = new DumperOptions();
             options.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED);
             options.setPrettyFlow(true);
+            options.setSplitLines(true);
+            options.setIndent(2);
+            options.setIndicatorIndent(2);
+            options.setIndentWithIndicator(true);
 
             Representer representer = new Representer(options);
             representer.addClassTag(dev.ebullient.convert.qute.NamedText.class, Tag.MAP); //

@@ -1,24 +1,24 @@
 ---
 sources:
-  reference:
-  - "CRB"
-  - "GMG"
-  book:
-  - "crb"
-  - "gmg"
+    reference:
+        - "CRB"
+        - "GMG"
+    book:
+        - "crb"
+        - "gmg"
 paths:
-  compendium: "compendium/"
-  rules: "compendium/rules/"
+    compendium: "compendium/"
+    rules: "compendium/rules/"
 include:
-- "ability|buck|b1"
+    - "ability|buck|b1"
 exclude:
-- "background|insurgent|apg"
+    - "background|insurgent|apg"
 excludePattern:
-- "background\\|.*\\|lowg"
+    - "background\\|.*\\|lowg"
 reprintBehavior: "newest"
 template:
-  ability: "../path/to/ability2md.txt"
+    ability: "../path/to/ability2md.txt"
 useDiceRoller: true
 tagPrefix: "ttrpg-cli"
 images: {
-  }
+    }
