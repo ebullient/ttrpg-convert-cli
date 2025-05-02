@@ -22,6 +22,7 @@ sources:
     reward: xdmg
     table: xdmg
     tableGroup: xdmg
+    variantrule: dmg
 
     monster: xmm
 

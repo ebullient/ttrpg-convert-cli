@@ -510,7 +510,8 @@ Note:
 ## Customizing the default source
 
 > [!WARNING]
-> 🔥 You can truly make a mess with this setting. Change these values with care, and inspect the result carefully in a test vault.
+> 🔥 You can truly make a mess with this setting.
+> Change these values with care, and inspect the result carefully in a test vault.
 >
 > - This will change generated file names. It will break links.
 > - If you have content generated with a different defaultSource configuration,
@@ -543,13 +544,13 @@ Create a map of a content type to the default source. In general, this is the sa
 | monster               | MM | legendary group (bestiary) |
 | object                | DMG | |
 | optfeature            | PHB | |
-| psionic               | UATheMysticClass |
+| psionic               | UATheMysticClass | |
 | race                  | PHB | subrace (species) |
 | reward                | DMG | |
 | spell                 | PHB | |
 | table                 | DMG | table group |
 | trap                  | DMG | hazard |
-| variantRule           | DMG | |
+| variantrule           | DMG | |
 | vehicle               | GoS | |
 
 ## Migrating `from`, `full-source`, and `convert`

@@ -397,7 +397,10 @@ public class CompendiumConfig {
             config.homebrew.addAll(input.sources.homebrew);
 
             // map: type to default source
-            config.defaultSource.putAll(input.sources.defaultSource);
+            input.sources.defaultSource.entrySet().stream()
+                    .forEach(e -> {
+                        config.defaultSource.put(e.getKey().toLowerCase(), e.getValue());
+                    });
 
             config.images = new ImageOptions(config.images, input.images);
             config.paths = new PathAttributes(config.paths, input.paths);
