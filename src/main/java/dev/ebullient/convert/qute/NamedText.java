@@ -80,7 +80,7 @@ public class NamedText {
         if (name.isBlank()) {
             return desc;
         }
-        return String.format("**%s** %s", name, desc);
+        return String.format("**%s.** %s", name, desc);
     }
 
     public static class SortedBuilder {

@@ -53,9 +53,6 @@ title: {resource.name}{#if resource.token}
 {#for trait in resource.trait}
 
 {#if trait.name }***{trait.name}.*** {/if}{trait.desc}
-{/for}{/if}{#if resource.spellcasting}{#for spellcasting in resource.spellcasting}
-
-***{spellcasting.name}.*** {spellcasting.desc}
 {/for}{/if}{#if resource.action}
 
 ## Actions

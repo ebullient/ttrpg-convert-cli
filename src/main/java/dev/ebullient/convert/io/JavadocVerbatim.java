@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.SOURCE)
-@Target({ ElementType.METHOD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface JavadocVerbatim {
     // include this method using the exact method or field name
 

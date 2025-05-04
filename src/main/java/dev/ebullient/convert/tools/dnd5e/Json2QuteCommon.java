@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -829,7 +828,7 @@ public class Json2QuteCommon implements JsonSource {
         return text;
     }
 
-    Collection<NamedText> collectSortedTraits(JsonNode array) {
+    List<NamedText> collectSortedTraits(JsonNode array) {
         boolean pushed = parseState().pushTrait();
         try {
             // gather traits into a sorted array
@@ -844,7 +843,7 @@ public class Json2QuteCommon implements JsonSource {
         }
     }
 
-    Collection<NamedText> collectTraits(String field) {
+    List<NamedText> collectTraits(String field) {
         boolean pushed = parseState().pushTrait();
         try {
             List<NamedText> traits = new ArrayList<>();
@@ -878,7 +877,7 @@ public class Json2QuteCommon implements JsonSource {
         }
     }
 
-    void addNamedTrait(Collection<NamedText> traits, String name, JsonNode node) {
+    void addNamedTrait(List<NamedText> traits, String name, JsonNode node) {
         boolean pushed = parseState().pushTrait();
         try {
             List<String> text = new ArrayList<>();
@@ -914,7 +913,7 @@ public class Json2QuteCommon implements JsonSource {
         return text;
     }
 
-    Collection<JsonNode> sortedTraits(JsonNode arrayNode) {
+    List<JsonNode> sortedTraits(JsonNode arrayNode) {
         boolean pushed = parseState().pushTrait();
         try {
             if (arrayNode == null || arrayNode.isNull()) {

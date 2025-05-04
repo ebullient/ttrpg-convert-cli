@@ -2,8 +2,10 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -23,6 +25,7 @@ import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 import dev.ebullient.convert.tools.dnd5e.qute.AcHp;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.HiddenType;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Initiative;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.InitiativeMode;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavesAndSkills;
@@ -343,8 +346,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
             List<Spellcasting> casting = new ArrayList<>();
             for (JsonNode scNode : iterableElements(array)) {
+                if (scNode == null || scNode.isNull()) {
+                    continue;
+                }
                 Spellcasting spellcasting = new Spellcasting();
                 spellcasting.name = SourceField.name.replaceTextFrom(scNode, this);
+                spellcasting.displayAs = MonsterFields.displayAs.getTextOrDefault(scNode, "trait");
+                spellcasting.hidden = MonsterFields.hidden.getListOfStrings(scNode, tui());
+                spellcasting.ability = MonsterFields.ability.getTextOrDefault(scNode, "spellcasting");
 
                 spellcasting.headerEntries = new ArrayList<>();
                 appendToText(spellcasting.headerEntries,
@@ -354,28 +363,55 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 appendToText(spellcasting.footerEntries,
                         MonsterFields.footerEntries.getFrom(scNode), null);
 
-                if (MonsterFields.will.existsIn(scNode)) {
-                    spellcasting.will = getSpells(MonsterFields.will.getFrom(scNode));
-                }
-                if (MonsterFields.daily.existsIn(scNode)) {
-                    spellcasting.daily = new TreeMap<>();
-                    for (Entry<String, JsonNode> f : iterableFields(MonsterFields.daily.getFrom(scNode))) {
-                        spellcasting.daily.put(f.getKey(), getSpells(f.getValue()));
+                spellcasting.fixed = new HashMap<>();
+                spellcasting.variable = new HashMap<>();
+
+                for (var type : HiddenType.values()) {
+                    JsonNode value = scNode.get(type.name());
+                    if (value == null || value.isNull()) {
+                        continue;
                     }
-                }
-                if (MonsterFields.spells.existsIn(scNode)) {
-                    spellcasting.spells = new TreeMap<>();
-                    for (Entry<String, JsonNode> f : iterableFields(MonsterFields.spells.getFrom(scNode))) {
-                        JsonNode spellNode = f.getValue();
-                        Spells spells = new Spells();
-                        if (spellNode.isArray()) {
-                            spells.spells = getSpells(spellNode);
-                        } else {
-                            spells.slots = MonsterFields.slots.intOrDefault(spellNode, 0);
-                            spells.lowerBound = MonsterFields.lower.intOrDefault(spellNode, 0);
-                            spells.spells = getSpells(MonsterFields.spells.getFrom(spellNode));
+                    switch (type) {
+                        case constant, will, ritual -> {
+                            List<String> spellList = getSpells(value);
+                            if (spellList.isEmpty()) {
+                                continue;
+                            }
+                            spellcasting.fixed.put(type.name(), spellList);
                         }
-                        spellcasting.spells.put(f.getKey(), spells);
+                        case spells -> {
+                            spellcasting.spells = new TreeMap<>();
+                            for (Entry<String, JsonNode> f : iterableFields(MonsterFields.spells.getFrom(scNode))) {
+                                // value is object defining slots and spells
+                                JsonNode spellNode = f.getValue();
+
+                                Spells spellContainer = new Spells();
+                                spellContainer.spells = getSpells(MonsterFields.spells.getFrom(spellNode));
+                                if (spellContainer.spells.isEmpty()) {
+                                    continue;
+                                }
+                                spellContainer.slots = MonsterFields.slots.intOrDefault(spellNode, 0);
+                                spellContainer.lowerBound = MonsterFields.lower.intOrDefault(spellNode, 0);
+
+                                // key is level
+                                spellcasting.spells.put(f.getKey(), spellContainer);
+                            }
+                        }
+                        default -> {
+                            Map<String, List<String>> frequencySpells = new HashMap<>();
+                            for (Entry<String, JsonNode> freqSpellList : iterableFields(value)) {
+                                String frequency = freqSpellList.getKey();
+                                List<String> spellList = getSpells(freqSpellList.getValue());
+                                if (spellList.isEmpty()) {
+                                    continue;
+                                }
+                                frequencySpells.put(frequency, spellList);
+                            }
+                            if (frequencySpells.isEmpty()) {
+                                continue;
+                            }
+                            spellcasting.variable.put(type.name(), frequencySpells);
+                        }
                     }
                 }
                 parseState().popCitations(spellcasting.footerEntries);
@@ -388,13 +424,31 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     List<String> getSpells(JsonNode source) {
-        if (source == null) {
+        if (source == null || source.isNull()) {
             tui().errorf("Null spells from %s", sources.getKey());
             return List.of();
         }
         List<String> spells = new ArrayList<>();
-        source.forEach(s -> spells.add(replaceText(s.asText())));
+        for (var item : iterableElements(source)) {
+            if (item.isTextual()) {
+                spells.add(toLink(item.asText()));
+            } else if (item.isObject()) {
+                boolean hidden = MonsterFields.hidden.booleanOrDefault(item, false);
+                if (hidden) {
+                    continue;
+                }
+                spells.add(toLink(SourceField.entry.getTextOrEmpty(item)));
+            } else {
+                tui().warnf(Msg.UNKNOWN, "Unknown spell type for %s: %s", sources.getKey(), item.toPrettyString());
+            }
+        }
         return spells;
+    }
+
+    private String toLink(String spellText) {
+        return spellText.contains("{@")
+                ? replaceText(spellText)
+                : linkify(Tools5eIndexType.spell, spellText);
     }
 
     Collection<NamedText> legendaryGroup(JsonNode content) {
@@ -617,6 +671,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         _implementations,
         _variables,
         _versions,
+        ability,
         ac,
         advantageMode,
         alignment,
@@ -626,10 +681,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
         cr,
         creatureType, // object -- alternate to monster type
         daily,
+        displayAs,
         footerEntries,
         formula,
         from,
         headerEntries,
+        hidden,
         hp,
         initiative,
         isNamedCreature,

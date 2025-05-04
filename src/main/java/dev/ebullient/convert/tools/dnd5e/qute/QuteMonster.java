@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 
 import static dev.ebullient.convert.StringUtil.asModifier;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
@@ -9,8 +10,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import dev.ebullient.convert.io.JavadocIgnore;
+import dev.ebullient.convert.io.JavadocVerbatim;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.qute.NamedText;
@@ -72,15 +76,15 @@ public class QuteMonster extends Tools5eQuteBase {
     /** Initiative bonus as {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Initiative} */
     public final Initiative initiative;
     /** Creature traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final Collection<NamedText> trait;
+    public final List<NamedText> trait;
     /** Creature actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final Collection<NamedText> action;
+    public final List<NamedText> action;
     /** Creature bonus actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final Collection<NamedText> bonusAction;
+    public final List<NamedText> bonusAction;
     /** Creature reactions as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final Collection<NamedText> reaction;
+    public final List<NamedText> reaction;
     /** Creature legendary traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final Collection<NamedText> legendary;
+    public final List<NamedText> legendary;
     /**
      * Map of grouped legendary traits (Lair Actions, Regional Effects, etc.).
      * The key the group name, and the value is a list of {@link dev.ebullient.convert.qute.NamedText}.
@@ -90,8 +94,6 @@ public class QuteMonster extends Tools5eQuteBase {
      * Markdown link to legendary group (can be embedded).
      */
     public final String legendaryGroupLink;
-    /** Creature abilities as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting} attributes */
-    public final List<Spellcasting> spellcasting;
     /** Formatted text containing the creature description. Same as `{resource.text}` */
     public final String description;
     /** Formatted text describing the creature's environment. Usually a single word. */
@@ -99,15 +101,19 @@ public class QuteMonster extends Tools5eQuteBase {
     /** Token image as {@link dev.ebullient.convert.qute.ImageRef} */
     public final ImageRef token;
 
+    private final List<Spellcasting> spellcasting;
+
     public QuteMonster(Tools5eSources sources, String name, String source, boolean isNpc, String size, String type,
             String subtype, String alignment,
             AcHp acHp, String speed,
             AbilityScores scores, SavesAndSkills savesSkills, String senses, int passive,
             ImmuneResist immuneResist,
             String languages, String cr, String pb, Initiative initiative,
-            Collection<NamedText> trait,
-            Collection<NamedText> action, Collection<NamedText> bonusAction, Collection<NamedText> reaction,
-            Collection<NamedText> legendary,
+            List<NamedText> trait,
+            List<NamedText> action,
+            List<NamedText> bonusAction,
+            List<NamedText> reaction,
+            List<NamedText> legendary,
             Collection<NamedText> legendaryGroup, String legendaryGroupLink,
             List<Spellcasting> spellcasting, String description, String environment,
             ImageRef tokenImage, List<ImageRef> images, Tags tags) {
@@ -143,6 +149,19 @@ public class QuteMonster extends Tools5eQuteBase {
         this.description = description;
         this.environment = environment;
         this.token = tokenImage;
+
+        if (isPresent(spellcasting)) {
+            for (var sc : spellcasting) {
+                switch (sc.displayAs) {
+                    case "trait" -> trait.addAll(0, spellcastingToTraits());
+                    case "action" -> action.addAll(spellcastingToTraits());
+                    case "bonus" -> bonusAction.addAll(spellcastingToTraits());
+                    case "reaction" -> reaction.addAll(spellcastingToTraits());
+                    case "legendary" -> legendary.addAll(spellcastingToTraits());
+                    // case "mythic" -> legendary.addAll(spellcastingToTraits());
+                }
+            }
+        }
     }
 
     @Override
@@ -173,6 +192,26 @@ public class QuteMonster extends Tools5eQuteBase {
     /** See {@link dev.ebullient.convert.tools.dnd5e.qute.AcHp#hitDice} */
     public String getHitDice() {
         return acHp.hitDice;
+    }
+
+    /**
+     * Always returns null/empty to suppress previous default behavior that
+     * rendered spellcasting as part of traits.
+     *
+     * 2024 rules interleave spellcasting with traits, actions, bonus actions, etc.
+     *
+     * @deprecated
+     */
+    public String getSpellcasting() {
+        return null;
+    }
+
+    /**
+     * Creature spellcasting abilities as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting}
+     * attributes
+     */
+    public List<Spellcasting> getRawSpellcasting() {
+        return spellcasting;
     }
 
     /** See {@link dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist#vulnerable} */
@@ -302,7 +341,7 @@ public class QuteMonster extends Tools5eQuteBase {
 
         if (initiative != null) {
             map.put("modifier", initiative.bonus);
-            // TODO: passive initiative
+            // TODO: passive initiative?
         }
 
         map.put("stats", scores.toArray());
@@ -324,11 +363,7 @@ public class QuteMonster extends Tools5eQuteBase {
         map.put("languages", languages);
         addUnlessEmpty(map, "cr", cr);
 
-        Collection<NamedText> yamlTraits = new ArrayList<>(spellcastingToTraits());
-        if (trait != null) {
-            yamlTraits.addAll(trait);
-        }
-        addUnlessEmpty(map, "traits", yamlTraits);
+        addUnlessEmpty(map, "traits", trait);
         addUnlessEmpty(map, "actions", action);
         addUnlessEmpty(map, "bonus_actions", bonusAction);
         addUnlessEmpty(map, "reactions", reaction);
@@ -370,12 +405,10 @@ public class QuteMonster extends Tools5eQuteBase {
     }
 
     Collection<NamedText> spellcastingToTraits() {
-        if (spellcasting == null) {
-            return List.of();
-        }
         return spellcasting.stream()
                 .map(s -> new NamedText(s.name, s.getDesc()))
-                .collect(Collectors.toList());
+                .filter(nt -> nt.hasContent())
+                .toList();
     }
 
     /**
@@ -407,10 +440,33 @@ public class QuteMonster extends Tools5eQuteBase {
         public String name;
         /** Formatted text that should be printed before the list of spells */
         public List<String> headerEntries;
-        /** Spells (links) that can be cast at will */
-        public List<String> will;
-        /** Map: key = nuber of times per day, value: list of spells (links) */
-        public Map<String, List<String>> daily;
+
+        /** Spells (links) that can be cast a fixed number of times (constant), at will (will), or as a ritual */
+        public Map<String, List<String>> fixed;
+
+        /**
+         * Map of frequency to spells (links).
+         *
+         * Frequencies (key)
+         * - charges
+         * - daily
+         * - legendary
+         * - monthly
+         * - recharge
+         * - rest
+         * - restLong
+         * - weekly
+         * - yearly
+         *
+         * Value is another map containing additional key/value pairs, where the key is a number,
+         * and the value is a list of spells (links).
+         *
+         * If the key ends with `e` (like `1e` or `2e`), each will be appended, e.g. "1/day each"
+         * to specify that each spell can be cast once per day.
+         */
+        @JavadocVerbatim
+        public Map<String, Map<String, List<String>>> variable;
+
         /**
          * Map: key = spell level, value: spell level information as
          * {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells}
@@ -420,12 +476,27 @@ public class QuteMonster extends Tools5eQuteBase {
         public List<String> footerEntries;
         public String ability;
 
+        /**
+         * Groups that should be hidden. Values: `constant`, `will`, `rest`, `restLong`, `daily`, `weekly`, `monthly`, `yearly`,
+         * `ritual`, `spells`, `charges`, `recharge`, `legendary`
+         */
+        public List<String> hidden;
+
+        /**
+         * Attribute should be displayed as specified trait type. Values: `trait` (default), `action`, `bonus`, `reaction`,
+         * `legendary`
+         */
+        public String displayAs = "trait";
+
         @Override
         public String toString() {
-            return "***" + name + ".*** " + getDesc();
+            return "%s%s".formatted(
+                    isPresent(name) ? ("***" + name + ".*** ") : "",
+                    getDesc());
+
         }
 
-        /** Formatted description: renders all attributes (other than name) */
+        /** Formatted description: renders all attributes (except name) unless the trait is hidden */
         public String getDesc() {
             List<String> text = new ArrayList<>();
             if (!headerEntries.isEmpty()) {
@@ -433,13 +504,56 @@ public class QuteMonster extends Tools5eQuteBase {
                 text.add("");
             }
 
-            appendList(text, "At will", will);
-            if (daily != null && !daily.isEmpty()) {
-                daily.forEach((k, v) -> appendList(text, innateKeyToTitle(k), v));
+            if (fixed.containsKey("constant") && !hidden.contains("constant")) {
+                appendList(text, "Constant", fixed.get("constant"));
             }
-            if (spells != null && !spells.isEmpty()) {
+            if (fixed.containsKey("will") && !hidden.contains("will")) {
+                appendList(text, "At will", fixed.get("will"));
+            }
+            for (var duration : DurationType.values()) {
+                String key = duration.name();
+                if (hidden.contains(key)) {
+                    continue;
+                }
+                if (variable.containsKey(key) && !hidden.contains(key)) {
+                    Map<String, List<String>> v = variable.get(key);
+                    switch (duration) {
+                        case recharge -> {
+                            Function<String, String> f = (num) -> {
+                                // This is a {@recharge} tag
+                                return Tools5eIndex.instance().replaceText(String.format(duration.durationText, num));
+                            };
+                            appendList(text, f, v);
+                        }
+                        case charges, legendary -> {
+                            Function<String, String> f = (num) -> {
+                                String value = String.format(duration.durationText, num);
+                                return value + pluralize(value, num);
+                            };
+                            appendList(text, f, v);
+                        }
+                        default -> {
+                            Function<String, String> f = (num) -> {
+                                boolean isEach = num.endsWith("e");
+                                String value = String.format(duration.durationText, num.replace("e", ""));
+                                return isEach
+                                        ? value + " each"
+                                        : value;
+                            };
+                            appendList(text, f, v);
+                        }
+                    }
+                }
+            }
+
+            if (fixed.containsKey("ritual") && !hidden.contains("ritual")) {
+                appendList(text, "Rituals", fixed.get("ritual"));
+            }
+
+            if (isPresent(spells) && !hidden.contains("spells")) {
                 spells.forEach((k, v) -> appendList(text, spellToTitle(k, v), v.spells));
             }
+
             if (!footerEntries.isEmpty()) {
                 text.add("");
                 text.addAll(footerEntries);
@@ -470,26 +584,31 @@ public class QuteMonster extends Tools5eQuteBase {
             return "";
         }
 
-        String innateKeyToTitle(String key) {
-            switch (key) {
-                case "1":
-                case "2":
-                case "3":
-                    return String.format("%s/day", key);
-                case "1e":
-                case "2e":
-                case "3e":
-                    return String.format("%s/day each", key.charAt(0));
-            }
-            return "Unknown";
-        }
-
         void appendList(List<String> text, String title, List<String> spells) {
             if (spells == null || spells.isEmpty()) {
                 return;
             }
             maybeAddBlankLine(text);
-            text.add(String.format("**%s**: %s", title, String.join(", ", spells)));
+            text.add(String.format("**%s:** %s", title, String.join(", ", spells)));
+        }
+
+        void appendList(List<String> text, Function<String, String> titleFunction, Map<String, List<String>> spells) {
+            if (spells == null || spells.isEmpty()) {
+                return;
+            }
+            for (int i = 9; i > 0; i--) {
+                String key = String.valueOf(i);
+                List<String> spellList = spells.get(key);
+                if (isPresent(spellList)) {
+                    appendList(text, titleFunction.apply(key), spellList);
+                }
+
+                key = key + "e";
+                spellList = spells.get(key);
+                if (isPresent(spellList)) {
+                    appendList(text, titleFunction.apply(key), spellList);
+                }
+            }
         }
     }
 
@@ -773,6 +892,45 @@ public class QuteMonster extends Tools5eQuteBase {
                 return disadvantage;
             }
             return none;
+        }
+    }
+
+    @JavadocIgnore
+    @TemplateData
+    public enum HiddenType {
+        constant,
+        will,
+        rest,
+        restLong,
+        daily,
+        weekly,
+        monthly,
+        yearly,
+        ritual,
+        spells,
+        charges,
+        recharge,
+        legendary,
+    }
+
+    @JavadocIgnore
+    @TemplateData
+    public enum DurationType {
+        recharge("{@recharge %s}"),
+        legendary("%s legendary action"),
+        charges("%s charge"),
+        rest("%s/rest"),
+        restLong("%s/long rest"),
+        daily("%s/day"),
+        weekly("%s/week"),
+        monthly("%s/month"),
+        yearly("%s/year"),
+        ;
+
+        final String durationText;
+
+        DurationType(String durationText) {
+            this.durationText = durationText;
         }
     }
 }

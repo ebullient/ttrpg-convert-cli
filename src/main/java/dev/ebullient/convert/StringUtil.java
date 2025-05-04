@@ -263,6 +263,24 @@ public class StringUtil {
     }
 
     /**
+     * {@link #pluralize(String, String, boolean)} with {@code assumeSingular} set to {@code false}
+     *
+     * @see #pluralize(String, Integer, boolean)
+     */
+    public static String pluralize(String s, String howMany) {
+        if (!isPresent(howMany)) {
+            return s;
+        }
+        Integer howManyInt;
+        try {
+            howManyInt = Integer.parseInt(howMany);
+            return pluralize(s, howManyInt, false);
+        } catch (NumberFormatException e) {
+            return s;
+        }
+    }
+
+    /**
      * Return the given string surrounded in parentheses. Return null if the input is null, or an empty string if
      * the input is empty.
      */

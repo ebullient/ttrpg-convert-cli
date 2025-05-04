@@ -84,8 +84,8 @@ public class Json2QuteVehicle extends Json2QuteCommon {
         return "";
     }
 
-    private Collection<NamedText> getActions() {
-        Collection<NamedText> actions = collectTraits("action");
+    private List<NamedText> getActions() {
+        List<NamedText> actions = collectTraits("action");
 
         if (VehicleFields.other.existsIn(rootNode)) {
             for (JsonNode node : VehicleFields.other.iterateArrayFrom(rootNode)) {

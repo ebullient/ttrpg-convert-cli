@@ -7,6 +7,17 @@
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
+## 🔥💥 3.1.0: Accommodating 2024 rules (XMM and SRD)
+
+- 💥 **Monster spellcasting traits**: 2024 monster statblocks interleave spellcasting behaviors in trait categories.
+    - trait-like attributes (`trait`, `action`, `bonusAction`, `reaction`, `legendary`) will already include spellcasting information. For 2014 rules, the information will be included in the trait attribute.
+    - `spellcasting` will now always return empty (no breakage, but also no output)
+    - `rawSpellcasting` can be used to retrieve raw [SpellCasting attributes](./docs/templates/dnd5e/QuteMonster/Spellcasting.md).
+        - `fixed` defines spells with a fixed duration (simple list): `constant`, `ritual` and `will`
+        - `variable` (varying frequencies): `charges`, `daily`, `legendary`, `monthly`, `recharge`, `rest`, `restLong`, `weekly`, `yearly`
+        - `daily` and `will` have been removed (incorporated in `variable` and `fixed`, respectively).
+- ✨ **Additional item fields**: Item variants have a fistful of additional fields: `bonusAc`, `bonusWeapon`, `bonusWeaponAttack`, `bonusWeaponDamage`, `bonusWeaponCritDamage`, `bonusSpellAttack`, `bonusSpellDamage`, `bonusSpellSaveDc`, `bonusSavingThrow`, `bonusAbilityCheck`, `bonusProficiencyBonus`, `bonusSavingThrowConcentration`
+
 ## 🔥✨ 3.0.0: Moving the things
 
 Support for the 2024 ruleset caused a lot of ripples. There is nothing small about this release.
