@@ -746,13 +746,18 @@ public interface JsonSource extends JsonTextReplacement {
                 final boolean cards = header.contains("Card | ");
                 for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
                     JsonNode cells;
+                    boolean indentFirst = false;
                     if ("row".equals(TableFields.type.getTextOrNull(r))) {
                         cells = TableFields.row.getFrom(r);
+                        indentFirst = TableFields.style.getTextOrEmpty(r).equals("row-indent-first");
                     } else {
                         cells = r;
                     }
 
-                    String row = "| " + streamOf(cells)
+                    String row = indentFirst
+                            ? "| &emsp;"
+                            : "| ";
+                    row += streamOf(cells)
                             .map(x -> {
                                 JsonNode roll = RollFields.roll.getFrom(x);
                                 if (roll != null) {
@@ -1417,7 +1422,9 @@ public interface JsonSource extends JsonTextReplacement {
         footnotes,
         intro,
         outro,
-        type;
+        style,
+        type,
+        ;
 
         static String getFirstRow(JsonNode tableNode) {
             JsonNode rowData = rows.getFrom(tableNode);
