@@ -14,34 +14,34 @@ Return the value formatted with a bonus with a +/- prefix. Example: `{perception
 
 ### capitalized
 
-Return the string capitalized. Example: `{resource.stringAttribute.capitalized}`
+Return the string capitalized. Example: `{resource.name.capitalized}`
 
 ### join
 
 Return the given collection converted into a string and joined using the specified joiner.
 
-Example: `{resource.itemList.join(", ")}`
+Example: `{resource.components.join(", ")}`
 
 ### joinConjunct
 
 Return the given list joined into a single string, using a different delimiter for the last element.
 
-Example: `{resource.itemList.joinConjunct(", ", " or ")}`
+Example: `{resource.components.joinConjunct(", ", " or ")}`
 
 ### jsonString
 
 Return the object as a JSON string
 
-Example: `{resource.whatever.getJsonString(resource)}`
+Example: `{resource.components.getJsonString(resource)}`
 
 ### pluralizeLabel
 
 Return the string pluralized based on the size of the collection.
 
-Example: `{resource.stringAttribute.pluralized(resource.components)}`
+Example: `{resource.name.pluralized(resource.components)}`
 
 ### prefixSpace
 
 Return the given object as a string, with a space prepended if it's non-empty and non-null.
 
-Example: `{resource.stringAttribute.prefixSpace}`
+Example: `{resource.name.prefixSpace}`
