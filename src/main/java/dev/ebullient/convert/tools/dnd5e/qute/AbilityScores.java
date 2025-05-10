@@ -151,6 +151,25 @@ public record AbilityScores(
         return asModifier(getModifier(charisma));
     }
 
+    public AbilityScore getScore(String name) {
+        switch (name.toLowerCase()) {
+            case "strength":
+                return strength;
+            case "dexterity":
+                return dexterity;
+            case "constitution":
+                return constitution;
+            case "intelligence":
+                return intelligence;
+            case "wisdom":
+                return wisdom;
+            case "charisma":
+                return charisma;
+            default:
+                throw new IllegalArgumentException("Unknown ability score: " + name);
+        }
+    }
+
     @Override
     public String toString() {
         return strength.toString()

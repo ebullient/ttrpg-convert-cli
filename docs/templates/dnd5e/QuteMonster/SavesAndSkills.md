@@ -4,7 +4,11 @@
 
 ## Attributes
 
-[saveValues](#savevalues), [saves](#saves), [skillChoices](#skillchoices), [skillValues](#skillvalues), [skills](#skills)
+[saveOrDefault](#saveordefault), [saveValues](#savevalues), [saves](#saves), [skillChoices](#skillchoices), [skillValues](#skillvalues), [skills](#skills)
+
+### saveOrDefault
+
+Saving throws as a list of maps (for YAML Statblock)
 
 ### saveValues
 

@@ -423,6 +423,25 @@ public class CommonDataTests {
         }
     }
 
+    public void testMonster2024(Path outputPath) {
+        if (dataPresent) {
+            Path out = outputPath.resolve("monster-2024");
+            TestUtils.deleteDir(out);
+            tui.setOutputPath(out);
+            configurator.setUseDiceRoller(DiceRoller.enabledUsingFS);
+
+            CompendiumConfig testConfig = ConfiguratorUtil.testCustomTemplate("monster",
+                    TestUtils.PROJECT_PATH.resolve("examples/templates/tools5e/monster2md-2024.txt"));
+            templates.setCustomTemplates(testConfig);
+
+            MarkdownWriter writer = new MarkdownWriter(out, templates, tui);
+            index.markdownConverter(writer)
+                    .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
+
+            TestUtils.assertDirectoryContents(out, tui);
+        }
+    }
+
     public void testObjectList(Path outputPath) {
         tui.setOutputPath(outputPath);
 

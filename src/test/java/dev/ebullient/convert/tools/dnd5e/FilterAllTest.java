@@ -571,6 +571,11 @@ public class FilterAllTest {
     }
 
     @Test
+    public void testMonster2024() {
+        commonTests.testMonster2024(outputPath);
+    }
+
+    @Test
     public void testObjectList() {
         commonTests.testObjectList(outputPath);
     }

@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import dev.ebullient.convert.StringUtil;
 import dev.ebullient.convert.io.JavadocVerbatim;
+import dev.ebullient.convert.io.Tui;
 import io.quarkus.qute.TemplateExtension;
 
 /**
@@ -71,5 +72,15 @@ public class TtrpgTemplateExtension {
     @JavadocVerbatim
     static String joinConjunct(Collection<?> collection, String joiner, String lastjoiner) {
         return StringUtil.joinConjunct(joiner, lastjoiner, collection.stream().map(o -> o.toString()).toList());
+    }
+
+    /**
+     * Return the object as a JSON string
+     *
+     * Example: `{resource.components.getJsonString(resource)}`
+     */
+    @JavadocVerbatim
+    static String jsonString(Object o) {
+        return Tui.jsonStringify(o);
     }
 }

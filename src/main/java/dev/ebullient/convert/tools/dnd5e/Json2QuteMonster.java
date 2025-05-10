@@ -240,12 +240,12 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return savesSkills;
     }
 
-    SavingThrow getSavingThrow(String name, JsonNode value) {
+    SavingThrow getSavingThrow(String name, JsonNode node) {
         SkillOrAbility save = SkillOrAbility.fromTextValue(name);
         name = save == null ? name : save.value();
-        String text = value.asText();
+        String text = node.asText();
         if (text.matches("[+-]?\\d+")) {
-            return new SavingThrow(name, value.asInt());
+            return new SavingThrow(name, node.asInt());
         } else {
             return new SavingThrow(name, replaceText(text));
         }

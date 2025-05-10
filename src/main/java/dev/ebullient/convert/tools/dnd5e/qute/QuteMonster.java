@@ -7,11 +7,15 @@ import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import dev.ebullient.convert.io.JavadocIgnore;
 import dev.ebullient.convert.io.JavadocVerbatim;
@@ -23,6 +27,7 @@ import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndex;
 import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
+import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores.AbilityScore;
 import io.quarkus.qute.TemplateData;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -37,6 +42,8 @@ public class QuteMonster extends Tools5eQuteBase {
             "lair actions", "lair_actions",
             "regional effects", "regional_effects",
             "mythic encounter", "mythic_encounter");
+    private static final List<String> abilities = List.of("strength", "dexterity", "constitution", "intelligence", "wisdom",
+            "charisma");
 
     /** True if this is an NPC */
     public final boolean isNpc;
@@ -130,7 +137,7 @@ public class QuteMonster extends Tools5eQuteBase {
         this.scores = scores == null
                 ? AbilityScores.DEFAULT
                 : scores;
-        this.savesSkills = savesSkills;
+        this.savesSkills = savesSkills.withParent(this);
         this.senses = senses;
         this.passive = passive;
         this.immuneResist = immuneResist;
@@ -638,7 +645,7 @@ public class QuteMonster extends Tools5eQuteBase {
     public record SavingThrow(String ability, int modifier, String special) implements QuteUtil {
 
         public SavingThrow(String ability, String special) {
-            this("special".equalsIgnoreCase(ability) ? null : special,
+            this("special".equalsIgnoreCase(ability) ? null : ability,
                     0, special);
         }
 
@@ -647,13 +654,17 @@ public class QuteMonster extends Tools5eQuteBase {
                     modifier, null);
         }
 
+        public SavingThrow(String ability, AbilityScore score) {
+            this(ability, score.modifier(), score.special());
+        }
+
         /** @return true if this saving throw has a "special" value */
         public boolean isSpecial() {
             return special != null;
         }
 
         public Object mapValue() {
-            return isSpecial() ? special : modifier;
+            return isSpecial() ? special : asModifier(modifier);
         }
 
         @Override
@@ -709,6 +720,14 @@ public class QuteMonster extends Tools5eQuteBase {
     @TemplateData
     @RegisterForReflection
     public static class SavesAndSkills implements QuteUtil {
+        @JsonIgnore
+        private QuteMonster parent;
+
+        private SavesAndSkills withParent(QuteMonster parent) {
+            this.parent = parent;
+            return this;
+        }
+
         /**
          * Creature saving throws as a list of {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavingThrow}.
          */
@@ -756,6 +775,36 @@ public class QuteMonster extends Tools5eQuteBase {
                         return map;
                     })
                     .collect(Collectors.toList());
+        }
+
+        /** Saving throws as a list of maps (for YAML Statblock) */
+        public Map<String, Object> getSaveOrDefault() {
+            Map<String, Object> saveDefaults = new HashMap<>();
+            for (String ability : abilities) {
+                Optional<SavingThrow> optSt = Optional.empty();
+                if (isPresent(saves)) {
+                    optSt = saves.stream()
+                            .filter(st -> st.ability().equalsIgnoreCase(ability))
+                            .findFirst();
+                }
+
+                if (optSt.isEmpty()) {
+                    AbilityScore score = parent.scores.getScore(ability);
+                    if (score != null) {
+                        addToMap(saveDefaults, new SavingThrow(ability, score), true);
+                    } else {
+                        addToMap(saveDefaults, new SavingThrow(getSkills(), "⏤"), true);
+                    }
+                } else {
+                    addToMap(saveDefaults, optSt.get(), false);
+                }
+            }
+            return saveDefaults;
+        }
+
+        private void addToMap(Map<String, Object> map, SavingThrow s, boolean isDefault) {
+            map.put(s.ability().toLowerCase(),
+                    (isDefault ? "%s" : "**%s**").formatted(s.mapValue()));
         }
 
         /**
@@ -924,8 +973,7 @@ public class QuteMonster extends Tools5eQuteBase {
         daily("%s/day"),
         weekly("%s/week"),
         monthly("%s/month"),
-        yearly("%s/year"),
-        ;
+        yearly("%s/year"),;
 
         final String durationText;
 

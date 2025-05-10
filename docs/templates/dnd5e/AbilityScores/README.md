@@ -12,7 +12,7 @@ For example:
 
 ## Attributes
 
-[cha](#cha), [chaMod](#chamod), [chaStat](#chastat), [charisma](#charisma), [con](#con), [conMod](#conmod), [conStat](#constat), [constitution](#constitution), [dex](#dex), [dexMod](#dexmod), [dexStat](#dexstat), [dexterity](#dexterity), [int](#int), [intMod](#intmod), [intStat](#intstat), [intelligence](#intelligence), [str](#str), [strMod](#strmod), [strStat](#strstat), [strength](#strength), [wis](#wis), [wisMod](#wismod), [wisStat](#wisstat), [wisdom](#wisdom)
+[cha](#cha), [chaMod](#chamod), [chaStat](#chastat), [charisma](#charisma), [con](#con), [conMod](#conmod), [conStat](#constat), [constitution](#constitution), [dex](#dex), [dexMod](#dexmod), [dexStat](#dexstat), [dexterity](#dexterity), [int](#int), [intMod](#intmod), [intStat](#intstat), [intelligence](#intelligence), [score](#score), [str](#str), [strMod](#strmod), [strStat](#strstat), [strength](#strength), [wis](#wis), [wisMod](#wismod), [wisStat](#wisstat), [wisdom](#wisdom)
 
 ### cha
 
@@ -77,6 +77,9 @@ Intelligence score as a number: 10
 ### intelligence
 
 Intelligence score as [AbilityScore](AbilityScore.md)
+
+### score
+
 
 ### str
 
