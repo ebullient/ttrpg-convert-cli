@@ -708,12 +708,16 @@ public interface JsonSource extends JsonTextReplacement {
                     ? ""
                     : "^" + slugify(caption);
 
+            String name = findTableName(tableNode);
             String known = findTable(Tools5eIndexType.table, tableNode);
             if (known != null) {
-                maybeAddBlankLine(text);
-                text.add(known);
+                appendTableText(name, List.of(known), text, tableNode);
                 return;
             }
+
+            // We could be working on a table, or a table nested inside a table.
+            // Gather text in "inner", then we'll decide how to append it later.
+            List<String> inner = new ArrayList<>();
 
             boolean pushTable = parseState().pushMarkdownTable(true);
             try {
@@ -775,8 +779,16 @@ public interface JsonSource extends JsonTextReplacement {
                                 }
                                 return x;
                             })
-                            .map(x -> flattenToString(x).replace("\n", "<br />"))
+                            .map(x -> {
+                                String s = flattenToString(x).replace("\n", "<br />");
+                                JsonNode nestedTable = TableFields.ttrpgNestedTable.getFrom(x);
+                                if (nestedTable != null) {
+                                    TableFields.ttrpgNestedTable.appendToArray(tableNode, nestedTable);
+                                }
+                                return s;
+                            })
                             .collect(Collectors.joining(" | ")) + " |";
+
                     table.add(row);
                 }
 
@@ -790,46 +802,70 @@ public interface JsonSource extends JsonTextReplacement {
                 if (header.matches(JsonTextConverter.DICE_TABLE_HEADER) && !blockid.isBlank()) {
                     // prepend a dice roller
                     String targetFile = getFileName();
-                    table.add(0, String.format("`dice: [](%s.md#%s)`", targetFile, blockid));
+                    // use dice roller string as name (for use if nested table)
+                    name = String.format("`dice: [](%s.md#%s)`", targetFile, blockid);
+                    table.add(0, name);
                     table.add(1, "");
                 }
                 if (!caption.isBlank()) {
                     table.add(0, "");
                     table.add(0, "**" + replaceText(caption) + "**");
                 }
+
+                switch (blockid) {
+                    case "personality-trait" -> Json2QuteBackground.traits.addAll(table);
+                    case "ideal" -> Json2QuteBackground.ideals.addAll(table);
+                    case "bond" -> Json2QuteBackground.bonds.addAll(table);
+                    case "flaw" -> Json2QuteBackground.flaws.addAll(table);
+                }
+
+                JsonNode intro = TableFields.intro.getFrom(tableNode);
+                if (intro != null) {
+                    maybeAddBlankLine(inner);
+                    appendToText(inner, intro, null);
+                }
+                maybeAddBlankLine(inner);
+                inner.addAll(table);
+
+                JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
+                if (footnotes != null) {
+                    maybeAddBlankLine(inner);
+                    boolean pushF = parseState().pushFootnotes(true);
+                    appendToText(inner, footnotes, null);
+                    parseState().pop(pushF);
+                }
+                JsonNode outro = TableFields.outro.getFrom(tableNode);
+                if (outro != null) {
+                    maybeAddBlankLine(inner);
+                    appendToText(inner, outro, null);
+                }
             } finally {
                 parseState().pop(pushTable);
             }
 
-            switch (blockid) {
-                case "personality-trait" -> Json2QuteBackground.traits.addAll(table);
-                case "ideal" -> Json2QuteBackground.ideals.addAll(table);
-                case "bond" -> Json2QuteBackground.bonds.addAll(table);
-                case "flaw" -> Json2QuteBackground.flaws.addAll(table);
-            }
-
-            JsonNode intro = TableFields.intro.getFrom(tableNode);
-            if (intro != null) {
-                maybeAddBlankLine(text);
-                appendToText(text, intro, null);
-            }
-            maybeAddBlankLine(text);
-            text.addAll(table);
-
-            JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
-            if (footnotes != null) {
-                maybeAddBlankLine(text);
-                boolean pushF = parseState().pushFootnotes(true);
-                appendToText(text, footnotes, null);
-                parseState().pop(pushF);
-            }
-            JsonNode outro = TableFields.outro.getFrom(tableNode);
-            if (outro != null) {
-                maybeAddBlankLine(text);
-                appendToText(text, outro, null);
-            }
+            // Add directly to text, or stick in a tableNode for later.
+            appendTableText(name, inner, text, tableNode);
         } finally {
             parseState().pop(pushed);
+        }
+    }
+
+    default void appendTableText(String name, List<String> inner, List<String> text, JsonNode tableNode) {
+        if (parseState().inMarkdownTable()) {
+            // we are inside a table row. Append this text to an element in the tableNode
+            // that will be rendered after the table.
+            TableFields.ttrpgNestedTable.appendToArray(tableNode, String.join("\n", inner));
+            text.add(name);
+        } else {
+            maybeAddBlankLine(text);
+            text.addAll(inner);
+            if (TableFields.ttrpgNestedTable.existsIn(tableNode)) {
+                // This table had nested tables! Append them, too (already formatted)
+                for (JsonNode nested : TableFields.ttrpgNestedTable.iterateArrayFrom(tableNode)) {
+                    maybeAddBlankLine(text);
+                    text.add(nested.asText());
+                }
+            }
         }
     }
 
@@ -1424,6 +1460,7 @@ public interface JsonSource extends JsonTextReplacement {
         outro,
         style,
         type,
+        ttrpgNestedTable, // mine, array
         ;
 
         static String getFirstRow(JsonNode tableNode) {

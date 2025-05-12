@@ -528,4 +528,18 @@ public interface JsonNodeReader {
         ArrayNode array = ensureArrayIn(target).add(value);
         setIn(target, array);
     }
+
+    /** Destructive! */
+    default void appendToArray(JsonNode target, JsonNode value) {
+        if (target == null || value == null) {
+            return;
+        }
+        ArrayNode array = ensureArrayIn(target);
+        if (value.isArray()) {
+            array.addAll((ArrayNode) value);
+        } else {
+            array.add(value);
+        }
+        setIn(target, array);
+    }
 }

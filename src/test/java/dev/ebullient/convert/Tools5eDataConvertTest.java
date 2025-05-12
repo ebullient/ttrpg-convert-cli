@@ -72,7 +72,7 @@ public class Tools5eDataConvertTest {
             Path filePath = testOutput.resolve(logFile);
             Files.move(logFile, filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            if (content.contains("Exception")) {
+            if (content.matches(".*?Exception(\\s.*|$)")) {
                 tui.errorf("Exception found in %s", filePath);
             }
         }

@@ -233,6 +233,10 @@ public class ParseState {
     }
 
     public boolean pushMarkdownTable(boolean inTable) {
+        ParseStateInfo current = stack.peek();
+        if (current != null && current.inMarkdownTable == inTable) {
+            return false;
+        }
         stack.addFirst(ParseStateInfo.inMarkdownTable(stack.peek(), inTable));
         return true;
     }
