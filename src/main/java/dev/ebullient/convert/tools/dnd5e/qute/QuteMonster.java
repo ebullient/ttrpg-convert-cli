@@ -122,7 +122,8 @@ public class QuteMonster extends Tools5eQuteBase {
             List<NamedText> reaction,
             List<NamedText> legendary,
             Collection<NamedText> legendaryGroup, String legendaryGroupLink,
-            List<Spellcasting> spellcasting, String description, String environment,
+            List<Spellcasting> spellcasting,
+            String description, String environment,
             ImageRef tokenImage, List<ImageRef> images, Tags tags) {
 
         super(sources, name, source, images, description, tags);
@@ -159,13 +160,16 @@ public class QuteMonster extends Tools5eQuteBase {
 
         if (isPresent(spellcasting)) {
             for (var sc : spellcasting) {
-                switch (sc.displayAs) {
-                    case "trait" -> trait.addAll(0, spellcastingToTraits());
-                    case "action" -> action.addAll(spellcastingToTraits());
-                    case "bonus" -> bonusAction.addAll(spellcastingToTraits());
-                    case "reaction" -> reaction.addAll(spellcastingToTraits());
-                    case "legendary" -> legendary.addAll(spellcastingToTraits());
-                    // case "mythic" -> legendary.addAll(spellcastingToTraits());
+                NamedText nt = new NamedText(sc.name, sc.getDesc());
+                if (nt.hasContent()) {
+                    switch (sc.displayAs) {
+                        case "trait" -> trait.add(0, nt);
+                        case "action" -> action.add(nt);
+                        case "bonus" -> bonusAction.add(nt);
+                        case "reaction" -> reaction.add(nt);
+                        case "legendary" -> legendary.add(nt);
+                        // case "mythic" -> legendary.add(nt);
+                    }
                 }
             }
         }
@@ -409,13 +413,6 @@ public class QuteMonster extends Tools5eQuteBase {
             }
         }
         return "";
-    }
-
-    Collection<NamedText> spellcastingToTraits() {
-        return spellcasting.stream()
-                .map(s -> new NamedText(s.name, s.getDesc()))
-                .filter(nt -> nt.hasContent())
-                .toList();
     }
 
     /**

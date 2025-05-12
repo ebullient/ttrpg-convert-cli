@@ -336,7 +336,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     List<Spellcasting> monsterSpellcasting() {
         boolean pushed = parseState().pushTrait();
         try {
-            JsonNode array = MonsterFields.spellcasting.readArrayFrom(rootNode);
+            ArrayNode array = MonsterFields.spellcasting.readArrayFrom(rootNode);
             if (array == null || array.isNull()) {
                 return null;
             } else if (array.isObject()) {
