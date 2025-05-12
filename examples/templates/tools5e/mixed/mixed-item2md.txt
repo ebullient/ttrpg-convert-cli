@@ -38,6 +38,38 @@ aliases:
 {/if}{#if resource.hasMoreImages }
 
 {resource.showMoreImages}
+{/if}{#if resource.variants }
+
+## Variants
+
+{resource.variantSectionLinks}
+{#for variant in resource.variants}
+
+### {variant.name}
+
+{#if variant.prerequisite}
+- **Prerequisites**: {variant.prerequisite}
+{/if}{#if variant.armorClass }
+- **Armor Class**: {variant.armorClass}
+{#else if variant.damage }{#if variant.damage2h }
+- **Damage**:
+  - One-handed: {variant.damage}
+  - Two-handed: {variant.damage2h}
+{#else}
+- **Damage**: {variant.damage}
+{/if}{#if variant.range }
+- **Range**: {variant.range}
+{/if}{/if}{#if variant.properties }
+- **Properties**: {variant.properties}
+{/if}{#if variant.strengthRequirement }
+- **Strength**: Requires {variant.strengthRequirement} STR.
+{/if}{#if variant.stealthPenalty }
+- **Stealth**: The wearer has disadvantage on Stealth (DEX) checks.
+{/if}{#if variant.cost }
+- **Cost**: {variant.cost}
+{/if}{#if variant.weight }
+- **Weight**: {variant.weight} lbs.
+{/if}{/for}
 {/if}{#if resource.source }
 
 ## Sources
