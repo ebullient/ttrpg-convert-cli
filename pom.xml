@@ -55,7 +55,7 @@
         <github-slugify.version>3.0.7</github-slugify.version>
         <icu4j.version>77.1</icu4j.version><!-- Optional dependency of Slugify -->
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
-        <hebi-sass.version>1.0.3</hebi-sass.version>
+        <hebi-sass.version>1.0.4</hebi-sass.version>
         <!-- Packaging -->
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <native.executable.name>ttrpg-convert</native.executable.name>
