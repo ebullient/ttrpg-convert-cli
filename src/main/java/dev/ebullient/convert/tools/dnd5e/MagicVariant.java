@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemField;
@@ -147,7 +148,6 @@ public class MagicVariant implements JsonSource {
                 || ItemField.hasFluffImages.booleanOrDefault(genericVariant, false)
                         ? Tools5eIndexType.itemFluff.createKey(genericVariant)
                         : null;
-
         for (JsonNode baseItem : baseItems) {
             if (ItemField.packContents.existsIn(baseItem)
                     || !editionMatch(baseItem, genericVariant)
@@ -183,6 +183,10 @@ public class MagicVariant implements JsonSource {
                 }
             }
         }
+        int numVariants = specificVariantListNode == null
+                ? variants.size()
+                : specificVariantListNode.size();
+        tui().logf(Msg.ITEM, "Found %d specific variants for %s", numVariants, key);
         return variants;
     }
 

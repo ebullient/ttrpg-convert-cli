@@ -12,6 +12,7 @@ public enum Msg {
     FEATURETYPE(Character.toString(0x1F31F)), // 🌟
     FILTER(Character.toString(0x1F50D)), // 🔍
     FOLDER(Character.toString(0x1F4C1)), // 📁
+    ITEM(Character.toString(0x1F9F8)), // 🧸
     MULTIPLE(Character.toString(0x1F4DA)), // 📚
     NOT_SET(Character.toString(0x1FAE5) + " "), // 🫥
     OK(Character.toString(0x2705) + "   OK|"), // ✅
