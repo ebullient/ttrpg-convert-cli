@@ -1271,6 +1271,10 @@
         {
           "match": "\\{@b \\{@feat Elemental Shape\\|PC1} ([^.]+)\\.",
           "replace": "{@b {@feat Elemental Shape|PC1}} $1."
+        },
+        {
+          "match": "\\{@condition charmed\\|PC1}",
+          "replace": "charmed"
         }
       ]
     }
