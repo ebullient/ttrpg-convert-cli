@@ -1,40 +1,125 @@
-# Templates for 5eTools
+# 5eTools Templates for Obsidian
 
-See the [5eTools template reference](../../../docs/templates/dnd5e/README.md) for additional information.
+This guide explains how to use 5eTools data with Obsidian plugins like Fantasy Statblocks and Initiative Tracker.
 
-- [5eTools default templates](#5etools-default-templates)
-- [5eTools templates with images](#5etools-templates-with-images)
-- [5eTools alternate monster templates](#5etools-alternate-monster-templates)
+- [References](#references)
+- [Fantasy Statblocks Integration](#fantasy-statblocks-integration)
+    - [Minimal YAML for Bestiary and Initive Tracker](#minimal-yaml-for-bestiary-and-initive-tracker)
+    - [Full statblock rendering](#full-statblock-rendering)
+- [Template Types](#template-types)
+    - [Default Templates](#default-templates)
+    - [5eTools templates with images](#5etools-templates-with-images)
+- [Display Variations](#display-variations)
+    - [Alternate Ability Score Display](#alternate-ability-score-display)
+    - [2024 Score Display (Table Format)](#2024-score-display-table-format)
+- [Advanced Techniques](#advanced-techniques)
+    - [Splitting Strings in Frontmatter](#splitting-strings-in-frontmatter)
 
-<!-- -->
-See also:
+## References
 
-- [5eTools mixed templates](mixed/README.md)
+- [5eTools template reference](../../../docs/templates/dnd5e/README.md)
+- [Monster template reference](../../../docs/templates/dnd5e/QuteMonster/README.md)
 
-## 5eTools default templates
+## Fantasy Statblocks Integration
 
-[5eTools default templates](../../../src/main/resources/templates/tools5e/)
+Thethe *Fantasy Statblocks* plugin provides a bestiary that can be used with *Initiative Tracker* to create encounters.
 
-Valid template keys for 5etools:
-[`background`](../../../src/main/resources/templates/tools5e/background2md.txt),
-[`class`](../../../src/main/resources/templates/tools5e/class2md.txt),
-[`deck`](../../../src/main/resources/templates/tools5e/deck2md.txt),
-[`deity`](../../../src/main/resources/templates/tools5e/deity2md.txt),
-[`feat`](../../../src/main/resources/templates/tools5e/feat2md.txt),
-[`hazard`](../../../src/main/resources/templates/tools5e/hazard2md.txt),
-[`index.txt`](../../../src/main/resources/templates/tools5e/index.txt),
-[`item`](../../../src/main/resources/templates/tools5e/item2md.txt),
-[`monster`](../../../src/main/resources/templates/tools5e/monster2md.txt),
-[`note`](../../../src/main/resources/templates/tools5e/note2md.txt),
-[`object`](../../../src/main/resources/templates/tools5e/object2md.txt),
-[`psionic`](../../../src/main/resources/templates/tools5e/psionic2md.txt),
-[`race`](../../../src/main/resources/templates/tools5e/race2md.txt),
-[`reward`](../../../src/main/resources/templates/tools5e/reward2md.txt),
-[`spell`](../../../src/main/resources/templates/tools5e/spell2md.txt),
-[`subclass`](../../../src/main/resources/templates/tools5e/subclass2md.txt),
-[`vehicle`](../../../src/main/resources/templates/tools5e/vehicle2md.txt)
+**Monsters**, **Objects**, and **Vehicles** provide attributes that can be used with the *Fantasy Statblocks* bestiary.
 
-## 5eTools templates with images
+- [Minimal YAML for Bestiary and Initive Tracker](#minimal-yaml-for-bestiary-and-initive-tracker)
+- [Full statblock rendering](#full-statblock-rendering)
+
+### Minimal YAML for Bestiary and Initive Tracker
+
+Use this approach to make creatures available to the Initiative Tracker for encounters.
+
+1. Add to your note's frontmatter:
+
+    ```yaml
+    statblock: true
+    statblock-link: "#^statblock"
+    {resource.5eInitiativeYaml}
+    ```
+
+    - `statblock: inline` tells *Fantasy Statblocks* that the note defines a creature.
+    - `statblock-link` specifies content that should be linked to / embeded in the *Initiative Tracker* and *Combatant/Creature* views
+    - `{resource.5eInitiativeYaml}` or `{resource.5eInitiativeYamlNoSource}` will add only the attributes *Initiative Tracker* needs
+
+2. In your note body, create a block reference (`^statblock) after the content you want displayed in the creature view:
+
+    ````md
+    ```ad-statblock
+
+    ...statblock content...
+
+    ```
+    ^statblock
+    ````
+
+Examples:
+
+- [monster2md-yamlStatblock-header.txt](monster2md-yamlStatblock-header.txt)
+- [object2md-yamlStatblock-header.txt](object2md-yamlStatblock-header.txt)
+
+### Full statblock rendering
+
+This approach will use *Fantasy Statblocks* rendering.
+
+1. Add `statblock: inline` to the note's frontmatter to tell *Fantasy Statblocks* that the note defines a creature.
+
+    ```yaml
+    statblock: true
+    ```
+
+2. In your note body, use:
+
+    ````markdown
+    ```statblock
+    {resource.5eStatblockYaml}
+    ```
+
+    Or, to hide the source suffix:
+
+    ````markdown
+    ```statblock
+    {resource.5eStatblockYamlNoSource}
+    ```
+    ````
+
+Examples:
+
+- [monster2md-yamlStatblock-body.txt](monster2md-yamlStatblock-body.txt)
+- [object2md-yamlStatblock-body.txt](object2md-yamlStatblock-body.txt)
+
+> [!TIP]
+> If you're using the *Fantasy Statblocks* plugin to render statblocks
+> and you use the Dice Roller plugin, you'll want to set the following
+> CLI config values:
+>
+> ```json
+> "useDiceRoller" : true,
+> "yamlStatblocks" : true,
+> ```
+
+## Template Types
+
+### Default Templates
+
+Available template types include:
+
+- monster
+- spell
+- item
+- background
+- class
+- object
+- vehicle
+- race
+- and more
+
+Full list: [5eTools default templates](../../../src/main/resources/templates/tools5e/)
+
+### 5eTools templates with images
 
 Some 5eTools data types have fluff images.  These templates include those images in the markdown.
 
@@ -46,93 +131,72 @@ Some 5eTools data types have fluff images.  These templates include those images
 - [images-spell2md.txt](images-spell2md.txt)
 - [images-vehicle2md.txt](images-vehicle2md.txt)
 
-## 5eTools alternate monster templates
+Full list: any template beginning with "images" [5eTools example templates](./)
 
-See the [Monster template reference](../../../docs/templates/dnd5e/QuteMonster/README.md) for additional attributes.
+## Display Variations
 
-- ***Fantasy Statblock* `statblock` in the body**
-    - Monsters, objects, and vehicles that have `statblock: inline` will populate the *Fantasy Statblock* bestiary.
-    - [monster2md-yamlStatblock-body.txt](monster2md-yamlStatblock-body.txt)
-    - [object2md-yamlStatblock-body.txt](object2md-yamlStatblock-body.txt)
+### Alternate Ability Score Display
 
-    The important frontmatter elements of this example:
+````markdown
+```ad-statblock
+...
+- STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
+- DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}`
+- CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}`
+- INT: {resource.scores.int} `dice: 1d20 {resource.scores.intMod}`
+- WIS: {resource.scores.wis} `dice: 1d20 {resource.scores.wisMod}`
+- CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
+...
+```
+^statblock
+````
 
-    ```yaml
-    statblock: inline
-    ```
+Example:
 
-    In the body of the note:
+- [monster2md-scores.txt](monster2md-scores.txt) (similar will work for objects)
 
-    ````markdown
-    ```statblock
-    {resource.5eStatblockYaml}
-    ```
-    ````
+### 2024 Score Display (Table Format)
 
-    Use `{resource.5eStatblockYamlNoSource}` to remove the source qualifier on the monster name.
-    Note that you may have to choose from a list of otherwise identical Goblins (as an example)
-    when creating encounters without the source attribute in the name.
+This pulls things apart a little differently.
 
-    > [!TIP]
-    > If you're using the Fantasy Statblock plugin to render statblocks
-    > and you use the Dice Roller plugin, you'll want to set *two* config values:
-    >
-    > ```json
-    > "useDiceRoller" : true,
-    > "yamlStatblocks" : true,
-    > ```
+- `resource.scores.*Stat` will show the raw score
+- `resource.scores.*Mod` will show the modifier
+- `resource.savesSkills.saveOrDefault.*` will render the saving throw (in bold) or the default modifier
 
-- **Markdown statblock with minimal YAML frontmatter** for use with *Fantasy Statblock* and *Initiative Tracker* plugins
-    - Monsters, objects, and vehicles that have `statblock: true` will populate the *Fantasy Statblock* bestiary.
-    - *Initiative Tracker* only needs a few elements from the statblock for encounter building. `{resource.5eInitiativeYaml}` will emit only those elements.
-    - The `statblock-link` is used by *Initiative Tracker* to embed the markdown statblock in the creature view.
-    - [monster2md-yamlStatblock-header.txt](monster2md-yamlStatblock-header.txt)
-    - [object2md-yamlStatblock-header.txt](object2md-yamlStatblock-header.txt)
+```md
+|   | STAT  |  MOD | SAVE |
+|:--|:-:|:----:|:----:|
+|Str| {resource.scores.strStat} | {resource.scores.strMod} | {resource.savesSkills.saveOrDefault.strength} |
+|Dex| {resource.scores.dexStat} | {resource.scores.dexMod} | {resource.savesSkills.saveOrDefault.dexterity} |
+|Con| {resource.scores.conStat} | {resource.scores.conMod} | {resource.savesSkills.saveOrDefault.constitution} |
+|Int| {resource.scores.intStat} | {resource.scores.intMod} | {resource.savesSkills.saveOrDefault.intelligence} |
+|Wis| {resource.scores.wisStat} | {resource.scores.wisMod} | {resource.savesSkills.saveOrDefault.wisdom} |
+|Cha| {resource.scores.chaStat} | {resource.scores.chaMod} | {resource.savesSkills.saveOrDefault.charisma} |
+```
 
-    The important frontmatter elements of this example:
+Raw types are [here](../../../docs/templates/dnd5e/QuteMonster/SavesAndSkills.md)
 
-    ```yaml
-    statblock: true
-    statblock-link: "#^statblock"
-    {resource.5eInitiativeYaml}
-    ```
+## Advanced Techniques
 
-    In the body of the note:
+### Splitting Strings in Frontmatter
 
-    ````markdown
-    ```ad-statblock
-    ...statblock content...
-    ```
-    ^statblock
-    ````
+```md
+{#if resource.conditionImmune}
+conditionImmunities:
+{#for condition in resource.conditionImmune.split(", ?")}
+- "{condition}"
+{/for}
+{/if}
+```
 
-    Use `{resource.5eInitiativeYamlNoSource}` to remove the source qualifier on the monster name.
-    Note that you may have to choose from a list of otherwise identical Goblins (as an example)
-    when creating encounters without the source attribute in the name.
+### Display as JSON
 
-- **Markdown statblock, alternate score display** - [monster2md-scores.txt](monster2md-scores.txt) (similar will work for objects)
+To help debug what attributes are available, you can have it rendered as a JSON string.
 
-    ````markdown
-    ```ad-statblock
-    ...
-    - STR: {resource.scores.str} `dice: 1d20 {resource.scores.strMod}`
-    - DEX: {resource.scores.dex} `dice: 1d20 {resource.scores.dexMod}`
-    - CON: {resource.scores.con} `dice: 1d20 {resource.scores.conMod}`
-    - INT: {resource.scores.int} `dice: 1d20 {resource.scores.intMod}`
-    - WIS: {resource.scores.wis} `dice: 1d20 {resource.scores.wisMod}`
-    - CHA: {resource.scores.cha} `dice: 1d20 {resource.scores.chaMod}`
-    ...
-    ```
-    ^statblock
-    ````
+Two examples:
 
-- **Split stings in frontmatter** - [monster2md-scores.txt](monster2md-scores.txt) (similar will work for objects)
+```md
+{resource.conditionImmune.jsonString}
 
-    ```yaml
-    {#if resource.conditionImmune}
-    conditionImmunities:
-    {#for condition in resource.conditionImmune.split(", ?")}
-    - "{condition}"
-    {/for}
-    {/if}
-    ```
+{resource.savesSkills.jsonString}
+```
