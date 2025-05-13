@@ -20,7 +20,7 @@ This application uses the [Qute Templating Engine](https://quarkus.io/guides/qut
 }
 ```
 
-The flag used to specify a template corresponds to the type of template being used. You can find the list of valid template keys in the [source code](../../src/main/resources/convertData.json) (look for `templateKeys`).
+The flag used to specify a template corresponds to the type of template being used.
 
 - Valid template keys for 5etools: `background`, `class`, `deck`, `deity`, `feat`, `hazard`, `index.txt`, `item`, `monster`, `note`, `object`, `psionic`, `race`, `reward`, `spell`, `subclass`, `vehicle`.
 - Valid template keys for Pf2eTools: `ability`, `action`, `affliction`, `archetype`, `background`, `book`, `deity`, `feat`, `hazard`, `inline-ability`, `inline-affliction`, `inline-attack`, `item`, `note`, `ritual`, `spell`, `trait`.
