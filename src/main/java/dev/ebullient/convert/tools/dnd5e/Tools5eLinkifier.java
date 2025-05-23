@@ -379,14 +379,15 @@ public class Tools5eLinkifier {
 
     public String getSubclassResource(String subclass, String parentClass, String classSource, String subclassSource) {
         String parentFile = Tui.slugify(parentClass);
-        // FIXME: check updated default source
-        if ("xphb".equalsIgnoreCase(classSource)) {
+        String defaultSource = Tools5eIndexType.classtype.defaultOutputSource();
+        if (!classSource.equalsIgnoreCase(defaultSource) &&
+                (classSource.equalsIgnoreCase("phb") || classSource.equalsIgnoreCase("xphb"))) {
             // For the most part, all subclasses are derived from the basic classes.
             // There wasn't really a need to include the class source in the file name.
             // However, the XPHB has created duplicates of all of the base classes.
-            // So if the parent class is from the XPHB, we need to include that in the file
-            // name.
-            parentFile += "-xphb";
+            // So if the parent class is not from the default source, we need to include
+            // its source in the file name if it's from the PHB or XPHB.
+            parentFile += "-" + classSource;
         }
         return fixFileName(
                 parentFile + "-" + Tui.slugify(subclass),
