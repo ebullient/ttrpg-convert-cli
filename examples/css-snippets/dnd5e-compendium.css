@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-compendium.scss */
 body {
   --admonition-charm: 211,141,159;
   --admonition-charm-text: var(--admonition-charm);
@@ -719,7 +720,6 @@ body {
   display: none;
 }
 
-/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-compendium.scss */
 .creature-view-container.workspace-leaf-content {
   background-color: var(--background-primary-alt);
 }

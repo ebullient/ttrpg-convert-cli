@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-only-admonitions.scss */
 body {
   --admonition-charm: 211,141,159;
   --admonition-charm-text: var(--admonition-charm);
@@ -224,5 +225,3 @@ body {
 .json5e-vehicle .callout[data-callout=gallery] .callout-title {
   display: none;
 }
-
-/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-only-admonitions.scss */

@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
 @import "https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap";
 @font-face {
@@ -66,6 +67,7 @@ body {
   --pf2e-green-link: rgb(19, 138, 6);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 /*! General Settings for #Action & [hrefs]s */
 a.internal-link[href$="#Actions"][title="Single Action"] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2128 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1022 512L510 0 263 247l265 265-265 265 247 247 512-512zM185 329L2 512l183 183 183-183-183-183z'/%3E%3C/svg%3E%0A");
@@ -331,6 +333,7 @@ li a.internal-link[href$="#Actions"][title="Duration or Frequency"] {
   color: transparent;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 a.internal-link[title="Common Rarity Trait"] {
   background: rgb(232, 232, 232);
   border-color: rgb(232, 232, 232);
@@ -500,6 +503,7 @@ li a.internal-link[title*="Action & Ability Trait"], li a.internal-link[title*="
   margin-bottom: 0.75rem;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 :is(.pf2e) .markdown-embed {
   border: none;
   border-radius: 0;
@@ -545,6 +549,7 @@ li a.internal-link[title*="Action & Ability Trait"], li a.internal-link[title*="
   font-size: 0;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 :is(.pf2e) a.internal-link {
   text-decoration: none;
   color: var(--pf2e-blue-link);
@@ -579,6 +584,7 @@ li a.internal-link[title*="Action & Ability Trait"], li a.internal-link[title*="
   text-decoration: underline;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 [class^=Pathfinder-], [class*=" Pathfinder-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: "Pathfinder", serif !important;
@@ -628,6 +634,7 @@ li a.internal-link[title*="Action & Ability Trait"], li a.internal-link[title*="
   border: 0.0625rem solid var(--scrollbar-thumb-bg);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 sub {
   font-size: 75%;
   line-height: 0;
@@ -646,6 +653,7 @@ sup {
   top: -0.5em;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 :is(.pf2e) .markdown-rendered table {
   border: 0.1875rem solid var(--pf2e-red-headers);
 }
@@ -680,6 +688,12 @@ sup {
   border-right: 0.0625rem solid rgb(234, 229, 213);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-beige] {
   --callout-border-opacity: 0.3;
   --callout-color: #f0e9d6;
@@ -5556,6 +5570,8 @@ sup {
   color: rgba(232, 232, 232, 0.3);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-beige] .callout-title .callout-title-inner {
   margin-left: 0.25rem;
   padding-bottom: 0.25rem;
@@ -5570,7 +5586,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .callout[data-callout=pf2-beige] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .callout[data-callout=pf2-beige] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -5582,7 +5598,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .callout[data-callout=pf2-beige] .callout-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .callout[data-callout=pf2-beige] .callout-content em {
   color: rgb(51, 51, 51);
@@ -5609,7 +5625,7 @@ sup {
   color: rgb(51, 66, 82);
 }
 .callout[data-callout=pf2-beige] .callout-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout[data-callout=pf2-beige] .callout-content ol > li::marker,
 .callout[data-callout=pf2-beige] .callout-content ul > li::marker {
@@ -5620,6 +5636,7 @@ sup {
   padding-left: 0.25rem;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-brown] .callout-title .callout-title-inner {
   font-family: "Helvetica Neue", Helvetica, Arial, "Pathfinder", sans-serif;
   margin-left: 0.25rem;
@@ -5635,7 +5652,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .callout[data-callout=pf2-brown] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .callout[data-callout=pf2-brown] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -5647,7 +5664,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .callout[data-callout=pf2-brown] .callout-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .callout[data-callout=pf2-brown] .callout-content em {
   color: rgb(51, 51, 51);
@@ -5674,13 +5691,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .callout[data-callout=pf2-brown] .callout-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout[data-callout=pf2-brown] .callout-content ol > li::marker,
 .callout[data-callout=pf2-brown] .callout-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout.callout[data-callout=pf2-example] .callout-content a.internal-link {
   color: rgb(102, 51, 51);
 }
@@ -5691,7 +5709,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .callout.callout[data-callout=pf2-example] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .callout.callout[data-callout=pf2-example] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -5703,7 +5721,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .callout.callout[data-callout=pf2-example] .callout-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .callout.callout[data-callout=pf2-example] .callout-content em {
   color: rgb(51, 51, 51);
@@ -5730,13 +5748,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .callout.callout[data-callout=pf2-example] .callout-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout.callout[data-callout=pf2-example] .callout-content ol > li::marker,
 .callout.callout[data-callout=pf2-example] .callout-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-inset] .callout-title .callout-title-inner {
   display: none;
 }
@@ -5744,6 +5763,7 @@ sup {
   font-weight: 700;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-key-box] {
   color: rgb(232, 232, 232);
   clear: left;
@@ -5757,13 +5777,13 @@ sup {
   color: rgb(255, 219, 88);
 }
 .callout[data-callout=pf2-key-box] .callout-content a.internal-link:hover {
-  color: #f1bd00;
+  color: rgb(241, 189.0479041916, 0);
 }
 .callout[data-callout=pf2-key-box] .callout-content a.internal-link.is-unresolved {
-  color: #b3d13c;
+  color: rgb(179.25, 208.5, 59.5);
 }
 .callout[data-callout=pf2-key-box] .callout-content a.internal-link.is-unresolved:hover {
-  color: #728720;
+  color: rgb(114.0392561983, 134.1033057851, 31.8966942149);
 }
 .callout[data-callout=pf2-key-box] .callout-content a.external-link {
   color: rgb(var(--callout-color));
@@ -5785,7 +5805,7 @@ sup {
   color: rgb(255, 143, 143);
 }
 .callout[data-callout=pf2-key-box] .callout-content strong em {
-  color: #cdae61;
+  color: rgb(204.5, 174, 96.5);
 }
 .callout[data-callout=pf2-key-box] .callout-content ol > li::marker,
 .callout[data-callout=pf2-key-box] .callout-content ul > li::marker {
@@ -5797,6 +5817,7 @@ sup {
   padding: 0.5em;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-note] {
   clear: both;
   font-style: italic;
@@ -5823,7 +5844,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .callout[data-callout=pf2-note] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .callout[data-callout=pf2-note] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -5835,7 +5856,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .callout[data-callout=pf2-note] .callout-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .callout[data-callout=pf2-note] .callout-content em {
   color: rgb(51, 51, 51);
@@ -5862,13 +5883,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .callout[data-callout=pf2-note] .callout-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout[data-callout=pf2-note] .callout-content ol > li::marker,
 .callout[data-callout=pf2-note] .callout-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-red] {
   color: rgb(232, 232, 232);
 }
@@ -5885,13 +5907,13 @@ sup {
   color: rgb(255, 219, 88);
 }
 .callout[data-callout=pf2-red] .callout-content a.internal-link:hover {
-  color: #f1bd00;
+  color: rgb(241, 189.0479041916, 0);
 }
 .callout[data-callout=pf2-red] .callout-content a.internal-link.is-unresolved {
-  color: #b3d13c;
+  color: rgb(179.25, 208.5, 59.5);
 }
 .callout[data-callout=pf2-red] .callout-content a.internal-link.is-unresolved:hover {
-  color: #728720;
+  color: rgb(114.0392561983, 134.1033057851, 31.8966942149);
 }
 .callout[data-callout=pf2-red] .callout-content a.external-link {
   color: rgb(var(--callout-color));
@@ -5913,7 +5935,7 @@ sup {
   color: rgb(255, 143, 143);
 }
 .callout[data-callout=pf2-red] .callout-content strong em {
-  color: #cdae61;
+  color: rgb(204.5, 174, 96.5);
 }
 .callout[data-callout=pf2-red] .callout-content ol > li::marker,
 .callout[data-callout=pf2-red] .callout-content ul > li::marker {
@@ -5928,6 +5950,7 @@ sup {
   color: rgb(232, 232, 232);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-sidebar] {
   color: rgb(128, 0, 0);
   clear: right;
@@ -5947,7 +5970,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .callout[data-callout=pf2-sidebar] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .callout[data-callout=pf2-sidebar] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -5959,7 +5982,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .callout[data-callout=pf2-sidebar] .callout-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .callout[data-callout=pf2-sidebar] .callout-content em {
   color: rgb(51, 51, 51);
@@ -5986,24 +6009,25 @@ sup {
   color: rgb(51, 66, 82);
 }
 .callout[data-callout=pf2-sidebar] .callout-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout[data-callout=pf2-sidebar] .callout-content ol > li::marker,
 .callout[data-callout=pf2-sidebar] .callout-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=pf2-tip] {
   color: rgb(36, 36, 36);
 }
 .callout[data-callout=pf2-tip] em {
-  color: #e1daba;
+  color: rgb(224.5, 218, 186);
 }
 .callout[data-callout=pf2-tip] strong {
-  color: #8e959d;
+  color: rgb(141.5, 149, 157);
 }
 .callout[data-callout=pf2-tip] strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout[data-callout=pf2-tip] .callout-title {
   background-color: rgb(6, 20, 53);
@@ -6026,13 +6050,13 @@ sup {
   color: rgb(0, 73, 97);
 }
 .callout[data-callout=pf2-tip] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .callout[data-callout=pf2-tip] .callout-content a.external-link {
   color: rgb(107, 0, 153);
 }
 .callout[data-callout=pf2-tip] .callout-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .callout[data-callout=pf2-tip] .callout-content em {
   color: rgb(51, 51, 51);
@@ -6059,7 +6083,7 @@ sup {
   color: rgb(51, 66, 82);
 }
 .callout[data-callout=pf2-tip] .callout-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout[data-callout=pf2-tip] .callout-content ol > li::marker,
 .callout[data-callout=pf2-tip] .callout-content ul > li::marker {
@@ -6069,6 +6093,7 @@ sup {
   text-align: justify;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .callout[data-callout=success-degree] {
   --callout-icon: lucide-scale;
 }
@@ -6094,7 +6119,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .callout[data-callout=success-degree] .callout-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .callout[data-callout=success-degree] .callout-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6106,7 +6131,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .callout[data-callout=success-degree] .callout-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .callout[data-callout=success-degree] .callout-content em {
   color: rgb(51, 51, 51);
@@ -6133,7 +6158,7 @@ sup {
   color: rgb(51, 66, 82);
 }
 .callout[data-callout=success-degree] .callout-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .callout[data-callout=success-degree] .callout-content ol > li::marker,
 .callout[data-callout=success-degree] .callout-content ul > li::marker {
@@ -6143,6 +6168,7 @@ sup {
   font-weight: 800;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition.admonition[data-callout=pf2-note] {
   --callout-icon: '<svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1024"><path fill="currentColor" d="M854.173 764.089H712.398l-1.355-2.419c.501-86.681 34.198-175.368 98.214-245.312 47.831-52.261 83.95-121.041 102.458-189.368l-82.338-49.795 76.414-13.791-86.599-51.529 104.084-17.674c-10.445-78.138-57.588-136.002-154.489-136.002-94.565 18.374-363.959 23.983-503.322 5.922-17.664-5.751-35.459-9.136-52.817-9.731-.129-.035-.267-.068-.394-.102l.219.097c-45.31-1.502-87.613 16.03-116.708 60.236-40.414 61.408 2.616 166.812 97.48 166.812 5.359 0 10.253-.289 14.727-.832v.733h118.467c-17.921 72.21-62.36 152.533-113.828 233.474a564.359 564.359 0 0 0-12.575 20.767l69.657 71.359-112.351 18.818c-65.349 171.651-54.745 363.552 96.403 363.552v-.002l15.634.11v.234h171.175v-.311h451.103c135.99.002 154.656-225.247-37.485-225.247zM452.277 872.408c-.003-.935-.03-1.888-.055-2.836.025.95.052 1.903.055 2.836zm-4.386-35.788c.027.119.047.232.074.351-.027-.117-.047-.231-.074-.347-5.374-23.696-20.779-43.454-40.897-56.175h.007c20.114 12.721 35.516 32.477 40.89 56.171zm4.214 29.647zm-.459-6.386zm-.765-6.682c-.125-.924-.242-1.844-.384-2.781.144.937.261 1.858.384 2.781zm-1.113-7.143c-.144-.814-.269-1.615-.426-2.437.157.822.282 1.624.426 2.437zM236.579 269.87c28.031-23.871-1.146-80.303-34.722-127.243h115.747c19.346 37.343 21.335 80.462 11.471 127.243h-92.496zm89.202 522.253c51.786-17.213 110.468 15.682 122.11 67.013 1.991 8.782 3.269 17.061 3.911 24.882.075-.817.112-1.662.17-2.491-1.291 18.519-6.792 33.936-15.602 46.701h-1.034a76.702 76.702 0 0 1-3.062 4.103l1.614-.707c-14.802 19.359-37.539 32.29-64.57 40.636h-28.104l1.368-.6c-29.614-.008-63.612-2.798-63.612-2.798 43.925-.703 62.862-19.294 70.065-40.598-31.298 11.376-64.654-9.072-75.146-39.264-14.161-40.748 12.502-83.784 51.893-96.877zm126.458 83.452c-.018.919-.027 1.846-.065 2.75.038-.905.045-1.831.065-2.75zm-18.22 55.872z"></path></svg>';
 }
@@ -6159,7 +6185,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition.admonition[data-callout=pf2-note] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition.admonition[data-callout=pf2-note] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6171,7 +6197,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition.admonition[data-callout=pf2-note] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition.admonition[data-callout=pf2-note] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6198,7 +6224,7 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition.admonition[data-callout=pf2-note] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition.admonition[data-callout=pf2-note] .admonition-content ol > li::marker,
 .admonition.admonition[data-callout=pf2-note] .admonition-content ul > li::marker {
@@ -6208,6 +6234,7 @@ sup {
   text-align: left;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=embed-ability] {
   --callout-icon: '<svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1024"><path fill="currentColor" d="M908.682 797.44c139.17-191.525 122.422-461.107-50.286-633.818-176.21-176.21-453.266-190.09-645.372-41.652-27.817-32.566-54.723-65.058-78.801-95.832L30.954 129.413c30.778 23.828 63.451 50.248 96.266 77.522-151.767 192.241-138.96 471.937 38.483 649.38 172.129 172.129 440.475 189.331 631.878 51.674l40.78 40.778 154.422 38.458-43.596-149.283-40.504-40.502zM660.181 548.939L426.963 315.724l87.314-87.321-63.667-63.672c180.697-9.014 330.398 207.332 209.571 384.207zM446.375 164.971L342.652 268.702a11470.78 11470.78 0 0 1-39.017-43.372c46.748-38.523 95.723-57.103 142.74-60.359zm-212.31 133.097a6682.191 6682.191 0 0 1 42.134 37.09L168.442 442.922l65.666 65.67 82.032-82.037L794.61 905.02C412.147 1162.465-75.257 688.289 234.064 298.069z"></path></svg>';
 }
@@ -6221,7 +6248,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=embed-ability] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=embed-ability] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6233,7 +6260,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=embed-ability] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=embed-ability] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6260,13 +6287,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=embed-ability] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=embed-ability] .admonition-content ol > li::marker,
 .admonition[data-callout=embed-ability] .admonition-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=embed-action] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="campground" class="svg-inline--fa fa-campground fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M624 448h-24.68L359.54 117.75l53.41-73.55c5.19-7.15 3.61-17.16-3.54-22.35l-25.9-18.79c-7.15-5.19-17.15-3.61-22.35 3.55L320 63.3 278.83 6.6c-5.19-7.15-15.2-8.74-22.35-3.55l-25.88 18.8c-7.15 5.19-8.74 15.2-3.54 22.35l53.41 73.55L40.68 448H16c-8.84 0-16 7.16-16 16v32c0 8.84 7.16 16 16 16h608c8.84 0 16-7.16 16-16v-32c0-8.84-7.16-16-16-16zM320 288l116.36 160H203.64L320 288z"></path></svg>';
 }
@@ -6280,7 +6308,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=embed-action] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=embed-action] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6292,7 +6320,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=embed-action] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=embed-action] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6319,13 +6347,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=embed-action] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=embed-action] .admonition-content ol > li::marker,
 .admonition[data-callout=embed-action] .admonition-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=embed-avatar] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="church" class="svg-inline--fa fa-church fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M464.46 246.68L352 179.2V128h48c8.84 0 16-7.16 16-16V80c0-8.84-7.16-16-16-16h-48V16c0-8.84-7.16-16-16-16h-32c-8.84 0-16 7.16-16 16v48h-48c-8.84 0-16 7.16-16 16v32c0 8.84 7.16 16 16 16h48v51.2l-112.46 67.48A31.997 31.997 0 0 0 160 274.12V512h96v-96c0-35.35 28.65-64 64-64s64 28.65 64 64v96h96V274.12c0-11.24-5.9-21.66-15.54-27.44zM0 395.96V496c0 8.84 7.16 16 16 16h112V320L19.39 366.54A32.024 32.024 0 0 0 0 395.96zm620.61-29.42L512 320v192h112c8.84 0 16-7.16 16-16V395.96c0-12.8-7.63-24.37-19.39-29.42z"></path></svg>';
 }
@@ -6333,7 +6362,7 @@ sup {
   color: rgb(100, 2, 59);
 }
 .admonition[data-callout=embed-avatar] a.internal-link:hover {
-  color: #32011e;
+  color: rgb(50, 1, 29.5);
 }
 .admonition[data-callout=embed-avatar] a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6346,13 +6375,13 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=embed-avatar] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=embed-avatar] .admonition-content a.external-link {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=embed-avatar] .admonition-content a.external-link:hover {
-  color: #240033;
+  color: rgb(35.6666666667, 0, 51);
 }
 .admonition[data-callout=embed-avatar] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6379,13 +6408,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=embed-avatar] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=embed-avatar] .admonition-content ol > li::marker,
 .admonition[data-callout=embed-avatar] .admonition-content ul > li::marker {
   color: rgb(19, 138, 6);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=embed-disease] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="head-side-virus" class="svg-inline--fa fa-head-side-virus fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M272,240a16,16,0,1,0,16,16A16,16,0,0,0,272,240Zm-64-64a16,16,0,1,0,16,16A16,16,0,0,0,208,176Zm301.2,99c-20.93-47.12-48.43-151.73-73.07-186.75A207.9,207.9,0,0,0,266.09,0H192C86,0,0,86,0,192A191.23,191.23,0,0,0,64,334.81V512H320V448h64a64,64,0,0,0,64-64V320H480A32,32,0,0,0,509.2,275ZM368,240H355.88c-28.51,0-42.79,34.47-22.63,54.63l8.58,8.57a16,16,0,1,1-22.63,22.63l-8.57-8.58C290.47,297.09,256,311.37,256,339.88V352a16,16,0,0,1-32,0V339.88c0-28.51-34.47-42.79-54.63-22.63l-8.57,8.58a16,16,0,0,1-22.63-22.63l8.58-8.57c20.16-20.16,5.88-54.63-22.63-54.63H112a16,16,0,0,1,0-32h12.12c28.51,0,42.79-34.47,22.63-54.63l-8.58-8.57a16,16,0,0,1,22.63-22.63l8.57,8.58c20.16,20.16,54.63,5.88,54.63-22.63V96a16,16,0,0,1,32,0v12.12c0,28.51,34.47,42.79,54.63,22.63l8.57-8.58a16,16,0,0,1,22.63,22.63l-8.58,8.57C313.09,173.53,327.37,208,355.88,208H368a16,16,0,0,1,0,32Z"></path></svg>';
   color: rgb(232, 232, 232);
@@ -6395,13 +6425,13 @@ sup {
   color: rgb(255, 219, 88);
 }
 .admonition[data-callout=embed-disease] .admonition-content a.internal-link:hover {
-  color: #f1bd00;
+  color: rgb(241, 189.0479041916, 0);
 }
 .admonition[data-callout=embed-disease] .admonition-content a.internal-link.is-unresolved {
-  color: #b3d13c;
+  color: rgb(179.25, 208.5, 59.5);
 }
 .admonition[data-callout=embed-disease] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #728720;
+  color: rgb(114.0392561983, 134.1033057851, 31.8966942149);
 }
 .admonition[data-callout=embed-disease] .admonition-content a.external-link {
   color: rgb(var(--callout-color));
@@ -6423,7 +6453,7 @@ sup {
   color: rgb(255, 143, 143);
 }
 .admonition[data-callout=embed-disease] .admonition-content strong em {
-  color: #cdae61;
+  color: rgb(204.5, 174, 96.5);
 }
 .admonition[data-callout=embed-disease] .admonition-content ol > li::marker,
 .admonition[data-callout=embed-disease] .admonition-content ul > li::marker {
@@ -6435,6 +6465,7 @@ sup {
   padding: 0.5em;
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=embed-feat] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="award" class="svg-inline--fa fa-award fa-w-12" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M97.12 362.63c-8.69-8.69-4.16-6.24-25.12-11.85-9.51-2.55-17.87-7.45-25.43-13.32L1.2 448.7c-4.39 10.77 3.81 22.47 15.43 22.03l52.69-2.01L105.56 507c8 8.44 22.04 5.81 26.43-4.96l52.05-127.62c-10.84 6.04-22.87 9.58-35.31 9.58-19.5 0-37.82-7.59-51.61-21.37zM382.8 448.7l-45.37-111.24c-7.56 5.88-15.92 10.77-25.43 13.32-21.07 5.64-16.45 3.18-25.12 11.85-13.79 13.78-32.12 21.37-51.62 21.37-12.44 0-24.47-3.55-35.31-9.58L252 502.04c4.39 10.77 18.44 13.4 26.43 4.96l36.25-38.28 52.69 2.01c11.62.44 19.82-11.27 15.43-22.03zM263 340c15.28-15.55 17.03-14.21 38.79-20.14 13.89-3.79 24.75-14.84 28.47-28.98 7.48-28.4 5.54-24.97 25.95-45.75 10.17-10.35 14.14-25.44 10.42-39.58-7.47-28.38-7.48-24.42 0-52.83 3.72-14.14-.25-29.23-10.42-39.58-20.41-20.78-18.47-17.36-25.95-45.75-3.72-14.14-14.58-25.19-28.47-28.98-27.88-7.61-24.52-5.62-44.95-26.41-10.17-10.35-25-14.4-38.89-10.61-27.87 7.6-23.98 7.61-51.9 0-13.89-3.79-28.72.25-38.89 10.61-20.41 20.78-17.05 18.8-44.94 26.41-13.89 3.79-24.75 14.84-28.47 28.98-7.47 28.39-5.54 24.97-25.95 45.75-10.17 10.35-14.15 25.44-10.42 39.58 7.47 28.36 7.48 24.4 0 52.82-3.72 14.14.25 29.23 10.42 39.59 20.41 20.78 18.47 17.35 25.95 45.75 3.72 14.14 14.58 25.19 28.47 28.98C104.6 325.96 106.27 325 121 340c13.23 13.47 33.84 15.88 49.74 5.82a39.676 39.676 0 0 1 42.53 0c15.89 10.06 36.5 7.65 49.73-5.82zM97.66 175.96c0-53.03 42.24-96.02 94.34-96.02s94.34 42.99 94.34 96.02-42.24 96.02-94.34 96.02-94.34-42.99-94.34-96.02z"></path></svg>';
 }
@@ -6448,7 +6479,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=embed-feat] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=embed-feat] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6460,7 +6491,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=embed-feat] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=embed-feat] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6487,13 +6518,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=embed-feat] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=embed-feat] .admonition-content ol > li::marker,
 .admonition[data-callout=embed-feat] .admonition-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=embed-item] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="coins" class="svg-inline--fa fa-coins fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M0 405.3V448c0 35.3 86 64 192 64s192-28.7 192-64v-42.7C342.7 434.4 267.2 448 192 448S41.3 434.4 0 405.3zM320 128c106 0 192-28.7 192-64S426 0 320 0 128 28.7 128 64s86 64 192 64zM0 300.4V352c0 35.3 86 64 192 64s192-28.7 192-64v-51.6c-41.3 34-116.9 51.6-192 51.6S41.3 334.4 0 300.4zm416 11c57.3-11.1 96-31.7 96-55.4v-42.7c-23.2 16.4-57.3 27.6-96 34.5v63.6zM192 160C86 160 0 195.8 0 240s86 80 192 80 192-35.8 192-80-86-80-192-80zm219.3 56.3c60-10.8 100.7-32 100.7-56.3v-42.7c-35.5 25.1-96.5 38.6-160.7 41.8 29.5 14.3 51.2 33.5 60 57.2z"></path></svg>';
 }
@@ -6507,7 +6539,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=embed-item] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=embed-item] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6519,7 +6551,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=embed-item] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=embed-item] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6546,13 +6578,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=embed-item] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=embed-item] .admonition-content ol > li::marker,
 .admonition[data-callout=embed-item] .admonition-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=embed-ritual] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="pray" class="svg-inline--fa fa-pray fa-w-12" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M256 128c35.35 0 64-28.65 64-64S291.35 0 256 0s-64 28.65-64 64 28.65 64 64 64zm-30.63 169.75c14.06 16.72 39 19.09 55.97 5.22l88-72.02c17.09-13.98 19.59-39.19 5.62-56.28-13.97-17.11-39.19-19.59-56.31-5.62l-57.44 47-38.91-46.31c-15.44-18.39-39.22-27.92-64-25.33-24.19 2.48-45.25 16.27-56.37 36.92l-49.37 92.03c-23.4 43.64-8.69 96.37 34.19 123.75L131.56 432H40c-22.09 0-40 17.91-40 40s17.91 40 40 40h208c34.08 0 53.77-42.79 28.28-68.28L166.42 333.86l34.8-64.87 24.15 28.76z"></path></svg>';
 }
@@ -6566,7 +6599,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=embed-ritual] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=embed-ritual] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6578,7 +6611,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=embed-ritual] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=embed-ritual] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6605,13 +6638,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=embed-ritual] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=embed-ritual] .admonition-content ol > li::marker,
 .admonition[data-callout=embed-ritual] .admonition-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=inline-affliction] {
   --callout-icon: '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="virus-slash" class="svg-inline--fa fa-virus-slash fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M114,227.6H92.4C76.7,227.6,64,240.3,64,256s12.7,28.4,28.4,28.4H114c50.7,0,76.1,61.3,40.2,97.1L139,396.8 c-11.5,10.7-12.2,28.7-1.6,40.2s28.7,12.2,40.2,1.6c0.5-0.5,1.1-1,1.6-1.6l15.2-15.2c35.8-35.8,97.1-10.5,97.1,40.2v21.5 c0,15.7,12.8,28.4,28.5,28.4c15.7,0,28.4-12.7,28.4-28.4V462c0-26.6,17-45.9,38.2-53.4l-244.5-189 C133.7,224.7,123.9,227.5,114,227.6z M617,505.8l19.6-25.3c5.4-7,4.2-17-2.8-22.5L470.6,332c4.2-25.4,24.9-47.5,55.4-47.5h21.5 c15.7,0,28.4-12.7,28.4-28.4s-12.7-28.4-28.4-28.4H526c-50.7,0-76.1-61.3-40.2-97.1l15.2-15.3c10.7-11.5,10-29.5-1.6-40.2 c-10.9-10.1-27.7-10.1-38.6,0l-15.2,15.2c-35.8,35.8-97.1,10.5-97.1-40.2V28.5C348.4,12.7,335.7,0,320,0 c-15.7,0-28.4,12.7-28.4,28.4V50c0,50.7-61.3,76.1-97.1,40.2L179.2,75c-11.1-11.1-29.4-10.6-40.5,0.5L45.5,3.4 c-7-5.4-17-4.2-22.5,2.8L3.4,31.5c-5.4,7-4.2,17,2.8,22.5l588.4,454.7C601.5,514.1,611.6,512.8,617,505.8z M335.4,227.5l-62.9-48.6 c4.9-1.8,10.2-2.8,15.4-2.9c26.5,0,48,21.5,48,48C336,225.2,335.5,226.3,335.4,227.5z"></path></svg>';
 }
@@ -6628,7 +6662,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=inline-affliction] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=inline-affliction] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6640,7 +6674,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=inline-affliction] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=inline-affliction] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6667,13 +6701,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=inline-affliction] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=inline-affliction] .admonition-content ol > li::marker,
 .admonition[data-callout=inline-affliction] .admonition-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=inline-attack] {
   --callout-icon: '<svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1024"><path fill="currentColor" d="M746.013 346.338c46.494-110.134 130.621 19.244 105.629 112.518-19.444 72.579-84.175 117.611-176.313 58.351l.002-.003c-211.764-136.2-156.573-202.882-263.845-314.147 36.755 155.341-72.25 56.868-170.627-68.533 28.348-16.96 60.092-28.884 94.211-34.921l220.269 148.443 41.1-86.039a516.489 516.489 0 0 1 17.294 11.65C733.437 257.936 719.977 58.832 756.047 17.728l-735.76-1.517 3.623 719.657c78.285 54.695 209.606-14.959 156.548-102.913a642.424 642.424 0 0 1-10.895-18.781l60.214-35.715-123.371-219.527c2.806-33.01 10.277-63.857 21.748-91.975 143.591 147.62 367.783 380.048 166.483 334.739 61.101 57.174 274.614 99.542 298.674 195.863 19.974 79.966-50.973 143.517-111.372 143.517-81.1 0-165.35-64.925-89.556-140.074-48.131 8.002-71.065 41.941-72.331 80.371s19.341 81.427 58.557 107.924h605.069V339.45c-14.114-118.729-241.943-168.205-237.665 6.887zM20.288 16.21v-.005z"></path></svg>';
 }
@@ -6687,7 +6722,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=inline-attack] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=inline-attack] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6699,7 +6734,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=inline-attack] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=inline-attack] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6726,13 +6761,14 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=inline-attack] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=inline-attack] .admonition-content ol > li::marker,
 .admonition[data-callout=inline-attack] .admonition-content ul > li::marker {
   color: rgb(204, 72, 0);
 }
 
+/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
 .admonition[data-callout=pf2-summary] {
   --callout-icon: '<svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 1024 1024"><path fill="currentColor" d="M854.173 764.089H712.398l-1.355-2.419c.501-86.681 34.198-175.368 98.214-245.312 47.831-52.261 83.95-121.041 102.458-189.368l-82.338-49.795 76.414-13.791-86.599-51.529 104.084-17.674c-10.445-78.138-57.588-136.002-154.489-136.002-94.565 18.374-363.959 23.983-503.322 5.922-17.664-5.751-35.459-9.136-52.817-9.731-.129-.035-.267-.068-.394-.102l.219.097c-45.31-1.502-87.613 16.03-116.708 60.236-40.414 61.408 2.616 166.812 97.48 166.812 5.359 0 10.253-.289 14.727-.832v.733h118.467c-17.921 72.21-62.36 152.533-113.828 233.474a564.359 564.359 0 0 0-12.575 20.767l69.657 71.359-112.351 18.818c-65.349 171.651-54.745 363.552 96.403 363.552v-.002l15.634.11v.234h171.175v-.311h451.103c135.99.002 154.656-225.247-37.485-225.247zM452.277 872.408c-.003-.935-.03-1.888-.055-2.836.025.95.052 1.903.055 2.836zm-4.386-35.788c.027.119.047.232.074.351-.027-.117-.047-.231-.074-.347-5.374-23.696-20.779-43.454-40.897-56.175h.007c20.114 12.721 35.516 32.477 40.89 56.171zm4.214 29.647zm-.459-6.386zm-.765-6.682c-.125-.924-.242-1.844-.384-2.781.144.937.261 1.858.384 2.781zm-1.113-7.143c-.144-.814-.269-1.615-.426-2.437.157.822.282 1.624.426 2.437zM236.579 269.87c28.031-23.871-1.146-80.303-34.722-127.243h115.747c19.346 37.343 21.335 80.462 11.471 127.243h-92.496zm89.202 522.253c51.786-17.213 110.468 15.682 122.11 67.013 1.991 8.782 3.269 17.061 3.911 24.882.075-.817.112-1.662.17-2.491-1.291 18.519-6.792 33.936-15.602 46.701h-1.034a76.702 76.702 0 0 1-3.062 4.103l1.614-.707c-14.802 19.359-37.539 32.29-64.57 40.636h-28.104l1.368-.6c-29.614-.008-63.612-2.798-63.612-2.798 43.925-.703 62.862-19.294 70.065-40.598-31.298 11.376-64.654-9.072-75.146-39.264-14.161-40.748 12.502-83.784 51.893-96.877zm126.458 83.452c-.018.919-.027 1.846-.065 2.75.038-.905.045-1.831.065-2.75zm-18.22 55.872z"></path></svg>';
 }
@@ -6746,7 +6782,7 @@ sup {
   color: rgb(0, 73, 97);
 }
 .admonition[data-callout=pf2-summary] .admonition-content a.internal-link.is-unresolved:hover {
-  color: #0096c7;
+  color: rgb(0, 149.7628865979, 199);
 }
 .admonition[data-callout=pf2-summary] .admonition-content a.internal-link:is([href*="#Actions"]) {
   color: transparent;
@@ -6758,7 +6794,7 @@ sup {
   color: rgb(107, 0, 153);
 }
 .admonition[data-callout=pf2-summary] .admonition-content a.external-link:hover {
-  color: #b200ff;
+  color: rgb(178.3333333333, 0, 255);
 }
 .admonition[data-callout=pf2-summary] .admonition-content em {
   color: rgb(51, 51, 51);
@@ -6785,7 +6821,7 @@ sup {
   color: rgb(51, 66, 82);
 }
 .admonition[data-callout=pf2-summary] .admonition-content strong em {
-  color: #333b43;
+  color: rgb(51, 58.5, 66.5);
 }
 .admonition[data-callout=pf2-summary] .admonition-content ol > li::marker,
 .admonition[data-callout=pf2-summary] .admonition-content ul > li::marker {
@@ -6962,5 +6998,3 @@ body .is-live-preview .callout[data-callout=statblock-pf2e]:has(.creature-statbl
 .pathfinder.pathfinder.pathfinder .admonition[data-callout=embed-ability] .admonition-content ol > li::marker, .pathfinder.pathfinder.pathfinder .admonition[data-callout=embed-ability] .admonition-content ul > li::marker {
   color: transparent;
 }
-
-/*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/pf2-compendium.scss */
