@@ -524,8 +524,26 @@ public interface JsonSource extends JsonTextReplacement {
     /** Internal */
     default void embedData(List<String> text, JsonNode dataNode) {
         String tag = Field.tag.getTextOrEmpty(dataNode);
-        JsonNode data = Field.data.getFrom(dataNode);
         Pf2eIndexType dataType = Pf2eIndexType.fromText(tag);
+        JsonNode data = Field.data.getFrom(dataNode);
+
+        if (isEmpty(data)) {
+            // WHY?!?!
+            // {"type":"data","tag":"table"}
+            // {"type":"data","tag":"creature"}
+            if (SourceField.name.existsIn(dataNode)) {
+                String name = SourceField.name.getTextOrEmpty(dataNode);
+                String source = SourceField.source.getTextOrEmpty(dataNode);
+                String link = linkify(dataType, name + "|" + source);
+                if (dataType == Pf2eIndexType.creature) {
+                    link = link.replace(".md)", ".md#^statblock)");
+                }
+                maybeAddBlankLine(text);
+                text.add("!" + link);
+                maybeAddBlankLine(text);
+            }
+            return;
+        }
 
         if ("generic".equals(tag)) {
             List<String> inner = embedGenericData(tag, data);
@@ -538,16 +556,8 @@ public interface JsonSource extends JsonTextReplacement {
             return;
         }
 
-        if (data == null) {
-            String name = SourceField.name.getTextOrEmpty(dataNode);
-            String source = SourceField.source.getTextOrEmpty(dataNode);
-            String link = linkify(dataType, name + "|" + source);
-            if (dataType == Pf2eIndexType.creature) {
-                link = link.replace(".md)", ".md#^statblock)");
-            }
-            maybeAddBlankLine(text);
-            text.add("!" + link);
-            maybeAddBlankLine(text);
+        if (dataType == Pf2eIndexType.table) {
+            appendTable(text, data);
             return;
         }
 

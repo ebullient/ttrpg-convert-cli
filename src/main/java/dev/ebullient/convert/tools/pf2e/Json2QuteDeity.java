@@ -175,7 +175,7 @@ public class Json2QuteDeity extends Json2QuteBase {
         Pf2eDeity.traitNote.getTextFrom(actionNode).ifPresent(traits::add);
 
         return new QuteInlineAttack(
-                Pf2eAttack.name.getTextOrDefault(actionNode, "attack"),
+                replaceText(Pf2eAttack.name.getTextOrDefault(actionNode, "attack")),
                 Pf2eActivity.single.toQuteActivity(this, null),
                 rangeType,
                 Json2QuteItem.Pf2eWeaponData.getDamageString(actionNode, this),
