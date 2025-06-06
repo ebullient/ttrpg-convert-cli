@@ -25,8 +25,8 @@
 
 1. From the [latest release][1], download the following files:
 
-    - `ttrpg-convert-cli-3.1.2-windows-x86_64.zip`
-    - `ttrpg-convert-cli-3.1.2-examples.zip`
+    - `ttrpg-convert-cli-3.1.3-windows-x86_64.zip`
+    - `ttrpg-convert-cli-3.1.3-examples.zip`
 
 2. Unzip the downloaded files into a place you'll remember. For example, `Downloads`.
 3. Navigate to the `bin` directory inside the unzipped files. It might be nested within another folder. You should see a `ttrpg-convert` EXE file in the folder - see the screenshot below.
@@ -85,7 +85,7 @@ On Windows, the command output will look like this, with weird characters at the
 
 ```shell
 [ Γ£à  OK] Finished reading config.
-ΓÅ▒∩╕Å Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-3.1.2-windows-x86_64\ttrpg-convert-cli-3.1.2-windows-x86_64\bin\5etools-mirror-2.github.io\data
+ΓÅ▒∩╕Å Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-3.1.3-windows-x86_64\ttrpg-convert-cli-3.1.3-windows-x86_64\bin\5etools-mirror-2.github.io\data
 [ Γ£à  OK] Finished reading data.
 ```
 
@@ -100,7 +100,7 @@ You should then start seeing the emoji correctly:
 
 ```shell
 [ ✅  OK] Finished reading config.
-⏱️ Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-3.1.2-windows-x86_64\ttrpg-convert-cli-3.1.2-windows-x86_64\bin\5etools-mirror-2.github.io\data
+⏱️ Reading C:\Users\Kelly\Downloads\ttrpg-convert-cli-3.1.3-windows-x86_64\ttrpg-convert-cli-3.1.3-windows-x86_64\bin\5etools-mirror-2.github.io\data
 [ ✅  OK] Finished reading data.
 ```
 
@@ -132,7 +132,7 @@ Type in `dir` and press **Enter**. You should see output similar to this:
 
 ```shell
     Directory:
-    C:\Users\Kelly\Downloads\ttrpg-convert-cli-3.1.2-windows-x86_64\ttrpg-convert-cli-3.1.2-windows-x86_64\bin
+    C:\Users\Kelly\Downloads\ttrpg-convert-cli-3.1.3-windows-x86_64\ttrpg-convert-cli-3.1.3-windows-x86_64\bin
 
 
 Mode                 LastWriteTime         Length Name
