@@ -1,5 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +20,8 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         Tags tags = new Tags(getSources());
-
-        for (String featureType : Tools5eFields.featureType.getListOfStrings(rootNode, tui())) {
+        List<String> typeList = Tools5eFields.featureType.getListOfStrings(rootNode, tui());
+        for (String featureType : typeList) {
             tags.add("optional-feature", featureType);
         }
 
@@ -33,8 +35,27 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
                 listPrerequisites(rootNode),
                 null,
                 null,
+                featureTypeToFull(typeList.get(0)),
                 images,
                 String.join("\n", text),
                 tags);
     }
+
+    protected String featureTypeToFull(String featureType) {
+        if (!isPresent(featureType)) {
+            return "";
+        }
+        return switch (featureType.toUpperCase()) {
+            case "AI" -> "Artificer Infusion";
+            case "AS" -> "Arcane Shot";
+            case "ED" -> "Elemental Discipline";
+            case "EI" -> "Eldritch Invocation";
+            case "FS:B", "FS:F", "FS:P", "FS:R" -> "Fighting Style";
+            case "MM" -> "Metamagic";
+            case "MV:B" -> "Battle Master Maneuver";
+            case "PB" -> "Pact Boon";
+            case "RN" -> "Rune Knight Rune";
+            default -> featureType;
+        };
+    };
 }
