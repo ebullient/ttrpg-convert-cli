@@ -1151,6 +1151,12 @@
           "replace": "\"name\": \"Ruyi Bang, the Extending Cudgel\""
         }
       ],
+      "domains.json": [
+        {
+          "match": "\\{\n\\s+\"name\": \"Dreams\",",
+          "replace": "{ \"name\": \"Disorientation\", \"source\": \"LODM\", \"page\": 264, \"entries\": [ \"You can bewilder and perplex your foes.\" ] },{\"name\": \"Dreams\","
+        }
+      ],
       "feats/feats-apg.json": [
         {
           "match": "\\{@note \\{@sup 1}Mwangi Expanse, p.76}",
@@ -1175,6 +1181,10 @@
         {
           "match": "\\{@featpitborn\\|PC1}",
           "replace": "{@feat pitborn|PC1} "
+        },
+        {
+          "match": "(\\{@skill [^|]+?\\|PC1})}\"",
+          "replace": "$1\""
         }
       ],
       "feats/feats-som.json": [
@@ -1243,6 +1253,12 @@
         {
           "match": "\"Interact ",
           "replace": "\"{@action Interact} "
+        }
+      ],
+      "items/items-losk.json": [
+        {
+          "match": "(\"\\{@note.*?\\.)\"\n",
+          "replace": "$1}\"\n"
         }
       ],
       "items/items-lotgb.json": [

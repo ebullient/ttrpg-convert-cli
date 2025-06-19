@@ -83,7 +83,8 @@ public interface JsonTextReplacement extends JsonTextConverter<Pf2eIndexType> {
                     .replace("#$prompt_number:title=Enter a Modifier$#", "Modifier")
                     .replace("#$prompt_number:title=Enter a Modifier,default=10$#", "Modifier (default 10)")
                     .replaceAll("#\\$prompt_number.*default=(.*)\\$#", "$1")
-                    .replace("{@conditoin", "{@condition"); // fix typo;
+                    .replace("{@conditoin", "{@condition")
+                    .replace("ffguard", "ff-guard"); // fix typo;
 
             if (parseState().inList() || parseState().inTable()) {
                 result = result.replaceAll("\\{@sup ([^}]+)}", "[^$1]");

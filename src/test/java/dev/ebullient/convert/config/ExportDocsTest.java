@@ -71,8 +71,8 @@ public class ExportDocsTest {
         writeToBuilder(ConfigKeys.configPf2e.getFrom(node), toolsPf2e, null, "Pf2eTools");
 
         String result = Files.readString(in)
-                .replace("<!--%% 5etools %% -->", tools5e.toString())
-                .replace("<!--%% Pf2eTools %% -->", toolsPf2e.toString());
+                .replace("<!--%% 5etools %% -->\n", tools5e.toString())
+                .replaceAll("<!--%% Pf2eTools %% -->\n+", toolsPf2e.toString());
         Files.writeString(out, result, StandardOpenOption.CREATE);
     }
 

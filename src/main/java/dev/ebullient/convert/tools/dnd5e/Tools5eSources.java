@@ -424,12 +424,12 @@ public class Tools5eSources extends CompendiumSources {
         if (srd52 != null) {
             srdText = "the <span title='Systems Reference Document (5.2)'>SRD</span>";
             if (srd52.isTextual()) {
-                srdText += " (as \"" + srd52.asText() + "\")";
+                srdText += " (as \"" + Tools5eIndex.instance().replaceText(srd52.asText()) + "\")";
             }
         } else if (srd != null) {
             srdText = "the <span title='Systems Reference Document (5.1)'>SRD</span>";
             if (srd.isTextual()) {
-                srdText += " (as \"" + srd.asText() + "\")";
+                srdText += " (as \"" + Tools5eIndex.instance().replaceText(srd.asText()) + "\")";
             }
         }
 

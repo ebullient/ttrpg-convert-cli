@@ -3,7 +3,7 @@
 - [5etools](#source-name-mapping-for-5etools)
 - [Pf2eTools](#source-name-mapping-for-pf2etools)
 
-Here is the name/abbreviation mapping for source materials. 
+Here is the name/abbreviation mapping for source materials.
 
 _Support content creators. Only use or include sources that you own._
 
@@ -35,6 +35,7 @@ _Support content creators. Only use or include sources that you own._
 | BGDIA | Baldur's Gate: Descent Into Avernus | adventure |
 | BGG | Bigby Presents: Glory of the Giants | book |
 | BMT | The Book of Many Things | book |
+| BQGT | Borderlands Quest: Goblin Trouble | adventure |
 | CM | Candlekeep Mysteries | adventure |
 | CRCotN | Critical Role: Call of the Netherdeep | adventure |
 | CoA | Chains of Asmodeus | adventure |
@@ -219,7 +220,6 @@ You may see these abbreviations referenced in source material, this is how they 
 | UATheMysticClass | UATMC |
 | freeRules2024 | basicRules2024 |
 
-
 ## Source name mapping for Pf2eTools
 
 ### Pf2eTools Abbreviations to long name
@@ -364,4 +364,3 @@ You may see these abbreviations referenced in source material, this is how they 
 | Abbreviation | Alias     |
 |--------------|-----------|
 | GnG | G&G |
-

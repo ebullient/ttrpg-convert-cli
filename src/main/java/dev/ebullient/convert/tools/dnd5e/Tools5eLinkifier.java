@@ -450,7 +450,7 @@ public class Tools5eLinkifier {
                 name = sources.getName();
             }
         }
-        return name;
+        return Tools5eIndex.instance().replaceText(name);
     }
 
     public String decoratedFeatureTypeName(Tools5eSources valueSources, JsonNode value) {
