@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
@@ -21,9 +23,14 @@ public class Json2QuteFeat extends Json2QuteCommon {
         Tags tags = new Tags(getSources());
         tags.add("feat");
 
-        List<ImageRef> images = new ArrayList<>();
-        List<String> text = getFluff(Tools5eIndexType.featFluff, "##", images);
-        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
+        List<ImageRef> images = getFluffImages(Tools5eIndexType.featFluff);
+
+        // Initialize full entries with ability score increases merged
+        JsonNode fullEntries = initFullEntries();
+
+        // Convert entries to text
+        List<String> text = new ArrayList<>();
+        appendToText(text, fullEntries, null);
 
         // TODO: update w/ category, additionalSpells
         return new QuteFeat(sources,
@@ -35,6 +42,79 @@ public class Json2QuteFeat extends Json2QuteCommon {
                 images,
                 String.join("\n", text),
                 tags);
+    }
+
+    JsonNode initFullEntries() {
+        ArrayNode entries = SourceField.entries.readArrayFrom(rootNode);
+
+        var abilities = FeatFields.ability.streamFrom(rootNode)
+                .filter(x -> !Tools5eFields.hidden.booleanOrDefault(x, false))
+                .toList();
+
+        // If there are no abilities, just return the entries as is
+        if (abilities.isEmpty()) {
+            return entries;
+        }
+
+        // Find the first element of type "list"
+        var targetList = streamOf(entries)
+                .filter(node -> SourceField.type.getTextOrEmpty(node).equals("list"))
+                .findFirst().orElse(null);
+
+        if (targetList != null) {
+            var items = Tools5eFields.items.readArrayFrom(targetList);
+            boolean allItems = Tools5eFields.items.streamFrom(targetList)
+                    .allMatch(x -> SourceField.type.getTextOrEmpty(x).equals("item"));
+
+            for (JsonNode abilityNode : abilities) {
+                items.insert(0, allItems
+                        ? entryToListItemItem(abilityNode)
+                        : entryToListItemText(abilityNode));
+            }
+        } else {
+            // No list found, handle other cases...
+            int firstEntriesIndex = -1;
+            for (int i = 0; i < entries.size(); i++) {
+                if (SourceField.type.getTextOrEmpty(entries.get(i)).equals("entries")) {
+                    firstEntriesIndex = i;
+                    break;
+                }
+            }
+            if (firstEntriesIndex >= 0) {
+                // Gather all displayed abilities
+                var abilityEntries = mapper().createArrayNode();
+                for (JsonNode abilityNode : abilities) {
+                    abilityEntries.add(entryToListItemText(abilityNode));
+                }
+
+                // Create new entries element for abilities
+                var abilityEntry = mapper().createObjectNode()
+                        .put("type", "entries")
+                        .put("name", "Ability Score Increase")
+                        .set("entries", abilityEntries);
+
+                // Insert the new ability entry at the beginning
+                entries.insert(firstEntriesIndex, abilityEntry);
+            } else {
+                // No nested entries found, just return the original entries
+                for (JsonNode abilityNode : abilities) {
+                    entries.insert(0, entryToListItemText(abilityNode));
+                }
+            }
+        }
+
+        return entries;
+    }
+
+    JsonNode entryToListItemText(JsonNode abilityNode) {
+        return new TextNode(SkillOrAbility.getAbilityScoreIncrease(abilityNode));
+    }
+
+    JsonNode entryToListItemItem(JsonNode abilityNode) {
+        return mapper().createObjectNode()
+                .put("type", "item")
+                .put("name", "Ability Score Increase")
+                .put("entry", SkillOrAbility.getAbilityScoreIncrease(abilityNode));
     }
 
     enum FeatFields implements JsonNodeReader {
