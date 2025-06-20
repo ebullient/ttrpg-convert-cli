@@ -13,8 +13,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import dev.ebullient.convert.io.Msg;
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 
@@ -145,68 +143,63 @@ public interface SkillOrAbility {
         }
     }
 
+    /** Ability scores related to race/species */
     public static String getAbilityScore(JsonNode abilityScore) {
-        return processAbilityScore(abilityScore, false);
+        return processAbilityScoreArray(abilityScore, false);
     }
 
+    /** Ability score increases for feats and backgrounds */
     public static String getAbilityScoreIncreases(JsonNode abilityScores) {
-        return processAbilityScore(abilityScores, true);
+        return processAbilityScoreArray(abilityScores, true);
     }
 
-    private static String processAbilityScore(JsonNode abilityScores, boolean increase) {
+    /** Single ability score increase (feat entries) */
+    public static String getAbilityScoreIncrease(JsonNode abilityScores) {
+        return abilityScore(abilityScores, true);
+    }
+
+    private static String processAbilityScoreArray(JsonNode abilityScores, boolean increase) {
         if (abilityScores == null || !abilityScores.isArray()) {
             return null;
         }
+
         List<String> list = new ArrayList<>();
-        for (JsonNode abilityScore : abilityScores) {
-            int max = 20;
-            for (var entry : abilityScore.properties()) {
-                AsiFields field = AsiFields.asiFieldFromString(entry.getKey());
-                switch (field) {
-                    case choose -> {
-                        String choose = null;
-                        if (AsiChoiceFields.from.existsIn(entry.getValue())) {
-                            choose = AsiChoiceFields.from.readFromChoice(entry.getValue(), increase);
-                        } else if (AsiChoiceFields.weighted.existsIn(entry.getValue())) {
-                            choose = AsiChoiceFields.weighted.readWeightedChoice(entry.getValue(), increase);
-                        }
-                        if (isPresent(choose)) {
-                            list.add(choose);
-                        }
-                    }
-                    case hidden -> {
-                        // ignore
-                    }
-                    case max -> {
-                        max = entry.getValue().asInt();
-                    }
-                    case unknown -> {
-                        Tui.instance().warnf(Msg.UNKNOWN, "Unknown ability score increase: %s=%s",
-                                entry.getKey(), entry.getValue());
-                        list.add(toAbilityString(entry.getKey(), entry.getValue(), increase));
-                    }
-                    default -> {
-                        list.add(toAbilityString(field.longName(), entry.getValue(), increase));
-                    }
-                }
+        for (JsonNode abilityNode : abilityScores) {
+            String result = abilityScore(abilityNode, increase);
+            if (isPresent(result)) {
+                list.add(result);
             }
-            final int targetMax = max;
-            list.replaceAll(s -> s.replace("MAX", "" + targetMax));
         }
-
-        if (list.isEmpty()) {
-            return null;
-        }
-
         return String.join("; ", list);
     }
 
-    private static String toAbilityString(String name, JsonNode value, boolean increase) {
-        if (increase) {
-            return "Increase your %s score by %s, to a maximum of MAX.".formatted(name, value.asText());
-        } else {
-            return "%s %s".formatted(name, toModifier(value));
+    private static String abilityScore(JsonNode abilityNode, boolean increase) {
+        var transform = Tools5eIndex.instance();
+        String max = "" + AsiFields.max.intOrDefault(abilityNode, 20);
+
+        JsonNode choose = AsiFields.choose.getFrom(abilityNode);
+        String result = "";
+        if (choose == null) {
+            result = transform.streamOfFieldNames(abilityNode)
+                    .filter(n -> !n.equalsIgnoreCase("max"))
+                    .map(n -> toAbilityString(n, abilityNode.get(n), increase))
+                    .collect(Collectors.joining(" "));
+        } else if (AsiChoiceFields.weighted.existsIn(choose)) {
+            result = AsiChoiceFields.weighted.readWeightedChoice(choose);
+        } else if (AsiChoiceFields.from.existsIn(choose)) {
+            result = AsiChoiceFields.from.readFromChoice(choose, increase);
         }
+        return result.replace("{@MAX}", max);
+    }
+
+    private static String toAbilityString(String nameAbv, JsonNode value, boolean increase) {
+        if (increase) {
+            SkillOrAbility ability = SkillOrAbility.fromTextValue(nameAbv);
+            return "Increase your %s score by %s, to a maximum of {@MAX}.".formatted(
+                    ability == null ? toTitleCase(nameAbv) : ability.value(),
+                    value.asText());
+        }
+        return "%s %s".formatted(nameAbv, toModifier(value));
     }
 
     private static String toModifier(JsonNode value) {
@@ -218,7 +211,7 @@ public interface SkillOrAbility {
         }
     }
 
-    enum AsiChoiceFields implements JsonNodeReader {
+    public enum AsiChoiceFields implements JsonNodeReader {
         from,
 
         amount,
@@ -247,9 +240,9 @@ public interface SkillOrAbility {
 
             if (increase) {
                 return options.size() == 6
-                        ? "Increase one ability score of your choice by %s, to a maximum of MAX."
+                        ? "Increase one ability score of your choice by %s, to a maximum of {@MAX}."
                                 .formatted(amount)
-                        : "Increase your %s by %s, to a maximum of MAX."
+                        : "Increase your %s by %s, to a maximum of {@MAX}."
                                 .formatted(joinConjunct(", ", " or ", options), amount);
             }
 
@@ -259,7 +252,7 @@ public interface SkillOrAbility {
         }
 
         // _mergeAbilityIncrease_getText
-        private String readWeightedChoice(JsonNode choiceNode, boolean increase) {
+        private String readWeightedChoice(JsonNode choiceNode) {
             JsonNode weightedNode = getFrom(choiceNode);
             if (weightedNode == null) {
                 return null;
@@ -301,7 +294,7 @@ public interface SkillOrAbility {
         }
     }
 
-    enum AsiFields implements JsonNodeReader {
+    public enum AsiFields implements JsonNodeReader {
         str(SkillOrAbilityEnum.STR),
         dex(SkillOrAbilityEnum.DEX),
         con(SkillOrAbilityEnum.CON),
