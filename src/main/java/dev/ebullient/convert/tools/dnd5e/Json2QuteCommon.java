@@ -351,9 +351,12 @@ public class Json2QuteCommon implements JsonSource {
             tui().warnf("Subclass %s without class in %s", subclassNode, levelPrereq);
         }
 
-        return String.format("%s%s",
-                isLevelVisible ? toOrdinal(level) : "",
-                isClassVisible ? " " + classPart : "");
+        String levelPart = isLevelVisible
+                ? String.format("Level %s", level)
+                : "";
+
+        return levelPart
+                + (isClassVisible ? " " + classPart : "");
     }
 
     // {"proficiency":[{"armor":"medium"}]}
