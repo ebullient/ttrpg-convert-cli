@@ -1,7 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import static dev.ebullient.convert.StringUtil.isPresent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +23,15 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
             tags.add("optional-feature", featureType);
         }
 
+        String featureTypeFull = featureTypeToFull(typeList.get(0));
+        if (featureTypeFull.startsWith("Fighting Style")) {
+            featureTypeFull = "Fighting Style"; //trim class name, fighting styles can be for multiple classes
+        } else if (featureTypeFull.equalsIgnoreCase("Maneuver, Battle Master")) {
+            featureTypeFull = "Battle Master Maneuver";
+        } else if (featureTypeFull.equalsIgnoreCase("Maneuver, Cavalier V2 (UA)")) {
+            featureTypeFull = "Cavalier Maneuver, V2 (UA)";
+        }
+
         List<ImageRef> images = new ArrayList<>();
         List<String> text = getFluff(Tools5eIndexType.optionalfeatureFluff, "##", images);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
@@ -35,27 +42,9 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
                 listPrerequisites(rootNode),
                 null,
                 null,
-                featureTypeToFull(typeList.get(0)),
+                featureTypeFull,
                 images,
                 String.join("\n", text),
                 tags);
     }
-
-    protected String featureTypeToFull(String featureType) {
-        if (!isPresent(featureType)) {
-            return "";
-        }
-        return switch (featureType.toUpperCase()) {
-            case "AI" -> "Artificer Infusion";
-            case "AS" -> "Arcane Shot";
-            case "ED" -> "Elemental Discipline";
-            case "EI" -> "Eldritch Invocation";
-            case "FS:B", "FS:F", "FS:P", "FS:R" -> "Fighting Style";
-            case "MM" -> "Metamagic";
-            case "MV:B" -> "Battle Master Maneuver";
-            case "PB" -> "Pact Boon";
-            case "RN" -> "Rune Knight Rune";
-            default -> featureType;
-        };
-    };
 }
