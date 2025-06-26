@@ -767,7 +767,7 @@ public class QuteMonster extends Tools5eQuteBase {
                             }
                             map.put("desc", s.mapValue());
                         } else {
-                            map.put(s.ability().toLowerCase(), s.mapValue());
+                            map.put(s.ability().toLowerCase(), s.modifier());
                         }
                         return map;
                     })
