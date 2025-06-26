@@ -50,6 +50,17 @@ _Support content creators. Only use or include sources that you own._
 | DoD | Domains of Delight | book |
 | DoDk | Dungeons of Drakkenheim | adventure |
 | DoSI | Dragons of Stormwreck Isle | adventure |
+| DrDe | Dragon Delves | reference |
+| DrDe-ACfaS | A Copper for a Song | adventure |
+| DrDe-BD | A Copper for a Song | adventure |
+| DrDe-BtS | Before the Storm | adventure |
+| DrDe-DaS | Death at Sunset | adventure |
+| DrDe-DotSC | Dragons of the Sandstone City | adventure |
+| DrDe-FWtVC | For Whom the Void Calls | adventure |
+| DrDe-SD | Shivering Death | adventure |
+| DrDe-TDoN | The Dragon of Najkir | adventure |
+| DrDe-TFV | The Forbidden Vale | adventure |
+| DrDe-TWoO | The Will of Orcus | adventure |
 | EEPC | Elemental Evil Player's Companion | reference |
 | EET | Elemental Evil: Trinkets | reference |
 | EFR | Eberron: Forgotten Relics | adventure |

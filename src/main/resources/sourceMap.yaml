@@ -102,6 +102,39 @@ config5e:
     DoSI:
       name: "Dragons of Stormwreck Isle"
       date: "2022-07-31"
+    DrDe:
+      name: "Dragon Delves"
+      date: "2025-07-08"
+    DrDe-ACfaS:
+      name: "A Copper for a Song"
+      date: "2025-07-08"
+    DrDe-BD:
+      name: "A Copper for a Song"
+      date: "2025-07-08"
+    DrDe-BtS:
+      name: "Before the Storm"
+      date: "2025-07-08"
+    DrDe-DaS:
+      name: "Death at Sunset"
+      date: "2025-07-08"
+    DrDe-DotSC:
+      name: "Dragons of the Sandstone City"
+      date: "2025-07-08"
+    DrDe-FWtVC:
+      name: "For Whom the Void Calls"
+      date: "2025-07-08"
+    DrDe-SD:
+      name: "Shivering Death"
+      date: "2025-07-08"
+    DrDe-TDoN:
+      name: "The Dragon of Najkir"
+      date: "2025-07-08"
+    DrDe-TFV:
+      name: "The Forbidden Vale"
+      date: "2025-07-08"
+    DrDe-TWoO:
+      name: "The Will of Orcus"
+      date: "2025-07-08"
     EEPC:
       name: "Elemental Evil Player's Companion"
       date: "2015-03-10"
