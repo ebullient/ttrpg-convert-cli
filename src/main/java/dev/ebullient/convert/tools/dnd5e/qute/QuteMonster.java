@@ -592,7 +592,6 @@ public class QuteMonster extends Tools5eQuteBase {
             if (spells == null || spells.isEmpty()) {
                 return;
             }
-            maybeAddBlankLine(text);
             text.add(String.format("**%s:** %s", title, String.join(", ", spells)));
         }
 
