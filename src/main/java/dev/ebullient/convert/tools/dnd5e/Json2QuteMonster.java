@@ -61,6 +61,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
         String environment = joinAndReplace(rootNode, "environment");
         String cr = monsterCr(rootNode);
         String pb = monsterPb(cr);
+        int legendary_actions_count = 0;
+        int legendary_actions_lair_count = 0;
 
         Tags tags = new Tags(getSources());
         tags.add("monster", "size", size);
@@ -100,6 +102,19 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
         }
 
+        if (MonsterFields.legendary.existsIn(rootNode)) {
+            if (MonsterFields.legendaryActions.existsIn(rootNode)) {
+                legendary_actions_count = legendaryActionCount(rootNode);
+            } else {
+                legendary_actions_count = 3; // Default legendary actions count
+            }
+            if (MonsterFields.legendaryActionsLair.existsIn(rootNode)) {
+                legendary_actions_lair_count = legendaryActionLairCount(rootNode);
+            } else {
+                legendary_actions_lair_count = legendary_actions_count; // Default legendary actions lair count
+            }
+        }
+
         AbilityScores abilityScores = abilityScores(rootNode);
 
         return new QuteMonster(sources,
@@ -122,6 +137,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 collectTraits("bonus"),
                 collectTraits("reaction"),
                 collectTraits("legendary"),
+                legendary_actions_count,
+                legendary_actions_lair_count,
                 legendaryGroupText,
                 legendaryGroupLink,
                 monsterSpellcasting(),
@@ -692,6 +709,9 @@ public class Json2QuteMonster extends Json2QuteCommon {
         isNamedCreature,
         isNpc,
         legendaryGroup,
+        legendary,
+        legendaryActions,
+        legendaryActionsLair,
         lower,
         oneOf,
         original,

@@ -1102,6 +1102,42 @@ public interface JsonSource extends JsonTextReplacement {
         return null;
     }
 
+    default int legendaryActionCount(JsonNode monster) {
+        if (monster.has("legendaryActions")) {
+            JsonNode laNode = Tools5eFields.legendaryActions.getFrom(monster);
+            if (laNode.isTextual()) {
+                return laNode.asInt();
+            } else if (laNode.isInt()) {
+                return laNode.asInt();
+            } else if (laNode.isObject() && laNode.has("count")) {
+                return Tools5eFields.count.getFrom(laNode).asInt();
+            } else if (laNode.has("legendaryActions")) {
+                return Tools5eFields.cr.getFrom(laNode).asInt();
+            } else {
+                tui().errorf("Unable to parse la count from %s", laNode.toPrettyString());
+            }
+        }
+        return 3;
+    }
+
+    default int legendaryActionLairCount(JsonNode monster) {
+        if (monster.has("legendaryActionsLair")) {
+            JsonNode laNode = Tools5eFields.legendaryActionsLair.getFrom(monster);
+            if (laNode.isTextual()) {
+                return laNode.asInt();
+            } else if (laNode.isInt()) {
+                return laNode.asInt();
+            } else if (laNode.isObject() && laNode.has("count")) {
+                return Tools5eFields.count.getFrom(laNode).asInt();
+            } else if (laNode.has("legendaryActionsLair")) {
+                return Tools5eFields.cr.getFrom(laNode).asInt();
+            } else {
+                tui().errorf("Unable to parse la lair count from %s", laNode.toPrettyString());
+            }
+        }
+        return 0;
+    }
+
     default double crToXp(JsonNode cr) {
         if (Tools5eFields.xp.existsIn(cr)) {
             return Tools5eFields.xp.getFrom(cr).asDouble();
@@ -1421,6 +1457,8 @@ public interface JsonSource extends JsonTextReplacement {
         images,
         items,
         lairActions, // legendary group
+        legendaryActions, // legendary group
+        legendaryActionsLair,
         level,
         number, // speed
         optionalfeature,
@@ -1446,6 +1484,7 @@ public interface JsonSource extends JsonTextReplacement {
         traitTags,
         visible,
         xp,
+
     }
 
     enum TableFields implements JsonNodeReader {

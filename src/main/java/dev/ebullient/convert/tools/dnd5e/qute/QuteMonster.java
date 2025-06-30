@@ -92,6 +92,10 @@ public class QuteMonster extends Tools5eQuteBase {
     public final List<NamedText> reaction;
     /** Creature legendary traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
     public final List<NamedText> legendary;
+    /** Number of legendary actions, if provided */
+    public final int legendaryActions;
+    /** Number of legendary actions in a lair, if provided */
+    public final int legendaryActionsLair;
     /**
      * Map of grouped legendary traits (Lair Actions, Regional Effects, etc.).
      * The key the group name, and the value is a list of {@link dev.ebullient.convert.qute.NamedText}.
@@ -121,6 +125,7 @@ public class QuteMonster extends Tools5eQuteBase {
             List<NamedText> bonusAction,
             List<NamedText> reaction,
             List<NamedText> legendary,
+            int legendaryActions, int legendaryActionsLair,
             Collection<NamedText> legendaryGroup, String legendaryGroupLink,
             List<Spellcasting> spellcasting,
             String description, String environment,
@@ -151,6 +156,8 @@ public class QuteMonster extends Tools5eQuteBase {
         this.bonusAction = bonusAction;
         this.reaction = reaction;
         this.legendary = legendary;
+        this.legendaryActions = legendaryActions;
+        this.legendaryActionsLair = legendaryActionsLair;
         this.legendaryGroup = legendaryGroup;
         this.legendaryGroupLink = legendaryGroupLink;
         this.spellcasting = spellcasting;
@@ -379,6 +386,8 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "bonus_actions", bonusAction);
         addUnlessEmpty(map, "reactions", reaction);
         addUnlessEmpty(map, "legendary_actions", legendary);
+        addIntegerUnlessEmpty(map, "legendary_actions_count", legendaryActions);
+        addIntegerUnlessEmpty(map, "legendary_actions_lair_count", legendaryActionsLair);
 
         if (legendaryGroup != null) {
             for (NamedText group : legendaryGroup) {
