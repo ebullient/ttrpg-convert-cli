@@ -48,7 +48,7 @@ _Support content creators. Only use or include sources that you own._
 | DSotDQ | Dragonlance: Shadow of the Dragon Queen | adventure |
 | DitLCoT | Descent into the Lost Caverns of Tsojcanth | adventure |
 | DoD | Domains of Delight | book |
-| DoDk | Dungeons of Drakkenheim | adventure |
+| DoDk | Dungeons of Drakkenheim | reference |
 | DoSI | Dragons of Stormwreck Isle | adventure |
 | DrDe | Dragon Delves | reference |
 | DrDe-ACfaS | A Copper for a Song | adventure |
@@ -74,7 +74,7 @@ _Support content creators. Only use or include sources that you own._
 | FS | Frozen Sick | adventure |
 | FTD | Fizban's Treasury of Dragons | book |
 | GGR | Guildmasters' Guide to Ravnica | book |
-| GHLoE | Grim Hollow: Lairs of Etharis | adventure |
+| GHLoE | Grim Hollow: Lairs of Etharis | reference |
 | GoS | Ghosts of Saltmarsh | adventure |
 | GotSF | Giants of the Star Forge | adventure |
 | HAT-LMI | Honor Among Thieves: Legendary Magic Items | reference |
@@ -174,7 +174,7 @@ _Support content creators. Only use or include sources that you own._
 | TftYP-ToH | Tales from the Yawning Portal: Tomb of Horrors | adventure |
 | TftYP-WPM | Tales from the Yawning Portal: White Plume Mountain | adventure |
 | ToA | Tomb of Annihilation | adventure |
-| ToB1-2023 | Tome of Beasts 1 (2023 Edition) | book |
+| ToB1-2023 | Tome of Beasts 1 (2023 Edition) | reference |
 | ToD | Tyranny of Dragons | reference |
 | ToFW | Turn of Fortune's Wheel | adventure |
 | ToR | Tide of Retribution | adventure |
