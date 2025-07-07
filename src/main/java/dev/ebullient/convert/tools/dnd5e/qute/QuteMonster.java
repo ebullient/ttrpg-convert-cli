@@ -4,6 +4,7 @@ import static dev.ebullient.convert.StringUtil.asModifier;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
+import static dev.ebullient.convert.StringUtil.uppercaseFirst;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,9 +50,9 @@ public class QuteMonster extends Tools5eQuteBase {
     public final boolean isNpc;
     /** Creature size (capitalized) */
     public final String size;
-    /** Creature type (lowercase) */
+    /** Creature type (capitalized) */
     public final String type;
-    /** Creature subtype (lowercase) */
+    /** Creature subtype (capitalized) */
     public final String subtype;
     /** Creature alignment */
     public final String alignment;
@@ -370,15 +371,15 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "damage_resistances", immuneResist.resist);
         addUnlessEmpty(map, "damage_immunities", immuneResist.immune);
         addUnlessEmpty(map, "condition_immunities", immuneResist.conditionImmune);
-        map.put("senses", (senses.isBlank() ? "" : senses + ", ") + "passive Perception " + passive);
+        map.put("senses", (senses.isBlank() ? "" : senses + ", ") + "Passive Perception " + passive);
         map.put("languages", languages);
         addUnlessEmpty(map, "cr", cr);
 
-        addUnlessEmpty(map, "traits", trait);
-        addUnlessEmpty(map, "actions", action);
-        addUnlessEmpty(map, "bonus_actions", bonusAction);
-        addUnlessEmpty(map, "reactions", reaction);
-        addUnlessEmpty(map, "legendary_actions", legendary);
+        addUnlessEmpty(map, "traits", punctuateTraitNames(trait));
+        addUnlessEmpty(map, "actions", punctuateTraitNames(action));
+        addUnlessEmpty(map, "bonus_actions", punctuateTraitNames(bonusAction));
+        addUnlessEmpty(map, "reactions", punctuateTraitNames(reaction));
+        addUnlessEmpty(map, "legendary_actions", punctuateTraitNames(legendary));
 
         if (legendaryGroup != null) {
             for (NamedText group : legendaryGroup) {
@@ -398,10 +399,7 @@ public class QuteMonster extends Tools5eQuteBase {
 
         // De-markdown-ify
         return Tui.quotedYaml().dump(map).trim()
-                .replaceAll("`", "")
-                .replaceAll("\\*([^*]+)\\*", "$1") // em
-                .replaceAll("\\*([^*]+)\\*", "$1") // bold
-                .replaceAll("\\*([^*]+)\\*", "$1"); // bold em
+                .replaceAll("`", "");
     }
 
     private String yamlMonsterName(boolean withSource) {
@@ -413,6 +411,22 @@ public class QuteMonster extends Tools5eQuteBase {
             }
         }
         return "";
+    }
+
+    private List<NamedText> punctuateTraitNames(List<NamedText> traits) {
+        if (traits.isEmpty()) {
+            return traits;
+        }
+        List<NamedText> namedTraits = new ArrayList<>();
+        for (NamedText trait : traits) {
+            if (!trait.name.isBlank() && !trait.name.endsWith(".")) {
+                NamedText nt = new NamedText(trait.name + ".", trait.desc, trait.nested);
+                namedTraits.add(nt);
+            } else {
+                namedTraits.add(trait);
+            }
+        }
+        return namedTraits;
     }
 
     /**
@@ -762,11 +776,11 @@ public class QuteMonster extends Tools5eQuteBase {
                         if (s.isSpecial()) {
                             String ability = s.ability();
                             if (ability != null) {
-                                map.put("name", ability);
+                                map.put("name", uppercaseFirst(ability));
                             }
                             map.put("desc", s.mapValue());
                         } else {
-                            map.put(s.ability().toLowerCase(), s.modifier());
+                            map.put(uppercaseFirst(s.ability().toLowerCase()), s.modifier());
                         }
                         return map;
                     })
