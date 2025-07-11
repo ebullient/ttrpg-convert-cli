@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.dnd5e;
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
+import static dev.ebullient.convert.StringUtil.uppercaseFirst;
 
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -605,7 +606,7 @@ public class Json2QuteCommon implements JsonSource {
             JsonNode v = speedNode.get(k);
             JsonNode altV = alternate == null ? null : alternate.get(k);
             if (v != null) {
-                String prefix = "walk".equals(k) ? "" : k + " ";
+                String prefix = "walk".equals(k) ? "" : uppercaseFirst(k) + " ";
                 speed.add(prefix + speedValue(k, v, includeZeroWalk));
                 if (altV != null && altV.isArray()) {
                     altV.forEach(x -> speed.add(prefix + speedValue(k, x, includeZeroWalk)));
@@ -826,9 +827,9 @@ public class Json2QuteCommon implements JsonSource {
 
     private String textValue(VulnerabilityFields field, String text) {
         if (field == VulnerabilityFields.conditionImmune) {
-            return linkify(Tools5eIndexType.condition, text);
+            return linkify(Tools5eIndexType.condition, uppercaseFirst(text));
         }
-        return text;
+        return uppercaseFirst(text);
     }
 
     List<NamedText> collectSortedTraits(JsonNode array) {

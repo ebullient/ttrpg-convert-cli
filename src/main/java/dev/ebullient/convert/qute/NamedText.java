@@ -42,6 +42,12 @@ public class NamedText {
         this.nested = List.of();
     }
 
+    public NamedText(String name, String desc, Collection<NamedText> nested) {
+        this.name = name;
+        this.desc = desc;
+        this.nested = nested;
+    }
+
     public NamedText(String name, Collection<String> text, Collection<NamedText> nested) {
         this.name = name == null ? "" : name;
         String body = text == null ? "" : String.join("\n", text);
