@@ -25,6 +25,13 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
         List<ImageRef> images = getFluffImages(Tools5eIndexType.featFluff);
 
+        String category = featureTypeToFull(FeatFields.category.getTextOrEmpty(rootNode));
+        if (category.equalsIgnoreCase("Fighting Style, Paladin")) {
+            category = "Fighting Style Replacement (Paladin)";
+        } else if (category.equalsIgnoreCase("Fighting Style, Ranger")) {
+            category = "Fighting Style Replacement (Ranger)";
+        }
+
         // Initialize full entries with ability score increases merged
         JsonNode fullEntries = initFullEntries();
 
@@ -32,13 +39,14 @@ public class Json2QuteFeat extends Json2QuteCommon {
         List<String> text = new ArrayList<>();
         appendToText(text, fullEntries, null);
 
-        // TODO: update w/ category, additionalSpells
+        // TODO: update w/ additionalSpells
         return new QuteFeat(sources,
                 linkifier().decoratedName(type, rootNode),
                 getSourceText(sources),
                 listPrerequisites(rootNode),
                 null, // Level coming someday..
                 SkillOrAbility.getAbilityScoreIncreases(FeatFields.ability.getFrom(rootNode)),
+                category,
                 images,
                 String.join("\n", text),
                 tags);
