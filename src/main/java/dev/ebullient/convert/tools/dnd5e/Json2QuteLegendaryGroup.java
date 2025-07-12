@@ -2,20 +2,14 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
-import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteLegendaryGroup extends Json2QuteCommon {
-    static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]|\\d+)");
-    static final List<String> LEGENDARY_IGNORE_LIST = List.of("name", "source", "page",
-            TtrpgValue.indexInputType.name(), TtrpgValue.indexKey.name(), "_copy", "_meta",
-            "additionalSources", "_rawName", "_isCopy", "_copiedFrom", "isHomebrew");
 
     Json2QuteLegendaryGroup(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
@@ -27,26 +21,9 @@ public class Json2QuteLegendaryGroup extends Json2QuteCommon {
         tags.add("monster", "legendary-group");
 
         List<String> text = new ArrayList<>();
-        for (Entry<String, JsonNode> field : iterableFields(rootNode)) {
-            String fieldName = field.getKey();
-            if (LEGENDARY_IGNORE_LIST.contains(fieldName)) {
-                continue;
-            }
-            boolean pushed = parseState().push(field.getValue());
-            try {
-                fieldName = fieldName.substring(0, 1).toUpperCase()
-                        + UPPERCASE_LETTER.matcher(fieldName.substring(1))
-                                .replaceAll(matchResult -> " " + (matchResult.group(1).toLowerCase()));
-
-                maybeAddBlankLine(text);
-                text.add("## " + fieldName);
-                text.add(getSourceText(parseState()));
-                text.add("");
-                appendToText(text, field.getValue(), "###");
-            } finally {
-                parseState().pop(pushed);
-            }
-        }
+        appendSectionText(text, LeGroupFields.lairActions, "Lair Actions");
+        appendSectionText(text, LeGroupFields.regionalEffects, "Regional Effects");
+        appendSectionText(text, LeGroupFields.mythicEncounter, "As a Mythic Encounter");
 
         return new Tools5eQuteNote(sources,
                 sources.getName(),
@@ -55,5 +32,28 @@ public class Json2QuteLegendaryGroup extends Json2QuteCommon {
                 tags)
                 .withTargetFile(linkifier().getTargetFileName(getName(), sources))
                 .withTargetPath(linkifier().getRelativePath(type));
+    }
+
+    void appendSectionText(List<String> text, LeGroupFields field, String header) {
+        JsonNode node = field.getFrom(rootNode);
+        if (node == null || node.isMissingNode() || node.isNull()) {
+            return;
+        }
+        boolean pushed = parseState().push(node);
+        try {
+            maybeAddBlankLine(text);
+            text.add("## " + header);
+            text.add(getSourceText(parseState()));
+            text.add("");
+            appendToText(text, node, "###");
+        } finally {
+            parseState().pop(pushed);
+        }
+    }
+
+    enum LeGroupFields implements JsonNodeReader {
+        lairActions,
+        mythicEncounter,
+        regionalEffects,
     }
 }

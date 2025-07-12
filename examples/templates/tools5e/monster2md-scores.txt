@@ -51,6 +51,8 @@ title: {resource.name}{#if resource.token}
 - **Damage Immunities** {resource.immune}
 {/if}{#if resource.conditionImmune}
 - **Condition Immunities** {resource.conditionImmune}
+{/if}{#if resource.gear}
+- **Gear** {resource.gear.join(", ")}
 {/if}
 - **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}
 - **Challenge** {resource.cr}

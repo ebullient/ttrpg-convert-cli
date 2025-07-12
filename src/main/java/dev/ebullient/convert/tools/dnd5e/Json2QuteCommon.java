@@ -870,10 +870,19 @@ public class Json2QuteCommon implements JsonSource {
                 tui().warnf(Msg.UNKNOWN, "Unknown %s for %s: %s", array, sources.getKey(), array.toPrettyString());
                 return;
             }
-            for (JsonNode e : iterableElements(array)) {
-                String name = SourceField.name.replaceTextFrom(e, this)
-                        .replaceAll(":$", "");
-                addNamedTrait(traits, name, e);
+            if (streamOf(array).allMatch(e -> e.isObject() && SourceField.name.existsIn(e))) {
+                for (JsonNode e : iterableElements(array)) {
+                    String name = SourceField.name.replaceTextFrom(e, this)
+                            .replaceAll(":$", "");
+                    addNamedTrait(traits, name, e);
+                }
+            } else {
+                // no names, just text
+                List<String> text = new ArrayList<>();
+                appendToText(text, array, null);
+                if (!text.isEmpty()) {
+                    traits.add(new NamedText("", text, List.of()));
+                }
             }
         } finally {
             parseState().pop(pushed);

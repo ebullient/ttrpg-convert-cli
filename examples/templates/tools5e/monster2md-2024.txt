@@ -49,7 +49,6 @@ title: {resource.name}{#if resource.token}
 - **Proficiency Bonus** {resource.pb}
 - **Saving Throws** {#if resource.savingThrows }{resource.savingThrows}{#else}⏤{/if}
 - **Skills** {#if resource.skills }{resource.skills}{#else}⏤{/if}
-- **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
 {#if resource.vulnerable }
 - **Damage Vulnerabilities** {resource.vulnerable}
 {/if}{#if resource.resist}
@@ -58,7 +57,10 @@ title: {resource.name}{#if resource.token}
 - **Damage Immunities** {resource.immune}
 {/if}{#if resource.conditionImmune}
 - **Condition Immunities** {resource.conditionImmune}
+{/if}{#if resource.gear}
+- **Gear** {resource.gear.join(", ")}
 {/if}
+- **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
 - **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}
 - **Challenge** {resource.cr}
 {#if resource.trait}

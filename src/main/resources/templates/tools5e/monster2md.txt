@@ -37,6 +37,8 @@ title: {resource.name}{#if resource.token}
 - **Senses** {#if resource.senses }{resource.senses}, {/if}passive Perception {resource.passive}
 {#if resource.immuneResist && resource.immuneResist.present }
 {resource.immuneResist}
+{/if}{#if resource.gear}
+- **Gear** {resource.gear.join(", ")}
 {/if}
 - **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}
 - **Challenge** {resource.cr}

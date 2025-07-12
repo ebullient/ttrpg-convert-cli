@@ -713,6 +713,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     }
 
     default String linkifyLegendaryGroup(Tools5eSources lgSources) {
+        if (lgSources == null) {
+            return "";
+        }
         return linkifier().link(lgSources);
     }
 

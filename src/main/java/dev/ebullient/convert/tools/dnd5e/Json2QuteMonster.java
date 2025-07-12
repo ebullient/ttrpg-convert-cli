@@ -1,7 +1,8 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.pluralize;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,8 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SavingThrow;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.SkillModifier;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spellcasting;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Spells;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.TraitDescription;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Traits;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteMonster extends Json2QuteCommon {
@@ -81,25 +84,6 @@ public class Json2QuteMonster extends Json2QuteCommon {
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.monsterFluff, "##", fluffImages);
 
-        Collection<NamedText> legendaryGroupText = null;
-        String legendaryGroupLink = null;
-        if (MonsterFields.legendaryGroup.existsIn(rootNode)) {
-            JsonNode nameSource = MonsterFields.legendaryGroup.getFrom(rootNode);
-            String lgKey = index().getAliasOrDefault(Tools5eIndexType.legendaryGroup.createKey(nameSource));
-            if (index.sourceIncluded(SourceField.source.getTextOrThrow(nameSource))) {
-                JsonNode lgNode = index.getOrigin(lgKey);
-                if (lgNode == null) {
-                    tui().debugf("No legendary group content for %s", lgKey);
-                } else {
-                    Tools5eSources lgSources = Tools5eSources.findSources(lgKey);
-                    legendaryGroupText = legendaryGroup(lgNode);
-                    legendaryGroupLink = linkifyLegendaryGroup(lgSources);
-                }
-            } else {
-                tui().debugf(Msg.FILTER, "Legendary group source excluded: %s", lgKey);
-            }
-        }
-
         AbilityScores abilityScores = abilityScores(rootNode);
 
         return new QuteMonster(sources,
@@ -114,16 +98,11 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 joinAndReplace(rootNode, "senses"),
                 intOrDefault(rootNode, "passive", 10),
                 immuneResist(),
+                gear(),
                 joinAndReplace(rootNode, "languages"),
                 cr, pb,
                 initiative(abilityScores, cr),
-                collectTraits("trait"),
-                collectTraits("action"),
-                collectTraits("bonus"),
-                collectTraits("reaction"),
-                collectTraits("legendary"),
-                legendaryGroupText,
-                legendaryGroupLink,
+                collectAllTraits(),
                 monsterSpellcasting(),
                 fluff,
                 environment,
@@ -451,20 +430,127 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 : linkify(Tools5eIndexType.spell, spellText);
     }
 
-    Collection<NamedText> legendaryGroup(JsonNode content) {
-        List<NamedText> traits = new ArrayList<>();
-        for (Entry<String, JsonNode> field : iterableFields(content)) {
-            String fieldName = field.getKey();
-            if (Json2QuteLegendaryGroup.LEGENDARY_IGNORE_LIST.contains(fieldName)) {
-                continue;
-            }
-            fieldName = fieldName.substring(0, 1).toUpperCase()
-                    + Json2QuteLegendaryGroup.UPPERCASE_LETTER.matcher(fieldName.substring(1))
-                            .replaceAll(matchResult -> " " + (matchResult.group(1).toLowerCase()));
+    Traits collectAllTraits() {
+        boolean pushed = parseState().pushTrait();
+        try {
+            String legendaryGroupLink = null;
+            TraitDescription lairActions = null;
+            TraitDescription regionalEffects = null;
 
-            addNamedTrait(traits, fieldName, field.getValue());
+            JsonNode lgNameSource = MonsterFields.legendaryGroup.getFrom(rootNode);
+            String lgKey = index().getAliasOrDefault(Tools5eIndexType.legendaryGroup.createKey(lgNameSource));
+            if (lgNameSource != null && index().isIncluded(lgKey)) {
+                JsonNode lgNode = index.getOrigin(lgKey);
+                Tools5eSources lgSources = Tools5eSources.findSources(lgKey);
+                lairActions = traitDescription(lgNode, MonsterFields.lairActions, "Lair Actions");
+                regionalEffects = traitDescription(lgNode, MonsterFields.regionalEffects, "Regional Effects");
+                legendaryGroupLink = linkifyLegendaryGroup(lgSources);
+            }
+
+            return new Traits(
+                    traitDescription(rootNode, MonsterFields.trait, "Traits"),
+                    traitDescription(rootNode, MonsterFields.action, "Actions"),
+                    traitDescription(rootNode, MonsterFields.bonus, "Bonus Actions"),
+                    traitDescription(rootNode, MonsterFields.reaction, "Reactions"),
+                    traitDescription(rootNode, MonsterFields.legendary, "Legendary Actions"),
+                    lairActions,
+                    regionalEffects,
+                    traitDescription(rootNode, MonsterFields.mythic, "Mythic Actions"),
+                    legendaryGroupLink);
+        } finally {
+            parseState().pop(pushed);
         }
-        return traits;
+    }
+
+    TraitDescription traitDescription(JsonNode source, MonsterFields field, String title) {
+        boolean pushed = parseState().pushTrait();
+        try {
+            String noteKey = field.name() + "Note";
+            JsonNode noteNode = source.get(noteKey);
+            if (noteNode != null && noteNode.isTextual()) {
+                title += " <small>(" + replaceText(noteNode) + ")</small>";
+            }
+
+            String headerKey = field.name() + "Header";
+            JsonNode headerNode = source.get(headerKey);
+            String headerText = null;
+            if (headerNode != null) {
+                headerText = flattenToString(headerNode);
+            }
+
+            List<NamedText> traits = new ArrayList<>();
+            JsonNode target = field.getFrom(source);
+            if (target != null && target.isArray()) {
+                collectTraits(traits, target);
+            }
+
+            if (traits.size() > 0 && field == MonsterFields.legendary && headerText == null) {
+                int legendaryActionCount = MonsterFields.legendaryActions.intOrDefault(rootNode, 3);
+                int legendaryActionsLairCount = MonsterFields.legendaryActionsLair.intOrDefault(rootNode, legendaryActionCount);
+                boolean isNamedCreature = MonsterFields.isNamedCreature.booleanOrDefault(rootNode, false);
+                var possessive = isNamedCreature ? "their" : "its";
+
+                if (getSources().isClassic()) {
+                    var shortName = Tools5eJsonSourceCopier.getShortName(rootNode, true);
+                    // The dragon can take 3 legendary actions, choosing from the options below.
+                    // Only one legendary action can be used at a time and only at the end of another creature's turn.
+                    // The dragon regains spent legendary actions at the start of its turn.
+                    headerText = replaceText(
+                            "%s can take %d legendary action%s%s, choosing from the options below. Only one legendary action can be used at a time and only at the end of another creature's turn. %s regains spent legendary actions at the start of %s turn."
+                                    .formatted(shortName,
+                                            legendaryActionCount,
+                                            legendaryActionCount == 1 ? "" : "s",
+                                            legendaryActionsLairCount != legendaryActionCount
+                                                    ? " (or %d when in %s lair)".formatted(legendaryActionsLairCount,
+                                                            possessive)
+                                                    : "",
+                                            shortName,
+                                            possessive));
+                } else {
+                    // Legendary Action Uses: 3 (4 in Lair).
+                    // Immediately after another creature's turn, The dragon can expend a use to take one of the following actions.
+                    // The dragon regains all expended uses at the start of each of its turns.
+                    headerText = replaceText(
+                            "Legendary Action Uses: %d%s. Immediately after another creature's turn, %s can expend a use to take one of the following actions. %s regains all expended uses at the start of each of %s turns."
+                                    .formatted(
+                                            legendaryActionCount,
+                                            legendaryActionsLairCount != legendaryActionCount
+                                                    ? " (%d in Lair)".formatted(legendaryActionsLairCount)
+                                                    : "",
+                                            Tools5eJsonSourceCopier.getShortName(rootNode, false),
+                                            Tools5eJsonSourceCopier.getShortName(rootNode, true),
+                                            possessive));
+                }
+            }
+            return new TraitDescription(title, headerText, traits);
+        } finally {
+            parseState().pop(pushed);
+        }
+    }
+
+    List<String> gear() {
+        final List<MonsterFields> gearFields = List.of(
+                MonsterFields.gear, MonsterFields.attachedItems);
+        List<String> gear = new ArrayList<>();
+        for (MonsterFields field : gearFields) {
+            for (var node : field.iterateArrayFrom(rootNode)) {
+                if (node == null || node.isNull() || node.isArray()) {
+                    continue;
+                }
+                int quantity = MonsterFields.quantity.intOrDefault(node, 1);
+                String item = node.isObject()
+                        ? MonsterFields.item.getTextOrEmpty(node)
+                        : node.asText();
+                if (quantity == 1) {
+                    gear.add(linkify(Tools5eIndexType.item, item));
+                } else {
+                    var name = item.split("\\|")[0];
+                    var plural = pluralize(name, quantity);
+                    gear.add(replaceText("%s {@item %s|%s}".formatted(numberToText(quantity), item, plural)));
+                }
+            }
+        }
+        return gear;
     }
 
     @Override
@@ -673,10 +759,17 @@ public class Json2QuteMonster extends Json2QuteCommon {
         _versions,
         ability,
         ac,
+        action,
+        actionHeader,
+        actionNote,
         advantageMode,
         alignment,
         alignmentPrefix,
+        attachedItems,
         average,
+        bonus,
+        bonusHeader,
+        bonusNote,
         choose,
         cr,
         creatureType, // object -- alternate to monster type
@@ -685,17 +778,31 @@ public class Json2QuteMonster extends Json2QuteCommon {
         footerEntries,
         formula,
         from,
+        gear,
         headerEntries,
         hidden,
         hp,
         initiative,
         isNamedCreature,
         isNpc,
+        item,
+        lairActions,
+        legendary,
+        legendaryActions,
+        legendaryActionsLair,
         legendaryGroup,
+        legendaryHeader,
         lower,
+        mythic,
+        mythicHeader,
         oneOf,
         original,
         proficiency,
+        quantity,
+        reaction,
+        reactionHeader,
+        reactionNote,
+        regionalEffects,
         save,
         senses,
         skill,

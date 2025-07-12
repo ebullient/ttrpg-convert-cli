@@ -38,10 +38,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  */
 @TemplateData
 public class QuteMonster extends Tools5eQuteBase {
-    private static final Map<String, String> group_map = Map.of(
-            "lair actions", "lair_actions",
-            "regional effects", "regional_effects",
-            "mythic encounter", "mythic_encounter");
     private static final List<String> abilities = List.of("strength", "dexterity", "constitution", "intelligence", "wisdom",
             "charisma");
 
@@ -60,6 +56,8 @@ public class QuteMonster extends Tools5eQuteBase {
     public AcHp acHp;
     /** Creature immunities and resistances as {@link dev.ebullient.convert.tools.dnd5e.qute.ImmuneResist} */
     public final ImmuneResist immuneResist;
+    /** Creature gear as list of item links */
+    public final List<String> gear;
 
     /** Creature speed as a comma-separated list */
     public final String speed;
@@ -82,25 +80,8 @@ public class QuteMonster extends Tools5eQuteBase {
     public final String pb;
     /** Initiative bonus as {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Initiative} */
     public final Initiative initiative;
-    /** Creature traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final List<NamedText> trait;
-    /** Creature actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final List<NamedText> action;
-    /** Creature bonus actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final List<NamedText> bonusAction;
-    /** Creature reactions as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final List<NamedText> reaction;
-    /** Creature legendary traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
-    public final List<NamedText> legendary;
-    /**
-     * Map of grouped legendary traits (Lair Actions, Regional Effects, etc.).
-     * The key the group name, and the value is a list of {@link dev.ebullient.convert.qute.NamedText}.
-     */
-    public final Collection<NamedText> legendaryGroup;
-    /**
-     * Markdown link to legendary group (can be embedded).
-     */
-    public final String legendaryGroupLink;
+    /** Creature traits as {@link dev.ebullient.convert.tools.dnd5e.qute.QuteMonster.Traits} */
+    public final Traits allTraits;
     /** Formatted text containing the creature description. Same as `{resource.text}` */
     public final String description;
     /** Formatted text describing the creature's environment. Usually a single word. */
@@ -114,14 +95,9 @@ public class QuteMonster extends Tools5eQuteBase {
             String subtype, String alignment,
             AcHp acHp, String speed,
             AbilityScores scores, SavesAndSkills savesSkills, String senses, int passive,
-            ImmuneResist immuneResist,
+            ImmuneResist immuneResist, List<String> gear,
             String languages, String cr, String pb, Initiative initiative,
-            List<NamedText> trait,
-            List<NamedText> action,
-            List<NamedText> bonusAction,
-            List<NamedText> reaction,
-            List<NamedText> legendary,
-            Collection<NamedText> legendaryGroup, String legendaryGroupLink,
+            Traits traits,
             List<Spellcasting> spellcasting,
             String description, String environment,
             ImageRef tokenImage, List<ImageRef> images, Tags tags) {
@@ -142,17 +118,12 @@ public class QuteMonster extends Tools5eQuteBase {
         this.senses = senses;
         this.passive = passive;
         this.immuneResist = immuneResist;
+        this.gear = gear;
         this.languages = languages;
         this.cr = cr;
         this.pb = pb;
+        this.allTraits = traits;
         this.initiative = initiative;
-        this.trait = trait;
-        this.action = action;
-        this.bonusAction = bonusAction;
-        this.reaction = reaction;
-        this.legendary = legendary;
-        this.legendaryGroup = legendaryGroup;
-        this.legendaryGroupLink = legendaryGroupLink;
         this.spellcasting = spellcasting;
         this.description = description;
         this.environment = environment;
@@ -163,12 +134,12 @@ public class QuteMonster extends Tools5eQuteBase {
                 NamedText nt = new NamedText(sc.name, sc.getDesc());
                 if (nt.hasContent()) {
                     switch (sc.displayAs) {
-                        case "trait" -> trait.add(0, nt);
-                        case "action" -> action.add(nt);
-                        case "bonus" -> bonusAction.add(nt);
-                        case "reaction" -> reaction.add(nt);
-                        case "legendary" -> legendary.add(nt);
-                        // case "mythic" -> legendary.add(nt);
+                        case "trait" -> allTraits.traits().add(0, nt);
+                        case "action" -> allTraits.actions().add(nt);
+                        case "bonus" -> allTraits.bonusActions().add(nt);
+                        case "reaction" -> allTraits.reactions().add(nt);
+                        case "legendary" -> allTraits.legendaryActions().add(nt);
+                        case "mythic" -> allTraits.mythicActions.add(nt);
                     }
                 }
             }
@@ -277,6 +248,68 @@ public class QuteMonster extends Tools5eQuteBase {
         return savesSkills.getSkills();
     }
 
+    /** Creature traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
+    public List<NamedText> getTrait() {
+        return traitsWithHeader(allTraits.traits);
+    }
+
+    /** Creature actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
+    public List<NamedText> getAction() {
+        return traitsWithHeader(allTraits.actions);
+    }
+
+    /** Creature bonus actions as a list of {@link dev.ebullient.convert.qute.NamedText} */
+    public List<NamedText> getBonusAction() {
+        return traitsWithHeader(allTraits.bonusActions);
+    }
+
+    /** Creature reactions as a list of {@link dev.ebullient.convert.qute.NamedText} */
+    public List<NamedText> getReaction() {
+        return traitsWithHeader(allTraits.reactions);
+    }
+
+    /** Creature legendary traits as a list of {@link dev.ebullient.convert.qute.NamedText} */
+    public List<NamedText> getLegendary() {
+        return traitsWithHeader(allTraits.legendaryActions);
+    }
+
+    private List<NamedText> traitsWithHeader(TraitDescription traitDesc) {
+        if (isPresent(traitDesc) && traitDesc.isPresent()) {
+            List<NamedText> traits = new ArrayList<>();
+            if (isPresent(traitDesc.description())) {
+                traits.add(new NamedText("", traitDesc.description()));
+            }
+            traits.addAll(traitDesc.traits());
+            return traits;
+        }
+        return List.of();
+    }
+
+    /**
+     * Map of grouped legendary traits (Lair Actions, Regional Effects, etc.).
+     * The key the group name, and the value is a list of {@link dev.ebullient.convert.qute.NamedText}.
+     */
+    public Collection<NamedText> getLegendaryGroup() {
+        List<NamedText> legendaryGroupTraits = new ArrayList<>();
+        if (isPresent(allTraits.lairActions) && allTraits.lairActions.isPresent()) {
+            legendaryGroupTraits.add(allTraits.lairActions.asNamedText());
+        }
+        if (isPresent(allTraits.regionalEffects) && allTraits.regionalEffects.isPresent()) {
+            legendaryGroupTraits.add(allTraits.regionalEffects.asNamedText());
+        }
+        if (isPresent(allTraits.mythicActions) && allTraits.mythicActions.isPresent()) {
+            legendaryGroupTraits.add(allTraits.mythicActions.asNamedText());
+        }
+        return legendaryGroupTraits;
+    }
+
+    /**
+     * Markdown link to legendary group (can be embedded).
+     */
+    public String getLegendaryGroupLink() {
+        return allTraits.legendaryGroupLink();
+    }
+
     /**
      * A minimal YAML snippet containing monster attributes required by the
      * Initiative Tracker plugin. Use this in frontmatter.
@@ -374,21 +407,23 @@ public class QuteMonster extends Tools5eQuteBase {
         map.put("languages", languages);
         addUnlessEmpty(map, "cr", cr);
 
-        addUnlessEmpty(map, "traits", trait);
-        addUnlessEmpty(map, "actions", action);
-        addUnlessEmpty(map, "bonus_actions", bonusAction);
-        addUnlessEmpty(map, "reactions", reaction);
-        addUnlessEmpty(map, "legendary_actions", legendary);
+        addUnlessEmpty(map, "traits", traitsFrom(allTraits.traits()));
+        addUnlessEmpty(map, "actions", traitsFrom(allTraits.actions()));
+        addUnlessEmpty(map, "bonus_actions", traitsFrom(allTraits.bonusActions()));
+        addUnlessEmpty(map, "reactions", traitsFrom(allTraits.reactions()));
+        addUnlessEmpty(map, "lair_actions", traitsFrom(allTraits.lairActions()));
+        addUnlessEmpty(map, "regional_effects", traitsFrom(allTraits.regionalEffects()));
 
-        if (legendaryGroup != null) {
-            for (NamedText group : legendaryGroup) {
-                String key = group_map.get(group.getKey().toLowerCase());
-                if (key != null && group.nested.isEmpty()) {
-                    map.put(key, group.getValue());
-                } else if (key != null) {
-                    map.put(key, group.nested);
-                }
-            }
+        TraitDescription legendary = allTraits.legendaryActions();
+        if (isPresent(legendary)) {
+            addUnlessEmpty(map, "legendary_description", legendary.description());
+            addUnlessEmpty(map, "legendary_actions", legendary.traits());
+        }
+
+        TraitDescription mythic = allTraits.mythicActions();
+        if (isPresent(mythic)) {
+            addUnlessEmpty(map, "mythic_description", mythic.description());
+            addUnlessEmpty(map, "mythic_actions", mythic.traits());
         }
 
         addUnlessEmpty(map, "source", getBooks());
@@ -398,10 +433,14 @@ public class QuteMonster extends Tools5eQuteBase {
 
         // De-markdown-ify
         return Tui.quotedYaml().dump(map).trim()
-                .replaceAll("`", "")
-                .replaceAll("\\*([^*]+)\\*", "$1") // em
-                .replaceAll("\\*([^*]+)\\*", "$1") // bold
-                .replaceAll("\\*([^*]+)\\*", "$1"); // bold em
+                .replaceAll("`", "");
+    }
+
+    private List<NamedText> traitsFrom(TraitDescription traitDesc) {
+        if (isPresent(traitDesc) && isPresent(traitDesc.traits())) {
+            return traitDesc.traits();
+        }
+        return null;
     }
 
     private String yamlMonsterName(boolean withSource) {
@@ -413,6 +452,76 @@ public class QuteMonster extends Tools5eQuteBase {
             }
         }
         return "";
+    }
+
+    /**
+     * 5eTools creature traits.
+     *
+     * @param traits Creature traits as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param actions Creature actions as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param bonusActions Creature bonus actions as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param reactions Creature reactions as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param legendaryActions Creature legendary traits as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param lairActions Creature lair actions as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param regionalEffects Creature regional effects as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param mythicActions Creature mythic traits as a list of {@link dev.ebullient.convert.qute.NamedText}
+     * @param legendaryGroupLink Link to the legendary group, if present
+     * @param legendaryActionCount Number of legendary actions
+     * @param legendaryActionsLairCount Number of legendary lair actions
+     */
+    @TemplateData
+    @RegisterForReflection
+    public record Traits(
+            TraitDescription traits,
+            TraitDescription actions,
+            TraitDescription bonusActions,
+            TraitDescription reactions,
+            TraitDescription legendaryActions,
+            TraitDescription lairActions,
+            TraitDescription regionalEffects,
+            TraitDescription mythicActions,
+            String legendaryGroupLink) implements QuteUtil {
+    }
+
+    /**
+     * 5eTools creature trait description.
+     *
+     * @param title Title of the trait description
+     * @param description Formatted text describing the collection of traits
+     * @param traits Traits as a list of {@link dev.ebullient.convert.qute.NamedText}
+     */
+    @TemplateData
+    @RegisterForReflection
+    public record TraitDescription(
+            String title,
+            String description,
+            List<NamedText> traits) implements QuteUtil {
+
+        public void add(int i, NamedText nt) {
+            traits.add(0, nt);
+        }
+
+        public boolean isPresent() {
+            return isPresent(description) || isPresent(traits);
+        }
+
+        public void add(NamedText nt) {
+            traits.add(nt);
+        }
+
+        public NamedText asNamedText() {
+            List<String> text = new ArrayList<>();
+            if (isPresent(description)) {
+                text.add(description);
+                if (isPresent(traits)) {
+                    text.add("");
+                }
+            }
+            for (var nt : traits) {
+                text.add(nt.toString());
+            }
+            return new NamedText(title, text, traits);
+        }
     }
 
     /**
