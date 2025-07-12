@@ -682,6 +682,9 @@ configPf2e:
     CHD:
       name: "Critical Hit Deck"
       date: "2019-10-16"
+    CotT:
+      name: "Claws of the Tyrant"
+      date: "2025-04-02"
     CRB:
       name: "Core Rulebook"
       date: "2019-08-01"
@@ -763,6 +766,9 @@ configPf2e:
     LOCG:
       name: "Lost Omens: Character Guide"
       date: "2019-10-16"
+    LODM:
+      name: "Lost Omens: Divine Mysteries"
+      date: "2024-11-20"
     LOGM:
       name: "Lost Omens: Gods & Magic"
       date: "2020-01-29"
@@ -790,6 +796,12 @@ configPf2e:
     LOPSG:
       name: "Lost Omens: Pathfinder Society Guide"
       date: "2020-10-14"
+    LORA:
+      name: "Lost Omens: Rival Academies"
+      date: "2025-03-05"
+    LOSK:
+      name: "Lost Omens: Shining Kingdoms"
+      date: "2025-06-04"
     LOTG:
       name: "Lost Omens: Travel Guide"
       date: "2022-08-31"
@@ -811,6 +823,9 @@ configPf2e:
     MotM:
       name: "Mark of the Mantis"
       date: "2022-02-23"
+    MS0:
+      name: "Myth-Speaker Player's Guide"
+      date: "2025-06-16"
     NGD:
       name: "Night of the Gray Death"
       date: "2021-10-13"
@@ -868,6 +883,9 @@ configPf2e:
     Sli:
       name: "The Slithering"
       date: "2020-07-30"
+    SoB0:
+      name: "Shades of Blood Player's Guide"
+      date: "2025-03-27"
     SoG0:
       name: "Season of Ghosts Player's Guide"
       date: "2023-10-02"
@@ -928,6 +946,9 @@ configPf2e:
     TotT0:
       name: "Triumph of the Tusk Player's Guide"
       date: "2024-10-09"
+    WoI:
+      name: "War of Immortals"
+      date: "2024-10-30"
     WoW0:
       name: "Wardens of Wildwood Player's Guide"
       date: "2024-04-23"

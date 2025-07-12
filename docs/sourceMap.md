@@ -277,6 +277,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | CFD | Critical Fumble Deck |
 | CHD | Critical Hit Deck |
 | CRB | Core Rulebook |
+| CotT | Claws of the Tyrant |
 | DA | Dark Archive |
 | DaLl | Dinner at Lionlodge |
 | EC0 | Extinction Curse Player's Guide |
@@ -303,6 +304,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | LOACLO | Lost Omens: Absalom, City of Lost Omens |
 | LOAG | Lost Omens: Ancestry Guide |
 | LOCG | Lost Omens: Character Guide |
+| LODM | Lost Omens: Divine Mysteries |
 | LOGM | Lost Omens: Gods & Magic |
 | LOGMWS | Lost Omens: Gods & Magic Web Supplement |
 | LOHh | Lost Omens: Highhelm |
@@ -312,11 +314,14 @@ You may see these abbreviations referenced in source material, this is how they 
 | LOME | Lost Omens: The Mwangi Expanse |
 | LOMM | Lost Omens: Monsters of Myth |
 | LOPSG | Lost Omens: Pathfinder Society Guide |
+| LORA | Lost Omens: Rival Academies |
+| LOSK | Lost Omens: Shining Kingdoms |
 | LOTG | Lost Omens: Travel Guide |
 | LOTGB | Lost Omens: The Grand Bazaar |
 | LOTXWG | Lost Omens: Tian Xia World Guide |
 | LOWG | Lost Omens: World Guide |
 | LTiBA | Little Trouble in Big Absalom |
+| MS0 | Myth-Speaker Player's Guide |
 | Mal | Malevolence |
 | MotM | Mark of the Mantis |
 | NGD | Night of the Gray Death |
@@ -339,6 +344,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | SW0 | Spore War Player's Guide |
 | SaS | Shadows at Sundown |
 | Sli | The Slithering |
+| SoB0 | Shades of Blood Player's Guide |
 | SoG0 | Season of Ghosts Player's Guide |
 | SoG1 | Season of Ghosts #1: The Summer That Never Was |
 | SoG2 | Season of Ghosts #2: Let the Leaves Fall |
@@ -358,6 +364,7 @@ You may see these abbreviations referenced in source material, this is how they 
 | TiO | Troubles in Otari |
 | ToK | Threshold of Knowledge |
 | TotT0 | Triumph of the Tusk Player's Guide |
+| WoI | War of Immortals |
 | WoW0 | Wardens of Wildwood Player's Guide |
 | WoW1 | Wardens of Wildwood #1: Pactbreaker |
 | WoW2 | Wardens of Wildwood #2: Severed at the Root |

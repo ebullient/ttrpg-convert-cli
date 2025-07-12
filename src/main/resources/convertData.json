@@ -1040,6 +1040,10 @@
     "fixes": {
       "actions.json": [
         {
+          "match": "(\\{@condition [^|]+?\\|PC1})}\"",
+          "replace": "$1\""
+        },
+        {
           "match": "(connecting areas \\{@b A12}} and \\{@b A22})",
           "replace": "(connecting areas {@b A12} and {@b A22})"
         }
@@ -1171,6 +1175,14 @@
       ],
       "feats/feats-pc1.json": [
         {
+          "match": "(\\{@action [^|]+?\\|PC1})}",
+          "replace": "$1"
+        },
+        {
+          "match": "(\\{@condition [^|]+?\\|PC1}.*\\.)}\"",
+          "replace": "$1\""
+        },
+        {
           "match": "\\{@featGrimspawn\\|PC1}",
           "replace": "{@feat Grimspawn|PC1}"
         },
@@ -1183,8 +1195,8 @@
           "replace": "{@feat pitborn|PC1} "
         },
         {
-          "match": "(\\{@skill [^|]+?\\|PC1})}\"",
-          "replace": "$1\""
+          "match": "(\\{@skill [^|]+?\\|PC1})}",
+          "replace": "$1"
         }
       ],
       "feats/feats-som.json": [
