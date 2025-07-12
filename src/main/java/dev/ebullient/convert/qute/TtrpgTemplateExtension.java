@@ -1,7 +1,5 @@
 package dev.ebullient.convert.qute;
 
-import static dev.ebullient.convert.StringUtil.pluralize;
-import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.Collection;
 
@@ -27,7 +25,19 @@ public class TtrpgTemplateExtension {
     /** Return the string capitalized. Example: `{resource.name.capitalized}` */
     @JavadocVerbatim
     static String capitalized(String s) {
-        return toTitleCase(s);
+        return StringUtil.toTitleCase(s);
+    }
+
+    /** Return the string capitalized. Example: `{resource.name.capitalized}` */
+    @JavadocVerbatim
+    static String uppercaseFirst(String s) {
+        return StringUtil.uppercaseFirst(s);
+    }
+
+    /** Return the lowercase string. Example: `{resource.name.lowercase}` */
+    @JavadocVerbatim
+    static String lowercase(String s) {
+        return s == null || s.isEmpty() ? s : s.toLowerCase();
     }
 
     /**
@@ -37,7 +47,7 @@ public class TtrpgTemplateExtension {
      */
     @JavadocVerbatim
     static String pluralizeLabel(Collection<?> collection, String s) {
-        return pluralize(s, collection.size(), true);
+        return StringUtil.pluralize(s, collection.size(), true);
     }
 
     /**
