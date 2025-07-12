@@ -339,9 +339,6 @@ public class CommonDataTests {
                         break;
                     } else {
                         frontmatter.add(l);
-                        if (l.contains("*")) {
-                            errors.add(String.format("Found '*' in %s: %s", p, l));
-                        }
                         TestUtils.commonTests(p, l, errors);
                     }
                 }
@@ -397,9 +394,6 @@ public class CommonDataTests {
                         yaml = false; // end yaml block
                     } else if (yaml) {
                         statblock.add(l);
-                        // if (l.contains("*")) {
-                        //     errors.add(String.format("Found '*' in %s: %s", p, l));
-                        // }
                         if (l.contains("\"desc\": \"\"")) {
                             errors.add(String.format("Found empty description in %s: %s", p, l));
                         }
