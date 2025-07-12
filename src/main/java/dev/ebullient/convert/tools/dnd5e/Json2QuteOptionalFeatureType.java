@@ -31,6 +31,7 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
         List<String> featureKeys = oft.features;
         List<JsonNode> nodes = featureKeys.stream()
                 .map(index::getAliasOrDefault)
+                .distinct()
                 .map(index::getNode)
                 .filter(x -> x != null)
                 .sorted(Comparator.comparing(SourceField.name::getTextOrEmpty))
@@ -45,8 +46,8 @@ public class Json2QuteOptionalFeatureType extends Json2QuteCommon {
         List<String> text = new ArrayList<>();
 
         for (JsonNode entry : nodes) {
-            Tools5eIndexType type = Tools5eIndexType.getTypeFromNode(entry);
-            text.add("- " + type.linkify(index, entry));
+            Tools5eSources sources = Tools5eSources.findSources(entry);
+            text.add("- " + linkifier().link(sources));
         }
         if (text.isEmpty()) {
             return null;
