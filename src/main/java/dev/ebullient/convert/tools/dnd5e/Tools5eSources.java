@@ -390,6 +390,10 @@ public class Tools5eSources extends CompendiumSources {
         if (Tools5eIndex.isSrdBasicOnly() && Tools5eSources.isSrd(jsonElement)) {
             String srdName = Tools5eSources.srdName(jsonElement);
             if (srdName != null) {
+                if (this.key.contains("(13 cards)") && !srdName.contains("13 cards")) {
+                    // Special case for the 13-card deck
+                    srdName += " (13 cards)";
+                }
                 return srdName;
             }
         }
