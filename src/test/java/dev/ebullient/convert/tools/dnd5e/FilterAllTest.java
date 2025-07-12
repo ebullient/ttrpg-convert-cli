@@ -573,6 +573,9 @@ public class FilterAllTest {
     @Test
     public void testMonster2024() {
         commonTests.testMonster2024(outputPath);
+
+        assertThat(commonTests.index.isIncluded("monster|archmage|xmm")).isTrue();
+        assertThat(commonTests.index.isIncluded("item|wand|xphb")).isTrue();
     }
 
     @Test

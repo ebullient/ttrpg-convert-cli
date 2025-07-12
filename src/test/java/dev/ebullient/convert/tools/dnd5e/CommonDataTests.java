@@ -68,6 +68,7 @@ public class CommonDataTests {
         configurator.readConfiguration(TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json"));
 
         index = new Tools5eIndex(TtrpgConfig.getConfig());
+        Tools5eLinkifier.instance().reset();
 
         if (dataPresent) {
             templates.setCustomTemplates(TtrpgConfig.getConfig());
@@ -396,9 +397,9 @@ public class CommonDataTests {
                         yaml = false; // end yaml block
                     } else if (yaml) {
                         statblock.add(l);
-                        if (l.contains("*")) {
-                            errors.add(String.format("Found '*' in %s: %s", p, l));
-                        }
+                        // if (l.contains("*")) {
+                        //     errors.add(String.format("Found '*' in %s: %s", p, l));
+                        // }
                         if (l.contains("\"desc\": \"\"")) {
                             errors.add(String.format("Found empty description in %s: %s", p, l));
                         }

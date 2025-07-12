@@ -112,9 +112,10 @@ public class OptionalFeatureIndex implements JsonSource {
     }
 
     public OptionalFeatureType get(String featureType) {
-        OptionalFeatureType type = optFeatureIndex.get(featureType.toLowerCase());
-        if (type == null && unresolvedFeatureTypes.add(featureType)) {
-            tui().logf(Msg.UNRESOLVED, "OptionalFeatureType %s not found", featureType);
+        var lowerType = featureType.toLowerCase();
+        OptionalFeatureType type = optFeatureIndex.get(lowerType);
+        if (type == null && unresolvedFeatureTypes.add(lowerType)) {
+            tui().logf(Msg.UNRESOLVED, "OptionalFeatureType %s not found", lowerType);
         }
         return type;
     }

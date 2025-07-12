@@ -135,10 +135,6 @@ public class CompendiumConfig {
         return allowedSources.stream().allMatch(sources::contains);
     }
 
-    public String getAllowedSourcePattern() {
-        return allSources ? "([^|]+)" : "(" + String.join("|", allowedSources) + ")";
-    }
-
     public boolean readSource(Path p, List<Fix> fixes, BiConsumer<String, JsonNode> callback) {
         return tui.readFile(p, fixes, callback);
     }
@@ -264,8 +260,13 @@ public class CompendiumConfig {
             return;
         }
         String s = source.toLowerCase();
-        allowedSources.add("all".equals(s) ? "*" : s);
-        allSources = allowedSources.contains("*");
+        if ("all".equals(s) || "*".equals(s)) {
+            allSources = true;
+            allowedSources.clear();
+            allowedSources.add("*");
+        } else if (!allSources) {
+            allowedSources.add(s);
+        }
 
         if (!allSources) {
             // If this source maps to an abbreviation, include that, too

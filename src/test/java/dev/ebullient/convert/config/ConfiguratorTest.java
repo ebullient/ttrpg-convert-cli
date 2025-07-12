@@ -58,11 +58,10 @@ public class ConfiguratorTest {
             assertThat(config.allSources()).isFalse();
             assertThat(config.sourceIncluded("phb")).isTrue();
             assertThat(config.sourceIncluded("scag")).isFalse();
-            assertThat(config.getAllowedSourcePattern()).contains("phb");
-            assertThat(config.getAllowedSourcePattern()).contains("dmg");
-            assertThat(config.getAllowedSourcePattern()).contains("xge");
-            assertThat(config.getAllowedSourcePattern()).contains("tce");
-            assertThat(config.getAllowedSourcePattern()).contains("wbtw");
+            assertThat(config.sourceIncluded("dmg")).isTrue();
+            assertThat(config.sourceIncluded("xge")).isTrue();
+            assertThat(config.sourceIncluded("tce")).isTrue();
+            assertThat(config.sourceIncluded("wbtw")).isTrue();
         });
     }
 
@@ -78,7 +77,6 @@ public class ConfiguratorTest {
             assertThat(config).isNotNull();
             assertThat(config.allSources()).isTrue();
             assertThat(config.sourceIncluded("scag")).isTrue();
-            assertThat(config.getAllowedSourcePattern()).contains("([^|]+)");
         });
     }
 

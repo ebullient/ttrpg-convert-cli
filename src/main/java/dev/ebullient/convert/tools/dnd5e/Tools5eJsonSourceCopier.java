@@ -680,7 +680,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         }
     }
 
-    private String getShortName(JsonNode target, boolean isTitleCase) {
+    public static String getShortName(JsonNode target, boolean isTitleCase) {
         String name = SourceField.name.getTextOrEmpty(target);
         JsonNode shortName = Tools5eFields.shortName.getFrom(target);
         boolean isNamedCreature = MonsterFields.isNamedCreature.booleanOrDefault(target, false);
@@ -705,7 +705,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         return prefix + getShortNameFromName(name, isNamedCreature);
     }
 
-    private String getShortNameFromName(String name, boolean isNamedCreature) {
+    public static String getShortNameFromName(String name, boolean isNamedCreature) {
         String result = name.split(",")[0]
                 .replaceAll("(?i)(?:adult|ancient|young) \\w+ (dragon|dracolich)", "$1");
 

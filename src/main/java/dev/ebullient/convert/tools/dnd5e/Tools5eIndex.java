@@ -280,6 +280,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             case table, tableGroup -> {
                 SourceAndPage sp = new SourceAndPage(node);
                 tableIndex.computeIfAbsent(sp, k -> new ArrayList<>()).add(node);
+                if (type == Tools5eIndexType.tableGroup) {
+                    addAlias(key.replace("tablegroup", "table"), key);
+                }
             }
             case language -> {
                 if (HomebrewFields.fonts.existsIn(node)) {
