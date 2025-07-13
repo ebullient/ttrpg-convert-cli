@@ -482,9 +482,8 @@ public class StringUtil {
 
     // markdown link to href
     public static String markdownLinkToHtml(String x) {
-        return x.replaceAll("\\[([^\\]]+)\\]\\(([^\\s)]+)(?:\\s\"[^\"]*\")?\\)",
+        return x.replaceAll("(?<!\\^)\\[([^\\]]+)\\]\\(([^\\s)]+)(?:\\s\"[^\"]*\")?\\)",
                 "<a href=\"$2\">$1</a>");
-
     }
 
     /**

@@ -34,6 +34,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteClass.StartingEquipment;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteSubclass;
 
 public class Json2QuteClass extends Json2QuteCommon {
+    final static Pattern footnotePattern = Pattern.compile("\\^\\[([^\\]]+)\\]");
 
     final static Map<String, ClassFeature> keyToClassFeature = new HashMap<>();
 
@@ -358,6 +359,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     List<String> buildProgressionTable(List<ClassFeature> features, JsonNode sourceNode, ClassFields field) {
         List<String> headings = new ArrayList<>();
         List<String> spellCasting = new ArrayList<>();
+        List<String> footnotes = new ArrayList<>();
 
         Map<Integer, LevelProgression> levels = new HashMap<>();
         for (int i = 1; i < 21; i++) {
@@ -375,7 +377,7 @@ public class Json2QuteClass extends Json2QuteCommon {
             if (ClassFields.rows.existsIn(tableNode)) {
                 // headings for other/middle columns
                 for (JsonNode label : ClassFields.colLabels.iterateArrayFrom(tableNode)) {
-                    headings.add(markdownLinkToHtml(replaceText(label)));
+                    headings.add(stripTableMarkdown(label, footnotes));
                 }
 
                 // values for other/middle columns
@@ -403,12 +405,26 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
         }
 
-        return progressionAsTable(headings, spellCasting, levels);
+        return progressionAsTable(headings, spellCasting, levels, footnotes);
+    }
+
+    private String stripTableMarkdown(JsonNode label, List<String> footnotes) {
+        String text = markdownLinkToHtml(replaceText(label));
+
+        // Extract footnotes and replace with markers
+        Matcher matcher = footnotePattern.matcher(text);
+
+        return matcher.replaceAll(matchResult -> {
+            String footnoteContent = matchResult.group(1);
+            footnotes.add(footnoteContent);
+            return " <sup>‡" + footnotes.size() + "</sup>";
+        });
     }
 
     List<String> progressionAsTable(List<String> headings,
             List<String> spellCasting,
-            Map<Integer, LevelProgression> levels) {
+            Map<Integer, LevelProgression> levels,
+            List<String> footnotes) {
         List<String> text = new ArrayList<>();
         text.add("[!tldr] Class and Feature Progression");
         text.add("");
@@ -455,6 +471,13 @@ public class Json2QuteClass extends Json2QuteCommon {
         }
 
         text.add("</tbody></table>");
+        if (!footnotes.isEmpty()) {
+            text.add("<section class=\"footnotes\"><ul>");
+            for (var i = 0; i < footnotes.size(); i++) {
+                text.add("<li>‡" + (i + 1) + ": " + footnotes.get(i) + "</li>");
+            }
+            text.add("</ul></section>");
+        }
 
         // Move everything into a callout box
         text.replaceAll(s -> "> " + s);
