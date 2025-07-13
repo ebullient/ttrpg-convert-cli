@@ -95,7 +95,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 speed(Tools5eFields.speed.getFrom(rootNode)),
                 abilityScores,
                 monsterSavesAndSkills(),
-                joinAndReplace(rootNode, "senses"),
+                linkedSenses(),
                 intOrDefault(rootNode, "passive", 10),
                 immuneResist(),
                 gear(),
@@ -526,6 +526,29 @@ public class Json2QuteMonster extends Json2QuteCommon {
         } finally {
             parseState().pop(pushed);
         }
+    }
+
+    String linkedSenses() {
+        JsonNode node = MonsterFields.senses.getFrom(rootNode);
+        if (node == null || node.isNull()) {
+            return "";
+        }
+        if (node.isTextual()) {
+            return linkifySense(node.asText());
+        }
+        List<String> list = new ArrayList<>();
+        for (JsonNode senseNode : iterableElements(node)) {
+            list.add(linkifySense(senseNode.asText()));
+        }
+        return String.join(", ", list);
+    }
+
+    String linkifySense(String sense) {
+        int pos = sense.indexOf(" "); // find first space
+        if (pos < 0) {
+            return linkify(Tools5eIndexType.sense, sense);
+        }
+        return replaceText("{@sense %s}%s".formatted(sense.substring(0, pos), sense.substring(pos)));
     }
 
     List<String> gear() {
