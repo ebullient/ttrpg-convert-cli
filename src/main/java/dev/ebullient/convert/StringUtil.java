@@ -11,8 +11,9 @@ import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * Holds common, generic string utiltity methods.
@@ -24,6 +25,12 @@ import java.util.stream.Collectors;
  * </p>
  */
 public class StringUtil {
+    final static Set<String> lowercaseWords = Set.of(
+            "a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "with",
+            "but", "nor", "so", "yet", "and", "or");
+
+    final static Set<String> conjunctionArticle = Set.of(
+            "a", "an", "the", "and", "or");
 
     /**
      * Return {@code formatString} formatted with {@code o} as the first parameter.
@@ -44,7 +51,24 @@ public class StringUtil {
     }
 
     public static String uppercaseFirst(String value) {
-        return value == null || value.isEmpty() ? value : Character.toUpperCase(value.charAt(0)) + value.substring(1);
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        Pattern pattern = Pattern.compile("^(\\P{L}*)(.*)");
+        Matcher matcher = pattern.matcher(value);
+
+        if (matcher.matches()) {
+            String prefix = matcher.group(1); // Leading non-letters
+            String rest = matcher.group(2); // Everything else
+
+            if (rest.isEmpty()) {
+                return value; // No letters found
+            }
+
+            return prefix + Character.toUpperCase(rest.charAt(0)) + rest.substring(1);
+        }
+
+        return value;
     }
 
     public static boolean equal(Object o1, Object o2) {
@@ -196,14 +220,43 @@ public class StringUtil {
 
     /** Return the given text converted to title case, with the first letter of each word capitalized. */
     public static String toTitleCase(String text) {
+        return toTitleCase(text, false);
+    }
+
+    /**
+     * Return the given text converted to title case, with the first letter of each word capitalized.
+     *
+     * @param text The text to convert to title case
+     * @param midClause If true, then don't capitalize conjunctions and articles in the middle of a clause.
+     */
+    public static String toTitleCase(String text, boolean midClause) {
         if (text == null || text.isEmpty()) {
             return text;
         }
-        return Arrays.stream(text.split(" "))
-                .map(word -> word.isEmpty()
-                        ? word
-                        : Character.toTitleCase(word.charAt(0)) + word.substring(1).toLowerCase())
-                .collect(Collectors.joining(" "));
+        String[] words = text.split(" ", -1);
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            if (word.isEmpty() || word.matches("\\P{L}+")) {
+                continue; // Skip empty words
+            }
+            var lowerWord = word.toLowerCase();
+
+            if (midClause && conjunctionArticle.contains(lowerWord)) {
+                // Don't capitalize conjunctions
+                words[i] = lowerWord;
+            } else if (i == 0 || i == words.length - 1 || !lowercaseWords.contains(lowerWord)) {
+                // // Capitalize; Handle markdown link display text: [word] -> [Word]
+                // if (word.startsWith("[") && word.length() > 1) {
+                //     words[i] = "[" + Character.toTitleCase(word.charAt(1)) + word.substring(2).toLowerCase();
+                // } else {
+                //     words[i] = Character.toTitleCase(word.charAt(0)) + word.substring(1).toLowerCase();
+                // }
+                words[i] = uppercaseFirst(word);
+            } else {
+                words[i] = lowerWord;
+            }
+        }
+        return String.join(" ", words);
     }
 
     /** Returns true if the given string is non-null and non-blank. */
