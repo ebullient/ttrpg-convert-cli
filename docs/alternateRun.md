@@ -152,6 +152,10 @@ Next steps:
 - [Convert Homebrew JSON data][homebrew]
 - Create your own [configuration file][config].
 
+> [!NOTE]
+> Java 17 and Java 21 will work without issue.
+> There are known issues with picocli and Java 24; avoid it.
+
 ## Build and run from source
 
 This is a Quarkus project that uses Maven as its build tool.

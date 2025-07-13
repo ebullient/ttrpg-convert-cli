@@ -36,6 +36,10 @@ mkdir -p sources
 gh repo clone Pf2eToolsOrg/Pf2eTools sources/Pf2eTools -- --depth=1
 ```
 
+> [!NOTE]
+> Java 17 and Java 21 will work without issue.
+> There are known issues with picocli and Java 24; avoid it.
+
 ### Building native images
 
 A Pull Request build will automatically build a native image for Linux. Building a native image requires a few more steps (GraalVM, native-image, etc). See the [Quarkus documentation](https://quarkus.io/guides/building-native-image) for more information.
