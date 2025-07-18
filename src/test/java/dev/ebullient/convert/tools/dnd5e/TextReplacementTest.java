@@ -142,7 +142,7 @@ public class TextReplacementTest implements JsonSource {
                 "with extended display text (`+2`) and display text (`+2`)",
                 "a special 'hit' version which assumes a d20 is to be rolled `+7`",
                 "There's also `1d12+3` and `-4`",
-                "scaledamage: `d6`, scaledice: extra amount (`d6`)",
+                "scaledamage: `1d6`, scaledice: extra amount (`1d6`)",
                 "<span title='Strength'>`20` (`+5`)</span>, <span title='Strength'>`+5`</span>, and [Animal Handling](rules/skills.md#Animal%20Handling) (`+5`)",
                 "with an Intelligence of `+3` (`16`), a Wisdom of `+0` (`10`), and a Charisma of `+4` (`18`)",
                 "`+3 plus PB` to hit;  *Hit:* 7 (`1d6 + 4`) piercing damage plus 7 (`2d6`) poison damage.",
@@ -165,7 +165,7 @@ public class TextReplacementTest implements JsonSource {
                 "with extended `dice:1d20+2|noform|noparens|avg|text(display text)` (`+2`) and `dice:1d20+2|noform|noparens|avg|text(display text)` (`+2`)",
                 "a special 'hit' version which assumes a d20 is to be rolled `dice:1d20+7|noform|noparens|text(+7)`",
                 "There's also `dice:1d12+3|noform|noparens|avg` (`1d12+3`) and `dice:1d20-4|noform|noparens|text(-4)`",
-                "scaledamage: `dice:1d6|noform|noparens|avg|text(d6)`, scaledice: `dice:1d6|noform|noparens|avg|text(extra amount)` (`d6`)",
+                "scaledamage: `dice:1d6|noform|noparens|avg|text(1d6)`, scaledice: `dice:1d6|noform|noparens|avg|text(extra amount)` (`1d6`)",
                 "<span title='Strength'>`20` (`dice:d20+5|noform|noparens|text(+5)`)</span>, <span title='Strength'>`dice:d20+5|noform|noparens|text(+5)`</span>, and [Animal Handling](rules/skills.md#Animal%20Handling) (`dice:1d20+5|noform|noparens|text(+5)`)",
                 "with an Intelligence of `dice:1d20+3|noform|noparens|text(+3)` (`16`), a Wisdom of `dice:1d20+0|noform|noparens|text(+0)` (`10`), and a Charisma of `dice:1d20+4|noform|noparens|text(+4)` (`18`)",
                 "`+3 plus PB` to hit;  *Hit:* `dice:1d6+4|noform|noparens|avg|text(7)` (`1d6 + 4`) piercing damage plus `dice:2d6|noform|noparens|avg|text(7)` (`2d6`) poison damage.",
@@ -195,7 +195,7 @@ public class TextReplacementTest implements JsonSource {
                 "with extended display text (+2) and display text (+2)",
                 "a special 'hit' version which assumes a d20 is to be rolled +7",
                 "There's also 1d12+3 and -4",
-                "scaledamage: d6, scaledice: extra amount (d6)",
+                "scaledamage: 1d6, scaledice: extra amount (1d6)",
                 "<span title='Strength'>20 (+5)</span>, <span title='Strength'>+5</span>, and [Animal Handling](rules/skills.md#Animal%20Handling) (+5)",
                 "with an Intelligence of +3 (16), a Wisdom of +0 (10), and a Charisma of +4 (18)",
                 "+3 plus PB to hit;  *Hit:* 7 (1d6 + 4) piercing damage plus 7 (2d6) poison damage.",
@@ -250,25 +250,25 @@ public class TextReplacementTest implements JsonSource {
         String tag20 = "{@d20}";
 
         assertThat(this.replaceText(d20)).isEqualTo("`d20`");
-        assertThat(this.replaceText(oneD20)).isEqualTo("`d20`");
+        assertThat(this.replaceText(oneD20)).isEqualTo("`1d20`");
         assertThat(this.replaceText(tag20)).isEqualTo("`d20`");
 
         configurator.setUseDiceRoller(DiceRoller.enabled);
 
         assertThat(this.replaceText(d20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
-        assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+        assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(1d20)`");
         assertThat(this.replaceText(tag20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
 
         configurator.setUseDiceRoller(DiceRoller.enabledUsingFS);
 
         assertThat(this.replaceText(d20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
-        assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
+        assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(1d20)`");
         assertThat(this.replaceText(tag20)).isEqualTo("`dice:1d20|noform|noparens|avg|text(d20)`");
 
         boolean pushed = parseState().pushMarkdownTable(true);
         try {
             assertThat(this.replaceText(d20)).isEqualTo("`dice:1d20\\|noform\\|noparens\\|avg\\|text(d20)`");
-            assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20\\|noform\\|noparens\\|avg\\|text(d20)`");
+            assertThat(this.replaceText(oneD20)).isEqualTo("`dice:1d20\\|noform\\|noparens\\|avg\\|text(1d20)`");
             assertThat(this.replaceText(tag20)).isEqualTo("`dice:1d20\\|noform\\|noparens\\|avg\\|text(d20)`");
         } finally {
             parseState().pop(pushed);
@@ -277,13 +277,13 @@ public class TextReplacementTest implements JsonSource {
         pushed = parseState().pushTrait();
         try {
             assertThat(this.replaceText(d20)).isEqualTo("d20");
-            assertThat(this.replaceText(oneD20)).isEqualTo("d20");
+            assertThat(this.replaceText(oneD20)).isEqualTo("1d20");
             assertThat(this.replaceText(tag20)).isEqualTo("d20");
 
             configurator.setUseDiceRoller(DiceRoller.disabledUsingFS);
 
             assertThat(this.replaceText(d20)).isEqualTo("d20");
-            assertThat(this.replaceText(oneD20)).isEqualTo("d20");
+            assertThat(this.replaceText(oneD20)).isEqualTo("1d20");
             assertThat(this.replaceText(tag20)).isEqualTo("d20");
         } finally {
             parseState().pop(pushed);
@@ -298,22 +298,22 @@ public class TextReplacementTest implements JsonSource {
         String oneD12 = "{@dice 1d12}";
 
         assertThat(this.replaceText(d12)).isEqualTo("`d12`");
-        assertThat(this.replaceText(oneD12)).isEqualTo("`d12`");
+        assertThat(this.replaceText(oneD12)).isEqualTo("`1d12`");
 
         configurator.setUseDiceRoller(DiceRoller.enabled);
 
         assertThat(this.replaceText(d12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
-        assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
+        assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(1d12)`");
 
         configurator.setUseDiceRoller(DiceRoller.enabledUsingFS);
 
         assertThat(this.replaceText(d12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
-        assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(d12)`");
+        assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12|noform|noparens|avg|text(1d12)`");
 
         boolean pushed = parseState().pushMarkdownTable(true);
         try {
             assertThat(this.replaceText(d12)).isEqualTo("`dice:1d12\\|noform\\|noparens\\|avg\\|text(d12)`");
-            assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12\\|noform\\|noparens\\|avg\\|text(d12)`");
+            assertThat(this.replaceText(oneD12)).isEqualTo("`dice:1d12\\|noform\\|noparens\\|avg\\|text(1d12)`");
         } finally {
             parseState().pop(pushed);
         }
@@ -321,12 +321,12 @@ public class TextReplacementTest implements JsonSource {
         pushed = parseState().pushTrait();
         try {
             assertThat(this.replaceText(d12)).isEqualTo("d12");
-            assertThat(this.replaceText(oneD12)).isEqualTo("d12");
+            assertThat(this.replaceText(oneD12)).isEqualTo("1d12");
 
             configurator.setUseDiceRoller(DiceRoller.disabledUsingFS);
 
             assertThat(this.replaceText(d12)).isEqualTo("d12");
-            assertThat(this.replaceText(oneD12)).isEqualTo("d12");
+            assertThat(this.replaceText(oneD12)).isEqualTo("1d12");
         } finally {
             parseState().pop(pushed);
         }
