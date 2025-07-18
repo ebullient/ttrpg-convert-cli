@@ -191,7 +191,7 @@ public interface JsonTextConverter<T extends IndexType> {
                 String[] alternatives = rollString.split(";");
                 if (displayText == null && alternatives.length > 1) {
                     for (int i = 0; i < alternatives.length; i++) {
-                        String coded = codeString(alternatives[i], formulaState, true);
+                        String coded = codeString(alternatives[i], formulaState);
                         alternatives[i] = formatDice(alternatives[i], coded, formulaState, true, false);
                     }
                     displayText = String.join(" or ", alternatives);
@@ -264,12 +264,7 @@ public interface JsonTextConverter<T extends IndexType> {
     }
 
     default String codeString(String text, DiceFormulaState formulaState) {
-        return codeString(text, formulaState, false);
-    }
-
-    default String codeString(String text, DiceFormulaState formulaState, boolean alternative) {
         if (text.matches("^1?d\\d+$")) {
-            text = alternative ? text : text.replace("1d", "d");
             return formulaState.plainText() ? text : "`%s`".formatted(text);
         }
         text = text.replace("1d20", "");
@@ -292,8 +287,8 @@ public interface JsonTextConverter<T extends IndexType> {
         if (text.contains("reach levels")) {
             // don't look for averages here. This is spell progression
         } else if (text.matches("^`dice:1?d\\d+\\|.*?` \\(`1?d\\d+`\\)")) {
-            text = text.replaceAll("^`dice:1?d(\\d+)\\|.*",
-                    "`dice:1d$1|noform|noparens|avg|text(d$1)`");
+            text = text.replaceAll("^`dice:(1)?d(\\d+)\\|.*",
+                    "`dice:1d$2|noform|noparens|avg|text($1d$2)`");
         } else {
             // otherwise look for average rolls
             // 7 (`dice:1d6+4|noform|avg` (`1d6 + 4`)) --> `dice:1d6+4|noform|avg|text(7)` (`1d6 + 4`)
