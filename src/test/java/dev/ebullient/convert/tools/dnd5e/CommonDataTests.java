@@ -331,11 +331,12 @@ public class CommonDataTests {
                 }
 
                 for (String l : content.subList(1, content.size())) {
-                    if (l.equals("cssclasses: json5e-note")) {
+                    if (l.startsWith("cssclasses:")) {
                         index = true;
                     } else if (l.equals("statblock: true")) {
                         found = true;
-                    } else if (l.equals("---")) {
+                    }
+                    if (l.equals("---")) {
                         break;
                     } else {
                         frontmatter.add(l);

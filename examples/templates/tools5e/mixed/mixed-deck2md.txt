@@ -1,6 +1,7 @@
 ---
 obsidianUIMode: preview
-cssclasses: json5e-deck
+cssclasses:
+- json5e-deck
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}

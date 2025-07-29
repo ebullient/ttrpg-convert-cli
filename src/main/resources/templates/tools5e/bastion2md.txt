@@ -1,6 +1,7 @@
 ---
 obsidianUIMode: preview
-cssclasses: json5e-bastion
+cssclasses:
+- json5e-bastion
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}

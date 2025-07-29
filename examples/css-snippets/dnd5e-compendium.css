@@ -726,3 +726,9 @@ body {
 .creature-view-container.workspace-leaf-content .admonition {
   margin-top: 0;
 }
+
+@media (min-width: 600px) {
+  .json5e-index ul {
+    columns: 2;
+  }
+}

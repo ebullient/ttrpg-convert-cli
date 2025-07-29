@@ -1,6 +1,7 @@
 ---
 obsidianUIMode: preview
-cssclasses: json5e-reward
+cssclasses:
+- json5e-reward
 {#if resource.tags }
 tags:
 {#for tag in resource.tags}

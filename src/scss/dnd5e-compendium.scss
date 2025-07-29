@@ -13,3 +13,11 @@
     margin-top: 0;
   }
 }
+
+.json5e-index {
+  @media (min-width: 600px) {
+    ul {
+      columns: 2;
+    }
+  }
+}
