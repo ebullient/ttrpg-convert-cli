@@ -799,7 +799,9 @@ public interface JsonSource extends JsonTextReplacement {
                 if (!blockid.isBlank()) {
                     table.add(blockid);
                 }
-                if (header.matches(JsonTextConverter.DICE_TABLE_HEADER) && !blockid.isBlank()) {
+                if (cfg().useDiceRoller().enabled()
+                        && header.matches(JsonTextConverter.DICE_TABLE_HEADER)
+                        && !blockid.isBlank()) {
                     // prepend a dice roller
                     String targetFile = getFileName();
                     // use dice roller string as name (for use if nested table)

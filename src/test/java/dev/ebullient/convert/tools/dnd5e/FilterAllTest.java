@@ -61,7 +61,8 @@ public class FilterAllTest {
                     },
                     "images": {
                         "copyInternal": false
-                    }
+                    },
+                    "useDiceRoller" : true
                 }
                 """.stripIndent();
         commonTests = new CommonDataTests(testInput, config, TestUtils.PATH_5E_TOOLS_DATA);

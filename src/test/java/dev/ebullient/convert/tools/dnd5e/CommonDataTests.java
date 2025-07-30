@@ -523,7 +523,10 @@ public class CommonDataTests {
 
             MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
             index.markdownConverter(writer).writeFiles(Stream.of(Tools5eIndexType.values())
-                    .filter(x -> x.isOutputType() && !x.useCompendiumBase())
+                    .filter(x -> (x.isOutputType() && !x.useCompendiumBase())
+                            || x == Tools5eIndexType.table
+                            || x == Tools5eIndexType.bookData
+                            || x == Tools5eIndexType.adventureData)
                     .toList());
 
             TestUtils.assertDirectoryContents(outputPath.resolve(index.rulesFilePath()), tui);

@@ -53,7 +53,8 @@ public class FilterSubsetMixedTest {
                     ],
                     "images": {
                         "copyInternal": false
-                    }
+                    },
+                    "useDiceRoller" : false
                 }
                 """.stripIndent();
         commonTests = new CommonDataTests(testInput, config, TestUtils.PATH_5E_TOOLS_DATA);
@@ -385,6 +386,11 @@ public class FilterSubsetMixedTest {
 
         String content = Files.readString(dirgeSinger);
         assertThat(content).contains("Mixed edition content");
+    }
+
+    @Test
+    public void testRules() {
+        commonTests.testRules(outputPath);
     }
 
     private static Tools5eLinkifier linkifier() {
