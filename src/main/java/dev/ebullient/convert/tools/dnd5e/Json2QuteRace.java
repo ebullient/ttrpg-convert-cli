@@ -71,14 +71,14 @@ public class Json2QuteRace extends Json2QuteCommon {
                 return speed.asText() + " ft.";
             } else if (speed.isObject()) {
                 List<String> list = new ArrayList<>();
-                speed.fields().forEachRemaining(f -> {
+                for (var f : speed.properties()) {
                     if (f.getValue().isIntegralNumber()) {
                         list.add(String.format("%s: %s ft.",
                                 f.getKey(), f.getValue().asText()));
                     } else if (f.getValue().isBoolean()) {
                         list.add(f.getKey() + " equal to your walking speed");
                     }
-                });
+                }
                 return String.join("; ", list);
             }
         } catch (IllegalArgumentException ignored) {

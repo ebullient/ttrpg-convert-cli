@@ -139,18 +139,18 @@ public class Json2QuteSpell extends Json2QuteBase {
         JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
         JsonNode X = Pf2eSpell.X.getFrom(heightened);
         if (plusX != null) {
-            plusX.fields().forEachRemaining(x -> {
+            for (var x : plusX.properties()) {
                 namedText.add(
                         String.format("Heightened (+ %s)", x.getKey()),
                         getHeightenedValue(x.getValue()));
-            });
+            }
         }
         if (X != null) {
-            X.fields().forEachRemaining(x -> {
+            for (var x : X.properties()) {
                 namedText.add(
                         String.format("Heightened (%s)", toOrdinal(x.getKey())),
                         getHeightenedValue(x.getValue()));
-            });
+            }
         }
         return namedText.build();
     }
@@ -182,18 +182,18 @@ public class Json2QuteSpell extends Json2QuteBase {
             JsonNode plusX = Pf2eSpell.plusX.getFrom(heightened);
             JsonNode X = Pf2eSpell.X.getFrom(heightened);
             if (plusX != null) {
-                plusX.fields().forEachRemaining(x -> {
+                for (var x : plusX.properties()) {
                     namedText.add(
                             String.format("Amp Heightened (+ %s)", x.getKey()),
                             getHeightenedValue(x.getValue()));
-                });
+                }
             }
             if (X != null) {
-                X.fields().forEachRemaining(x -> {
+                for (var x : X.properties()) {
                     namedText.add(
                             String.format("Amp Heightened (%s)", toOrdinal(x.getKey())),
                             getHeightenedValue(x.getValue()));
-                });
+                }
             }
             amp.ampEffects = namedText.build();
         }

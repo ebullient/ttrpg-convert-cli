@@ -444,7 +444,7 @@ public interface JsonNodeReader {
 
     default Iterable<Entry<String, JsonNode>> iterateFieldsFrom(JsonNode source) {
         if (isObjectIn(source)) {
-            return () -> source.get(this.nodeName()).fields();
+            return () -> source.get(this.nodeName()).properties().iterator();
         }
         return List.of();
     }

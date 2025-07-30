@@ -426,7 +426,9 @@ public class TtrpgConfig {
                 return Map.of();
             }
             Map<String, String> result = new HashMap<>();
-            map.fields().forEachRemaining(e -> result.put(e.getKey().toLowerCase(), e.getValue().asText()));
+            for (var e : map.properties()) {
+                result.put(e.getKey().toLowerCase(), e.getValue().asText());
+            }
             return result;
         }
 
@@ -436,11 +438,11 @@ public class TtrpgConfig {
                 return Map.of();
             }
             Map<String, SourceReference> result = new HashMap<>();
-            map.fields().forEachRemaining(e -> {
+            for (var e : map.properties()) {
                 String key = e.getKey().toLowerCase();
                 SourceReference ref = Tui.MAPPER.convertValue(e.getValue(), SourceReference.class);
                 result.put(key, ref);
-            });
+            }
             return result;
         }
 

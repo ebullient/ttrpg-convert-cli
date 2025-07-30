@@ -371,7 +371,7 @@ public interface JsonTextConverter<T extends IndexType> {
         if (source == null) {
             return List.of();
         }
-        return source::fields;
+        return source.properties();
     }
 
     default Iterable<String> iterableFieldNames(JsonNode source) {

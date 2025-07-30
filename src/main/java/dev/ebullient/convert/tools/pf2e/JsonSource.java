@@ -243,13 +243,17 @@ public interface JsonSource extends JsonTextReplacement {
 
         insetText.add("[!" + callout + "] " + replaceText(name));
 
-        // TODO
-        JsonNode autoReference = Field.recurs.getFieldFrom(entry, Field.auto);
-        if (Field.auto.booleanOrDefault(Field.reference.getFrom(entry), false)) {
-            String page = SourceField.page.getTextOrEmpty(entry);
-            insetText.add(String.format("See %s%s",
-                    page == null ? "" : "page " + page + " of ",
-                    TtrpgConfig.sourceToLongName(SourceField.source.getTextOrEmpty(entry))));
+        JsonNode reference = Field.reference.getFrom(entry);
+        if (Field.auto.booleanOrDefault(reference, false)) {
+            String note = SourceField.note.getTextOrEmpty(reference);
+            if (!note.isEmpty()) {
+                insetText.add(replaceText(note));
+            } else {
+                String page = SourceField.page.getTextOrEmpty(entry);
+                insetText.add(String.format("See %s%s",
+                        page == null ? "" : "page " + page + " of ",
+                        TtrpgConfig.sourceToLongName(SourceField.source.getTextOrEmpty(entry))));
+            }
         } else {
             appendToText(insetText, SourceField.entry.getFrom(entry), "##");
             appendToText(insetText, SourceField.entries.getFrom(entry), "##");

@@ -185,7 +185,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         }
 
         // For any null'd out fields on the subrace, delete the field
-        Iterator<Entry<String, JsonNode>> fields = subraceOut.fields();
+        Iterator<Entry<String, JsonNode>> fields = subraceOut.properties().iterator();
         while (fields.hasNext()) {
             Entry<String, JsonNode> e = fields.next();
             if (e.getValue().isNull()) {
