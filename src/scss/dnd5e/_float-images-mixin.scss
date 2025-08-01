@@ -1,6 +1,20 @@
 @mixin floatBySrcAnchor() {
   div,
   span {
+    &.image-embed {
+      position: relative;
+
+      /* Display the alt text after the image */
+      /*
+      &::after {
+        content: attr(alt);
+        display: block;
+        margin-top: 0.5em;
+        top: 100%; // Positions it below the parent element
+        left: 0;
+      }
+      */
+    }
     &[src$="#center"] {
       display: flex;
       justify-content: center;
@@ -30,6 +44,25 @@
     &[src$="#symbol"],
     &[src$="#portrait"] {
       width: 200px;
+    }
+  }
+  div.image-embed,
+  span.image-embed,
+  img {
+    &:hover::after {
+      content: attr(alt);
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      width: 200px;
+      max-width: 200px;
+      z-index: 10;
+      top: 2em;
+      left: 50%;
+      transform: translateX(-50%); // Centers it horizontally
     }
   }
 }

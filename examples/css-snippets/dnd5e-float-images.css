@@ -1,4 +1,46 @@
 /*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-float-images.scss */
+.json5e-background div.image-embed,
+.json5e-background span.image-embed,
+.json5e-class div.image-embed,
+.json5e-class span.image-embed,
+.json5e-deck div.image-embed,
+.json5e-deck span.image-embed,
+.json5e-deity div.image-embed,
+.json5e-deity span.image-embed,
+.json5e-feat div.image-embed,
+.json5e-feat span.image-embed,
+.json5e-hazard div.image-embed,
+.json5e-hazard span.image-embed,
+.json5e-item div.image-embed,
+.json5e-item span.image-embed,
+.json5e-monster div.image-embed,
+.json5e-monster span.image-embed,
+.json5e-note div.image-embed,
+.json5e-note span.image-embed,
+.json5e-object div.image-embed,
+.json5e-object span.image-embed,
+.json5e-psionic div.image-embed,
+.json5e-psionic span.image-embed,
+.json5e-race div.image-embed,
+.json5e-race span.image-embed,
+.json5e-reward div.image-embed,
+.json5e-reward span.image-embed,
+.json5e-spell div.image-embed,
+.json5e-spell span.image-embed,
+.json5e-vehicle div.image-embed,
+.json5e-vehicle span.image-embed {
+  position: relative;
+  /* Display the alt text after the image */
+  /*
+  &::after {
+    content: attr(alt);
+    display: block;
+    margin-top: 0.5em;
+    top: 100%; // Positions it below the parent element
+    left: 0;
+  }
+  */
+}
 .json5e-background div[src$="#center"],
 .json5e-background span[src$="#center"],
 .json5e-class div[src$="#center"],
@@ -396,6 +438,65 @@
 .json5e-vehicle span[src$="#symbol"],
 .json5e-vehicle span[src$="#portrait"] {
   width: 200px;
+}
+.json5e-background div.image-embed:hover::after,
+.json5e-background span.image-embed:hover::after,
+.json5e-background img:hover::after,
+.json5e-class div.image-embed:hover::after,
+.json5e-class span.image-embed:hover::after,
+.json5e-class img:hover::after,
+.json5e-deck div.image-embed:hover::after,
+.json5e-deck span.image-embed:hover::after,
+.json5e-deck img:hover::after,
+.json5e-deity div.image-embed:hover::after,
+.json5e-deity span.image-embed:hover::after,
+.json5e-deity img:hover::after,
+.json5e-feat div.image-embed:hover::after,
+.json5e-feat span.image-embed:hover::after,
+.json5e-feat img:hover::after,
+.json5e-hazard div.image-embed:hover::after,
+.json5e-hazard span.image-embed:hover::after,
+.json5e-hazard img:hover::after,
+.json5e-item div.image-embed:hover::after,
+.json5e-item span.image-embed:hover::after,
+.json5e-item img:hover::after,
+.json5e-monster div.image-embed:hover::after,
+.json5e-monster span.image-embed:hover::after,
+.json5e-monster img:hover::after,
+.json5e-note div.image-embed:hover::after,
+.json5e-note span.image-embed:hover::after,
+.json5e-note img:hover::after,
+.json5e-object div.image-embed:hover::after,
+.json5e-object span.image-embed:hover::after,
+.json5e-object img:hover::after,
+.json5e-psionic div.image-embed:hover::after,
+.json5e-psionic span.image-embed:hover::after,
+.json5e-psionic img:hover::after,
+.json5e-race div.image-embed:hover::after,
+.json5e-race span.image-embed:hover::after,
+.json5e-race img:hover::after,
+.json5e-reward div.image-embed:hover::after,
+.json5e-reward span.image-embed:hover::after,
+.json5e-reward img:hover::after,
+.json5e-spell div.image-embed:hover::after,
+.json5e-spell span.image-embed:hover::after,
+.json5e-spell img:hover::after,
+.json5e-vehicle div.image-embed:hover::after,
+.json5e-vehicle span.image-embed:hover::after,
+.json5e-vehicle img:hover::after {
+  content: attr(alt);
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  width: 200px;
+  max-width: 200px;
+  z-index: 10;
+  top: 2em;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* For decks of cards, ensure images don't overlap */
