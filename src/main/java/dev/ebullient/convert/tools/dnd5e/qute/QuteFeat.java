@@ -19,17 +19,19 @@ public class QuteFeat extends Tools5eQuteBase {
     public final String level;
     /** Formatted text listing other prerequisite conditions (optional) */
     public final String prerequisite;
-
+    /** Feat category (optional) */
+    public final String category;
     /** Formatted text listing ability score increase (optional) */
     public final String ability;
 
     public QuteFeat(Tools5eSources sources, String name, String source,
-            String prerequisite, String level, String ability,
+            String prerequisite, String level, String ability, String category,
             List<ImageRef> images, String text, Tags tags) {
         super(sources, name, source, images, text, tags);
         withTemplate("feat2md.txt"); // Feat and OptionalFeature
         this.level = level;
         this.prerequisite = prerequisite; // optional
+        this.category = category; // optional
         this.ability = ability; // optional
     }
 }
