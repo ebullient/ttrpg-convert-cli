@@ -47,6 +47,7 @@ jobs:
     permissions:
       contents: write
       actions: write
+      security-events: write
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -57,6 +58,12 @@ jobs:
       - uses: ./.github/actions/data-cache
         id: data_cache
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@76621b61decf072c1cee8dd1ce2d2a82d33c17ed # v3.29.5
+        if: needs.main_root.outputs.is_main
+        with:
+          languages: java-kotlin
+
       - name: Build with Maven
         uses: ebullient/workflows/.github/actions/maven-build@main
         with:
@@ -64,6 +71,12 @@ jobs:
           version: ${{ needs.metadata.outputs.snapshot }}
           java-version: ${{ env.JAVA_VERSION }}
           java-distribution: ${{ env.JAVA_DISTRO }}
+
+      - name: Perform CodeQL Analysis
+        if: needs.main_root.outputs.is_main
+        uses: github/codeql-action/analyze@76621b61decf072c1cee8dd1ce2d2a82d33c17ed # v3.29.5
+        with:
+          category: "/language:java-kotlin"
 
       - name: Push changes to files
         if: needs.main_root.outputs.is_main
