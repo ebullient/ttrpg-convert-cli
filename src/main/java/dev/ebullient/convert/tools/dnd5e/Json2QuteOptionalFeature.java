@@ -18,9 +18,18 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         Tags tags = new Tags(getSources());
-
-        for (String featureType : Tools5eFields.featureType.getListOfStrings(rootNode, tui())) {
+        List<String> typeList = Tools5eFields.featureType.getListOfStrings(rootNode, tui());
+        for (String featureType : typeList) {
             tags.add("optional-feature", featureType);
+        }
+
+        String featureTypeFull = featureTypeToFull(typeList.get(0));
+        if (featureTypeFull.startsWith("Fighting Style")) {
+            featureTypeFull = "Fighting Style"; //trim class name, fighting styles can be for multiple classes
+        } else if (featureTypeFull.equalsIgnoreCase("Maneuver, Battle Master")) {
+            featureTypeFull = "Battle Master Maneuver";
+        } else if (featureTypeFull.equalsIgnoreCase("Maneuver, Cavalier V2 (UA)")) {
+            featureTypeFull = "Cavalier Maneuver, V2 (UA)";
         }
 
         List<ImageRef> images = new ArrayList<>();
@@ -33,6 +42,7 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
                 listPrerequisites(rootNode),
                 null,
                 null,
+                featureTypeFull,
                 images,
                 String.join("\n", text),
                 tags);

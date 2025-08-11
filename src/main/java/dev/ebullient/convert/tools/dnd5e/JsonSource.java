@@ -1299,6 +1299,46 @@ public interface JsonSource extends JsonTextReplacement {
         return String.join(", ", result);
     }
 
+    default String featureTypeToFull(String featureType) {
+        return featureTypeToString(featureType);
+    }
+
+    public static String featureTypeToString(String featureType) {
+        if (!isPresent(featureType)) {
+            return "";
+        }
+        return switch (featureType.toUpperCase()) {
+            case "EB" -> "Epic Boon Feat";
+            case "FS" -> "Fighting Style Feat";
+            case "G" -> "General Feat";
+            case "O" -> "Origin Feat";
+            case "AI" -> "Artificer Infusion";
+            case "ED" -> "Elemental Discipline";
+            case "EI" -> "Eldritch Invocation";
+            case "MM" -> "Metamagic";
+            case "MV" -> "Maneuver";
+            case "MV:B" -> "Maneuver, Battle Master";
+            case "MV:C2-UA" -> "Maneuver, Cavalier V2 (UA)";
+            case "AS:V1-UA" -> "Arcane Shot, V1 (UA)";
+            case "AS:V2-UA" -> "Arcane Shot, V2 (UA)";
+            case "AS" -> "Arcane Shot";
+            case "OTH" -> "Other";
+            case "FS:F" -> "Fighting Style, Fighter";
+            case "FS:B" -> "Fighting Style, Bard";
+            case "FS:P" -> "Fighting Style, Paladin";
+            case "FS:R" -> "Fighting Style, Ranger";
+            case "PB" -> "Pact Boon";
+            case "OR" -> "Onomancy Resonant";
+            case "RN" -> "Rune Knight Rune";
+            case "AF" -> "Alchemical Formula";
+            case "TT" -> "Traveler's Trick";
+            case "BC" -> "Blood Curse";
+            case "CR" -> "Crimson Rite";
+            case "MTGN" -> "Mutagen";
+            default -> featureType;
+        };
+    };
+
     public static String spellLevelToText(String level) {
         return switch (level) {
             case "0", "c" -> "cantrip";
