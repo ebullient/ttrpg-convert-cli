@@ -31,8 +31,16 @@ public class QuteSpell extends Tools5eQuteBase {
     public final String components;
     /** Formatted: spell range */
     public final String duration;
+    /** String: rendered list of links to classes that grant access to this spell. May be incomplete or empty. */
+    public final String backgrounds;
     /** String: rendered list of links to classes that can use this spell. May be incomplete or empty. */
     public final String classes;
+    /** String: rendered list of links to feats that grant acccess to this spell. May be incomplete or empty. */
+    public final String feats;
+    /** String: rendered list of links to optional features that grant access to this spell. May be incomplete or empty. */
+    public final String optionalfeatures;
+    /** String: rendered list of links to races that can use this spell. May be incomplete or empty. */
+    public final String races;
     /** List of links to resources (classes, subclasses, feats, etc.) that have access to this spell */
     public final Collection<String> references;
 
@@ -50,8 +58,31 @@ public class QuteSpell extends Tools5eQuteBase {
         this.components = components;
         this.duration = duration;
         this.references = references;
+        this.backgrounds = references.stream()
+                .filter(s -> s.contains("background"))
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining("; "));
         this.classes = references.stream()
                 .filter(s -> s.contains("class"))
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining("; "));
+        this.feats = references.stream()
+                .filter(s -> s.contains("feat"))
+                .filter(s -> !s.contains("optional-feature"))
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining("; "));
+        this.optionalfeatures = references.stream()
+                .filter(s -> s.contains("optional-feature"))
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining("; "));
+        this.races = references.stream()
+                .filter(s -> s.contains("race"))
+                .distinct()
+                .sorted()
                 .collect(Collectors.joining("; "));
     }
 
