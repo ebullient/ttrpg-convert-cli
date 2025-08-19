@@ -6,7 +6,11 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[books](#books), [classList](#classlist), [classes](#classes), [components](#components), [duration](#duration), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [range](#range), [references](#references), [reprintOf](#reprintof), [ritual](#ritual), [school](#school), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
+[backgrounds](#backgrounds), [books](#books), [classList](#classlist), [classes](#classes), [components](#components), [duration](#duration), [feats](#feats), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [optionalfeatures](#optionalfeatures), [races](#races), [range](#range), [references](#references), [reprintOf](#reprintof), [ritual](#ritual), [school](#school), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
+
+### backgrounds
+
+String: rendered list of links to classes that grant access to this spell. May be incomplete or empty.
 
 ### books
 
@@ -27,6 +31,10 @@ Formatted: spell components
 ### duration
 
 Formatted: spell range
+
+### feats
+
+String: rendered list of links to feats that grant acccess to this spell. May be incomplete or empty.
 
 ### fluffImages
 
@@ -55,6 +63,14 @@ Spell level
 ### name
 
 Note name
+
+### optionalfeatures
+
+String: rendered list of links to optional features that grant access to this spell. May be incomplete or empty.
+
+### races
+
+String: rendered list of links to races that can use this spell. May be incomplete or empty.
 
 ### range
 
