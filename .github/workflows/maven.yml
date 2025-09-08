@@ -16,7 +16,7 @@ on:
 env:
   JAVA_VERSION: 17
   JAVA_DISTRO: temurin
-  NATIVE_JAVA_VERSION: 23
+  NATIVE_JAVA_VERSION: 24
   GRAALVM_DIST: graalvm-community
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
@@ -117,6 +117,7 @@ jobs:
           native-java-version: ${{ env.NATIVE_JAVA_VERSION }}
           distribution: ${{ env.GRAALVM_DIST }}
           matrix-os: ${{ matrix.os }}
+          maven-args: "-Dmaven.javadoc.skip=true"
 
   snap-release:
     needs: [main_root, metadata, build, native-build]
