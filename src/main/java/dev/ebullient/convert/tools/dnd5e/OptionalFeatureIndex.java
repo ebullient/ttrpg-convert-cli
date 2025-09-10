@@ -268,39 +268,19 @@ public class OptionalFeatureIndex implements JsonSource {
         }
 
         public String getTitle() {
-            return switch (abbreviation) {
-                case "AI" -> "Artificer Infusion";
-                case "ED" -> "Elemental Discipline";
-                case "EI" -> "Eldritch Invocation";
-                case "MM" -> "Metamagic";
-                case "MV" -> "Maneuver";
-                case "MV:B" -> "Maneuver, Battle Master";
-                case "MV:C2-UA" -> "Maneuver, Cavalier V2 (UA)";
-                case "AS:V1-UA" -> "Arcane Shot, V1 (UA)";
-                case "AS:V2-UA" -> "Arcane Shot, V2 (UA)";
-                case "AS" -> "Arcane Shot";
-                case "OTH" -> "Other";
-                case "FS:F" -> "Fighting Style, Fighter";
-                case "FS:B" -> "Fighting Style, Bard";
-                case "FS:P" -> "Fighting Style, Paladin";
-                case "FS:R" -> "Fighting Style, Ranger";
-                case "PB" -> "Pact Boon";
-                case "OR" -> "Onomancy Resonant";
-                case "RN" -> "Rune Knight Rune";
-                case "AF" -> "Alchemical Formula";
-                case "TT" -> "Traveler's Trick";
-                default -> {
-                    if (!homebrewMeta.isEmpty()) {
-                        yield homebrewMeta.values().stream()
-                                .map(hb -> hb.getOptionalFeatureType(abbreviation))
-                                .distinct()
-                                .collect(Collectors.joining("; "));
-                    }
-                    Tui.instance().warnf(Msg.NOT_SET, "Missing title for OptionalFeatureType in %s",
-                            abbreviation);
-                    yield abbreviation;
+            String title = JsonSource.featureTypeToString(abbreviation);
+            if (title.equalsIgnoreCase(abbreviation)) {
+                if (!homebrewMeta.isEmpty()) {
+                    return homebrewMeta.values().stream()
+                            .map(hb -> hb.getOptionalFeatureType(abbreviation))
+                            .distinct()
+                            .collect(Collectors.joining("; "));
                 }
-            };
+                Tui.instance().warnf(Msg.NOT_SET, "Missing title for OptionalFeatureType in %s",
+                        abbreviation);
+                return abbreviation;
+            }
+            return title;
         }
 
         private String getSource(HomebrewMetaTypes homebrewMeta) {
