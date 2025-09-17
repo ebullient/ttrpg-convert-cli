@@ -216,10 +216,11 @@ public class SpellIndex implements JsonSource {
         }
         // Collect all spells referenced by this element
         for (var additionalSpells : iterableElements(additionalNode)) {
-            gatherSpells(refererKey, SpellIndexFields.innate.getFrom(additionalSpells), false);
-            gatherSpells(refererKey, SpellIndexFields.known.getFrom(additionalSpells), false);
-            gatherSpells(refererKey, SpellIndexFields.prepared.getFrom(additionalSpells), false);
-            gatherSpells(refererKey, SpellIndexFields.expanded.getFrom(additionalSpells), true);
+            String groupName = SpellIndexFields.name.getTextOrNull(additionalSpells);
+            gatherSpells(refererKey, SpellIndexFields.innate.getFrom(additionalSpells), false, groupName);
+            gatherSpells(refererKey, SpellIndexFields.known.getFrom(additionalSpells), false, groupName);
+            gatherSpells(refererKey, SpellIndexFields.prepared.getFrom(additionalSpells), false, groupName);
+            gatherSpells(refererKey, SpellIndexFields.expanded.getFrom(additionalSpells), true, groupName);
         }
     }
 
@@ -231,17 +232,18 @@ public class SpellIndex implements JsonSource {
      * @param refererKey the key of the referring node
      * @param spellList the _additionalSpellObject data from the referring node
      * @param expanded true if this data expands/extends the class spell list
+     * @param groupName (optional) the name of the group of spells
      */
-    private void gatherSpells(String refererKey, JsonNode spellList, boolean expanded) {
+    private void gatherSpells(String refererKey, JsonNode spellList, boolean expanded, String groupName) {
         // This is a rough ride. We need to handle a variety of formats
         // Ultimately, we're just looking to find a list of touched/referenced spells
         for (var properties : iterableFields(spellList)) {
-            toSpellList(refererKey, properties.getValue(), properties.getKey(), expanded);
+            toSpellList(refererKey, properties.getValue(), properties.getKey(), expanded, groupName);
         }
     }
 
     /**
-     * Called from {@link #gatherSpells(String, JsonNode, boolean)}
+     * Called from {@link #gatherSpells(String, JsonNode, boolean, String)}
      *
      * from: "util-additionalspells.json", schema noted below
      *
@@ -250,40 +252,40 @@ public class SpellIndex implements JsonSource {
      * @param constraint the constraint (the key: 1, s1, etc.)
      * @param expanded true if this data expands/extends the class spell list
      */
-    private void toSpellList(String refererKey, JsonNode spellList, String constraint, boolean expanded) {
+    private void toSpellList(String refererKey, JsonNode spellList, String constraint, boolean expanded, String groupName) {
         if (spellList == null || spellList.isNull()) {
             return;
         }
         if (spellList.isObject()) {
             // _additionalSpellLevelObject -> _additionalSpellRechargeObject
-            resolveRechargeSpells(refererKey, SpellIndexFields.rest.getFrom(spellList), constraint, expanded);
-            resolveRechargeSpells(refererKey, SpellIndexFields.daily.getFrom(spellList), constraint, expanded);
-            resolveRechargeSpells(refererKey, SpellIndexFields.resource.getFrom(spellList), constraint, expanded);
+            resolveRechargeSpells(refererKey, SpellIndexFields.rest.getFrom(spellList), constraint, expanded, groupName);
+            resolveRechargeSpells(refererKey, SpellIndexFields.daily.getFrom(spellList), constraint, expanded, groupName);
+            resolveRechargeSpells(refererKey, SpellIndexFields.resource.getFrom(spellList), constraint, expanded, groupName);
 
             // recurse: these keys hold arrays of spells:
             // _additionalSpellArrayOfStringOrFilterObject
-            toSpellList(refererKey, SpellIndexFields.ritual.getFrom(spellList), constraint, expanded);
-            toSpellList(refererKey, SpellIndexFields.will.getFrom(spellList), constraint, expanded);
-            toSpellList(refererKey, SpellIndexFields.others.getFrom(spellList), constraint, expanded);
+            toSpellList(refererKey, SpellIndexFields.ritual.getFrom(spellList), constraint, expanded, groupName);
+            toSpellList(refererKey, SpellIndexFields.will.getFrom(spellList), constraint, expanded, groupName);
+            toSpellList(refererKey, SpellIndexFields.others.getFrom(spellList), constraint, expanded, groupName);
         } else if (spellList.isArray()) {
             // _additionalSpellArrayOfStringOrFilterObject
             for (var reference : iterableElements(spellList)) {
                 if (reference.isTextual()) {
-                    addFromText(refererKey, reference.asText(), constraint, expanded);
+                    addFromText(refererKey, reference.asText(), constraint, expanded, groupName);
                 } else if (reference.isObject()) {
                     // a filter defining referenced spells (where all would be included)
-                    resolveFilter(refererKey, SpellIndexFields.all.getFrom(reference), constraint, expanded);
+                    resolveFilter(refererKey, SpellIndexFields.all.getFrom(reference), constraint, expanded, groupName);
 
                     // a filter defining referenced spells (where some would be chosen)
                     JsonNode choose = SpellIndexFields.choose.getFrom(reference);
                     if (SpellIndexFields.from.existsIn(choose)) {
                         // choose from a list of spell reference tags..
                         for (var x : SpellIndexFields.from.iterateArrayFrom(choose)) {
-                            addFromText(refererKey, x.asText(), constraint, expanded);
+                            addFromText(refererKey, x.asText(), constraint, expanded, groupName);
                         }
                     } else {
                         // handle the filter describing the spells to include
-                        resolveFilter(refererKey, choose, constraint, expanded);
+                        resolveFilter(refererKey, choose, constraint, expanded, groupName);
                     }
                 }
             }
@@ -302,14 +304,14 @@ public class SpellIndex implements JsonSource {
      * @param expanded true if this data expands/extends the class spell list
      */
     public void resolveRechargeSpells(String refererKey, JsonNode rechargeNode, String constraint,
-            boolean expanded) {
+            boolean expanded, String groupName) {
         if (rechargeNode == null || rechargeNode.isNull()) {
             return;
         }
         // we're ignoring the key here: 1, 2, 3, 4, ...; 1e, 2e, 3e...
         // the value is _additionalSpellArrayOfStringOrFilterObject
         for (var x : iterableFields(rechargeNode)) {
-            toSpellList(refererKey, x.getValue(), constraint, expanded);
+            toSpellList(refererKey, x.getValue(), constraint, expanded, groupName);
         }
     }
 
@@ -322,7 +324,7 @@ public class SpellIndex implements JsonSource {
      * @param constraint the constraint (the key: 1, s1, etc.)
      * @param expanded true if this data expands/extends the class spell list
      */
-    public void resolveFilter(String refererKey, JsonNode filter, String constraint, boolean expanded) {
+    public void resolveFilter(String refererKey, JsonNode filter, String constraint, boolean expanded, String groupName) {
         if (filter == null || filter.isNull()) {
             return;
         }
@@ -364,7 +366,7 @@ public class SpellIndex implements JsonSource {
         }
         for (SpellEntry spell : spellsByKey.values()) {
             if (filterConditions.matchAll(spell)) {
-                spell.addReference(new SpellReference(refererKey, constraint, null, expanded));
+                spell.addReference(new SpellReference(refererKey, constraint, null, expanded, groupName));
             }
         }
     }
@@ -377,7 +379,7 @@ public class SpellIndex implements JsonSource {
      * @param constraint the constraint (the key: 1, s1, etc.)
      * @param expanded true if this data expands/extends the class spell list
      */
-    private void addFromText(String refererKey, String tag, String constraint, boolean expanded) {
+    private void addFromText(String refererKey, String tag, String constraint, boolean expanded, String groupName) {
         int pos = tag.indexOf("#");
         String asLevel = pos > 0 ? tag.substring(pos + 1) : null;
         tag = pos > 0 ? tag.substring(0, pos) : tag;
@@ -388,7 +390,7 @@ public class SpellIndex implements JsonSource {
         }
         var spellEntry = getSpellEntry(spellKey);
         if (spellEntry != null) {
-            spellEntry.addReference(refererKey, constraint, asLevel, expanded);
+            spellEntry.addReference(refererKey, constraint, asLevel, expanded, groupName);
         }
     }
 
@@ -505,9 +507,11 @@ public class SpellIndex implements JsonSource {
         known,
         level,
         meta,
+        name,
         others("_"),
         prepared,
         resource,
+        resourceName,
         rest,
         ritual,
         school,

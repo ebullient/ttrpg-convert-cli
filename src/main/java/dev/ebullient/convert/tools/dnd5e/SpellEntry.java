@@ -85,8 +85,9 @@ public class SpellEntry {
         return ref;
     }
 
-    public SpellReference addReference(String refererKey, String constraint, String asLevel, boolean expanded) {
-        SpellReference ref = new SpellReference(refererKey, constraint, asLevel, expanded);
+    public SpellReference addReference(String refererKey, String constraint, String asLevel, boolean expanded,
+            String groupName) {
+        SpellReference ref = new SpellReference(refererKey, constraint, asLevel, expanded, groupName);
         return addReference(ref);
     }
 
@@ -225,16 +226,17 @@ public class SpellEntry {
         final String refererName;
 
         final String refererKey;
+        final String groupName;
         final String classLevel;
         final String spellLevel;
         final String asLevel; // special case for known spells castable as cantrips
         final boolean expanded;
 
         public SpellReference(String key, boolean expanded) {
-            this(key, "", null, expanded);
+            this(key, "", null, expanded, null);
         }
 
-        public SpellReference(String key, String constraint, String asLevel, boolean expanded) {
+        public SpellReference(String key, String constraint, String asLevel, boolean expanded, String groupName) {
             this.refererKey = key;
             this.asLevel = asLevel;
             this.expanded = expanded;
@@ -257,6 +259,7 @@ public class SpellEntry {
             this.refererType = Tools5eIndexType.getTypeFromKey(key);
             this.refererNode = Tools5eIndex.instance().getOriginNoFallback(key);
             this.refererName = linkifier().decoratedName(refererType, refererNode);
+            this.groupName = groupName;
         }
 
         boolean isSpecific() {
@@ -302,7 +305,8 @@ public class SpellEntry {
 
         public String tagifyReference() {
             String type = refererType.name().replace("type", "");
-            return Stream.of("spell", type, refererName)
+            return Stream.of("spell", type, refererName, groupName)
+                    .filter(s -> isPresent(s))
                     .map(Tui::slugify)
                     .collect(Collectors.joining("/"));
         }
@@ -316,19 +320,22 @@ public class SpellEntry {
 
             List<String> linkSources = new ArrayList<>();
             Tools5eSources sources = Tools5eSources.findSources(refererNode);
-            String name = linkifier().decoratedName(refererType, refererNode);
-            String resource = linkifier().getSpellList(name, sources);
+            String linkText = linkifier().decoratedName(refererType, refererNode);
+            String resource = linkifier().getSpellList(linkText, sources);
 
             if (refererType == Tools5eIndexType.subclass) {
                 String classKey = Tools5eIndexType.classtype.fromChildKey(refererKey);
                 JsonNode classNode = index.getOriginNoFallback(classKey);
                 String className = linkifier().decoratedName(Tools5eIndexType.classtype, classNode);
-                name = "%s (%s)".formatted(className, name);
+                linkText = "%s (%s%s)".formatted(className, linkText, isPresent(groupName) ? ", " + groupName : "");
                 linkSources.add(sourceString(refererType, sources.primarySource()));
                 linkSources.add(sourceString(Tools5eIndexType.classtype, SourceField.source.getTextOrEmpty(classNode)));
+            } else if (isPresent(groupName)) {
+                linkText = "%s (%s)".formatted(linkText, groupName);
             }
+
             linkSources.removeIf(String::isEmpty);
-            return "[%s](%s%s/%s.md%s)".formatted(name,
+            return "[%s](%s%s/%s.md%s)".formatted(linkText,
                     Tools5eIndex.instance().compendiumVaultRoot(),
                     linkifier().getRelativePath(Tools5eIndexType.spellIndex),
                     resource,
