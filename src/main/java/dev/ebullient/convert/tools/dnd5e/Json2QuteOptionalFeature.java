@@ -23,7 +23,7 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
             tags.add("optional-feature", featureType);
         }
 
-        String featureTypeFull = featureTypeToFull(typeList.get(0));
+        String featureTypeFull = index.getOptionalFeatureType(typeList.get(0)).getTitle();
         if (featureTypeFull.startsWith("Fighting Style")) {
             featureTypeFull = "Fighting Style"; //trim class name, fighting styles can be for multiple classes
         } else if (featureTypeFull.equalsIgnoreCase("Maneuver, Battle Master")) {
