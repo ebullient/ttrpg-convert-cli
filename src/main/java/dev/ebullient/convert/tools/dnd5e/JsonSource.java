@@ -30,6 +30,7 @@ import dev.ebullient.convert.tools.JsonSourceCopier.MetaFields;
 import dev.ebullient.convert.tools.JsonTextConverter;
 import dev.ebullient.convert.tools.ParseState;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
+import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.ClassFeature;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -1299,11 +1300,7 @@ public interface JsonSource extends JsonTextReplacement {
         return String.join(", ", result);
     }
 
-    default String featureTypeToFull(String featureType) {
-        return featureTypeToString(featureType);
-    }
-
-    public static String featureTypeToString(String featureType) {
+    public static String featureTypeToString(String featureType, Map<String, HomebrewMetaTypes> homebrew) {
         if (!isPresent(featureType)) {
             return "";
         }
@@ -1332,10 +1329,15 @@ public interface JsonSource extends JsonTextReplacement {
             case "RN" -> "Rune Knight Rune";
             case "AF" -> "Alchemical Formula";
             case "TT" -> "Traveler's Trick";
-            case "BC" -> "Blood Curse";
-            case "CR" -> "Crimson Rite";
-            case "MTGN" -> "Mutagen";
-            default -> featureType;
+            default -> {
+                if (!homebrew.isEmpty()) {
+                    yield homebrew.values().stream()
+                            .map(hb -> hb.getOptionalFeatureType(featureType))
+                            .distinct()
+                            .collect(Collectors.joining("; "));
+                }
+                yield featureType;
+            }
         };
     };
 
