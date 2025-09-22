@@ -25,11 +25,9 @@ public class Json2QuteFeat extends Json2QuteCommon {
 
         List<ImageRef> images = getFluffImages(Tools5eIndexType.featFluff);
 
-        String category = featureTypeToFull(FeatFields.category.getTextOrEmpty(rootNode));
-        if (category.equalsIgnoreCase("Fighting Style, Paladin")) {
-            category = "Fighting Style Replacement (Paladin)";
-        } else if (category.equalsIgnoreCase("Fighting Style, Ranger")) {
-            category = "Fighting Style Replacement (Ranger)";
+        String category = JsonSource.featureTypeToString(FeatFields.category.getTextOrEmpty(rootNode), null);
+        if (category.startsWith("Fighting Style, ")) {
+            category = "Fighting Style Replacement";
         }
 
         // Initialize full entries with ability score increases merged

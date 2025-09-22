@@ -244,7 +244,7 @@ public class Json2QuteCommon implements JsonSource {
     private String replaceConjoinOr(JsonNode campaignPrereq, String suffix) {
         List<String> cmpn = new ArrayList<>();
         for (JsonNode p : iterableElements(campaignPrereq)) {
-            replaceText(p.asText());
+            cmpn.add(replaceText(p.asText()));
         }
         return joinConjunct(" or ", cmpn) + suffix;
     }
@@ -513,7 +513,7 @@ public class Json2QuteCommon implements JsonSource {
                     case culture -> values.add(replaceConjoinOr(value, " Culture"));
                     case expertise -> values.add(expertisePrereq(value));
                     case feat -> values.add(featPrereq(value));
-                    case feature -> values.add(replaceConjoinOr(value, ""));
+                    case feature -> values.add(replaceConjoinOr(value, " Feature"));
                     case optionalfeature -> values.add(replaceConjoinOr(value, ""));
                     case group -> values.add(replaceConjoinOr(value, " Group"));
                     case item -> values.add(replaceConjoinOr(value, ""));

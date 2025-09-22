@@ -263,7 +263,7 @@ config5e:
       name: "Monstrous Compendium Volume 3: Minecraft Creatures"
       date: "2023-03-28"
     MCV4EC:
-      name: "Monstrous Compendium Volume 3: 4: Eldraine Creatures"
+      name: "Monstrous Compendium Volume 4: Eldraine Creatures"
       date: "2023-09-21"
     MFF:
       name: "Mordenkainen's Fiendish Folio"
