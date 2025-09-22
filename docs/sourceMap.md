@@ -88,6 +88,7 @@ _Support content creators. Only use or include sources that you own._
 | HWCS | Humblewood Campaign Setting | reference |
 | HftT | Hunt for the Thessalhydra | adventure |
 | HoL | The House of Lament | adventure |
+| HotB | Heroes of the Borderlands | adventure |
 | HotDQ | Hoard of the Dragon Queen | adventure |
 | IDRotF | Icewind Dale: Rime of the Frostmaiden | adventure |
 | IMR | Infernal Machine Rebuild | adventure |
@@ -103,7 +104,7 @@ _Support content creators. Only use or include sources that you own._
 | MCV1SC | Monstrous Compendium Volume 1: Spelljammer Creatures | reference |
 | MCV2DC | Monstrous Compendium Volume 2: Dragonlance Creatures | reference |
 | MCV3MC | Monstrous Compendium Volume 3: Minecraft Creatures | reference |
-| MCV4EC | Monstrous Compendium Volume 3: 4: Eldraine Creatures | book |
+| MCV4EC | Monstrous Compendium Volume 4: Eldraine Creatures | book |
 | MFF | Mordenkainen's Fiendish Folio | reference |
 | MGELFT | Muk's Guide To Everything He Learned From Tasha | reference |
 | MM | Monster Manual | book |

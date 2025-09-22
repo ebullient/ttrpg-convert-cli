@@ -214,6 +214,9 @@ config5e:
     HoL:
       name: "The House of Lament"
       date: "2021-05-18"
+    HotB:
+      name: "Heroes of the Borderlands"
+      date: "2025-09-15"
     HotDQ:
       name: "Hoard of the Dragon Queen"
       date: "2014-08-19"
@@ -260,7 +263,7 @@ config5e:
       name: "Monstrous Compendium Volume 3: Minecraft Creatures"
       date: "2023-03-28"
     MCV4EC:
-      name: "Monstrous Compendium Volume 3: 4: Eldraine Creatures"
+      name: "Monstrous Compendium Volume 4: Eldraine Creatures"
       date: "2023-09-21"
     MFF:
       name: "Mordenkainen's Fiendish Folio"
