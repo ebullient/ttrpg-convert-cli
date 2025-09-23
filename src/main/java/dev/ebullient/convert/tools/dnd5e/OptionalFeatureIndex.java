@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -268,14 +267,8 @@ public class OptionalFeatureIndex implements JsonSource {
         }
 
         public String getTitle() {
-            String title = JsonSource.featureTypeToString(abbreviation);
+            String title = JsonSource.featureTypeToString(abbreviation, homebrewMeta);
             if (title.equalsIgnoreCase(abbreviation)) {
-                if (!homebrewMeta.isEmpty()) {
-                    return homebrewMeta.values().stream()
-                            .map(hb -> hb.getOptionalFeatureType(abbreviation))
-                            .distinct()
-                            .collect(Collectors.joining("; "));
-                }
                 Tui.instance().warnf(Msg.NOT_SET, "Missing title for OptionalFeatureType in %s",
                         abbreviation);
                 return abbreviation;
