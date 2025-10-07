@@ -1283,6 +1283,12 @@
           "replace": "\"{@action Interact} "
         }
       ],
+      "items/items-sf3.json": [
+        {
+          "match": "@condition grappled}",
+          "replace": "@condition grabbed||grappled}"
+        }
+      ],
       "rituals.json": [
         {
           "match": "@skill Religion \\(legendary\\)",
