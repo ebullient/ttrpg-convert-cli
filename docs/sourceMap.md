@@ -88,6 +88,7 @@ _Support content creators. Only use or include sources that you own._
 | HWCS | Humblewood Campaign Setting | reference |
 | HftT | Hunt for the Thessalhydra | adventure |
 | HoL | The House of Lament | adventure |
+| HotB | Heroes of the Borderlands | adventure |
 | HotDQ | Hoard of the Dragon Queen | adventure |
 | IDRotF | Icewind Dale: Rime of the Frostmaiden | adventure |
 | IMR | Infernal Machine Rebuild | adventure |

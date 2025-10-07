@@ -214,6 +214,9 @@ config5e:
     HoL:
       name: "The House of Lament"
       date: "2021-05-18"
+    HotB:
+      name: "Heroes of the Borderlands"
+      date: "2025-09-16"
     HotDQ:
       name: "Hoard of the Dragon Queen"
       date: "2014-08-19"
