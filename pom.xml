@@ -36,7 +36,7 @@
         <clean-plugin.version>3.5.0</clean-plugin.version>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <maven.compiler.release>17</maven.compiler.release>
-        <formatter-plugin.version>2.27.0</formatter-plugin.version>
+        <formatter-plugin.version>2.29.0</formatter-plugin.version>
         <impsort-plugin.version>1.12.0</impsort-plugin.version>
         <javadoc-plugin.version>3.11.3</javadoc-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
