@@ -19,7 +19,7 @@
 
 JBang is a tool designed to simplify Java application execution. By eliminating the need for traditional build tools and app servers, JBang enables quick and easy running of Java apps, scripts, and more.
 
-1. Install JBang: <https://www.jbang.dev/documentation/guide/latest/installation.html>
+1. Install JBang: <https://www.jbang.dev/documentation/jbang/latest/installation.html>
 
 2. Install the pre-built release of ttrpg-convert-cli:
 
@@ -128,7 +128,7 @@ To run the CLI, you will need to have **Java 17** installed on your system.
 2. Download the CLI as a jar
 
     - Latest release: [ttrpg-convert-cli-3.1.5-runner.jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/3.1.5/ttrpg-convert-cli-3.1.5-runner.jar)
-    - 🚧 [_unreleased snapshot_][]: [ttrpg-convert-cli-299-SNAPSHOT-runner.jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/299-SNAPSHOT/ttrpg-convert-cli-299-SNAPSHOT-runner.jar)
+    - 🚧 [_unreleased snapshot_][]: [ttrpg-convert-cli-399-SNAPSHOT-runner.jar](https://github.com/ebullient/ttrpg-convert-cli/releases/download/399-SNAPSHOT/ttrpg-convert-cli-399-SNAPSHOT-runner.jar)
 
 3. Verify the install by running the command:
 
