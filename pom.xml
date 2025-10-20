@@ -38,7 +38,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <formatter-plugin.version>2.29.0</formatter-plugin.version>
         <impsort-plugin.version>1.12.0</impsort-plugin.version>
-        <javadoc-plugin.version>3.11.3</javadoc-plugin.version>
+        <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
