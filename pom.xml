@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
@@ -53,11 +52,11 @@
         <assertj.version>3.27.4</assertj.version>
         <evalex.version>3.5.0</evalex.version>
         <github-slugify.version>3.0.7</github-slugify.version>
-        <icu4j.version>77.1</icu4j.version><!-- Optional dependency of Slugify -->
+        <icu4j.version>77.1</icu4j.version>        <!-- Optional dependency of Slugify -->
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
         <hebi-sass.version>1.0.4</hebi-sass.version>
-        <!-- Packaging -->
-        <quarkus.package.type>uber-jar</quarkus.package.type>
+        <quarkus.package.jar.enabled>true</quarkus.package.jar.enabled>
+        <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
         <native.executable.name>ttrpg-convert</native.executable.name>
     </properties>
     <dependencyManagement>
@@ -133,7 +132,7 @@
                 <version>${hebi-sass.version}</version>
                 <configuration>
                     <sassVersion>${sass.version}</sassVersion>
-                    <args> <!-- Any argument that should be forwarded to the sass cli -->
+                    <args>                        <!-- Any argument that should be forwarded to the sass cli -->
                         <arg>${project.basedir}/src/scss:${project.basedir}/examples/css-snippets</arg>
                         <arg>--no-source-map</arg>
                     </args>
@@ -192,9 +191,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${compiler-plugin.version}</version>
                 <configuration>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
             <plugin>
@@ -221,8 +218,7 @@
                             <skipTests>${skipITs}</skipTests>
                             <skipITs>${skipITs}</skipITs>
                             <systemPropertyVariables>
-                                <native.image.path>
-                                    ${project.build.directory}/${native.executable.name}</native.image.path>
+                                <native.image.path>${project.build.directory}/${native.executable.name}</native.image.path>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <maven.home>${maven.home}</maven.home>
                             </systemPropertyVariables>
