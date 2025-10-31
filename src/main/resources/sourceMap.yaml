@@ -165,6 +165,12 @@ config5e:
     ESK:
       name: "Essentials Kit"
       date: "2019-06-24"
+    FRAiF:
+      name: "Forgotten Realms: Adventures in Faerûn"
+      date: "2025-11-11"
+    FRHoF:
+      name: "Forgotten Realms: Heroes of Faerûn"
+      date: "2025-11-11"
     FS:
       name: "Frozen Sick"
       date: "2020-03-17"
@@ -519,6 +525,9 @@ config5e:
     WDMM:
       name: "Waterdeep: Dungeon of the Mad Mage"
       date: "2018-11-20"
+    WttHC:
+      name: "Stranger Things: Welcome to the Hellfire Club"
+      date: "2025-10-07"
     XDMG:
       name: "Dungeon Master's Guide (2024)"
       date: "2024-11-12"
@@ -871,12 +880,24 @@ configPf2e:
     RoE:
       name: "Rage of Elements"
       date: "2023-08-02"
+    RotR0:
+      name: "Revenge of the Runelords Player's Guide"
+      date: "2025-09-25"
     Rust:
       name: "Rusthenge"
       date: "2023-10-18"
     SF0:
       name: "Stolen Fate Player's Guide"
       date: "2023-04-13"
+    SF1:
+      name: "Stolen Fate #1: The Choosing"
+      date: "2023-04-26"
+    SF2:
+      name: "Stolen Fate #2: The Destiny War"
+      date: "2023-05-24"
+    SF3:
+      name: "Stolen Fate #3: Worst of All Possible Worlds"
+      date: "2023-06-28"
     SKT0:
       name: "Sky King's Tomb Player's Guide"
       date: "2023-07-13"

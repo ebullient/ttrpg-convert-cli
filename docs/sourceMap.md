@@ -71,6 +71,8 @@ _Support content creators. Only use or include sources that you own._
 | EGW_US | Unwelcome Spirits | reference |
 | ERLW | Eberron: Rising from the Last War | book |
 | ESK | Essentials Kit | reference |
+| FRAiF | Forgotten Realms: Adventures in Faerûn | adventure |
+| FRHoF | Forgotten Realms: Heroes of Faerûn | book |
 | FS | Frozen Sick | adventure |
 | FTD | Fizban's Treasury of Dragons | book |
 | GGR | Guildmasters' Guide to Ravnica | book |
@@ -190,6 +192,7 @@ _Support content creators. Only use or include sources that you own._
 | WBtW | The Wild Beyond the Witchlight | adventure |
 | WDH | Waterdeep: Dragon Heist | adventure |
 | WDMM | Waterdeep: Dungeon of the Mad Mage | adventure |
+| WttHC | Stranger Things: Welcome to the Hellfire Club | adventure |
 | XDMG | Dungeon Master's Guide (2024) | book |
 | XGE | Xanathar's Guide to Everything | book |
 | XMM | Monster Manual (2024) | book |
@@ -339,8 +342,12 @@ You may see these abbreviations referenced in source material, this is how they 
 | QFF2 | Quest for the Frozen Flame #2: Lost Mammoth Valley |
 | QFF3 | Quest for the Frozen Flame #3: Burning Tundra |
 | RoE | Rage of Elements |
+| RotR0 | Revenge of the Runelords Player's Guide |
 | Rust | Rusthenge |
 | SF0 | Stolen Fate Player's Guide |
+| SF1 | Stolen Fate #1: The Choosing |
+| SF2 | Stolen Fate #2: The Destiny War |
+| SF3 | Stolen Fate #3: Worst of All Possible Worlds |
 | SKT0 | Sky King's Tomb Player's Guide |
 | SW0 | Spore War Player's Guide |
 | SaS | Shadows at Sundown |
