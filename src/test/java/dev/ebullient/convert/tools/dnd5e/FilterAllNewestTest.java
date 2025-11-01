@@ -97,7 +97,8 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("condition|blinded|phb");
             commonTests.assert_Present("condition|blinded|xphb");
 
-            commonTests.assert_Present("deity|auril|faerûnian|scag");
+            commonTests.assert_Present("deity|auril|faerûnian|frhof"); // frhof supercedes scag
+            commonTests.assert_MISSING("deity|auril|faerûnian|scag");
             commonTests.assert_Present("deity|auril|forgotten realms|phb");
             commonTests.assert_Present("deity|chemosh|dragonlance|dsotdq");
             commonTests.assert_MISSING("deity|chemosh|dragonlance|phb");

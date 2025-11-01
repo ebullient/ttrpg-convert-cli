@@ -83,7 +83,7 @@ public class FilterSrdEditionsTest {
 
             commonTests.assert_MISSING("feat|alert|phb");
             commonTests.assert_Present("feat|alert|xphb");
-            commonTests.assert_Present("feat|dueling|xphb");
+            commonTests.assert_MISSING("feat|dueling|xphb");
             commonTests.assert_MISSING("feat|grappler|phb");
             commonTests.assert_Present("feat|grappler|xphb");
             commonTests.assert_MISSING("feat|mobile|phb");
@@ -104,6 +104,7 @@ public class FilterSrdEditionsTest {
             commonTests.assert_Present("condition|blinded|xphb");
             commonTests.assert_Present("condition|blinded|xphb");
 
+            commonTests.assert_MISSING("deity|auril|faerûnian|frhof");
             commonTests.assert_MISSING("deity|auril|faerûnian|scag");
             commonTests.assert_Present("deity|auril|forgotten realms|phb"); // part of basic rules/srd
             commonTests.assert_MISSING("deity|chemosh|dragonlance|dsotdq");
@@ -211,7 +212,7 @@ public class FilterSrdEditionsTest {
 
             commonTests.assert_MISSING("optfeature|ambush|tce");
             commonTests.assert_MISSING("optfeature|ambush|xphb");
-            commonTests.assert_MISSING("optfeature|dueling|phb");
+            commonTests.assert_Present("optfeature|dueling|phb");
             commonTests.assert_MISSING("optfeature|investment of the chain master|tce");
             commonTests.assert_Present("optfeature|investment of the chain master|xphb");
 

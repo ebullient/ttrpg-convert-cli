@@ -105,6 +105,7 @@ public class FilterSubset2014Test {
             commonTests.assert_Present("condition|blinded|phb");
             commonTests.assert_MISSING("condition|blinded|xphb");
 
+            commonTests.assert_MISSING("deity|auril|faerûnian|frhof");
             commonTests.assert_MISSING("deity|auril|faerûnian|scag");
             commonTests.assert_Present("deity|auril|forgotten realms|phb");
             commonTests.assert_MISSING("deity|chemosh|dragonlance|dsotdq");

@@ -126,6 +126,7 @@ public class FilterAllTest {
             commonTests.assert_Present("condition|blinded|phb");
             commonTests.assert_Present("condition|blinded|xphb");
 
+            commonTests.assert_Present("deity|auril|faerûnian|frhof");
             commonTests.assert_Present("deity|auril|faerûnian|scag");
             commonTests.assert_Present("deity|auril|forgotten realms|phb");
             commonTests.assert_Present("deity|chemosh|dragonlance|dsotdq");

@@ -75,7 +75,7 @@ public class FilterNoneTest {
 
             commonTests.assert_MISSING("feat|alert|phb");
             commonTests.assert_Present("feat|alert|xphb");
-            commonTests.assert_Present("feat|dueling|xphb");
+            commonTests.assert_MISSING("feat|dueling|xphb");
             commonTests.assert_MISSING("feat|grappler|phb");
             commonTests.assert_Present("feat|grappler|xphb");
             commonTests.assert_MISSING("feat|mobile|phb");
@@ -96,6 +96,7 @@ public class FilterNoneTest {
             commonTests.assert_Present("condition|blinded|xphb");
             commonTests.assert_Present("condition|blinded|xphb");
 
+            commonTests.assert_MISSING("deity|auril|faerûnian|frhof");
             commonTests.assert_MISSING("deity|auril|faerûnian|scag");
             commonTests.assert_MISSING("deity|auril|forgotten realms|phb");
             commonTests.assert_MISSING("deity|chemosh|dragonlance|dsotdq");
