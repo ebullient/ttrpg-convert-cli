@@ -520,6 +520,7 @@ public class Json2QuteCommon implements JsonSource {
                     case itemProperty -> values.add(itemPropertyPrereq(value));
                     case itemType -> values.add(itemTypePrereq(value));
                     case level -> values.add(levelPrereq(value));
+                    case membership -> values.add("Membership in the " + replaceConjoinOr(value, ""));
                     case other -> values.add(replaceText(value));
                     case otherSummary -> values.add(SourceField.entry.replaceTextFrom(value, this));
                     case pact -> values.add("Pact of the " + replaceText(value));
@@ -1049,6 +1050,7 @@ public class Json2QuteCommon implements JsonSource {
         /* */ campaign,
         /* */ culture,
         /* */ group,
+        /* */ membership,
         /* */ other,
         /* */ otherSummary,
         choose, // inner field for spells
