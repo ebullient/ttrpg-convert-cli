@@ -31,6 +31,34 @@ public class QuteSpell extends Tools5eQuteBase {
     public final String components;
     /** Formatted: spell range */
     public final String duration;
+    /** Formatted: Ability checks */
+    public final String abilityChecks;
+    /** Formatted: Creature types */
+    public final String affectsCreatureTypes;
+    /** Formatted/mapped: Areas */
+    public final String areaTags;
+    /** Formatted: Condition immunities */
+    public final String conditionImmune;
+    /** Formatted: Conditions */
+    public final String conditionInflict;
+    /** Formatted: Damage immunities */
+    public final String damageImmune;
+    /** Formatted: Damage types */
+    public final String damageInflict;
+    /** Formatted: Damage resistances */
+    public final String damageResist;
+    /** Formatted: Damage vulnerabilities */
+    public final String damageVulnerable;
+    /** Formatted/mapped: Misc tags */
+    public final String miscTags;
+    /** Formatted: Saving throws */
+    public final String savingThrows;
+    /** Formatted: Scaling damage dice entries */
+    public final String scalingLevelDice;
+    /** Formatted: Spell attack forms */
+    public final String spellAttacks;
+    /** At higher levels text */
+    public final String higherLevels;
     /** String: rendered list of links to classes that grant access to this spell. May be incomplete or empty. */
     public final String backgrounds;
     /** String: rendered list of links to classes that can use this spell. May be incomplete or empty. */
@@ -47,7 +75,14 @@ public class QuteSpell extends Tools5eQuteBase {
     public QuteSpell(Tools5eSources sources, String name, String source, String level,
             String school, boolean ritual, String time, String range,
             String components, String duration,
-            Collection<String> references, List<ImageRef> images, String text, Tags tags) {
+            String abilityChecks, String affectsCreatureTypes,
+            String areaTags, String conditionImmune,
+            String conditionInflict, String damageImmune,
+            String damageInflict, String damageResist,
+            String damageVulnerable, String miscTags,
+            String savingThrows, String scalingLevelDice,
+            String spellAttacks,
+            String higherLevels, Collection<String> references, List<ImageRef> images, String text, Tags tags) {
         super(sources, name, source, images, text, tags);
 
         this.level = level;
@@ -57,6 +92,20 @@ public class QuteSpell extends Tools5eQuteBase {
         this.range = range;
         this.components = components;
         this.duration = duration;
+        this.abilityChecks = abilityChecks;
+        this.affectsCreatureTypes = affectsCreatureTypes;
+        this.areaTags = areaTags;
+        this.conditionImmune = conditionImmune;
+        this.conditionInflict = conditionInflict;
+        this.damageImmune = damageImmune;
+        this.damageInflict = damageInflict;
+        this.damageResist = damageResist;
+        this.damageVulnerable = damageVulnerable;
+        this.miscTags = miscTags;
+        this.savingThrows = savingThrows;
+        this.scalingLevelDice = scalingLevelDice;
+        this.spellAttacks = spellAttacks;
+        this.higherLevels = higherLevels == null || higherLevels.isBlank() ? null : higherLevels;
         this.references = references;
         this.backgrounds = references.stream()
                 .filter(s -> s.contains("background"))
