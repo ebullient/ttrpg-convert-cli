@@ -114,6 +114,9 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         if ("creature".equalsIgnoreCase(name)) {
             return monster;
         }
+        if ("creatureFluff".equalsIgnoreCase(name)) {
+            return monsterFluff;
+        }
         if ("optionalfeature".equalsIgnoreCase(name)) {
             return optfeature;
         }

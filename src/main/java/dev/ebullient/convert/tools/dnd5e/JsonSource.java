@@ -490,7 +490,7 @@ public interface JsonSource extends JsonTextReplacement {
         String title = null;
         String id = null;
         if (entry.has("name")) {
-            title = SourceField.name.getTextOrEmpty(entry);
+            title = replaceText(SourceField.name.getTextOrEmpty(entry));
             id = title;
         } else if (getSources().getType() == Tools5eIndexType.race) {
             title = insetText.remove(0);

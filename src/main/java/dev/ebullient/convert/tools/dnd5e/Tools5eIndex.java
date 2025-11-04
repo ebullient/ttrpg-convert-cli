@@ -141,7 +141,6 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.featFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.hazardFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.itemFluff.withArrayFrom(node, this::addToIndex);
-        Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.objectFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.optionalfeatureFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
@@ -150,6 +149,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.subclassFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.trapFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.vehicleFluff.withArrayFrom(node, this::addToIndex);
+
+        Tools5eIndexType.monsterFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.monsterFluff.withArrayFrom(node, "creatureFluff", this::addToIndex);
 
         Tools5eIndexType.language.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.citation.withArrayFrom(node, this::addToIndex);

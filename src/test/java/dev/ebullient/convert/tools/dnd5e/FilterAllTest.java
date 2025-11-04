@@ -34,7 +34,8 @@ public class FilterAllTest {
                     "sources": {
                         "book": [
                             "XGE",
-                            "XMM"
+                            "XMM",
+                            "FRAiF"
                         ],
                         "adventure": [
                             "OotA",

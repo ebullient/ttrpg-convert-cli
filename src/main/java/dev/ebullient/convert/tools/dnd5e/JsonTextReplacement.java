@@ -38,7 +38,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType> {
     static final Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
     static final Pattern linkifyPattern = Pattern.compile("\\{@("
-            + "|action|background|card|class|condition|creature|deck|deity|disease|facility"
+            + "|action|background|card|class|condition|creature|creatureFluff|deck|deity|disease|facility"
             + "|feat|hazard|item|itemMastery|itemProperty|itemType|legroup|object|psionic|race|reward"
             + "|sense|skill|spell|status|subclass|table|variantrule|vehicle"
             + "|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
@@ -427,12 +427,12 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     case "note" -> {
                         // {@note This is a note}
                         if (nested) {
-                            yield "<span class='note'>**Note:** " + match.group(2).trim() + "</span>";
+                            yield "<span class='note'>**Note:** " + replaceText(match.group(2).trim()) + "</span>";
                         } else {
                             List<String> text = new ArrayList<>();
                             text.add("> [!note]");
                             for (String line : match.group(2).split("\n")) {
-                                text.add("> " + line);
+                                text.add("> " + replaceText(line.trim()));
                             }
                             yield String.join("\n", text);
                         }
