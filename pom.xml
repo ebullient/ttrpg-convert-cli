@@ -37,7 +37,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <formatter-plugin.version>2.29.0</formatter-plugin.version>
         <impsort-plugin.version>1.12.0</impsort-plugin.version>
-        <javadoc-plugin.version>3.11.3</javadoc-plugin.version>
+        <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
@@ -47,7 +47,7 @@
         <!-- Quarkus -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.26.2</quarkus.platform.version>
+        <quarkus.platform.version>3.29.0</quarkus.platform.version>
         <!-- Libraries -->
         <assertj.version>3.27.4</assertj.version>
         <evalex.version>3.5.0</evalex.version>
@@ -268,6 +268,7 @@
                 <configuration>
                     <doclet>dev.ebullient.convert.io.MarkdownDoclet</doclet>
                     <docletPath>${project.basedir}/target/classes</docletPath>
+                    <disableNoFonts>true</disableNoFonts>
                     <additionalOptions>
                         <additionalOption>-d</additionalOption>
                         <additionalOption>${project.basedir}/docs/templates</additionalOption>
