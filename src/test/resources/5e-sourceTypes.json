@@ -96,7 +96,7 @@
     "DrDe-DotSC",
     "HotB",
     "WttHC",
-    "FRAiF"
+    "FRAiF-TLLoL"
   ],
   "book" : [
     "PHB",
@@ -134,9 +134,9 @@
     "TDCSR",
     "MPMM",
     "TD",
+    "ScreenSpelljammer",
     "AAG",
     "BAM",
-    "ScreenSpelljammer",
     "HAT-TG",
     "BGG",
     "MCV4EC",
@@ -151,6 +151,7 @@
     "XDMG",
     "XScreen",
     "XMM",
+    "FRAiF",
     "FRHoF"
   ]
 }

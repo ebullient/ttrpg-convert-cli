@@ -168,6 +168,9 @@ config5e:
     FRAiF:
       name: "Forgotten Realms: Adventures in Faerûn"
       date: "2025-11-11"
+    FRAiF-TLLoL:
+      name: "Forgotten Realms: The Lost Library of Lethchauntos"
+      date: "2025-11-11"
     FRHoF:
       name: "Forgotten Realms: Heroes of Faerûn"
       date: "2025-11-11"
@@ -456,6 +459,7 @@ config5e:
       date: "2017-09-19"
     TftYP:
       name: "Tales from the Yawning Portal"
+      date: "2017-04-04"
     TftYP-AtG:
       name: "Tales from the Yawning Portal: Against the Giants"
       date: "2017-04-04"
