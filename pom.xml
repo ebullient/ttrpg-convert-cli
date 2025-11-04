@@ -319,6 +319,7 @@
             </activation>
             <properties>
                 <skipITs>false</skipITs>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
                 <quarkus.package.type>native</quarkus.package.type>
                 <quarkus.package.add-runner-suffix>false</quarkus.package.add-runner-suffix>
                 <quarkus.package.output-name>${native.executable.name}</quarkus.package.output-name>
