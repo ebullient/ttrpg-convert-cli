@@ -7,16 +7,22 @@
     "adventure": [
       "WBtW",
       "MOT-NSS",
-      "DIP"
+      "DIP",
+      ""
     ],
     "book": [
       "PHB",
-      "MOT"
+      "MOT",
+      ""
     ],
     "reference": [
       "DMG",
       "XGE",
-      "TCE"
+      "TCE",
+      ""
+    ],
+    "homebrew": [
+      ""
     ]
   },
   "include": [

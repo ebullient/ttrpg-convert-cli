@@ -1,5 +1,7 @@
 package dev.ebullient.convert.config;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -208,7 +210,7 @@ public class CompendiumConfig {
     }
 
     public List<String> resolveBooks() {
-        // works for 5eTools and pf2eTools
+        books.removeIf(x -> !isPresent(x));
         return books.stream()
                 .map(b -> {
                     if (b.endsWith(".json")) {
@@ -224,7 +226,7 @@ public class CompendiumConfig {
     }
 
     public List<String> resolveAdventures() {
-        // works for 5eTools and pf2eTools
+        adventures.removeIf(x -> !isPresent(x));
         return adventures.stream()
                 .map(a -> {
                     if (a.endsWith(".json")) {
@@ -240,6 +242,7 @@ public class CompendiumConfig {
     }
 
     public Collection<String> resolveHomebrew() {
+        homebrew.removeIf(x -> !isPresent(x));
         return Collections.unmodifiableCollection(homebrew);
     }
 

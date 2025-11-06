@@ -91,8 +91,15 @@ public class ConfiguratorTest {
 
             Collection<String> books = config.resolveBooks();
             Collection<String> adventures = config.resolveAdventures();
+            Collection<String> homebrew = config.resolveHomebrew();
 
             assertThat(config).isNotNull();
+
+            // empty values should be filtered out
+            assertThat(books).size().isEqualTo(2);
+            assertThat(adventures).size().isEqualTo(3);
+            assertThat(homebrew).size().isEqualTo(0);
+
             assertThat(books).contains("book/book-phb.json");
             assertThat(adventures).contains("adventure/adventure-wbtw.json");
 
