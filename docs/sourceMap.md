@@ -23,7 +23,7 @@ _Support content creators. Only use or include sources that you own._
 | ALCoS | Adventurers League: Curse of Strahd | reference |
 | ALEE | Adventurers League: Elemental Evil | reference |
 | ALRoD | Adventurers League: Rage of Demons | reference |
-| AWM | Adventure with Muk | reference |
+| AWM | Adventure with Muk | book |
 | AZfyT | A Zib for your Thoughts | adventure |
 | AitFR | Adventures in the Forgotten Realms | reference |
 | AitFR-AVT | Adventures in the Forgotten Realms: A Verdant Tomb | adventure |
@@ -109,7 +109,7 @@ _Support content creators. Only use or include sources that you own._
 | MCV3MC | Monstrous Compendium Volume 3: Minecraft Creatures | reference |
 | MCV4EC | Monstrous Compendium Volume 4: Eldraine Creatures | book |
 | MFF | Mordenkainen's Fiendish Folio | reference |
-| MGELFT | Muk's Guide To Everything He Learned From Tasha | reference |
+| MGELFT | Muk's Guide To Everything He Learned From Tasha | book |
 | MM | Monster Manual | book |
 | MOT | Mythic Odysseys of Theros | book |
 | MPMM | Mordenkainen Presents: Monsters of the Multiverse | book |
