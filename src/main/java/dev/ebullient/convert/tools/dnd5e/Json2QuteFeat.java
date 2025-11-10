@@ -1,7 +1,9 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.Tags;
+import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewMetaTypes;
 import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
@@ -24,8 +27,9 @@ public class Json2QuteFeat extends Json2QuteCommon {
         tags.add("feat");
 
         List<ImageRef> images = getFluffImages(Tools5eIndexType.featFluff);
+        Collection<HomebrewMetaTypes> metas = index.getHomebrewMetaTypes(sources);
 
-        String category = JsonSource.featureTypeToString(FeatFields.category.getTextOrEmpty(rootNode), null);
+        String category = JsonSource.featureTypeToString(FeatFields.category.getTextOrEmpty(rootNode), Map.of());
         if (category.startsWith("Fighting Style, ")) {
             category = "Fighting Style Replacement";
         }
