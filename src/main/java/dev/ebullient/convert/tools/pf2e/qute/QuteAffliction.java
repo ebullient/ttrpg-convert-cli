@@ -26,8 +26,7 @@ public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Rende
     public final Collection<String> traits;
     /** Integer from 1 to 10. Level of the affliction. */
     public final String level;
-    /** Aliases for this note. Only populated if not embedded. */
-    public final List<String> aliases;
+
     /** Category of affliction (Curse or Disease). Usually shown alongside the level. */
     public final String category;
     /** A description of the tempted version of the curse */
@@ -55,6 +54,7 @@ public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Rende
 
     // Internal only
     private final JsonTextConverter<?> _converter;
+    private final List<String> altNames;
 
     public QuteAffliction(
             Pf2eSources sources, String name, List<String> text, Tags tags,
@@ -72,11 +72,17 @@ public final class QuteAffliction extends Pf2eQuteNote implements QuteUtil.Rende
         this.effect = effect;
         this.stages = stages;
         this.temptedCurse = temptedCurse;
-        this.aliases = aliases;
+        this.altNames = aliases;
         this.category = category;
         this.isEmbedded = isEmbedded;
         this.notes = notes;
         this._converter = _converter;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     /** The category and level as a formatted string, e.g. "Disease 9" */

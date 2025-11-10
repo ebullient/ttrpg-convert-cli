@@ -6,11 +6,27 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[books](#books), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[books](#books), [getAliases](#getaliases), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 ### books
 
 List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasSections
 

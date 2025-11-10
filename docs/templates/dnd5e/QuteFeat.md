@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[ability](#ability), [books](#books), [category](#category), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [prerequisite](#prerequisite), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[ability](#ability), [books](#books), [category](#category), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [prerequisite](#prerequisite), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 ### ability
 
@@ -23,6 +23,22 @@ Feat category (optional)
 ### fluffImages
 
 List of images as [ImageRef](../ImageRef.md) (optional)
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasImages
 

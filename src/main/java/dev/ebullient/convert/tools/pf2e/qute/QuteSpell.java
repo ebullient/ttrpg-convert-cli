@@ -22,14 +22,15 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteSpell extends Pf2eQuteBase {
 
+    private final List<String> altNames;
+
     /** A spell’s overall power, from 1 to 10. */
     public final String level;
     /** Type: spell, cantrip, or focus */
     public final String spellType;
     /** Collection of traits (decorated links) */
     public final Collection<String> traits;
-    /** Aliases for this note */
-    public final List<String> aliases;
+
     /**
      * The time it takes to cast the spell, as a {@link QuteDataDuration} which is either a {@link QuteDataActivity}
      * or a {@link QuteDataTimedDuration}.
@@ -81,7 +82,7 @@ public class QuteSpell extends Pf2eQuteBase {
         this.level = level;
         this.spellType = spellType;
         this.traits = traits;
-        this.aliases = aliases;
+        this.altNames = aliases;
         this.castDuration = castDuration;
         this.components = components;
         this.cost = cost;
@@ -96,6 +97,12 @@ public class QuteSpell extends Pf2eQuteBase {
         this.subclass = subclass;
         this.heightened = heightened;
         this.amp = amp;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     /**

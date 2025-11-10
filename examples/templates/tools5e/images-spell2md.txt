@@ -14,7 +14,9 @@ classes:
 - {it}
 {/each}{/if}
 aliases:
-- {resource.name}
+{#each resource.aliases}
+- {it}
+{/each}
 ---
 # {resource.name}
 %%-- Embedded content starts on the next line. --%%

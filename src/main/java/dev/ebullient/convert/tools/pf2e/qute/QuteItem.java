@@ -19,10 +19,10 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteItem extends Pf2eQuteBase {
 
+    private final List<String> altNames;
+
     /** Collection of traits (decorated links) */
     public final Collection<String> traits;
-    /** Aliases for this note */
-    public final List<String> aliases;
     /**
      * Item activation attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteItem.QuteItemActivate QuteItemActivate}
      */
@@ -74,7 +74,7 @@ public class QuteItem extends Pf2eQuteBase {
             List<QuteItemVariant> variants, String craftReq) {
         super(sources, text, tags);
         this.traits = traits;
-        this.aliases = aliases;
+        this.altNames = aliases;
 
         this.activate = activate;
         this.price = price;
@@ -93,6 +93,12 @@ public class QuteItem extends Pf2eQuteBase {
         this.weapons = weapons;
         this.variants = variants;
         this.craftReq = craftReq;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     /**

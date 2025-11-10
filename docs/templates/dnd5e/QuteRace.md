@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[ability](#ability), [books](#books), [description](#description), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [type](#type), [vaultPath](#vaultpath)
+[ability](#ability), [books](#books), [description](#description), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [type](#type), [vaultPath](#vaultpath)
 
 ### ability
 
@@ -23,6 +23,22 @@ Formatted text describing the race. Optional. Same as {resource.text}
 ### fluffImages
 
 List of images as [ImageRef](../ImageRef.md) (optional)
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasImages
 

@@ -6,7 +6,7 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[access](#access), [activate](#activate), [aliases](#aliases), [ammunition](#ammunition), [armor](#armor), [books](#books), [category](#category), [contract](#contract), [craftReq](#craftreq), [duration](#duration), [group](#group), [hands](#hands), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [onset](#onset), [price](#price), [reprintOf](#reprintof), [shield](#shield), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [traits](#traits), [usage](#usage), [variants](#variants), [vaultPath](#vaultpath), [weapons](#weapons)
+[access](#access), [activate](#activate), [altNames](#altnames), [ammunition](#ammunition), [armor](#armor), [books](#books), [category](#category), [contract](#contract), [craftReq](#craftreq), [duration](#duration), [getAliases](#getaliases), [group](#group), [hands](#hands), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [onset](#onset), [price](#price), [reprintOf](#reprintof), [shield](#shield), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [traits](#traits), [usage](#usage), [variants](#variants), [vaultPath](#vaultpath), [weapons](#weapons)
 
 ### access
 
@@ -16,9 +16,8 @@ Formatted string. Item access attributes
 
 Item activation attributes as [QuteItemActivate](QuteItemActivate.md)
 
-### aliases
+### altNames
 
-Aliases for this note
 
 ### ammunition
 
@@ -47,6 +46,22 @@ Formatted string. Crafting requirements
 ### duration
 
 Formatted string. How long will the item remain active
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### group
 

@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[backgrounds](#backgrounds), [books](#books), [classList](#classlist), [classes](#classes), [components](#components), [duration](#duration), [feats](#feats), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [optionalfeatures](#optionalfeatures), [races](#races), [range](#range), [references](#references), [reprintOf](#reprintof), [ritual](#ritual), [school](#school), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
+[backgrounds](#backgrounds), [books](#books), [classList](#classlist), [classes](#classes), [components](#components), [duration](#duration), [feats](#feats), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [optionalfeatures](#optionalfeatures), [races](#races), [range](#range), [references](#references), [reprintOf](#reprintof), [ritual](#ritual), [school](#school), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
 
 ### backgrounds
 
@@ -39,6 +39,22 @@ String: rendered list of links to feats that grant acccess to this spell. May be
 ### fluffImages
 
 List of images as [ImageRef](../ImageRef.md) (optional)
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasImages
 

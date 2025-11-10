@@ -10,7 +10,7 @@ Extension of [Pf2eQuteNote](Pf2eQuteNote.md)
 
 ## Attributes
 
-[books](#books), [categoryLinks](#categorylinks), [categoryToTraits](#categorytotraits), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[books](#books), [categoryLinks](#categorylinks), [categoryToTraits](#categorytotraits), [getAliases](#getaliases), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 ### books
 
@@ -23,6 +23,22 @@ List of category anchor links
 ### categoryToTraits
 
 Map of category to a list of traits
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasSections
 

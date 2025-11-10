@@ -15,8 +15,7 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteBook extends Pf2eQuteNote {
 
-    /** Aliases for this note */
-    public final List<String> aliases;
+    public final List<String> altNames;
     /** Information about the book as {@code dev.ebullient.convert.tools.pf2e.qute.QuteBook.BookInfo} */
     public final BookInfo bookInfo;
 
@@ -27,7 +26,13 @@ public class QuteBook extends Pf2eQuteNote {
         super(Pf2eIndexType.book, name, null, text, tags);
         this.bookDir = bookDir;
         this.bookInfo = bookInfo;
-        this.aliases = aliases;
+        this.altNames = aliases;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase/Pf2eQuteNote
+        return altNames;
     }
 
     @Override

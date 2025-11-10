@@ -7,7 +7,9 @@ tags:
 - {tag}
 {/for}{/if}
 aliases:
-- {resource.name}
+{#each resource.aliases}
+- {it}
+{/each}
 ---
 # {resource.name}  
 {#if resource.source }*Source: {resource.source}*  {/if}

@@ -14,8 +14,8 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteTrait extends Pf2eQuteBase {
 
-    /** Aliases for this note */
-    public final List<String> aliases;
+    private final List<String> altNames;
+
     /** List of categories to which this trait belongs */
     public final List<String> categories;
 
@@ -23,8 +23,14 @@ public class QuteTrait extends Pf2eQuteBase {
             List<String> aliases, List<String> categories) {
         super(sources, text, tags);
 
-        this.aliases = aliases;
+        this.altNames = aliases;
         this.categories = categories;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     @Override

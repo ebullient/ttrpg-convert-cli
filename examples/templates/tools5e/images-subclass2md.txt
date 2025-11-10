@@ -9,7 +9,9 @@ tags:
 {/for}
 {/if}
 aliases:
-- {resource.name}
+{#each resource.aliases}
+- {it}
+{/each}
 ---
 # {resource.name}
 *{resource.parentClassLink}{#if resource.subclassTitle}: {resource.subclassTitle}{/if}*  

@@ -13,7 +13,7 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 ## Attributes
 
-[access](#access), [activity](#activity), [aliases](#aliases), [books](#books), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [hasSections](#hassections), [labeledSource](#labeledsource), [leadsTo](#leadsto), [level](#level), [name](#name), [note](#note), [prerequisites](#prerequisites), [reprintOf](#reprintof), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
+[access](#access), [activity](#activity), [altNames](#altnames), [books](#books), [cost](#cost), [embedded](#embedded), [frequency](#frequency), [getAliases](#getaliases), [hasSections](#hassections), [labeledSource](#labeledsource), [leadsTo](#leadsto), [level](#level), [name](#name), [note](#note), [prerequisites](#prerequisites), [reprintOf](#reprintof), [requirements](#requirements), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [special](#special), [tags](#tags), [text](#text), [traits](#traits), [trigger](#trigger), [vaultPath](#vaultpath)
 
 ### access
 
@@ -22,9 +22,8 @@ Extension of [Pf2eQuteBase](Pf2eQuteBase.md)
 
 Activity/Activation cost (as [QuteDataActivity](QuteDataActivity.md))
 
-### aliases
+### altNames
 
-Aliases for this note
 
 ### books
 
@@ -44,6 +43,22 @@ The default template uses this flag to include a `title:` prefix for the admonit
 
 [QuteDataFrequency](QuteDataFrequency.md).
 How often this feat can be used/activated. Use directly to get a formatted string.
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasSections
 
