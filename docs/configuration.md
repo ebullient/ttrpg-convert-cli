@@ -47,6 +47,12 @@ The CLI can be set up using JSON or YAML files. These files allow you to specify
 
 The following examples are presented in JSON.
 
+> [!IMPORTANT]
+> Check your work! If you are getting errors reading your config file, *don't rely on your eyes,* **use a linter!**
+>
+> - JSON: <https://jsonlint.com/>
+> - YAML: <https://www.yamllint.com/>
+
 ### Basic configuration example
 
 Below is a straightforward `config.json` file. In this format, settings are noted in a `"key": "value"` structure.
