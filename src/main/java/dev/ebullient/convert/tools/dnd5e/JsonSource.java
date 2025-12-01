@@ -1304,7 +1304,11 @@ public interface JsonSource extends JsonTextReplacement {
         if (!isPresent(featureType)) {
             return "";
         }
+
+        // Parser.FEAT_CATEGORY_TO_FULL
+        // Parser.OPT_FEATURE_TYPE_TO_FULL
         return switch (featureType.toUpperCase()) {
+            case "D" -> "Dragonmark";
             case "EB" -> "Epic Boon Feat";
             case "FS" -> "Fighting Style Feat";
             case "G" -> "General Feat";
@@ -1329,6 +1333,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "RN" -> "Rune Knight Rune";
             case "AF" -> "Alchemical Formula";
             case "TT" -> "Traveler's Trick";
+            case "RP" -> "Renown Perk";
             default -> {
                 if (!homebrew.isEmpty()) {
                     yield homebrew.values().stream()

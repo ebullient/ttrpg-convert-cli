@@ -252,6 +252,7 @@ public class FilterSrd2014Test {
 
             // Classes, subclasses, class features, and subclass features
 
+            commonTests.assert_MISSING("classtype|artificer|efa");
             commonTests.assert_MISSING("classtype|artificer|tce");
 
             // "Path of Wild Magic|Barbarian||Wild Magic|TCE|3",
@@ -302,6 +303,7 @@ public class FilterSrd2014Test {
             commonTests.assert_MISSING("race|human|xphb");
             commonTests.assert_Present("race|tiefling|phb");
             commonTests.assert_MISSING("race|tiefling|xphb");
+            commonTests.assert_MISSING("race|warforged|efa");
             commonTests.assert_MISSING("race|warforged|erlw");
             commonTests.assert_MISSING("race|yuan-ti pureblood|vgm");
             commonTests.assert_MISSING("race|yuan-ti|mpmm");

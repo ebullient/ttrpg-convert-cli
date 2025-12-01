@@ -18,6 +18,7 @@ _Support content creators. Only use or include sources that you own._
 |--------------|-----------|-------|
 | AAG | Astral Adventurer's Guide | book |
 | AATM | Adventure Atlas: The Mortuary | book |
+| ABH | Astarion's Book of Hungers | book |
 | AI | Acquisitions Incorporated | book |
 | AL | Adventurers' League | book |
 | ALCoS | Adventurers League: Curse of Strahd | reference |
@@ -63,6 +64,7 @@ _Support content creators. Only use or include sources that you own._
 | DrDe-TWoO | The Will of Orcus | adventure |
 | EEPC | Elemental Evil Player's Companion | reference |
 | EET | Elemental Evil: Trinkets | reference |
+| EFA | Eberron: Forge of the Artificer | book |
 | EFR | Eberron: Forgotten Relics | adventure |
 | EGW | Explorer's Guide to Wildemount | book |
 | EGW_DD | Dangerous Designs | reference |
@@ -98,6 +100,7 @@ _Support content creators. Only use or include sources that you own._
 | JttRC | Journeys through the Radiant Citadel | adventure |
 | KKW | Krenko's Way | adventure |
 | KftGV | Keys from the Golden Vault | adventure |
+| LFL | Lorwyn: First Light | book |
 | LK | Lightning Keep | adventure |
 | LLK | Lost Laboratory of Kwalish | adventure |
 | LMoP | Lost Mine of Phandelver | adventure |
@@ -117,6 +120,7 @@ _Support content creators. Only use or include sources that you own._
 | MTF | Mordenkainen's Tome of Foes | book |
 | MaBJoV | Minsc and Boo's Journal of Villainy | book |
 | MisMV1 | Misplaced Monsters: Volume 1 | reference |
+| NF | Netheril's Fall | book |
 | NRH | NERDS Restoring Harmony | reference |
 | NRH-ASS | NERDS Restoring Harmony: A Sticky Situation | adventure |
 | NRH-AT | NERDS Restoring Harmony: Adventure Together | adventure |

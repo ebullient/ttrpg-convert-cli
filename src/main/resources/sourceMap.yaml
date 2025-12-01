@@ -7,6 +7,9 @@ config5e:
     AATM:
       name: "Adventure Atlas: The Mortuary"
       date: "2023-10-17"
+    ABH:
+      name: "Astarion's Book of Hungers"
+      date: "2025-11-11"
     AI:
       name: "Acquisitions Incorporated"
       date: "2019-06-18"
@@ -141,6 +144,9 @@ config5e:
     EET:
       name: "Elemental Evil: Trinkets"
       date: "2015-03-10"
+    EFA:
+      name: "Eberron: Forge of the Artificer"
+      date: "2025-12-09"
     EFR:
       name: "Eberron: Forgotten Relics"
       date: "2019-11-19"
@@ -244,6 +250,9 @@ config5e:
     KftGV:
       name: "Keys from the Golden Vault"
       date: "2023-02-21"
+    LFL:
+      name: "Lorwyn: First Light"
+      date: "2025-11-18"
     LK:
       name: "Lightning Keep"
       date: "2023-09-26"
@@ -301,6 +310,9 @@ config5e:
     MisMV1:
       name: "Misplaced Monsters: Volume 1"
       date: "2023-05-03"
+    NF:
+      name: "Netheril's Fall"
+      date: "2025-11-11"
     NRH:
       name: "NERDS Restoring Harmony"
       date: "2021-09-01"
