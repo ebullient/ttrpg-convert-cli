@@ -375,6 +375,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@actSaveSuccessOrFail}", "*Failure or Success:*") // render.js Renderer.tag
                         .replaceAll("\\{@actResponse}", "Response:") // render.js Renderer.tag
                         .replaceAll("\\{@actTrigger}", "Trigger:") // render.js Renderer.tag
+                        .replaceAll("\\{@dcYourSpellSave}", "your spell save DC") // render.js Renderer.tag
                         .replaceAll("\\{@spell\\s*}", "") // error in homebrew
                         .replaceAll("\\{@color ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@style ([^|}]+)\\|?[^}]*}", "$1")
