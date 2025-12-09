@@ -30,8 +30,7 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteDeity extends Pf2eQuteBase {
 
-    /** Aliases for this note */
-    public final List<String> aliases;
+    private final List<String> altNames;
     public final String category;
     public final String pantheon;
 
@@ -52,7 +51,7 @@ public class QuteDeity extends Pf2eQuteBase {
             String alignment, String followerAlignment, String areasOfConcern, String edicts, String anathema,
             QuteDeityCleric cleric, QuteDivineAvatar avatar, QuteDivineIntercession intercession) {
         super(sources, text, tags);
-        this.aliases = aliases;
+        this.altNames = aliases;
         this.category = category;
         this.pantheon = pantheon;
 
@@ -65,6 +64,11 @@ public class QuteDeity extends Pf2eQuteBase {
         this.cleric = cleric;
         this.avatar = avatar;
         this.intercession = intercession;
+    }
+
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     /**

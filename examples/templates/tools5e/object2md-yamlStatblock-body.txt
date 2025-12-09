@@ -10,7 +10,9 @@ tags:
 statblock: inline
 statblock-link: "#^statblock"
 aliases:
-- {resource.name}
+{#each resource.aliases}
+- {it}
+{/each}
 ---
 # {resource.name}
 *Source: {resource.source}*  

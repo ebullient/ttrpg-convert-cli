@@ -18,8 +18,6 @@ public class QuteAction extends Pf2eQuteBase {
 
     /** Trigger for this action */
     public final String trigger;
-    /** Aliases for this note */
-    public final List<String> aliases;
     /** Collection of traits (decorated links) */
     public final Collection<String> traits;
     /** Situational requirements for performing this action */
@@ -38,13 +36,15 @@ public class QuteAction extends Pf2eQuteBase {
     /** Activity/Activation cost (as {@link dev.ebullient.convert.tools.pf2e.qute.QuteDataActivity QuteDataActivity}) */
     public final QuteDataActivity activity;
 
+    private final List<String> altNames;
+
     public QuteAction(Pf2eSources sources, List<String> text, Tags tags,
             String cost, String trigger, List<String> aliases, Collection<String> traits,
             String prerequisites, String requirements, QuteDataFrequency frequency,
             QuteDataActivity activity, ActionType actionType) {
         super(sources, text, tags);
         this.trigger = trigger;
-        this.aliases = aliases;
+        this.altNames = aliases;
         this.traits = traits;
 
         this.prerequisites = prerequisites;
@@ -54,6 +54,12 @@ public class QuteAction extends Pf2eQuteBase {
 
         this.activity = activity;
         this.actionType = actionType;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     /** True if this is a basic action. Same as `{resource.actionType.basic}`. */

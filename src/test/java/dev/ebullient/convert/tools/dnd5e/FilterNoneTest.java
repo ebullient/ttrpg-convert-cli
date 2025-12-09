@@ -262,6 +262,7 @@ public class FilterNoneTest {
             // 5.1 SRD defines: barbarian, bard, cleric, druid, fighter, monk,
             //    paladin, ranger, rogue, sorcerer, warlock.
 
+            commonTests.assert_MISSING("classtype|artificer|efa");
             commonTests.assert_MISSING("classtype|artificer|tce");
 
             // "Path of Wild Magic|Barbarian||Wild Magic|TCE|3",
@@ -312,6 +313,7 @@ public class FilterNoneTest {
             commonTests.assert_Present("race|human|xphb");
             commonTests.assert_MISSING("race|tiefling|phb");
             commonTests.assert_Present("race|tiefling|xphb");
+            commonTests.assert_MISSING("race|warforged|efa");
             commonTests.assert_MISSING("race|warforged|erlw");
             commonTests.assert_MISSING("race|yuan-ti pureblood|vgm");
             commonTests.assert_MISSING("race|yuan-ti|mpmm");

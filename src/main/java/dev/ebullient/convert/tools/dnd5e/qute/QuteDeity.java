@@ -52,6 +52,11 @@ public class QuteDeity extends Tools5eQuteBase {
     }
 
     @Override
+    public List<String> getAltNames() {
+        return altNames;
+    }
+
+    @Override
     public String targetFile() {
         return linkifier().getDeityResourceName(sources());
     }

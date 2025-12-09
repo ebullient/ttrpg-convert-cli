@@ -24,8 +24,8 @@ public class QuteFeat extends Pf2eQuteBase {
 
     /** Collection of traits (decorated links) */
     public final Collection<String> traits;
-    /** Aliases for this note */
-    public final List<String> aliases;
+
+    private final List<String> altNames;
 
     public final String level;
     public final String access;
@@ -57,7 +57,7 @@ public class QuteFeat extends Pf2eQuteBase {
             List<String> leadsTo, boolean embedded) {
         super(sources, text, tags);
         this.traits = traits;
-        this.aliases = aliases;
+        this.altNames = aliases;
 
         this.level = level;
         this.access = access;
@@ -71,6 +71,11 @@ public class QuteFeat extends Pf2eQuteBase {
         this.note = note;
         this.leadsTo = leadsTo;
         this.embedded = embedded;
+    }
+
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     @Override

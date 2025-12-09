@@ -8,8 +8,10 @@ tags:
 - {tag}
 {/for}
 {/if}
-aliases: 
-- {resource.name}
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
 {#if resource.conditionImmune}
 conditionImmunities:
 {#for condition in resource.conditionImmune.split(", ?")}

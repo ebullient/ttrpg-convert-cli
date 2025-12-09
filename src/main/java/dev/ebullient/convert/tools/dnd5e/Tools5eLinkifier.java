@@ -459,6 +459,8 @@ public class Tools5eLinkifier {
 
         if (!type.isEmpty()) {
             switch (type) {
+                case "D":
+                    return "Dragon Mark: " + name;
                 case "ED":
                     return "Elemental Discipline: " + name;
                 case "EI":

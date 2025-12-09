@@ -19,14 +19,14 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteRitual extends Pf2eQuteBase {
 
+    private final List<String> altNames;
+
     /** A spell’s overall power, from 1 to 10. */
     public final String level;
     /** Type: Ritual (usually) */
     public final String ritualType;
     /** Collection of traits (decorated links) */
     public final Collection<String> traits;
-    /** Aliases for this note */
-    public final List<String> aliases;
 
     /** Casting attributes as {@link dev.ebullient.convert.tools.pf2e.qute.QuteRitual.QuteRitualCasting QuteRitualCasting} */
     public final QuteRitualCasting casting;
@@ -52,13 +52,19 @@ public class QuteRitual extends Pf2eQuteBase {
         this.level = level;
         this.ritualType = ritualType;
         this.traits = traits;
-        this.aliases = aliases;
+        this.altNames = aliases;
         this.casting = casting;
         this.checks = checks;
         this.targeting = targeting;
         this.requirements = requirements;
         this.duration = duration;
         this.heightened = heightened;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase
+        return altNames;
     }
 
     /**

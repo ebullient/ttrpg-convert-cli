@@ -35,6 +35,16 @@ public class QuteItem extends Tools5eQuteBase {
         this.variants = variants == null ? List.of() : variants;
     }
 
+    @Override
+    public List<String> getAltNames() {
+        if (variants.isEmpty()) {
+            return List.of();
+        }
+        return variants.stream()
+                .map(v -> v.name())
+                .toList();
+    }
+
     /** Formatted string of item details. Will include some combination of tier, rarity, category, and attunement */
     public String getDetail() {
         return rootVariant.detail();

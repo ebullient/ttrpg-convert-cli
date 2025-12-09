@@ -11,7 +11,9 @@ statblock: true
 statblock-link: "#^statblock"
 {resource.5eInitiativeYaml}
 aliases:
-- {resource.name}
+{#each resource.aliases}
+- {it}
+{/each}
 ---
 # {resource.name}
 

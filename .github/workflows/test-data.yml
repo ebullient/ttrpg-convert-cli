@@ -16,7 +16,7 @@ permissions: read-all
 
 jobs:
   metadata:
-    uses: ebullient/workflows/.github/workflows/java-snap-metadata.yml@main
+    uses: ebullient/workflows/.github/workflows/java-snap-metadata.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
 
   build:
     runs-on: ubuntu-latest
@@ -25,13 +25,13 @@ jobs:
       cache_key: ${{ steps.data_cache.outputs.cache_key }}
 
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - id: data_cache
         uses: ./.github/actions/data-cache
 
       - name: Build with Maven
-        uses: ebullient/workflows/.github/actions/maven-build@main
+        uses: ebullient/workflows/.github/actions/maven-build@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
         with:
           artifact: ${{ needs.metadata.outputs.artifact }}
           version: ${{ needs.metadata.outputs.snapshot }}
@@ -43,7 +43,7 @@ jobs:
     needs: [metadata, build]
 
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 1
 
@@ -52,7 +52,7 @@ jobs:
           cache_key: ${{ needs.build.outputs.cache_key }}
 
       - name: Native build with Maven
-        uses: ebullient/workflows/.github/actions/native-build@main
+        uses: ebullient/workflows/.github/actions/native-build@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
         with:
           artifact: ${{ needs.metadata.outputs.artifact }}
           version: ${{ needs.metadata.outputs.snapshot }}
@@ -71,7 +71,7 @@ jobs:
       issues: write
 
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 1
 

@@ -13,13 +13,12 @@ Extension of [Pf2eQuteBase](../Pf2eQuteBase.md)
 
 ## Attributes
 
-[aliases](#aliases), [alignment](#alignment), [anathema](#anathema), [areasOfConcern](#areasofconcern), [avatar](#avatar), [books](#books), [category](#category), [cleric](#cleric), [edicts](#edicts), [followerAlignment](#followeralignment), [hasSections](#hassections), [intercession](#intercession), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
-
-### aliases
-
-Aliases for this note
+[alignment](#alignment), [altNames](#altnames), [anathema](#anathema), [areasOfConcern](#areasofconcern), [avatar](#avatar), [books](#books), [category](#category), [cleric](#cleric), [edicts](#edicts), [followerAlignment](#followeralignment), [getAliases](#getaliases), [hasSections](#hassections), [intercession](#intercession), [labeledSource](#labeledsource), [name](#name), [pantheon](#pantheon), [reprintOf](#reprintof), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 ### alignment
+
+
+### altNames
 
 
 ### anathema
@@ -46,6 +45,22 @@ List of source books using abbreviated name. Fantasy statblocks uses this list f
 
 ### followerAlignment
 
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasSections
 

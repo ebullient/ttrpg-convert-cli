@@ -28,8 +28,7 @@ import io.quarkus.qute.TemplateData;
 @TemplateData
 public class QuteCreature extends Pf2eQuteBase {
 
-    /** Aliases for this note (optional) */
-    public final List<String> aliases;
+    public final List<String> altNames;
     /** Collection of traits (decorated links, optional) */
     public final Collection<String> traits;
     /** Short creature description (optional) */
@@ -80,7 +79,7 @@ public class QuteCreature extends Pf2eQuteBase {
             List<CreatureSpellcasting> spellcasting, List<CreatureRitualCasting> ritualCasting) {
         super(sources, text, tags);
         this.traits = traits;
-        this.aliases = aliases;
+        this.altNames = aliases;
         this.description = description;
         this.level = level;
         this.perception = perception;
@@ -95,6 +94,12 @@ public class QuteCreature extends Pf2eQuteBase {
         this.abilities = abilities;
         this.spellcasting = spellcasting;
         this.ritualCasting = ritualCasting;
+    }
+
+    @Override
+    public List<String> getAltNames() {
+        // Used by getAliases in QuteBase/Pf2eQuteNote
+        return altNames;
     }
 
     /**

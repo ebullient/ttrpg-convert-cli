@@ -6,11 +6,10 @@ Extension of [Pf2eQuteNote](../Pf2eQuteNote.md)
 
 ## Attributes
 
-[aliases](#aliases), [books](#books), [category](#category), [effect](#effect), [hasSections](#hassections), [isEmbedded](#isembedded), [labeledSource](#labeledsource), [level](#level), [maxDuration](#maxduration), [name](#name), [notes](#notes), [onset](#onset), [reprintOf](#reprintof), [savingThrow](#savingthrow), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [stages](#stages), [tags](#tags), [temptedCurse](#temptedcurse), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
+[altNames](#altnames), [books](#books), [category](#category), [effect](#effect), [getAliases](#getaliases), [hasSections](#hassections), [isEmbedded](#isembedded), [labeledSource](#labeledsource), [level](#level), [maxDuration](#maxduration), [name](#name), [notes](#notes), [onset](#onset), [reprintOf](#reprintof), [savingThrow](#savingthrow), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [stages](#stages), [tags](#tags), [temptedCurse](#temptedcurse), [text](#text), [traits](#traits), [vaultPath](#vaultpath)
 
-### aliases
+### altNames
 
-Aliases for this note. Only populated if not embedded.
 
 ### books
 
@@ -23,6 +22,22 @@ Category of affliction (Curse or Disease). Usually shown alongside the level.
 ### effect
 
 Formatted text. Affliction effect, may be multiple lines.
+
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
 
 ### hasSections
 

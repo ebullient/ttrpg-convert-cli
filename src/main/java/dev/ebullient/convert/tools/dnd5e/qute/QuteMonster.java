@@ -403,6 +403,7 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "damage_resistances", immuneResist.resist);
         addUnlessEmpty(map, "damage_immunities", immuneResist.immune);
         addUnlessEmpty(map, "condition_immunities", immuneResist.conditionImmune);
+        addUnlessEmpty(map, "gear", gear);
         map.put("senses", (senses.isBlank() ? "" : senses + ", ") + "passive Perception " + passive);
         map.put("languages", languages);
         addUnlessEmpty(map, "cr", cr);

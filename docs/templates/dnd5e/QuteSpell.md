@@ -76,6 +76,22 @@ String: rendered list of links to feats that grant acccess to this spell. May be
 
 List of images as [ImageRef](../ImageRef.md) (optional)
 
+### getAliases
+
+Aliases for this note, including the note name, as quoted/escaped strings.
+
+Example values:
+- "+1 All-Purpose Tool"
+- "Carl \"The Elder\" Frost"
+
+In templates:
+```md
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+```
+
 ### hasImages
 
 Return true if any images are present

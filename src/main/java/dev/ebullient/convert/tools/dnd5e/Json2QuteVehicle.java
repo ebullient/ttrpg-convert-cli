@@ -393,6 +393,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
 
     enum VehicleType {
         SHIP("Ship"),
+        ELEMENTAL_AIRSHIP("Elemental Airship"),
         SPELLJAMMER("Spelljammer"),
         INFWAR("Infernal War Machine"),
         CREATURE("Creature"),
@@ -408,6 +409,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
             String vehicleType = VehicleFields.vehicleType.getTextOrDefault(node, "SHIP");
             return switch (vehicleType) {
                 case "SHIP" -> SHIP;
+                case "ELEMENTAL_AIRSHIP" -> ELEMENTAL_AIRSHIP;
                 case "SPELLJAMMER" -> SPELLJAMMER;
                 case "INFWAR" -> INFWAR;
                 case "CREATURE" -> CREATURE;

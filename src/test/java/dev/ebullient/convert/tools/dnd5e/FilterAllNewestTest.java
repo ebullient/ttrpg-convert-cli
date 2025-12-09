@@ -255,7 +255,8 @@ public class FilterAllNewestTest {
 
             // Classes, subclasses, class features, and subclass features
 
-            commonTests.assert_Present("classtype|artificer|tce");
+            commonTests.assert_Present("classtype|artificer|efa");
+            commonTests.assert_MISSING("classtype|artificer|tce");
 
             // "Path of Wild Magic|Barbarian||Wild Magic|TCE|3",
             // "Bolstering Magic|Barbarian||Wild Magic|TCE|6",
@@ -305,7 +306,8 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("race|human|xphb");
             commonTests.assert_MISSING("race|tiefling|phb");
             commonTests.assert_Present("race|tiefling|xphb");
-            commonTests.assert_Present("race|warforged|erlw");
+            commonTests.assert_Present("race|warforged|efa");
+            commonTests.assert_MISSING("race|warforged|erlw");
             commonTests.assert_MISSING("race|yuan-ti pureblood|vgm");
             commonTests.assert_Present("race|yuan-ti|mpmm");
 

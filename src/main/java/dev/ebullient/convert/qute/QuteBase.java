@@ -1,9 +1,12 @@
 package dev.ebullient.convert.qute;
 
+import static dev.ebullient.convert.StringUtil.quotedEscaped;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import dev.ebullient.convert.io.JavadocVerbatim;
 import dev.ebullient.convert.tools.CompendiumSources;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.Tags;
@@ -16,7 +19,7 @@ import io.quarkus.qute.TemplateData;
  * for the type. For example, {@code QuteBackground} will use {@code background2md.txt}.
  */
 @TemplateData
-public class QuteBase implements QuteUtil {
+public class QuteBase implements QuteUtil, QuteAltNames {
     protected final String name;
     protected final CompendiumSources sources;
     protected final String sourceText;
@@ -45,6 +48,35 @@ public class QuteBase implements QuteUtil {
     /** String describing the content's source(s) */
     public String getSource() {
         return sourceText;
+    }
+
+    /**
+     * Aliases for this note, including the note name, as quoted/escaped strings.
+     *
+     * Example values:
+     * - "+1 All-Purpose Tool"
+     * - "Carl \"The Elder\" Frost"
+     *
+     * In templates:
+     * ```md
+     * aliases:
+     * {#each resource.aliases}
+     * - {it}
+     * {/each}
+     * ```
+     */
+    @JavadocVerbatim
+    public List<String> getAliases() {
+        var altNames = getAltNames();
+        if (altNames.isEmpty()) {
+            return List.of(quotedEscaped(name));
+        }
+        List<String> aliases = new ArrayList<>();
+        aliases.add(quotedEscaped(name));
+        for (var alt : altNames) {
+            aliases.add(quotedEscaped(alt));
+        }
+        return aliases;
     }
 
     /** Formatted string describing the content's source(s): `_Source: &lt;sources&gt;_` */

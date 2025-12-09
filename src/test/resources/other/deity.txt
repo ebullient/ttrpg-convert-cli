@@ -7,7 +7,9 @@ tags:
 - {tag}
 {/for}{/if}
 aliases:
-- {resource.name}
+{#each resource.aliases}
+- {it}
+{/each}
 ---
 # [{resource.name}]({resource.vaultPath})
 *Source: {resource.source}* {#if resource.image }

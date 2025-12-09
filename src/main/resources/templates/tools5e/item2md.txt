@@ -8,11 +8,10 @@ tags:
 - {tag}
 {/for}
 {/if}
-aliases: 
-- "{resource.name}"
-{#if resource.variantAliases }
-{resource.variantAliases}
-{/if}
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
 ---
 # {resource.name}
 {#if resource.detail }*{resource.detail}*  {/if}
