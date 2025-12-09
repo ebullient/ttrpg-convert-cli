@@ -1,6 +1,7 @@
 @mixin floatBySrcAnchor() {
   div,
-  span {
+  span,
+  img {
     &.image-embed {
       position: relative;
 
@@ -46,6 +47,9 @@
       width: 200px;
     }
   }
+}
+div,
+span {
   div.image-embed,
   span.image-embed,
   img {
