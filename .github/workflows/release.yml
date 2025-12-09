@@ -50,14 +50,14 @@ jobs:
       contents: write
       actions: write
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       # Fetches all tags for the repo
       - name: Fetch tags
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRO }}
@@ -100,7 +100,7 @@ jobs:
 
   native-binaries:
     needs: build_tag
-    uses: ebullient/workflows/.github/workflows/java-release-native-binaries.yml@main
+    uses: ebullient/workflows/.github/workflows/java-release-native-binaries.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
     permissions:
       contents: read
       actions: write
@@ -110,7 +110,7 @@ jobs:
 
   release:
     needs: [build_tag, native-binaries]
-    uses: ebullient/workflows/.github/workflows/jreleaser-release.yml@main
+    uses: ebullient/workflows/.github/workflows/jreleaser-release.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
     permissions:
       contents: write
       actions: write
@@ -123,7 +123,7 @@ jobs:
 
   release-prep-next:
     needs: [build_tag, release]
-    uses: ebullient/workflows/.github/workflows/java-release-prep-next.yml@main
+    uses: ebullient/workflows/.github/workflows/java-release-prep-next.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
     permissions:
       contents: write
     with:
