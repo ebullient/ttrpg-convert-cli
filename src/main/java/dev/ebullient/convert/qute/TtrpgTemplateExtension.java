@@ -1,6 +1,10 @@
 package dev.ebullient.convert.qute;
 
+import static dev.ebullient.convert.StringUtil.quotedEscaped;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import dev.ebullient.convert.StringUtil;
@@ -201,5 +205,34 @@ public class TtrpgTemplateExtension {
     @JavadocVerbatim
     public static String jsonString(Object o) {
         return Tui.jsonStringify(o);
+    }
+
+    /**
+     * Skip first element in list
+     *
+     * Usage: `{resource.components.skipFirst()}`
+     */
+    @JavadocVerbatim
+    public static List<?> skipFirst(ArrayList<?> list) {
+        return list.subList(1, list.size());
+    }
+
+    /**
+     * Return the size of a list
+     *
+     * Usage: `{resource.components.size()}`
+     */
+    @JavadocVerbatim
+    public static int size(ArrayList<?> list) {
+        return list.size();
+    }
+
+    /**
+     * Escape double quotes in a string (YAML/properties safe)
+     *
+     * Usage: `{resource.components.size()}`
+     */
+    public static String escapeQuotes(String s) {
+        return quotedEscaped(s);
     }
 }

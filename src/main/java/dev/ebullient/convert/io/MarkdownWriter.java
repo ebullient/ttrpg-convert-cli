@@ -131,7 +131,12 @@ public class MarkdownWriter {
             fd.toFile().mkdirs();
             String fileName = Tui.slugify(fn) + (fn.endsWith(".md") ? "" : ".md");
             String relative = dir.resolve(n.targetPath()).normalize().toString().replace("\\", "/");
-            n.vaultPath(relative + "/" + fileName);
+            if (relative.isBlank() || relative.equals(".")) {
+                relative = "";
+            } else {
+                relative += "/";
+            }
+            n.vaultPath(relative + fileName);
             writeNote(fd, fileName, n);
         }
 
