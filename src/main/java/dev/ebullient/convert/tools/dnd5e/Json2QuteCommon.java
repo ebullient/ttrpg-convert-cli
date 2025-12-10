@@ -514,6 +514,7 @@ public class Json2QuteCommon implements JsonSource {
                     case exclusiveFeatCategory -> values.add("Can't Have Another " + replaceConjoinOr(value, " Feat"));
                     case expertise -> values.add(expertisePrereq(value));
                     case feat -> values.add(featPrereq(value));
+                    case featCategory -> values.add("Any " + replaceConjoinOr(value, " Feat"));
                     case feature -> values.add(replaceConjoinOr(value, " Feature"));
                     case optionalfeature -> values.add(replaceConjoinOr(value, ""));
                     case group -> values.add(replaceConjoinOr(value, " Group"));
@@ -1055,6 +1056,7 @@ public class Json2QuteCommon implements JsonSource {
         /* */ other,
         /* */ otherSummary,
         /* */ exclusiveFeatCategory,
+        /* */ featCategory,
         choose, // inner field for spells
         displayEntry, // inner field for display
         note, // field alongside other fields
