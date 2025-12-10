@@ -6,7 +6,7 @@ Use these functions to help render TTRPG data in Qute templates.
 
 ## Attributes
 
-[asBonus](#asbonus), [capitalized](#capitalized), [capitalizedList](#capitalizedlist), [join](#join), [joinConjunct](#joinconjunct), [jsonString](#jsonstring), [lowercase](#lowercase), [pluralizeLabel](#pluralizelabel), [prefixSpace](#prefixspace), [uppercaseFirst](#uppercasefirst)
+[asBonus](#asbonus), [capitalized](#capitalized), [capitalizedList](#capitalizedlist), [first](#first), [join](#join), [joinConjunct](#joinconjunct), [jsonString](#jsonstring), [lowercase](#lowercase), [pluralizeLabel](#pluralizelabel), [prefixSpace](#prefixspace), [quotedEscaped](#quotedescaped), [size](#size), [skipFirst](#skipfirst), [uppercaseFirst](#uppercasefirst)
 
 ### asBonus
 
@@ -27,6 +27,12 @@ Return a capitalized form of this string, capitalizing the first word of each cl
 Clauses are separated by commas or semicolons. Ignores conjunctions and parenthetical content.
 
 Usage: `{resource.languages.capitalizedList}`
+
+### first
+
+First element in list
+
+Usage: `{resource.components.first}`
 
 ### join
 
@@ -64,6 +70,24 @@ Usage: `{resource.name.pluralized(resource.components)}`
 Return the given object as a string, with a space prepended if it's non-empty and non-null.
 
 Usage: `{resource.name.prefixSpace}`
+
+### quotedEscaped
+
+Escape double quotes in a string (YAML/properties safe)
+
+Usage: `{resource.components.quotedEscaped}`
+
+### size
+
+Return the size of a list
+
+Usage: `{resource.components.size()}`
+
+### skipFirst
+
+Skip first element in list
+
+Usage: `{resource.components.skipFirst}`
 
 ### uppercaseFirst
 
