@@ -47,7 +47,7 @@
         <!-- Quarkus -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.29.0</quarkus.platform.version>
+        <quarkus.platform.version>3.29.1</quarkus.platform.version>
         <!-- Libraries -->
         <assertj.version>3.27.6</assertj.version>
         <evalex.version>3.5.0</evalex.version>
