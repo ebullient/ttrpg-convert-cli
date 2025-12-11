@@ -52,7 +52,7 @@
         <assertj.version>3.27.6</assertj.version>
         <evalex.version>3.5.0</evalex.version>
         <github-slugify.version>3.0.7</github-slugify.version>
-        <icu4j.version>77.1</icu4j.version>        <!-- Optional dependency of Slugify -->
+        <icu4j.version>78.1</icu4j.version>        <!-- Optional dependency of Slugify -->
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
         <hebi-sass.version>1.0.4</hebi-sass.version>
         <quarkus.package.jar.enabled>true</quarkus.package.jar.enabled>
