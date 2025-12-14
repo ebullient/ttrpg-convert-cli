@@ -224,7 +224,7 @@ public class ImageRef {
             } else if (sourceUrl.startsWith("stream/")) {
                 copyToVault = true;
             } else if (!sourceUrl.startsWith("file:/")) {
-                sourceUrl = imageRoot.getRootPath() + sourceUrl;
+                sourceUrl = "file://" + imageRoot.getRootPath() + sourceUrl;
                 copyToVault = imageRoot.copyInternalToVault();
             }
 

@@ -1,5 +1,7 @@
 {
   "images": {
-    "copyInternal": false
+    "copyInternal": false,
+    "copyExternal": false,
+    "internalRoot" : "sources/5etools-img"
   }
 }

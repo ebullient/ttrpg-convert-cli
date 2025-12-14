@@ -447,23 +447,23 @@ The CLI can copy images referenced in the content to your vault. This is useful 
 
 ### Copying internal images
 
-5eTools mirror-2 moved internal images into a separate repository. Downloads can take some time, and the images repository is quite large.
+5eTools internal images are stored in a separate repository.
 
-**By default, no files are downloaded**. Links will reference the remote location, and you will need to be online to view the images. This is a safe, fast, and relatively well-behaving option given that downloads can be quite slow, and you may change your mind about where you want content to be generated.
+**By default, images are not downloaded**. Links reference the remote location, requiring internet access to view. This is the safest, fastest option.
 
-The following configuration options allow you to change how the CLI treats these internal image references.
+To copy internal images into your vault:
 
-- Set `images.copyInternal` to `true` (as shown below) in your configuration file to instruct the CLI to copy these images into your vault. This will make your vault larger, but you will not need to be online to view the images.
+- **Option 1: Download on demand**
 
     ```json
     "images": {
-        "copyInternal": true,
+        "copyInternal": true
     }
     ```
 
-    With just this setting, the CLI will download each "internal" image it hasn't seen before into your compendium. It is a lot of individual requests. If you have a slow connection, the next option may be better.
+    The CLI downloads each image individually as needed. This is many separate requests and may be slow.
 
-- Create a shallow clone of the images repository, and set `images.internalRoot` in your configuration file to tell the CLI where it can locally find "internal" images.
+- **Option 2: Use a local clone (faster)**
 
     ```json
     "images": {
@@ -472,46 +472,47 @@ The following configuration options allow you to change how the CLI treats these
     }
     ```
 
-    With this setting, the CLI will look for "internal" images in the local directory, which will speed things up (at the cost of a few extra steps).
+    The CLI reads images from a local directory. Relative paths resolve from the current working directory[^1]; absolute paths[^2] also work. You'll get an error if the directory doesn't exist.
 
-    If you use a relative path, it will be resolved relative to the current working directory[^1]. An absolute path[^2] will also work. You will get an error message if that directory doesn't exist (and it will tell you the directory it tried to use, which should help you figure out where the problem is).
+> [!NOTE]
+> If not copying images, delete both `copyInternal` and `internalRoot` attributes.
+>
+> If using `internalRoot`, ensure the path exists. `http` or `file` URLs work best; otherwise the CLI creates a `file` link from the specified path.
+>
+> Without copying, images must be accessible from your vault to display in Obsidian.
 
 ### Copying external images
 
-External images are referenced by media references marked as "external", and usually begin with "http://" or "https://". Some homebrew content may use a "file://" URL[^3] to reference a local file.
+External images are marked as "external" in the JSON source and typically use `http://`, `https://`, or `file://`[^3] URLs.
 
-**By default, external images are not downloaded.** Links will reference the remote location, and you will need to be online to view the images. This is a safe, fast, and relatively well-behaving option given that downloads can be quite slow, and you may change your mind about where you want content to be generated.
+**By default, external images are not downloaded**. Links reference the remote location, requiring internet access to view. This is the safest, fastest option.
 
-To download remote images, set `images.copyExternal` to `true` (as shown below) in your configuration file to instruct the CLI to copy "external" images into your vault. This will make your vault larger, but you will not need to be online to view the images.
+To copy external images into your vault:
 
 ```json
 "images": {
-    "copyExternal": true,
+    "copyExternal": true
 }
 ```
 
-With this setting, the CLI will copy all "external" images it hasn't seen before into your compendium.
+The CLI will download each external image it hasn't seen before.
 
 ### Fallback paths
 
-🧪 This config has not been fully tested, so if it goes wrong, raise an issue so we can sort it out properly.
+🧪 Experimental feature. Report issues if problems occur.
 
-In the event you have a bad image reference and the copy fails, you can set a fallback path for an image that should be used instead.
+If an image reference is broken or fails to copy, you can specify a fallback path:
 
 ```json
 "images": {
     "fallbackPaths": {
         "img/bestiary/MM/Green Hag.jpg": "img/bestiary/MM/Green Hag.webp"
-    },
+    }
 }
 ```
 
-The hard part will be knowing what the original lookup path was. For "external" and homebrew images, you can usually find the broken image reference in the json source material. Missing internal images may be a bit harder to track down.
-
-Note:
-
-- The key (original path) must match what the Json source is specifying.
-- The value (replacement path) should be either: a valid path to a local file[^2] or a valid URL to a remote file[^3].
+- **Key** (original path): Must match exactly what the JSON source specifies. For external/homebrew images, check the JSON source. Internal images may be harder to identify.
+- **Value** (replacement path): Must be a valid local file path[^2] or URL[^3].
 
 ## Customizing the default source
 
