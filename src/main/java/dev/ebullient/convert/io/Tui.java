@@ -484,8 +484,7 @@ public class Tui {
         String sourcePath = image.sourcePath().toString().replace("stream", "");
         targetPath.getParent().toFile().mkdirs();
 
-        try {
-            InputStream in = TtrpgConfig.class.getResourceAsStream(sourcePath);
+        try (InputStream in = TtrpgConfig.class.getResourceAsStream(sourcePath)) {
             Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             errorf("Unable to copy resource. %s", e);
@@ -505,10 +504,8 @@ public class Tui {
             return;
         }
 
-        try {
-            Tui.instance().debugf("copy image %s", url);
-
-            ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
+        Tui.instance().debugf("copy image %s", url);
+        try (ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream())) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(targetPath.toFile())) {
                 fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             }
@@ -653,10 +650,10 @@ public class Tui {
     }
 
     public static JsonNode readTreeFromResource(String resource) {
-        try {
+        try (InputStream in = TtrpgConfig.class.getResourceAsStream(resource)) {
             return resource.endsWith(".yaml")
-                    ? Tui.yamlMapper().readTree(TtrpgConfig.class.getResourceAsStream(resource))
-                    : Tui.MAPPER.readTree(TtrpgConfig.class.getResourceAsStream(resource));
+                    ? Tui.yamlMapper().readTree(in)
+                    : Tui.MAPPER.readTree(in);
         } catch (IOException | IllegalArgumentException e) {
             Tui.instance.errorf(e, "Unable to read or parse required resource (%s): %s", resource, e.toString());
             return null;
