@@ -92,11 +92,12 @@ public class Templates {
         }
     }
 
-    public String renderIndex(String name, Collection<IndexEntry> resources) {
+    public String renderIndex(String name, String vaultPath, Collection<IndexEntry> resources) {
         Template tpl = customTemplateOrDefault("index.txt");
         try {
             return tpl
                     .data("name", name)
+                    .data("vaultPath", vaultPath)
                     .data("resources", resources)
                     .render();
         } catch (TemplateException tex) {

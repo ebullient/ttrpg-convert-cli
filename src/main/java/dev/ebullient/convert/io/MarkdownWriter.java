@@ -91,7 +91,8 @@ public class MarkdownWriter {
                             .map(fm -> new IndexEntry(fm.title, fm.fileName, "./" + fm.fileName)) // folder note
                             .collect(Collectors.toList());
                     try {
-                        writeFile(new FileMap(title, fileName, dir, false), templates.renderIndex(title, entries));
+                        String vaultPath = dir.resolve(fileName).toString();
+                        writeFile(new FileMap(title, fileName, dir, false), templates.renderIndex(title, vaultPath, entries));
                     } catch (IOException ex) {
                         throw new UncheckedIOException(ex);
                     }
