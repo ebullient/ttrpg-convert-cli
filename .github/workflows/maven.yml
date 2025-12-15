@@ -44,6 +44,7 @@ jobs:
     needs: [main_root, metadata]
     outputs:
       cache_key: ${{ steps.data_cache.outputs.cache_key }}
+
     permissions:
       contents: write
       actions: write

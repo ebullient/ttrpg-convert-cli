@@ -70,15 +70,14 @@ runs:
         popd
 
         mkdir -p sources/5etools-img
-        gh release download ${LATEST_5E_VERSION} -D sources/5etools-img -R 5etools-mirror-3/5etools-img
+        git clone -b ${LATEST_5E_VERSION} \
+            --single-branch --depth=1 \
+            -c advice.detachedHead=false \
+            https://github.com/5etools-mirror-3/5etools-img.git sources/5etools-img
         pushd sources/5etools-img
-          zip -FF img-${LATEST_5E_VERSION}.zip --out fixed.zip
-          unzip -q fixed.zip
-          rm *.z*
           du -sh .
           # replace all images w/ empty files. We don't care about image content for test purposes
-          find img -type f | while read FILE; do echo > "$FILE"; done
-          mv img/* .
+          find . -type f -not -path '*/.git*' | while read FILE; do echo > "$FILE"; done
           du -sh .
         popd
 

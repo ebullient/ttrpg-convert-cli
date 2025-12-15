@@ -1,0 +1,18 @@
+name: Refresh cache
+on:
+  workflow_dispatch:
+
+jobs:
+  cache:
+    runs-on: ubuntu-latest
+    outputs:
+      cache_key: ${{ steps.data_cache.outputs.cache_key }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - id: data_cache
+        uses: ./.github/actions/data-cache
+
+      - uses: ./.github/actions/native-data-cache
+        with:
+          cache_key: ${{ steps.data_cache.outputs.cache_key }}
