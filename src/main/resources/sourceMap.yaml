@@ -171,6 +171,9 @@ config5e:
     ESK:
       name: "Essentials Kit"
       date: "2019-06-24"
+    FFotR:
+      name: "Fated Flight of the Recluse"
+      date: "2025-12-09"
     FRAiF:
       name: "Forgotten Realms: Adventures in Faerûn"
       date: "2025-11-11"
