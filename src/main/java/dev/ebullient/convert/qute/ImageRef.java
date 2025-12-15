@@ -224,8 +224,10 @@ public class ImageRef {
             } else if (sourceUrl.startsWith("stream/")) {
                 copyToVault = true;
             } else if (!sourceUrl.startsWith("file:/")) {
-                sourceUrl = "file://" + imageRoot.getRootPath() + sourceUrl;
                 copyToVault = imageRoot.copyInternalToVault();
+                sourceUrl = copyToVault
+                        ? imageRoot.getRootPath() + sourceUrl
+                        : "file://" + imageRoot.getRootPath() + sourceUrl;
             }
 
             boolean localTargetSet = relativeTarget != null && vaultRoot != null && rootFilePath != null;
