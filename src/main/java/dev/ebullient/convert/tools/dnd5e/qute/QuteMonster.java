@@ -641,8 +641,11 @@ public class QuteMonster extends Tools5eQuteBase {
                         }
                         case charges, legendary -> {
                             Function<String, String> f = (num) -> {
-                                String value = String.format(duration.durationText, num);
-                                return value + pluralize(value, num);
+                                boolean isEach = num.endsWith("e");
+                                String value = String.format(duration.durationText, num.replace("e", ""));
+                                return isEach
+                                        ? pluralize(value, num.replace("e", "")) + " each"
+                                        : pluralize(value, num);
                             };
                             appendList(text, f, v);
                         }
