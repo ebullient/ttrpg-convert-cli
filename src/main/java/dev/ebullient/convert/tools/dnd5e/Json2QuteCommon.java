@@ -669,7 +669,7 @@ public class Json2QuteCommon implements JsonSource {
                     StringBuilder value = new StringBuilder();
                     value.append(MonsterFields.ac.replaceTextFrom(acValue, this));
                     if (MonsterFields.from.existsIn(acValue)) {
-                        value.append(" from ").append(joinAndReplace(MonsterFields.from.readArrayFrom(acValue)));
+                        value.append(" ").append(joinAndReplace(MonsterFields.from.readArrayFrom(acValue)));
                     }
                     if (Tools5eFields.condition.existsIn(acValue)) {
                         value.append(" ").append(Tools5eFields.condition.replaceTextFrom(acValue, this));
