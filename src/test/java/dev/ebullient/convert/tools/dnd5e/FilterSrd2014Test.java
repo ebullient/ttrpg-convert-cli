@@ -108,7 +108,6 @@ public class FilterSrd2014Test {
             commonTests.assert_MISSING("deity|the traveler|eberron|erlw");
             commonTests.assert_MISSING("deity|the traveler|eberron|phb");
             commonTests.assert_MISSING("deity|the traveler|exandria|egw");
-            commonTests.assert_MISSING("deity|the traveler|exandria|tdcsr");
 
             commonTests.assert_Present("disease|cackle fever|dmg"); // srd/basicrules
             commonTests.assert_MISSING("disease|cackle fever|xdmg");
@@ -135,7 +134,6 @@ public class FilterSrd2014Test {
             commonTests.assert_MISSING("itemproperty|2h|xphb");
             commonTests.assert_MISSING("itemproperty|bf|dmg");
             commonTests.assert_MISSING("itemproperty|bf|xdmg");
-            commonTests.assert_MISSING("itemproperty|er|tdcsr");
             commonTests.assert_Present("itemproperty|s|phb");
 
             commonTests.assert_Present("itemtype|$c|phb");

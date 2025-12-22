@@ -38,7 +38,6 @@ sources:
     - SCAG
     - SCC
     - TCE
-    - TDCSR
     - VGM
     - XGE
   reference:
@@ -49,6 +48,7 @@ sources:
     - SaF
   homebrew:
     - sources/5e-homebrew/collection/MCDM Productions; Strongholds and Followers.json
+    - sources/5e-homebrew/collection/Darrington Press; Tal’Dorei Campaign Setting Reborn.json
 
 paths:
   compendium: /compendium/5e/

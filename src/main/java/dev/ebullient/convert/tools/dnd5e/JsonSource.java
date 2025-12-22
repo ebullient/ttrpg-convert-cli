@@ -694,7 +694,6 @@ public interface JsonSource extends JsonTextReplacement {
         }
         // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","prop":"subclass","source":"XUA2023PlayersHandbookP7","name":"Aberrant","className":"Sorcerer","classSource":"XUA2023PlayersHandbookP7","collapsed":true,"displayName":"Aberrant Sorcery","indexInputType":"reference","indexKey":"reference|aberrant|xua2023playershandbookp7"} from sources[book|book-xua2023playershandbookp7]
         // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","prop":"subclass","source":"XUA2023PlayersHandbookP7","name":"Clockwork","className":"Sorcerer","classSource":"XUA2023PlayersHandbookP7","collapsed":true,"displayName":"Clockwork Sorcery","indexInputType":"reference","indexKey":"reference|clockwork|xua2023playershandbookp7"} from sources[book|book-xua2023playershandbookp7]
-        // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","name":"Shove","source":"PHB","page":206,"tag":"action","indexInputType":"reference","indexKey":"reference|shove|phb"} from sources[itemgroup|honor's last stand|tdcsr]
         // 🔸 WARN| 🫣 unable to find statblock target {"type":"statblock","tag":"variantrule","source":"ESK","name":"Sidekicks","page":66,"indexInputType":"reference","indexKey":"reference|sidekicks|esk"} from sources[adventure|adventure-dip]
     }
 

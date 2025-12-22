@@ -142,7 +142,6 @@ public class FilterAllTest {
             commonTests.assert_Present("deity|the traveler|eberron|erlw");
             commonTests.assert_Present("deity|the traveler|eberron|phb");
             commonTests.assert_Present("deity|the traveler|exandria|egw");
-            commonTests.assert_Present("deity|the traveler|exandria|tdcsr");
 
             commonTests.assert_Present("disease|cackle fever|dmg");
             commonTests.assert_Present("disease|cackle fever|xdmg");
@@ -169,7 +168,6 @@ public class FilterAllTest {
             commonTests.assert_Present("itemproperty|2h|xphb");
             commonTests.assert_Present("itemproperty|bf|dmg");
             commonTests.assert_Present("itemproperty|bf|xdmg");
-            commonTests.assert_Present("itemproperty|er|tdcsr");
             commonTests.assert_Present("itemproperty|s|phb");
 
             commonTests.assert_Present("itemtype|$c|phb");
@@ -427,11 +425,6 @@ public class FilterAllTest {
         JsonNode orbOfShielding = commonTests.index.getOrigin("magicvariant|orb of shielding (irian quartz)|erlw");
         assertThat(orbOfShielding).isNotNull();
 
-        // "requires":[{"type":"R"},{"property":"T"}],
-        // "excludes":{"net":true}
-        JsonNode oceanicWeapon = commonTests.index.getOrigin("magicvariant|oceanic weapon|tdcsr");
-        assertThat(oceanicWeapon).isNotNull();
-
         JsonNode x;
 
         x = commonTests.index.getOrigin("item|arrow|phb");
@@ -446,9 +439,6 @@ public class FilterAllTest {
         assertThat(MagicVariant.INSTANCE.hasExcludedProperty(x, orbOfShielding))
                 .describedAs("orbOfShielding: Crystal does not have excluded name")
                 .isFalse();
-        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(x, oceanicWeapon))
-                .describedAs("oceanicWeapon: Crystal does not have excluded property (net)")
-                .isFalse();
         assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, armBlade))
                 .describedAs("armBlade: Crystal is not a melee type (M)")
                 .isFalse();
@@ -461,9 +451,6 @@ public class FilterAllTest {
         assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, orbOfShielding))
                 .describedAs("orbOfShielding: Crystal has required property (SCF)")
                 .isTrue();
-        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, oceanicWeapon))
-                .describedAs("oceanicWeapon: Crystal is not the right type (R) and does not have the right property (T)")
-                .isFalse();
 
         x = commonTests.index.getOrigin("item|dagger|phb");
         assertThat(MagicVariant.INSTANCE.hasExcludedProperty(x, armBlade))
@@ -478,9 +465,6 @@ public class FilterAllTest {
         assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, orbOfShielding))
                 .describedAs("orbOfShielding: Dagger does not have the required property (SCF / arcane)")
                 .isFalse();
-        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, oceanicWeapon))
-                .describedAs("oceanicWeapon: Dagger has one of two required properties")
-                .isTrue();
 
         x = commonTests.index.getOrigin("item|greatsword|phb");
         assertThat(MagicVariant.INSTANCE.hasExcludedProperty(x, armBlade))
@@ -488,14 +472,6 @@ public class FilterAllTest {
                 .isTrue();
         assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, luckBlade))
                 .describedAs("luckBlade: Greatsword is a sword")
-                .isTrue();
-
-        x = commonTests.index.getOrigin("item|net|phb");
-        assertThat(MagicVariant.INSTANCE.hasExcludedProperty(x, oceanicWeapon))
-                .describedAs("oceanicWeapon: Net property is excluded")
-                .isTrue();
-        assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, oceanicWeapon))
-                .describedAs("oceanicWeapon: Net has the right type (R) and the right property (T)")
                 .isTrue();
 
         x = commonTests.index.getOrigin("item|scimitar|phb");

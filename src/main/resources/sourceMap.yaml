@@ -463,9 +463,6 @@ config5e:
     TD:
       name: "Tarot Deck"
       date: "2022-05-24"
-    TDCSR:
-      name: "Tal'Dorei Campaign Setting Reborn"
-      date: "2022-01-18"
     TLK:
       name: "The Lost Kenku"
       date: "2017-11-28"

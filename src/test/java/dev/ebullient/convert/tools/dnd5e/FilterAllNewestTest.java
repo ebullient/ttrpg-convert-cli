@@ -105,14 +105,13 @@ public class FilterAllNewestTest {
             commonTests.assert_MISSING("deity|ehlonna|greyhawk|phb");
             commonTests.assert_Present("deity|ehlonna|greyhawk|xdmg");
             commonTests.assert_Present("deity|gruumsh|dawn war|dmg"); // different pantheon
-            commonTests.assert_MISSING("deity|gruumsh|exandria|egw"); // different pantheon
+            commonTests.assert_Present("deity|gruumsh|exandria|egw"); // different pantheon
             commonTests.assert_Present("deity|gruumsh|nonhuman|phb"); // superseded
             commonTests.assert_MISSING("deity|gruumsh|orc|scag"); // superseded
             commonTests.assert_Present("deity|gruumsh|orc|vgm"); // keep this one
             commonTests.assert_Present("deity|the traveler|eberron|erlw");
             commonTests.assert_MISSING("deity|the traveler|eberron|phb");
-            commonTests.assert_MISSING("deity|the traveler|exandria|egw");
-            commonTests.assert_Present("deity|the traveler|exandria|tdcsr");
+            commonTests.assert_Present("deity|the traveler|exandria|egw");
 
             commonTests.assert_MISSING("disease|cackle fever|dmg");
             commonTests.assert_Present("disease|cackle fever|xdmg");
@@ -139,7 +138,6 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("itemproperty|2h|xphb");
             commonTests.assert_MISSING("itemproperty|bf|dmg");
             commonTests.assert_Present("itemproperty|bf|xdmg");
-            commonTests.assert_Present("itemproperty|er|tdcsr");
             commonTests.assert_Present("itemproperty|s|phb");
 
             commonTests.assert_MISSING("itemtype|$c|phb");

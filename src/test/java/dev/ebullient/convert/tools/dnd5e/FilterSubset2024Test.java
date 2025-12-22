@@ -28,7 +28,7 @@ public class FilterSubset2024Test {
                 {
                     "sources": {
                         "adventure": ["PaBTSO", "dsotdq"],
-                        "book": ["tdcsr", "xdmg", "xphb"],
+                        "book": ["xdmg", "xphb"],
                         "reference": ["srd52", "basicRules2024", "mpmm"]
                     },
                     "images": {
@@ -72,7 +72,6 @@ public class FilterSubset2024Test {
             assertThat(config.sourceIncluded("SCAG")).isFalse();
             assertThat(config.sourceIncluded("TCE")).isFalse();
             assertThat(config.sourceIncluded("XGE")).isFalse();
-            assertThat(config.sourceIncluded("tdcsr")).isTrue();
 
             assertThat(config.sourceIncluded("PaBTSO")).isTrue();
             assertThat(config.sourceIncluded("dsotdq")).isTrue();
@@ -121,7 +120,6 @@ public class FilterSubset2024Test {
             commonTests.assert_MISSING("deity|the traveler|eberron|erlw");
             commonTests.assert_MISSING("deity|the traveler|eberron|phb");
             commonTests.assert_MISSING("deity|the traveler|exandria|egw");
-            commonTests.assert_Present("deity|the traveler|exandria|tdcsr");
 
             commonTests.assert_MISSING("disease|cackle fever|dmg");
             commonTests.assert_Present("disease|cackle fever|xdmg");
@@ -148,7 +146,6 @@ public class FilterSubset2024Test {
             commonTests.assert_Present("itemproperty|2h|xphb");
             commonTests.assert_MISSING("itemproperty|bf|dmg");
             commonTests.assert_Present("itemproperty|bf|xdmg");
-            commonTests.assert_Present("itemproperty|er|tdcsr");
             commonTests.assert_MISSING("itemproperty|s|phb");
 
             commonTests.assert_MISSING("itemtype|$c|phb");

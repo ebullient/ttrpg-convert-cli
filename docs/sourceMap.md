@@ -171,7 +171,6 @@ _Support content creators. Only use or include sources that you own._
 | SjA | Spelljammer Academy | adventure |
 | TCE | Tasha's Cauldron of Everything | book |
 | TD | Tarot Deck | book |
-| TDCSR | Tal'Dorei Campaign Setting Reborn | book |
 | TLK | The Lost Kenku | adventure |
 | TTP | The Tortle Package | adventure |
 | TftYP | Tales from the Yawning Portal | reference |
