@@ -99,6 +99,9 @@ public class TestUtils {
             if (path.startsWith("http") && path.contains(" ")) {
                 e.add(String.format("HTTP path with space in %s: %s ", p, m.group(0)));
                 return;
+            } else if (path.contains("file://https://")) {
+                e.add(String.format("file://https:// in %s: %s ", p, m.group(0)));
+                return;
             } else if (path.startsWith("http")
                     || path.startsWith("file://")
                     || path.contains("vaultPath")

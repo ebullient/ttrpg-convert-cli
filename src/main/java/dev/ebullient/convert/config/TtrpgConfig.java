@@ -178,6 +178,12 @@ public class TtrpgConfig {
             return internalImageRoot;
         }
 
+        public String getRootPathUrl() {
+            return internalImageRoot.startsWith("http") || internalImageRoot.startsWith("file")
+                    ? internalImageRoot
+                    : "file://" + internalImageRoot;
+        }
+
         public boolean copyInternalToVault() {
             return copyInternal;
         }
