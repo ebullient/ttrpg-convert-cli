@@ -78,7 +78,7 @@ public class Json2QuteBook extends Json2QuteCommon {
                             String page = x.get("page").asText();
                             titlePage = title + ", p. " + page;
                         }
-                        Tools5eQuteNote note = new Tools5eQuteNote(name, titlePage, content, tags)
+                        Tools5eQuteNote note = new Tools5eQuteNote(getSources(), name, titlePage, content, tags)
                                 .withTargetPath(imagePath)
                                 .withTargetFile(fileName);
                         pages.add(note);
