@@ -15,7 +15,10 @@
 .json5e-reward,
 .json5e-spell,
 .json5e-vehicle {
-  @include floatBySrcAnchor();
+  .markdown-preview-view,
+  .markdown-source-view {
+    @include floatBySrcAnchor();
+  }
 }
 /* For decks of cards, ensure images don't overlap */
 .json5e-deck {
