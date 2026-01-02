@@ -148,9 +148,13 @@ public class Json2QuteClass extends Json2QuteCommon {
                 }
 
                 maybeAddBlankLine(text);
-                text.add("## Class Features");
                 for (ClassFeature scf : scFeatures) {
-                    scf.appendText(this, text, scSources.primarySource());
+                    if (scf.getName().equalsIgnoreCase(scName)) {
+                        // This "feature" is the flavor text for the subclass, so treat it like fluff text
+                        scf.appendIntroText(this, text, scSources.primarySource());
+                    } else {
+                        scf.appendText(this, text, scSources.primarySource());
+                    }
                 }
 
                 addOptionalFeatureText(scNode, scSources.primarySource(), text);
@@ -727,6 +731,51 @@ public class Json2QuteClass extends Json2QuteCommon {
             }
         }
 
+        void appendIntroText(JsonSource converter, List<String> text, String primarySource) {
+            boolean pushed = converter.parseState().pushFeatureType();
+            boolean hasHeading = false;
+            boolean isSubclassFeature = false;
+            boolean isEntries = false;
+            boolean isSpellsTable = false;
+            AppendTypeValue type = null;
+            String name = "";
+            String caption = "";
+
+            try {
+                for (JsonNode entry : converter.iterableElements(SourceField.entries.getFrom(cfNode))) {
+                    type = AppendTypeValue.valueFrom(entry, SourceField.type);
+                    name = SourceField.name.replaceTextFrom(entry, converter);
+                    caption = TableFields.caption.getTextOrEmpty(entry);
+
+                    // Any of the following indicate the end of the flavor text, so inject the heading here
+                    // refSubclassFeature, named entries, Cleric Domain Spells Table
+                    // "At each indicated cleric level, you add the listed spells to your spells prepared."
+                    isSubclassFeature = !hasHeading && AppendTypeValue.refSubclassFeature.equals(type);
+                    isEntries = !hasHeading && !name.isEmpty() && AppendTypeValue.entries.equals(type);
+                    isSpellsTable = !hasHeading && (entry.asText().startsWith("At each indicated ") ||
+                            (AppendTypeValue.table.equals(type) && caption.contains("Spell")));
+
+                    if (isSubclassFeature || isEntries || isSpellsTable) {
+                        converter.maybeAddBlankLine(text);
+                        text.add("## Subclass Features");
+                        if (isEntries) {
+                            converter.maybeAddBlankLine(text);
+                            text.add("### " + name + " (Level " + level() + ")");
+                            entry = SourceField.entries.getFrom(entry);
+                        } else if (isSpellsTable) {
+                            converter.maybeAddBlankLine(text);
+                            text.add("### Domain Spells (Level " + level() + ")");
+                        }
+                        hasHeading = true;
+                    }
+                    converter.maybeAddBlankLine(text);
+                    converter.appendToText(text, entry, null);
+                }
+            } finally {
+                converter.parseState().pop(pushed);
+            }
+        }
+
         void appendText(JsonSource converter, List<String> text, String primarySource) {
             boolean pushed = converter.parseState().pushFeatureType();
             try {
@@ -736,7 +785,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     text.add(converter.getLabeledSource(cfSources));
                 }
                 converter.maybeAddBlankLine(text);
-                converter.appendToText(text, SourceField.entries.getFrom(cfNode), "####");
+                converter.appendToText(text, SourceField.entries.getFrom(cfNode), null);
             } finally {
                 converter.parseState().pop(pushed);
             }
