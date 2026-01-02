@@ -366,7 +366,9 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@cult ([^|}]+)\\|[^|}]+\\|([^|}]*)}", "$2")
                         .replaceAll("\\{@cult ([^|}]+)\\|[^}]*}", "$1")
                         .replaceAll("\\{@cult ([^|}]+)}", "$1")
-                        .replaceAll("\\{@language ([^|}]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@language ([^|}]+)\\|[^|}]*\\|([^|}]*)}", "$2")
+                        .replaceAll("\\{@language ([^|}]+)\\|[^}]*}", "$1")
+                        .replaceAll("\\{@language ([^|}]+)}", "$1")
                         .replaceAll("\\{@book ([^}|]+)\\|?[^}]*}", "\"$1\"")
                         .replaceAll("\\{@h}", "*Hit:* ") // render.js Renderer.tag
                         .replaceAll("\\{@m}", "*Miss:* ")
