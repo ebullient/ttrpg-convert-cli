@@ -1,6 +1,5 @@
 package dev.ebullient.convert.qute;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -212,7 +211,7 @@ public class TtrpgTemplateExtension {
      * Usage: `{resource.components.skipFirst}`
      */
     @JavadocVerbatim
-    public static List<?> skipFirst(ArrayList<?> list) {
+    public static List<?> skipFirst(List<?> list) {
         return list.subList(1, list.size());
     }
 
@@ -222,7 +221,7 @@ public class TtrpgTemplateExtension {
      * Usage: `{resource.components.first}`
      */
     @JavadocVerbatim
-    public static <T> T first(ArrayList<T> list) {
+    public static <T> T first(List<T> list) {
         return list.get(0);
     }
 
@@ -232,7 +231,7 @@ public class TtrpgTemplateExtension {
      * Usage: `{resource.components.size()}`
      */
     @JavadocVerbatim
-    public static int size(ArrayList<?> list) {
+    public static int size(List<?> list) {
         return list.size();
     }
 
