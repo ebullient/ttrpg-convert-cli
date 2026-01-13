@@ -15,8 +15,8 @@
 .json5e-reward,
 .json5e-spell,
 .json5e-vehicle {
-  .markdown-preview-view,
-  .markdown-source-view {
+  &.markdown-preview-view,
+  &.markdown-source-view {
     @include floatBySrcAnchor();
   }
 }
