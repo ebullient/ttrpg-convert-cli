@@ -441,7 +441,7 @@ public interface JsonSource extends JsonTextReplacement {
         String[] parts = lookup.split("\\|");
         String nodeSource = parts.length > 1 && !parts[1].isBlank() ? parts[1]
                 : Tools5eIndexType.optfeature.defaultSourceString();
-        String key = Tools5eIndexType.optfeature.createKey(lookup, nodeSource);
+        String key = Tools5eIndexType.optfeature.createKey(parts[0], nodeSource);
         if (index().isIncluded(key)) {
             if (parseState().inList()) {
                 text.add(linkify(Tools5eIndexType.optfeature, lookup));
@@ -461,9 +461,11 @@ public interface JsonSource extends JsonTextReplacement {
                 List<String> item = new ArrayList<>();
                 appendToText(item, e, null);
                 if (item.size() > 0) {
-                    text.add(indent + "- " + item.get(0) + "  ");
+                    StringBuilder listItem = new StringBuilder();
+                    listItem.append(indent).append("- ").append(item.get(0)).append("  ");
                     item.remove(0);
-                    item.forEach(x -> text.add(x.isEmpty() ? "" : indent + "    " + x + "  "));
+                    item.forEach(x -> listItem.append(x.isEmpty() ? "" : "\n" + indent + "    " + x + "  "));
+                    list.add(listItem.toString());
                 }
             }
 
