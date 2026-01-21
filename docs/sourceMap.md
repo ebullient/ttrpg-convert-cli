@@ -203,6 +203,7 @@ _Support content creators. Only use or include sources that you own._
 | XMM | Monster Manual (2024) | book |
 | XMtS | X Marks the Spot | adventure |
 | XPHB | Player's Handbook (2024) | book |
+| XSAC | Sage Advice Compendium (2025) | book |
 | XScreen | Dungeon Master's Screen (2024) | book |
 
 ### 5eTools Alternate abbreviation mapping

@@ -559,6 +559,9 @@ config5e:
     XPHB:
       name: "Player's Handbook (2024)"
       date: "2024-09-17"
+    XSAC:
+      name: "Sage Advice Compendium (2025)"
+      date: "2025-04-30"
     XScreen:
       name: "Dungeon Master's Screen (2024)"
       date: "2024-11-12"

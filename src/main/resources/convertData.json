@@ -926,6 +926,12 @@
           "match": "(?<=\\\"source\\\": \\\"XDMG\\\",\\s*\\\"page\\\": \\d+,\\s*)\\\"srd\\\":",
           "replace": "\"srd52\":"
         }
+      ],
+      "book/book-xsac.json": [
+        {
+          "match": "the \\{@classFeature Protector\\|Cleric\\|XPHB\\|1\\|XPHB\\} option",
+          "replace": "the Protector option"
+        }
       ]
     },
     "sourceFiles": [
