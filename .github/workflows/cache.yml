@@ -1,5 +1,7 @@
 name: Refresh cache
 on:
+  schedule:
+    - cron: '0 2 * * 1'  # Mondays at 2 AM UTC
   workflow_dispatch:
 
 jobs:
