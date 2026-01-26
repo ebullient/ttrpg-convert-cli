@@ -3,6 +3,35 @@ on:
   workflow_dispatch:
 
 jobs:
+  clear_cache:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Delete old caches (except TestData)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cutoff=$(date -d '14 days ago' +%s)
+  
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/actions/caches?per_page=100" \
+            --paginate \
+            --jq '.actions_caches[]' | \
+          jq -r --arg cutoff "$cutoff" '
+            select(.key | startswith("TestData-") | not) |
+            select((.last_accessed_at | sub("\\..*Z$"; "Z") | fromdateiso8601) < ($cutoff | tonumber)) |
+            "\(.id) \(.key)"
+          ' | while read cache_id cache_key; do
+            if [ -n "$cache_id" ]; then
+              echo "Deleting cache $cache_id ($cache_key)"
+              gh api --method DELETE \
+                -H "Accept: application/vnd.github+json" \
+                "/repos/${{ github.repository }}/actions/caches/$cache_id" || true
+            fi
+          done
+
   cache:
     runs-on: ubuntu-latest
     outputs:
