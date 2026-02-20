@@ -68,7 +68,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     // Initialization
     private final Map<String, JsonNode> nodeIndex = new TreeMap<>(); // --index
 
-    private final Map<String, Set<JsonNode>> subraceIndex = new HashMap<>(); // --index
+    private final Map<String, JsonNode> subraces = new HashMap<>(); // --index
     private final Map<SourceAndPage, List<JsonNode>> tableIndex = new HashMap<>();
 
     private final Map<String, String> aliases = new TreeMap<>(); // --index
@@ -230,10 +230,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     void addToSubraceIndex(Tools5eIndexType type, JsonNode node) {
-        String raceName = RaceFields.raceName.getTextOrThrow(node);
-        String raceSource = RaceFields.raceSource.getTextOrThrow(node);
-        String raceKey = Tools5eIndexType.race.createKey(raceName, raceSource);
-        subraceIndex.computeIfAbsent(raceKey, k -> new HashSet<>()).add(node);
+        subraces.put(type.createKey(node), node);
     }
 
     void addMagicVariantToIndex(Tools5eIndexType type, JsonNode node) {
@@ -503,7 +500,19 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     private void defineSubraces() {
         tui().verbosef("Adding subraces");
-        for (Entry<String, Set<JsonNode>> entry : subraceIndex.entrySet()) {
+
+        Map<String, Set<JsonNode>> raceToSubraces = new HashMap<>();
+
+        for (JsonNode subrace : subraces.values()) {
+            subrace = copier.handleCopy(Tools5eIndexType.subrace, subrace);
+            String raceName = RaceFields.raceName.getTextOrThrow(subrace);
+            String raceSource = RaceFields.raceSource.getTextOrThrow(subrace);
+            String raceKey = Tools5eIndexType.race.createKey(raceName, raceSource);
+
+            raceToSubraces.computeIfAbsent(raceKey, k -> new HashSet<>()).add(subrace);
+        }
+
+        for (var entry : raceToSubraces.entrySet()) {
             String raceKey = entry.getKey();
             JsonNode jsonSource = nodeIndex.get(raceKey);
 
@@ -547,7 +556,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
             Json2QuteRace.updateBaseRace(this, jsonSource, inputSubraces, subraces);
         }
-        subraceIndex.clear();
+        subraces.clear();
     }
 
     List<JsonNode> findVariants(String key, JsonNode jsonSource, List<JsonNode> baseItems) {
@@ -1027,8 +1036,12 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
     public JsonNode getOriginNoFallback(String finalKey) {
         JsonNode result = nodeIndex.get(finalKey);
-        if (result == null && unresolvableKeys.add(finalKey)) {
-            tui().logf(Msg.UNRESOLVED, "No element found for %s", finalKey);
+        if (result == null) {
+            // subraces are initially held in a separate map; check there (handle copies)
+            result = subraces.get(finalKey);
+            if (result == null && unresolvableKeys.add(finalKey)) {
+                tui().logf(Msg.UNRESOLVED, "No element found for %s", finalKey);
+            }
         }
         return result;
     }
@@ -1272,7 +1285,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             instance = null;
         }
         nodeIndex.clear();
-        subraceIndex.clear();
+        subraces.clear();
         tableIndex.clear();
 
         if (filteredIndex != null) {
