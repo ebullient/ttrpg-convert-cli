@@ -6,7 +6,19 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[backgrounds](#backgrounds), [books](#books), [classList](#classlist), [classes](#classes), [components](#components), [duration](#duration), [feats](#feats), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [level](#level), [name](#name), [optionalfeatures](#optionalfeatures), [races](#races), [range](#range), [references](#references), [reprintOf](#reprintof), [ritual](#ritual), [school](#school), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
+[abilityChecks](#abilitychecks), [affectsCreatureTypes](#affectscreaturetypes), [areaTags](#areatags), [backgrounds](#backgrounds), [books](#books), [classList](#classlist), [classes](#classes), [components](#components), [conditionImmune](#conditionimmune), [conditionInflict](#conditioninflict), [damageImmune](#damageimmune), [damageInflict](#damageinflict), [damageResist](#damageresist), [damageVulnerable](#damagevulnerable), [duration](#duration), [feats](#feats), [fluffImages](#fluffimages), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [higherLevels](#higherlevels), [labeledSource](#labeledsource), [level](#level), [miscTags](#misctags), [name](#name), [optionalfeatures](#optionalfeatures), [races](#races), [range](#range), [references](#references), [reprintOf](#reprintof), [ritual](#ritual), [savingThrows](#savingthrows), [scalingLevelDice](#scalingleveldice), [school](#school), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [spellAttacks](#spellattacks), [tags](#tags), [text](#text), [time](#time), [vaultPath](#vaultpath)
+
+### abilityChecks
+
+Formatted: Ability checks
+
+### affectsCreatureTypes
+
+Formatted: Creature types
+
+### areaTags
+
+Formatted/mapped: Areas
 
 ### backgrounds
 
@@ -27,6 +39,30 @@ String: rendered list of links to classes that can use this spell. May be incomp
 ### components
 
 Formatted: spell components
+
+### conditionImmune
+
+Formatted: Condition immunities
+
+### conditionInflict
+
+Formatted: Conditions
+
+### damageImmune
+
+Formatted: Damage immunities
+
+### damageInflict
+
+Formatted: Damage types
+
+### damageResist
+
+Formatted: Damage resistances
+
+### damageVulnerable
+
+Formatted: Damage vulnerabilities
 
 ### duration
 
@@ -68,6 +104,10 @@ Return true if more than one image is present
 
 True if the content (text) contains sections
 
+### higherLevels
+
+At higher levels text
+
 ### labeledSource
 
 Formatted string describing the content's source(s): `_Source: <sources>_`
@@ -75,6 +115,10 @@ Formatted string describing the content's source(s): `_Source: <sources>_`
 ### level
 
 Spell level
+
+### miscTags
+
+Formatted/mapped: Misc tags
 
 ### name
 
@@ -103,6 +147,14 @@ List of content superceded by this note (as [Reprinted](../Reprinted.md))
 ### ritual
 
 true for ritual spells
+
+### savingThrows
+
+Formatted: Saving throws
+
+### scalingLevelDice
+
+Formatted: Scaling damage dice entries
 
 ### school
 
@@ -138,6 +190,10 @@ Get Sources as a footnote.
 Calling this method will return an italicised string with the primary source
 followed by a footnote listing all other sources. Useful for types
 that tend to have many sources.
+
+### spellAttacks
+
+Formatted: Spell attack forms
 
 ### tags
 
