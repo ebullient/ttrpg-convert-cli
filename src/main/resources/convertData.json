@@ -1247,6 +1247,10 @@
         {
           "match": "\"Interact ",
           "replace": "\"{@action Interact} "
+        },
+        {
+          "match": "\\{@tanglefoot\\}",
+          "replace": "{@spell tanglefoot}"
         }
       ],
       "items/items-ec4.json": [
