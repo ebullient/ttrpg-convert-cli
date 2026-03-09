@@ -323,7 +323,8 @@ The CLI `--index` option compiles two lists of data keys:
 - `all-index.json`: Lists all discovered data keys.
 - `src-index.json`: Lists the data keys after source filters (`adventure`, `book`, `reference`, and the config options below) have been applied.
 
-# You can check some common Emitted types to refine with [here](#Customizing_the_default_source).
+> [!NOTE]
+> You can check some common emitted types to refine with [here](#customizing-the-default-source).
 
 ### Excluding content matching an `excludePattern`
 
