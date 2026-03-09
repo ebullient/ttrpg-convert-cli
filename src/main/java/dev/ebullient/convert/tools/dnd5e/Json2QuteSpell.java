@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.join;
 import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
 import static dev.ebullient.convert.StringUtil.uppercaseFirst;
@@ -267,7 +268,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellAreaTags() {
-        return joinList(SpellFields.areaTags.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.areaTags.getListOfStrings(rootNode, tui()).stream()
                 .map(tag -> AREA_TAG_LABELS.getOrDefault(tag, uppercaseFirst(tag)))
                 .filter(Objects::nonNull)
                 .distinct()
@@ -275,7 +276,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellDamageInflict() {
-        return joinList(SpellFields.damageInflict.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.damageInflict.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -283,7 +284,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellSavingThrows() {
-        return joinList(SpellFields.savingThrow.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.savingThrow.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -291,7 +292,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellConditionInflict() {
-        return joinList(SpellFields.conditionInflict.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.conditionInflict.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -299,7 +300,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellAbilityChecks() {
-        return joinList(SpellFields.abilityCheck.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.abilityCheck.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatAbility)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -307,15 +308,15 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellMiscTags() {
-        return joinList(SpellFields.miscTags.getListOfStrings(rootNode, tui()).stream()
-                .map(Json2QuteSpell::formatMiscTag)
+        return join(", ", SpellFields.miscTags.getListOfStrings(rootNode, tui()).stream()
+                .map(this::formatMiscTag)
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList());
     }
 
     String spellAffectsCreatureTypes() {
-        return joinList(SpellFields.affectsCreatureType.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.affectsCreatureType.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -323,7 +324,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellConditionImmune() {
-        return joinList(SpellFields.conditionImmune.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.conditionImmune.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -331,7 +332,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellDamageImmune() {
-        return joinList(SpellFields.damageImmune.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.damageImmune.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -339,7 +340,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellDamageResist() {
-        return joinList(SpellFields.damageResist.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.damageResist.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -347,7 +348,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellDamageVulnerable() {
-        return joinList(SpellFields.damageVulnerable.getListOfStrings(rootNode, tui()).stream()
+        return join(", ", SpellFields.damageVulnerable.getListOfStrings(rootNode, tui()).stream()
                 .map(this::formatKeyword)
                 .filter(Objects::nonNull)
                 .distinct()
@@ -355,8 +356,8 @@ public class Json2QuteSpell extends Json2QuteCommon {
     }
 
     String spellAttacks() {
-        return joinList(SpellFields.spellAttack.getListOfStrings(rootNode, tui()).stream()
-                .map(Json2QuteSpell::formatSpellAttack)
+        return join(", ", SpellFields.spellAttack.getListOfStrings(rootNode, tui()).stream()
+                .map(this::formatSpellAttack)
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList());
@@ -439,14 +440,14 @@ public class Json2QuteSpell extends Json2QuteCommon {
         return uppercaseFirst(ability.trim());
     }
 
-    private static String formatMiscTag(String tag) {
+    private String formatMiscTag(String tag) {
         if (tag == null || tag.isBlank()) {
             return null;
         }
         return MISC_TAG_LABELS.getOrDefault(tag, uppercaseFirst(tag.trim()));
     }
 
-    private static String formatSpellAttack(String code) {
+    private String formatSpellAttack(String code) {
         if (code == null || code.isBlank()) {
             return null;
         }
@@ -495,12 +496,5 @@ public class Json2QuteSpell extends Json2QuteCommon {
         type,
         unit,
         unlimited,
-    }
-
-    private static String joinList(List<String> values) {
-        if (values == null || values.isEmpty()) {
-            return null;
-        }
-        return String.join(", ", values);
     }
 }
