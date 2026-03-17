@@ -39,7 +39,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -125,13 +125,13 @@ public class Tui {
 
             yamlMapper = initMapper(new ObjectMapper(new YAMLFactoryBuilder(new YAMLFactory())
                     .dumperOptions(options).build()))
-                    .setSerializationInclusion(Include.NON_DEFAULT);
+                    .setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
         }
         return yamlMapper;
     }
 
     private static ObjectMapper initMapper(ObjectMapper mapper) {
-        mapper.setSerializationInclusion(Include.NON_DEFAULT)
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT)
                 .setVisibility(VisibilityChecker.Std.defaultInstance()
                         .with(JsonAutoDetect.Visibility.ANY));
         return mapper;
