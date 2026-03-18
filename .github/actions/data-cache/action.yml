@@ -93,6 +93,7 @@ runs:
         mkdir -p sources/5e-homebrew/deity
         mkdir -p sources/5e-homebrew/optionalfeature
         mkdir -p sources/5e-homebrew/race
+        mkdir -p sources/5e-homebrew/spell
         mkdir -p sources/5e-homebrew/subclass
 
         paths=(
@@ -131,6 +132,7 @@ runs:
         "deity/Frog God Games; The Lost Lands.json"
         "optionalfeature/laserllama; Laserllama's Exploit Compendium.json"
         "race/Middle Finger of Vecna; Archon.json"
+        "spell/LaserLlama; LaserLlama's Compendium of Spells.json"
         "subclass/LaserLlama; Druid Circles.json"
         )
 
