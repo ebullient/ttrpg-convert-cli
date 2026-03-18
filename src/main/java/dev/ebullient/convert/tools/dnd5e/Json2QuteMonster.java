@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.io.Tui;
@@ -695,13 +698,55 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     ObjectNode cpyImpl = impl.deepCopy();
                     JsonNode _variables = MonsterFields._variables.removeFrom(cpyImpl);
                     if (_variables != null) {
-                        Tui.instance().warnf(Msg.SOMEDAY, "Replace variables in templates. Templates: %s; Variables: %s",
-                                cpyImpl, _variables);
+                        cpyTemplate = replaceTemplateVariables(cpyTemplate, _variables);
                     }
                     ((ObjectNode) cpyTemplate).setAll(cpyImpl);
                     return cpyTemplate;
                 })
                 .toList();
+    }
+
+    /**
+     * Walk a JSON tree, replacing all {{varName}} patterns in text nodes
+     * with the corresponding value from the variables object.
+     * Mirrors 5etools: MiscUtil.getWalker().walk(cpyTemplate, {string: str => str.replace(...)})
+     */
+    static JsonNode replaceTemplateVariables(JsonNode node, JsonNode variables) {
+        if (node.isTextual()) {
+            String text = node.asText();
+            if (text.contains("{{")) {
+                Matcher matcher = Pattern.compile("\\{\\{([^}]+)}}").matcher(text);
+                String replaced = matcher.replaceAll(m -> {
+                    JsonNode value = variables.get(m.group(1));
+                    return value != null ? Matcher.quoteReplacement(value.asText()) : Matcher.quoteReplacement(m.group());
+                });
+                return new TextNode(replaced);
+            }
+            return node;
+        }
+        if (node.isObject()) {
+            ObjectNode obj = (ObjectNode) node;
+            var i = obj.fieldNames();
+            while (i.hasNext()) {
+                var field = i.next();
+                JsonNode replaced = replaceTemplateVariables(obj.get(field), variables);
+                if (replaced != obj.get(field)) {
+                    obj.set(field, replaced);
+                }
+            }
+            return obj;
+        }
+        if (node.isArray()) {
+            ArrayNode arr = (ArrayNode) node;
+            for (int i = 0; i < arr.size(); i++) {
+                JsonNode replaced = replaceTemplateVariables(arr.get(i), variables);
+                if (replaced != arr.get(i)) {
+                    arr.set(i, replaced);
+                }
+            }
+            return arr;
+        }
+        return node;
     }
 
     public static void mutExpandCopy(JsonNode node) {
