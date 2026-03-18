@@ -254,6 +254,20 @@ public class Json2QuteSpell extends Json2QuteCommon {
         JsonNode time = rootNode.withArray("time").get(0);
         String number = SpellFields.number.getTextOrEmpty(time);
         String unit = SpellFields.unit.getTextOrEmpty(time);
+        String condition = replaceText(SpellFields.condition.getTextOrEmpty(time));
+        String note = replaceText(SpellFields.note.getTextOrEmpty(time));
+
+        if ("special".equals(unit)) {
+            result.append("Special");
+            if (!condition.isEmpty()) {
+                result.append(" (").append(condition).append(")");
+            }
+            if (!note.isEmpty()) {
+                result.append(" (").append(note).append(")");
+            }
+            return result.toString();
+        }
+
         result.append(number).append(" ");
         switch (unit) {
             case "action", "reaction" ->
@@ -264,7 +278,13 @@ public class Json2QuteSpell extends Json2QuteCommon {
             default ->
                 result.append(unit);
         }
-        return pluralize(result.toString(), Integer.valueOf(number));
+        if (!condition.isEmpty()) {
+            result.append(", ").append(condition);
+        }
+        if (!note.isEmpty()) {
+            result.append(" (").append(note).append(")");
+        }
+        return pluralize(result.toString(), number);
     }
 
     String spellAreaTags() {
@@ -467,6 +487,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         classSource,
         classes,
         components,
+        condition,
         conditionImmune,
         conditionInflict,
         damageImmune,
@@ -480,6 +501,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         level,
         meta,
         miscTags,
+        note,
         number,
         range,
         ritual,
