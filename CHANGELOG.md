@@ -7,6 +7,60 @@
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
+## 3.2.5 Races or species?
+
+- ✨ Add option to emit races as species
+- ✨ Lots of extra spell fields added to templates
+- 🐛 Resolve {{resist}} template values in bestiary
+- 🐛 Add subclass references for dunamancy spells
+- 🐛 Fix template vaultPath (#837)
+- 🐛 Handle alternate casting times (#827)
+
+## 3.2.2 New template extensions
+
+- 🎨 Additional template extensions; recompiled/updated CSS for images
+    - `{resource.<attribute>.first}` -- retrieve the first element in a list
+    - `{resource.<attribute>.skipFirst}` -- skip the first element of a list
+    - `{resource.<attribute>.size}` -- return the size of a list
+    - `{resource.<attribute>.quotedEscaped}` -- Escape double quotes in a string (YAML/frontmatter safe)
+- ✨ Add featCategory prerequisite
+- 🐛 Fix handling of special AC, spellcasting, and cult links
+
+## 3.2.1 Airships and gear
+
+- ✨ 5e: Elemental Airship support
+- ✨ Added gear to the 5e monster template
+
+## 3.1.6 / 3.2.0: 🔥 Changes to template aliases
+
+- 🐛 5e: Add membership prerequisite (feats, etc.)
+- 🔥 `aliases` template attribute: new for 5e, changed for Pf2e
+
+    Instead of using `{resource.name}` as a single alias, iterate over the group:
+
+    ```md
+    aliases:
+    {#each resource.aliases}
+    - {it}
+    {/each}
+    ```
+
+## 3.1.5: Lots of goodies
+
+- ✨ Add feat categories handling
+- ✨ Sort class lists for spells; add feats, races, and backgrounds lists
+- ✨ Linkify senses in monster statblocks (#754)
+- ✨ Mythic Actions; Gear attributes; Trait entries in statblocks
+- ✨ Additional template extensions for case munging
+- ✨ Template methods for 2024 template
+- 🐛 Include group name for additional spells (#784)
+- 🐛 No table roll string when dice disabled (#761)
+- 🐛 Make singular dice roll formats consistent with source material
+- 🐛 Fix footnotes in class progression (#747)
+- 🐛 Remove duplicate optional features (#744)
+- 🎨 cssclasses as array; two-column layout for indexes
+- ♻️ Use full feature type titles for homebrew optional features
+
 ## 🔥💥 3.1.0: Accommodating 2024 rules (XMM and SRD)
 
 - 💥 **Monster spellcasting traits**: 2024 monster statblocks interleave spellcasting behaviors in trait categories.
