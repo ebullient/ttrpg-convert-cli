@@ -199,8 +199,10 @@ public class SpellIndex implements JsonSource {
             for (var nameEntry : iterableFields(sourceEntry.getValue())) {
                 String name = nameEntry.getKey();
                 String refKey = refType.createKey(name, source);
-                if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
-                    spellEntry.addSpellReference(refKey, false);
+                // Resolve aliases (e.g. race -> subrace) before lookup
+                String resolvedKey = index().getAliasOrDefault(refKey);
+                if (!index().isExcluded(resolvedKey) && index().getOriginNoFallback(resolvedKey) != null) {
+                    spellEntry.addSpellReference(resolvedKey, false);
                 }
             }
         }
