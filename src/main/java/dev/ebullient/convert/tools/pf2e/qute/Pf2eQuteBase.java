@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.pf2e.qute;
 
 import java.util.List;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.pf2e.Pf2eIndexType;
@@ -35,6 +36,18 @@ public class Pf2eQuteBase extends QuteBase {
 
     public String title() {
         return getName();
+    }
+
+    @Override
+    public String getVaultPath() {
+        String vaultRoot = type.useCompendiumBase()
+                ? TtrpgConfig.getConfig().compendiumVaultRoot()
+                : TtrpgConfig.getConfig().rulesVaultRoot();
+        String file = targetFile();
+        if (!file.endsWith(".md")) {
+            file += ".md";
+        }
+        return vaultRoot + targetPath() + "/" + file;
     }
 
     @Override

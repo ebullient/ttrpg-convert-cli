@@ -12,6 +12,7 @@
     "feat": "src/test/resources/other/feat.txt",
     "index": "src/test/resources/other/index.txt",
     "item": "src/test/resources/other/item.txt",
+    "monster": "src/test/resources/other/monster-all.txt",
     "note": "src/test/resources/other/note.txt",
     "race": "src/test/resources/other/race.txt",
     "spell": "src/test/resources/other/spell.txt",

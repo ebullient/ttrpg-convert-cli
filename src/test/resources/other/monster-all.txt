@@ -4,6 +4,7 @@ cssclass: json5e-monster
 statblock: inline
 {#if resource.tags }
 tags:
+- test
 {#for tag in resource.tags}
 - {tag}
 {/for}{/if}
@@ -13,7 +14,7 @@ aliases:
 {/each}
 ---
 
-# {resource.name}
+# [{resource.name}]({resource.vaultPath})
 *Source: {resource.source}*  
 
 {#if resource.description }

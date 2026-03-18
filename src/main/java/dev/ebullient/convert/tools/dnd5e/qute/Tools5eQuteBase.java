@@ -141,6 +141,15 @@ public class Tools5eQuteBase extends QuteBase {
                 : Tools5eSources.getInlineNotes(sources().getKey());
     }
 
+    @Override
+    public String getVaultPath() {
+        String file = targetFile();
+        if (!file.endsWith(".md")) {
+            file += ".md";
+        }
+        return linkifier().vaultRoot(sources()) + targetPath() + "/" + file;
+    }
+
     protected Tools5eLinkifier linkifier() {
         return Tools5eLinkifier.instance();
     }

@@ -213,6 +213,7 @@ public class CustomTemplatesTest {
 
             List.of(
                     testOutput.resolve("compendium/backgrounds"),
+                    testOutput.resolve("compendium/bestiary"),
                     testOutput.resolve("compendium/classes"),
                     testOutput.resolve("compendium/deities"),
                     testOutput.resolve("compendium/feats"),
@@ -230,6 +231,10 @@ public class CustomTemplatesTest {
                             } else if (frontmatter && l.equals("- test")) {
                                 foundTestTag = true;
                             } else if (l.startsWith("# ")) {
+                                if (l.contains("\\")) {
+                                    errors.add(
+                                            String.format("Backslash in heading/link in %s: %s", p.toString(), l));
+                                }
                                 break;
                             }
                         }

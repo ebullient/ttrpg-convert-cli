@@ -91,7 +91,7 @@ public class MarkdownWriter {
                             .map(fm -> new IndexEntry(fm.title, fm.fileName, "./" + fm.fileName)) // folder note
                             .collect(Collectors.toList());
                     try {
-                        String vaultPath = dir.resolve(fileName).toString();
+                        String vaultPath = dir.resolve(fileName).toString().replace('\\', '/');
                         writeFile(new FileMap(title, fileName, dir, false), templates.renderIndex(title, vaultPath, entries));
                     } catch (IOException ex) {
                         throw new UncheckedIOException(ex);
@@ -103,7 +103,6 @@ public class MarkdownWriter {
 
     <T extends QuteBase> FileMap doWrite(FileMap fileMap, T qs, Map<String, Integer> counts) {
         try {
-            qs.vaultPath(fileMap.dir + "/" + fileMap.fileName);
             writeFile(fileMap, templates.render(qs));
             counts.compute(qs.indexType().name(), (k, v) -> (v == null) ? 1 : v + 1);
         } catch (IOException e) {
