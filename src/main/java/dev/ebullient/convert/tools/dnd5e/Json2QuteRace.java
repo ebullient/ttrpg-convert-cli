@@ -41,7 +41,8 @@ public class Json2QuteRace extends Json2QuteCommon {
         for (int i = 0; i < split.length; i++) {
             split[i] = slugify(split[i].trim());
         }
-        tags.addRaw("race", String.join("/", split));
+        String tagRoot = cfg().racesAsSpecies() ? "species" : "race";
+        tags.addRaw(tagRoot, String.join("/", split));
 
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.raceFluff, "###", fluffImages);

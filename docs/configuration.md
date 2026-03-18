@@ -23,6 +23,7 @@ This guide introduces you to configuring data transformations using the Command 
     - [Including specific content with `include`](#including-specific-content-with-include)
 - [Reprint behavior](#reprint-behavior)
     - [Troubleshooting reprint behavior](#troubleshooting-reprint-behavior)
+- [Races as species](#races-as-species)
 - [Use the dice roller plugin](#use-the-dice-roller-plugin)
 - [Render with Fantasy Statblocks](#render-with-fantasy-statblocks)
 - [Tag prefix](#tag-prefix)
@@ -400,6 +401,16 @@ If the behavior isn’t what you expect, run with the --log option and check the
 The log will show whether a specific key was kept or dropped and explain why.
 
 To ensure a specific resource is included, add its key to the [`include` filter](#including-specific-content-with-include) instead of relying on reprint behavior.
+
+## Races as species
+
+If you prefer the term "species" over "race" (as used in newer D&D editions), set `racesAsSpecies` to `true`.
+
+``` json
+  "racesAsSpecies": true
+```
+
+This changes the output directory from `races/` to `species/`, tags from `race/...` to `species/...`, and the CSS class from `json5e-race` to `json5e-species`. It does not affect internal indexing or source data processing.
 
 ## Use the dice roller plugin
 

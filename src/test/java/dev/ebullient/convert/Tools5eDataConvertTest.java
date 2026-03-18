@@ -444,6 +444,10 @@ public class Tools5eDataConvertTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+
+            assertThat(testOutput.resolve("compendium/species")).isDirectory();
+            assertThat(testOutput.resolve("compendium/races")).doesNotExist();
+
             TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {
@@ -470,6 +474,9 @@ public class Tools5eDataConvertTest {
             assertThat(result.exitCode())
                     .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
                     .isEqualTo(0);
+
+            assertThat(testOutput.resolve("compendium/species")).doesNotExist();
+            assertThat(testOutput.resolve("compendium/races")).isDirectory();
 
             TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();

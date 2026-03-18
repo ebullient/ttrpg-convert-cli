@@ -71,7 +71,7 @@ public class Tools5eLinkifier {
             case monster -> "bestiary";
             case optfeature -> "optional-features";
             case optionalFeatureTypes, spellIndex -> "lists";
-            case race, subrace -> "races";
+            case race, subrace -> TtrpgConfig.getConfig().racesAsSpecies() ? "species" : "races";
             case table, tableGroup -> "tables";
             case trap, hazard -> "traps-hazards";
             case variantrule -> "variant-rules";

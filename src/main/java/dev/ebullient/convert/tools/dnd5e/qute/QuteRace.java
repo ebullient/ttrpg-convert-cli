@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e.qute;
 
 import java.util.List;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.qute.ImageRef;
 import dev.ebullient.convert.tools.Tags;
 import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
@@ -42,5 +43,10 @@ public class QuteRace extends Tools5eQuteBase {
         this.spellcasting = spellcasting;
         this.traits = traits;
         this.description = description;
+    }
+
+    /** CSS class for this resource: {@code json5e-race} or {@code json5e-species} */
+    public String getCssClass() {
+        return TtrpgConfig.getConfig().racesAsSpecies() ? "json5e-species" : "json5e-race";
     }
 }

@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[ability](#ability), [books](#books), [description](#description), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [type](#type), [vaultPath](#vaultpath)
+[ability](#ability), [books](#books), [cssClass](#cssclass), [description](#description), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [tags](#tags), [text](#text), [traits](#traits), [type](#type), [vaultPath](#vaultpath)
 
 ### ability
 
@@ -15,6 +15,10 @@ Ability scores associated with this race (comma-separated list of scores or choi
 ### books
 
 List of source books using abbreviated name. Fantasy statblocks uses this list format, as an example.
+
+### cssClass
+
+CSS class for this resource: `json5e-race` or `json5e-species`
 
 ### description
 
