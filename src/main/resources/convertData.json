@@ -981,7 +981,7 @@
       "vehicles.json"
     ],
     "indexes": {
-      "spell-source": "spells/sources.json"
+      "spell-source": "generated/gendata-spell-source-lookup.json"
     }
   },
   "configPf2e": {

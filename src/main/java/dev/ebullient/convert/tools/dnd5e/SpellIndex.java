@@ -71,20 +71,19 @@ public class SpellIndex implements JsonSource {
 
     /**
      * Called from {@link #buildSpellIndex(Collection)} to read
-     * the spells/sources.json file and create class indexes for filtering
-     * by class.
+     * the generated/gendata-spell-source-lookup.json file and create
+     * indexes for filtering by class, subclass, feat, etc.
      */
     private void readSpellSources() {
-        // Iterate the contents of spells/sources.json
-        // This file is organized source -> spellName -> "class" or "classVariant"->
-        // array of { name, source }
+        // Iterate the contents of generated/gendata-spell-source-lookup.json
+        // This file is organized: source -> spellName -> type -> type-specific data
         JsonNode spellClassMap = TtrpgConfig.readIndex("spell-source");
         // source -> spellName
         for (var sourceToSpells : iterableFields(spellClassMap)) {
             final String spellSource = sourceToSpells.getKey();
-            // spellName -> "class" or "classVariant"
-            for (var nameToReferences : iterableFields(sourceToSpells.getValue())) {
-                final String spellName = nameToReferences.getKey();
+            // spellName -> types
+            for (var nameToTypes : iterableFields(sourceToSpells.getValue())) {
+                final String spellName = nameToTypes.getKey();
 
                 String spellKey = Tools5eIndexType.spell.createKey(spellName, spellSource);
                 if (index.isExcluded(spellKey)) {
@@ -92,25 +91,130 @@ public class SpellIndex implements JsonSource {
                 }
 
                 final JsonNode spellNode = index().getOriginNoFallback(spellKey);
+                if (spellNode == null) {
+                    continue; // spell source not included
+                }
                 SpellEntry spellEntry = addSpell(spellKey, spellNode);
 
-                final JsonNode referenceNode = nameToReferences.getValue();
-                // "class" or "classVariant" -> { name, source }
-                for (var typeToReference : iterableFields(referenceNode)) {
-                    if (!typeToReference.getKey().matches("^class.*")) {
-                        // maybe something besides class or classVariant..
-                        // that would be unexpected
-                        tui().logf(Msg.UNKNOWN, "Unknown reference type: %s", typeToReference.getKey());
-                        continue;
+                // type -> type-specific data
+                for (var typeEntry : iterableFields(nameToTypes.getValue())) {
+                    processSpellSourceType(spellEntry, typeEntry.getKey(), typeEntry.getValue());
+                }
+            }
+        }
+    }
+
+    /**
+     * Process a single reference type from the spell source lookup.
+     */
+    private void processSpellSourceType(SpellEntry spellEntry, String type, JsonNode typeData) {
+        switch (type) {
+            case "class" -> processClassRefs(spellEntry, typeData, false);
+            case "classVariant" -> processClassRefs(spellEntry, typeData, true);
+            case "subclass" -> processSubclassRefs(spellEntry, typeData);
+            default -> processSimpleRefs(spellEntry, typeData, type);
+        }
+    }
+
+    /**
+     * Process class or classVariant references.
+     * Structure for class: classSource -> { className: true, ... }
+     * Structure for classVariant: classSource -> { className: { definedInSources: [...] }, ... }
+     */
+    private void processClassRefs(SpellEntry spellEntry, JsonNode data, boolean expanded) {
+        for (var sourceEntry : iterableFields(data)) {
+            String classSource = sourceEntry.getKey();
+            for (var classEntry : iterableFields(sourceEntry.getValue())) {
+                String className = classEntry.getKey();
+
+                if (expanded) {
+                    // classVariant: check that at least one definedInSource is included
+                    JsonNode classValue = classEntry.getValue();
+                    JsonNode definedIn = classValue.isObject()
+                            ? classValue.get("definedInSources")
+                            : null;
+                    if (definedIn != null && definedIn.isArray()) {
+                        boolean anyIncluded = false;
+                        for (var src : iterableElements(definedIn)) {
+                            if (index().sourceIncluded(src.asText())) {
+                                anyIncluded = true;
+                                break;
+                            }
+                        }
+                        if (!anyIncluded) {
+                            continue;
+                        }
                     }
-                    Tools5eIndexType refType = Tools5eIndexType.classtype;
-                    // "class" or "classVariant" -> array of { name, source }
-                    for (var reference : iterableElements(typeToReference.getValue())) {
-                        readClassType(spellEntry, reference, refType);
+                }
+
+                String refKey = Tools5eIndexType.classtype.createKey(className, classSource);
+                if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
+                    spellEntry.addSpellReference(refKey, expanded);
+                }
+            }
+        }
+    }
+
+    /**
+     * Process subclass references.
+     * Structure: classSource -> { className: { scSource: { scShortName: { name: "..." } } } }
+     */
+    private void processSubclassRefs(SpellEntry spellEntry, JsonNode data) {
+        for (var classSourceEntry : iterableFields(data)) {
+            String classSource = classSourceEntry.getKey();
+            for (var classNameEntry : iterableFields(classSourceEntry.getValue())) {
+                String className = classNameEntry.getKey();
+                for (var scSourceEntry : iterableFields(classNameEntry.getValue())) {
+                    String scSource = scSourceEntry.getKey();
+                    for (var scEntry : iterableFields(scSourceEntry.getValue())) {
+                        // The value has { "name": "Full Subclass Name" }
+                        JsonNode scValue = scEntry.getValue();
+                        String scName = scValue.isObject() && scValue.has("name")
+                                ? scValue.get("name").asText()
+                                : scEntry.getKey();
+                        // subclass|subclassName|className|classSource|scSource
+                        String refKey = "subclass|%s|%s|%s|%s".formatted(
+                                scName, className, classSource, scSource).toLowerCase();
+                        if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
+                            spellEntry.addSpellReference(refKey, false);
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Process simple reference types (feat, reward, background, race, optionalfeature).
+     * Structure: source -> { name: true|{...} }
+     */
+    private void processSimpleRefs(SpellEntry spellEntry, JsonNode data, String typeName) {
+        Tools5eIndexType refType = resolveRefType(typeName);
+        if (refType == null) {
+            tui().logf(Msg.UNKNOWN, "Unknown spell source type: %s", typeName);
+            return;
+        }
+        for (var sourceEntry : iterableFields(data)) {
+            String source = sourceEntry.getKey();
+            for (var nameEntry : iterableFields(sourceEntry.getValue())) {
+                String name = nameEntry.getKey();
+                String refKey = refType.createKey(name, source);
+                if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
+                    spellEntry.addSpellReference(refKey, false);
+                }
+            }
+        }
+    }
+
+    private Tools5eIndexType resolveRefType(String typeName) {
+        return switch (typeName) {
+            case "feat" -> Tools5eIndexType.feat;
+            case "optionalfeature" -> Tools5eIndexType.optfeature;
+            case "race" -> Tools5eIndexType.race;
+            case "background" -> Tools5eIndexType.background;
+            case "reward" -> Tools5eIndexType.reward;
+            default -> null;
+        };
     }
 
     /**
