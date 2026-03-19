@@ -111,6 +111,18 @@ public interface JsonTextConverter<T extends IndexType> {
         if (!isPresent(input)) {
             return input;
         }
+        if (parseState().inHtmlTable()) {
+            // Dice roller syntax doesn't work in HTML tables;
+            // strip dice tags to plain text (display text or roll string)
+            return input
+                    .replaceAll("\\{@d20}", "d20")
+                    .replaceAll(
+                            "\\{@(?:dice|damage|autodice|hit|d20|initiative|scaledice|scaledamage) ([^}|]+)\\|([^|}]+)[^}]*}",
+                            "$2")
+                    .replaceAll("\\{@(?:dice|damage|autodice|hit|d20|initiative|scaledice|scaledamage) ([^}|]+)}", "$1")
+                    .replaceAll("\\{@hitYourSpellAttack ([^}]+)}", "$1")
+                    .replaceAll("\\{@hitYourSpellAttack}", "your spell attack modifier");
+        }
         if (input.equals("{@d20}")) {
             // this is a weird case where the input is just a d20 roll
             input = "{@dice d20}";

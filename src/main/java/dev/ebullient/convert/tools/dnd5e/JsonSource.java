@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
+import static dev.ebullient.convert.StringUtil.markdownLinkToHtml;
 import static java.util.Map.entry;
 
 import java.util.ArrayList;
@@ -704,7 +705,6 @@ public interface JsonSource extends JsonTextReplacement {
         try {
             List<String> table = new ArrayList<>();
 
-            String header;
             String caption = TableFields.caption.getTextOrEmpty(tableNode);
             String blockid = caption.isBlank()
                     ? ""
@@ -721,130 +721,10 @@ public interface JsonSource extends JsonTextReplacement {
             // Gather text in "inner", then we'll decide how to append it later.
             List<String> inner = new ArrayList<>();
 
-            boolean pushTable = parseState().pushMarkdownTable(true);
-            try {
-                if (TableFields.colLabels.existsIn(tableNode)) {
-                    List<String> labels = TableFields.colLabels.getListOfStrings(tableNode, tui());
-                    header = String.join(" | ", labels.stream()
-                            .map(x -> tableHeader(x))
-                            .toList());
-
-                    if (blockid.isEmpty()) {
-                        blockid = "^" + slugify(header
-                                .replaceAll("dice: ", "")
-                                .replaceAll("d\\d+", "")
-                                .replaceAll("</?span.*?>", "")
-                                .replace("|", "")
-                                .replaceAll("\\s+", " ")
-                                .trim());
-                    }
-                } else if (TableFields.colStyles.existsIn(tableNode)) {
-                    header = TableFields.colStyles.getListOfStrings(tableNode, tui()).stream()
-                            .map(x -> "  ")
-                            .collect(Collectors.joining(" | "));
-                } else {
-                    int length = TableFields.rows.size(tableNode);
-                    String[] array = new String[length];
-                    Arrays.fill(array, " ");
-                    header = "|" + String.join(" | ", array) + " |";
-                }
-
-                final boolean cards = header.contains("Card | ");
-                for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
-                    JsonNode cells;
-                    boolean indentFirst = false;
-                    if ("row".equals(TableFields.type.getTextOrNull(r))) {
-                        cells = TableFields.row.getFrom(r);
-                        indentFirst = TableFields.style.getTextOrEmpty(r).equals("row-indent-first");
-                    } else {
-                        cells = r;
-                    }
-
-                    String row = indentFirst
-                            ? "| &emsp;"
-                            : "| ";
-                    row += streamOf(cells)
-                            .map(x -> {
-                                JsonNode roll = RollFields.roll.getFrom(x);
-                                if (roll != null) {
-                                    String result = "";
-                                    if (RollFields.exact.existsIn(roll)) {
-                                        result = RollFields.exact.getFrom(roll).asText();
-                                    } else {
-                                        result = RollFields.min.getTextOrEmpty(roll) + "-"
-                                                + RollFields.max.getTextOrEmpty(roll);
-                                    }
-                                    if (cards) {
-                                        result += " | " + SourceField.entry.getTextOrEmpty(x);
-                                    }
-                                    return new TextNode(result);
-                                }
-                                return x;
-                            })
-                            .map(x -> {
-                                String s = flattenToString(x).replace("\n", "<br />");
-                                JsonNode nestedTable = TableFields.ttrpgNestedTable.getFrom(x);
-                                if (nestedTable != null) {
-                                    TableFields.ttrpgNestedTable.appendToArray(tableNode, nestedTable);
-                                }
-                                return s;
-                            })
-                            .collect(Collectors.joining(" | ")) + " |";
-
-                    table.add(row);
-                }
-
-                header = "| " + header + " |";
-                table.add(0, header.replaceAll("[^|]", "-"));
-                table.add(0, header);
-
-                if (!blockid.isBlank()) {
-                    table.add(blockid);
-                }
-                if (cfg().useDiceRoller().enabled()
-                        && header.matches(JsonTextConverter.DICE_TABLE_HEADER)
-                        && !blockid.isBlank()) {
-                    // prepend a dice roller
-                    String targetFile = getFileName();
-                    // use dice roller string as name (for use if nested table)
-                    name = String.format("`dice: [](%s.md#%s)`", targetFile, blockid);
-                    table.add(0, name);
-                    table.add(1, "");
-                }
-                if (!caption.isBlank()) {
-                    table.add(0, "");
-                    table.add(0, "**" + replaceText(caption) + "**");
-                }
-
-                switch (blockid) {
-                    case "personality-trait" -> Json2QuteBackground.traits.addAll(table);
-                    case "ideal" -> Json2QuteBackground.ideals.addAll(table);
-                    case "bond" -> Json2QuteBackground.bonds.addAll(table);
-                    case "flaw" -> Json2QuteBackground.flaws.addAll(table);
-                }
-
-                JsonNode intro = TableFields.intro.getFrom(tableNode);
-                if (intro != null) {
-                    maybeAddBlankLine(inner);
-                    appendToText(inner, intro, null);
-                }
-                maybeAddBlankLine(inner);
-                inner.addAll(table);
-
-                JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
-                if (footnotes != null) {
-                    maybeAddBlankLine(inner);
-                    boolean pushF = parseState().pushFootnotes(true);
-                    appendToText(inner, footnotes, null);
-                    parseState().pop(pushF);
-                }
-                JsonNode outro = TableFields.outro.getFrom(tableNode);
-                if (outro != null) {
-                    maybeAddBlankLine(inner);
-                    appendToText(inner, outro, null);
-                }
-            } finally {
-                parseState().pop(pushTable);
+            if (TableFields.colLabelRows.existsIn(tableNode)) {
+                name = appendHtmlTable(table, inner, tableNode, caption, blockid, name);
+            } else {
+                name = appendMarkdownTable(table, inner, tableNode, caption, blockid, name);
             }
 
             // Add directly to text, or stick in a tableNode for later.
@@ -854,8 +734,251 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
+    default String appendMarkdownTable(List<String> table, List<String> inner,
+            JsonNode tableNode, String caption, String blockid, String name) {
+        boolean pushTable = parseState().pushMarkdownTable(true);
+        try {
+            String header;
+            if (TableFields.colLabels.existsIn(tableNode)) {
+                List<String> labels = TableFields.colLabels.getListOfStrings(tableNode, tui());
+                header = String.join(" | ", labels.stream()
+                        .map(x -> tableHeader(x))
+                        .toList());
+
+                if (blockid.isEmpty()) {
+                    blockid = "^" + slugify(header
+                            .replaceAll("dice: ", "")
+                            .replaceAll("d\\d+", "")
+                            .replaceAll("</?span.*?>", "")
+                            .replace("|", "")
+                            .replaceAll("\\s+", " ")
+                            .trim());
+                }
+            } else if (TableFields.colStyles.existsIn(tableNode)) {
+                header = TableFields.colStyles.getListOfStrings(tableNode, tui()).stream()
+                        .map(x -> "  ")
+                        .collect(Collectors.joining(" | "));
+            } else {
+                int length = TableFields.rows.size(tableNode);
+                String[] array = new String[length];
+                Arrays.fill(array, " ");
+                header = "|" + String.join(" | ", array) + " |";
+            }
+
+            final boolean cards = header.contains("Card | ");
+            for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
+                JsonNode cells;
+                boolean indentFirst = false;
+                if ("row".equals(TableFields.type.getTextOrNull(r))) {
+                    cells = TableFields.row.getFrom(r);
+                    indentFirst = TableFields.style.getTextOrEmpty(r).equals("row-indent-first");
+                } else {
+                    cells = r;
+                }
+
+                String row = indentFirst
+                        ? "| &emsp;"
+                        : "| ";
+                row += streamOf(cells)
+                        .map(x -> {
+                            JsonNode roll = RollFields.roll.getFrom(x);
+                            if (roll != null) {
+                                String result = "";
+                                if (RollFields.exact.existsIn(roll)) {
+                                    result = RollFields.exact.getFrom(roll).asText();
+                                } else {
+                                    result = RollFields.min.getTextOrEmpty(roll) + "-"
+                                            + RollFields.max.getTextOrEmpty(roll);
+                                }
+                                if (cards) {
+                                    result += " | " + SourceField.entry.getTextOrEmpty(x);
+                                }
+                                return new TextNode(result);
+                            }
+                            return x;
+                        })
+                        .map(x -> {
+                            String s = flattenToString(x).replace("\n", "<br />");
+                            JsonNode nestedTable = TableFields.ttrpgNestedTable.getFrom(x);
+                            if (nestedTable != null) {
+                                TableFields.ttrpgNestedTable.appendToArray(tableNode, nestedTable);
+                            }
+                            return s;
+                        })
+                        .collect(Collectors.joining(" | ")) + " |";
+
+                table.add(row);
+            }
+
+            header = "| " + header + " |";
+            table.add(0, header.replaceAll("[^|]", "-"));
+            table.add(0, header);
+
+            if (!blockid.isBlank()) {
+                table.add(blockid);
+            }
+            if (cfg().useDiceRoller().enabled()
+                    && header.matches(JsonTextConverter.DICE_TABLE_HEADER)
+                    && !blockid.isBlank()) {
+                // prepend a dice roller
+                String targetFile = getFileName();
+                // use dice roller string as name (for use if nested table)
+                name = String.format("`dice: [](%s.md#%s)`", targetFile, blockid);
+                table.add(0, name);
+                table.add(1, "");
+            }
+            if (!caption.isBlank()) {
+                table.add(0, "");
+                table.add(0, "**" + replaceText(caption) + "**");
+            }
+
+            switch (blockid) {
+                case "personality-trait" -> Json2QuteBackground.traits.addAll(table);
+                case "ideal" -> Json2QuteBackground.ideals.addAll(table);
+                case "bond" -> Json2QuteBackground.bonds.addAll(table);
+                case "flaw" -> Json2QuteBackground.flaws.addAll(table);
+            }
+
+            JsonNode intro = TableFields.intro.getFrom(tableNode);
+            if (intro != null) {
+                maybeAddBlankLine(inner);
+                appendToText(inner, intro, null);
+            }
+            maybeAddBlankLine(inner);
+            inner.addAll(table);
+
+            JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
+            if (footnotes != null) {
+                maybeAddBlankLine(inner);
+                boolean pushF = parseState().pushFootnotes(true);
+                appendToText(inner, footnotes, null);
+                parseState().pop(pushF);
+            }
+            JsonNode outro = TableFields.outro.getFrom(tableNode);
+            if (outro != null) {
+                maybeAddBlankLine(inner);
+                appendToText(inner, outro, null);
+            }
+        } finally {
+            parseState().pop(pushTable);
+        }
+        return name;
+    }
+
+    default String appendHtmlTable(List<String> table, List<String> inner,
+            JsonNode tableNode, String caption, String blockid, String name) {
+        boolean pushTable = parseState().pushHtmlTable(true);
+        try {
+            if (!caption.isBlank()) {
+                inner.add("");
+                inner.add("**" + replaceText(caption) + "**");
+            }
+
+            JsonNode intro = TableFields.intro.getFrom(tableNode);
+            if (intro != null) {
+                maybeAddBlankLine(inner);
+                appendToText(inner, intro, null);
+            }
+
+            maybeAddBlankLine(inner);
+            table.add("<table>");
+
+            // Header rows from colLabelRows
+            for (JsonNode headerRow : TableFields.colLabelRows.iterateArrayFrom(tableNode)) {
+                table.add("<tr>");
+                for (JsonNode cell : iterableElements(headerRow)) {
+                    if (cell.isObject() && "cellHeader".equals(cell.path("type").asText())) {
+                        int width = cell.path("width").asInt(1);
+                        String cellText = markdownLinkToHtml(replaceText(cell.path("entry").asText("")));
+                        table.add(String.format("  <th colspan=\"%d\">%s</th>", width, cellText));
+                    } else {
+                        String cellText = cell.isTextual()
+                                ? markdownLinkToHtml(replaceText(cell.asText()))
+                                : markdownLinkToHtml(flattenToString(cell));
+                        table.add("  <th>" + cellText + "</th>");
+                    }
+                }
+                table.add("</tr>");
+            }
+
+            // Data rows
+            for (JsonNode r : TableFields.rows.iterateArrayFrom(tableNode)) {
+                JsonNode cells;
+                boolean indentFirst = false;
+                if ("row".equals(TableFields.type.getTextOrNull(r))) {
+                    cells = TableFields.row.getFrom(r);
+                    indentFirst = TableFields.style.getTextOrEmpty(r).equals("row-indent-first");
+                } else {
+                    cells = r;
+                }
+
+                table.add("<tr>");
+                boolean first = true;
+                for (JsonNode x : iterableElements(cells)) {
+                    JsonNode roll = RollFields.roll.getFrom(x);
+                    String cellText;
+                    if (roll != null) {
+                        if (RollFields.exact.existsIn(roll)) {
+                            cellText = RollFields.exact.getFrom(roll).asText();
+                        } else {
+                            cellText = RollFields.min.getTextOrEmpty(roll) + "-"
+                                    + RollFields.max.getTextOrEmpty(roll);
+                        }
+                    } else {
+                        cellText = markdownLinkToHtml(flattenToString(x).replace("\n", "<br />"));
+                    }
+                    JsonNode nestedTable = TableFields.ttrpgNestedTable.getFrom(x);
+                    if (nestedTable != null) {
+                        TableFields.ttrpgNestedTable.appendToArray(tableNode, nestedTable);
+                    }
+                    if (first && indentFirst) {
+                        cellText = "&emsp;" + cellText;
+                    }
+                    table.add("  <td>" + cellText + "</td>");
+                    first = false;
+                }
+                table.add("</tr>");
+            }
+
+            table.add("</table>");
+
+            // Derive blockid from last header row if not set from caption
+            if (blockid.isEmpty()) {
+                JsonNode labelRows = TableFields.colLabelRows.getFrom(tableNode);
+                if (labelRows != null && labelRows.size() > 0) {
+                    JsonNode lastRow = labelRows.get(labelRows.size() - 1);
+                    String headerText = streamOf(lastRow)
+                            .map(x -> x.isObject() ? x.path("entry").asText("") : x.asText())
+                            .collect(Collectors.joining(" "));
+                    blockid = "^" + slugify(headerText.trim());
+                }
+            }
+            if (!blockid.isBlank()) {
+                table.add(blockid);
+            }
+
+            inner.addAll(table);
+
+            JsonNode footnotes = TableFields.footnotes.getFrom(tableNode);
+            if (footnotes != null) {
+                maybeAddBlankLine(inner);
+                boolean pushF = parseState().pushFootnotes(true);
+                appendToText(inner, footnotes, null);
+                parseState().pop(pushF);
+            }
+            JsonNode outro = TableFields.outro.getFrom(tableNode);
+            if (outro != null) {
+                maybeAddBlankLine(inner);
+                appendToText(inner, outro, null);
+            }
+        } finally {
+            parseState().pop(pushTable);
+        }
+        return name;
+    }
+
     default void appendTableText(String name, List<String> inner, List<String> text, JsonNode tableNode) {
-        if (parseState().inMarkdownTable()) {
+        if (parseState().inTable()) {
             // we are inside a table row. Append this text to an element in the tableNode
             // that will be rendered after the table.
             TableFields.ttrpgNestedTable.appendToArray(tableNode, String.join("\n", inner));
@@ -1503,6 +1626,7 @@ public interface JsonSource extends JsonTextReplacement {
         caption,
         colLabels,
         colLabelGroups,
+        colLabelRows,
         colStyles,
         rowLabels,
         rows,
