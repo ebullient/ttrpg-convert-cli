@@ -19,6 +19,7 @@
     }
     &[src$="#center"] {
       display: flex;
+      width: 100%;
       justify-content: center;
       align-items: center;
     }
@@ -30,12 +31,18 @@
       float: right;
       padding-left: 5px;
     }
+    &[src$="#left"] {
+      float: left;
+      padding-right: 5px;
+    }
+    &[src$="#left"],
     &[src$="#center"],
     &[src$="#right"] {
       img {
         max-height: 60vh;
       }
     }
+    &[src$="#left"],
     &[src$="#right"] {
       max-width: 50%;
     }
