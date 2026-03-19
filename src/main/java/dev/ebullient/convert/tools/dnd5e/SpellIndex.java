@@ -148,6 +148,8 @@ public class SpellIndex implements JsonSource {
                 }
 
                 String refKey = Tools5eIndexType.classtype.createKey(className, classSource);
+                // Resolve reprints so we reference the newest version
+                refKey = index().getAliasOrDefault(refKey);
                 if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
                     spellEntry.addSpellReference(refKey, expanded);
                 }
@@ -175,6 +177,8 @@ public class SpellIndex implements JsonSource {
                         // subclass|subclassName|className|classSource|scSource
                         String refKey = "subclass|%s|%s|%s|%s".formatted(
                                 scName, className, classSource, scSource).toLowerCase();
+                        // Resolve reprints so we reference the newest version
+                        refKey = index().getAliasOrDefault(refKey);
                         if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
                             spellEntry.addSpellReference(refKey, false);
                         }
@@ -290,7 +294,8 @@ public class SpellIndex implements JsonSource {
      * @param refType Tools5eIndexType.classtype or Tools5eIndexType.subclass
      */
     private void readClassType(SpellEntry spellEntry, JsonNode reference, Tools5eIndexType refType) {
-        final String refKey = refType.createKey(reference);
+        // Resolve reprints so we reference the newest version
+        final String refKey = index().getAliasOrDefault(refType.createKey(reference));
 
         // A book: TCE, for example, which made changes to Bard and Ranger..
         String variantSource = SpellIndexFields.definedInSource.getTextOrNull(reference);
