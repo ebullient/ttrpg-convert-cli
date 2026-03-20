@@ -305,7 +305,9 @@ public class Json2QuteCompose extends Json2QuteCommon {
 
         for (JsonNode srdEntry : iterableElements(srdEntries)) {
             String finalKey = TtrpgValue.indexKey.getTextOrEmpty(srdEntry);
-            if (index().isExcluded(finalKey)) {
+            // Use isExcluded without following reprint aliases:
+            // reprinted entries should be skipped (the newer version will be included separately)
+            if (!index().isIncluded(finalKey, false)) {
                 continue;
             }
             currentSources = Tools5eSources.findSources(finalKey);

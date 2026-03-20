@@ -1156,6 +1156,11 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return filteredIndex.containsKey(key) || filteredIndex.containsKey(alias);
     }
 
+    public boolean isIncluded(String key, boolean followReprints) {
+        String alias = getAliasOrDefault(key, followReprints);
+        return filteredIndex.containsKey(key) || filteredIndex.containsKey(alias);
+    }
+
     public boolean isExcluded(String key) {
         return !isIncluded(key);
     }
