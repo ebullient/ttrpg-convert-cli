@@ -448,6 +448,17 @@ public class Tools5eDataConvertTest {
             assertThat(testOutput.resolve("compendium/species")).isDirectory();
             assertThat(testOutput.resolve("compendium/races")).doesNotExist();
 
+            // splitRules: individual note subdirectories exist
+            assertThat(testOutput.resolve("rules/conditions")).isDirectoryContaining("glob:**/blinded.md");
+            assertThat(testOutput.resolve("rules/actions")).isDirectory();
+            assertThat(testOutput.resolve("rules/senses")).isDirectory();
+            assertThat(testOutput.resolve("rules/skills")).isDirectory();
+            assertThat(testOutput.resolve("rules/item-mastery")).isDirectoryContaining("glob:**/cleave.md");
+            // collated doc is a folder note inside the subdirectory
+            assertThat(testOutput.resolve("rules/conditions/conditions.md")).isRegularFile();
+            assertThat(testOutput.resolve("rules/actions/actions.md")).isRegularFile();
+            assertThat(testOutput.resolve("rules/item-mastery/item-mastery.md")).isRegularFile();
+
             TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
                 content.forEach(l -> {

@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
 public class Json2QuteCompose extends Json2QuteCommon {
     final List<JsonNode> nodes = new ArrayList<>();
+    final List<Tools5eQuteNote> splitNotes = new ArrayList<>();
     Tools5eSources currentSources;
     final String title;
     final String targetPath;
@@ -48,11 +50,20 @@ public class Json2QuteCompose extends Json2QuteCommon {
         return currentSources;
     }
 
+    public List<Tools5eQuteNote> getSplitNotes() {
+        return Collections.unmodifiableList(splitNotes);
+    }
+
     @Override
     protected Tools5eQuteNote buildQuteNote() {
         if (nodes.isEmpty()) {
             return null;
         }
+
+        boolean split = isSplittable() && TtrpgConfig.getConfig().splitRules();
+        String subfolder = split
+                ? Tools5eLinkifier.instance().getRelativePath(type)
+                : null;
 
         Tags tags = new Tags();
         List<String> text = new ArrayList<>();
@@ -65,6 +76,10 @@ public class Json2QuteCompose extends Json2QuteCommon {
 
         if (type == Tools5eIndexType.itemProperty) {
             appendItemProperties(text, tags);
+        } else if (split) {
+            for (JsonNode entry : nodes) {
+                appendSplitElement(entry, text, tags, subfolder);
+            }
         } else {
             for (JsonNode entry : nodes) {
                 appendElement(entry, text, tags);
@@ -72,7 +87,68 @@ public class Json2QuteCompose extends Json2QuteCommon {
         }
 
         return new Tools5eQuteNote(title, null, text, tags)
-                .withTargetPath(targetPath);
+                .withTargetPath(split ? subfolder : targetPath);
+    }
+
+    /** Types that can be split into individual notes */
+    private boolean isSplittable() {
+        return switch (type) {
+            case action, condition, disease, itemMastery, sense, skill, status -> true;
+            default -> false;
+        };
+    }
+
+    /** Tag segment for the individual note's type tag */
+    private String typeTag() {
+        return switch (type) {
+            case action -> "action";
+            case condition, status -> "condition";
+            case disease -> "disease";
+            case itemMastery -> "item/mastery";
+            case sense -> "sense";
+            case skill -> "skill";
+            default -> type.name();
+        };
+    }
+
+    private void appendSplitElement(JsonNode entry, List<String> text, Tags tags, String subfolder) {
+        currentSources = Tools5eSources.findOrTemporary(entry);
+
+        boolean pushed = parseState().push(entry);
+        try {
+            String name = SourceField.name.replaceTextFrom(entry, index);
+
+            // Add source tags to collated doc
+            tags.addSourceTags(currentSources);
+
+            // Build individual note content
+            Tags noteTags = new Tags(currentSources);
+            noteTags.addRaw(typeTag());
+            List<String> noteText = new ArrayList<>();
+
+            noteText.add(getLabeledSource(entry));
+
+            if (type == Tools5eIndexType.action) {
+                appendAction(entry, noteText);
+            } else if (entry.has("table")) {
+                appendTable(name, entry, noteText);
+            } else {
+                appendToText(noteText, entry, null);
+            }
+
+            Tools5eQuteNote note = new Tools5eQuteNote(name, null, noteText, noteTags)
+                    .withTargetPath(subfolder);
+            splitNotes.add(note);
+
+            // Add embed line to collated doc
+            String fileName = slugify(name) + ".md";
+            maybeAddBlankLine(text);
+            text.add("## " + name);
+            text.add("");
+            text.add("![%s](%s)".formatted(name, fileName));
+        } finally {
+            parseState().pop(pushed);
+        }
     }
 
     private void appendElement(JsonNode entry, List<String> text, Tags tags) {

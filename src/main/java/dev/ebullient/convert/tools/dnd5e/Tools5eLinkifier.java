@@ -281,11 +281,23 @@ public class Tools5eLinkifier {
     private String linkRule(String linkText, String ruleKey) {
         Tools5eSources sources = Tools5eSources.findSources(ruleKey);
         String sectionName = sources == null ? linkText : sources.getName();
+        Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(ruleKey);
+        String relativePath = getRelativePath(type);
+
+        if (TtrpgConfig.getConfig().splitRules()) {
+            // Folder note: conditions/conditions.md#Blinded
+            String folderNote = relativePath + "/" + relativePath;
+            return "[%s](%s%s.md#%s)".formatted(
+                    linkText,
+                    index.rulesVaultRoot(),
+                    folderNote,
+                    toAnchorTag(sectionName));
+        }
 
         return "[%s](%s%s.md#%s)".formatted(
                 linkText,
                 index.rulesVaultRoot(),
-                getRelativePath(Tools5eIndexType.getTypeFromKey(ruleKey)),
+                relativePath,
                 toAnchorTag(sectionName));
     }
 

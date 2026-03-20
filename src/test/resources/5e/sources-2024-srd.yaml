@@ -3,3 +3,4 @@ sources:
   - "srd52"
   - "basicRules2024"
 racesAsSpecies: true
+splitRules: true

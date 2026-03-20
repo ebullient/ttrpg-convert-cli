@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
@@ -36,10 +37,14 @@ public record ItemMastery(
                 ? index.isIncluded(indexKey)
                 : index.customContentIncluded();
 
-        return included
-                ? "[%s](%sitem-mastery.md#%s)".formatted(
-                        linkText, index.rulesVaultRoot(), toAnchorTag(name))
-                : linkText;
+        if (!included) {
+            return linkText;
+        }
+        String path = TtrpgConfig.getConfig().splitRules()
+                ? "item-mastery/item-mastery.md"
+                : "item-mastery.md";
+        return "[%s](%s%s#%s)".formatted(
+                linkText, index.rulesVaultRoot(), path, toAnchorTag(name));
     }
 
     public static final Comparator<ItemMastery> comparator = Comparator.comparing(ItemMastery::name);

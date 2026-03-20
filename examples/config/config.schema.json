@@ -113,6 +113,9 @@
         }
       }
     },
+    "splitRules" : {
+      "type" : "boolean"
+    },
     "tagPrefix" : {
       "type" : "string"
     },

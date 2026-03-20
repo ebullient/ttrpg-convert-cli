@@ -576,9 +576,13 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         String linkText = valueOrDefault(parts, 2, name);
 
         if (name.isBlank()) {
+            String relativePath = linkifier().getRelativePath(type);
+            String docPath = TtrpgConfig.getConfig().splitRules()
+                    ? relativePath + "/" + relativePath
+                    : relativePath;
             return "[%s](%s%s.md)".formatted(linkText,
                     index().rulesVaultRoot(),
-                    linkifier().getRelativePath(type));
+                    docPath);
         }
 
         String aliasKey = index().getAliasOrDefault(type.createKey(name, source));

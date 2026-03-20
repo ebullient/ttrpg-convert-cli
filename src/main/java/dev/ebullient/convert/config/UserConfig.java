@@ -45,6 +45,7 @@ public class UserConfig {
     Boolean useDiceRoller = null;
     Boolean yamlStatblocks = null;
     Boolean racesAsSpecies = null;
+    Boolean splitRules = null;
 
     String tagPrefix = "";
 
@@ -75,6 +76,7 @@ public class UserConfig {
         tagPrefix,
         template,
         racesAsSpecies,
+        splitRules,
         useDiceRoller,
         yamlStatblocks,
         ;

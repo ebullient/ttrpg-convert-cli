@@ -89,6 +89,7 @@ public class CompendiumConfig {
     DiceRoller useDiceRoller = DiceRoller.disabled;
     ReprintBehavior reprintBehavior = ReprintBehavior.newest;
     boolean racesAsSpecies = false;
+    boolean splitRules = false;
     final Set<String> allowedSources = new HashSet<>();
     final Set<String> includedKeys = new HashSet<>();
     final Set<String> includedGroups = new HashSet<>();
@@ -128,6 +129,10 @@ public class CompendiumConfig {
 
     public boolean racesAsSpecies() {
         return racesAsSpecies;
+    }
+
+    public boolean splitRules() {
+        return splitRules;
     }
 
     public boolean allSources() {
@@ -432,6 +437,10 @@ public class CompendiumConfig {
 
             if (input.racesAsSpecies != null && input.racesAsSpecies) {
                 config.racesAsSpecies = true;
+            }
+
+            if (input.splitRules != null && input.splitRules) {
+                config.splitRules = true;
             }
         }
     }

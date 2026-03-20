@@ -83,6 +83,9 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
 
         for (Json2QuteCommon value : queue.combinedDocs.values()) {
             append(value.type, value.buildNote(), queue.noteCompendium, queue.noteRules);
+            if (value instanceof Json2QuteCompose compose) {
+                queue.noteRules.addAll(compose.getSplitNotes());
+            }
         }
 
         if (types.contains(Tools5eIndexType.spell) || types.contains(Tools5eIndexType.spellIndex)) {
