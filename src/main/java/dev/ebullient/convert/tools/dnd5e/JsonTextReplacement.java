@@ -920,11 +920,42 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 .replaceAll("\\[.*\\]", "");
 
         String key = findKey(type, parts[0], source);
+
+        // Check if the key resolved to a reference type (via alias)
+        Tools5eIndexType resolvedType = Tools5eIndexType.getTypeFromKey(key);
+        if (resolvedType == Tools5eIndexType.reference) {
+            return linkifyReference(linkText, key);
+        }
+
         if (index().isExcluded(key)) {
             return "<span title=\"%s\">%s</span>".formatted(TtrpgConfig.sourceToLongName(source), linkText);
         }
 
         return linkifier().link(linkText, key);
+    }
+
+    default String linkifyReference(String linkText, String key) {
+        String[] parts = key.split("\\|");
+        String name = parts.length > 1 ? parts[1] : key;
+
+        Tools5eIndex index = index();
+        String path = switch (name.toLowerCase()) {
+            case "item mastery" -> {
+                String relativePath = linkifier().getRelativePath(Tools5eIndexType.itemMastery);
+                if (TtrpgConfig.getConfig().splitRules()) {
+                    relativePath = relativePath + "/" + relativePath;
+                }
+                yield relativePath;
+            }
+            case "item properties" -> linkifier().getRelativePath(Tools5eIndexType.itemProperty);
+            default -> null;
+        };
+
+        if (path == null || !index.customContentIncluded()) {
+            return linkText;
+        }
+
+        return "[%s](%s%s.md)".formatted(linkText, index.rulesVaultRoot(), path);
     }
 
     /**

@@ -918,7 +918,8 @@
       "spell|word of radiance|phb": "spell|word of radiance|xge",
       "trap|quicksand|dmg": "hazard|quicksand|dmg",
       "trapfluff|green slime|xdmg": "hazardfluff|green slime|xdmg",
-      "trapfluff|webs|xdmg": "hazardfluff|webs|xdmg"
+      "trapfluff|webs|xdmg": "hazardfluff|webs|xdmg",
+      "variantrule|weapon mastery properties|xphb": "reference|item mastery|xphb"
     },
     "fixes": {
       "vehicles.json": [
