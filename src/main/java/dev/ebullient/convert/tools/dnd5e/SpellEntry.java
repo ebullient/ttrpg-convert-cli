@@ -172,6 +172,23 @@ public class SpellEntry {
         return ref;
     }
 
+    /**
+     * Returns the most specific reference for the given key, preferring specific
+     * (constraint-bearing) references over non-specific ones. Checks expandedList
+     * first, then references, returning whichever has a constraint (classLevel/spellLevel/asLevel).
+     */
+    public SpellReference getMostSpecificReference(String key) {
+        SpellReference expandedRef = expandedList.get(key);
+        if (expandedRef != null && expandedRef.isSpecific()) {
+            return expandedRef;
+        }
+        SpellReference ref = references.get(key);
+        if (ref != null && ref.isSpecific()) {
+            return ref;
+        }
+        return ref != null ? ref : expandedRef;
+    }
+
     public boolean inClassList(String x) {
         return classes.contains(x.toLowerCase());
     }
