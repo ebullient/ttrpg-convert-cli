@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
@@ -170,7 +171,9 @@ public class Json2QuteSpellIndex extends Json2QuteCommon {
             text.add("## " + levelHeading);
             text.add("");
             for (var entry : levelSpells) {
-                text.add("- " + entry.linkify() + " " + spellsByOther.reference.describe());
+                SpellEntry.SpellReference spellRef = entry.getMostSpecificReference(key);
+                String desc = spellRef != null ? spellRef.describe() : "";
+                text.add("- " + entry.linkify() + (isPresent(desc) ? " " + desc : ""));
             }
         }
         maybeAddBlankLine(text);

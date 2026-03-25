@@ -149,9 +149,12 @@ public class SpellIndex implements JsonSource {
 
                 String refKey = Tools5eIndexType.classtype.createKey(className, classSource);
                 // Resolve reprints so we reference the newest version
-                refKey = index().getAliasOrDefault(refKey);
-                if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
-                    spellEntry.addSpellReference(refKey, expanded);
+                String resolvedKey = index().getAliasOrDefault(refKey);
+                if (!refKey.equals(resolvedKey)) {
+                    continue; // Skip old reprinted version; the canonical version is handled separately
+                }
+                if (!index().isExcluded(resolvedKey) && index().getOriginNoFallback(resolvedKey) != null) {
+                    spellEntry.addSpellReference(resolvedKey, expanded);
                 }
             }
         }
@@ -178,9 +181,12 @@ public class SpellIndex implements JsonSource {
                         String refKey = "subclass|%s|%s|%s|%s".formatted(
                                 scName, className, classSource, scSource).toLowerCase();
                         // Resolve reprints so we reference the newest version
-                        refKey = index().getAliasOrDefault(refKey);
-                        if (!index().isExcluded(refKey) && index().getOriginNoFallback(refKey) != null) {
-                            spellEntry.addSpellReference(refKey, false);
+                        String resolvedKey = index().getAliasOrDefault(refKey);
+                        if (!refKey.equals(resolvedKey)) {
+                            continue; // Skip old reprinted version; the canonical version is handled separately
+                        }
+                        if (!index().isExcluded(resolvedKey) && index().getOriginNoFallback(resolvedKey) != null) {
+                            spellEntry.addSpellReference(resolvedKey, false);
                         }
                     }
                 }
