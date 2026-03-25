@@ -1055,6 +1055,25 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return subclassMap.getOrDefault(classKey, Set.of());
     }
 
+    /**
+     * Resolve the effective class source through reprints.
+     * If the class identified by className+classSource was reprinted
+     * (e.g., PHB Druid → XPHB Druid), return the reprint target's source.
+     */
+    public String resolveClassSource(String className, String classSource) {
+        String classKey = String.join("|",
+                Tools5eIndexType.classtype.name(),
+                className, classSource).toLowerCase();
+        String reprint = reprints.get(classKey);
+        if (reprint != null) {
+            Tools5eSources reprintSources = Tools5eSources.findSources(reprint);
+            if (reprintSources != null && reprintSources.includedByConfig()) {
+                return reprintSources.primarySource();
+            }
+        }
+        return classSource;
+    }
+
     public Set<String> findClassFeatures(String classOrSubclassKey) {
         return classFeatures.getOrDefault(classOrSubclassKey, Set.of());
     }

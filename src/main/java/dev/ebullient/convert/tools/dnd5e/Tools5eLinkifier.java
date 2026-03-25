@@ -390,6 +390,8 @@ public class Tools5eLinkifier {
     }
 
     public String getSubclassResource(String subclass, String parentClass, String classSource, String subclassSource) {
+        // Resolve classSource through reprints (e.g., PHB → XPHB when PHB class is reprinted)
+        classSource = index.resolveClassSource(parentClass, classSource);
         String parentFile = Tui.slugify(parentClass);
         String defaultSource = Tools5eIndexType.classtype.defaultOutputSource();
         if (!classSource.equalsIgnoreCase(defaultSource) &&
