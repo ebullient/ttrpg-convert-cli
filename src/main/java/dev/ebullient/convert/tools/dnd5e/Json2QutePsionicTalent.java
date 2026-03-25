@@ -31,7 +31,7 @@ public class Json2QutePsionicTalent extends Json2QuteCommon {
                 getName(),
                 getSourceText(sources),
                 getPsionicTypeOrder(),
-                PsionicFields.focus.getTextOrDefault(rootNode, "\u2014"),
+                PsionicFields.focus.replaceTextFrom(rootNode, this),
                 getPsionicModes(),
                 String.join("\n", text),
                 tags);
