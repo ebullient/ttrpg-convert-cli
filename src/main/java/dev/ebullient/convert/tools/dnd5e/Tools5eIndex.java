@@ -80,6 +80,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     private final Map<String, Set<String>> classFeatures = new TreeMap<>(); // --index
     private final Map<String, Set<String>> subclassMap = new TreeMap<>(); // --index
 
+    // Legendary group key -> monster keys that reference it
+    private final Map<String, Set<String>> legendaryGroupMonsters = new HashMap<>();
+
     private final Set<String> unresolvableKeys = new TreeSet<>();
     private final Map<String, SkillOrAbility> resolvedSkills = new HashMap<>();
 
@@ -381,6 +384,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     if (old != null && !old.equals(variant)) {
                         tui().errorf("Duplicate key: %s%nold: %s%nnew: %s", variantKey, old, variant);
                     }
+                    // Record legendary group references from monsters
+                    if (type == Tools5eIndexType.monster) {
+                        JsonNode lgRef = Json2QuteMonster.MonsterFields.legendaryGroup.getFrom(variant);
+                        if (lgRef != null) {
+                            String lgKey = Tools5eIndexType.legendaryGroup.createKey(lgRef);
+                            legendaryGroupMonsters.computeIfAbsent(lgKey, k -> new HashSet<>()).add(variantKey);
+                        }
+                    }
                 }
             }
 
@@ -417,6 +428,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     || isReprinted(key, jsonSource)
                     // While Deities are interesting, their handling is unique and done later
                     || type == Tools5eIndexType.deity
+                    // Legendary groups are filtered by reference in a post-loop block
+                    || type == Tools5eIndexType.legendaryGroup
                     // Subclasses are also handled backwards (filled in by subclass features)
                     || type == Tools5eIndexType.subclass) {
                 // Theses are uninteresting.
@@ -455,6 +468,43 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             } else {
                 // source is not included, item is dropped
                 logThis.accept(msgType, "(drop) " + key);
+            }
+        }
+
+        // Legendary groups: include only if referenced by an included monster
+        tui().verbosef("Filtering legendary groups");
+        for (var e : nodeIndex.entrySet()) {
+            String key = e.getKey();
+            if (Tools5eIndexType.getTypeFromKey(key) != Tools5eIndexType.legendaryGroup) {
+                continue;
+            }
+            // Skip if aliased/reprinted to a different key
+            if (!key.equals(getAliasOrDefault(key))) {
+                continue;
+            }
+            Tools5eSources sources = Tools5eSources.findSources(key);
+            if (sources == null || !sources.includedByConfig()) {
+                continue;
+            }
+            Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
+
+            // Explicit filter rule overrides reference check
+            if (sources.filterRuleApplied()) {
+                filteredIndex.put(key, e.getValue());
+                logThis.accept(msgType, " ----  " + key);
+                continue;
+            }
+            // Include only if referenced by an included monster.
+            // Don't resolve aliases: a reprinted monster won't be in filteredIndex,
+            // so it correctly won't count as a reference for the old legendary group.
+            Set<String> monsters = legendaryGroupMonsters.get(key);
+            boolean referenced = monsters != null && monsters.stream()
+                    .anyMatch(filteredIndex::containsKey);
+            if (referenced) {
+                filteredIndex.put(key, e.getValue());
+                logThis.accept(msgType, " ----  " + key);
+            } else {
+                logThis.accept(msgType, "(drop | unreferenced) " + key);
             }
         }
 
@@ -1292,6 +1342,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         nodeIndex.clear();
         subraces.clear();
         tableIndex.clear();
+        legendaryGroupMonsters.clear();
 
         if (filteredIndex != null) {
             filteredIndex.clear();
