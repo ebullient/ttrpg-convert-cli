@@ -13,10 +13,19 @@ aliases:
 {/each}
 ---
 # {resource.name}
-*{resource.typeOrder}*  
+*{resource.typeOrder}*
 {#if resource.text }
 
 {resource.text}
-{/if}{#if resource.source }
+{/if}{#if resource.focus }
+
+**Psionic Focus.** {resource.focus}
+{/if}{#if resource.modes}
+
+## Modes
+{#for mode in resource.modes}
+
+{#if mode.name }***{mode.name}.*** {/if}{mode.desc}
+{/for}{/if}{#if resource.source }
 
 *Source: {resource.source}* {/if}
