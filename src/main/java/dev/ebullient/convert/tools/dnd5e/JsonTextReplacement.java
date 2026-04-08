@@ -345,6 +345,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@link ([^}|]+)\\|([^}]+)}", "$1 ($2)") // this must come first
                         .replaceAll("\\{@link ([^}|]+)}", "$1") // this must come first
                         .replaceAll("\\{@5etools ([^}|]+)\\|?[^}]*}", "$1")
+                        .replaceAll("\\{@5etoolsAudio ([^}|]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@loader ([^}|]+)\\|([^}]+)}", "$1 ^[$2]")
                         .replaceAll("\\{@area ([^|}]+)\\|?[^}]*}", "$1")
                         .replaceAll("\\{@vehupgrade ([^|}]+)\\|?[^}]*}", "$1") // TODO: vehicle upgrade type
