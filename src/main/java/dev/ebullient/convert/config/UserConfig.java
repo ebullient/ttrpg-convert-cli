@@ -46,6 +46,7 @@ public class UserConfig {
     Boolean yamlStatblocks = null;
     Boolean racesAsSpecies = null;
     Boolean splitRules = null;
+    Boolean onlyReferencedTables = null;
 
     String tagPrefix = "";
 
@@ -75,6 +76,7 @@ public class UserConfig {
         sources(List.of("fullSource", "full-source", "convert")),
         tagPrefix,
         template,
+        onlyReferencedTables,
         racesAsSpecies,
         splitRules,
         useDiceRoller,

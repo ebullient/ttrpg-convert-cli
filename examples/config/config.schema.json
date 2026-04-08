@@ -60,6 +60,9 @@
         "type" : "string"
       }
     },
+    "onlyReferencedTables" : {
+      "type" : "boolean"
+    },
     "paths" : {
       "type" : "object",
       "properties" : {

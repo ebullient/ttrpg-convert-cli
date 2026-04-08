@@ -60,22 +60,24 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
         index.tui().verbosef("Converting data: %s", types);
 
         WritingQueue queue = new WritingQueue();
-        for (var entry : index.includedEntries()) {
-            final String key = entry.getKey();
-            final JsonNode jsonSource = entry.getValue();
 
-            Tools5eIndexType nodeType = Tools5eIndexType.getTypeFromKey(key);
-            if (types.contains(Tools5eIndexType.race) && nodeType == Tools5eIndexType.subrace) {
-                // include subrace with race
-            } else if (!types.contains(nodeType)) {
-                continue;
-            }
+        boolean hasTables = types.stream()
+                .anyMatch(t -> t == Tools5eIndexType.table || t == Tools5eIndexType.tableGroup);
+        boolean hasNonTables = types.stream()
+                .anyMatch(t -> t != Tools5eIndexType.table && t != Tools5eIndexType.tableGroup);
 
-            if (nodeType.writeFile()) {
-                writeQuteBaseFiles(nodeType, key, jsonSource, queue);
-            } else if (nodeType.isOutputType() && nodeType.useQuteNote()) {
-                writeQuteNoteFiles(nodeType, key, jsonSource, queue);
-            }
+        if (hasTables && hasNonTables && index.cfg().onlyReferencedTables()) {
+            // Non-tables first: renders content and populates referencedTableKeys
+            _writeFiles(types.stream()
+                    .filter(t -> t != Tools5eIndexType.table && t != Tools5eIndexType.tableGroup)
+                    .toList(), queue, false);
+            // Tables second: only write those actually linked from included content
+            _writeFiles(types.stream()
+                    .filter(t -> t == Tools5eIndexType.table || t == Tools5eIndexType.tableGroup)
+                    .toList(), queue, true);
+        } else {
+            // Config not set, only tables, or only non-tables — single pass, no filtering
+            _writeFiles(types, queue, false);
         }
 
         writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium);
@@ -103,6 +105,39 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
         writer.writeNotes(index.rulesFilePath(), queue.noteRules, false);
 
         return this;
+    }
+
+    private void _writeFiles(List<? extends IndexType> types, WritingQueue queue, boolean filterTables) {
+        for (var entry : index.includedEntries()) {
+            final String key = entry.getKey();
+            final JsonNode jsonSource = entry.getValue();
+
+            Tools5eIndexType nodeType = Tools5eIndexType.getTypeFromKey(key);
+            if (types.contains(Tools5eIndexType.race) && nodeType == Tools5eIndexType.subrace) {
+                // include subrace with race
+            } else if (!types.contains(nodeType)) {
+                continue;
+            }
+
+            if (nodeType.writeFile()) {
+                writeQuteBaseFiles(nodeType, key, jsonSource, queue);
+            } else if (nodeType.isOutputType() && nodeType.useQuteNote()) {
+                if (filterTables && (nodeType == Tools5eIndexType.table || nodeType == Tools5eIndexType.tableGroup)) {
+                    Tools5eSources sources = Tools5eSources.findSources(key);
+                    // Write if linked from rendered content, or explicitly targeted by a filter rule
+                    boolean explicitlyIncluded = sources != null
+                            && sources.filterRuleApplied()
+                            && sources.includedByConfig();
+                    if (index.isTableReferenced(key) || explicitlyIncluded) {
+                        writeQuteNoteFiles(nodeType, key, jsonSource, queue);
+                    } else {
+                        index.tui().logf(Msg.FILTER, "(drop | unreferenced) %s", key);
+                    }
+                } else {
+                    writeQuteNoteFiles(nodeType, key, jsonSource, queue);
+                }
+            }
+        }
     }
 
     private void writeQuteBaseFiles(Tools5eIndexType type, String key, JsonNode jsonSource, WritingQueue queue) {
