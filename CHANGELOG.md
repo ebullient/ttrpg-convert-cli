@@ -7,6 +7,20 @@
 
 **Note:** Entries marked with "🔥" indicate crucial or breaking changes that might affect your current setup.
 
+## 3.3.0 Reference-based filtering and split rules
+
+- ✨ Filter table notes by reference: only emit tables linked from included content (`onlyReferencedTables`); resolves #862
+- ✨ Filter legendary groups by monster references; resolves #718
+- ✨ Option to break rules into separate documents (`splitRules`); resolves #781
+- 🐛 Use HTML to render complex tables; resolves #811
+- 🐛 Resolve reprint aliases before adding spell references; resolves #857
+- 🐛 Fix reprinted subclass spell list merging and wrong qualifiers; resolves #859
+- 🐛 Resolve reprinted class source in subclass link generation; refs #779
+- 🐛 Render psionic focus and modes in template; resolves #839
+- 🐛 Fix image floating (center, left); resolves #853
+- 🐛 Fix duplicated item properties
+- 🐛 Remove length limit for captions; resolves #762
+
 ## 3.2.5 Races or species?
 
 - ✨ Add option to emit races as species
