@@ -26,7 +26,6 @@ sources:
     - AAG
     - AI
     - BAM
-    - DMG
     - DoD
     - EGW
     - FTD
@@ -42,6 +41,7 @@ sources:
     - XGE
   reference:
     - AWM
+    - DMG
     - EEPC
     - ESK
     - TftYP
@@ -91,3 +91,4 @@ images:
 
 useDiceRoller: true
 yamlStatblocks: false
+onlyReferencedTables: true

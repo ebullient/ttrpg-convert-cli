@@ -24,6 +24,7 @@ This guide introduces you to configuring data transformations using the Command 
 - [Reprint behavior](#reprint-behavior)
     - [Troubleshooting reprint behavior](#troubleshooting-reprint-behavior)
 - [Races as species](#races-as-species)
+- [Only emit referenced tables](#only-emit-referenced-tables)
 - [Use the dice roller plugin](#use-the-dice-roller-plugin)
 - [Render with Fantasy Statblocks](#render-with-fantasy-statblocks)
 - [Tag prefix](#tag-prefix)
@@ -411,6 +412,21 @@ If you prefer the term "species" over "race" (as used in newer D&D editions), se
 ```
 
 This changes the output directory from `races/` to `species/`, tags from `race/...` to `species/...`, and the CSS class from `json5e-race` to `json5e-species`. It does not affect internal indexing or source data processing.
+
+## Only emit referenced tables
+
+By default, the CLI emits all table notes from included sources. Set `onlyReferencedTables` to `true` to restrict output to tables that are actually linked from other included content (monsters, spells, adventures, etc.).
+
+``` json
+  "onlyReferencedTables": true
+```
+
+When enabled, a table note is written only if:
+
+- something in the rendered output links to it (via a `{@table}` tag or inline table matching), **or**
+- it is explicitly named in an [`include` filter](#including-specific-content-with-include).
+
+Unreferenced tables are logged as `(drop | unreferenced)` when run with `--log`.
 
 ## Use the dice roller plugin
 

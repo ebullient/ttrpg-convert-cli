@@ -83,6 +83,9 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     // Legendary group key -> monster keys that reference it
     private final Map<String, Set<String>> legendaryGroupMonsters = new HashMap<>();
 
+    // Table keys that are actually linked from included (non-table) content
+    private final Set<String> referencedTableKeys = new HashSet<>();
+
     private final Set<String> unresolvableKeys = new TreeSet<>();
     private final Map<String, SkillOrAbility> resolvedSkills = new HashMap<>();
 
@@ -1234,6 +1237,14 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return !isIncluded(key);
     }
 
+    public void recordTableReference(String key) {
+        referencedTableKeys.add(key);
+    }
+
+    public boolean isTableReferenced(String key) {
+        return referencedTableKeys.contains(key);
+    }
+
     public boolean differentSource(Tools5eSources sources, String source) {
         String primarySource = sources == null ? null : sources.primarySource();
         if (primarySource == null || source == null) {
@@ -1362,6 +1373,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         subraces.clear();
         tableIndex.clear();
         legendaryGroupMonsters.clear();
+        referencedTableKeys.clear();
 
         if (filteredIndex != null) {
             filteredIndex.clear();

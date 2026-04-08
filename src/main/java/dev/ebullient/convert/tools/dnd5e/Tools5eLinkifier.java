@@ -188,6 +188,15 @@ public class Tools5eLinkifier {
             case deity -> linkDeity(linkText, key);
             case subclass -> linkSubclass(linkText, key);
             case variantrule -> linkVariantRules(linkText, key);
+            case table, tableGroup -> {
+                if (index.isIncluded(key)) {
+                    index.recordTableReference(key);
+                }
+                JsonNode node = index.getNode(key);
+                yield linkOrText(linkText, key,
+                        getRelativePath(type),
+                        fixFileName(decoratedName(type, node), linkSource.primarySource(), type));
+            }
             default -> {
                 JsonNode node = index.getNode(key);
                 yield linkOrText(linkText, key,
