@@ -8,6 +8,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.MarkdownWriter;
+import dev.ebullient.convert.io.MarkdownWriter.IndexContext;
 import dev.ebullient.convert.io.Msg;
 import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
@@ -80,8 +81,19 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             _writeFiles(types, queue, false);
         }
 
-        writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium);
-        writer.writeFiles(index.rulesFilePath(), queue.baseRules);
+        IndexContext ctx = new IndexContext(name -> switch (name) {
+            case "npc" -> "NPC";
+            case "traps-hazards" -> "Traps & Hazards";
+            default -> MarkdownWriter.toTitle(name);
+        }, path -> {
+            if (path.toString().contains("books") || path.toString().contains("adventures")) {
+                return MarkdownWriter.sortEntryByPath;
+            }
+            return MarkdownWriter.sortEntryByTitle;
+        });
+
+        writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium, ctx);
+        writer.writeFiles(index.rulesFilePath(), queue.baseRules, ctx);
 
         for (Json2QuteCommon value : queue.combinedDocs.values()) {
             append(value.type, value.buildNote(), queue.noteCompendium, queue.noteRules);
@@ -101,8 +113,10 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             queue.noteCompendium.addAll(new BackgroundTraits2Note(index).buildNotes());
         }
 
-        writer.writeNotes(index.compendiumFilePath(), queue.noteCompendium, true);
-        writer.writeNotes(index.rulesFilePath(), queue.noteRules, false);
+        writer.writeNotes(index.compendiumFilePath(), queue.noteCompendium, true, ctx);
+        writer.writeNotes(index.rulesFilePath(), queue.noteRules, false, ctx);
+
+        writer.writeIndexes(ctx);
 
         return this;
     }

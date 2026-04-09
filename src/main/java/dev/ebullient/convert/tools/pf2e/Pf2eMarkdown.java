@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.io.MarkdownWriter;
+import dev.ebullient.convert.io.MarkdownWriter.IndexContext;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
@@ -76,8 +77,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
             }
         }
 
-        writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium);
-        writer.writeFiles(index.rulesFilePath(), queue.baseRules);
+        IndexContext ctx = new IndexContext(MarkdownWriter::toTitle, (path) -> MarkdownWriter.sortEntryByTitle);
+
+        writer.writeFiles(index.compendiumFilePath(), queue.baseCompendium, ctx);
+        writer.writeFiles(index.rulesFilePath(), queue.baseRules, ctx);
 
         for (Json2QuteBase value : queue.combinedDocs.values()) {
             append(value.type, value.buildNote(), queue.noteCompendium, queue.noteRules);
@@ -86,8 +89,10 @@ public class Pf2eMarkdown implements MarkdownConverter {
         // Custom indices
         append(Pf2eIndexType.trait, Json2QuteTrait.buildIndex(index), queue.noteCompendium, queue.noteRules);
 
-        writer.writeNotes(index.compendiumFilePath(), queue.noteCompendium, true);
-        writer.writeNotes(index.rulesFilePath(), queue.noteRules, false);
+        writer.writeNotes(index.compendiumFilePath(), queue.noteCompendium, true, ctx);
+        writer.writeNotes(index.rulesFilePath(), queue.noteRules, false, ctx);
+
+        writer.writeIndexes(ctx);
 
         // TODO: DOES THIS WORK RIGHT? shouldn't these be in the other image map?
         // List<ImageRef> images = rules.stream()
