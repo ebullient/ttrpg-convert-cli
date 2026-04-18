@@ -63,6 +63,9 @@ config5e:
     BQGT:
       name: "Borderlands Quest: Goblin Trouble"
       date: "2025-06-04"
+    CaBoMP:
+      name: "Crochet: A Book of Many Patterns"
+      date: "2026-03-31"
     CM:
       name: "Candlekeep Mysteries"
       date: "2021-03-16"

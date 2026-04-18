@@ -39,6 +39,7 @@ _Support content creators. Only use or include sources that you own._
 | BQGT | Borderlands Quest: Goblin Trouble | adventure |
 | CM | Candlekeep Mysteries | adventure |
 | CRCotN | Critical Role: Call of the Netherdeep | adventure |
+| CaBoMP | Crochet: A Book of Many Patterns | book |
 | CoA | Chains of Asmodeus | adventure |
 | CoS | Curse of Strahd | adventure |
 | DC | Divine Contention | adventure |
