@@ -85,14 +85,14 @@ jobs:
           zip -r target/${ARTIFACT}-${NEXT}-examples.zip docs examples default
 
       - name: Upload ${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-runner.jar
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         id: upload-jar
         with:
           name: artifacts-runner
           path: target/${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-runner.jar
 
       - name: Upload ${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-examples.zip
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         id: upload-zip
         with:
           name: artifacts-examples
