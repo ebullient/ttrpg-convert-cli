@@ -50,7 +50,7 @@
         <quarkus.platform.version>3.34.3</quarkus.platform.version>
         <!-- Libraries -->
         <assertj.version>3.27.7</assertj.version>
-        <evalex.version>3.6.0</evalex.version>
+        <evalex.version>3.6.1</evalex.version>
         <github-slugify.version>3.0.7</github-slugify.version>
         <icu4j.version>78.3</icu4j.version>        <!-- Optional dependency of Slugify -->
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
