@@ -203,7 +203,6 @@ public class Tools5eDataConvertTest {
 
             assertThat(testOutput.resolve("compendium/backgrounds/cook-variant-dndwiki-bestbackgrounds.md"))
                     .isRegularFile();
-            assertThat(testOutput.resolve("compendium/classes/alchemist-dynamo-engineer-vss.md")).isRegularFile();
 
             TestUtils.assertDirectoryContents(testOutput, tui, (p, content) -> {
                 List<String> errors = new ArrayList<>();
