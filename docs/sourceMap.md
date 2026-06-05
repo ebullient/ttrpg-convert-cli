@@ -36,6 +36,7 @@ _Support content creators. Only use or include sources that you own._
 | BGDIA | Baldur's Gate: Descent Into Avernus | adventure |
 | BGG | Bigby Presents: Glory of the Giants | book |
 | BMT | The Book of Many Things | book |
+| BQDD | Borderlands Quest: Dagger Danger! | adventure |
 | BQGT | Borderlands Quest: Goblin Trouble | adventure |
 | CM | Candlekeep Mysteries | adventure |
 | CRCotN | Critical Role: Call of the Netherdeep | adventure |

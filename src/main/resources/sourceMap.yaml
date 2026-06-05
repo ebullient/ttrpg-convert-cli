@@ -60,6 +60,9 @@ config5e:
     BMT:
       name: "The Book of Many Things"
       date: "2023-11-14"
+    BQDD:
+      name: "Borderlands Quest: Dagger Danger!"
+      date: "2026-05-28"
     BQGT:
       name: "Borderlands Quest: Goblin Trouble"
       date: "2025-06-04"
