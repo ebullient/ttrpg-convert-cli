@@ -8,9 +8,9 @@ on:
       - "ide-config"
 
 env:
-  JAVA_VERSION: 17
+  JAVA_VERSION: 21
   JAVA_DISTRO: temurin
-  NATIVE_JAVA_VERSION: 23
+  NATIVE_JAVA_VERSION: 24
   GRAALVM_DIST: graalvm-community
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"

@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 env:
-  JAVA_VERSION: 17
+  JAVA_VERSION: 21
   JAVA_DISTRO: temurin
-  NATIVE_JAVA_VERSION: 23
+  NATIVE_JAVA_VERSION: 24
   GRAALVM_DIST: graalvm-community
   FAIL_ISSUE: 140
 
