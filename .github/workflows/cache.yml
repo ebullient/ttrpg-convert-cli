@@ -4,6 +4,8 @@ on:
     - cron: '0 2 * * 1'  # Mondays at 2 AM UTC
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   clear_cache:
     runs-on: ubuntu-latest
@@ -38,6 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       cache_key: ${{ steps.data_cache.outputs.cache_key }}
+    permissions:
+      actions: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
