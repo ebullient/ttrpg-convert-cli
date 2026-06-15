@@ -147,6 +147,7 @@ _Support content creators. Only use or include sources that you own._
 | PiP | Peril in Pinegrove | adventure |
 | PotA | Princes of the Apocalypse | adventure |
 | QftIS | Quests from the Infinite Staircase | adventure |
+| RHW | Ravenloft: The Horrors Within | book |
 | RMBRE | The Lost Dungeon of Rickedness: Big Rick Energy | adventure |
 | RMR | Dungeons & Dragons vs. Rick and Morty: Basic Rules | book |
 | RoT | The Rise of Tiamat | adventure |

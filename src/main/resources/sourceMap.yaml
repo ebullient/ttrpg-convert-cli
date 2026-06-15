@@ -391,6 +391,9 @@ config5e:
     QftIS:
       name: "Quests from the Infinite Staircase"
       date: "2024-07-16"
+    RHW:
+      name: "Ravenloft: The Horrors Within"
+      date: "2026-06-16"
     RMBRE:
       name: "The Lost Dungeon of Rickedness: Big Rick Energy"
       date: "2019-11-19"
