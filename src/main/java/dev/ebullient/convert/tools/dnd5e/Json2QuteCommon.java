@@ -3,6 +3,7 @@ package dev.ebullient.convert.tools.dnd5e;
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.toOrdinal;
+import static dev.ebullient.convert.StringUtil.uppercaseFirst;
 
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -372,6 +373,12 @@ public class Json2QuteCommon implements JsonSource {
                             replaceText(prof.getValue().asText())));
                     case "weaponGroup" -> profs.add(String.format("%s weapons",
                             replaceText(prof.getValue().asText())));
+                    case "skill" -> {
+                        List<String> skills = new ArrayList<>();
+                        prof.getValue().forEach(x -> skills.add(uppercaseFirst(replaceText(x.asText()))));
+                        profs.add(String.format("the %s skill",
+                                joinConjunct(" or ", skills)));
+                    }
                     default -> {
                         tui().warnf(Msg.UNKNOWN, "unknown proficiency prereq %s from %s / %s",
                                 p.toString(), getSources().getKey(), parseState().getSource());
