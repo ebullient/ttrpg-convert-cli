@@ -383,6 +383,10 @@ public class QuteMonster extends Tools5eQuteBase {
         addIntegerUnlessEmpty(map, "hp", acHp.hp);
         addUnlessEmpty(map, "hit_dice", acHp.hitDice);
 
+        if (acHp.hp == null) {
+            addUnlessEmpty(map, "hp", acHp.hpText);
+        }
+
         if (initiative != null) {
             map.put("modifier", initiative.bonus);
             // TODO: passive initiative?
