@@ -16,7 +16,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cutoff=$(date -d '14 days ago' +%s)
+          cutoff=$(date -d '5 days ago' +%s)
   
           gh api \
             -H "Accept: application/vnd.github+json" \
