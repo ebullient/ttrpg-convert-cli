@@ -221,11 +221,17 @@ public class Tools5eLinkifier {
         String cardName = cardSources.getName();
         String deckName = IndexFields.set.getTextOrThrow(node).trim();
 
+        // The deck may have been reprinted; resolve the alias so the filename matches the actual deck file
+        String deckKey = Tools5eIndexType.deck.fromChildKey(cardKey);
+        String resolvedDeckKey = index.getAliasOrDefault(deckKey);
+        Tools5eSources deckSources = resolvedDeckKey != null ? Tools5eSources.findSources(resolvedDeckKey) : null;
+        String deckSource = deckSources != null ? deckSources.primarySource() : cardSources.primarySource();
+
         return "[%s](%s%s/%s.md#%s)".formatted(
                 linkText,
                 index.compendiumVaultRoot(),
                 getRelativePath(Tools5eIndexType.deck),
-                fixFileName(deckName, cardSources.primarySource(), Tools5eIndexType.card),
+                fixFileName(deckName, deckSource, Tools5eIndexType.card),
                 cardName.replace(" ", "%20"));
     }
 

@@ -675,6 +675,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
     enum IndexFields implements JsonNodeReader {
         abbreviation,
+        alias,
         appliesTo,
         className,
         classSource,

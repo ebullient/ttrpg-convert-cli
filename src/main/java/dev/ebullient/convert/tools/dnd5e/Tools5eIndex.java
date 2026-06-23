@@ -41,6 +41,7 @@ import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.SkillOrAbility.CustomSkillOrAbility;
 import dev.ebullient.convert.tools.dnd5e.SpellSchool.CustomSpellSchool;
+import dev.ebullient.convert.tools.dnd5e.Tools5eIndexType.IndexFields;
 
 public class Tools5eIndex implements JsonSource, ToolsIndex {
     private static Tools5eIndex instance;
@@ -310,6 +311,22 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
             case itemGroup -> {
                 addAlias(key.replace("itemgroup|", "item|"), key);
+            }
+            case card -> {
+                // alias field maps alternate names (e.g. "Vizier" for "Sage") to the canonical card key
+                String cardName = SourceField.name.getTextOrThrow(node).toLowerCase();
+                String cardSource = SourceField.source.getTextOrEmpty(node).toLowerCase();
+                String cardDefaultSrc = Tools5eIndexType.card.defaultSourceString().toLowerCase();
+                for (JsonNode aliasNode : IndexFields.alias.iterateArrayFrom(node)) {
+                    String cardAlias = aliasNode.asText().trim().toLowerCase();
+                    String cardAliasKey = key.replace(cardName, cardAlias);
+                    addAlias(cardAliasKey, key);
+                    // also register alias for the default source so sourceless references resolve correctly
+                    if (!cardSource.equals(cardDefaultSrc)) {
+                        String defaultAliasKey = cardAliasKey.replace("|" + cardSource, "|" + cardDefaultSrc);
+                        aliases.putIfAbsent(defaultAliasKey, key);
+                    }
+                }
             }
             default -> {
             }
