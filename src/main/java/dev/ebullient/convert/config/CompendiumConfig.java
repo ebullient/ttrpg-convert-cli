@@ -102,6 +102,7 @@ public class CompendiumConfig {
     final Map<String, String> defaultSource = new HashMap<>();
     final Map<String, Path> customTemplates = new HashMap<>();
     final Map<String, String> sourceIdAlias = new HashMap<>();
+    boolean configError = false;
 
     CompendiumConfig(Datasource datasource, Tui tui) {
         this.datasource = datasource;
@@ -265,10 +266,16 @@ public class CompendiumConfig {
         return customTemplates.get(id);
     }
 
+    public boolean configError() {
+        return configError;
+    }
+
     public void readConfigurationIfPresent(JsonNode node) {
         if (userConfigPresent(node)) {
             Configurator c = new Configurator(this);
-            c.readConfigIfPresent(node);
+            if (!c.readConfigIfPresent(node)) {
+                configError = true;
+            }
         }
     }
 
@@ -391,14 +398,15 @@ public class CompendiumConfig {
          *
          * @param node
          */
-        public void readConfigIfPresent(JsonNode node) {
+        public boolean readConfigIfPresent(JsonNode node) {
             if (userConfigPresent(node)) {
                 CompendiumConfig cfg = TtrpgConfig.getConfig();
-                readConfig(cfg, node);
+                return readConfig(cfg, node);
             }
+            return true;
         }
 
-        private void readConfig(CompendiumConfig config, JsonNode node) {
+        private boolean readConfig(CompendiumConfig config, JsonNode node) {
             UserConfig input = Tui.MAPPER.convertValue(node, UserConfig.class);
 
             if (input.useDiceRoller != null || input.yamlStatblocks != null) {
@@ -434,7 +442,9 @@ public class CompendiumConfig {
             if (!input.template.isEmpty()) {
                 TemplatePaths tplPaths = new TemplatePaths();
                 input.template.forEach((key, value) -> tplPaths.setCustomTemplate(key, Path.of(value)));
-                tplPaths.verify(tui);
+                if (!tplPaths.verify(tui)) {
+                    return false;
+                }
                 config.customTemplates.putAll(tplPaths.customTemplates);
             }
 
@@ -451,6 +461,7 @@ public class CompendiumConfig {
             if (input.onlyReferencedTables != null && input.onlyReferencedTables) {
                 config.onlyReferencedTables = true;
             }
+            return true;
         }
     }
 

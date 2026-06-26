@@ -1,7 +1,6 @@
 package dev.ebullient.convert.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -116,8 +115,8 @@ public class ConfiguratorTest {
         Configurator test = new Configurator(tui);
 
         tui.readFile(TestUtils.TEST_RESOURCES.resolve("sources-bad-template.json"), List.of(), (f, node) -> {
-            assertThrows(IllegalArgumentException.class,
-                    () -> test.readConfigIfPresent(node));
+            boolean valid = test.readConfigIfPresent(node);
+            assertThat(valid).isFalse();
 
             CompendiumConfig config = TtrpgConfig.getConfig();
             assertThat(config).isNotNull();

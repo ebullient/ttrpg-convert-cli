@@ -23,7 +23,6 @@ import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
 import io.quarkus.test.junit.main.QuarkusMainLauncher;
 import io.quarkus.test.junit.main.QuarkusMainTest;
-import picocli.CommandLine;
 
 @QuarkusMainTest
 public class CustomTemplatesTest {
@@ -93,23 +92,6 @@ public class CustomTemplatesTest {
     }
 
     @Test
-    void testCommandBadTemplates(QuarkusMainLauncher launcher) throws IOException {
-        testOutput = rootTestOutput.resolve("bad-templates");
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
-            TestUtils.deleteDir(testOutput);
-            LaunchResult result = launcher.launch("--index",
-                    "--background=garbage.txt",
-                    "-o", testOutput.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
-                    TestUtils.PATH_5E_TOOLS_DATA.toString());
-
-            assertThat(result.exitCode())
-                    .withFailMessage("Command did not fail as expected. Output:%n%s", TestUtils.dump(result))
-                    .isEqualTo(CommandLine.ExitCode.USAGE);
-        }
-    }
-
-    @Test
     void testCommandBadTemplatesInJson(QuarkusMainLauncher launcher) throws IOException {
         testOutput = rootTestOutput.resolve("bad-templates-json");
         if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
@@ -123,69 +105,7 @@ public class CustomTemplatesTest {
 
             assertThat(result.exitCode())
                     .withFailMessage("Command did not fail as expected. Output:%n%s", TestUtils.dump(result))
-                    .isEqualTo(CommandLine.ExitCode.USAGE);
-        }
-    }
-
-    @Test
-    void testCommandTemplates_5e(QuarkusMainLauncher launcher) throws IOException {
-        testOutput = rootTestOutput.resolve("srd-templates");
-        if (TestUtils.PATH_5E_TOOLS_DATA.toFile().exists()) {
-            TestUtils.deleteDir(testOutput);
-
-            // SRD only, just templates
-            LaunchResult result = launcher.launch("--log", "--index",
-                    "--background", TestUtils.TEST_RESOURCES.resolve("other/background.txt").toString(),
-                    "--class", TestUtils.TEST_RESOURCES.resolve("other/class.txt").toString(),
-                    "--deity", TestUtils.TEST_RESOURCES.resolve("other/deity.txt").toString(),
-                    "--feat", TestUtils.TEST_RESOURCES.resolve("other/feat.txt").toString(),
-                    "--item", TestUtils.TEST_RESOURCES.resolve("other/item.txt").toString(),
-                    "--note", TestUtils.TEST_RESOURCES.resolve("other/note.txt").toString(),
-                    "--race", TestUtils.TEST_RESOURCES.resolve("other/race.txt").toString(),
-                    "--spell", TestUtils.TEST_RESOURCES.resolve("other/spell.txt").toString(),
-                    "--subclass", TestUtils.TEST_RESOURCES.resolve("other/subclass.txt").toString(),
-                    "-o", testOutput.toString(),
-                    TestUtils.TEST_RESOURCES.resolve("5e/images-remote.json").toString(),
-                    TestUtils.PATH_5E_TOOLS_DATA.toString());
-
-            assertThat(result.exitCode())
-                    .withFailMessage("Command failed. Output:%n%s", TestUtils.dump(result))
-                    .isEqualTo(0);
-
-            List.of(
-                    testOutput.resolve("compendium/backgrounds"),
-                    testOutput.resolve("compendium/classes"),
-                    testOutput.resolve("compendium/feats"),
-                    testOutput.resolve("compendium/items"),
-                    testOutput.resolve("compendium/races"),
-                    testOutput.resolve("compendium/spells"),
-                    testOutput.resolve("rules"))
-                    .forEach(directory -> TestUtils.assertDirectoryContents(directory, tui, (p, content) -> {
-                        List<String> errors = new ArrayList<>();
-                        boolean index = false;
-                        boolean frontmatter = false;
-                        boolean foundTestTag = false;
-                        for (String l : content) {
-                            if ("---".equals(l)) {
-                                frontmatter = !frontmatter;
-                            } else if (frontmatter && l.equals("- test")) {
-                                foundTestTag = true;
-                            } else if (l.startsWith("# Index ")) {
-                                index = true;
-                            } else if (l.startsWith("# ") && !l.matches("^# \\[.*]\\(.*\\)")) {
-                                errors.add(
-                                        String.format("H1 does not contain markdown link in %s: %s", p.toString(), l));
-                            }
-                            if (l.startsWith("# ")) {
-                                break;
-                            }
-                        }
-
-                        if (!index && !foundTestTag) {
-                            errors.add("Unable to find the - test tag in file " + p);
-                        }
-                        return errors;
-                    }));
+                    .isEqualTo(2);
         }
     }
 

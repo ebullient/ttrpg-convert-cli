@@ -12,7 +12,6 @@ import jakarta.inject.Inject;
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.Configurator;
 import dev.ebullient.convert.config.Datasource;
-import dev.ebullient.convert.config.TemplatePaths;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.MarkdownWriter;
 import dev.ebullient.convert.io.Msg;
@@ -22,7 +21,6 @@ import dev.ebullient.convert.tools.ToolsIndex;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import picocli.CommandLine;
-import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.IFactory;
@@ -36,7 +34,6 @@ import picocli.CommandLine.ScopeType;
 import picocli.CommandLine.Spec;
 import picocli.CommandLine.UnmatchedArgumentException;
 
-@SuppressWarnings("CanBeFinal")
 @QuarkusMain
 @Command(name = "ttrpg-convert", header = "Convert TTRPG JSON data to markdown", subcommands = {
         Completion.class,
@@ -118,9 +115,6 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
     @Option(names = "--index", description = "Create index of keys that can be used to exclude entries")
     boolean writeIndex;
 
-    @ArgGroup(exclusive = false)
-    TemplatePaths templatePaths = new TemplatePaths();
-
     @Option(names = "-o", description = "Output directory", required = true)
     void setOutputPath(File outputDir) {
         output = outputDir.toPath().toAbsolutePath().normalize();
@@ -155,8 +149,6 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
 
         TtrpgConfig.init(tui, game);
         Configurator configurator = new Configurator(tui);
-
-        configurator.setTemplatePaths(templatePaths);
 
         if (configPath != null) {
             if (configPath.toFile().exists()) {
@@ -205,6 +197,10 @@ public class RpgDataConvertCli implements Callable<Integer>, QuarkusApplication 
         // We've read all user specified files and user config.
         if (toolsPath == null) {
             tui.errorf("❌ No tools directory found. Please specify the directory containing the data files.");
+            return ExitCode.USAGE;
+        }
+
+        if (config.configError()) {
             return ExitCode.USAGE;
         }
 

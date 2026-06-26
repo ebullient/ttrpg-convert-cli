@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dev.ebullient.convert.io.Tui;
-import picocli.CommandLine.Option;
 
 public class TemplatePaths {
 
@@ -29,66 +28,11 @@ public class TemplatePaths {
         badTemplates.put(key, path);
     }
 
-    @Option(names = { "--background" }, order = 1, hidden = true, description = "Path to Qute template for Backgrounds")
-    void setBackgroundTemplatePath(Path path) {
-        setCustomTemplate("background", path);
-    }
-
-    @Option(names = { "--class" }, order = 2, hidden = true, description = "Path to Qute template for Classes")
-    void setClassTemplatePath(Path path) {
-        setCustomTemplate("class", path);
-    }
-
-    @Option(names = { "--deity" }, order = 3, hidden = true, description = "Path to Qute template for Deities")
-    void setDeityTemplatePath(Path path) {
-        setCustomTemplate("deity", path);
-    }
-
-    @Option(names = { "--feat" }, order = 4, hidden = true, description = "Path to Qute template for Feats")
-    void setFeatTemplatePath(Path path) {
-        setCustomTemplate("feat", path);
-    }
-
-    @Option(names = { "--item" }, order = 5, hidden = true, description = "Path to Qute template for Items")
-    void setItemTemplatePath(Path path) {
-        setCustomTemplate("item", path);
-    }
-
-    @Option(names = { "--monster" }, order = 6, hidden = true, description = "Path to Qute template for Monsters")
-    void setMonsterTemplatePath(Path path) {
-        setCustomTemplate("monster", path);
-    }
-
-    @Option(names = { "--name" }, order = 7, hidden = true, description = "Path to Qute template for Names")
-    void setNameTemplatePath(Path path) {
-        setCustomTemplate("name", path);
-    }
-
-    @Option(names = { "--note" }, order = 8, hidden = true, description = "Path to Qute template for Notes")
-    void setNoteTemplatePath(Path path) {
-        setCustomTemplate("note", path);
-    }
-
-    @Option(names = { "--race" }, order = 9, hidden = true, description = "Path to Qute template for Races")
-    void setRaceTemplatePath(Path path) {
-        setCustomTemplate("race", path);
-    }
-
-    @Option(names = { "--spell" }, order = 10, hidden = true, description = "Path to Qute template for Spells")
-    void setSpellTemplatePath(Path path) {
-        setCustomTemplate("spell", path);
-    }
-
-    @Option(names = { "--subclass" }, order = 11, hidden = true, description = "Path to Qute template for Subclasses")
-    void setSubclassTemplatePath(Path path) {
-        setCustomTemplate("subclass", path);
-    }
-
     public Path get(String id) {
         return customTemplates.get(id);
     }
 
-    public void verify(Tui tui) {
+    public boolean verify(Tui tui) {
         Map<String, Path> badKeys = new HashMap<>();
 
         // Check template keys after game system config has been loaded
@@ -98,7 +42,7 @@ public class TemplatePaths {
             }
         });
         if (badKeys.isEmpty() && badTemplates.isEmpty()) {
-            return;
+            return true;
         }
         badKeys.forEach((k, v) -> {
             customTemplates.remove(k);
@@ -109,7 +53,7 @@ public class TemplatePaths {
             tui.errorf("Template file specified for '%s' (%s) does not exist or is not a file.",
                     toConfigKey(k), v);
         });
-        tui.throwInvalidArgumentException("Bad template specified");
+        return false;
     }
 
     private String toTemplateKey(String key) {
