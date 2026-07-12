@@ -208,6 +208,7 @@ _Support content creators. Only use or include sources that you own._
 | XPHB | Player's Handbook (2024) | book |
 | XSAC | Sage Advice Compendium (2025) | book |
 | XScreen | Dungeon Master's Screen (2024) | book |
+| XScreenRHW | Dungeon Master's Screen; Ravenloft: The Horrors Within | book |
 
 ### 5eTools Alternate abbreviation mapping
 

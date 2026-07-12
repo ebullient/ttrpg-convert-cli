@@ -574,6 +574,9 @@ config5e:
     XScreen:
       name: "Dungeon Master's Screen (2024)"
       date: "2024-11-12"
+    XScreenRHW:
+      name: "Dungeon Master's Screen; Ravenloft: The Horrors Within"
+      date: "2026-06-16"
   longToAbv:
     ALCurseOfStrahd: "ALCoS"
     ALElementalEvil: "ALEE"
