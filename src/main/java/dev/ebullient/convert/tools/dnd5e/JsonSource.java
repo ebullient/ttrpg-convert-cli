@@ -238,7 +238,7 @@ public interface JsonSource extends JsonTextReplacement {
         List<String> abilities = Tools5eFields.attributes.streamFrom(entry)
                 .map(this::asAbilityEnum)
                 .toList();
-        String ability = joinConjunct(" or ", abilities);
+        String ability = abilityModifierPhrase(abilities);
 
         if (type == AppendTypeValue.abilityDc) {
             // {
@@ -251,9 +251,9 @@ public interface JsonSource extends JsonTextReplacement {
             String dcName = SourceField.name.replaceTextFrom(entry, this);
             text.add(spanWrap("abilityDc",
                     getSources().isClassic()
-                            ? "**%s save DC**: your proficiency bonus + your %s"
+                            ? "**%s save DC** = 8 + your proficiency bonus + your %s"
                                     .formatted(dcName, ability)
-                            : "**%s save DC**: %s + Proficiency Bonus"
+                            : "**%s save DC** = 8 + %s + Proficiency Bonus"
                                     .formatted(dcName, ability)));
         } else if (type == AppendTypeValue.abilityAttackMod) {
             // {
@@ -266,9 +266,9 @@ public interface JsonSource extends JsonTextReplacement {
             String attackName = SourceField.name.replaceTextFrom(entry, this);
             text.add(spanWrap("abilityAttackMod",
                     getSources().isClassic()
-                            ? "**%s attack modifier**: your proficiency bonus + your %s"
+                            ? "**%s attack modifier** = your proficiency bonus + your %s"
                                     .formatted(attackName, ability)
-                            : "**%s attack modifier**: %s + Proficiency Bonus"
+                            : "**%s attack modifier** = %s + Proficiency Bonus"
                                     .formatted(attackName, ability)));
         } else { // abilityGeneric
             List<String> inner = new ArrayList<>();
@@ -277,13 +277,24 @@ public interface JsonSource extends JsonTextReplacement {
                 inner.add("**" + name + ".**");
             }
             if (Tools5eFields.text.existsIn(entry)) {
-                Tools5eFields.text.replaceTextFrom(entry, this);
+                inner.add(Tools5eFields.text.replaceTextFrom(entry, this));
             }
             if (!abilities.isEmpty()) {
                 inner.add(ability);
             }
             text.add(spanWrap("abilityGeneric", String.join(" ", inner)));
         }
+    }
+
+    /** Mirrors 5eTools Parser.attrChooseToFull: appends "modifier", or "modifier (your choice)" for 2+ abilities. */
+    default String abilityModifierPhrase(List<String> abilities) {
+        if (abilities.isEmpty()) {
+            return "";
+        }
+        if (abilities.size() == 1) {
+            return abilities.get(0) + " modifier";
+        }
+        return joinConjunct(" or ", abilities) + " modifier (your choice)";
     }
 
     default void appendAttack(List<String> text, JsonNode entry) {
