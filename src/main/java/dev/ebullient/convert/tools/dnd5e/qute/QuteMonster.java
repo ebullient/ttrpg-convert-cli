@@ -58,6 +58,8 @@ public class QuteMonster extends Tools5eQuteBase {
     public final ImmuneResist immuneResist;
     /** Creature gear as list of item links */
     public final List<String> gear;
+    /** Creature treasure themes as a list of links to the Random Magic Items tables (2024+) */
+    public final List<String> treasure;
 
     /** Creature speed as a comma-separated list */
     public final String speed;
@@ -95,7 +97,7 @@ public class QuteMonster extends Tools5eQuteBase {
             String subtype, String alignment,
             AcHp acHp, String speed,
             AbilityScores scores, SavesAndSkills savesSkills, String senses, int passive,
-            ImmuneResist immuneResist, List<String> gear,
+            ImmuneResist immuneResist, List<String> gear, List<String> treasure,
             String languages, String cr, String pb, Initiative initiative,
             Traits traits,
             List<Spellcasting> spellcasting,
@@ -119,6 +121,7 @@ public class QuteMonster extends Tools5eQuteBase {
         this.passive = passive;
         this.immuneResist = immuneResist;
         this.gear = gear;
+        this.treasure = treasure;
         this.languages = languages;
         this.cr = cr;
         this.pb = pb;
@@ -408,6 +411,7 @@ public class QuteMonster extends Tools5eQuteBase {
         addUnlessEmpty(map, "damage_immunities", immuneResist.immune);
         addUnlessEmpty(map, "condition_immunities", immuneResist.conditionImmune);
         addUnlessEmpty(map, "gear", gear);
+        addUnlessEmpty(map, "treasure", treasure);
         map.put("senses", (senses.isBlank() ? "" : senses + ", ") + "passive Perception " + passive);
         map.put("languages", languages);
         addUnlessEmpty(map, "cr", cr);
