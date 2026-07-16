@@ -1,6 +1,7 @@
 package dev.ebullient.convert.tools.dnd5e;
 
 import static dev.ebullient.convert.StringUtil.pluralize;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,6 +103,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 intOrDefault(rootNode, "passive", 10),
                 immuneResist(),
                 gear(),
+                treasure(),
                 joinAndReplace(rootNode, "languages"),
                 cr, pb,
                 initiative(abilityScores, cr),
@@ -579,6 +581,28 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return gear;
     }
 
+    List<String> treasure() {
+        // 2024+ creatures list treasure themes as keys (e.g. "arcana", "relics").
+        // Known themes link to the Random Magic Items tables in the 2024 DMG (XDMG);
+        // anything else is passed through title-cased. Mirrors 5eTools getRenderedTreasure.
+        final List<String> knownThemes = List.of("arcana", "armaments", "implements", "relics");
+        List<String> themes = new ArrayList<>();
+        for (var node : MonsterFields.treasure.iterateArrayFrom(rootNode)) {
+            if (node != null && node.isTextual()) {
+                themes.add(node.asText());
+            }
+        }
+        themes.sort(String.CASE_INSENSITIVE_ORDER);
+        List<String> treasure = new ArrayList<>();
+        for (String theme : themes) {
+            String title = toTitleCase(theme);
+            treasure.add(knownThemes.contains(theme)
+                    ? replaceText("{@table Random Magic Items - %s|XDMG|%s}".formatted(title, title))
+                    : title);
+        }
+        return treasure;
+    }
+
     @Override
     public String getImagePath() {
         if (type != Tools5eIndexType.monster) {
@@ -880,6 +904,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         spells,
         summonedBySpellLevel,
         trait,
+        treasure,
         type,
         variant,
         will,

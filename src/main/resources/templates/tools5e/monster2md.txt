@@ -42,6 +42,8 @@ title: {resource.name}{#if resource.token}
 {resource.immuneResist}
 {/if}{#if resource.gear}
 - **Gear** {resource.gear.join(", ")}
+{/if}{#if resource.treasure}
+- **Treasure** {resource.treasure.join(", ")}
 {/if}
 - **Languages** {#if resource.languages }{resource.languages}{#else}—{/if}
 - **Challenge** {resource.cr}
