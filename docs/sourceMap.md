@@ -110,7 +110,7 @@ _Support content creators. Only use or include sources that you own._
 | LR | Locathah Rising | adventure |
 | LRDT | Red Dragon's Tale: A LEGO Adventure | adventure |
 | LoX | Light of Xaryxis | adventure |
-| MCV1SC | Monstrous Compendium Volume 1: Spelljammer Creatures | reference |
+| MCV1SC | Monstrous Compendium Volume 1: Spelljammer Creatures | book |
 | MCV2DC | Monstrous Compendium Volume 2: Dragonlance Creatures | reference |
 | MCV3MC | Monstrous Compendium Volume 3: Minecraft Creatures | reference |
 | MCV4EC | Monstrous Compendium Volume 4: Eldraine Creatures | book |
