@@ -224,7 +224,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.book.withArrayFrom(node, this::addToIndex);
 
         // 5e tools book/adventure data
-        if (node.has("data") && !filename.isEmpty()) {
+        if (Tools5eFields.data.existsIn(node) && !filename.isEmpty()) {
             int slash = filename.indexOf('/');
             int dot = filename.indexOf('.');
             String basename = filename.substring(slash < 0 ? 0 : slash + 1, dot < 0 ? filename.length() : dot);
@@ -1327,7 +1327,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     void linkSources(Tools5eIndexType type, JsonNode dataNode) {
-        String id = dataNode.get("id").asText();
+        String id = SourceField.id.getTextOrEmpty(dataNode);
 
         String finalKey = type == Tools5eIndexType.adventureData
                 ? Tools5eIndexType.adventure.createKey("adventure", id)

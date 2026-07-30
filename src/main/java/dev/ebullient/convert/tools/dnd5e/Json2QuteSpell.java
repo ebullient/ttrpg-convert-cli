@@ -200,7 +200,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
             }
             case "special" -> result.append("Special");
             case "timed" -> {
-                if (booleanOrDefault(element, "concentration", false)) {
+                if (SpellFields.concentration.booleanOrDefault(element, false)) {
                     result.append("Concentration, up to ");
                 }
                 JsonNode duration = element.get("duration");
@@ -487,6 +487,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
         classSource,
         classes,
         components,
+        concentration,
         condition,
         conditionImmune,
         conditionInflict,

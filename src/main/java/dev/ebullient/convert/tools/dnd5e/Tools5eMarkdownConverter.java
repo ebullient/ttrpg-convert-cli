@@ -14,6 +14,7 @@ import dev.ebullient.convert.qute.QuteBase;
 import dev.ebullient.convert.qute.QuteNote;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.MarkdownConverter;
+import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteNote;
 
@@ -204,7 +205,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
             case adventureData, bookData -> {
                 String metadataKey = key.replace("data|", "|");
                 JsonNode metadata = index.getOrigin(metadataKey);
-                if (!node.has("data")) {
+                if (!Tools5eFields.data.existsIn(node)) {
                     index.tui().errorf("No data for %s", key);
                 } else if (metadata == null) {
                     index.tui().errorf("Unable to find metadata (%s) for %s", metadataKey, key);

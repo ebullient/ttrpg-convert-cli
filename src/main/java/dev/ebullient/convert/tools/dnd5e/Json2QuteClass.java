@@ -51,7 +51,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     Json2QuteClass(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
         decoratedClassName = linkifier().decoratedName(type, jsonNode);
-        classSource = jsonNode.get("source").asText();
+        classSource = SourceField.source.getTextOrEmpty(jsonNode);
         isSidekick = ClassFields.isSidekick.booleanOrDefault(jsonNode, false);
         subclassTitle = ClassFields.subclassTitle.getTextOrEmpty(jsonNode);
         primaryAbility = buildPrimaryAbility();

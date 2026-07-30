@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -33,7 +32,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
     protected Tools5eQuteBase buildQuteResource() {
         Tags tags = new Tags(getSources());
 
-        String pantheon = getTextOrDefault(rootNode, "pantheon", null);
+        String pantheon = DeityField.pantheon.getTextOrDefault(rootNode, null);
         if (pantheon != null) {
             tags.add("deity", pantheon);
         }
@@ -73,14 +72,8 @@ public class Json2QuteDeity extends Json2QuteCommon {
     }
 
     ImageRef getSymbolImage() {
-        if (rootNode.has("symbolImg")) {
-            JsonNode symbolImg = rootNode.get("symbolImg");
-            try {
-                JsonMediaHref mediaHref = mapper().treeToValue(symbolImg, JsonMediaHref.class);
-                return buildImageRef(mediaHref, getImagePath());
-            } catch (JsonProcessingException | IllegalArgumentException e) {
-                tui().errorf("Unable to read media reference from %s", symbolImg.toPrettyString());
-            }
+        if (DeityField.symbolImg.existsIn(rootNode)) {
+            return readImageRef(DeityField.symbolImg.getFrom(rootNode));
         }
         return null;
     }
@@ -154,6 +147,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
         pantheon,
         province,
         symbol,
+        symbolImg,
         title,
         reprintAlias
     }

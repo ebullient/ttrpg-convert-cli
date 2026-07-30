@@ -746,4 +746,14 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
         }
         throw new IllegalArgumentException("Unknown skill: " + skill);
     }
+
+    int intOrThrow(JsonNode source, String key) {
+        JsonNode result = source.get(key);
+        if (result == null || !result.canConvertToInt()) {
+            tui().errorf("Missing required field, or field is not a number. Key: %s; value: %s; from %s: %s",
+                    key, result, getSources(), source);
+            return -999;
+        }
+        return result.asInt();
+    }
 }

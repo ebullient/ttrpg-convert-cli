@@ -49,40 +49,6 @@ public interface JsonSource extends JsonTextReplacement {
         return haystack.stream().anyMatch(x -> x.contains(needle));
     }
 
-    default String getTextOrEmpty(JsonNode x, String field) {
-        if (x.has(field)) {
-            return x.get(field).asText();
-        }
-        return "";
-    }
-
-    default String getTextOrDefault(JsonNode x, String field, String value) {
-        if (x.has(field)) {
-            return x.get(field).asText();
-        }
-        return value;
-    }
-
-    default boolean booleanOrDefault(JsonNode source, String key, boolean value) {
-        JsonNode result = source.get(key);
-        return result == null ? value : result.asBoolean(value);
-    }
-
-    default int intOrDefault(JsonNode source, String key, int value) {
-        JsonNode result = source.get(key);
-        return result == null ? value : result.asInt();
-    }
-
-    default int intOrThrow(JsonNode source, String key) {
-        JsonNode result = source.get(key);
-        if (result == null || !result.canConvertToInt()) {
-            tui().errorf("Missing required field, or field is not a number. Key: %s; value: %s; from %s: %s",
-                    key, result, getSources(), source);
-            return -999;
-        }
-        return result.asInt();
-    }
-
     default String getSourceText(JsonNode node) {
         return getSourceText(Tools5eSources.findOrTemporary(node));
     }
@@ -436,7 +402,7 @@ public interface JsonSource extends JsonTextReplacement {
     default void appendOptionalFeature(List<String> text, JsonNode entry, String heading) {
         maybeAddBlankLine(text);
         text.add(heading + " " + SourceField.name.replaceTextFrom(entry, this));
-        String prereq = getTextOrDefault(entry, "prerequisite", null);
+        String prereq = Tools5eFields.prerequisite.getTextOrNull(entry);
         if (prereq != null) {
             text.add("*Prerequisites* " + prereq);
         }
@@ -483,7 +449,7 @@ public interface JsonSource extends JsonTextReplacement {
 
             if (list.size() > 0) {
                 maybeAddBlankLine(text);
-                int count = intOrDefault(entry, "count", 0);
+                int count = Tools5eFields.count.intOrDefault(entry, 0);
                 text.add(String.format("Options%s:",
                         count > 0 ? " (choose " + count + ")" : ""));
                 maybeAddBlankLine(text);
@@ -503,7 +469,7 @@ public interface JsonSource extends JsonTextReplacement {
 
         String title = null;
         String id = null;
-        if (entry.has("name")) {
+        if (SourceField.name.existsIn(entry)) {
             title = replaceText(SourceField.name.getTextOrEmpty(entry));
             id = title;
         } else if (getSources().getType() == Tools5eIndexType.race) {
@@ -532,7 +498,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendFlowchart(List<String> text, JsonNode entry, String heading) {
-        if (entry.has("name")) {
+        if (SourceField.name.existsIn(entry)) {
             maybeAddBlankLine(text);
             text.add(heading + " " + SourceField.name.replaceTextFrom(entry, this));
         }
@@ -549,7 +515,7 @@ public interface JsonSource extends JsonTextReplacement {
 
     default void appendQuote(List<String> text, JsonNode entry) {
         List<String> quoteText = new ArrayList<>();
-        if (entry.has("by")) {
+        if (Tools5eFields.by.existsIn(entry)) {
             String by = replaceText(Tools5eFields.by.getTextOrEmpty(entry));
             quoteText.add("[!quote] A quote from " + by + "  ");
         } else {
@@ -650,7 +616,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default boolean equivalentNode(JsonNode dataNode, JsonNode existingNode) {
-        if (existingNode == null || dataNode == null || dataNode.has("_copy")) {
+        if (existingNode == null || dataNode == null || MetaFields._copy.existsIn(dataNode)) {
             return false;
         }
         for (Entry<String, JsonNode> field : iterableFields(dataNode)) {
@@ -1144,7 +1110,7 @@ public interface JsonSource extends JsonTextReplacement {
                                 || AlignmentFields.note.existsIn(x)) {
                             return alignmentObjToFull(x);
                         } else {
-                            return alignmentListToFull(x.get("alignment"));
+                            return alignmentListToFull(AlignmentFields.alignment.getFrom(x));
                         }
                     })
                     .collect(Collectors.joining(" or "));
@@ -1227,11 +1193,11 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default String monsterCr(JsonNode monster) {
-        if (monster.has("cr")) {
+        if (Tools5eFields.cr.existsIn(monster)) {
             JsonNode crNode = Tools5eFields.cr.getFrom(monster);
             if (crNode.isTextual()) {
                 return crNode.asText();
-            } else if (crNode.has("cr")) {
+            } else if (Tools5eFields.cr.existsIn(crNode)) {
                 return Tools5eFields.cr.getFrom(crNode).asText();
             } else {
                 tui().errorf("Unable to parse cr value from %s", crNode.toPrettyString());
@@ -1610,6 +1576,7 @@ public interface JsonSource extends JsonTextReplacement {
         optionalfeature,
         otherSources,
         parentSource,
+        prerequisite,
         prop, // statblock
         race,
         regionalEffects, // legendary group

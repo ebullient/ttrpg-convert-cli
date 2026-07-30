@@ -755,7 +755,7 @@ public class Json2QuteCommon implements JsonSource {
         String targetDir = getImagePath() + "/token/";
 
         // "original" is set by conjured monster variant
-        String name = getTextOrDefault(rootNode, "original", getName());
+        String name = MonsterFields.original.getTextOrDefault(rootNode, getName());
         String filename = Normalizer.normalize(name, Form.NFD)
                 .replaceAll("\\p{M}", "")
                 .replace("Æ", "AE")

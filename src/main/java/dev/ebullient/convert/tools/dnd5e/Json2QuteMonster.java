@@ -100,7 +100,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 abilityScores,
                 monsterSavesAndSkills(),
                 linkedSenses(),
-                intOrDefault(rootNode, "passive", 10),
+                MonsterFields.passive.intOrDefault(rootNode, 10),
                 immuneResist(),
                 gear(),
                 treasure(),
@@ -290,7 +290,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     String monsterAlignment() {
-        ArrayNode a1 = rootNode.withArray("alignment");
+        ArrayNode a1 = MonsterFields.alignment.readArrayFrom(rootNode);
         if (a1.size() == 0) {
             return "Unaligned";
         }
@@ -889,6 +889,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         mythicHeader,
         oneOf,
         original,
+        passive,
         proficiency,
         quantity,
         reaction,
