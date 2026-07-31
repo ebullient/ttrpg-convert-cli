@@ -360,7 +360,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 }
                 if (ItemField.resist.existsIn(rootNode)) {
                     entriesTemplate = entriesTemplate.replaceAll("\\{\\{(getFullImmRes\\s)?item.resist}}",
-                            joinAndReplace(ItemField.resist.readArrayFrom(rootNode)));
+                            ItemField.resist.joinAndReplace(rootNode, this));
                 }
                 appendToText(text, mapper().readTree(entriesTemplate), "##");
             } catch (JsonProcessingException e) {

@@ -249,13 +249,13 @@ public class Json2QuteCompose extends Json2QuteCommon {
 
     String chooseFrom(JsonNode choose) {
         // TODO: Replace generic/group lists
-        if (choose.has("fromGroup")) {
-            return joinAndReplace(choose.withArray("fromGroup"));
-        } else if (choose.has("fromGeneric")) {
-            return joinAndReplace(choose.withArray("fromGeneric"));
-        } else if (choose.has("fromItems")) {
+        if (ComposedTypeFields.fromGroup.existsIn(choose)) {
+            return ComposedTypeFields.fromGroup.joinAndReplace(choose, this);
+        } else if (ComposedTypeFields.fromGeneric.existsIn(choose)) {
+            return ComposedTypeFields.fromGeneric.joinAndReplace(choose, this);
+        } else if (ComposedTypeFields.fromItems.existsIn(choose)) {
             // TODO: Another/following table!
-            return joinAndReplace(choose.withArray("fromItems"));
+            return ComposedTypeFields.fromItems.joinAndReplace(choose, this);
         }
         throw new IllegalArgumentException("What kind of item to choose? " + choose.toPrettyString());
     }

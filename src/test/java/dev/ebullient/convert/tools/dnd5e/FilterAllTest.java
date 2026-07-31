@@ -38,6 +38,7 @@ public class FilterAllTest {
                             "FRAiF"
                         ],
                         "adventure": [
+                            "COA",
                             "OotA",
                             "DIP"
                         ],

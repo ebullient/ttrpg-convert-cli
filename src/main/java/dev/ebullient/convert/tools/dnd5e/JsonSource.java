@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -149,7 +148,7 @@ public interface JsonSource extends JsonTextReplacement {
                     case list -> {
                         String style = Tools5eFields.style.getTextOrEmpty(node);
                         if ("list-no-bullets".equals(style)) {
-                            if (node.has("columns")) {
+                            if (Tools5eFields.columns.existsIn(node)) {
                                 maybeAddBlankLine(text);
                                 appendToText(text, SourceField.items.readArrayFrom(node), heading);
                             } else {
@@ -503,10 +502,10 @@ public interface JsonSource extends JsonTextReplacement {
             text.add(heading + " " + SourceField.name.replaceTextFrom(entry, this));
         }
 
-        for (JsonNode n : entry.withArray("blocks")) {
+        for (JsonNode n : Tools5eFields.blocks.iterateArrayFrom(entry)) {
             maybeAddBlankLine(text);
             text.add("> [!flowchart] " + SourceField.name.replaceTextFrom(n, this));
-            for (JsonNode e : n.withArray("entries")) {
+            for (JsonNode e : SourceField.entries.iterateArrayFrom(n)) {
                 text.add("> " + replaceText(e.asText()));
             }
             text.add("%% %%");
@@ -1548,9 +1547,11 @@ public interface JsonSource extends JsonTextReplacement {
         appliesTo,
         attributes,
         basicRules,
+        blocks, // flowchart
         by,
         className,
         classSource,
+        columns, // list
         condition, // speed, ac
         count,
         cr,
@@ -1709,13 +1710,7 @@ public interface JsonSource extends JsonTextReplacement {
         }
 
         static AppendTypeValue valueFrom(JsonNode source, JsonNodeReader field) {
-            String textOrNull = field.getTextOrNull(source);
-            if (textOrNull == null) {
-                return null;
-            }
-            return Stream.of(AppendTypeValue.values())
-                    .filter((t) -> t.matches(textOrNull))
-                    .findFirst().orElse(null);
+            return JsonNodeReader.FieldValue.valueFrom(field.getTextOrNull(source), AppendTypeValue.class);
         }
     }
 }

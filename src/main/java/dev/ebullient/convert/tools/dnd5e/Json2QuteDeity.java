@@ -1,6 +1,5 @@
 package dev.ebullient.convert.tools.dnd5e;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -37,21 +36,15 @@ public class Json2QuteDeity extends Json2QuteCommon {
             tags.add("deity", pantheon);
         }
 
-        List<String> domains = new ArrayList<>();
-        if (rootNode.has("domains")) {
-            rootNode.withArray("domains").forEach(d -> {
-                String domain = d.asText();
-                tags.add("domain", domain);
-                domains.add(domain);
-            });
-        }
+        List<String> domains = DeityField.domains.getListOfStrings(rootNode, tui());
+        domains.forEach(d -> tags.add("domain", d));
 
         return new QuteDeity(sources,
                 getName(),
                 getSourceText(getSources()),
                 DeityField.altNames.replaceTextFromList(rootNode, this),
                 pantheon,
-                dietyAlignment(),
+                deityAlignment(),
                 replaceText(DeityField.title.getTextOrEmpty(rootNode)),
                 replaceText(DeityField.category.getTextOrEmpty(rootNode)),
                 String.join(", ", domains),
@@ -62,8 +55,8 @@ public class Json2QuteDeity extends Json2QuteCommon {
                 tags);
     }
 
-    String dietyAlignment() {
-        ArrayNode a1 = rootNode.withArray("alignment");
+    String deityAlignment() {
+        ArrayNode a1 = DeityField.alignment.readArrayFrom(rootNode);
         if (a1.size() == 0) {
             return "Unaligned";
         }
@@ -142,8 +135,10 @@ public class Json2QuteDeity extends Json2QuteCommon {
     }
 
     public enum DeityField implements JsonNodeReader {
+        alignment,
         altNames,
         category,
+        domains,
         pantheon,
         province,
         symbol,

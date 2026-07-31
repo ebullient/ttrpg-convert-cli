@@ -16,14 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import dev.ebullient.convert.config.CompendiumConfig;
 import dev.ebullient.convert.config.CompendiumConfig.DiceRoller;
@@ -86,50 +84,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     default String getImagePath() {
         Tools5eIndexType type = getSources().getType();
         return linkifier().getRelativePath(type);
-    }
-
-    default List<String> findAndReplace(JsonNode jsonSource, String field) {
-        return findAndReplace(jsonSource, field, s -> s);
-    }
-
-    default List<String> findAndReplace(JsonNode jsonSource, String field, Function<String, String> replacement) {
-        JsonNode node = jsonSource.get(field);
-        if (node == null || node.isNull()) {
-            return List.of();
-        } else if (node.isTextual()) {
-            return List.of(replaceText(node.asText()));
-        } else if (node.isObject()) {
-            throw new IllegalArgumentException(
-                    "Unexpected object node (expected array): %s (referenced from %s)".formatted(
-                            node,
-                            getSources()));
-        }
-        return streamOf(jsonSource.withArray(field))
-                .map(x -> replaceText(x.asText()).trim())
-                .map(replacement)
-                .filter(x -> !x.isBlank())
-                .collect(Collectors.toList());
-    }
-
-    default String joinAndReplace(JsonNode jsonSource, String field) {
-        JsonNode node = jsonSource.get(field);
-        if (node == null || node.isNull()) {
-            return "";
-        } else if (node.isTextual()) {
-            return node.asText();
-        } else if (node.isObject()) {
-            throw new IllegalArgumentException(
-                    "Unexpected object node (expected array): %s (referenced from %s)".formatted(
-                            node,
-                            getSources()));
-        }
-        return joinAndReplace((ArrayNode) node);
-    }
-
-    default String joinAndReplace(ArrayNode array) {
-        List<String> list = new ArrayList<>();
-        array.forEach(v -> list.add(replaceText(v.asText())));
-        return String.join(", ", list);
     }
 
     default String replaceText(String input) {

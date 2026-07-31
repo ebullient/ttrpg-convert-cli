@@ -62,7 +62,7 @@ public class Json2QuteRace extends Json2QuteCommon {
     }
 
     String getSpeed(JsonNode value) {
-        JsonNode speed = value.get("speed");
+        JsonNode speed = RaceFields.speed.getFrom(value);
         try {
             if (speed == null) {
                 return "30 ft.";
@@ -90,7 +90,7 @@ public class Json2QuteRace extends Json2QuteCommon {
 
     String creatureTypes() {
         List<String> types = new ArrayList<>();
-        for (JsonNode x : iterableElements(rootNode.get("creatureTypes"))) {
+        for (JsonNode x : iterableElements(RaceFields.creatureTypes.getFrom(rootNode))) {
             types.add(x.asText());
         }
         return types.isEmpty()
@@ -99,13 +99,13 @@ public class Json2QuteRace extends Json2QuteCommon {
     }
 
     String spellcastingAbility() {
-        if (rootNode.has("additionalSpells") && rootNode.get("additionalSpells").isArray()) {
-            JsonNode spells = rootNode.get("additionalSpells").get(0);
-            if (spells.has("ability")) {
-                JsonNode ability = spells.get("ability");
-                if (ability.has("choose")) {
+        if (RaceFields.additionalSpells.isArrayIn(rootNode)) {
+            JsonNode spells = RaceFields.additionalSpells.getFrom(rootNode).get(0);
+            if (RaceFields.ability.existsIn(spells)) {
+                JsonNode ability = RaceFields.ability.getFrom(spells);
+                if (RaceFields.choose.existsIn(ability)) {
                     List<String> abilities = new ArrayList<>();
-                    ability.withArray("choose")
+                    RaceFields.choose.readArrayFrom(ability)
                             .forEach(x -> abilities.add(SkillOrAbility.format(x.asText(), index(), getSources())));
                     return "Choose one of " + String.join(", ", abilities);
                 } else {
@@ -259,6 +259,7 @@ public class Json2QuteRace extends Json2QuteCommon {
         _isSubRace,
         _rawName,
         ability,
+        choose, // inner field of additionalSpells[].ability
         additionalSpells,
         creatureTypes,
         languageProficiencies,

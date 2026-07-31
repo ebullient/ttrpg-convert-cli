@@ -65,7 +65,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     @Override
     protected Tools5eQuteBase buildQuteResource() {
         String size = getSize(rootNode);
-        String environment = joinAndReplace(rootNode, "environment");
+        String environment = MonsterFields.environment.joinAndReplace(rootNode, this);
         String cr = monsterCr(rootNode);
         String pb = monsterPb(cr);
 
@@ -104,7 +104,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 immuneResist(),
                 gear(),
                 treasure(),
-                joinAndReplace(rootNode, "languages"),
+                MonsterFields.languages.joinAndReplace(rootNode, this),
                 cr, pb,
                 initiative(abilityScores, cr),
                 collectAllTraits(),
@@ -470,17 +470,21 @@ public class Json2QuteMonster extends Json2QuteCommon {
     TraitDescription traitDescription(JsonNode source, MonsterFields field, String title) {
         boolean pushed = parseState().pushTrait();
         try {
-            String noteKey = field.name() + "Note";
-            JsonNode noteNode = source.get(noteKey);
-            if (noteNode != null && noteNode.isTextual()) {
-                title += " <small>(" + replaceText(noteNode) + ")</small>";
+            MonsterFields noteField = field.noteField();
+            if (noteField != null) {
+                JsonNode noteNode = noteField.getFrom(source);
+                if (noteNode != null && noteNode.isTextual()) {
+                    title += " <small>(" + replaceText(noteNode) + ")</small>";
+                }
             }
 
-            String headerKey = field.name() + "Header";
-            JsonNode headerNode = source.get(headerKey);
+            MonsterFields headerField = field.headerField();
             String headerText = null;
-            if (headerNode != null) {
-                headerText = flattenToString(headerNode);
+            if (headerField != null) {
+                JsonNode headerNode = headerField.getFrom(source);
+                if (headerNode != null) {
+                    headerText = flattenToString(headerNode);
+                }
             }
 
             List<NamedText> traits = new ArrayList<>();
@@ -867,6 +871,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         creatureType, // object -- alternate to monster type
         daily,
         displayAs,
+        environment,
         footerEntries,
         formula,
         from,
@@ -879,6 +884,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         isNpc,
         item,
         lairActions,
+        languages,
         legendary,
         legendaryActions,
         legendaryActionsLair,
@@ -908,6 +914,26 @@ public class Json2QuteMonster extends Json2QuteCommon {
         treasure,
         type,
         variant,
-        will,
+        will;
+
+        MonsterFields noteField() {
+            return switch (this) {
+                case action -> actionNote;
+                case bonus -> bonusNote;
+                case reaction -> reactionNote;
+                default -> null;
+            };
+        }
+
+        MonsterFields headerField() {
+            return switch (this) {
+                case action -> actionHeader;
+                case bonus -> bonusHeader;
+                case reaction -> reactionHeader;
+                case legendary -> legendaryHeader;
+                case mythic -> mythicHeader;
+                default -> null;
+            };
+        }
     }
 }

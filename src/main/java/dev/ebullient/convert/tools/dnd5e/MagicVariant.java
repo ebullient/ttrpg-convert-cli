@@ -535,7 +535,6 @@ public class MagicVariant implements JsonSource {
         barding,
         bardingType,
         conditionImmune,
-        customProperties,
         entries,
         excludes,
         immune,
