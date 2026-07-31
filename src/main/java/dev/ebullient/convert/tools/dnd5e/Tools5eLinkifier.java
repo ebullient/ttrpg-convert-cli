@@ -8,7 +8,7 @@ import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.SubclassKeyData;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteDeity.DeityField;
+import dev.ebullient.convert.tools.dnd5e.Json2QuteDeity.DeityFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterType;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
@@ -373,7 +373,7 @@ public class Tools5eLinkifier {
         String name = deitySources.getName();
         String source = deitySources.primarySource();
         JsonNode node = deitySources.findNode();
-        String pantheon = DeityField.pantheon.getTextOrEmpty(node);
+        String pantheon = DeityFields.pantheon.getTextOrEmpty(node);
         String suffix = "";
         switch (pantheon.toLowerCase()) {
             case "exandria" -> {

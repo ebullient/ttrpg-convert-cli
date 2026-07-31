@@ -29,11 +29,11 @@ public class Json2QuteReward extends Json2QuteCommon {
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         List<String> details = new ArrayList<>();
-        String type = RewardField.type.getTextOrNull(rootNode);
+        String type = RewardFields.type.getTextOrNull(rootNode);
         if (type != null) {
             details.add(type);
         }
-        String rarity = RewardField.rarity.getTextOrNull(rootNode);
+        String rarity = RewardFields.rarity.getTextOrNull(rootNode);
         if (rarity != null) {
             details.add(rarity);
         }
@@ -42,15 +42,15 @@ public class Json2QuteReward extends Json2QuteCommon {
         return new QuteReward(getSources(),
                 getSources().getName(),
                 getSourceText(sources),
-                RewardField.ability.transformTextFrom(rootNode, "\n", index),
+                RewardFields.ability.transformTextFrom(rootNode, "\n", index),
                 getSources().getName().startsWith(detail) ? "" : detail,
-                RewardField.signaturespells.transformTextFrom(rootNode, "\n", index),
+                RewardFields.signaturespells.transformTextFrom(rootNode, "\n", index),
                 images,
                 String.join("\n", text),
                 tags);
     }
 
-    enum RewardField implements JsonNodeReader {
+    enum RewardFields implements JsonNodeReader {
         ability,
         rarity,
         signaturespells,

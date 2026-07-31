@@ -31,32 +31,32 @@ public class Json2QuteDeity extends Json2QuteCommon {
     protected Tools5eQuteBase buildQuteResource() {
         Tags tags = new Tags(getSources());
 
-        String pantheon = DeityField.pantheon.getTextOrDefault(rootNode, null);
+        String pantheon = DeityFields.pantheon.getTextOrDefault(rootNode, null);
         if (pantheon != null) {
             tags.add("deity", pantheon);
         }
 
-        List<String> domains = DeityField.domains.getListOfStrings(rootNode, tui());
+        List<String> domains = DeityFields.domains.getListOfStrings(rootNode, tui());
         domains.forEach(d -> tags.add("domain", d));
 
         return new QuteDeity(sources,
                 getName(),
                 getSourceText(getSources()),
-                DeityField.altNames.replaceTextFromList(rootNode, this),
+                DeityFields.altNames.replaceTextFromList(rootNode, this),
                 pantheon,
                 deityAlignment(),
-                replaceText(DeityField.title.getTextOrEmpty(rootNode)),
-                replaceText(DeityField.category.getTextOrEmpty(rootNode)),
+                replaceText(DeityFields.title.getTextOrEmpty(rootNode)),
+                replaceText(DeityFields.category.getTextOrEmpty(rootNode)),
                 String.join(", ", domains),
-                replaceText(DeityField.province.getTextOrEmpty(rootNode)),
-                replaceText(DeityField.symbol.getTextOrEmpty(rootNode)),
+                replaceText(DeityFields.province.getTextOrEmpty(rootNode)),
+                replaceText(DeityFields.symbol.getTextOrEmpty(rootNode)),
                 getSymbolImage(),
                 getText("##"),
                 tags);
     }
 
     String deityAlignment() {
-        ArrayNode a1 = DeityField.alignment.readArrayFrom(rootNode);
+        ArrayNode a1 = DeityFields.alignment.readArrayFrom(rootNode);
         if (a1.size() == 0) {
             return "Unaligned";
         }
@@ -65,8 +65,8 @@ public class Json2QuteDeity extends Json2QuteCommon {
     }
 
     ImageRef getSymbolImage() {
-        if (DeityField.symbolImg.existsIn(rootNode)) {
-            return readImageRef(DeityField.symbolImg.getFrom(rootNode));
+        if (DeityFields.symbolImg.existsIn(rootNode)) {
+            return readImageRef(DeityFields.symbolImg.getFrom(rootNode));
         }
         return null;
     }
@@ -85,8 +85,8 @@ public class Json2QuteDeity extends Json2QuteCommon {
                 .comparing(k -> TtrpgConfig.sourcePublicationDate(k));
 
         Function<Tuple, String> deityKey = n -> {
-            String name = DeityField.reprintAlias.getTextOrDefault(n.node, SourceField.name.getTextOrEmpty(n.node));
-            String pantheon = DeityField.pantheon.getTextOrEmpty(n.node);
+            String name = DeityFields.reprintAlias.getTextOrDefault(n.node, SourceField.name.getTextOrEmpty(n.node));
+            String pantheon = DeityFields.pantheon.getTextOrEmpty(n.node);
             return (name + "-" + pantheon).toLowerCase();
         };
 
@@ -134,7 +134,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
         return keepers.entrySet().stream().map(e -> e.getValue().key).toList();
     }
 
-    public enum DeityField implements JsonNodeReader {
+    public enum DeityFields implements JsonNodeReader {
         alignment,
         altNames,
         category,
