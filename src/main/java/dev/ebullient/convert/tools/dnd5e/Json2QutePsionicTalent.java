@@ -27,9 +27,9 @@ public class Json2QutePsionicTalent extends Json2QuteCommon {
         List<String> text = new ArrayList<>();
         appendToText(text, rootNode, "##");
 
-        return new QutePsionic(sources,
+        return new QutePsionic(getSources(),
                 getName(),
-                getSourceText(sources),
+                getSourceText(getSources()),
                 getPsionicTypeOrder(),
                 PsionicFields.focus.replaceTextFrom(rootNode, this),
                 getPsionicModes(),
@@ -39,7 +39,7 @@ public class Json2QutePsionicTalent extends Json2QuteCommon {
 
     String getPsionicTypeOrder() {
         String order = PsionicFields.order.replaceTextFrom(rootNode, this);
-        Collection<HomebrewMetaTypes> metas = index.getHomebrewMetaTypes(sources);
+        Collection<HomebrewMetaTypes> metas = index.getHomebrewMetaTypes(getSources());
 
         String typeName = PsionicFields.type.getTextOrDefault(rootNode, "\u2014");
         PsionicType type = switch (typeName) {

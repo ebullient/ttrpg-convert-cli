@@ -19,8 +19,8 @@ public class Json2QuteBook extends Json2QuteCommon {
     Json2QuteBook(Tools5eIndex index, Tools5eIndexType type, JsonNode rootNode, JsonNode dataNode) {
         super(index, type, rootNode);
         this.dataNode = dataNode;
-        this.bookRelativePath = slugify(sources.getName());
-        this.title = replaceText(sources.getName());
+        this.bookRelativePath = slugify(getSources().getName());
+        this.title = replaceText(getSources().getName());
 
         String key = getSources().getKey();
         final String basePath;

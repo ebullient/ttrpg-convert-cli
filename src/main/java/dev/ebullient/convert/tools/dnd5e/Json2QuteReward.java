@@ -40,10 +40,10 @@ public class Json2QuteReward extends Json2QuteCommon {
         String detail = String.join(", ", details);
 
         return new QuteReward(getSources(),
-                getSources().getName(),
-                getSourceText(sources),
+                getName(),
+                getSourceText(getSources()),
                 RewardFields.ability.transformTextFrom(rootNode, "\n", index),
-                getSources().getName().startsWith(detail) ? "" : detail,
+                getName().startsWith(detail) ? "" : detail,
                 RewardFields.signaturespells.transformTextFrom(rootNode, "\n", index),
                 images,
                 String.join("\n", text),

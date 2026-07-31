@@ -65,7 +65,7 @@ public class Json2QuteBastion extends Json2QuteCommon {
         }
 
         return new QuteBastion(
-                sources,
+                getSources(),
                 getName(),
                 getSourceText(getSources()),
                 hirelings,

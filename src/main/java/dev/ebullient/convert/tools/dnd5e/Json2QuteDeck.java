@@ -25,7 +25,7 @@ public class Json2QuteDeck extends Json2QuteCommon {
 
     @Override
     protected Tools5eQuteBase buildQuteResource() {
-        Tags tags = new Tags(sources);
+        Tags tags = new Tags(getSources());
         List<String> text = new ArrayList<>();
         List<Card> cards = new ArrayList<>();
 
@@ -45,16 +45,16 @@ public class Json2QuteDeck extends Json2QuteCommon {
             if (cardKey != null) {
                 JsonNode cardNode = index.getNode(cardKey);
                 if (cardNode == null) {
-                    tui().errorf("Unable to find %s referenced from %s", cardKey, sources.getKey());
+                    tui().errorf("Unable to find %s referenced from %s", cardKey, getSources().getKey());
                 } else {
                     appendCard(hasCardArt, cards, cardNode);
                 }
             }
         }
 
-        return new QuteDeck(sources,
+        return new QuteDeck(getSources(),
                 getName(),
-                getSourceText(sources),
+                getSourceText(getSources()),
                 getImage(DeckFields.back, rootNode),
                 cards,
                 String.join("\n", text),

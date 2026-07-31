@@ -41,9 +41,9 @@ public class Json2QuteVehicle extends Json2QuteCommon {
         List<String> text = getFluff(Tools5eIndexType.vehicleFluff, "##", fluffImages);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
-        return new QuteVehicle(sources,
-                getSources().getName(),
-                getSourceText(sources),
+        return new QuteVehicle(getSources(),
+                getName(),
+                getSourceText(getSources()),
                 vehicleType.name(),
                 String.join(", ", terrain),
                 abilityScores(rootNode),

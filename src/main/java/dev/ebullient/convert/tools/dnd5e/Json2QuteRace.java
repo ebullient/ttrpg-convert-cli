@@ -31,7 +31,7 @@ public class Json2QuteRace extends Json2QuteCommon {
     @Override
     protected QuteRace buildQuteResource() {
         if (RaceFields._rawName.existsIn(rootNode)) {
-            tui().debugf("Skipping output of base race %s", sources.getKey());
+            tui().debugf("Skipping output of base race %s", getSources().getKey());
             return null;
         }
         String name = linkifier().decoratedName(type, rootNode);
@@ -47,9 +47,9 @@ public class Json2QuteRace extends Json2QuteCommon {
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.raceFluff, "###", fluffImages);
 
-        return new QuteRace(sources,
+        return new QuteRace(getSources(),
                 name,
-                getSourceText(sources),
+                getSourceText(getSources()),
                 getRaceAbility(),
                 creatureTypes(),
                 getSize(rootNode),

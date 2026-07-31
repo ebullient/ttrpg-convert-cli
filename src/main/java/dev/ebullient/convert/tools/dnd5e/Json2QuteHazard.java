@@ -33,7 +33,7 @@ public class Json2QuteHazard extends Json2QuteCommon {
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         return new QuteHazard(getSources(),
-                getSources().getName(),
+                getName(),
                 getSourceText(getSources()),
                 getHazardType(hazardType),
                 images,

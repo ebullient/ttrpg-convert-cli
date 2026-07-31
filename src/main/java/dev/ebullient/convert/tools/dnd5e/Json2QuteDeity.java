@@ -39,7 +39,7 @@ public class Json2QuteDeity extends Json2QuteCommon {
         List<String> domains = DeityFields.domains.getListOfStrings(rootNode, tui());
         domains.forEach(d -> tags.add("domain", d));
 
-        return new QuteDeity(sources,
+        return new QuteDeity(getSources(),
                 getName(),
                 getSourceText(getSources()),
                 DeityFields.altNames.replaceTextFromList(rootNode, this),

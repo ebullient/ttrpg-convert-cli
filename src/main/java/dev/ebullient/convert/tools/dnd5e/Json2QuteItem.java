@@ -50,8 +50,8 @@ public class Json2QuteItem extends Json2QuteCommon {
                     + "**Items in this group:**\n\n- " + String.join("\n- ", itemLinks);
         }
 
-        return new QuteItem(sources,
-                getSourceText(sources),
+        return new QuteItem(getSources(),
+                getSourceText(getSources()),
                 rootVariant,
                 variants,
                 fluffImages,

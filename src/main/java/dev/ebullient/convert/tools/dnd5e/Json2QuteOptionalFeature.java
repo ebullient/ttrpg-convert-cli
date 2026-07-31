@@ -37,8 +37,8 @@ public class Json2QuteOptionalFeature extends Json2QuteCommon {
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         return new QuteFeat(getSources(),
-                getSources().getName(),
-                getSourceText(sources),
+                getName(),
+                getSourceText(getSources()),
                 listPrerequisites(rootNode),
                 null,
                 null,

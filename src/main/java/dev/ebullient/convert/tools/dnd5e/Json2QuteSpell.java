@@ -99,9 +99,9 @@ public class Json2QuteSpell extends Json2QuteCommon {
             appendToText(text, SpellFields.entriesHigherLevel.getFrom(rootNode),
                     textContains(text, "## ") ? "##" : null);
         }
-        return new QuteSpell(sources,
+        return new QuteSpell(getSources(),
                 decoratedName,
-                getSourceText(sources),
+                getSourceText(getSources()),
                 JsonSource.spellLevelToText(spellEntry.level),
                 spellEntry.school.name(),
                 spellEntry.ritual,

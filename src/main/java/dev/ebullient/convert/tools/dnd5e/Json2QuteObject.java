@@ -33,9 +33,9 @@ public class Json2QuteObject extends Json2QuteMonster {
         List<String> text = getFluff(Tools5eIndexType.objectFluff, "##", fluffImages);
         appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
-        return new QuteObject(sources,
-                getSources().getName(),
-                getSourceText(sources),
+        return new QuteObject(getSources(),
+                getName(),
+                getSourceText(getSources()),
                 isNpc, size,
                 creatureType, objectType,
                 acHp,

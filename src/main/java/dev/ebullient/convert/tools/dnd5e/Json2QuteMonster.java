@@ -90,9 +90,9 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         AbilityScores abilityScores = abilityScores(rootNode);
 
-        return new QuteMonster(sources,
+        return new QuteMonster(getSources(),
                 linkifier().decoratedName(type, rootNode),
-                getSourceText(sources),
+                getSourceText(getSources()),
                 isNpc,
                 size, creatureType, subtype, monsterAlignment(),
                 acHp,
@@ -207,7 +207,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                     for (var item : ensureArray(value)) {
                         JsonNode oneOf = MonsterFields.oneOf.getFrom(item);
                         if (oneOf == null) {
-                            tui().errorf("What is this (from %s): %s", sources.getKey(), item);
+                            tui().errorf("What is this (from %s): %s", getSources().getKey(), item);
                             continue;
                         }
                         List<SkillModifier> choices = new ArrayList<>();
@@ -324,7 +324,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
             if (array == null || array.isNull()) {
                 return null;
             } else if (array.isObject()) {
-                tui().warnf(Msg.UNKNOWN, "Unknown spellcasting for %s: %s", sources.getKey(), array.toPrettyString());
+                tui().warnf(Msg.UNKNOWN, "Unknown spellcasting for %s: %s", getSources().getKey(), array.toPrettyString());
                 return null;
             }
 
@@ -409,7 +409,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
     List<String> getSpells(JsonNode source) {
         if (source == null || source.isNull()) {
-            tui().errorf("Null spells from %s", sources.getKey());
+            tui().errorf("Null spells from %s", getSources().getKey());
             return List.of();
         }
         List<String> spells = new ArrayList<>();
@@ -423,7 +423,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 }
                 spells.add(toLink(SourceField.entry.getTextOrEmpty(item)));
             } else {
-                tui().warnf(Msg.UNKNOWN, "Unknown spell type for %s: %s", sources.getKey(), item.toPrettyString());
+                tui().warnf(Msg.UNKNOWN, "Unknown spell type for %s: %s", getSources().getKey(), item.toPrettyString());
             }
         }
         return spells;

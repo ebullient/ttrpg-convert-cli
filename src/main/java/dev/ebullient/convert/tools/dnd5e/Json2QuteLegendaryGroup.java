@@ -25,12 +25,12 @@ public class Json2QuteLegendaryGroup extends Json2QuteCommon {
         appendSectionText(text, LeGroupFields.regionalEffects, "Regional Effects");
         appendSectionText(text, LeGroupFields.mythicEncounter, "As a Mythic Encounter");
 
-        return new Tools5eQuteNote(sources,
-                sources.getName(),
+        return new Tools5eQuteNote(getSources(),
+                getName(),
                 null,
                 String.join("\n", text),
                 tags)
-                .withTargetFile(linkifier().getTargetFileName(getName(), sources))
+                .withTargetFile(linkifier().getTargetFileName(getName(), getSources()))
                 .withTargetPath(linkifier().getRelativePath(type));
     }
 

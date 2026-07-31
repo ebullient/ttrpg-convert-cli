@@ -40,6 +40,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     final Map<String, List<String>> startingText = new HashMap<>();
     final boolean isSidekick;
+    final boolean isClassic;
     final String decoratedClassName;
     final String classSource;
     final String subclassTitle;
@@ -53,6 +54,7 @@ public class Json2QuteClass extends Json2QuteCommon {
         decoratedClassName = linkifier().decoratedName(type, jsonNode);
         classSource = SourceField.source.getTextOrEmpty(jsonNode);
         isSidekick = ClassFields.isSidekick.booleanOrDefault(jsonNode, false);
+        isClassic = getSources().isClassic();
         subclassTitle = ClassFields.subclassTitle.getTextOrEmpty(jsonNode);
         primaryAbility = buildPrimaryAbility();
     }
@@ -140,7 +142,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                         || (TtrpgValue.isHomebrew.booleanOrDefault(scNode, false)
                                 && Tools5eFields.classSource.getTextOrDefault(scNode, "phb").equalsIgnoreCase("phb"));
 
-                if (scIsClassic && !getSources().isClassic()) {
+                if (scIsClassic && !isClassic) {
                     // insert warning about mixed edition content
                     text.add(0,
                             "> This subclass is from a different game edition. You will need to do some adjustment to resolve differences.");
@@ -264,7 +266,7 @@ public class Json2QuteClass extends Json2QuteCommon {
     HitPointDie buildHitDie() {
         if (isSidekick) {
             // Sidekicks do not have a hit die. Hit points depend on creature statblock
-            return new HitPointDie(getName(), 0, 0, this.sources.isClassic(), isSidekick);
+            return new HitPointDie(getName(), 0, 0, isClassic, isSidekick);
         }
         JsonNode hdNode = ClassFields.hd.getFrom(rootNode);
         if (hdNode != null) {
@@ -273,7 +275,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     getName(),
                     ClassFields.number.intOrDefault(hdNode, 1),
                     ClassFields.faces.intOrDefault(hdNode, 1),
-                    this.sources.isClassic(),
+                    isClassic,
                     isSidekick);
         }
         return null;
@@ -292,7 +294,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     sidekickProficiencies.tools(),
                     sidekickProficiencies.armor(),
                     "",
-                    sources.isClassic());
+                    isClassic);
         }
 
         List<String> savingThrows = ClassFields.proficiency.streamFrom(rootNode)
@@ -309,7 +311,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
         return new StartingEquipment(savingThrows, skills, weapons, tools, armor,
                 equipmentDescription(ClassFields.startingEquipment.getFrom(rootNode)),
-                sources.isClassic());
+                isClassic);
     }
 
     Multiclassing buildMulticlassing() {
@@ -357,7 +359,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 join(", ", toolsGained),
                 join(", ", armorGained),
                 flattenToString(SourceField.entries.getFrom(multiclassing), "\n"),
-                getSources().isClassic());
+                isClassic);
     }
 
     List<String> buildProgressionTable(List<ClassFeature> features, JsonNode sourceNode, ClassFields field) {
@@ -592,7 +594,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                     String weaponType = n.asText();
                     if (weaponType.matches("(?i)(simple|martial)")) {
                         return "%s weapons".formatted(
-                                sources.isClassic() ? weaponType : toTitleCase(weaponType));
+                                isClassic ? weaponType : toTitleCase(weaponType));
                     }
                     return replaceText(weaponType);
                 })
@@ -608,20 +610,20 @@ public class Json2QuteClass extends Json2QuteCommon {
     String armorToLink(String armor) {
         return armor
                 .replaceAll("^light", linkify(Tools5eIndexType.itemType,
-                        sources.isClassic() ? "la|phb|light armor" : "la|xphb|Light armor"))
+                        isClassic ? "la|phb|light armor" : "la|xphb|Light armor"))
                 .replaceAll("^medium", linkify(Tools5eIndexType.itemType,
-                        sources.isClassic() ? "ma|phb|medium armor" : "ma|xphb|Medium armor"))
+                        isClassic ? "ma|phb|medium armor" : "ma|xphb|Medium armor"))
                 .replaceAll("^heavy", linkify(Tools5eIndexType.itemType,
-                        sources.isClassic() ? "ha|phb|heavy armor" : "ha|xphb|Heavy armor"))
+                        isClassic ? "ha|phb|heavy armor" : "ha|xphb|Heavy armor"))
                 .replaceAll("^shields?", linkify(Tools5eIndexType.item,
-                        sources.isClassic() ? "shield|phb|shields" : "shield|xphb|Shields"));
+                        isClassic ? "shield|phb|shields" : "shield|xphb|Shields"));
     }
 
     String skillChoices(Collection<String> skills, int numSkills) {
         if (skills.isEmpty() || skills.size() >= 18) {
             String link = "||skill%s".formatted(numSkills == 1 ? "" : "s");
             String linkToSkills = linkifyRules(Tools5eIndexType.skill, link);
-            return sources.isClassic()
+            return isClassic
                     ? "choose any %s %s".formatted(numSkills, linkToSkills)
                     : "Choose %s %s".formatted(numSkills, linkToSkills);
         }
@@ -631,7 +633,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 .sorted(SkillOrAbility.comparator)
                 .map(x -> linkifySkill(x))
                 .toList();
-        return sources.isClassic()
+        return isClassic
                 ? "choose %s from %s".formatted(numSkills,
                         joinConjunct(" and ", formatted))
                 : "*Choose %s:* %s".formatted(numSkills,

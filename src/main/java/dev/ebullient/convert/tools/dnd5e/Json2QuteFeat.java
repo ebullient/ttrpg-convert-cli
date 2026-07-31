@@ -27,7 +27,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
         tags.add("feat");
 
         List<ImageRef> images = getFluffImages(Tools5eIndexType.featFluff);
-        Collection<HomebrewMetaTypes> metas = index.getHomebrewMetaTypes(sources);
+        Collection<HomebrewMetaTypes> metas = index.getHomebrewMetaTypes(getSources());
 
         String category = JsonSource.featureTypeToString(FeatFields.category.getTextOrEmpty(rootNode), Map.of());
         if (category.startsWith("Fighting Style, ")) {
@@ -42,9 +42,9 @@ public class Json2QuteFeat extends Json2QuteCommon {
         appendToText(text, fullEntries, null);
 
         // TODO: update w/ additionalSpells
-        return new QuteFeat(sources,
+        return new QuteFeat(getSources(),
                 linkifier().decoratedName(type, rootNode),
-                getSourceText(sources),
+                getSourceText(getSources()),
                 listPrerequisites(rootNode),
                 null, // Level coming someday..
                 SkillOrAbility.getAbilityScoreIncreases(FeatFields.ability.getFrom(rootNode)),
