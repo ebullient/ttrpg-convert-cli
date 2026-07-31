@@ -219,10 +219,7 @@ public interface SkillOrAbility {
         entry,
 
         weighted,
-        weights,
-
-        unknown // catcher for unknown attributes (see #fromString())
-        ;
+        weights;
 
         // _mergeAbilityIncrease_getText
         private String readFromChoice(JsonNode choiceNode, boolean increase) {

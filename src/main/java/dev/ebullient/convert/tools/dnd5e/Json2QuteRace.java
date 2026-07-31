@@ -133,13 +133,6 @@ public class Json2QuteRace extends Json2QuteCommon {
                 : "None";
     }
 
-    String decoratedAmount(int amount) {
-        if (amount >= 0) {
-            return "+" + amount;
-        }
-        return amount + "";
-    }
-
     public static String getSubraceName(String raceName, String subraceName) {
         if (subraceName == null) {
             return raceName;
