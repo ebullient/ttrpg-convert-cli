@@ -46,7 +46,7 @@ public class Json2QuteVehicle extends Json2QuteCommon {
                 getSourceText(getSources()),
                 vehicleType.name(),
                 String.join(", ", terrain),
-                abilityScores(rootNode),
+                abilityScores(),
                 vehicleSize(tags),
                 immuneResist(),
                 shipCrewCargoPace(),

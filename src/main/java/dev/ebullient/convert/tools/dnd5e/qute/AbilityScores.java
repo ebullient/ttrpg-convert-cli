@@ -208,49 +208,4 @@ public record AbilityScores(
         }
     }
 
-    public static class Builder {
-        AbilityScore strength;
-        AbilityScore dexterity;
-        AbilityScore constitution;
-        AbilityScore intelligence;
-        AbilityScore wisdom;
-        AbilityScore charisma;
-
-        public Builder() {
-        }
-
-        public Builder setStrength(int strength) {
-            this.strength = new AbilityScore(strength, null);
-            return this;
-        }
-
-        public Builder setDexterity(int dexterity) {
-            this.dexterity = new AbilityScore(dexterity, null);
-            return this;
-        }
-
-        public Builder setConstitution(int constitution) {
-            this.constitution = new AbilityScore(constitution, null);
-            return this;
-        }
-
-        public Builder setIntelligence(int intelligence) {
-            this.intelligence = new AbilityScore(intelligence, null);
-            return this;
-        }
-
-        public Builder setWisdom(int wisdom) {
-            this.wisdom = new AbilityScore(wisdom, null);
-            return this;
-        }
-
-        public Builder setCharisma(int charisma) {
-            this.charisma = new AbilityScore(charisma, null);
-            return this;
-        }
-
-        public AbilityScores build() {
-            return new AbilityScores(strength, dexterity, constitution, intelligence, wisdom, charisma);
-        }
-    }
 }

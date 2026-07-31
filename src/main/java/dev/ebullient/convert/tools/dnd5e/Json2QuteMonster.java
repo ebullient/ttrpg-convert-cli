@@ -88,7 +88,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         List<ImageRef> fluffImages = new ArrayList<>();
         String fluff = getFluffDescription(Tools5eIndexType.monsterFluff, "##", fluffImages);
 
-        AbilityScores abilityScores = abilityScores(rootNode);
+        AbilityScores abilityScores = abilityScores();
 
         return new QuteMonster(getSources(),
                 linkifier().decoratedName(type, rootNode),
