@@ -21,11 +21,11 @@ public class Json2QuteCompose extends Json2QuteCommon {
     final String title;
     final String targetPath;
 
-    public Json2QuteCompose(Tools5eIndexType type, Tools5eIndex index, String title) {
+    Json2QuteCompose(Tools5eIndexType type, Tools5eIndex index, String title) {
         this(type, index, title, ".");
     }
 
-    public Json2QuteCompose(Tools5eIndexType type, Tools5eIndex index, String title, String targetPath) {
+    Json2QuteCompose(Tools5eIndexType type, Tools5eIndex index, String title, String targetPath) {
         super(index, type, null);
         this.title = title;
         this.targetPath = targetPath;

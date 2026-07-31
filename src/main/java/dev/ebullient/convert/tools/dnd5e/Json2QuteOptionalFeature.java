@@ -11,7 +11,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteFeat;
 import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteOptionalFeature extends Json2QuteCommon {
-    public Json2QuteOptionalFeature(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteOptionalFeature(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 

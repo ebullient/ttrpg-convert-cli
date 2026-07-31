@@ -12,7 +12,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.QuteReward;
 
 public class Json2QuteReward extends Json2QuteCommon {
 
-    public Json2QuteReward(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteReward(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 

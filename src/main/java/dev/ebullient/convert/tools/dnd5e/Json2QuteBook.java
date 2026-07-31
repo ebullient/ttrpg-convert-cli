@@ -16,7 +16,7 @@ public class Json2QuteBook extends Json2QuteCommon {
     final String title;
     String fileName;
 
-    public Json2QuteBook(Tools5eIndex index, Tools5eIndexType type, JsonNode rootNode, JsonNode dataNode) {
+    Json2QuteBook(Tools5eIndex index, Tools5eIndexType type, JsonNode rootNode, JsonNode dataNode) {
         super(index, type, rootNode);
         this.dataNode = dataNode;
         this.bookRelativePath = slugify(sources.getName());

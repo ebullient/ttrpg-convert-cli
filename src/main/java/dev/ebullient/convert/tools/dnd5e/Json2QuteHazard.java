@@ -13,7 +13,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase;
 
 public class Json2QuteHazard extends Json2QuteCommon {
 
-    public Json2QuteHazard(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
+    Json2QuteHazard(Tools5eIndex index, Tools5eIndexType type, JsonNode jsonNode) {
         super(index, type, jsonNode);
     }
 

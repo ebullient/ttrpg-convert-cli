@@ -14,7 +14,7 @@ public class BackgroundTraits2Note extends Json2QuteCommon {
 
     final String targetDir = linkifier().getRelativePath(Tools5eIndexType.table);
 
-    public BackgroundTraits2Note(Tools5eIndex index) {
+    BackgroundTraits2Note(Tools5eIndex index) {
         super(index, Tools5eIndexType.syntheticGroup, null);
     }
 
