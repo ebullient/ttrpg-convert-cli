@@ -12,7 +12,6 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 
@@ -69,7 +68,7 @@ public record ItemMastery(
             return new ItemMastery(
                     name,
                     key,
-                    "item/mastery/" + Tui.slugify(name));
+                    ItemTag.mastery.build(name));
         });
     }
 
