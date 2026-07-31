@@ -27,7 +27,7 @@ public interface SkillOrAbility {
 
     int ordinal();
 
-    public static SkillOrAbility fromTextValue(String v) {
+    public static SkillOrAbility fromString(String v) {
         if (v == null || v.isBlank()) {
             return SkillOrAbilityEnum.None;
         }
@@ -58,7 +58,7 @@ public interface SkillOrAbility {
         return skill == null ? key : skill.value();
     }
 
-    public class CustomSkillOrAbility implements SkillOrAbility {
+    public static class CustomSkillOrAbility implements SkillOrAbility {
         final String name;
         final String lower;
         final String key;
@@ -194,7 +194,7 @@ public interface SkillOrAbility {
 
     private static String toAbilityString(String nameAbv, JsonNode value, boolean increase) {
         if (increase) {
-            SkillOrAbility ability = SkillOrAbility.fromTextValue(nameAbv);
+            SkillOrAbility ability = SkillOrAbility.fromString(nameAbv);
             return "Increase your %s score by %s, to a maximum of {@MAX}.".formatted(
                     ability == null ? toTitleCase(nameAbv) : ability.value(),
                     value.asText());
@@ -285,7 +285,7 @@ public interface SkillOrAbility {
             }
             List<String> options = new ArrayList<>();
             for (JsonNode option : fromNode) {
-                options.add(AsiFields.asiFieldFromString(option.asText()).longName());
+                options.add(AsiFields.fromString(option.asText()).longName());
             }
             return options;
         }
@@ -332,7 +332,7 @@ public interface SkillOrAbility {
             return ability == null ? "Choose" : ability.value();
         }
 
-        private static AsiFields asiFieldFromString(String name) {
+        private static AsiFields fromString(String name) {
             for (AsiFields field : AsiFields.values()) {
                 if (field.name().equalsIgnoreCase(name) || field.nodeName().equalsIgnoreCase(name)) {
                     return field;

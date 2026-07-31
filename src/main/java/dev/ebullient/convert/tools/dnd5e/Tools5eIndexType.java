@@ -325,7 +325,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                             valueOrDefault(parts, 1, defaultSourceString()))
                             .toLowerCase();
                 }
-                yield getSubclassKey(
+                yield createSubclassKey(
                         parts[0],
                         valueOrDefault(parts, 1, defaultSourceString()),
                         valueOrDefault(parts, 3, null),
@@ -361,7 +361,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                 String classSource = valueOrDefault(parts, 2, "phb");
                 String subClassSource = valueOrDefault(parts, 3, "phb");
 
-                yield getSubclassKey(
+                yield createSubclassKey(
                         className, classSource,
                         scName, subClassSource);
             }
@@ -443,7 +443,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         return convert.linkify(this, reference);
     }
 
-    public static String getSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
+    public static String createSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
         classSource = valueOrDefault(classSource, Tools5eIndexType.classtype.defaultSourceString());
         subclassSource = valueOrDefault(subclassSource, Tools5eIndexType.subclass.defaultSourceString());
         return "%s|%s|%s|%s|%s".formatted(

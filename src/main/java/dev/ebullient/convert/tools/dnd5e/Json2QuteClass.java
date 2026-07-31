@@ -522,7 +522,7 @@ public class Json2QuteClass extends Json2QuteCommon {
 
     String abilityRequirements(JsonNode reqNode, String joiner) {
         return streamProps(reqNode)
-                .filter(n -> SkillOrAbility.fromTextValue(n.getKey()) != null)
+                .filter(n -> SkillOrAbility.fromString(n.getKey()) != null)
                 .map(e -> "%s %s".formatted(
                         SkillOrAbility.format(e.getKey(), index(), getSources()),
                         e.getValue().asText()))

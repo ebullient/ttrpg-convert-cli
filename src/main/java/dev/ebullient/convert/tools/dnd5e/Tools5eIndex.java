@@ -275,7 +275,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
             case subclass -> {
                 // add alias with subclass shortname
-                String lookupKey = Tools5eIndexType.getSubclassKey(
+                String lookupKey = Tools5eIndexType.createSubclassKey(
                         Tools5eFields.className.getTextOrEmpty(node),
                         Tools5eFields.classSource.getTextOrEmpty(node),
                         Tools5eFields.shortName.getTextOrEmpty(node),
@@ -784,7 +784,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 SubclassFeatureKeyData keyData = new SubclassFeatureKeyData(key);
 
                 // does the subclass exist or is it a reprint
-                String scKey = getSubclassKey(keyData.toSubclassKey());
+                String scKey = resolveSubclassKey(keyData.toSubclassKey());
                 boolean scIncluded = Tools5eSources.includedByConfig(scKey);
                 boolean scReprint = reprints.containsKey(scKey);
 
@@ -819,7 +819,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     keyData.classSource = altSources.primarySource();
 
                     // is there a subclass key with this new class source?
-                    var altScKey = getSubclassKey(keyData.toSubclassKey());
+                    var altScKey = resolveSubclassKey(keyData.toSubclassKey());
                     boolean altScPresent = Tools5eSources.includedByConfig(altScKey);
                     if (altScPresent) {
                         // This is the sometimes-covered case:
@@ -897,7 +897,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         }
     }
 
-    public String getSubclassKey(String targetKey) {
+    public String resolveSubclassKey(String targetKey) {
         // short name to long name without following reprints.
         return getAliasOrDefault(targetKey, false);
     }
@@ -916,7 +916,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         return getAliasOrDefault(key, true);
     }
 
-    public String getAliasOrDefault(String key, boolean includeReprints) {
+    public String getAliasOrDefault(String key, boolean followReprints) {
         String previous;
         String value = key;
         do {
@@ -927,7 +927,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     ? subraceMap.get(previous)
                     : null;
 
-            if (includeReprints) {
+            if (followReprints) {
                 String reprint = reprints.get(alias == null ? previous : alias);
                 if (reprint != null) {
                     alias = reprint;
@@ -1043,7 +1043,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             return null;
         }
         SkillOrAbility skill = resolvedSkills.computeIfAbsent(key, k -> {
-            SkillOrAbility sk = SkillOrAbility.fromTextValue(key);
+            SkillOrAbility sk = SkillOrAbility.fromString(key);
             if (sk == null) {
                 sk = homebrewIndex.findHomebrewSkillOrAbility(key, sources);
                 if (sk == null) {

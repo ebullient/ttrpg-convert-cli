@@ -225,7 +225,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     SavingThrow getSavingThrow(String name, JsonNode node) {
-        SkillOrAbility save = SkillOrAbility.fromTextValue(name);
+        SkillOrAbility save = SkillOrAbility.fromString(name);
         name = save == null ? name : save.value();
         String text = node.asText();
         if (text.matches("[+-]?\\d+")) {
@@ -236,7 +236,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     SkillModifier getModifier(String name, JsonNode value) {
-        SkillOrAbility skill = SkillOrAbility.fromTextValue(name);
+        SkillOrAbility skill = SkillOrAbility.fromString(name);
         name = skill == null ? name : skill.value();
         String link = skill == null ? null : linkifySkill(skill);
         String text = value.asText();
