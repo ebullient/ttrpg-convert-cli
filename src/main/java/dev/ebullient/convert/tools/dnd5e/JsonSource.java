@@ -1409,7 +1409,8 @@ public interface JsonSource extends JsonTextReplacement {
         // Parser.FEAT_CATEGORY_TO_FULL
         // Parser.OPT_FEATURE_TYPE_TO_FULL
         return switch (featureType.toUpperCase()) {
-            case "D" -> "Dragonmark";
+            case "D" -> "Dragonmark Feat";
+            case "DG" -> "Dark Gift Feat";
             case "EB" -> "Epic Boon Feat";
             case "FS" -> "Fighting Style Feat";
             case "G" -> "General Feat";
@@ -1430,6 +1431,7 @@ public interface JsonSource extends JsonTextReplacement {
             case "FS:P" -> "Fighting Style, Paladin";
             case "FS:R" -> "Fighting Style, Ranger";
             case "PB" -> "Pact Boon";
+            case "PPACT" -> "Planar Pact Feat";
             case "OR" -> "Onomancy Resonant";
             case "RN" -> "Rune Knight Rune";
             case "AF" -> "Alchemical Formula";
