@@ -367,8 +367,11 @@ public class Json2QuteCommon implements JsonSource {
         for (JsonNode p : iterableElements(profPrereq)) {
             for (Entry<String, JsonNode> prof : iterableFields(p)) {
                 switch (prof.getKey()) {
-                    case "armor" -> profs.add(String.format("%s armor",
-                            replaceText(prof.getValue().asText())));
+                    case "armor" -> {
+                        String armor = replaceText(prof.getValue().asText());
+                        armor = armor.equals("shield") ? armor + "s" : armor + " armor";
+                        profs.add(armor);
+                    }
                     case "weapon" -> profs.add(String.format("a %s weapon",
                             replaceText(prof.getValue().asText())));
                     case "weaponGroup" -> profs.add(String.format("%s weapons",
@@ -518,12 +521,14 @@ public class Json2QuteCommon implements JsonSource {
                     case background -> values.add(backgroundPrereq(value));
                     case campaign -> values.add(replaceConjoinOr(value, " Campaign"));
                     case culture -> values.add(replaceConjoinOr(value, " Culture"));
-                    case exclusiveFeatCategory -> values.add("Can't Have Another " + replaceConjoinOr(value, " Feat"));
+                    case exclusiveFeatCategory -> values.add("Can't Have Another " +
+                            JsonSource.featureTypeToString(replaceConjoinOr(value, ""), Map.of()));
                     case expertise -> values.add(expertisePrereq(value));
                     case feat -> values.add(featPrereq(value));
-                    case featCategory -> values.add("Any " + replaceConjoinOr(value, " Feat"));
+                    case featCategory -> values.add("Any " +
+                            JsonSource.featureTypeToString(replaceConjoinOr(value, ""), Map.of()));
                     case feature -> values.add(replaceConjoinOr(value, " Feature"));
-                    case optionalfeature -> values.add(replaceConjoinOr(value, ""));
+                    case optionalfeature -> values.add(replaceText("{@optfeature " + replaceConjoinOr(value, "") + "}"));
                     case group -> values.add(replaceConjoinOr(value, " Group"));
                     case item -> values.add(replaceConjoinOr(value, ""));
                     case itemProperty -> values.add(itemPropertyPrereq(value));
