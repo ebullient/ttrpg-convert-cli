@@ -1,25 +1,25 @@
 body {
-  --admonition-charm: 211,141,159;
+  --admonition-charm: rgb(211,141,159);
   --admonition-charm-text: var(--admonition-charm);
-  --admonition-letter: 98, 159, 197;
-  --admonition-npc: 102, 121, 137;
-  --admonition-scene: 139, 167, 145;
-  --admonition-skill: 236,201,134;
+  --admonition-letter: rgb(98, 159, 197);
+  --admonition-npc: rgb(102, 121, 137);
+  --admonition-scene: rgb(139, 167, 145);
+  --admonition-skill: rgb(236,201,134);
   --admonition-skill-text: var(--admonition-skill);
-  --admonition-weather: 53,119,174;
-  --admonition-flowchart: 72,72,72;
+  --admonition-weather: rgb(53,119,174);
+  --admonition-flowchart: rgb(72,72,72);
 }
 .theme-light {
-  --admonition-charm: 222,170,184;
-  --admonition-charm-text: 167,92,112;
-  --admonition-npc: 58, 125, 127;
-  --admonition-scene: 92, 122, 99;
-  --admonition-skill: 221,178,84;
-  --admonition-skill-text: 157,101,83;
+  --admonition-charm: rgb(222,170,184);
+  --admonition-charm-text: rgb(167,92,112);
+  --admonition-npc: rgb(58, 125, 127);
+  --admonition-scene: rgb(92, 122, 99);
+  --admonition-skill: rgb(221,178,84);
+  --admonition-skill-text: rgb(157,101,83);
 }
 .callout[data-callout="charm"] {
   --callout-color: var(--admonition-charm);
-  --callout-title-color: rgb(var(--admonition-charm-text));
+  --callout-title-color: var(--admonition-charm-text);
   .callout-title {
     color: var(--callout-title-color);
   }
@@ -36,7 +36,7 @@ body {
 }
 .callout[data-callout="skill"] {
   --callout-color: var(--admonition-skill);
-  --callout-title-color: rgb(var(--admonition-skill-text));
+  --callout-title-color: var(--admonition-skill-text);
 }
 .callout[data-callout="weather"] {
   --callout-color: var(--admonition-weather);

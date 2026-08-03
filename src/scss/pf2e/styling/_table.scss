@@ -19,11 +19,11 @@
     }
 
     tbody {
-      background-color: rgb(var(--pf2e-tan-table-odd-rows-rgb));
+      background-color: var(--pf2e-tan-table-odd-rows-rgb);
       color: var.$almost-black;
 
       tr:nth-child(even) {
-        background-color: rgb(var(--pf2e-beige-table-even-rows-rgb));
+        background-color: var(--pf2e-beige-table-even-rows-rgb);
       }
 
       tr:hover {

@@ -1,6 +1,6 @@
 /*! Source: https://github.com/ebullient/ttrpg-convert-cli/blob/main/src/scss/dnd5e-only-statblock.scss */
 body {
-  --statblock-accent: rgb(201,60,60);
+  --statblock-accent: 201,60,60;
 }
 
 .admonition-statblock-parent {
@@ -45,7 +45,7 @@ body {
   padding: 0.5em 0 0 0;
   margin-top: 0.2em;
   margin-bottom: 0.3em;
-  border-bottom: 1px solid var(--statblock-accent);
+  border-bottom: 1px solid rgb(var(--statblock-accent));
 }
 .callout[data-callout=statblock] .callout-content p {
   line-height: 1.2em;

@@ -38,13 +38,13 @@ body {
 
     // Theme Dark
     .theme-dark & {
-      --statblock-pf2e: 201, 60, 60;
+      --statblock-pf2e: rgb(201, 60, 60);
     }
 
     // Theme Light
 
     .theme-light & {
-      --statblock-pf2e: 201, 60, 60;
+      --statblock-pf2e: rgb(201, 60, 60);
     }
 
     // Strong + Em

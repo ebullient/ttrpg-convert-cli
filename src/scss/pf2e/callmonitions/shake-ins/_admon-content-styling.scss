@@ -160,7 +160,7 @@
   }
 
   a.external-link {
-    color: rgb(var(--callout-color));
+    color: var(--callout-color);
     filter: invert(100%);
 
     &:hover {

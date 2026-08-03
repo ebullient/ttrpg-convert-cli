@@ -127,7 +127,7 @@ body {
   --pf2e-tan-table-odd-rows-rgb: 236, 228, 203;
   --pf2e-tan-table-odd-rows: #ece4cb;
   --pf2e-brown-table-borders: var(--pf2e-light-brown-headers);
-  --pf2e-brown-table-borders-rgb: rgb(var(--pf2e-light-brown-headers-rgb));
+  --pf2e-brown-table-borders-rgb: var(--pf2e-light-brown-headers-rgb);
   --pf2e-table-hover-color: 241, 167, 162;
 
   // Scroll Bars

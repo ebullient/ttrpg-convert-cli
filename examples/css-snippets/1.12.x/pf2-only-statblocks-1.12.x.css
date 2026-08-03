@@ -15,10 +15,10 @@ body .callout[data-callout=statblock-pf2e] {
   padding: 0 0.25em;
 }
 .theme-dark body .callout[data-callout=statblock-pf2e] {
-  --statblock-pf2e: rgb(201, 60, 60);
+  --statblock-pf2e: 201, 60, 60;
 }
 .theme-light body .callout[data-callout=statblock-pf2e] {
-  --statblock-pf2e: rgb(201, 60, 60);
+  --statblock-pf2e: 201, 60, 60;
 }
 body .callout[data-callout=statblock-pf2e] strong {
   color: rgb(0, 0, 0);
