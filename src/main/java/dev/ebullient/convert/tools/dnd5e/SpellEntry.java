@@ -341,7 +341,7 @@ public class SpellEntry {
             String resource = linkifier().getSpellList(linkText, sources);
 
             if (refererType == Tools5eIndexType.subclass) {
-                String classKey = Tools5eIndexType.classtype.fromChildKey(refererKey);
+                String classKey = SubclassKeyData.fromKey(refererKey).toParentKey().toKey();
                 JsonNode classNode = index.getOriginNoFallback(classKey);
                 String className = linkifier().decoratedName(Tools5eIndexType.classtype, classNode);
                 linkText = "%s (%s%s)".formatted(className, linkText, isPresent(groupName) ? ", " + groupName : "");

@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.config.TtrpgConfig;
-import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.IndexType;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
@@ -145,10 +144,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     public String createKey(JsonNode x) {
         if (this == book || this == adventure || this == bookData || this == adventureData) {
             String id = SourceField.id.getTextOrEmpty(x);
-            return String.format("%s|%s-%s",
-                    this.name(),
-                    this.name().replace("Data", ""),
-                    id).toLowerCase();
+            return new DocumentKeyData(this, this.name().replace("Data", ""), id).toKey();
         } else if (this == itemTypeAdditionalEntries) {
             return createKey(
                     IndexFields.appliesTo.getTextOrEmpty(x),
@@ -163,54 +159,22 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         return switch (this) {
             case classfeature -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
-                yield "%s|%s|%s|%s|%s|%s".formatted(
-                        this.name(),
-                        name,
-                        IndexFields.className.getTextOrEmpty(x),
-                        classSource,
-                        IndexFields.level.getTextOrEmpty(x),
-                        source)
-                        .toLowerCase();
+                yield new ClassFeatureKeyData(name,
+                        IndexFields.className.getTextOrEmpty(x), classSource,
+                        IndexFields.level.getTextOrEmpty(x), source)
+                        .toKey();
             }
             case card -> {
                 String set = IndexFields.set.getTextOrThrow(x).trim();
-                yield "%s|%s|%s|%s".formatted(
-                        this.name(),
-                        name,
-                        set,
-                        source)
-                        .toLowerCase();
+                yield new CardKeyData(name, set, source).toKey();
             }
             case deity -> {
-                yield "%s|%s|%s|%s".formatted(
-                        this.name(),
-                        name,
-                        IndexFields.pantheon.getTextOrEmpty(x).trim(),
-                        source)
-                        .toLowerCase();
+                yield new DeityKeyData(name, IndexFields.pantheon.getTextOrEmpty(x).trim(), source).toKey();
             }
             case itemType, itemProperty -> {
                 source = SourceField.source.getTextOrDefault(x, "phb");
                 String abbreviation = IndexFields.abbreviation.getTextOrDefault(x, name).trim();
-                yield "%s|%s|%s".formatted(
-                        this.name(),
-                        abbreviation,
-                        source)
-                        .toLowerCase();
-            }
-            case itemEntry -> {
-                yield "%s|%s|%s".formatted(
-                        this.name(),
-                        name,
-                        source)
-                        .toLowerCase();
-            }
-            case optfeature -> {
-                yield "%s|%s|%s".formatted(
-                        this.name(),
-                        name,
-                        source)
-                        .toLowerCase();
+                yield new ItemAbbreviationKeyData(this, abbreviation, source).toKey();
             }
             case reference -> {
                 if (!isPresent(source)) {
@@ -223,39 +187,26 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case subclass -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
                 String scSource = SourceField.source.getTextOrDefault(x, classSource);
-                // subclass|subclassName|className|classSource|subclassSource
-                yield "%s|%s|%s|%s|%s".formatted(
-                        this.name(),
-                        name,
+                yield new SubclassKeyData(name,
                         IndexFields.className.getTextOrEmpty(x).trim(),
-                        classSource,
-                        scSource)
-                        .toLowerCase();
+                        classSource, scSource)
+                        .toKey();
             }
             case subclassFeature -> {
                 String classSource = IndexFields.classSource.getTextOrDefault(x, "phb");
                 String scSource = IndexFields.subclassSource.getTextOrDefault(x, "phb");
-                // scFeature|className|classSource|subclassShortName|subclassSource|level|source
-                yield "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
-                        this.name(),
-                        name,
-                        IndexFields.className.getTextOrEmpty(x).trim(),
-                        classSource,
-                        IndexFields.subclassShortName.getTextOrEmpty(x).trim(),
-                        scSource,
-                        IndexFields.level.getTextOrEmpty(x),
-                        source)
-                        .toLowerCase();
+                yield new SubclassFeatureKeyData(name,
+                        IndexFields.className.getTextOrEmpty(x).trim(), classSource,
+                        IndexFields.subclassShortName.getTextOrEmpty(x).trim(), scSource,
+                        IndexFields.level.getTextOrEmpty(x), source)
+                        .toKey();
             }
             case subrace -> {
                 String raceSource = IndexFields.raceSource.getTextOrDefault(x, "phb");
-                yield "%s|%s|%s|%s|%s".formatted(
-                        this.name(),
-                        name,
+                yield new SubraceKeyData(name,
                         IndexFields.raceName.getTextOrEmpty(x).trim(),
-                        raceSource,
-                        source)
-                        .toLowerCase();
+                        raceSource, source)
+                        .toKey();
             }
             default -> createKey(name, source);
         };
@@ -283,35 +234,11 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
         String[] parts = crossRef.trim().split("\s?\\|\\s?");
         return switch (this) {
             case card -> {
-                // 0    name,
-                // 1    set,
-                // 2    source
-                yield String.format("%s|%s|%s|%s",
-                        this.name(),
-                        parts[0].trim(),
-                        parts[1].trim(),
-                        valueOrDefault(parts, 2, defaultSourceString()))
-                        .toLowerCase();
+                yield CardKeyData.fromRefTag(crossRef).toKey();
             }
             case classfeature -> {
-                // 0    name,
-                // 1    IndexFields.className.getTextOrEmpty(x),
-                // 2    classSource || "phb",
-                // 3    IndexFields.level.getTextOrEmpty(x),
-                // 4    source || classSource
-                if (parts.length < 4) {
-                    Tui.instance().errorf("Badly formed Class Feature key (not enough segments): %s", crossRef);
-                    yield null;
-                }
-                String classSource = valueOrDefault(parts, 2, Tools5eIndexType.classtype.defaultSourceString());
-                String featureSource = valueOrDefault(parts, 4, classSource);
-                yield "%s|%s|%s|%s|%s|%s".formatted(this.name(),
-                        parts[0].trim(),
-                        parts[1].trim(),
-                        classSource,
-                        parts[3].trim(),
-                        featureSource)
-                        .toLowerCase();
+                ClassFeatureKeyData keyData = ClassFeatureKeyData.fromRefTag(crossRef);
+                yield keyData == null ? null : keyData.toKey();
             }
             case classtype -> {
                 // A {@class} tag can reference either a class or a subclass.
@@ -325,78 +252,32 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                             valueOrDefault(parts, 1, defaultSourceString()))
                             .toLowerCase();
                 }
-                yield createSubclassKey(
+                yield new SubclassKeyData(
+                        valueOrDefault(parts, 3, null),
                         parts[0],
                         valueOrDefault(parts, 1, defaultSourceString()),
-                        valueOrDefault(parts, 3, null),
-                        valueOrDefault(parts, 4, defaultSourceString()));
+                        valueOrDefault(parts, 4, defaultSourceString()))
+                        .toKey();
             }
             case deity -> {
-                yield "%s|%s|%s|%s".formatted(
-                        this.name(),
-                        parts[0],
-                        valueOrDefault(parts, 1, "Forotten Realms"),
-                        valueOrDefault(parts, 2, defaultSourceString()))
-                        .toLowerCase();
+                yield DeityKeyData.fromRefTag(crossRef).toKey();
             }
             case itemProperty -> {
-                yield ItemProperty.refTagToKey(crossRef);
+                yield ItemProperty.refTagToKey(crossRef).toKey();
             }
             case itemType -> {
-                yield ItemType.refTagToKey(crossRef);
+                yield ItemType.refTagToKey(crossRef).toKey();
             }
             case subclass -> {
-                // Homebrew and reprint tags
-                // {@subclass Artillerist|Artificer|TCE|TCE}
-                // 0    subclassShortName,
-                // 1    IndexFields.className.getTextOrEmpty(x),
-                // 2    classSource || "phb",
-                // 3    subClassSource || "phb"
-                if (parts.length < 2) {
-                    Tui.instance().errorf("Badly formed Subclass key (not enough segments): %s", crossRef);
-                    yield null;
-                }
-                String scName = parts[0];
-                String className = parts[1];
-                String classSource = valueOrDefault(parts, 2, "phb");
-                String subClassSource = valueOrDefault(parts, 3, "phb");
-
-                yield createSubclassKey(
-                        className, classSource,
-                        scName, subClassSource);
+                SubclassKeyData keyData = SubclassKeyData.fromRefTag(crossRef);
+                yield keyData == null ? null : keyData.toKey();
             }
             case subclassFeature -> {
-                // 0    name,
-                // 1    IndexFields.className.getTextOrEmpty(x),
-                // 2    classSource || "phb",
-                // 3    IndexFields.subclassShortName.getTextOrEmpty(x),
-                // 4    subClassSource || "phb",
-                // 5    IndexFields.level.getTextOrEmpty(x),
-                // 6    source || subClassSource
-                if (parts.length < 6) {
-                    Tui.instance().errorf("Badly formed Subclass Feature key (not enough segments): %s", crossRef);
-                    yield null;
-                }
-                String classSource = valueOrDefault(parts, 2, "phb");
-                String scSource = valueOrDefault(parts, 4, "phb");
-                String featureSource = valueOrDefault(parts, 6, scSource);
-
-                yield "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
-                        Tools5eIndexType.subclassFeature,
-                        parts[0],
-                        parts[1].trim(),
-                        classSource,
-                        parts[3].trim(),
-                        scSource,
-                        parts[5].trim(),
-                        featureSource)
-                        .toLowerCase();
+                SubclassFeatureKeyData keyData = SubclassFeatureKeyData.fromRefTag(crossRef);
+                yield keyData == null ? null : keyData.toKey();
             }
             default -> {
-                // 0    name,
-                // 1    source
-                yield createKey(parts[0],
-                        valueOrDefault(parts, 1, defaultSourceString()));
+                yield SimpleKeyData.fromRefTag(this, crossRef).toKey();
             }
         };
     }
@@ -408,74 +289,34 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
 
         return switch (this) {
             // {@card Donjon|Deck of Several Things|LLK}
-            case card -> "%s|%s|%s".formatted(
-                    name,
-                    IndexFields.deck.getTextOrEmpty(entry),
-                    source);
+            case card -> new CardKeyData(name, IndexFields.set.getTextOrEmpty(entry), source)
+                    .toRefTag(entry, linkText);
             // {@subclass Artillerist|Artificer|TCE|TCE}
-            case subclass -> "%s|%s|%s|%s|%s".formatted(
+            case subclass -> new SubclassKeyData(
                     name,
                     IndexFields.className.getTextOrEmpty(entry),
                     IndexFields.classSource.getTextOrEmpty(entry),
-                    source,
-                    linkText);
+                    source)
+                    .toRefTag(entry, linkText);
             // {@subclassFeature Blessed Strikes|Cleric|PHB|Twilight|TCE|8|TCE}
-            case subclassFeature -> "%s|%s|%s|%s|%s|%s|%s|%s".formatted(
+            case subclassFeature -> new SubclassFeatureKeyData(
                     name,
-                    IndexFields.className.getTextOrEmpty(entry),
-                    IndexFields.classSource.getTextOrEmpty(entry),
-                    IndexFields.subclassShortName.getTextOrEmpty(entry),
-                    IndexFields.subclassSource.getTextOrEmpty(entry),
-                    IndexFields.level.getTextOrEmpty(entry),
-                    source,
-                    linkText);
+                    IndexFields.className.getTextOrEmpty(entry), IndexFields.classSource.getTextOrEmpty(entry),
+                    IndexFields.subclassShortName.getTextOrEmpty(entry), IndexFields.subclassSource.getTextOrEmpty(entry),
+                    IndexFields.level.getTextOrEmpty(entry), source)
+                    .toRefTag(entry, linkText);
             // {@itemType abv|source|linkText}
-            case itemProperty, itemType -> "%s|%s|%s".formatted(
-                    IndexFields.abbreviation.getTextOrEmpty(entry),
-                    source, linkText);
+            case itemProperty, itemType -> new ItemAbbreviationKeyData(this,
+                    IndexFields.abbreviation.getTextOrEmpty(entry), source)
+                    .toRefTag(entry, linkText);
             // {@feat name|source|linkText}
-            default -> "%s|%s|%s".formatted(name, source, linkText);
+            default -> new SimpleKeyData(this, name, source).toRefTag(entry, linkText);
         };
     }
 
     public String linkify(JsonSource convert, JsonNode entry) {
         String reference = toTagReference(entry);
         return convert.linkify(this, reference);
-    }
-
-    public static String createSubclassKey(String className, String classSource, String subclassName, String subclassSource) {
-        classSource = valueOrDefault(classSource, Tools5eIndexType.classtype.defaultSourceString());
-        subclassSource = valueOrDefault(subclassSource, Tools5eIndexType.subclass.defaultSourceString());
-        return "%s|%s|%s|%s|%s".formatted(
-                Tools5eIndexType.subclass,
-                subclassName,
-                className,
-                classSource,
-                subclassSource)
-                .toLowerCase();
-    }
-
-    public String fromChildKey(String key) {
-        if (!isPresent(key)) {
-            return null;
-        }
-        return switch (this) {
-            case deck, classtype, race -> {
-                String[] parts = key.trim().split("\s?\\|\\s?");
-                // card|cardName|deckName|source
-                // classfeature|cfName|className|classSource|level|cfSource
-                // subclass|scName|className|classSource|scSource
-                // subclassfeature|scfName|className|classSource|subclassShortName|scSource|level|scfSource
-                // subrace|subraceName|raceName|raceSource|subraceSource
-                yield parts.length < 4 ? null : "%s|%s|%s".formatted(this, parts[2], parts[3]);
-            }
-            case subclass -> {
-                String[] parts = key.trim().split("\s?\\|\\s?");
-                // subclassfeature|scfName|className|classSource|subclassShortName|scSource|level|scfSource
-                yield parts.length < 6 ? null : "%s|%s|%s|%s|%s".formatted(this, parts[4], parts[2], parts[3], parts[5]);
-            }
-            default -> null;
-        };
     }
 
     public boolean multiNode() {

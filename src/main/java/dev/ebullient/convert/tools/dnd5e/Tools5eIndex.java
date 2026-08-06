@@ -35,7 +35,6 @@ import dev.ebullient.convert.tools.MarkdownConverter;
 import dev.ebullient.convert.tools.ToolsIndex;
 import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewFields;
 import dev.ebullient.convert.tools.dnd5e.HomebrewIndex.HomebrewMetaTypes;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.SubclassFeatureKeyData;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemField;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteRace.RaceFields;
 import dev.ebullient.convert.tools.dnd5e.OptionalFeatureIndex.OptionalFeatureType;
@@ -275,11 +274,12 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
             case subclass -> {
                 // add alias with subclass shortname
-                String lookupKey = Tools5eIndexType.createSubclassKey(
+                String lookupKey = new SubclassKeyData(
+                        Tools5eFields.shortName.getTextOrEmpty(node),
                         Tools5eFields.className.getTextOrEmpty(node),
                         Tools5eFields.classSource.getTextOrEmpty(node),
-                        Tools5eFields.shortName.getTextOrEmpty(node),
-                        SourceField.source.getTextOrEmpty(node));
+                        SourceField.source.getTextOrEmpty(node))
+                        .toKey();
                 addAlias(lookupKey, key);
                 classFeatures.put(key, new HashSet<>());
             }
@@ -606,16 +606,17 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 subraces.add(sr);
 
                 // Add expected alias:  {@race Aasimar (Fallen)|VGM}
-                String[] parts = srKey.split("\\|");
+                SubraceKeyData keyData = SubraceKeyData.fromKey(srKey);
                 String source = SourceField.source.getTextOrThrow(sr);
                 final String lookupKey;
-                if (parts[1].contains("(")) { // "subrace|dwarf (duergar)|dwarf|phb|mtf"
-                    lookupKey = String.format("race|%s|%s", parts[1], source).toLowerCase();
+                if (keyData.name().contains("(")) { // "subrace|dwarf (duergar)|dwarf|phb|mtf"
+                    lookupKey = String.format("race|%s|%s", keyData.name(), source).toLowerCase();
                 } else { // "subrace|half-elf|half-elf|phb"
-                    if (parts[1].equals(parts[2])) {
-                        lookupKey = String.format("race|%s|%s", parts[1], source).toLowerCase();
+                    if (keyData.name().equals(keyData.parentName())) {
+                        lookupKey = String.format("race|%s|%s", keyData.name(), source).toLowerCase();
                     } else {
-                        lookupKey = String.format("race|%s (%s)|%s", parts[2], parts[1], source).toLowerCase();
+                        lookupKey = String.format("race|%s (%s)|%s", keyData.parentName(), keyData.name(), source)
+                                .toLowerCase();
                     }
                 }
                 // lookups from race to subrace are necessary, but can conflict with reprints/aliases
@@ -749,7 +750,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
         switch (type) {
             case card -> {
-                String deckKey = Tools5eIndexType.deck.fromChildKey(key);
+                String deckKey = CardKeyData.fromKey(key).toParentKey().toKey();
                 Tools5eSources deckSources = Tools5eSources.findSources(deckKey);
                 return deckSources != null && deckSources.includedByConfig();
             }
@@ -761,7 +762,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 // classfeature is reliably tied to the class
                 //   classfeature|ability score improvement|barbarian|phb|8|phb
                 //   classfeature|ability score improvement|barbarian|xphb|12|xphb
-                String classKey = Tools5eIndexType.classtype.fromChildKey(key);
+                String classKey = ClassFeatureKeyData.fromKey(key).toParentKey().toKey();
                 boolean reprinted = reprints.containsKey(classKey);
                 if (!reprinted && Tools5eSources.includedByConfig(classKey)) {
                     // Only keep the class feature if the parent class is not a reprint.
@@ -784,7 +785,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 SubclassFeatureKeyData keyData = new SubclassFeatureKeyData(key);
 
                 // does the subclass exist or is it a reprint
-                String scKey = resolveSubclassKey(keyData.toSubclassKey());
+                String scKey = resolveSubclassKey(keyData.toParentKey().toKey());
                 boolean scIncluded = Tools5eSources.includedByConfig(scKey);
                 boolean scReprint = reprints.containsKey(scKey);
 
@@ -794,7 +795,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                 }
 
                 // does the parent class exist or is it a reprint
-                String classKey = keyData.toClassKey();
+                String classKey = keyData.toParentKey().toParentKey().toKey();
                 boolean classIncluded = Tools5eSources.includedByConfig(classKey);
                 String classReprint = reprints.get(classKey);
 
@@ -819,7 +820,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
                     keyData.classSource = altSources.primarySource();
 
                     // is there a subclass key with this new class source?
-                    var altScKey = resolveSubclassKey(keyData.toSubclassKey());
+                    var altScKey = resolveSubclassKey(keyData.toParentKey().toKey());
                     boolean altScPresent = Tools5eSources.includedByConfig(altScKey);
                     if (altScPresent) {
                         // This is the sometimes-covered case:
@@ -964,7 +965,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (!isPresent(tagReference)) {
             return null;
         }
-        String key = ItemProperty.refTagToKey(tagReference);
+        String key = ItemProperty.refTagToKey(tagReference).toKey();
         ItemProperty itemProperty = ItemProperty.forKey(tagReference);
         if (itemProperty == null) {
             JsonNode propertyNode = getOriginNoFallback(getAliasOrDefault(key));
@@ -973,8 +974,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
             if (itemProperty == null) {
                 // try homebrew (normalize from key)
-                String[] parts = key.split("\\|");
-                itemProperty = homebrewIndex.findHomebrewProperty(parts[1], sources);
+                itemProperty = homebrewIndex.findHomebrewProperty(
+                        ItemAbbreviationKeyData.fromKey(Tools5eIndexType.itemProperty, key).name(), sources);
 
                 if (itemProperty != null) {
                     // add alias for resolved property
@@ -990,7 +991,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         if (!isPresent(tagReference)) {
             return null;
         }
-        String key = ItemType.refTagToKey(tagReference);
+        String key = ItemType.refTagToKey(tagReference).toKey();
         ItemType itemType = ItemType.forKey(key);
         if (itemType == null) {
             JsonNode typeNode = getOriginNoFallback(getAliasOrDefault(key));
@@ -999,8 +1000,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
             if (itemType == null) {
                 // try homebrew (normalize from key)
-                String[] parts = key.split("\\|");
-                itemType = homebrewIndex.findHomebrewType(parts[1], sources);
+                itemType = homebrewIndex.findHomebrewType(
+                        ItemAbbreviationKeyData.fromKey(Tools5eIndexType.itemType, key).name(), sources);
 
                 if (itemType != null) {
                     // add alias for resolved item type
@@ -1026,8 +1027,8 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
             if (mastery == null) {
                 // try homebrew (normalize from key)
-                String[] parts = key.split("\\|");
-                mastery = homebrewIndex.findHomebrewMastery(parts[1], sources);
+                mastery = homebrewIndex.findHomebrewMastery(
+                        SimpleKeyData.fromKey(Tools5eIndexType.itemMastery, key).name(), sources);
                 if (mastery != null) {
                     // add alias for resolved item mastery
                     String itemKey = mastery.indexKey();
@@ -1081,9 +1082,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
      * (e.g., PHB Druid → XPHB Druid), return the reprint target's source.
      */
     public String resolveClassSource(String className, String classSource) {
-        String classKey = String.join("|",
-                Tools5eIndexType.classtype.name(),
-                className, classSource).toLowerCase();
+        String classKey = Tools5eIndexType.classtype.createKey(className, classSource);
         String reprint = reprints.get(classKey);
         if (reprint != null) {
             Tools5eSources reprintSources = Tools5eSources.findSources(reprint);

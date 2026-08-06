@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.config.TtrpgConfig;
 import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonTextConverter.SourceField;
-import dev.ebullient.convert.tools.dnd5e.Json2QuteClass.SubclassKeyData;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteDeity.DeityFields;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterType;
 import dev.ebullient.convert.tools.dnd5e.JsonSource.Tools5eFields;
@@ -222,7 +221,7 @@ public class Tools5eLinkifier {
         String deckName = IndexFields.set.getTextOrThrow(node).trim();
 
         // The deck may have been reprinted; resolve the alias so the filename matches the actual deck file
-        String deckKey = Tools5eIndexType.deck.fromChildKey(cardKey);
+        String deckKey = CardKeyData.fromKey(cardKey).toParentKey().toKey();
         String resolvedDeckKey = index.getAliasOrDefault(deckKey);
         Tools5eSources deckSources = resolvedDeckKey != null ? Tools5eSources.findSources(resolvedDeckKey) : null;
         String deckSource = deckSources != null ? deckSources.primarySource() : cardSources.primarySource();
@@ -398,7 +397,7 @@ public class Tools5eLinkifier {
     }
 
     public String getSubclassResource(String subclassKey) {
-        SubclassKeyData subclassData = new SubclassKeyData(subclassKey);
+        SubclassKeyData subclassData = SubclassKeyData.fromKey(subclassKey);
         return getSubclassResource(subclassData.name(),
                 subclassData.parentName(), subclassData.parentSource(),
                 subclassData.itemSource());

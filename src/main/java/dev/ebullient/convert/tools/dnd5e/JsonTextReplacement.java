@@ -820,7 +820,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         }
 
         // Find the subclass that will be emitted...
-        String subclassKey = Tools5eIndexType.subclass.fromChildKey(featureKey);
+        String subclassKey = SubclassFeatureKeyData.fromKey(featureKey).toParentKey().toKey();
 
         // look up alias for subclass so link is correct, but don't follow reprints
         // "subclass|redemption|paladin|phb|"

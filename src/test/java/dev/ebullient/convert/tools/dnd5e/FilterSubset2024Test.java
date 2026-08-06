@@ -325,4 +325,32 @@ public class FilterSubset2024Test {
             commonTests.assert_MISSING("subrace|vampire (ixalan)|vampire|psz|psx");
         }
     }
+
+    @Test
+    public void testKeyData() {
+        if (!commonTests.dataPresent) {
+            return;
+        }
+
+        // ItemProperty/ItemType.refTagToKey read the live TtrpgConfig singleton, which
+        // @AfterEach resets after every @Test in this class -- re-establish this class's
+        // actual sources before relying on it here.
+        commonTests.configurator.allowSource("xdmg");
+        commonTests.configurator.allowSource("xphb");
+        commonTests.configurator.allowSource("srd52");
+        commonTests.configurator.allowSource("basicRules2024");
+        commonTests.configurator.allowSource("mpmm");
+
+        // PHB/DMG are not loaded here, so {@itemProperty 2H}/{@itemType $G} (no explicit
+        // source) should default to XPHB/XDMG -- ItemProperty/ItemType.defaultItemSource.
+        assertThat(ItemProperty.refTagToKey("2H").toKey()).isEqualTo("itemproperty|2h|xphb");
+        assertThat(ItemType.refTagToKey("$G").toKey()).isEqualTo("itemtype|$g|xdmg");
+
+        // {@subclass} tags reference subclasses by short name ("Life"), not the full index
+        // name ("Life Domain"). SubclassKeyData.fromRefTag's short-name key should resolve
+        // through the real alias table (and reprint chain, since only XPHB is loaded here)
+        // to the full-name key.
+        assertThat(commonTests.index.getAliasOrDefault(SubclassKeyData.fromRefTag("Life|Cleric").toKey()))
+                .isEqualTo("subclass|life domain|cleric|xphb|xphb");
+    }
 }

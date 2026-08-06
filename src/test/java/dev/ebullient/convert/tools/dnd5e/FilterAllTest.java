@@ -355,6 +355,32 @@ public class FilterAllTest {
     }
 
     @Test
+    public void testKeyData() {
+        if (!commonTests.dataPresent) {
+            return;
+        }
+
+        // {@subclass} tags reference subclasses by short name ("Wild Magic"), not the full
+        // index name ("Path of Wild Magic"). SubclassKeyData.fromRefTag's short-name key
+        // should resolve through the real alias table to the full-name key.
+        assertThat(commonTests.index.getAliasOrDefault(SubclassKeyData.fromRefTag("Wild Magic|Barbarian||TCE").toKey()))
+                .isEqualTo("subclass|path of wild magic|barbarian|phb|tce");
+
+        // ItemProperty/ItemType.refTagToKey read the live TtrpgConfig singleton, which
+        // @AfterEach resets after every @Test in this class -- re-establish "all sources
+        // allowed" (this class's actual config) before relying on it here.
+        commonTests.configurator.allowSource("*");
+
+        // {@itemProperty 2H} (no explicit source) should default to XPHB, not PHB, once XPHB
+        // is available -- ItemProperty.defaultItemSource's config-driven PHB<->XPHB swap.
+        assertThat(ItemProperty.refTagToKey("2H").toKey()).isEqualTo("itemproperty|2h|xphb");
+
+        // {@itemType $G} (no explicit source) should default to XDMG, not DMG -- same
+        // config-driven swap, DMG<->XDMG group this time.
+        assertThat(ItemType.refTagToKey("$G").toKey()).isEqualTo("itemtype|$g|xdmg");
+    }
+
+    @Test
     public void testAdventures() {
         commonTests.testAdventures(outputPath);
     }
