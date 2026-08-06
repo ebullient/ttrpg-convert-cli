@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,60 +57,37 @@ public class HomebrewIndex implements JsonSource {
     }
 
     public SkillOrAbility findHomebrewSkillOrAbility(String key, Tools5eSources sources) {
-        Collection<HomebrewMetaTypes> metaTypes = getHomebrewMetaTypes(sources);
-        for (HomebrewMetaTypes meta : metaTypes) {
-            SkillOrAbility skill = meta.getSkillType(key);
-            if (skill != null) {
-                return skill;
-            }
-        }
-        return null;
+        return findHomebrew(key, sources, HomebrewMetaTypes::getSkillType, null);
     }
 
     public SpellSchool findHomebrewSpellSchool(String code, Tools5eSources sources) {
-        Collection<HomebrewMetaTypes> metaTypes = getHomebrewMetaTypes(sources);
-        for (HomebrewMetaTypes meta : metaTypes) {
-            SpellSchool school = meta.getSpellSchool(code);
-            if (school != null) {
-                return school;
-            }
-        }
-        return SpellSchool.SchoolEnum.None;
+        return findHomebrew(code, sources, HomebrewMetaTypes::getSpellSchool, SpellSchool.SchoolEnum.None);
     }
 
     public ItemType findHomebrewType(String abbreviation, Tools5eSources sources) {
-        Collection<HomebrewMetaTypes> metaTypes = getHomebrewMetaTypes(sources);
-        for (HomebrewMetaTypes meta : metaTypes) {
-            // key is lowercase abbreviation
-            JsonNode node = meta.getItemType(abbreviation);
-            if (node != null) {
-                return ItemType.fromNode(node);
-            }
-        }
-        return null;
+        JsonNode node = findHomebrew(abbreviation, sources, HomebrewMetaTypes::getItemType, null);
+        return node == null ? null : ItemType.fromNode(node);
     }
 
     public ItemMastery findHomebrewMastery(String name, Tools5eSources sources) {
-        Collection<HomebrewMetaTypes> metaTypes = getHomebrewMetaTypes(sources);
-        for (HomebrewMetaTypes meta : metaTypes) {
-            // key is lowercase name
-            JsonNode node = meta.getItemMastery(name);
-            if (node != null) {
-                return ItemMastery.fromNode(node);
-            }
-        }
-        return null;
+        JsonNode node = findHomebrew(name, sources, HomebrewMetaTypes::getItemMastery, null);
+        return node == null ? null : ItemMastery.fromNode(node);
     }
 
     public ItemProperty findHomebrewProperty(String code, Tools5eSources sources) {
-        Collection<HomebrewMetaTypes> metaTypes = getHomebrewMetaTypes(sources);
-        for (HomebrewMetaTypes meta : metaTypes) {
-            JsonNode node = meta.getItemProperty(code);
-            if (node != null) {
-                return ItemProperty.fromNode(node);
+        JsonNode node = findHomebrew(code, sources, HomebrewMetaTypes::getItemProperty, null);
+        return node == null ? null : ItemProperty.fromNode(node);
+    }
+
+    private <T> T findHomebrew(String key, Tools5eSources sources,
+            BiFunction<HomebrewMetaTypes, String, T> lookup, T defaultValue) {
+        for (HomebrewMetaTypes meta : getHomebrewMetaTypes(sources)) {
+            T value = lookup.apply(meta, key);
+            if (value != null) {
+                return value;
             }
         }
-        return null;
+        return defaultValue;
     }
 
     public void clear() {
