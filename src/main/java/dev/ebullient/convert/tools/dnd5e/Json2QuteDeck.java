@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dev.ebullient.convert.qute.ImageRef;
@@ -83,15 +82,7 @@ public class Json2QuteDeck extends Json2QuteCommon {
 
     ImageRef getImage(JsonNodeReader field, JsonNode imgSource) {
         JsonNode imageRef = field.getFrom(imgSource);
-        if (imageRef != null) {
-            try {
-                JsonMediaHref mediaHref = mapper().treeToValue(imageRef, JsonMediaHref.class);
-                return buildImageRef(mediaHref, getImagePath());
-            } catch (JsonProcessingException | IllegalArgumentException e) {
-                tui().errorf("Unable to read media reference from %s", imageRef.toPrettyString());
-            }
-        }
-        return null;
+        return imageRef == null ? null : readImageRef(imageRef);
     }
 
     enum DeckFields implements JsonNodeReader {
