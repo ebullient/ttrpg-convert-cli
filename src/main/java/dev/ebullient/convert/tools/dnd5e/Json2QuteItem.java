@@ -86,7 +86,6 @@ public class Json2QuteItem extends Json2QuteCommon {
 
             String baseItemKey = ItemField.baseItem.getTextOrEmpty(variantNode);
             String baseItem = linkify(Tools5eIndexType.item, baseItemKey);
-            boolean baseItemIncluded = false;
 
             boolean ammo = ItemField.ammo.booleanOrDefault(variantNode, false);
             boolean cursed = ItemField.curse.booleanOrDefault(variantNode, false);
@@ -114,98 +113,29 @@ public class Json2QuteItem extends Json2QuteCommon {
             // const [typeListText, typeHtml, subTypeHtml] =
             // Renderer.item.getHtmlAndTextTypes(item);
             // Building typeDescription and subtypeDescription in a stable order
-            List<String> typeDescription = new ArrayList<>();
-            List<String> subTypeDescription = new ArrayList<>();
-
-            if (wondrous) {
-                typeDescription.add("wondrous item" + (tattoo ? " (tattoo)" : ""));
-                if (tattoo) {
-                    ItemTag.wondrous.add(tags, "tattoo");
-                }
-            }
-            if (staff) {
-                typeDescription.add("staff");
-            }
-            if (ammo) {
-                typeDescription.add("ammunition");
-            }
-            if (isPresent(age)) {
-                ItemTag.age.add(tags, age);
-                subTypeDescription.add(age);
-            }
-            if (isPresent(weaponCategory)) {
-                ItemTag.weapon.add(tags, weaponCategory);
-                baseItemIncluded = isPresent(baseItem);
-                typeDescription.add("weapon"
-                        + (baseItemIncluded ? " (" + baseItem + ")" : ""));
-                subTypeDescription.add(weaponCategory + " weapon");
-            }
-            if (staff && (EncodedType.M.typeIn(itemType, itemTypeAlt))) {
-                // "M" --> Type: Melee weapon
-                // DMG p140: "Unless a staff's description says otherwise, a staff can be used
-                // as a quarterstaff."
-                subTypeDescription.add("melee weapon");
-            }
-            if (itemType != null) {
-                tags.addRaw(ItemType.tagForType(itemType, tui()));
-                processType(itemType, typeDescription, subTypeDescription, baseItem, baseItemIncluded);
-                subTypeDescription.add(itemType.linkify());
-            }
-            if (itemTypeAlt != null) {
-                tags.addRaw(ItemType.tagForType(itemTypeAlt, tui()));
-                processType(itemTypeAlt, typeDescription, subTypeDescription, baseItem, baseItemIncluded);
-                subTypeDescription.add(itemTypeAlt.linkify());
-            }
-            if (firearm) {
-                subTypeDescription.add("firearm");
-            }
-            if (poison) {
-                itemProperties.add(ItemProperty.POISON);
-                typeDescription.add("poison" + (isPresent(poisonTypes) ? " (" + poisonTypes + ")" : ""));
-            }
-            if (cursed) {
-                itemProperties.add(ItemProperty.CURSED);
-                typeDescription.add("cursed item");
-            }
+            TypeAssembly typeAssembly = new TypeAssembly(tags);
+            typeAssembly.addWondrous(wondrous, tattoo);
+            typeAssembly.addStaff(staff);
+            typeAssembly.addAmmo(ammo);
+            typeAssembly.addAge(age);
+            typeAssembly.addWeaponCategory(weaponCategory, baseItem);
+            typeAssembly.addStaffMeleeNote(staff, itemType, itemTypeAlt);
+            typeAssembly.addItemType(itemType, baseItem);
+            typeAssembly.addItemType(itemTypeAlt, baseItem);
+            typeAssembly.addFirearm(firearm);
+            typeAssembly.addPoison(poison, poisonTypes, itemProperties);
+            typeAssembly.addCursed(cursed, itemProperties);
 
             // Begin creation of detail string;
             // render.js getAttunementAndAttunementCatText(item);
             // getTypeRarityAndAttunementText(item);
             // getTypeRarityAndAttunementHtml
-            String detail = join(", ", typeDescription);
-            if ("other".equals(detail)) {
-                detail = "";
-            }
-
-            if (isPresent(tier)) {
-                ItemTag.tier.add(tags, tier);
-                detail += (detail.isBlank() ? "" : ", ") + tier;
-            }
-            if (isPresent(rarity)) {
-                ItemTag.rarity.add(tags, rarity
-                        .replace("very rare", "very-rare")
-                        .replaceAll("[()]", "") // unknown (magic) -> unknown magic
-                        .split(" "));
-                if (!hiddenRarity.contains(rarity)) {
-                    detail += (detail.isBlank() ? "" : ", ") + rarity;
-                }
-            }
-            if (isPresent(attunement)) {
-                ItemTag.attunement.add(tags,
-                        attunement.equals("optional") ? "optional" : "required");
-
-                detail += (detail.isBlank() ? "" : " ")
-                        + switch (attunement) {
-                            case "required" -> "(requires attunement)";
-                            case "optional" -> "(attunement optional)";
-                            default -> "(requires attunement " + attunement + ")";
-                        };
-            }
+            String detail = typeAssembly.buildDetail(tier, rarity, attunement);
 
             return new Variant(
                     itemName(variantNode),
                     uppercaseFirst(detail),
-                    uppercaseFirst(join(", ", subTypeDescription)),
+                    uppercaseFirst(join(", ", typeAssembly.subTypeDescription)),
                     baseItem,
                     itemType == null ? "" : itemType.name(),
                     itemTypeAlt == null ? "" : itemTypeAlt.name(),
@@ -253,24 +183,149 @@ public class Json2QuteItem extends Json2QuteCommon {
         }
     }
 
-    // render.js _getHtmlAndTextTypes_type
-    private void processType(ItemType type,
-            List<String> typeDescription, List<String> subTypeDescription,
-            String baseItem, boolean baseItemIncluded) {
+    /**
+     * Progressive assembly of a variant's typeDescription/subTypeDescription/detail strings,
+     * plus the {@link Tags} side effects that go with each piece.
+     * Call order matters (later steps read state set by earlier ones),
+     * so keep calls at the {@code createVariant} call site in the same order
+     * found here.
+     */
+    private class TypeAssembly {
+        final Tags tags;
+        final List<String> typeDescription = new ArrayList<>();
+        final List<String> subTypeDescription = new ArrayList<>();
+        boolean baseItemIncluded = false;
 
-        String allTypes = typeDescription.toString();
-        String fullType = type.lowercaseName();
+        TypeAssembly(Tags tags) {
+            this.tags = tags;
+        }
 
-        boolean isSubType = (type.group() == ItemTypeGroup.weapon && allTypes.contains("weapon"))
-                || (type.group() == ItemTypeGroup.armor && allTypes.contains("armor"));
-        List<String> target = isSubType ? subTypeDescription : typeDescription;
+        void addWondrous(boolean wondrous, boolean tattoo) {
+            if (!wondrous) {
+                return;
+            }
+            typeDescription.add("wondrous item" + (tattoo ? " (tattoo)" : ""));
+            if (tattoo) {
+                ItemTag.wondrous.add(tags, "tattoo");
+            }
+        }
 
-        if (EncodedType.S.typeIn(type, null)) {
-            target.add("armor (" + linkify(Tools5eIndexType.item, "shield|phb") + ")");
-        } else if (!baseItemIncluded && isPresent(baseItem)) {
-            target.add(fullType + " (" + baseItem + ")");
-        } else if (EncodedType.GV.not(type)) {
-            target.add(fullType);
+        void addStaff(boolean staff) {
+            if (staff) {
+                typeDescription.add("staff");
+            }
+        }
+
+        void addAmmo(boolean ammo) {
+            if (ammo) {
+                typeDescription.add("ammunition");
+            }
+        }
+
+        void addAge(String age) {
+            if (isPresent(age)) {
+                ItemTag.age.add(tags, age);
+                subTypeDescription.add(age);
+            }
+        }
+
+        void addWeaponCategory(String weaponCategory, String baseItem) {
+            if (!isPresent(weaponCategory)) {
+                return;
+            }
+            ItemTag.weapon.add(tags, weaponCategory);
+            baseItemIncluded = isPresent(baseItem);
+            typeDescription.add("weapon"
+                    + (baseItemIncluded ? " (" + baseItem + ")" : ""));
+            subTypeDescription.add(weaponCategory + " weapon");
+        }
+
+        void addStaffMeleeNote(boolean staff, ItemType itemType, ItemType itemTypeAlt) {
+            if (staff && EncodedType.M.typeIn(itemType, itemTypeAlt)) {
+                // "M" --> Type: Melee weapon
+                // DMG p140: "Unless a staff's description says otherwise, a staff can be used
+                // as a quarterstaff."
+                subTypeDescription.add("melee weapon");
+            }
+        }
+
+        // render.js _getHtmlAndTextTypes_type
+        void addItemType(ItemType type, String baseItem) {
+            if (type == null) {
+                return;
+            }
+            tags.addRaw(ItemType.tagForType(type, tui()));
+
+            String allTypes = typeDescription.toString();
+            String fullType = type.lowercaseName();
+
+            boolean isSubType = (type.group() == ItemTypeGroup.weapon && allTypes.contains("weapon"))
+                    || (type.group() == ItemTypeGroup.armor && allTypes.contains("armor"));
+            List<String> target = isSubType ? subTypeDescription : typeDescription;
+
+            if (EncodedType.S.typeIn(type, null)) {
+                target.add("armor (" + linkify(Tools5eIndexType.item, "shield|phb") + ")");
+            } else if (!baseItemIncluded && isPresent(baseItem)) {
+                target.add(fullType + " (" + baseItem + ")");
+            } else if (EncodedType.GV.not(type)) {
+                target.add(fullType);
+            }
+            subTypeDescription.add(type.linkify());
+        }
+
+        void addFirearm(boolean firearm) {
+            if (firearm) {
+                subTypeDescription.add("firearm");
+            }
+        }
+
+        void addPoison(boolean poison, String poisonTypes, Set<ItemProperty> itemProperties) {
+            if (poison) {
+                itemProperties.add(ItemProperty.POISON);
+                typeDescription.add("poison" + (isPresent(poisonTypes) ? " (" + poisonTypes + ")" : ""));
+            }
+        }
+
+        void addCursed(boolean cursed, Set<ItemProperty> itemProperties) {
+            if (cursed) {
+                itemProperties.add(ItemProperty.CURSED);
+                typeDescription.add("cursed item");
+            }
+        }
+
+        // render.js getAttunementAndAttunementCatText(item); getTypeRarityAndAttunementText(item);
+        // getTypeRarityAndAttunementHtml
+        String buildDetail(String tier, String rarity, String attunement) {
+            String detail = join(", ", typeDescription);
+            if ("other".equals(detail)) {
+                detail = "";
+            }
+
+            if (isPresent(tier)) {
+                ItemTag.tier.add(tags, tier);
+                detail += (detail.isBlank() ? "" : ", ") + tier;
+            }
+            if (isPresent(rarity)) {
+                ItemTag.rarity.add(tags, rarity
+                        .replace("very rare", "very-rare")
+                        .replaceAll("[()]", "") // unknown (magic) -> unknown magic
+                        .split(" "));
+                if (!hiddenRarity.contains(rarity)) {
+                    detail += (detail.isBlank() ? "" : ", ") + rarity;
+                }
+            }
+            if (isPresent(attunement)) {
+                ItemTag.attunement.add(tags,
+                        attunement.equals("optional") ? "optional" : "required");
+
+                detail += (detail.isBlank() ? "" : " ")
+                        + switch (attunement) {
+                            case "required" -> "(requires attunement)";
+                            case "optional" -> "(attunement optional)";
+                            default -> "(requires attunement " + attunement + ")";
+                        };
+            }
+            return detail;
         }
     }
 
