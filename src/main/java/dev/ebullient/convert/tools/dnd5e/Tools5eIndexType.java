@@ -174,7 +174,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case itemType, itemProperty -> {
                 source = SourceField.source.getTextOrDefault(x, "phb");
                 String abbreviation = IndexFields.abbreviation.getTextOrDefault(x, name).trim();
-                yield new ItemAbbreviationKeyData(this, abbreviation, source).toKey();
+                yield new AbbreviationKeyData(this, abbreviation, source).toKey();
             }
             case reference -> {
                 if (!isPresent(source)) {
@@ -306,7 +306,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     IndexFields.level.getTextOrEmpty(entry), source)
                     .toRefTag(entry, linkText);
             // {@itemType abv|source|linkText}
-            case itemProperty, itemType -> new ItemAbbreviationKeyData(this,
+            case itemProperty, itemType -> new AbbreviationKeyData(this,
                     IndexFields.abbreviation.getTextOrEmpty(entry), source)
                     .toRefTag(entry, linkText);
             // {@feat name|source|linkText}

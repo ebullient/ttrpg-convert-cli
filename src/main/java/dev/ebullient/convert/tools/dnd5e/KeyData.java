@@ -76,19 +76,19 @@ class SimpleKeyData implements KeyData {
 }
 
 // Unpack the type|abbreviation|source key shared by itemType/itemProperty (keyed by abbreviation, not name)
-class ItemAbbreviationKeyData implements KeyData {
+class AbbreviationKeyData implements KeyData {
     final Tools5eIndexType type;
     final String abbreviation;
     final String source;
 
-    public ItemAbbreviationKeyData(Tools5eIndexType type, String key) {
+    public AbbreviationKeyData(Tools5eIndexType type, String key) {
         String[] parts = key.split("\\|");
         this.type = type;
         this.abbreviation = parts[1];
         this.source = parts[2];
     }
 
-    public ItemAbbreviationKeyData(Tools5eIndexType type, String abbreviation, String source) {
+    public AbbreviationKeyData(Tools5eIndexType type, String abbreviation, String source) {
         this.type = type;
         this.abbreviation = abbreviation;
         this.source = source;
@@ -103,8 +103,8 @@ class ItemAbbreviationKeyData implements KeyData {
         return type.createKey(abbreviation, source);
     }
 
-    public static ItemAbbreviationKeyData fromKey(Tools5eIndexType type, String key) {
-        return new ItemAbbreviationKeyData(type, key);
+    public static AbbreviationKeyData fromKey(Tools5eIndexType type, String key) {
+        return new AbbreviationKeyData(type, key);
     }
 
     // {@itemType abv|source|linkText}

@@ -18,6 +18,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -962,81 +963,64 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
     }
 
     public ItemProperty findItemProperty(String tagReference, Tools5eSources sources) {
-        if (!isPresent(tagReference)) {
-            return null;
-        }
-        String key = ItemProperty.refTagToKey(tagReference).toKey();
-        ItemProperty itemProperty = ItemProperty.forKey(tagReference);
-        if (itemProperty == null) {
-            JsonNode propertyNode = getOriginNoFallback(getAliasOrDefault(key));
-            if (propertyNode != null) {
-                itemProperty = ItemProperty.fromNode(propertyNode);
-            }
-            if (itemProperty == null) {
-                // try homebrew (normalize from key)
-                itemProperty = homebrewIndex.findHomebrewProperty(
-                        ItemAbbreviationKeyData.fromKey(Tools5eIndexType.itemProperty, key).name(), sources);
-
-                if (itemProperty != null) {
-                    // add alias for resolved property
-                    String itemKey = itemProperty.indexKey();
-                    addAlias(key, itemKey);
-                }
-            }
-        }
-        return itemProperty;
+        String key = isPresent(tagReference)
+                ? ItemProperty.refTagToKey(tagReference).toKey()
+                : null;
+        return findItemTag(key,
+                ItemProperty::forKey, ItemProperty::fromNode, ItemProperty::indexKey,
+                k -> homebrewIndex.findHomebrewProperty(
+                        AbbreviationKeyData.fromKey(Tools5eIndexType.itemProperty, k).name(), sources));
     }
 
     public ItemType findItemType(String tagReference, Tools5eSources sources) {
-        if (!isPresent(tagReference)) {
-            return null;
-        }
-        String key = ItemType.refTagToKey(tagReference).toKey();
-        ItemType itemType = ItemType.forKey(key);
-        if (itemType == null) {
-            JsonNode typeNode = getOriginNoFallback(getAliasOrDefault(key));
-            if (typeNode != null) {
-                itemType = ItemType.fromNode(typeNode);
-            }
-            if (itemType == null) {
-                // try homebrew (normalize from key)
-                itemType = homebrewIndex.findHomebrewType(
-                        ItemAbbreviationKeyData.fromKey(Tools5eIndexType.itemType, key).name(), sources);
-
-                if (itemType != null) {
-                    // add alias for resolved item type
-                    String itemKey = itemType.indexKey();
-                    addAlias(key, itemKey);
-                }
-            }
-        }
-        return itemType;
+        String key = isPresent(tagReference)
+                ? ItemType.refTagToKey(tagReference).toKey()
+                : null;
+        return findItemTag(key,
+                ItemType::forKey, ItemType::fromNode, ItemType::indexKey,
+                k -> homebrewIndex.findHomebrewType(
+                        AbbreviationKeyData.fromKey(Tools5eIndexType.itemType, k).name(), sources));
     }
 
     public ItemMastery findItemMastery(String tagReference, Tools5eSources sources) {
-        if (!isPresent(tagReference)) {
+        // This is always a tag: name|source
+        String key = isPresent(tagReference)
+                ? Tools5eIndexType.itemMastery.fromTagReference(tagReference)
+                : null;
+        return findItemTag(key,
+                ItemMastery::forKey, ItemMastery::fromNode, ItemMastery::indexKey,
+                k -> homebrewIndex.findHomebrewMastery(
+                        SimpleKeyData.fromKey(Tools5eIndexType.itemMastery, k).name(), sources));
+    }
+
+    /**
+     * Shared resolution path for item properties/types/masteries: check the static cache via
+     * {@code forKey}, fall back to the live index via {@code fromNode}, fall back to homebrew,
+     * and register an alias for the resolved key.
+     */
+    private <T> T findItemTag(String key,
+            Function<String, T> forKey,
+            Function<JsonNode, T> fromNode,
+            Function<T, String> indexKey,
+            Function<String, T> findHomebrew) {
+        if (!isPresent(key)) {
             return null;
         }
-        // This is always a tag: name|source
-        String key = Tools5eIndexType.itemMastery.fromTagReference(tagReference);
-        ItemMastery mastery = ItemMastery.forKey(key);
-        if (mastery == null) {
-            JsonNode masteryNode = getOriginNoFallback(getAliasOrDefault(key));
-            if (masteryNode != null) {
-                mastery = ItemMastery.fromNode(masteryNode);
+        T value = forKey.apply(key);
+        if (value == null) {
+            JsonNode node = getOriginNoFallback(getAliasOrDefault(key));
+            if (node != null) {
+                value = fromNode.apply(node);
             }
-            if (mastery == null) {
+            if (value == null) {
                 // try homebrew (normalize from key)
-                mastery = homebrewIndex.findHomebrewMastery(
-                        SimpleKeyData.fromKey(Tools5eIndexType.itemMastery, key).name(), sources);
-                if (mastery != null) {
-                    // add alias for resolved item mastery
-                    String itemKey = mastery.indexKey();
-                    addAlias(key, itemKey);
+                value = findHomebrew.apply(key);
+                if (value != null) {
+                    addAlias(key, indexKey.apply(value));
                 }
             }
         }
-        return mastery;
+        return value;
     }
 
     public SkillOrAbility findSkillOrAbility(String key, Tools5eSources sources) {

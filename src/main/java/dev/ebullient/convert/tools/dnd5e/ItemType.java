@@ -177,13 +177,13 @@ public record ItemType(
         typeMap.clear();
     }
 
-    public static ItemAbbreviationKeyData refTagToKey(String text) {
+    public static AbbreviationKeyData refTagToKey(String text) {
         String[] parts = text.split("\\|");
         String abv = parts[0].trim();
         String source = defaultItemSource(abv,
                 valueOrDefault(parts, 1, "PHB"));
 
-        return new ItemAbbreviationKeyData(Tools5eIndexType.itemType, abv, source);
+        return new AbbreviationKeyData(Tools5eIndexType.itemType, abv, source);
     }
 
     private static String defaultItemSource(String code, String source) {
