@@ -116,6 +116,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 tags);
     }
 
+    /**
+     * Sets {@code creatureType}/{@code subtype} for the displayed statblock string. Used by both
+     * {@link Json2QuteMonster} and (via inheritance) {@link Json2QuteObject}
+     */
     void findCreatureType() {
         JsonNode typeNode = type == Tools5eIndexType.monster
                 ? SourceField.type.getFrom(rootNode)
@@ -148,7 +152,10 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
     }
 
-    // Aliases for consistency. Hard-coded for common types/corrections. Won't be fool-proof
+    /**
+     * Aliases for consistency. Hard-coded for common types/corrections. Won't be fool-proof.
+     * Has {@code subtype} side effects (fixing golem typo).
+     */
     String mapType(String type) {
         for (MonsterType t : MonsterType.values()) {
             if (type.toLowerCase().startsWith(t.name())) {
@@ -538,15 +545,8 @@ public class Json2QuteMonster extends Json2QuteCommon {
     }
 
     String linkedSenses() {
-        JsonNode node = MonsterFields.senses.getFrom(rootNode);
-        if (node == null || node.isNull()) {
-            return "";
-        }
-        if (node.isTextual()) {
-            return linkifySense(node.asText());
-        }
         List<String> list = new ArrayList<>();
-        for (JsonNode senseNode : iterableElements(node)) {
+        for (JsonNode senseNode : MonsterFields.senses.iterateArrayFrom(rootNode)) {
             list.add(linkifySense(senseNode.asText()));
         }
         return String.join(", ", list);
