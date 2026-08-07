@@ -344,22 +344,122 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // we're finished with discovery of official/homebrew sources
         prepared.set(true);
 
-        tui().verbosef("Adding default aliases");
-
-        // Add missing/frequently-used aliases
-        TtrpgConfig.addDefaultAliases(aliases);
-        TtrpgConfig.addReferenceEntries((n) -> addToIndex(Tools5eIndexType.reference, n));
-
-        // Properly import homebrew sources
-        tui().infof(Msg.BREW, "Importing homebrew sources");
-        homebrewIndex.importBrew(this::importHomebrewTree);
-        tui().verbosef(Msg.BREW, "Finished with homebrew sources");
+        addDefaultAliasesAndReferences();
+        importHomebrewSources();
 
         tui().debugf("Preparing index using configuration:\n%s", Tui.jsonStringify(config));
 
         // Add subraces to index
         defineSubraces();
 
+        List<Tuple> deities = resolveCopiesAndLinkSources();
+
+        tui().progressf("Applying source filters");
+        filteredIndex = new HashMap<>(nodeIndex.size());
+        BiConsumer<Msg, String> logThis = (msgType, msg) -> {
+            if (msgType == Msg.TARGET) {
+                tui().debugf(msgType, msg);
+            } else {
+                tui().logf(msgType, msg);
+            }
+        };
+
+        applySourceFilters(logThis);
+        filterLegendaryGroups(logThis);
+        filterClassFeatures(logThis);
+        pruneUnusedOptionalFeatures(logThis);
+        resolveDeities(deities);
+
+        // And finally, create an index of classes/subclasses/feats for spells
+        // based on included sources & avaiable spells.
+        spellIndex.buildSpellIndex(filteredIndex.values());
+    }
+
+    private void addDefaultAliasesAndReferences() {
+        tui().verbosef("Adding default aliases");
+
+        // Add missing/frequently-used aliases
+        TtrpgConfig.addDefaultAliases(aliases);
+        TtrpgConfig.addReferenceEntries((n) -> addToIndex(Tools5eIndexType.reference, n));
+    }
+
+    private void importHomebrewSources() {
+        // Properly import homebrew sources
+        tui().infof(Msg.BREW, "Importing homebrew sources");
+        homebrewIndex.importBrew(this::importHomebrewTree);
+        tui().verbosef(Msg.BREW, "Finished with homebrew sources");
+    }
+
+    private void defineSubraces() {
+        tui().verbosef("Adding subraces");
+
+        Map<String, Set<JsonNode>> raceToSubraces = new HashMap<>();
+
+        for (JsonNode subrace : subraces.values()) {
+            subrace = copier.handleCopy(Tools5eIndexType.subrace, subrace);
+            String raceName = RaceFields.raceName.getTextOrThrow(subrace);
+            String raceSource = RaceFields.raceSource.getTextOrThrow(subrace);
+            String raceKey = Tools5eIndexType.race.createKey(raceName, raceSource);
+
+            raceToSubraces.computeIfAbsent(raceKey, k -> new HashSet<>()).add(subrace);
+        }
+
+        for (var entry : raceToSubraces.entrySet()) {
+            String raceKey = entry.getKey();
+            JsonNode jsonSource = nodeIndex.get(raceKey);
+
+            Set<JsonNode> inputSubraces = entry.getValue();
+            List<JsonNode> subraces = new ArrayList<>();
+
+            Json2QuteRace.prepareBaseRace(this, jsonSource, inputSubraces);
+
+            if (inputSubraces.size() > 1) {
+                tui().logf(Msg.RACES, "%s subraces found for %s", inputSubraces.size(), raceKey);
+            }
+
+            for (JsonNode sr : inputSubraces) {
+                sr = copier.mergeSubrace(sr, jsonSource);
+                String srKey = Tools5eIndexType.subrace.createKey(sr);
+                TtrpgValue.indexInputType.setIn(sr, Tools5eIndexType.subrace.name());
+                TtrpgValue.indexKey.setIn(sr, srKey);
+
+                nodeIndex.put(srKey, sr);
+                addSrdEntry(srKey, sr);
+                subraces.add(sr);
+
+                // Add expected alias:  {@race Aasimar (Fallen)|VGM}
+                SubraceKeyData keyData = SubraceKeyData.fromKey(srKey);
+                String source = SourceField.source.getTextOrThrow(sr);
+                final String lookupKey;
+                if (keyData.name().contains("(")) { // "subrace|dwarf (duergar)|dwarf|phb|mtf"
+                    lookupKey = String.format("race|%s|%s", keyData.name(), source).toLowerCase();
+                } else { // "subrace|half-elf|half-elf|phb"
+                    if (keyData.name().equals(keyData.parentName())) {
+                        lookupKey = String.format("race|%s|%s", keyData.name(), source).toLowerCase();
+                    } else {
+                        lookupKey = String.format("race|%s (%s)|%s", keyData.parentName(), keyData.name(), source)
+                                .toLowerCase();
+                    }
+                }
+                // lookups from race to subrace are necessary, but can conflict with reprints/aliases
+                // keep them separate (still used in getAliasOrDefault)
+                subraceMap.put(lookupKey, srKey);
+                tui().logf(Msg.RACES, "\t%s :: %s", lookupKey, srKey);
+            }
+
+            Json2QuteRace.updateBaseRace(this, jsonSource, inputSubraces, subraces);
+        }
+        subraces.clear();
+    }
+
+    /**
+     * For each indexed node: resolve `_copy` inheritance, construct sources, discover variants
+     * (specific magic items, monster templates), and record legendary-group references. Deities
+     * are set aside for {@link #resolveDeities(List)} to handle later. Order-sensitive: copies must
+     * be resolved before sources are constructed, and variants must be discovered here (even though
+     * they're filtered later) because reprints can target a variant's key.
+     */
+    private List<Tuple> resolveCopiesAndLinkSources() {
         tui().verbosef("Resolving copies and linking sources");
 
         // Find remaining/included base items
@@ -425,210 +525,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         } // end for each entry
 
-        tui().progressf("Applying source filters");
-        filteredIndex = new HashMap<>(nodeIndex.size());
-
-        BiConsumer<Msg, String> logThis = (msgType, msg) -> {
-            if (msgType == Msg.TARGET) {
-                tui().debugf(msgType, msg);
-            } else {
-                tui().logf(msgType, msg);
-            }
-        };
-
-        // Let's create a list of interesting keys
-        List<String> interestingKeys = new ArrayList<>(nodeIndex.size());
-        for (var e : nodeIndex.entrySet()) {
-            String key = e.getKey();
-            JsonNode jsonSource = e.getValue();
-            Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-            if (false
-                    // Fluff types can continue to live only in the origin/nodeIndex
-                    || type.isFluffType()
-                    // Checking for reprints / aliasing knock-ons.
-                    || isReprinted(key, jsonSource)
-                    // While Deities are interesting, their handling is unique and done later
-                    || type == Tools5eIndexType.deity
-                    // Legendary groups are filtered by reference in a post-loop block
-                    || type == Tools5eIndexType.legendaryGroup
-                    // Subclasses are also handled backwards (filled in by subclass features)
-                    || type == Tools5eIndexType.subclass) {
-                // Theses are uninteresting.
-            } else {
-                interestingKeys.add(key);
-            }
-        }
-
-        // Apply include/exclude rules & source filters
-        // to add included elements to the filter index
-        for (String key : interestingKeys) {
-            JsonNode jsonSource = getOriginNoFallback(key);
-            if (jsonSource == null) {
-                continue;
-            }
-            Tools5eSources sources = Tools5eSources.findSources(key);
-            Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
-            Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
-            if (type.isDependentType()) {
-                // dependent types: don't keep if parent is excluded/missing
-                if (processDependentType(key)) {
-                    logThis.accept(msgType, " ----  " + key);
-                    filteredIndex.put(key, jsonSource);
-                } else {
-                    logThis.accept(msgType, "(drop) " + key);
-                }
-            } else if (sources.includedByConfig()) {
-                // key is included (by a specific rule, or because the source is included)
-                filteredIndex.put(key, jsonSource);
-                logThis.accept(msgType, " ----  " + key);
-
-                if (type == Tools5eIndexType.spell) {
-                    // Create a spell entry for included spell
-                    spellIndex.addSpell(key, jsonSource);
-                }
-            } else {
-                // source is not included, item is dropped
-                logThis.accept(msgType, "(drop) " + key);
-            }
-        }
-
-        // Legendary groups: include only if referenced by an included monster
-        tui().verbosef("Filtering legendary groups");
-        for (var e : nodeIndex.entrySet()) {
-            String key = e.getKey();
-            if (Tools5eIndexType.getTypeFromKey(key) != Tools5eIndexType.legendaryGroup) {
-                continue;
-            }
-            // Skip if aliased/reprinted to a different key
-            if (!key.equals(getAliasOrDefault(key))) {
-                continue;
-            }
-            Tools5eSources sources = Tools5eSources.findSources(key);
-            if (sources == null || !sources.includedByConfig()) {
-                continue;
-            }
-            Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
-
-            // Explicit filter rule overrides reference check
-            if (sources.filterRuleApplied()) {
-                filteredIndex.put(key, e.getValue());
-                logThis.accept(msgType, " ----  " + key);
-                continue;
-            }
-            // Include only if referenced by an included monster.
-            // Don't resolve aliases: a reprinted monster won't be in filteredIndex,
-            // so it correctly won't count as a reference for the old legendary group.
-            Set<String> monsters = legendaryGroupMonsters.get(key);
-            boolean referenced = monsters != null && monsters.stream()
-                    .anyMatch(filteredIndex::containsKey);
-            if (referenced) {
-                filteredIndex.put(key, e.getValue());
-                logThis.accept(msgType, " ----  " + key);
-            } else {
-                logThis.accept(msgType, "(drop | unreferenced) " + key);
-            }
-        }
-
-        // classFeatures contains both features and subclass features
-        for (var entry : classFeatures.entrySet()) {
-            String scKey = entry.getKey();
-            if (scKey.startsWith("subclass")) {
-                if (entry.getValue().isEmpty()) {
-                    // no features associated with this subclass
-                    logThis.accept(Msg.CLASSES, "(drop | no subclass features) " + scKey);
-                } else {
-                    logThis.accept(Msg.CLASSES, " ----  " + scKey);
-                    filteredIndex.put(scKey, nodeIndex.get(scKey));
-                }
-            }
-        }
-
-        // Remove unused optional features from the optional feature index
-        optFeatureIndex.removeUnusedOptionalFeatures(
-                (k) -> filteredIndex.containsKey(k),
-                (k) -> logThis.accept(Msg.FEATURETYPE, " ----  " + k),
-                (k) -> {
-                    Tools5eSources sources = Tools5eSources.findSources(k);
-                    if (sources.filterRuleApplied()) {
-                        return; // keep because a rule says so (we already logged these)
-                    }
-                    logThis.accept(Msg.FEATURETYPE, "(drop) " + k);
-                    filteredIndex.remove(k);
-                });
-
-        // Deities have their own glorious reprint mess, which we only need to deal with
-        // when we aren't hoarding all the things.
-        tui().verbosef("Dealing with deities");
-        // Find deities that have not been superceded by a reprint
-        Json2QuteDeity.findDeities(deities).forEach(k -> {
-            filteredIndex.put(k, nodeIndex.get(k));
-        });
-
-        // And finally, create an index of classes/subclasses/feats for spells
-        // based on included sources & avaiable spells.
-        spellIndex.buildSpellIndex(filteredIndex.values());
-    }
-
-    private void defineSubraces() {
-        tui().verbosef("Adding subraces");
-
-        Map<String, Set<JsonNode>> raceToSubraces = new HashMap<>();
-
-        for (JsonNode subrace : subraces.values()) {
-            subrace = copier.handleCopy(Tools5eIndexType.subrace, subrace);
-            String raceName = RaceFields.raceName.getTextOrThrow(subrace);
-            String raceSource = RaceFields.raceSource.getTextOrThrow(subrace);
-            String raceKey = Tools5eIndexType.race.createKey(raceName, raceSource);
-
-            raceToSubraces.computeIfAbsent(raceKey, k -> new HashSet<>()).add(subrace);
-        }
-
-        for (var entry : raceToSubraces.entrySet()) {
-            String raceKey = entry.getKey();
-            JsonNode jsonSource = nodeIndex.get(raceKey);
-
-            Set<JsonNode> inputSubraces = entry.getValue();
-            List<JsonNode> subraces = new ArrayList<>();
-
-            Json2QuteRace.prepareBaseRace(this, jsonSource, inputSubraces);
-
-            if (inputSubraces.size() > 1) {
-                tui().logf(Msg.RACES, "%s subraces found for %s", inputSubraces.size(), raceKey);
-            }
-
-            for (JsonNode sr : inputSubraces) {
-                sr = copier.mergeSubrace(sr, jsonSource);
-                String srKey = Tools5eIndexType.subrace.createKey(sr);
-                TtrpgValue.indexInputType.setIn(sr, Tools5eIndexType.subrace.name());
-                TtrpgValue.indexKey.setIn(sr, srKey);
-
-                nodeIndex.put(srKey, sr);
-                addSrdEntry(srKey, sr);
-                subraces.add(sr);
-
-                // Add expected alias:  {@race Aasimar (Fallen)|VGM}
-                SubraceKeyData keyData = SubraceKeyData.fromKey(srKey);
-                String source = SourceField.source.getTextOrThrow(sr);
-                final String lookupKey;
-                if (keyData.name().contains("(")) { // "subrace|dwarf (duergar)|dwarf|phb|mtf"
-                    lookupKey = String.format("race|%s|%s", keyData.name(), source).toLowerCase();
-                } else { // "subrace|half-elf|half-elf|phb"
-                    if (keyData.name().equals(keyData.parentName())) {
-                        lookupKey = String.format("race|%s|%s", keyData.name(), source).toLowerCase();
-                    } else {
-                        lookupKey = String.format("race|%s (%s)|%s", keyData.parentName(), keyData.name(), source)
-                                .toLowerCase();
-                    }
-                }
-                // lookups from race to subrace are necessary, but can conflict with reprints/aliases
-                // keep them separate (still used in getAliasOrDefault)
-                subraceMap.put(lookupKey, srKey);
-                tui().logf(Msg.RACES, "\t%s :: %s", lookupKey, srKey);
-            }
-
-            Json2QuteRace.updateBaseRace(this, jsonSource, inputSubraces, subraces);
-        }
-        subraces.clear();
+        return deities;
     }
 
     List<JsonNode> findVariants(String key, JsonNode jsonSource, List<JsonNode> baseItems) {
@@ -853,6 +750,159 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
             }
         }
         return false; // remove it!
+    }
+
+    /**
+     * Applies include/exclude rules and source filters to add included elements to
+     * {@link #filteredIndex}. Must run after {@link #resolveCopiesAndLinkSources()} (needs
+     * constructed {@link Tools5eSources} and discovered variants) and before
+     * {@link #filterLegendaryGroups(BiConsumer)}/{@link #filterClassFeatures(BiConsumer)} (which
+     * only add entries {@code filteredIndex} doesn't already reference-check against yet).
+     */
+    private void applySourceFilters(BiConsumer<Msg, String> logThis) {
+        // Let's create a list of interesting keys
+        List<String> interestingKeys = new ArrayList<>(nodeIndex.size());
+        for (var e : nodeIndex.entrySet()) {
+            String key = e.getKey();
+            JsonNode jsonSource = e.getValue();
+            Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
+            if (false
+                    // Fluff types can continue to live only in the origin/nodeIndex
+                    || type.isFluffType()
+                    // Checking for reprints / aliasing knock-ons.
+                    || isReprinted(key, jsonSource)
+                    // While Deities are interesting, their handling is unique and done later
+                    || type == Tools5eIndexType.deity
+                    // Legendary groups are filtered by reference in a post-loop block
+                    || type == Tools5eIndexType.legendaryGroup
+                    // Subclasses are also handled backwards (filled in by subclass features)
+                    || type == Tools5eIndexType.subclass) {
+                // Theses are uninteresting.
+            } else {
+                interestingKeys.add(key);
+            }
+        }
+
+        // Apply include/exclude rules & source filters
+        // to add included elements to the filter index
+        for (String key : interestingKeys) {
+            JsonNode jsonSource = getOriginNoFallback(key);
+            if (jsonSource == null) {
+                continue;
+            }
+            Tools5eSources sources = Tools5eSources.findSources(key);
+            Tools5eIndexType type = Tools5eIndexType.getTypeFromKey(key);
+            Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
+            if (type.isDependentType()) {
+                // dependent types: don't keep if parent is excluded/missing
+                if (processDependentType(key)) {
+                    logThis.accept(msgType, " ----  " + key);
+                    filteredIndex.put(key, jsonSource);
+                } else {
+                    logThis.accept(msgType, "(drop) " + key);
+                }
+            } else if (sources.includedByConfig()) {
+                // key is included (by a specific rule, or because the source is included)
+                filteredIndex.put(key, jsonSource);
+                logThis.accept(msgType, " ----  " + key);
+
+                if (type == Tools5eIndexType.spell) {
+                    // Create a spell entry for included spell
+                    spellIndex.addSpell(key, jsonSource);
+                }
+            } else {
+                // source is not included, item is dropped
+                logThis.accept(msgType, "(drop) " + key);
+            }
+        }
+    }
+
+    /**
+     * Legendary groups are excluded from {@link #applySourceFilters(BiConsumer)} above and handled
+     * here instead: a group is only kept if referenced by a monster that's already in
+     * {@link #filteredIndex}, so this must run after that method.
+     */
+    private void filterLegendaryGroups(BiConsumer<Msg, String> logThis) {
+        tui().verbosef("Filtering legendary groups");
+        for (var e : nodeIndex.entrySet()) {
+            String key = e.getKey();
+            if (Tools5eIndexType.getTypeFromKey(key) != Tools5eIndexType.legendaryGroup) {
+                continue;
+            }
+            // Skip if aliased/reprinted to a different key
+            if (!key.equals(getAliasOrDefault(key))) {
+                continue;
+            }
+            Tools5eSources sources = Tools5eSources.findSources(key);
+            if (sources == null || !sources.includedByConfig()) {
+                continue;
+            }
+            Msg msgType = sources.filterRuleApplied() ? Msg.TARGET : Msg.FILTER;
+
+            // Explicit filter rule overrides reference check
+            if (sources.filterRuleApplied()) {
+                filteredIndex.put(key, e.getValue());
+                logThis.accept(msgType, " ----  " + key);
+                continue;
+            }
+            // Include only if referenced by an included monster.
+            // Don't resolve aliases: a reprinted monster won't be in filteredIndex,
+            // so it correctly won't count as a reference for the old legendary group.
+            Set<String> monsters = legendaryGroupMonsters.get(key);
+            boolean referenced = monsters != null && monsters.stream()
+                    .anyMatch(filteredIndex::containsKey);
+            if (referenced) {
+                filteredIndex.put(key, e.getValue());
+                logThis.accept(msgType, " ----  " + key);
+            } else {
+                logThis.accept(msgType, "(drop | unreferenced) " + key);
+            }
+        }
+    }
+
+    /** Subclasses are handled backwards: a subclass is kept only if it has kept subclass features. */
+    private void filterClassFeatures(BiConsumer<Msg, String> logThis) {
+        // classFeatures contains both features and subclass features
+        for (var entry : classFeatures.entrySet()) {
+            String scKey = entry.getKey();
+            if (scKey.startsWith("subclass")) {
+                if (entry.getValue().isEmpty()) {
+                    // no features associated with this subclass
+                    logThis.accept(Msg.CLASSES, "(drop | no subclass features) " + scKey);
+                } else {
+                    logThis.accept(Msg.CLASSES, " ----  " + scKey);
+                    filteredIndex.put(scKey, nodeIndex.get(scKey));
+                }
+            }
+        }
+    }
+
+    private void pruneUnusedOptionalFeatures(BiConsumer<Msg, String> logThis) {
+        // Remove unused optional features from the optional feature index
+        optFeatureIndex.removeUnusedOptionalFeatures(
+                (k) -> filteredIndex.containsKey(k),
+                (k) -> logThis.accept(Msg.FEATURETYPE, " ----  " + k),
+                (k) -> {
+                    Tools5eSources sources = Tools5eSources.findSources(k);
+                    if (sources.filterRuleApplied()) {
+                        return; // keep because a rule says so (we already logged these)
+                    }
+                    logThis.accept(Msg.FEATURETYPE, "(drop) " + k);
+                    filteredIndex.remove(k);
+                });
+    }
+
+    /**
+     * Deities have their own glorious reprint mess, which we only need to deal with when we aren't
+     * hoarding all the things. {@code deities} is the list set aside by
+     * {@link #resolveCopiesAndLinkSources()}.
+     */
+    private void resolveDeities(List<Tuple> deities) {
+        tui().verbosef("Dealing with deities");
+        // Find deities that have not been superceded by a reprint
+        Json2QuteDeity.findDeities(deities).forEach(k -> {
+            filteredIndex.put(k, nodeIndex.get(k));
+        });
     }
 
     public boolean notPrepared() {
