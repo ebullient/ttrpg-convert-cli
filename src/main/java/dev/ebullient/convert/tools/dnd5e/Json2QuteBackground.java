@@ -33,7 +33,7 @@ public class Json2QuteBackground extends Json2QuteCommon {
         tags.add("background");
 
         List<String> text = new ArrayList<>();
-        appendToText(text, rootNode, "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         List<ImageRef> images = new ArrayList<>();
         List<String> fluff = getFluff(Tools5eIndexType.backgroundFluff, "##", images);

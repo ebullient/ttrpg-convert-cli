@@ -28,7 +28,7 @@ public class Json2QuteDeck extends Json2QuteCommon {
         List<String> text = new ArrayList<>();
         List<Card> cards = new ArrayList<>();
 
-        appendToText(text, rootNode, "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         boolean hasCardArt = DeckFields.hasCardArt.booleanOrDefault(rootNode, false);
         for (JsonNode cardRef : DeckFields.cards.iterateArrayFrom(rootNode)) {

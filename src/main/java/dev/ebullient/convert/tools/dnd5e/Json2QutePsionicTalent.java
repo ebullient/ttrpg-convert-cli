@@ -25,7 +25,7 @@ public class Json2QutePsionicTalent extends Json2QuteCommon {
         Tags tags = new Tags(getSources());
 
         List<String> text = new ArrayList<>();
-        appendToText(text, rootNode, "##");
+        appendToText(text, SourceField.entries.getFrom(rootNode), "##");
 
         return new QutePsionic(getSources(),
                 getName(),
