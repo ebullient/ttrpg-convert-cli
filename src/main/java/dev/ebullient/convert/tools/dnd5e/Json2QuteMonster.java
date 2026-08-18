@@ -340,78 +340,82 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 if (scNode == null || scNode.isNull()) {
                     continue;
                 }
-                Spellcasting spellcasting = new Spellcasting();
-                spellcasting.name = SourceField.name.replaceTextFrom(scNode, this);
-                spellcasting.displayAs = MonsterFields.displayAs.getTextOrDefault(scNode, "trait");
-                spellcasting.hidden = MonsterFields.hidden.getListOfStrings(scNode, tui());
-                spellcasting.ability = MonsterFields.ability.getTextOrDefault(scNode, "spellcasting");
-
-                spellcasting.headerEntries = new ArrayList<>();
-                appendToText(spellcasting.headerEntries,
-                        MonsterFields.headerEntries.getFrom(scNode), null);
-
-                spellcasting.footerEntries = new ArrayList<>();
-                appendToText(spellcasting.footerEntries,
-                        MonsterFields.footerEntries.getFrom(scNode), null);
-
-                spellcasting.fixed = new HashMap<>();
-                spellcasting.variable = new HashMap<>();
-
-                for (var type : HiddenType.values()) {
-                    JsonNode value = scNode.get(type.name());
-                    if (value == null || value.isNull()) {
-                        continue;
-                    }
-                    switch (type) {
-                        case constant, will, ritual -> {
-                            List<String> spellList = getSpells(value);
-                            if (spellList.isEmpty()) {
-                                continue;
-                            }
-                            spellcasting.fixed.put(type.name(), spellList);
-                        }
-                        case spells -> {
-                            spellcasting.spells = new TreeMap<>();
-                            for (Entry<String, JsonNode> f : iterableFields(MonsterFields.spells.getFrom(scNode))) {
-                                // value is object defining slots and spells
-                                JsonNode spellNode = f.getValue();
-
-                                Spells spellContainer = new Spells();
-                                spellContainer.spells = getSpells(MonsterFields.spells.getFrom(spellNode));
-                                if (spellContainer.spells.isEmpty()) {
-                                    continue;
-                                }
-                                spellContainer.slots = MonsterFields.slots.intOrDefault(spellNode, 0);
-                                spellContainer.lowerBound = MonsterFields.lower.intOrDefault(spellNode, 0);
-
-                                // key is level
-                                spellcasting.spells.put(f.getKey(), spellContainer);
-                            }
-                        }
-                        default -> {
-                            Map<String, List<String>> frequencySpells = new HashMap<>();
-                            for (Entry<String, JsonNode> freqSpellList : iterableFields(value)) {
-                                String frequency = freqSpellList.getKey();
-                                List<String> spellList = getSpells(freqSpellList.getValue());
-                                if (spellList.isEmpty()) {
-                                    continue;
-                                }
-                                frequencySpells.put(frequency, spellList);
-                            }
-                            if (frequencySpells.isEmpty()) {
-                                continue;
-                            }
-                            spellcasting.variable.put(type.name(), frequencySpells);
-                        }
-                    }
-                }
-                parseState().popCitations(spellcasting.footerEntries);
-                casting.add(spellcasting);
+                casting.add(spellCasting(scNode));
             }
             return casting;
         } finally {
             parseState().pop(pushed);
         }
+    }
+
+    private Spellcasting spellCasting(JsonNode scNode) {
+        Spellcasting spellcasting = new Spellcasting();
+        spellcasting.name = SourceField.name.replaceTextFrom(scNode, this);
+        spellcasting.displayAs = MonsterFields.displayAs.getTextOrDefault(scNode, "trait");
+        spellcasting.hidden = MonsterFields.hidden.getListOfStrings(scNode, tui());
+        spellcasting.ability = MonsterFields.ability.getTextOrDefault(scNode, "spellcasting");
+
+        spellcasting.headerEntries = new ArrayList<>();
+        appendToText(spellcasting.headerEntries,
+                MonsterFields.headerEntries.getFrom(scNode), null);
+
+        spellcasting.footerEntries = new ArrayList<>();
+        appendToText(spellcasting.footerEntries,
+                MonsterFields.footerEntries.getFrom(scNode), null);
+
+        spellcasting.fixed = new HashMap<>();
+        spellcasting.variable = new HashMap<>();
+
+        for (var type : HiddenType.values()) {
+            JsonNode value = scNode.get(type.name());
+            if (value == null || value.isNull()) {
+                continue;
+            }
+            switch (type) {
+                case constant, will, ritual -> {
+                    List<String> spellList = getSpells(value);
+                    if (spellList.isEmpty()) {
+                        continue;
+                    }
+                    spellcasting.fixed.put(type.name(), spellList);
+                }
+                case spells -> {
+                    spellcasting.spells = new TreeMap<>();
+                    for (Entry<String, JsonNode> f : iterableFields(MonsterFields.spells.getFrom(scNode))) {
+                        // value is object defining slots and spells
+                        JsonNode spellNode = f.getValue();
+
+                        Spells spellContainer = new Spells();
+                        spellContainer.spells = getSpells(MonsterFields.spells.getFrom(spellNode));
+                        if (spellContainer.spells.isEmpty()) {
+                            continue;
+                        }
+                        spellContainer.slots = MonsterFields.slots.intOrDefault(spellNode, 0);
+                        spellContainer.lowerBound = MonsterFields.lower.intOrDefault(spellNode, 0);
+
+                        // key is level
+                        spellcasting.spells.put(f.getKey(), spellContainer);
+                    }
+                }
+                default -> {
+                    Map<String, List<String>> frequencySpells = new HashMap<>();
+                    for (Entry<String, JsonNode> freqSpellList : iterableFields(value)) {
+                        String frequency = freqSpellList.getKey();
+                        List<String> spellList = getSpells(freqSpellList.getValue());
+                        if (spellList.isEmpty()) {
+                            continue;
+                        }
+                        frequencySpells.put(frequency, spellList);
+                    }
+                    if (frequencySpells.isEmpty()) {
+                        continue;
+                    }
+                    spellcasting.variable.put(type.name(), frequencySpells);
+                }
+            }
+        }
+        parseState().popCitations(spellcasting.footerEntries);
+        return spellcasting;
     }
 
     List<String> getSpells(JsonNode source) {

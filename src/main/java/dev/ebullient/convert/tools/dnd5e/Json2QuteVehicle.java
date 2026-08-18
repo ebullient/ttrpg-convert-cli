@@ -130,58 +130,18 @@ public class Json2QuteVehicle extends Json2QuteCommon {
         return null;
     }
 
+    private record AcHpPace(Integer shipPace, String speedPace, ShipAcHp shipAcHp, String keelBeam) {
+        static final AcHpPace NONE = new AcHpPace(null, "", null, null);
+    }
+
     private ShipCrewCargoPace shipCrewCargoPace() {
-        Integer shipPace = null;
-        String speedPace = "";
-        ShipAcHp shipAcHp = null;
-        String keelBeam = null;
-
-        if (vehicleType == VehicleType.SHIP) {
-            shipPace = VehicleFields.pace.intOrNull(rootNode);
-        } else if (vehicleType == VehicleType.SPELLJAMMER) {
-            JsonNode speedNode = VehicleFields.speed.getFrom(rootNode);
-            JsonNode paceNode = VehicleFields.pace.getFrom(rootNode);
-
-            String speed = speed(speedNode, false);
-            List<String> text = new ArrayList<>();
-            for (String k : SPEED_MODE) {
-                JsonNode pNode = paceNode.get(k);
-                if (pNode != null) {
-                    String prefix = "walk".equals(k) ? "" : k + " ";
-                    double num = convertToNumber(pNode.asText());
-                    text.add(prefix + pNode.asText() + " mph ^[" + (num * 24) + " miles per day]");
-                }
-            }
-            String pace = text.isEmpty() ? "" : " (" + String.join(", ", text) + ")";
-            speedPace = speed + pace;
-
-            JsonNode hull = VehicleFields.hull.getFrom(rootNode);
-            shipAcHp = getAcHp(hull);
-            // Replace the cost with the value from the root node
-            shipAcHp.cost = getCost(rootNode);
-
-            if (VehicleFields.dimensions.existsIn(rootNode)) {
-                keelBeam = VehicleFields.dimensions.joinAndReplace(rootNode, this, " by ");
-            }
-        } else if (vehicleType == VehicleType.INFWAR) {
-            int dexMod = VehicleFields.dexMod.intOrDefault(rootNode, 0);
-            JsonNode hpNode = VehicleFields.hp.getFrom(rootNode);
-            shipAcHp = new ShipAcHp(vehicleType.name(),
-                    dexMod == 0 ? 19 : 19 + dexMod,
-                    dexMod == 0 ? "" : "19 while motionless",
-                    VehicleFields.hp.intOrNull(hpNode),
-                    null,
-                    VehicleFields.dt.intOrNull(hpNode),
-                    VehicleFields.mt.intOrNull(hpNode),
-                    null);
-            speedPace = speed(Tools5eFields.speed.getFrom(rootNode));
-        } else if (vehicleType == VehicleType.CREATURE || vehicleType == VehicleType.OBJECT) {
-            AcHp creatureAcHp = new AcHp();
-            findAc(creatureAcHp);
-            findHp(creatureAcHp);
-            shipAcHp = new ShipAcHp(vehicleType.name(), creatureAcHp);
-            speedPace = speed(Tools5eFields.speed.getFrom(rootNode));
-        }
+        AcHpPace acHpPace = switch (vehicleType) {
+            case SHIP -> getShipAcHpPace();
+            case SPELLJAMMER -> getSpelljammerAcHpPace();
+            case INFWAR -> getInfwarAcHpPace();
+            case CREATURE, OBJECT -> getCreatureAcHpPace();
+            default -> AcHpPace.NONE;
+        };
 
         String capCrew = VehicleFields.capCrew.getTextOrEmpty(rootNode);
         if (!capCrew.isBlank()) {
@@ -208,7 +168,64 @@ public class Json2QuteVehicle extends Json2QuteCommon {
                 VehicleFields.capCrewNote.replaceTextFrom(rootNode, this),
                 VehicleFields.capPassenger.getTextOrEmpty(rootNode),
                 cargo,
-                shipPace, speedPace, shipAcHp, keelBeam);
+                acHpPace.shipPace(), acHpPace.speedPace(), acHpPace.shipAcHp(), acHpPace.keelBeam());
+    }
+
+    private AcHpPace getShipAcHpPace() {
+        return new AcHpPace(VehicleFields.pace.intOrNull(rootNode), "", null, null);
+    }
+
+    private AcHpPace getSpelljammerAcHpPace() {
+        JsonNode speedNode = VehicleFields.speed.getFrom(rootNode);
+        JsonNode paceNode = VehicleFields.pace.getFrom(rootNode);
+
+        String speed = speed(speedNode, false);
+        List<String> text = new ArrayList<>();
+        for (String k : SPEED_MODE) {
+            JsonNode pNode = paceNode.get(k);
+            if (pNode != null) {
+                String prefix = "walk".equals(k) ? "" : k + " ";
+                double num = convertToNumber(pNode.asText());
+                text.add(prefix + pNode.asText() + " mph ^[" + (num * 24) + " miles per day]");
+            }
+        }
+        String pace = text.isEmpty() ? "" : " (" + String.join(", ", text) + ")";
+        String speedPace = speed + pace;
+
+        JsonNode hull = VehicleFields.hull.getFrom(rootNode);
+        ShipAcHp shipAcHp = getAcHp(hull);
+        // Replace the cost with the value from the root node
+        shipAcHp.cost = getCost(rootNode);
+
+        String keelBeam = VehicleFields.dimensions.existsIn(rootNode)
+                ? VehicleFields.dimensions.joinAndReplace(rootNode, this, " by ")
+                : null;
+
+        return new AcHpPace(null, speedPace, shipAcHp, keelBeam);
+    }
+
+    private AcHpPace getInfwarAcHpPace() {
+        int dexMod = VehicleFields.dexMod.intOrDefault(rootNode, 0);
+        JsonNode hpNode = VehicleFields.hp.getFrom(rootNode);
+        ShipAcHp shipAcHp = new ShipAcHp(vehicleType.name(),
+                dexMod == 0 ? 19 : 19 + dexMod,
+                dexMod == 0 ? "" : "19 while motionless",
+                VehicleFields.hp.intOrNull(hpNode),
+                null,
+                VehicleFields.dt.intOrNull(hpNode),
+                VehicleFields.mt.intOrNull(hpNode),
+                null);
+        String speedPace = speed(Tools5eFields.speed.getFrom(rootNode));
+        return new AcHpPace(null, speedPace, shipAcHp, null);
+    }
+
+    private AcHpPace getCreatureAcHpPace() {
+        AcHp creatureAcHp = new AcHp();
+        findAc(creatureAcHp);
+        findHp(creatureAcHp);
+        ShipAcHp shipAcHp = new ShipAcHp(vehicleType.name(), creatureAcHp);
+        String speedPace = speed(Tools5eFields.speed.getFrom(rootNode));
+        return new AcHpPace(null, speedPace, shipAcHp, null);
     }
 
     private String poundsToTons(JsonNode sourceNode) {
