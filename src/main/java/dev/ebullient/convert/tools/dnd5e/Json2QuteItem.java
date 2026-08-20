@@ -118,10 +118,10 @@ public class Json2QuteItem extends Json2QuteCommon {
             typeAssembly.addStaff(staff);
             typeAssembly.addAmmo(ammo);
             typeAssembly.addAge(age);
-            typeAssembly.addWeaponCategory(weaponCategory, baseItem);
+            typeAssembly.addWeaponCategory(itemType, weaponCategory, baseItem);
             typeAssembly.addStaffMeleeNote(staff, itemType, itemTypeAlt);
-            typeAssembly.addItemType(itemType, baseItem);
-            typeAssembly.addItemType(itemTypeAlt, baseItem);
+            typeAssembly.addItemType(itemType, weaponCategory, baseItem);
+            typeAssembly.addItemType(itemTypeAlt, weaponCategory, baseItem);
             typeAssembly.addFirearm(firearm);
             typeAssembly.addPoison(poison, poisonTypes, itemProperties);
             typeAssembly.addCursed(cursed, itemProperties);
@@ -229,13 +229,14 @@ public class Json2QuteItem extends Json2QuteCommon {
             }
         }
 
-        void addWeaponCategory(String weaponCategory, String baseItem) {
+        void addWeaponCategory(ItemType type, String weaponCategory, String baseItem) {
             if (!isPresent(weaponCategory)) {
                 return;
             }
             ItemTag.weapon.add(tags, weaponCategory);
             baseItemIncluded = isPresent(baseItem);
-            typeDescription.add("weapon"
+            typeDescription.add(weaponCategory
+                    + ((type == null) ? "" : " " + type.name())
                     + (baseItemIncluded ? " (" + baseItem + ")" : ""));
             subTypeDescription.add(weaponCategory + " weapon");
         }
@@ -250,7 +251,7 @@ public class Json2QuteItem extends Json2QuteCommon {
         }
 
         // render.js _getHtmlAndTextTypes_type
-        void addItemType(ItemType type, String baseItem) {
+        void addItemType(ItemType type, String weaponCategory, String baseItem) {
             if (type == null) {
                 return;
             }
@@ -265,9 +266,9 @@ public class Json2QuteItem extends Json2QuteCommon {
 
             if (EncodedType.S.typeIn(type, null)) {
                 target.add("armor (" + linkify(Tools5eIndexType.item, "shield|phb") + ")");
-            } else if (!baseItemIncluded && isPresent(baseItem)) {
+            } else if (!baseItemIncluded && isPresent(baseItem) && !isPresent(weaponCategory)) {
                 target.add(fullType + " (" + baseItem + ")");
-            } else if (EncodedType.GV.not(type)) {
+            } else if (EncodedType.GV.not(type) && !isPresent(weaponCategory)) {
                 target.add(fullType);
             }
             subTypeDescription.add(type.linkify());
