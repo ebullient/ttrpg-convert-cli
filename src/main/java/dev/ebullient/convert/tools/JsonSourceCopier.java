@@ -303,10 +303,14 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         return "/" + String.join("/", propPath.split("\\."));
     }
 
+    /**
+     * Split a dotted prop path into a JSON-pointer prefix (for {@code withObject}) and the
+     * final plain field name (for {@code set}/{@code get}/{@code put}).
+     */
     private String[] splitLastPropPath(String propPath) {
         String nodePath = nodePath(propPath);
         int lastPropIdx = nodePath.lastIndexOf('/');
-        return new String[] { nodePath.substring(0, lastPropIdx), nodePath.substring(lastPropIdx) };
+        return new String[] { nodePath.substring(0, lastPropIdx), nodePath.substring(lastPropIdx + 1) };
     }
 
     private void doAppendText(String originKey, JsonNode modInfo, JsonNode copyFrom, String prop, ObjectNode target) {
