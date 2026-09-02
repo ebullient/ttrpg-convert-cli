@@ -273,12 +273,12 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         }
     }
 
-    /** Set the target prop which corresponds to the prop in {@code modInfo} to the value from {@code modInfo}. */
+    /** Wrap the existing string value at the target prop with a prefix and suffix from {@code modInfo}. */
     private void doPrefixSuffixStringProp(String originKey, JsonNode modInfo, String prop, ObjectNode target) {
-        // target.(prop . modinfo.prop) = modinfo.value
+        // target.(prop . modinfo.prop) = prefix + target.(prop . modinfo.prop) + suffix
         String propPath = MetaFields.prop.getTextOrEmpty(modInfo);
         if (!"*".equals(prop)) {
-            // target.(prop . modinfo.prop) = modinfo.value
+            // target.(prop . modinfo.prop) = prefix + target.(prop . modinfo.prop) + suffix
             propPath = prop + "." + propPath;
         }
         String prefix = MetaFields.prefix.getTextOrEmpty(modInfo);
@@ -292,11 +292,8 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
         if (targetValue == null || !targetValue.isTextual()) {
             return;
         }
-        // Update the string value, add prefix and suffix
-        targetRw.put(path[1],
-                prefix
-                        + MetaFields.value.getTextOrEmpty(modInfo)
-                        + suffix);
+        // Wrap the existing string value with prefix and suffix
+        targetRw.put(path[1], prefix + targetValue.asText() + suffix);
     }
 
     private String nodePath(String propPath) {
