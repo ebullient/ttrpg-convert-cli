@@ -287,7 +287,7 @@ public class Json2QuteCommon implements JsonSource {
     private String featPrereq(JsonNode featPrereq) {
         List<String> feats = new ArrayList<>();
         for (JsonNode p : iterableElements(featPrereq)) {
-            replaceText(String.format("{@feat %s} feat", p.asText()));
+            feats.add(replaceText(String.format("{@feat %s} feat", p.asText())));
         }
         return joinConjunct(" or ", feats);
     }
