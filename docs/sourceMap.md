@@ -24,6 +24,8 @@ _Support content creators. Only use or include sources that you own._
 | ALCoS | Adventurers League: Curse of Strahd | reference |
 | ALEE | Adventurers League: Elemental Evil | reference |
 | ALRoD | Adventurers League: Rage of Demons | reference |
+| AU | Arcana Unleashed | book |
+| AUD | Arcana Unleashed: Deadfall | adventure |
 | AWM | Adventure with Muk | book |
 | AZfyT | A Zib for your Thoughts | adventure |
 | AitFR | Adventures in the Forgotten Realms | reference |

@@ -174,6 +174,7 @@ public class FilterNoneTest {
             commonTests.assert_MISSING("item|chain (10 feet)|phb");
             commonTests.assert_Present("item|chain|xphb");
 
+            commonTests.assert_MISSING("monster|abjurer archmage|au");
             commonTests.assert_MISSING("monster|abjurer wizard|mpmm");
             commonTests.assert_MISSING("monster|abjurer|vgm");
             commonTests.assert_MISSING("monster|alkilith|mpmm");
@@ -228,6 +229,7 @@ public class FilterNoneTest {
             commonTests.assert_MISSING("spell|blade barrier|phb");
             commonTests.assert_Present("spell|blade barrier|xphb");
             commonTests.assert_MISSING("spell|feeblemind|phb");
+            commonTests.assert_MISSING("spell|illusory dragon|au");
             commonTests.assert_MISSING("spell|illusory dragon|xge");
             commonTests.assert_MISSING("spell|illusory script|phb");
             commonTests.assert_Present("spell|illusory script|xphb");

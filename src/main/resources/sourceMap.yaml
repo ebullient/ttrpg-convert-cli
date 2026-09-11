@@ -24,6 +24,12 @@ config5e:
     ALRoD:
       name: "Adventurers League: Rage of Demons"
       date: "2015-09-15"
+    AU:
+      name: "Arcana Unleashed"
+      date: "2026-09-15"
+    AUD:
+      name: "Arcana Unleashed: Deadfall"
+      date: "2026-09-15"
     AWM:
       name: "Adventure with Muk"
       date: "2019-11-12"
