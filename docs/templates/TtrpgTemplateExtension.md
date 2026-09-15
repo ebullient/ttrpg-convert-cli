@@ -32,25 +32,25 @@ Usage: `{resource.languages.capitalizedList}`
 
 First element in list
 
-Usage: `{resource.components.first}`
+Usage: `{resource.element.first}`
 
 ### join
 
 Return the given collection converted into a string and joined using the specified joiner.
 
-Usage: `{resource.components.join(", ")}`
+Usage: `{resource.element.join(", ")}`
 
 ### joinConjunct
 
 Return the given list joined into a single string, using a different delimiter for the last element.
 
-Usage: `{resource.components.joinConjunct(", ", " or ")}`
+Usage: `{resource.element.joinConjunct(", ", " or ")}`
 
 ### jsonString
 
 Return the object as a JSON string
 
-Usage: `{resource.components.getJsonString(resource)}`
+Usage: `{resource.element.getJsonString(resource)}`
 
 ### lowercase
 
@@ -81,13 +81,13 @@ Usage: `{resource.element.quotedEscaped}`
 
 Return the size of a list
 
-Usage: `{resource.components.size()}`
+Usage: `{resource.element.size()}`
 
 ### skipFirst
 
 Skip first element in list
 
-Usage: `{resource.components.skipFirst}`
+Usage: `{resource.element.skipFirst}`
 
 ### uppercaseFirst
 
