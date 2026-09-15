@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -435,6 +436,31 @@ public class CommonDataTests {
                     .writeFiles(List.of(Tools5eIndexType.monster, Tools5eIndexType.legendaryGroup));
 
             TestUtils.assertDirectoryContents(out, tui);
+            assertMonster2024Frontmatter(out);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void assertMonster2024Frontmatter(Path outputPath) {
+        Path aberrantZealot = outputPath.resolve("bestiary/aberration/aberrant-zealot-pabtso.md");
+        assertThat(aberrantZealot).exists();
+
+        try {
+            String content = Files.readString(aberrantZealot);
+            int frontmatterEnd = content.indexOf("\n---", 4);
+            assertThat(frontmatterEnd).isGreaterThan(0);
+
+            Map<String, Object> frontmatter = Tui.quotedYaml().load(content.substring(4, frontmatterEnd));
+            assertThat((List<String>) frontmatter.get("conditionImmunities"))
+                    .containsExactly("blinded", "charmed", "frightened", "grappled", "restrained");
+            assertThat((List<String>) frontmatter.get("aliases")).containsExactly("Aberrant Zealot");
+            assertThat((List<String>) frontmatter.get("cssclasses")).containsExactly("json5e-monster");
+            assertThat((List<String>) frontmatter.get("tags")).contains("compendium/src/5e/pabtso");
+            assertThat(content)
+                    .contains("- **Condition Immunities** [Blinded](rules/conditions.md#Blinded)")
+                    .contains("^statblock");
+        } catch (IOException e) {
+            throw new AssertionError("Unable to read generated frontmatter from " + aberrantZealot, e);
         }
     }
 

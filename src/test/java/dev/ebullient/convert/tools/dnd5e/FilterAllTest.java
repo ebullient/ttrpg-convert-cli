@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.ebullient.convert.TestUtils;
 import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteMonster.MonsterFields;
+import dev.ebullient.convert.tools.dnd5e.qute.QuteMonster;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
@@ -583,6 +584,22 @@ public class FilterAllTest {
     @Test
     public void testMonster2024() {
         commonTests.testMonster2024(outputPath);
+    }
+
+    @Test
+    public void testMonsterConditionImmunityRepresentations() {
+        if (!commonTests.dataPresent) {
+            return;
+        }
+
+        JsonNode source = commonTests.index.getOrigin("monster|aberrant zealot|pabtso");
+        QuteMonster monster = (QuteMonster) new Json2QuteMonster(
+                commonTests.index, Tools5eIndexType.monster, source).build();
+
+        assertThat(monster.immuneResist.conditionImmune)
+                .contains("[blinded]", "[charmed]");
+        assertThat(monster.immuneResist.conditionImmuneList)
+                .containsExactly("blinded", "charmed", "frightened", "grappled", "restrained");
     }
 
     @Test

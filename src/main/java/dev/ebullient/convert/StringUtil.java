@@ -50,8 +50,11 @@ public class StringUtil {
                 : valueOrDefault(parts[index], fallback);
     }
 
-    public static String quotedEscaped(String name) {
-        var cleaned = name;
+    public static String quotedEscaped(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        var cleaned = value;
         // Strip leading and trailing quotes if both present
         if (cleaned.startsWith("\"") && cleaned.endsWith("\"") && cleaned.length() > 1) {
             cleaned = cleaned.substring(1, cleaned.length() - 1);

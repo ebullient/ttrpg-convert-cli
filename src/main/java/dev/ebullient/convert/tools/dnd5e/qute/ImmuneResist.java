@@ -11,7 +11,8 @@ import io.quarkus.qute.TemplateData;
  *
  * This data object provides a default mechanism for creating
  * a marked up string based on the attributes that are present.
- * To use it, reference it directly.
+ * The {@code conditionImmune} property contains the linkified string; use the
+ * condition-immunity list accessor when plain, ordered values are needed.
  */
 @TemplateData
 public class ImmuneResist implements QuteUtil {
@@ -23,15 +24,24 @@ public class ImmuneResist implements QuteUtil {
     public String immune;
     /** Comma-separated string of creature condition immunities (if present). */
     public String conditionImmune;
+    /** Ordered plain condition-immunity values, including non-standard values such as {@code special}. */
+    public List<String> conditionImmuneList;
 
     public ImmuneResist() {
+        this(null, null, null, null, List.of());
     }
 
     public ImmuneResist(String vulnerable, String resist, String immune, String conditionImmune) {
+        this(vulnerable, resist, immune, conditionImmune, List.of());
+    }
+
+    public ImmuneResist(String vulnerable, String resist, String immune, String conditionImmune,
+            List<String> conditionImmuneList) {
         this.vulnerable = vulnerable;
         this.resist = resist;
         this.immune = immune;
         this.conditionImmune = conditionImmune;
+        this.conditionImmuneList = conditionImmuneList == null ? List.of() : conditionImmuneList;
     }
 
     /** True if immunities or resistances are present (otherwise false) */

@@ -178,7 +178,7 @@ public class TtrpgTemplateExtension {
     /**
      * Return the given collection converted into a string and joined using the specified joiner.
      *
-     * Usage: `{resource.components.join(", ")}`
+     * Usage: `{resource.element.join(", ")}`
      */
     @JavadocVerbatim
     public static String join(Collection<?> collection, String joiner) {
@@ -188,7 +188,7 @@ public class TtrpgTemplateExtension {
     /**
      * Return the given list joined into a single string, using a different delimiter for the last element.
      *
-     * Usage: `{resource.components.joinConjunct(", ", " or ")}`
+     * Usage: `{resource.element.joinConjunct(", ", " or ")}`
      */
     @JavadocVerbatim
     public static String joinConjunct(Collection<?> collection, String joiner, String lastjoiner) {
@@ -198,7 +198,7 @@ public class TtrpgTemplateExtension {
     /**
      * Return the object as a JSON string
      *
-     * Usage: `{resource.components.getJsonString(resource)}`
+     * Usage: `{resource.element.getJsonString(resource)}`
      */
     @JavadocVerbatim
     public static String jsonString(Object o) {
@@ -208,7 +208,7 @@ public class TtrpgTemplateExtension {
     /**
      * Skip first element in list
      *
-     * Usage: `{resource.components.skipFirst}`
+     * Usage: `{resource.element.skipFirst}`
      */
     @JavadocVerbatim
     public static List<?> skipFirst(List<?> list) {
@@ -218,7 +218,7 @@ public class TtrpgTemplateExtension {
     /**
      * First element in list
      *
-     * Usage: `{resource.components.first}`
+     * Usage: `{resource.element.first}`
      */
     @JavadocVerbatim
     public static <T> T first(List<T> list) {
@@ -228,7 +228,7 @@ public class TtrpgTemplateExtension {
     /**
      * Return the size of a list
      *
-     * Usage: `{resource.components.size()}`
+     * Usage: `{resource.element.size()}`
      */
     @JavadocVerbatim
     public static int size(List<?> list) {
@@ -236,9 +236,10 @@ public class TtrpgTemplateExtension {
     }
 
     /**
-     * Escape double quotes in a string (YAML/properties safe)
+     * Remove one surrounding pair of double quotes, escape embedded double quotes, and wrap the result in double quotes.
+     * This is suitable for ordinary YAML/properties scalar values.
      *
-     * Usage: `{resource.components.quotedEscaped}`
+     * Usage: `{resource.element.quotedEscaped}`
      */
     @JavadocVerbatim
     public static String quotedEscaped(String s) {
@@ -246,9 +247,9 @@ public class TtrpgTemplateExtension {
     }
 
     /**
-     * Escape double quotes in a string (YAML/properties safe)
+     * Quote the contained string using the YAML/properties-safe quoted-string behavior, or return an empty string when absent.
      *
-     * Usage: `{resource.components.quotedEscaped}`
+     * Usage: `{resource.element.quotedEscaped}`
      */
     @JavadocVerbatim
     public static String quotedEscaped(Optional<String> s) {

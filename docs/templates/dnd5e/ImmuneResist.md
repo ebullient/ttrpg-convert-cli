@@ -4,15 +4,20 @@
 
 This data object provides a default mechanism for creating
 a marked up string based on the attributes that are present.
-To use it, reference it directly.
+The `conditionImmune` property contains the linkified string; use the
+condition-immunity list accessor when plain, ordered values are needed.
 
 ## Attributes
 
-[conditionImmune](#conditionimmune), [immune](#immune), [present](#present), [resist](#resist), [vulnerable](#vulnerable)
+[conditionImmune](#conditionimmune), [conditionImmuneList](#conditionimmunelist), [immune](#immune), [present](#present), [resist](#resist), [vulnerable](#vulnerable)
 
 ### conditionImmune
 
 Comma-separated string of creature condition immunities (if present).
+
+### conditionImmuneList
+
+Ordered plain condition-immunity values, including non-standard values such as `special`.
 
 ### immune
 

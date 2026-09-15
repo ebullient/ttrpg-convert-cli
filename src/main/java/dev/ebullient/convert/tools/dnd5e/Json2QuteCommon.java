@@ -588,7 +588,8 @@ public class Json2QuteCommon implements JsonSource {
                 collectImmunities(rootNode, VulnerabilityFields.vulnerable),
                 collectImmunities(rootNode, VulnerabilityFields.resist),
                 collectImmunities(rootNode, VulnerabilityFields.immune),
-                collectImmunities(rootNode, VulnerabilityFields.conditionImmune));
+                collectImmunities(rootNode, VulnerabilityFields.conditionImmune),
+                collectPlainImmunities(rootNode, VulnerabilityFields.conditionImmune));
     }
 
     AbilityScores abilityScores() {
@@ -836,6 +837,24 @@ public class Json2QuteCommon implements JsonSource {
             return String.join(separator.toString(), immunities);
         }
         return null;
+    }
+
+    static List<String> collectPlainImmunities(JsonNode fromNode, VulnerabilityFields field) {
+        if (!field.existsIn(fromNode)) {
+            return List.of();
+        }
+
+        List<String> immunities = new ArrayList<>();
+        for (JsonNode value : field.iterateArrayFrom(fromNode)) {
+            if (value.isTextual()) {
+                immunities.add(value.asText());
+            } else if (VulnerabilityFields.special.existsIn(value)) {
+                immunities.add("special");
+            } else if (field.existsIn(value)) {
+                immunities.addAll(collectPlainImmunities(value, field));
+            }
+        }
+        return List.copyOf(immunities);
     }
 
     private String textValue(VulnerabilityFields field, String text) {

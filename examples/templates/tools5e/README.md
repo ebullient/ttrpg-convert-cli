@@ -181,12 +181,9 @@ Raw types are [here](../../../docs/templates/dnd5e/QuteMonster/SavesAndSkills.md
 ### Splitting Strings in Frontmatter
 
 ```md
-{#if resource.conditionImmune}
-conditionImmunities:
-{#for condition in resource.conditionImmune.split(", ?")}
-- "{condition}"
+{#for x in resource.commaString.split(", ?")}
+- "{x}"
 {/for}
-{/if}
 ```
 
 ### Display as JSON

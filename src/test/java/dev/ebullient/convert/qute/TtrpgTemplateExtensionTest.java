@@ -61,4 +61,13 @@ public class TtrpgTemplateExtensionTest {
         assertThat(TtrpgTemplateExtension.asBonus(-3)).isEqualTo("-3");
         assertThat(TtrpgTemplateExtension.asBonus(0)).isEqualTo("+0");
     }
+
+    @Test
+    public void testQuotedEscaped() {
+        assertThat(TtrpgTemplateExtension.quotedEscaped("hello world")).isEqualTo("\"hello world\"");
+        assertThat(TtrpgTemplateExtension.quotedEscaped("say \"hello\"")).isEqualTo("\"say \\\"hello\\\"\"");
+        assertThat(TtrpgTemplateExtension.quotedEscaped("\"already quoted\"")).isEqualTo("\"already quoted\"");
+        assertThat(TtrpgTemplateExtension.quotedEscaped("")).isEqualTo("");
+        assertThat(TtrpgTemplateExtension.quotedEscaped((String) null)).isEqualTo(null);
+    }
 }

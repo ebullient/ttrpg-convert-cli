@@ -73,9 +73,9 @@ Usage: `{resource.name.prefixSpace}`
 
 ### quotedEscaped
 
-Escape double quotes in a string (YAML/properties safe)
+Quote the contained string using the YAML/properties-safe quoted-string behavior, or return an empty string when absent.
 
-Usage: `{resource.components.quotedEscaped}`
+Usage: `{resource.element.quotedEscaped}`
 
 ### size
 

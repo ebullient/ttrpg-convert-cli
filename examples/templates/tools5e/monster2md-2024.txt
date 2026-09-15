@@ -12,10 +12,10 @@ aliases:
 {#each resource.aliases}
 - {it}
 {/each}
-{#if resource.conditionImmune}
+{#if resource.immuneResist.conditionImmuneList}
 conditionImmunities:
-{#for condition in resource.conditionImmune.split(", ?")}
-- {condition}
+{#for condition in resource.immuneResist.conditionImmuneList}
+- {condition.quotedEscaped}
 {/for}
 {/if}
 ---
