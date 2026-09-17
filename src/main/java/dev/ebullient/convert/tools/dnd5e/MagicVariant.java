@@ -3,8 +3,12 @@ package dev.ebullient.convert.tools.dnd5e;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -22,6 +26,7 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import dev.ebullient.convert.io.Msg;
+import dev.ebullient.convert.io.Tui;
 import dev.ebullient.convert.tools.JsonNodeReader;
 import dev.ebullient.convert.tools.ToolsIndex.TtrpgValue;
 import dev.ebullient.convert.tools.dnd5e.Json2QuteItem.ItemField;
@@ -30,6 +35,7 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eSources.SourceAttributes;
 public class MagicVariant implements JsonSource {
 
     static final List<String> IGNORE = List.of("entries", "rarity", "namePrefix", "nameSuffix");
+    static final List<String> DAMAGE_FIELDS = List.of("vulnerable", "resist", "immune");
     static final Pattern EXPRESSION = Pattern.compile("\\[\\[([^\\]]+)]]");
     static final Pattern TEMPLATE = Pattern.compile("\\{=([^}]+)}");
 
@@ -510,8 +516,7 @@ public class MagicVariant implements JsonSource {
                 }
             }
         }
-        // TODO:
-        // Renderer.item._createSpecificVariants_mergeVulnerableResistImmune({specificVariant, inherits});
+        mergeDamageFields(specificVariant, inherits);
 
         // Carry over any homebrew sources from the base or GV item
         // so that any  properties or types can be rendered properly
@@ -519,6 +524,124 @@ public class MagicVariant implements JsonSource {
             TtrpgValue.homebrewSource.copy(genericVariant, specificVariant);
         }
         return specificVariant;
+    }
+
+    // Mirrors Renderer.item._createSpecificVariants_mergeVulnerableResistImmune in
+    // sources/5etools-src/js/render.js:13192-13247.
+    private void mergeDamageFields(JsonNode specificVariant, JsonNode inherits) {
+        Map<String, ArrayNode> fromBase = new HashMap<>();
+        for (String field : DAMAGE_FIELDS) {
+            JsonNode value = specificVariant.get(field);
+            if (value != null && !value.isNull() && value.isArray()) {
+                fromBase.put(field, value.deepCopy());
+            }
+        }
+
+        for (String field : DAMAGE_FIELDS) {
+            JsonNode inherited = inherits.get(field);
+            if (inherited == null) {
+                continue;
+            }
+            if (inherited.isNull()) {
+                fromBase.remove(field);
+                continue;
+            }
+            if (!inherited.isArray()) {
+                throw new IllegalArgumentException("Damage field must be an array: " + inherited);
+            }
+
+            Set<String> inheritedTypes = damageTypes(inherited, field);
+            for (String otherField : DAMAGE_FIELDS) {
+                if (field.equals(otherField)) {
+                    continue;
+                }
+                ArrayNode baseValues = fromBase.get(otherField);
+                if (baseValues == null) {
+                    continue;
+                }
+                ArrayNode filtered = Tui.MAPPER.createArrayNode();
+                for (JsonNode value : baseValues) {
+                    if (value.isTextual()) {
+                        if (!inheritedTypes.contains(value.asText())) {
+                            filtered.add(value);
+                        }
+                    } else {
+                        JsonNode copy = value.deepCopy();
+                        JsonNode nested = copy.get(otherField);
+                        if (nested != null && nested.isArray()) {
+                            ArrayNode nestedFiltered = Tui.MAPPER.createArrayNode();
+                            for (JsonNode nestedValue : nested) {
+                                if (!nestedValue.isTextual() || !inheritedTypes.contains(nestedValue.asText())) {
+                                    nestedFiltered.add(nestedValue);
+                                }
+                            }
+                            ((ObjectNode) copy).set(otherField, nestedFiltered);
+                        }
+                        filtered.add(copy);
+                    }
+                }
+                if (filtered.isEmpty()) {
+                    fromBase.remove(otherField);
+                } else {
+                    fromBase.put(otherField, filtered);
+                }
+            }
+        }
+
+        for (String field : DAMAGE_FIELDS) {
+            JsonNode inherited = inherits.get(field);
+            ArrayNode baseValues = fromBase.get(field);
+            if (baseValues == null && (inherited == null || inherited.isNull())) {
+                ((ObjectNode) specificVariant).remove(field);
+                continue;
+            }
+
+            ArrayNode merged = Tui.MAPPER.createArrayNode();
+            if (baseValues != null) {
+                addUnique(merged, baseValues);
+            }
+            if (inherited != null && !inherited.isNull()) {
+                addUnique(merged, inherited);
+            }
+            if (merged.isEmpty()) {
+                ((ObjectNode) specificVariant).remove(field);
+            } else {
+                ((ObjectNode) specificVariant).set(field, merged);
+            }
+        }
+    }
+
+    private Set<String> damageTypes(JsonNode values, String field) {
+        Set<String> result = new HashSet<>();
+        for (JsonNode value : values) {
+            if (value.isTextual()) {
+                result.add(value.asText());
+            }
+            JsonNode nested = value.get(field);
+            if (nested != null && nested.isArray()) {
+                for (JsonNode nestedValue : nested) {
+                    if (nestedValue.isTextual()) {
+                        result.add(nestedValue.asText());
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private void addUnique(ArrayNode target, JsonNode values) {
+        for (JsonNode value : values) {
+            boolean contains = false;
+            for (JsonNode existing : target) {
+                if (existing.equals(value)) {
+                    contains = true;
+                    break;
+                }
+            }
+            if (!contains) {
+                target.add(value.deepCopy());
+            }
+        }
     }
 
     private void resetOrRemove(JsonNodeReader field, JsonNode source, JsonNode target) {

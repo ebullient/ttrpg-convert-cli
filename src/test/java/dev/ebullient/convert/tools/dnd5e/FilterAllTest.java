@@ -543,6 +543,26 @@ public class FilterAllTest {
         assertThat(MagicVariant.INSTANCE.hasRequiredProperty(x, adamantineArmor))
                 .describedAs("adamantineArmor: Hide Armor is MA")
                 .isTrue();
+
+        assertInheritedPsychicResistance("regal breastplate of the tyrant", "Regal Breastplate of the Tyrant");
+        assertInheritedPsychicResistance("subjugating breastplate of the tyrant", "Subjugating Breastplate of the Tyrant");
+    }
+
+    private void assertInheritedPsychicResistance(String keyName, String displayName) {
+        JsonNode item = commonTests.index.getNode("item|" + keyName + "|au");
+        assertThat(item)
+                .describedAs("%s should be present in the prepared item index", displayName)
+                .isNotNull();
+        assertThat(Json2QuteItem.ItemField.resist.getListOfStrings(item, commonTests.tui))
+                .describedAs("%s should contain inherited Psychic resistance", displayName)
+                .containsExactly("psychic");
+
+        String rendered = commonTests.templates
+                .render(new Json2QuteItem(commonTests.index, Tools5eIndexType.item, item).build());
+        assertThat(rendered)
+                .describedAs("%s should render inherited Psychic resistance", displayName)
+                .contains("to psychic damage")
+                .doesNotContain("getFullImmRes");
     }
 
     @Test
