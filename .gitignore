@@ -67,3 +67,5 @@ native-image-macOS-logs
 ttrpg-convert.out.*
 .claude/settings.local.json
 qrspi
+.capn/
+.codex/
