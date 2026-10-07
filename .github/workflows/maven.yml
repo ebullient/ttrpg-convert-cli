@@ -16,7 +16,7 @@ on:
 env:
   JAVA_VERSION: 21
   JAVA_DISTRO: temurin
-  NATIVE_JAVA_VERSION: 24
+  NATIVE_JAVA_VERSION: 25
   GRAALVM_DIST: graalvm-community
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
