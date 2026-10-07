@@ -121,7 +121,7 @@ public class FilterNoneTest {
             commonTests.assert_MISSING("hazard|razorvine|xdmg");
 
             commonTests.assert_MISSING("itemgroup|arcane focus|phb");
-            commonTests.assert_MISSING("itemgroup|arcane focus|xphb");
+            commonTests.assert_Present("itemgroup|arcane focus|xphb");
             commonTests.assert_MISSING("itemgroup|carpet of flying|dmg");
             commonTests.assert_Present("itemgroup|carpet of flying|xdmg");
             commonTests.assert_MISSING("itemgroup|ioun stone|dmg");

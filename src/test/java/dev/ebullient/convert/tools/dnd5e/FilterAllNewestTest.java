@@ -176,7 +176,7 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("item|chain|xphb");
 
             commonTests.assert_Present("monster|abjurer archmage|au");
-            commonTests.assert_MISSING("monster|abjurer wizard|mpmm");
+            commonTests.assert_Present("monster|abjurer wizard|mpmm");
             commonTests.assert_MISSING("monster|abjurer|vgm");
             commonTests.assert_Present("monster|alkilith|mpmm");
             commonTests.assert_MISSING("monster|alkilith|mtf");
