@@ -93,6 +93,7 @@ _Support content creators. Only use or include sources that you own._
 | HF | Heroes' Feast | book |
 | HFDoMM | Heroes' Feast: The Deck of Many Morsels | reference |
 | HFFotM | Heroes' Feast Flavors of the Multiverse | book |
+| HFLotT | Heroes' Feast: Legends of the Table | book |
 | HFStCM | Heroes' Feast: Saving the Children's Menu | adventure |
 | HWAitW | Humblewood: Adventure in the Wood | reference |
 | HWCS | Humblewood Campaign Setting | reference |
@@ -152,6 +153,7 @@ _Support content creators. Only use or include sources that you own._
 | RHW | Ravenloft: The Horrors Within | book |
 | RMBRE | The Lost Dungeon of Rickedness: Big Rick Energy | adventure |
 | RMR | Dungeons & Dragons vs. Rick and Morty: Basic Rules | book |
+| RWG | Red Wizards' Gambit | adventure |
 | RoT | The Rise of Tiamat | adventure |
 | RoTOS | The Rise of Tiamat Online Supplement | reference |
 | RtG | Return to Glory | adventure |

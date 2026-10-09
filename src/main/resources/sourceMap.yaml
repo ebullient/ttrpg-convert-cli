@@ -229,6 +229,9 @@ config5e:
     HFFotM:
       name: "Heroes' Feast Flavors of the Multiverse"
       date: "2023-11-07"
+    HFLotT:
+      name: "Heroes' Feast: Legends of the Table"
+      date: "2026-09-15"
     HFStCM:
       name: "Heroes' Feast: Saving the Children's Menu"
       date: "2023-11-21"
@@ -415,6 +418,9 @@ config5e:
     RtG:
       name: "Return to Glory"
       date: "2021-05-21"
+    RWG:
+      name: "Red Wizards' Gambit"
+      date: "2026-09-15"
     SAC:
       name: "Sage Advice Compendium"
       date: "2019-01-31"
