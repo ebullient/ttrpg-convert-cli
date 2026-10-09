@@ -222,6 +222,10 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
 
         Tools5eIndexType.adventure.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.book.withArrayFrom(node, this::addToIndex);
+        if (homebrew == null) {
+            Tools5eIndexType.adventureData.withArrayFrom(node, this::addToIndex);
+            Tools5eIndexType.bookData.withArrayFrom(node, this::addToIndex);
+        }
 
         // 5e tools book/adventure data
         if (Tools5eFields.data.existsIn(node) && !filename.isEmpty()) {
