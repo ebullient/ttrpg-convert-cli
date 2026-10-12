@@ -57,7 +57,7 @@ jobs:
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRO }}
@@ -85,14 +85,14 @@ jobs:
           zip -r target/${ARTIFACT}-${NEXT}-examples.zip docs examples default
 
       - name: Upload ${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-runner.jar
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         id: upload-jar
         with:
           name: artifacts-runner
           path: target/${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-runner.jar
 
       - name: Upload ${{ steps.git-commit-tag.outputs.artifact }}-${{ steps.git-commit-tag.outputs.next }}-examples.zip
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         id: upload-zip
         with:
           name: artifacts-examples
@@ -100,17 +100,19 @@ jobs:
 
   native-binaries:
     needs: build_tag
-    uses: ebullient/workflows/.github/workflows/java-release-native-binaries.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
+    uses: ebullient/workflows/.github/workflows/java-release-native-binaries.yml@d5e66da3d233f1c67c2097134cde73152ff43e2b # 0.2.3
     permissions:
       contents: read
       actions: write
     with:
+      artifact: ${{ needs.build_tag.outputs.artifact }}
       version: ${{ needs.build_tag.outputs.version }}
+      native_java_version: 25
     secrets: inherit
 
   release:
     needs: [build_tag, native-binaries]
-    uses: ebullient/workflows/.github/workflows/jreleaser-release.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
+    uses: ebullient/workflows/.github/workflows/jreleaser-release.yml@d5e66da3d233f1c67c2097134cde73152ff43e2b # 0.2.3
     permissions:
       contents: write
       actions: write
@@ -123,7 +125,7 @@ jobs:
 
   release-prep-next:
     needs: [build_tag, release]
-    uses: ebullient/workflows/.github/workflows/java-release-prep-next.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
+    uses: ebullient/workflows/.github/workflows/java-release-prep-next.yml@81f65356aee1e9914a3b3eea640c35cb40d99bc2 # 0.2.2
     permissions:
       contents: write
     with:
