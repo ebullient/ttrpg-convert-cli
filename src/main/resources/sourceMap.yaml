@@ -394,6 +394,9 @@ config5e:
     PiP:
       name: "Peril in Pinegrove"
       date: "2023-11-20"
+    PL:
+      name: "Project_Lamordia"
+      date: "2026-10-13"
     PotA:
       name: "Princes of the Apocalypse"
       date: "2015-04-07"

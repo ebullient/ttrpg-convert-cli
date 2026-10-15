@@ -139,6 +139,7 @@ _Support content creators. Only use or include sources that you own._
 | OoW | The Orrery of the Wanderer | adventure |
 | OotA | Out of the Abyss | adventure |
 | PHB | Player's Handbook | book |
+| PL | Project_Lamordia | book |
 | PSA | Plane Shift: Amonkhet | reference |
 | PSD | Plane Shift: Dominaria | reference |
 | PSI | Plane Shift: Innistrad | reference |
