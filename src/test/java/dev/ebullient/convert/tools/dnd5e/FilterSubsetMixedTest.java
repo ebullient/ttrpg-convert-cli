@@ -16,7 +16,6 @@ import dev.ebullient.convert.tools.dnd5e.CommonDataTests.TestInput;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-
 public class FilterSubsetMixedTest {
     static CommonDataTests commonTests;
     static final TestInput testInput = TestInput.subsetMixed;
