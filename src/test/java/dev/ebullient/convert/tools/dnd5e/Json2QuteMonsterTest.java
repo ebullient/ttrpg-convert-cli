@@ -2,6 +2,7 @@ package dev.ebullient.convert.tools.dnd5e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -352,6 +353,45 @@ public class Json2QuteMonsterTest {
                 .describedAs("pre-existing version entry should now render a parent link to its base monster")
                 .isNotNull()
                 .contains("[Ordinary Beast]");
+    }
+
+    @Test
+    void hydratedVersionFiltersOwnSourceOutOfReferenceSources() throws Exception {
+        Tui tui = new Tui();
+        CompendiumConfig config = ConfiguratorUtil.createNewConfig(tui);
+        new Configurator(config).allowSource("all");
+        Tools5eIndex localIndex = new Tools5eIndex(config);
+        Tools5eLinkifier.instance().reset();
+
+        JsonNode tree = Tui.MAPPER.readTree("""
+                {
+                  "monster": [
+                    {
+                      "name": "Referenced Beast",
+                      "source": "TEST",
+                      "type": "beast",
+                      "referenceSources": ["TEST-WBTW", "TEST-MPMM"],
+                      "_versions": [
+                        {"name": "Referenced Beast (MPMM)", "source": "TEST-MPMM"}
+                      ]
+                    }
+                  ]
+                }
+                """);
+        localIndex.importTree("test.json", tree);
+        localIndex.prepare();
+
+        JsonNode version = localIndex
+                .getOrigin(Tools5eIndexType.monster.createKey("Referenced Beast (MPMM)", "TEST-MPMM"));
+        assertThat(version).isNotNull();
+
+        JsonNode referenceSources = version.get("referenceSources");
+        assertThat(referenceSources).isNotNull();
+        List<String> values = new ArrayList<>();
+        referenceSources.forEach(n -> values.add(n.asText()));
+        assertThat(values)
+                .describedAs("the version's own source (MPMM) must be filtered out; the other entry (WBTW) is kept")
+                .containsExactly("TEST-WBTW");
     }
 
     @Test

@@ -1617,6 +1617,7 @@ public interface JsonSource extends JsonTextReplacement {
         prerequisite,
         prop, // statblock
         race,
+        referenceSources,
         regionalEffects, // legendary group
         shortName,
         size,

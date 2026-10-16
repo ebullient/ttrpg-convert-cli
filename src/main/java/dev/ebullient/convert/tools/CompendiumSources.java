@@ -27,6 +27,9 @@ public abstract class CompendiumSources {
     protected final Set<SourceAndPage> bookRef = new LinkedHashSet<>();
     protected String sourceText;
 
+    // Sources (typically adventures) that reference/use this entity without redefining it
+    protected final Set<String> referenceSources = new HashSet<>();
+
     // Provides a list of sources that this is a reprint of
     protected final Set<CompendiumSources> reprintOf = new HashSet<>();
     // Source that this is a copy of
@@ -105,6 +108,16 @@ public abstract class CompendiumSources {
                         this.sources.add(sp.source);
                     });
         }
+
+        if (Fields.referenceSources.existsIn(jsonElement)) {
+            // Used by (but not redefined in)...
+            // Tracked separately from sources/bookRef: this does not change primarySource()
+            // or appear in "Also found in" source text; it only affects inclusion.
+            Fields.referenceSources.streamFrom(jsonElement)
+                    .map(JsonNode::asText)
+                    .filter(s -> s != null && !s.equals(copySrc))
+                    .forEach(s -> this.referenceSources.add(s.toLowerCase()));
+        }
     }
 
     protected String findSourceText(IndexType type, JsonNode jsonElement) {
@@ -180,7 +193,8 @@ public abstract class CompendiumSources {
 
     public boolean includedBy(Set<String> sources) {
         return TtrpgConfig.getConfig().allSources()
-                || this.sources.stream().anyMatch(x -> sources.contains(x.toLowerCase()));
+                || this.sources.stream().anyMatch(x -> sources.contains(x.toLowerCase()))
+                || this.referenceSources.stream().anyMatch(sources::contains);
     }
 
     public String getKey() {
@@ -228,5 +242,6 @@ public abstract class CompendiumSources {
         _copiedFrom,
         additionalSources,
         otherSources,
+        referenceSources,
     }
 }

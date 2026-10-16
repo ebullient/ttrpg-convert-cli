@@ -31,6 +31,7 @@ public class Tools5eJsonSourceCopier extends JsonSourceCopier<Tools5eIndexType> 
     private static final List<String> _MERGE_REQUIRES_PRESERVE_BASE = List.of(
             "page",
             "otherSources",
+            "referenceSources",
             "srd",
             "srd52",
             "basicRules",

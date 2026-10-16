@@ -856,6 +856,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         filterSources(Tools5eFields.additionalSources, parentCopy, SourceField.source.getTextOrNull(version));
         filterSources(Tools5eFields.otherSources, parentCopy, SourceField.source.getTextOrNull(version));
+        filterSources(Tools5eFields.referenceSources, parentCopy, SourceField.source.getTextOrNull(version));
 
         index.copier.mergeNodes(type, parentKey, parentCopy, version);
         TtrpgValue.indexParentKey.setIn(version, parentKey);

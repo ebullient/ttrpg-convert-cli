@@ -33,7 +33,8 @@ public class FilterSubsetMixedTest {
                         ],
                         "adventure": [
                             "PaBTSO",
-                            "OotA"
+                            "OotA",
+                            "WBtW"
                         ],
                         "reference": [
                             "MM",
@@ -95,6 +96,7 @@ public class FilterSubsetMixedTest {
 
             assertThat(config.sourceIncluded("PaBTSO")).isTrue();
             assertThat(config.sourceIncluded("OotA")).isTrue();
+            assertThat(config.sourceIncluded("WBtW")).isTrue();
             assertThat(config.sourceIncluded("LMOP")).isFalse();
 
             commonTests.assert_MISSING("action|attack|phb");
@@ -343,6 +345,30 @@ public class FilterSubsetMixedTest {
             commonTests.assert_MISSING("subrace|tiefling (zariel)|tiefling|phb|mtf");
             commonTests.assert_MISSING("subrace|tiefling|tiefling|phb|phb");
             commonTests.assert_MISSING("subrace|vampire (ixalan)|vampire|psz|psx");
+
+            // referenced-only creatures: defined in VGM (not independently selected),
+            // referenced by WBtW (selected) without redefinition, but reprinted in MPMM
+            // (also selected) -- reprint collapse still applies, so the reference
+            // resolves through to the MPMM version rather than keeping the VGM original.
+            commonTests.assert_MISSING("monster|darkling|vgm");
+            commonTests.assert_MISSING("monster|darkling elder|vgm");
+            commonTests.assert_MISSING("monster|boggle|vgm");
+            commonTests.assert_MISSING("monster|korred|vgm");
+            commonTests.assert_MISSING("monster|quickling|vgm");
+            commonTests.assert_MISSING("monster|redcap|vgm");
+
+            assertThat(commonTests.index.getAliasOrDefault("monster|darkling|vgm"))
+                    .isEqualTo("monster|darkling|mpmm");
+            assertThat(commonTests.index.getAliasOrDefault("monster|darkling elder|vgm"))
+                    .isEqualTo("monster|darkling elder|mpmm");
+            assertThat(commonTests.index.getAliasOrDefault("monster|boggle|vgm"))
+                    .isEqualTo("monster|boggle|mpmm");
+            assertThat(commonTests.index.getAliasOrDefault("monster|korred|vgm"))
+                    .isEqualTo("monster|korred|mpmm");
+            assertThat(commonTests.index.getAliasOrDefault("monster|quickling|vgm"))
+                    .isEqualTo("monster|quickling|mpmm");
+            assertThat(commonTests.index.getAliasOrDefault("monster|redcap|vgm"))
+                    .isEqualTo("monster|redcap|mpmm");
 
             // specific for this combination of features (homebrew)
             var dirgeSinger = "subclass|college of the dirge singer|bard|phb|exploringeberron";
