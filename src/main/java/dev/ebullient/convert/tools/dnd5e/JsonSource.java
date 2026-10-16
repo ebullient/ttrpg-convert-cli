@@ -148,6 +148,11 @@ public interface JsonSource extends JsonTextReplacement {
                     case link -> appendLink(text, node);
                     case list -> {
                         String style = Tools5eFields.style.getTextOrEmpty(node);
+                        String caption = SourceField.name.replaceTextFrom(node, this);
+                        if (caption != null && !caption.isBlank()) {
+                            maybeAddBlankLine(text);
+                            text.add("**" + caption + "**");
+                        }
                         if ("list-no-bullets".equals(style)) {
                             if (Tools5eFields.columns.existsIn(node)) {
                                 maybeAddBlankLine(text);
@@ -380,20 +385,45 @@ public interface JsonSource extends JsonTextReplacement {
         }
     }
 
+    default String withHardBreak(String line) {
+        return line.endsWith("  ") ? line : line + "  ";
+    }
+
     default void appendList(List<String> text, ArrayNode itemArray, ListType listType) {
-        String indent = parseState().getListIndent();
+        // Item text is indented by the enclosing list item (if any), not here
         boolean pushed = parseState().indentList();
         try {
             maybeAddBlankLine(text);
-            itemArray.forEach(e -> {
+            boolean hasPrevious = false;
+            for (JsonNode e : itemArray) {
                 List<String> item = new ArrayList<>();
                 appendToText(item, e, null);
-                if (item.size() > 0) {
-                    text.add(indent + listType.marker + item.get(0) + "  ");
+                while (!item.isEmpty() && item.get(0).isBlank()) {
                     item.remove(0);
-                    item.forEach(x -> text.add(x.isEmpty() ? "" : indent + "    " + x + "  "));
                 }
-            });
+                if (item.isEmpty()) {
+                    continue;
+                }
+                AppendTypeValue entryType = AppendTypeValue.valueFrom(e, SourceField.type);
+                boolean isCaptionedList = entryType == AppendTypeValue.list
+                        && !SourceField.name.getTextOrEmpty(e).isBlank();
+                if (entryType == AppendTypeValue.options || entryType == AppendTypeValue.list) {
+                    // An uncaptioned list or an options block nests under the previous item
+                    // (or stands in for this one) rather than merging onto a bullet marker.
+                    // A captioned list is its own standalone section, so it always renders
+                    // at the current level, regardless of what preceded it.
+                    if (entryType == AppendTypeValue.options || isCaptionedList) {
+                        maybeAddBlankLine(text);
+                    }
+                    String nested = (hasPrevious && !isCaptionedList) ? "    " : "";
+                    item.forEach(x -> text.add(x.isEmpty() ? "" : nested + x));
+                } else {
+                    text.add(listType.marker + withHardBreak(item.get(0)));
+                    item.remove(0);
+                    item.forEach(x -> text.add(x.isEmpty() ? "" : "    " + withHardBreak(x)));
+                }
+                hasPrevious = true;
+            }
         } finally {
             parseState().pop(pushed);
         }
@@ -431,7 +461,7 @@ public interface JsonSource extends JsonTextReplacement {
     }
 
     default void appendOptions(List<String> text, JsonNode entry) {
-        String indent = parseState().getListIndent();
+        // Item text is indented by the enclosing list item (if any), not here
         boolean pushed = parseState().indentList();
         try {
             List<String> list = new ArrayList<>();
@@ -440,9 +470,9 @@ public interface JsonSource extends JsonTextReplacement {
                 appendToText(item, e, null);
                 if (item.size() > 0) {
                     StringBuilder listItem = new StringBuilder();
-                    listItem.append(indent).append("- ").append(item.get(0)).append("  ");
+                    listItem.append("- ").append(withHardBreak(item.get(0)));
                     item.remove(0);
-                    item.forEach(x -> listItem.append(x.isEmpty() ? "" : "\n" + indent + "    " + x + "  "));
+                    item.forEach(x -> listItem.append(x.isEmpty() ? "" : "\n" + "    " + withHardBreak(x)));
                     list.add(listItem.toString());
                 }
             }
