@@ -628,6 +628,26 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return linkifier().monsterPath(isNpc, creatureType);
     }
 
+    /**
+     * Generation-time counterpart to {@link #findCreatureType()}'s display-time detection
+     * of an unresolved {@code {"type": {"choose": [...]}}} shape. Returns the {@code choose}
+     * array's string values (in source order) if {@code node}'s {@code type} field has that
+     * shape, or an empty list otherwise (including when {@code node} has no {@code type} field
+     * at all).
+     */
+    static List<String> chooseTypeValues(JsonNode node) {
+        List<String> values = new ArrayList<>();
+        JsonNode typeNode = SourceField.type.getFrom(node);
+        if (typeNode == null) {
+            return values;
+        }
+        JsonNode innerType = SourceField.type.getFrom(typeNode);
+        if (innerType != null && innerType.isObject() && MonsterFields.choose.existsIn(innerType)) {
+            MonsterFields.choose.readArrayFrom(innerType).forEach(x -> values.add(x.asText()));
+        }
+        return values;
+    }
+
     public static List<JsonNode> findMonsterVariants(
             Tools5eIndex index, Tools5eIndexType type,
             String key, JsonNode jsonSource) {
@@ -682,7 +702,35 @@ public class Json2QuteMonster extends Json2QuteCommon {
             }
             return versions;
         }
-        return List.of(jsonSource);
+
+        List<String> chooseValues = chooseTypeValues(jsonSource);
+        if (chooseValues.isEmpty()) {
+            return List.of(jsonSource);
+        }
+
+        List<JsonNode> withSiblings = new ArrayList<>();
+        withSiblings.add(jsonSource);
+        String origname = SourceField.name.getTextOrEmpty(jsonSource);
+        boolean hasFluff = Tools5eFields.hasFluff.booleanOrDefault(jsonSource, false)
+                || Tools5eFields.hasFluffImages.booleanOrDefault(jsonSource, false);
+        String fluffKey = hasFluff ? Tools5eIndexType.monsterFluff.createKey(jsonSource) : null;
+        for (String value : chooseValues) {
+            ObjectNode copy = (ObjectNode) jsonSource.deepCopy();
+            SourceField.type.setIn(copy, value);
+            String name = "%s (%s)".formatted(origname, toTitleCase(value));
+            SourceField.name.setIn(copy, name);
+            if (Tools5eFields.hasToken.booleanOrDefault(jsonSource, false)) {
+                MonsterFields.original.setIn(copy, origname);
+            }
+            if (fluffKey != null) {
+                TtrpgValue.indexFluffKey.setIn(copy, fluffKey);
+            }
+            String siblingKey = type.createKey(name, SourceField.source.getTextOrEmpty(copy));
+            Tools5eSources.constructSources(siblingKey, copy);
+            TtrpgValue.indexParentKey.setIn(copy, key);
+            withSiblings.add(copy);
+        }
+        return withSiblings;
     }
 
     public static String hydrateVersion(String parentKey, JsonNode parentSource, ObjectNode version, Tools5eIndex index) {
