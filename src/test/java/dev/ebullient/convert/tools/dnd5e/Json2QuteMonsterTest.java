@@ -134,6 +134,146 @@ public class Json2QuteMonsterTest {
     }
 
     @Test
+    void findMonsterVariantsPreservesTypeTagsOnGeneratedSiblings() throws Exception {
+        JsonNode source = Tui.MAPPER.readTree("""
+                {
+                  "name": "Empyrean",
+                  "source": "TEST",
+                  "type": {"type": {"choose": ["celestial", "fiend"]}, "tags": ["titan"]}
+                }
+                """);
+        String key = Tools5eIndexType.monster.createKey(source);
+
+        List<JsonNode> variants = Json2QuteMonster.findMonsterVariants(
+                index, Tools5eIndexType.monster, key, source);
+
+        JsonNode celestial = variants.get(1);
+        Json2QuteMonster json2Qute = new Json2QuteMonster(index, Tools5eIndexType.monster, celestial);
+        assertThat(json2Qute.creatureType).isEqualTo("celestial");
+        assertThat(json2Qute.subtype).isEqualTo("titan");
+    }
+
+    @Test
+    void findMonsterVariantsCoveredByVersionsGeneratesNoSiblings() throws Exception {
+        JsonNode source = Tui.MAPPER.readTree("""
+                {
+                  "name": "Otherworldly Steed",
+                  "source": "TEST",
+                  "type": {"type": {"choose": ["celestial", "fey", "fiend"]}},
+                  "_versions": [
+                    {"name": "Otherworldly Steed (Celestial)", "source": "TEST", "type": "celestial"},
+                    {"name": "Otherworldly Steed (Fey)", "source": "TEST", "type": "fey"},
+                    {"name": "Otherworldly Steed (Fiend)", "source": "TEST", "type": "fiend"}
+                  ]
+                }
+                """);
+        String key = Tools5eIndexType.monster.createKey(source);
+
+        List<JsonNode> variants = Json2QuteMonster.findMonsterVariants(
+                index, Tools5eIndexType.monster, key, source);
+
+        // Original (unmodified, kept since no version name matches origname) + 3 versions = 4
+        assertThat(variants).hasSize(4);
+        assertThat(variants.get(0)).isSameAs(source);
+    }
+
+    @Test
+    void findMonsterVariantsPartiallyCoveredGeneratesOnlyUncoveredSiblings() throws Exception {
+        JsonNode source = Tui.MAPPER.readTree("""
+                {
+                  "name": "Partial Steed",
+                  "source": "TEST",
+                  "type": {"type": {"choose": ["celestial", "fey", "fiend"]}},
+                  "_versions": [
+                    {"name": "Partial Steed (Celestial)", "source": "TEST", "type": "celestial"},
+                    {"name": "Partial Steed (Fey)", "source": "TEST", "type": "fey"}
+                  ]
+                }
+                """);
+        String key = Tools5eIndexType.monster.createKey(source);
+
+        List<JsonNode> variants = Json2QuteMonster.findMonsterVariants(
+                index, Tools5eIndexType.monster, key, source);
+
+        // Original + 2 versions (covering celestial, fey) + 1 new sibling for fiend = 4
+        assertThat(variants).hasSize(4);
+        assertThat(variants.get(0)).isSameAs(source);
+
+        JsonNode fiendSibling = variants.get(3);
+        assertThat(fiendSibling.get("name").asText()).isEqualTo("Partial Steed (Fiend)");
+        assertThat(fiendSibling.get("type").asText()).isEqualTo("fiend");
+        assertThat(TtrpgValue.indexParentKey.getTextOrNull(fiendSibling)).isEqualTo(key);
+    }
+
+    @Test
+    void findMonsterVariantsGeneratesFormAndTypeSiblingsWhenNoVersionOverridesType() throws Exception {
+        JsonNode source = Tui.MAPPER.readTree("""
+                {
+                  "name": "Battle Familiar",
+                  "source": "TEST",
+                  "type": {"type": {"choose": ["celestial", "fey", "fiend"]}},
+                  "_versions": [
+                    {"name": "Battle Familiar (Brute)", "source": "TEST"},
+                    {"name": "Battle Familiar (Flyer)", "source": "TEST"},
+                    {"name": "Battle Familiar (Stalker)", "source": "TEST"}
+                  ]
+                }
+                """);
+        String key = Tools5eIndexType.monster.createKey(source);
+
+        List<JsonNode> variants = Json2QuteMonster.findMonsterVariants(
+                index, Tools5eIndexType.monster, key, source);
+
+        // original (kept, no version matches origname) + 3 versions + 9 new (3 forms x 3 types)
+        assertThat(variants).hasSize(13);
+
+        List<String> names = variants.stream().map(v -> v.get("name").asText()).toList();
+        assertThat(names).contains(
+                "Battle Familiar",
+                "Battle Familiar (Brute)", "Battle Familiar (Flyer)", "Battle Familiar (Stalker)",
+                "Battle Familiar (Brute, Celestial)", "Battle Familiar (Brute, Fey)", "Battle Familiar (Brute, Fiend)",
+                "Battle Familiar (Flyer, Celestial)", "Battle Familiar (Flyer, Fey)", "Battle Familiar (Flyer, Fiend)",
+                "Battle Familiar (Stalker, Celestial)", "Battle Familiar (Stalker, Fey)", "Battle Familiar (Stalker, Fiend)");
+
+        JsonNode bruteFiend = variants.stream()
+                .filter(v -> v.get("name").asText().equals("Battle Familiar (Brute, Fiend)"))
+                .findFirst().orElseThrow();
+        assertThat(bruteFiend.get("type").asText()).isEqualTo("fiend");
+        String bruteKey = Tools5eIndexType.monster.createKey("Battle Familiar (Brute)", "TEST");
+        assertThat(TtrpgValue.indexParentKey.getTextOrNull(bruteFiend)).isEqualTo(bruteKey);
+
+        // The original "choose" entries are kept unchanged (still ambiguous)
+        JsonNode brute = variants.stream()
+                .filter(v -> v.get("name").asText().equals("Battle Familiar (Brute)"))
+                .findFirst().orElseThrow();
+        assertThat(Json2QuteMonster.chooseTypeValues(brute)).containsExactly("celestial", "fey", "fiend");
+    }
+
+    @Test
+    void findMonsterVariantsLeavesOrdinaryVersionsUnchanged() throws Exception {
+        JsonNode source = Tui.MAPPER.readTree("""
+                {
+                  "name": "Ordinary Beast",
+                  "source": "TEST",
+                  "type": "beast",
+                  "_versions": [
+                    {"name": "Ordinary Beast (Small)", "source": "TEST"},
+                    {"name": "Ordinary Beast (Large)", "source": "TEST"}
+                  ]
+                }
+                """);
+        String key = Tools5eIndexType.monster.createKey(source);
+
+        List<JsonNode> variants = Json2QuteMonster.findMonsterVariants(
+                index, Tools5eIndexType.monster, key, source);
+
+        // original (kept, no version matches origname) + 2 versions, no choose-driven siblings
+        assertThat(variants).hasSize(3);
+        List<String> names = variants.stream().map(v -> v.get("name").asText()).toList();
+        assertThat(names).containsExactly("Ordinary Beast", "Ordinary Beast (Small)", "Ordinary Beast (Large)");
+    }
+
+    @Test
     void findMonsterVariantsLeavesNoChooseNoVersionsUnchanged() throws Exception {
         JsonNode source = Tui.MAPPER.readTree("""
                 {

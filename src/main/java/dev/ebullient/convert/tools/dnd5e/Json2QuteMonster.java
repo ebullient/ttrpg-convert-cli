@@ -6,10 +6,12 @@ import static dev.ebullient.convert.StringUtil.toTitleCase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -628,13 +630,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
         return linkifier().monsterPath(isNpc, creatureType);
     }
 
-    /**
-     * Generation-time counterpart to {@link #findCreatureType()}'s display-time detection
-     * of an unresolved {@code {"type": {"choose": [...]}}} shape. Returns the {@code choose}
-     * array's string values (in source order) if {@code node}'s {@code type} field has that
-     * shape, or an empty list otherwise (including when {@code node} has no {@code type} field
-     * at all).
-     */
+    /** Returns the {@code choose} array's values if {@code node}'s {@code type} is unresolved, else empty. */
     static List<String> chooseTypeValues(JsonNode node) {
         List<String> values = new ArrayList<>();
         JsonNode typeNode = SourceField.type.getFrom(node);
@@ -646,6 +642,65 @@ public class Json2QuteMonster extends Json2QuteCommon {
             MonsterFields.choose.readArrayFrom(innerType).forEach(x -> values.add(x.asText()));
         }
         return values;
+    }
+
+    private static final Pattern VERSION_FORM_NAME = Pattern.compile("^(.*) \\((.+)\\)$");
+
+    /** Resolves {@code copy}'s ambiguous {@code type} to {@code value}, keeping any sibling {@code tags}. */
+    private static void resolveChosenType(ObjectNode copy, String value) {
+        JsonNode typeNode = SourceField.type.getFrom(copy);
+        JsonNode tags = typeNode == null ? null : typeNode.get("tags");
+        if (tags != null) {
+            ObjectNode typeObj = Tui.MAPPER.createObjectNode();
+            typeObj.put("type", value);
+            typeObj.set("tags", tags);
+            SourceField.type.setIn(copy, typeObj);
+        } else {
+            SourceField.type.setIn(copy, value);
+        }
+    }
+
+    /**
+     * Generates one sibling per {@code uncovered} value for {@code node}. Names
+     * {@code "<name> (<value>)"}, or {@code "<base> (<form>, <value>)"} when {@code node}'s
+     * own name already has a {@code "<base> (<form>)"} version suffix.
+     */
+    private static List<JsonNode> generateTypeSiblings(
+            Tools5eIndexType type, String monsterKey, JsonNode node, List<String> uncovered) {
+        List<JsonNode> siblings = new ArrayList<>();
+        String nodeName = SourceField.name.getTextOrEmpty(node);
+        String nodeKey = type.createKey(node);
+        boolean hasFluff = Tools5eFields.hasFluff.booleanOrDefault(node, false)
+                || Tools5eFields.hasFluffImages.booleanOrDefault(node, false);
+        String fluffKey = hasFluff ? Tools5eIndexType.monsterFluff.createKey(node) : null;
+
+        Matcher formMatcher = VERSION_FORM_NAME.matcher(nodeName);
+        String baseName = nodeName;
+        String form = null;
+        if (formMatcher.matches()) {
+            baseName = formMatcher.group(1);
+            form = formMatcher.group(2);
+        }
+
+        for (String value : uncovered) {
+            ObjectNode copy = (ObjectNode) node.deepCopy();
+            resolveChosenType(copy, value);
+            String name = form == null
+                    ? "%s (%s)".formatted(baseName, toTitleCase(value))
+                    : "%s (%s, %s)".formatted(baseName, form, toTitleCase(value));
+            SourceField.name.setIn(copy, name);
+            if (Tools5eFields.hasToken.booleanOrDefault(node, false)) {
+                MonsterFields.original.setIn(copy, baseName);
+            }
+            if (fluffKey != null) {
+                TtrpgValue.indexFluffKey.setIn(copy, fluffKey);
+            }
+            String siblingKey = type.createKey(name, SourceField.source.getTextOrEmpty(copy));
+            Tools5eSources.constructSources(siblingKey, copy);
+            TtrpgValue.indexParentKey.setIn(copy, nodeKey);
+            siblings.add(copy);
+        }
+        return siblings;
     }
 
     public static List<JsonNode> findMonsterVariants(
@@ -700,6 +755,60 @@ public class Json2QuteMonster extends Json2QuteCommon {
             if (!replacedPrimary) {
                 versions.add(0, jsonSource);
             }
+
+            // Resolve any unresolved `choose`-shaped type across the base + hydrated versions:
+            // for each node still carrying the choose shape, generate one sibling per value
+            // not already covered by some other node's plain-string type override.
+            List<String> candidateValues = List.of();
+            Set<String> covered = new HashSet<>();
+            for (JsonNode node : versions) {
+                List<String> nodeChoose = chooseTypeValues(node);
+                if (!nodeChoose.isEmpty() && candidateValues.isEmpty()) {
+                    candidateValues = nodeChoose;
+                } else {
+                    JsonNode typeNode = SourceField.type.getFrom(node);
+                    if (typeNode != null && typeNode.isTextual()) {
+                        covered.add(typeNode.asText().toLowerCase());
+                    }
+                }
+            }
+
+            if (!candidateValues.isEmpty()) {
+                List<String> uncovered = new ArrayList<>();
+                for (String value : candidateValues) {
+                    if (!covered.contains(value.toLowerCase())) {
+                        uncovered.add(value);
+                    }
+                }
+                if (!uncovered.isEmpty()) {
+                    // If any version-form node is itself still ambiguous, expand those (not the
+                    // base) to avoid duplicating the same type values per form. Otherwise (base
+                    // already has distinct version overrides, but some value is still uncovered),
+                    // expand the base node instead.
+                    boolean hasAmbiguousVersionForm = false;
+                    if (hasVersions) {
+                        for (JsonNode node : versions) {
+                            if (node != jsonSource && !chooseTypeValues(node).isEmpty()) {
+                                hasAmbiguousVersionForm = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    List<JsonNode> siblings = new ArrayList<>();
+                    for (JsonNode node : versions) {
+                        if (chooseTypeValues(node).isEmpty()) {
+                            continue; // already-typed node; not an ambiguous node to expand
+                        }
+                        if (hasAmbiguousVersionForm && node == jsonSource) {
+                            continue;
+                        }
+                        siblings.addAll(generateTypeSiblings(type, key, node, uncovered));
+                    }
+                    versions.addAll(siblings);
+                }
+            }
+
             return versions;
         }
 
@@ -710,26 +819,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
 
         List<JsonNode> withSiblings = new ArrayList<>();
         withSiblings.add(jsonSource);
-        String origname = SourceField.name.getTextOrEmpty(jsonSource);
-        boolean hasFluff = Tools5eFields.hasFluff.booleanOrDefault(jsonSource, false)
-                || Tools5eFields.hasFluffImages.booleanOrDefault(jsonSource, false);
-        String fluffKey = hasFluff ? Tools5eIndexType.monsterFluff.createKey(jsonSource) : null;
-        for (String value : chooseValues) {
-            ObjectNode copy = (ObjectNode) jsonSource.deepCopy();
-            SourceField.type.setIn(copy, value);
-            String name = "%s (%s)".formatted(origname, toTitleCase(value));
-            SourceField.name.setIn(copy, name);
-            if (Tools5eFields.hasToken.booleanOrDefault(jsonSource, false)) {
-                MonsterFields.original.setIn(copy, origname);
-            }
-            if (fluffKey != null) {
-                TtrpgValue.indexFluffKey.setIn(copy, fluffKey);
-            }
-            String siblingKey = type.createKey(name, SourceField.source.getTextOrEmpty(copy));
-            Tools5eSources.constructSources(siblingKey, copy);
-            TtrpgValue.indexParentKey.setIn(copy, key);
-            withSiblings.add(copy);
-        }
+        withSiblings.addAll(generateTypeSiblings(type, key, jsonSource, chooseValues));
         return withSiblings;
     }
 
