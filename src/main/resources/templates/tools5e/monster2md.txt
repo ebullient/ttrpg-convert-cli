@@ -14,6 +14,7 @@ aliases:
 ---
 # {resource.name}
 *Source: {resource.source}*  
+{#if resource.parentLink}*See also: {resource.parentLink}*{/if}
 
 {#if resource.description }
 {resource.description}

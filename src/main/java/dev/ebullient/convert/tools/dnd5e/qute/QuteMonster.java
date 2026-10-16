@@ -90,6 +90,10 @@ public class QuteMonster extends Tools5eQuteBase {
     public final String environment;
     /** Token image as {@link dev.ebullient.convert.qute.ImageRef} */
     public final ImageRef token;
+    /**
+     * Markdown link back to the originating "choose"-type entry or base monster, if this entry was generated/hydrated from one
+     */
+    public final String parentLink;
 
     private final List<Spellcasting> spellcasting;
 
@@ -102,7 +106,7 @@ public class QuteMonster extends Tools5eQuteBase {
             Traits traits,
             List<Spellcasting> spellcasting,
             String description, String environment,
-            ImageRef tokenImage, List<ImageRef> images, Tags tags) {
+            ImageRef tokenImage, List<ImageRef> images, Tags tags, String parentLink) {
 
         super(sources, name, source, images, description, tags);
 
@@ -131,6 +135,7 @@ public class QuteMonster extends Tools5eQuteBase {
         this.description = description;
         this.environment = environment;
         this.token = tokenImage;
+        this.parentLink = parentLink;
 
         if (isPresent(spellcasting)) {
             for (var sc : spellcasting) {
@@ -221,6 +226,9 @@ public class QuteMonster extends Tools5eQuteBase {
 
     /** Creature type (lowercase) and subtype if present: `{resource.type} ({resource.subtype})` */
     public String getFullType() {
+        if (type != null && type.startsWith("Choose one of ")) {
+            return "creature (choose one of " + type.substring("Choose one of ".length()) + ")";
+        }
         return type + ((subtype == null || subtype.isEmpty()) ? "" : " (" + subtype + ")");
     }
 

@@ -116,7 +116,26 @@ public class Json2QuteMonster extends Json2QuteCommon {
                 environment,
                 getToken(),
                 fluffImages,
-                tags);
+                tags,
+                parentLink());
+    }
+
+    /**
+     * Resolves {@code TtrpgValue.indexParentKey} (if set) into a linkified reference back to the
+     * node this monster was generated/hydrated from (a typed sibling generated from a "choose"-shaped
+     * type, or a pre-existing {@code _versions} entry), matching how {@code Tools5eLinkifier.linkCreature()}
+     * resolves an ordinary {@code {@creature name|source}} reference.
+     */
+    String parentLink() {
+        String parentKey = TtrpgValue.indexParentKey.getTextOrNull(rootNode);
+        if (parentKey == null) {
+            return null;
+        }
+        Tools5eSources parentSources = Tools5eSources.findSources(parentKey);
+        if (parentSources == null) {
+            return null;
+        }
+        return replaceText("{@creature %s|%s}".formatted(parentSources.getName(), parentSources.primarySource()));
     }
 
     /**
