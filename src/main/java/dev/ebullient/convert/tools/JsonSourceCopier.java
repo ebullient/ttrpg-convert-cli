@@ -238,14 +238,28 @@ public abstract class JsonSourceCopier<T extends IndexType> implements JsonTextC
             }
             return value;
         }
-        Matcher matcher = VARIABLE_SUBST_PAT.matcher(value.toString());
-        if (matcher.find()) {
+        String text = value.asText();
+        Matcher matcher = VARIABLE_SUBST_PAT.matcher(text);
+        if (!matcher.find()) {
+            return value;
+        }
+
+        StringBuilder result = new StringBuilder();
+        int lastEnd = 0;
+        matcher.reset();
+        while (matcher.find()) {
             String[] params = matcher.group("variable").split("__");
             TemplateVariable variableMode = TemplateVariable.valueFrom(params[0]);
-            return resolveDynamicVariable(
+            JsonNode resolved = resolveDynamicVariable(
                     originKey, value, target, variableMode, Arrays.copyOfRange(params, 1, params.length));
+            result.append(text, lastEnd, matcher.start());
+            // On failure, resolveDynamicVariable returns the original (unresolved) `value` node;
+            // leave that occurrence's raw token text in place rather than re-inserting the whole string.
+            result.append(resolved == value ? matcher.group() : resolved.asText());
+            lastEnd = matcher.end();
         }
-        return value;
+        result.append(text, lastEnd, text.length());
+        return new TextNode(result.toString());
     }
 
     /** Set the target prop which corresponds to the prop in {@code modInfo} to the value from {@code modInfo}. */
