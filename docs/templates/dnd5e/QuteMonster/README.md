@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[5eInitiativeYaml](#5einitiativeyaml), [5eInitiativeYamlNoSource](#5einitiativeyamlnosource), [5eStatblockYaml](#5estatblockyaml), [5eStatblockYamlNoSource](#5estatblockyamlnosource), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [alignment](#alignment), [allTraits](#alltraits), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [gear](#gear), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [initiative](#initiative), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [legendaryGroupLink](#legendarygrouplink), [name](#name), [passive](#passive), [pb](#pb), [rawSpellcasting](#rawspellcasting), [reaction](#reaction), [reprintOf](#reprintof), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [treasure](#treasure), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
+[5eInitiativeYaml](#5einitiativeyaml), [5eInitiativeYamlNoSource](#5einitiativeyamlnosource), [5eStatblockYaml](#5estatblockyaml), [5eStatblockYamlNoSource](#5estatblockyamlnosource), [ac](#ac), [acHp](#achp), [acText](#actext), [action](#action), [alignment](#alignment), [allTraits](#alltraits), [bonusAction](#bonusaction), [books](#books), [conditionImmune](#conditionimmune), [cr](#cr), [description](#description), [environment](#environment), [fluffImages](#fluffimages), [fullType](#fulltype), [gear](#gear), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hitDice](#hitdice), [hp](#hp), [hpText](#hptext), [immune](#immune), [immuneResist](#immuneresist), [initiative](#initiative), [isNpc](#isnpc), [labeledSource](#labeledsource), [languages](#languages), [legendary](#legendary), [legendaryGroup](#legendarygroup), [legendaryGroupLink](#legendarygrouplink), [name](#name), [parentLink](#parentlink), [passive](#passive), [pb](#pb), [rawSpellcasting](#rawspellcasting), [reaction](#reaction), [reprintOf](#reprintof), [resist](#resist), [savesSkills](#savesskills), [savingThrows](#savingthrows), [scores](#scores), [senses](#senses), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [size](#size), [skills](#skills), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [speed](#speed), [spellcasting](#spellcasting), [subtype](#subtype), [tags](#tags), [text](#text), [token](#token), [trait](#trait), [treasure](#treasure), [type](#type), [vaultPath](#vaultpath), [vulnerable](#vulnerable)
 
 ### 5eInitiativeYaml
 
@@ -178,6 +178,10 @@ Markdown link to legendary group (can be embedded).
 ### name
 
 Note name
+
+### parentLink
+
+Markdown link back to the originating "choose"-type entry or base monster, if this entry was generated/hydrated from one
 
 ### passive
 
