@@ -365,7 +365,7 @@ public class Json2QuteItem extends Json2QuteCommon {
     String itemName(JsonNode variantNode) {
         Tools5eSources vSources = Tools5eSources.findSources(variantNode);
         if (Tools5eSources.isSrd(variantNode)) {
-            if (index().sourceIncluded(vSources.primarySource())) {
+            if (vSources.includedByConfig()) {
                 return vSources.getName();
             }
             String srdName = Tools5eSources.srdName(variantNode);
