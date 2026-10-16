@@ -1,5 +1,6 @@
 package dev.ebullient.convert.tools.dnd5e;
 
+import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.pluralize;
 import static dev.ebullient.convert.StringUtil.toTitleCase;
 
@@ -132,6 +133,14 @@ public class Json2QuteMonster extends Json2QuteCommon {
         }
         if (typeNode.isTextual()) {
             creatureType = mapType(typeNode.asText());
+            return;
+        }
+
+        JsonNode innerType = SourceField.type.getFrom(typeNode);
+        if (innerType != null && innerType.isObject() && MonsterFields.choose.existsIn(innerType)) {
+            List<String> values = new ArrayList<>();
+            MonsterFields.choose.readArrayFrom(innerType).forEach(x -> values.add(x.asText()));
+            creatureType = "Choose one of " + joinConjunct(" or ", values);
             return;
         }
 
