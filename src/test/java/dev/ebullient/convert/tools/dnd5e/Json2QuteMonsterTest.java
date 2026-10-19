@@ -49,9 +49,53 @@ public class Json2QuteMonsterTest {
         Json2QuteMonster json2Qute = new Json2QuteMonster(index, Tools5eIndexType.monster, source);
 
         assertThat(json2Qute.creatureType).isEqualTo("Choose one of celestial or fiend");
+        assertThat(json2Qute.subtype).isNull();
 
         QuteMonster monster = (QuteMonster) json2Qute.build();
         assertThat(monster.type).isEqualTo("Choose one of celestial or fiend");
+        assertThat(monster.getFullType()).isEqualTo("creature (choose one of celestial or fiend)");
+
+        JsonNode withTags = Tui.MAPPER.readTree("""
+                {
+                  "name": "Empyrean",
+                  "source": "TEST",
+                  "type": {"type": {"choose": ["celestial", "fiend"]}, "tags": ["titan"]}
+                }
+                """);
+        Json2QuteMonster withTagsJson2Qute = new Json2QuteMonster(index, Tools5eIndexType.monster, withTags);
+        assertThat(withTagsJson2Qute.creatureType).isEqualTo("Choose one of celestial or fiend");
+        assertThat(withTagsJson2Qute.subtype).isEqualTo("titan");
+
+        QuteMonster withTagsMonster = (QuteMonster) withTagsJson2Qute.build();
+        assertThat(withTagsMonster.getFullType()).isEqualTo("creature (choose one of celestial or fiend) (titan)");
+
+        JsonNode withPrefixedTag = Tui.MAPPER.readTree("""
+                {
+                  "name": "Empyrean",
+                  "source": "TEST",
+                  "type": {"type": {"choose": ["celestial", "fiend"]}, "tags": [{"prefix": "former", "tag": "titan"}]}
+                }
+                """);
+        Json2QuteMonster withPrefixedTagJson2Qute = new Json2QuteMonster(index, Tools5eIndexType.monster, withPrefixedTag);
+        assertThat(withPrefixedTagJson2Qute.subtype).isEqualTo("former titan");
+    }
+
+    @Test
+    void plainTypeWithTagsRendersFullTypeUnchanged() throws Exception {
+        JsonNode source = Tui.MAPPER.readTree("""
+                {
+                  "name": "Flesh Golem",
+                  "source": "TEST",
+                  "type": {"type": "golem", "tags": ["flesh"]}
+                }
+                """);
+
+        Json2QuteMonster json2Qute = new Json2QuteMonster(index, Tools5eIndexType.monster, source);
+
+        assertThat(json2Qute.subtype).isEqualTo("flesh");
+
+        QuteMonster monster = (QuteMonster) json2Qute.build();
+        assertThat(monster.getFullType()).isEqualTo("construct (flesh)");
     }
 
     @Test

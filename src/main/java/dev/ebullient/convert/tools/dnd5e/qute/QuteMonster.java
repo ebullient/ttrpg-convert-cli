@@ -227,7 +227,8 @@ public class QuteMonster extends Tools5eQuteBase {
     /** Creature type (lowercase) and subtype if present: `{resource.type} ({resource.subtype})` */
     public String getFullType() {
         if (type != null && type.startsWith("Choose one of ")) {
-            return "creature (choose one of " + type.substring("Choose one of ".length()) + ")";
+            return "creature (choose one of " + type.substring("Choose one of ".length()) + ")"
+                    + ((subtype == null || subtype.isEmpty()) ? "" : " (" + subtype + ")");
         }
         return type + ((subtype == null || subtype.isEmpty()) ? "" : " (" + subtype + ")");
     }

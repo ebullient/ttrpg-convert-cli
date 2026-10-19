@@ -162,11 +162,22 @@ public class Json2QuteMonster extends Json2QuteCommon {
             List<String> values = new ArrayList<>();
             MonsterFields.choose.readArrayFrom(innerType).forEach(x -> values.add(x.asText()));
             creatureType = "Choose one of " + joinConjunct(" or ", values);
+            List<String> tags = extractTags(typeNode);
+            if (!tags.isEmpty()) {
+                subtype = String.join(", ", tags);
+            }
             return;
         }
 
         // We have an object: type + tags
         creatureType = mapType(SourceField.type.getTextOrEmpty(typeNode));
+        List<String> tags = extractTags(typeNode);
+        if (!tags.isEmpty()) {
+            subtype = String.join(", ", tags);
+        }
+    }
+
+    private List<String> extractTags(JsonNode typeNode) {
         List<String> tags = new ArrayList<>();
         typeNode.withArray("tags").forEach(tag -> {
             if (tag.isTextual()) {
@@ -177,9 +188,7 @@ public class Json2QuteMonster extends Json2QuteCommon {
                         tag.get("tag").asText()));
             }
         });
-        if (!tags.isEmpty()) {
-            subtype = String.join(", ", tags);
-        }
+        return tags;
     }
 
     /**
