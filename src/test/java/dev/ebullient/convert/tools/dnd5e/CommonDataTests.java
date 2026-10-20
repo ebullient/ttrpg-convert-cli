@@ -163,6 +163,22 @@ public class CommonDataTests {
         }
     }
 
+    public void testCharoptionList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (dataPresent) {
+            Path charoptionDir = deleteDir(Tools5eIndexType.charoption, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer)
+                    .writeFiles(Tools5eIndexType.charoption);
+
+            if (charoptionDir.toFile().exists()) {
+                TestUtils.assertDirectoryContents(charoptionDir, tui);
+            }
+        }
+    }
+
     public void testClassList(Path outputPath) {
         tui.setOutputPath(outputPath);
 

@@ -36,7 +36,7 @@ import dev.ebullient.convert.tools.dnd5e.qute.AbilityScores;
 public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType> {
     static final Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
     static final Pattern linkifyPattern = Pattern.compile("\\{@("
-            + "|action|background|card|class|condition|creature|creatureFluff|deck|deity|disease|facility"
+            + "|action|background|card|charoption|class|condition|creature|creatureFluff|deck|deity|disease|facility"
             + "|feat|hazard|item|itemMastery|itemProperty|itemType|legroup|object|psionic|race|recipe|reward"
             + "|sense|skill|spell|status|subclass|table|variantrule|vehicle"
             + "|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
@@ -325,9 +325,6 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                         .replaceAll("\\{@boon ([^|}]+)\\|[^|}]+\\|([^|}]*)}", "$2")
                         .replaceAll("\\{@boon ([^|}]+)\\|[^}]*}", "$1")
                         .replaceAll("\\{@boon ([^|}]+)}", "$1")
-                        .replaceAll("\\{@charoption ([^|}]+)\\|[^|}]+\\|([^|}]*)}", "$2")
-                        .replaceAll("\\{@charoption ([^|}]+)\\|[^}]*}", "$1")
-                        .replaceAll("\\{@charoption ([^|}]+)}", "$1")
                         .replaceAll("\\{@crochet ([^|}]+)\\|[^|}]+\\|([^|}]*)}", "$2")
                         .replaceAll("\\{@crochet ([^|}]+)\\|[^}]*}", "$1")
                         .replaceAll("\\{@crochet ([^}|]+)}", "$1")
@@ -627,6 +624,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@vehicle Galley|UAOfShipsAndSea} can have sources added with a pipe,
             // {@vehicle Galley|GoS|and optional link text added with another pipe}.",
             case background,
+                    charoption,
                     feat,
                     classtype,
                     deck,

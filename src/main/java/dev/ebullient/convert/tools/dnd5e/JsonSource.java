@@ -700,11 +700,7 @@ public interface JsonSource extends JsonTextReplacement {
             return;
         }
 
-        if (type == Tools5eIndexType.charoption) {
-            // charoption is not a linkable type.
-            tui().debugf(Msg.SOMEDAY, "charoption is not yet an embeddable type: %s", entry);
-            return;
-        } else if (type.isFluffType()) {
+        if (type.isFluffType()) {
             // Fluff is not a linkable type, and is never added to the filtered index,
             // so we need to check if the material is included in other ways
             JsonNode fluffNode = index().getOrigin(key);

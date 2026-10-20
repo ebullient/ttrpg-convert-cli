@@ -151,6 +151,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         Tools5eIndexType.objectFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.optionalfeatureFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.raceFluff.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.charoptionFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.recipeFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.rewardFluff.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.spellFluff.withArrayFrom(node, this::addToIndex);
@@ -205,6 +206,7 @@ public class Tools5eIndex implements JsonSource, ToolsIndex {
         // templated types
 
         Tools5eIndexType.background.withArrayFrom(node, this::addToIndex);
+        Tools5eIndexType.charoption.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.classtype.withArrayFrom(node, "class", this::addToIndex);
         Tools5eIndexType.deck.withArrayFrom(node, this::addToIndex);
         Tools5eIndexType.deity.withArrayFrom(node, this::addToIndex);

@@ -348,6 +348,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     public boolean writeFile() {
         return switch (this) {
             case background,
+                    charoption,
                     classtype,
                     deck,
                     deity,
@@ -435,7 +436,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     monsterfeatures ->
                 "MM";
             case boon, cult -> "MTF";
-            case charoption -> "MOT";
+            case charoption, charoptionFluff -> "MOT";
             case facility -> "XDMG";
             case itemMastery -> "XPHB";
             case itemTypeAdditionalEntries -> "XGE";
@@ -486,6 +487,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     boolean isFluffType() {
         return switch (this) {
             case backgroundFluff,
+                    charoptionFluff,
                     classFluff,
                     conditionFluff,
                     facilityFluff,

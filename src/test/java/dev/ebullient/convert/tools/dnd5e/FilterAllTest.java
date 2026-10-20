@@ -401,6 +401,11 @@ public class FilterAllTest {
     }
 
     @Test
+    public void testCharoptionList() {
+        commonTests.testCharoptionList(outputPath);
+    }
+
+    @Test
     public void testClassList() {
         commonTests.testClassList(outputPath);
     }
