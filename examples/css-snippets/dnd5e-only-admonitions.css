@@ -63,6 +63,7 @@ body {
 }
 
 .json5e-background div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-charoption div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-class div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-deck div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-deity div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
@@ -81,6 +82,7 @@ body {
   position: relative;
 }
 .json5e-background div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-charoption div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-class div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-deck div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-deity div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
@@ -109,6 +111,7 @@ body {
   text-align: center;
 }
 .json5e-background .callout[data-callout=gallery],
+.json5e-charoption .callout[data-callout=gallery],
 .json5e-class .callout[data-callout=gallery],
 .json5e-deck .callout[data-callout=gallery],
 .json5e-deity .callout[data-callout=gallery],
@@ -128,6 +131,7 @@ body {
   --callout-border-width: 0;
 }
 .json5e-background .callout[data-callout=gallery] .callout-content p,
+.json5e-charoption .callout[data-callout=gallery] .callout-content p,
 .json5e-class .callout[data-callout=gallery] .callout-content p,
 .json5e-deck .callout[data-callout=gallery] .callout-content p,
 .json5e-deity .callout[data-callout=gallery] .callout-content p,
@@ -150,6 +154,8 @@ body {
 }
 .json5e-background .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
 .json5e-background .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-charoption .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
+.json5e-charoption .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
 .json5e-class .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
 .json5e-class .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
 .json5e-deck .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
@@ -184,6 +190,8 @@ body {
 }
 .json5e-background .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
 .json5e-background .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-charoption .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
+.json5e-charoption .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
 .json5e-class .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
 .json5e-class .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
 .json5e-deck .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
@@ -217,6 +225,7 @@ body {
   max-height: 40vh;
 }
 .json5e-background .callout[data-callout=gallery] .callout-title,
+.json5e-charoption .callout[data-callout=gallery] .callout-title,
 .json5e-class .callout[data-callout=gallery] .callout-title,
 .json5e-deck .callout[data-callout=gallery] .callout-title,
 .json5e-deity .callout[data-callout=gallery] .callout-title,

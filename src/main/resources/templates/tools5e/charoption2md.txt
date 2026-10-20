@@ -1,0 +1,24 @@
+---
+obsidianUIMode: preview
+cssclasses:
+- json5e-charoption
+{#if resource.tags }
+tags:
+{#for tag in resource.tags}
+- {tag}
+{/for}{/if}
+aliases:
+{#each resource.aliases}
+- {it}
+{/each}
+---
+# {resource.name}
+{#if resource.optionType }*{resource.optionType}*  
+{/if}{#if resource.prerequisite }
+**Prerequisite**: {resource.prerequisite}
+{/if}{#if resource.text }
+
+{resource.text}
+{/if}
+
+{#if resource.source }*Source: {resource.source}* {/if}
