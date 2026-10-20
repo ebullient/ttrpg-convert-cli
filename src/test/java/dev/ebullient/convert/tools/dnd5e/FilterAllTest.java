@@ -36,7 +36,8 @@ public class FilterAllTest {
                         "book": [
                             "XGE",
                             "XMM",
-                            "FRAiF"
+                            "FRAiF",
+                            "HF"
                         ],
                         "adventure": [
                             "COA",
@@ -640,6 +641,11 @@ public class FilterAllTest {
     @Test
     public void testRaceList() {
         commonTests.testRaceList(outputPath);
+    }
+
+    @Test
+    public void testRecipeList() {
+        commonTests.testRecipeList(outputPath);
     }
 
     @Test

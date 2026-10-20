@@ -68,6 +68,8 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
     race,
     raceFeature,
     raceFluff,
+    recipe,
+    recipeFluff,
     reward,
     rewardFluff,
     sense,
@@ -181,6 +183,12 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     source = Tools5eSources.has2024Content()
                             ? "XPHB"
                             : "PHB";
+                }
+                yield createKey(name, source);
+            }
+            case recipe, recipeFluff -> {
+                if (!isPresent(source)) {
+                    source = defaultSourceString();
                 }
                 yield createKey(name, source);
             }
@@ -354,6 +362,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     psionic,
                     race,
                     subrace,
+                    recipe,
                     reward,
                     spell,
                     trap,
@@ -431,6 +440,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
             case itemMastery -> "XPHB";
             case itemTypeAdditionalEntries -> "XGE";
             case psionic -> "UATheMysticClass";
+            case recipe, recipeFluff -> "HF";
             case vehicle, vehicleUpgrade -> "GoS";
             // ---
             case syntheticGroup -> null;
@@ -487,6 +497,7 @@ public enum Tools5eIndexType implements IndexType, JsonNodeReader {
                     objectFluff,
                     optionalfeatureFluff,
                     raceFluff,
+                    recipeFluff,
                     rewardFluff,
                     subclassFluff,
                     trapFluff,

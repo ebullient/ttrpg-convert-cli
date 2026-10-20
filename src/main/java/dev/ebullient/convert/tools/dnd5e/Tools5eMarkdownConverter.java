@@ -179,6 +179,7 @@ public class Tools5eMarkdownConverter implements MarkdownConverter {
                 case optfeature -> new Json2QuteOptionalFeature(index, type, jsonSource).build();
                 case psionic -> new Json2QutePsionicTalent(index, type, jsonSource).build();
                 case race, subrace -> new Json2QuteRace(index, type, jsonSource).build();
+                case recipe -> new Json2QuteRecipe(index, type, jsonSource).build();
                 case reward -> new Json2QuteReward(index, type, jsonSource).build();
                 case spell -> new Json2QuteSpell(index, type, jsonSource).build();
                 case vehicle -> new Json2QuteVehicle(index, type, jsonSource).build();

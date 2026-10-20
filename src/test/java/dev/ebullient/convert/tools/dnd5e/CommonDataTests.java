@@ -522,6 +522,22 @@ public class CommonDataTests {
         }
     }
 
+    public void testRecipeList(Path outputPath) {
+        tui.setOutputPath(outputPath);
+
+        if (dataPresent) {
+            Path recipeDir = deleteDir(Tools5eIndexType.recipe, outputPath, index.compendiumFilePath());
+
+            MarkdownWriter writer = new MarkdownWriter(outputPath, templates, tui);
+            index.markdownConverter(writer)
+                    .writeFiles(Tools5eIndexType.recipe);
+
+            if (recipeDir.toFile().exists()) {
+                TestUtils.assertDirectoryContents(recipeDir, tui);
+            }
+        }
+    }
+
     public void testRewardList(Path outputPath) {
         tui.setOutputPath(outputPath);
 

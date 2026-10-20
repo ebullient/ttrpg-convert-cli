@@ -128,6 +128,7 @@ Some 5eTools data types have fluff images.  These templates include those images
 - [images-monster2md.txt](images-monster2md.txt)
 - [images-object2md.txt](images-object2md.txt)
 - [images-race2md.txt](images-race2md.txt)
+- [images-recipe2md.txt](images-recipe2md.txt)
 - [images-spell2md.txt](images-spell2md.txt)
 - [images-vehicle2md.txt](images-vehicle2md.txt)
 

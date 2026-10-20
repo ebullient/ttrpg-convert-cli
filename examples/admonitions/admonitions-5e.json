@@ -43,5 +43,93 @@
     "injectColor": false,
     "noTitle": false,
     "copy": false
+  },
+  {
+    "type": "embed-deck",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "embed-disease",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "embed-hazard",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "embed-item",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "embed-monster",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "embed-recipe",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "embed-table",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
+  },
+  {
+    "type": "embed-trap",
+    "icon": {
+      "type": "obsidian",
+      "name": "lucide-swords"
+    },
+    "command": false,
+    "injectColor": false,
+    "noTitle": false,
+    "copy": false
   }
 ]

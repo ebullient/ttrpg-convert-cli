@@ -57,6 +57,10 @@ Qute templates for generating content from 5eTools data.
 
     Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
+- [QuteRecipe](QuteRecipe.md): 5eTools recipe attributes (`recipe2md.txt`)
+
+    Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
+
 - [QuteReward](QuteReward.md): 5eTools reward attributes (`reward2md.txt`)
 
     Extension of [Tools5eQuteBase](Tools5eQuteBase.md).

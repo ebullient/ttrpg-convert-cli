@@ -37,7 +37,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern FRACTIONAL = Pattern.compile("^(\\d+)?([⅛¼⅜½⅝¾⅞⅓⅔⅙⅚])?$");
     static final Pattern linkifyPattern = Pattern.compile("\\{@("
             + "|action|background|card|class|condition|creature|creatureFluff|deck|deity|disease|facility"
-            + "|feat|hazard|item|itemMastery|itemProperty|itemType|legroup|object|psionic|race|reward"
+            + "|feat|hazard|item|itemMastery|itemProperty|itemType|legroup|object|psionic|race|recipe|reward"
             + "|sense|skill|spell|status|subclass|table|variantrule|vehicle"
             + "|optfeature|classFeature|subclassFeature|trap) ([^}]+)}");
     static final Pattern chancePattern = Pattern.compile("\\{@chance ([^}]+)}");
@@ -57,6 +57,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
     static final Pattern optionalFeaturesFilter = Pattern.compile("\\{@filter ([^|}]+)\\|optionalfeatures\\|([^}]*)}");
     static final Pattern superscriptCitationPattern = Pattern.compile("\\{@(sup|cite) ([^}]+)}");
     static final Pattern promptPattern = Pattern.compile("#\\$prompt_number(?::(.*?))?\\$#");
+    static final Pattern unitPattern = Pattern.compile("\\{@unit ([^}]+)}");
     static final String subclassFeatureMask = "subclassfeature\\|(.*)\\|.*?\\|.*?\\|.*?\\|.*?\\|(\\d+)\\|.*";
 
     static final Set<String> missingKeys = new HashSet<>();
@@ -206,6 +207,18 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                 String newText = s.substring(pos + 1);
 
                 return newText + " ^[This is a homebrew addition, replacing the following: " + oldText + "]";
+            });
+
+            result = unitPattern.matcher(result).replaceAll((match) -> {
+                // {@unit {=amount1/v}|egg|eggs}: amount1: 1 -> "egg", amount1: 6 -> "eggs"
+                // (the {=amountN/...} token is already resolved to plain text by this point)
+                String[] parts = match.group(1).split("\\|");
+                String amount = parts[0].trim();
+                String singular = valueOrDefault(parts, 1, amount);
+                String plural = valueOrDefault(parts, 2, singular);
+                return "1".equals(amount) || "one".equalsIgnoreCase(amount)
+                        ? singular
+                        : plural;
             });
 
             result = linkTo5eImgRepo.matcher(result).replaceAll((match) -> {
@@ -594,6 +607,10 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
             // {@race Aarakocra|eepc} can have sources added with a pipe,
             // {@race Aarakocra|eepc|and optional link text added with another pipe}.",
             // {@race dwarf (hill)||Dwarf, hill}
+            // {@recipe Honey Cakes} assumes HF by default,
+            // {@recipe Honey Cakes|source} can have sources added with a pipe,
+            // {@recipe Honey Cakes|source|and optional link text added with another
+            // pipe}.",
             // {@reward Blessing of Health} assumes DMG by default,
             // {@reward Blessing of Health} can have sources added with a pipe,
             // {@reward Blessing of Health|DMG|and optional link text added with another
@@ -625,6 +642,7 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
                     optfeature,
                     psionic,
                     race,
+                    recipe,
                     reward,
                     spell,
                     table,

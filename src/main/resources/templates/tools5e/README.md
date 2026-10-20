@@ -20,6 +20,7 @@ This directory contains the default templates for 5eTools data.
 - [`object`](./object2md.txt)
 - [`psionic`](./psionic2md.txt)
 - [`race`](./race2md.txt)
+- [`recipe`](./recipe2md.txt)
 - [`reward`](./reward2md.txt)
 - [`spell`](./spell2md.txt)
 - [`subclass`](./subclass2md.txt)

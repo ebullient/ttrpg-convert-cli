@@ -3,10 +3,12 @@ package dev.ebullient.convert.tools.dnd5e;
 import static dev.ebullient.convert.StringUtil.isPresent;
 import static dev.ebullient.convert.StringUtil.joinConjunct;
 import static dev.ebullient.convert.StringUtil.markdownLinkToHtml;
+import static dev.ebullient.convert.StringUtil.toTitleCase;
 import static java.util.Map.entry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ public interface JsonSource extends JsonTextReplacement {
     int CR_UNKNOWN = 100001;
     int CR_CUSTOM = 100000;
     Pattern leadingNumber = Pattern.compile("(\\d+)(.*)");
+    Pattern AMOUNT_PLACEHOLDER = Pattern.compile("\\{=(amount\\d+)(?:/([a-z]+))?}");
 
     default String getName() {
         return getSources() == null ? null : getSources().getName();
@@ -133,6 +136,7 @@ public interface JsonSource extends JsonTextReplacement {
                     case flowchart -> appendFlowchart(text, node, heading);
                     case gallery -> appendGallery(text, node);
                     case homebrew -> appendCallout("note", "Homebrew", text, node);
+                    case ingredient -> appendIngredient(text, node);
                     case hr -> {
                         maybeAddBlankLine(text);
                         text.add("---");
@@ -342,6 +346,15 @@ public interface JsonSource extends JsonTextReplacement {
         text.addAll(inner);
     }
 
+    /** A recipe ingredient/equipment entry: {@code {"type":"ingredient","entry":"...","amount1":2,...}} */
+    default void appendIngredient(List<String> text, JsonNode ingredientNode) {
+        String entry = SourceField.entry.getTextOrNull(ingredientNode);
+        if (entry == null) {
+            return;
+        }
+        text.add(replaceText(resolveAmountPlaceholders(entry, ingredientNode)));
+    }
+
     default void appendGallery(List<String> text, JsonNode imageNode) {
         text.add("> [!gallery]");
         imageNode.withArray("images").forEach(image -> {
@@ -407,6 +420,12 @@ public interface JsonSource extends JsonTextReplacement {
                 AppendTypeValue entryType = AppendTypeValue.valueFrom(e, SourceField.type);
                 boolean isCaptionedList = entryType == AppendTypeValue.list
                         && !SourceField.name.getTextOrEmpty(e).isBlank();
+                if (entryType == AppendTypeValue.entries && isIngredientGroup(e)) {
+                    // A captioned sub-group of ingredient/equipment entries (e.g. "Cinnamon Whipped
+                    // Cream"): render tightly, like a nested unordered list, not as blank-line-separated
+                    // prose paragraphs.
+                    item.removeIf(String::isBlank);
+                }
                 if (entryType == AppendTypeValue.options || entryType == AppendTypeValue.list) {
                     // An uncaptioned list or an options block nests under the previous item
                     // (or stands in for this one) rather than merging onto a bullet marker.
@@ -427,6 +446,20 @@ public interface JsonSource extends JsonTextReplacement {
         } finally {
             parseState().pop(pushed);
         }
+    }
+
+    /** True if every element of {@code entriesNode}'s own {@code entries} array is an ingredient entry. */
+    private boolean isIngredientGroup(JsonNode entriesNode) {
+        JsonNode nested = SourceField.entries.getFrom(entriesNode);
+        if (nested == null || !nested.isArray() || nested.isEmpty()) {
+            return false;
+        }
+        for (JsonNode child : nested) {
+            if (AppendTypeValue.valueFrom(child, SourceField.type) != AppendTypeValue.ingredient) {
+                return false;
+            }
+        }
+        return true;
     }
 
     default void appendOptionalFeature(List<String> text, JsonNode entry, String heading) {
@@ -1391,6 +1424,224 @@ public interface JsonSource extends JsonTextReplacement {
                         strValue);
     }
 
+    /** Fractional part (as it appears after the decimal point, e.g. "5" for 0.5) to its word form. */
+    Map<String, String> FRACTION_WORDS = Map.ofEntries(
+            Map.entry("125", "one-eighth"),
+            Map.entry("2", "one-fifth"),
+            Map.entry("25", "one-quarter"),
+            Map.entry("375", "three-eighths"),
+            Map.entry("4", "two-fifths"),
+            Map.entry("5", "one-half"),
+            Map.entry("6", "three-fifths"),
+            Map.entry("625", "five-eighths"),
+            Map.entry("75", "three-quarters"),
+            Map.entry("8", "four-fifths"),
+            Map.entry("875", "seven-eighths"));
+
+    /** Fractional part (as it appears after the decimal point) to its vulgar-fraction glyph. */
+    Map<String, String> FRACTION_GLYPHS = Map.ofEntries(
+            Map.entry("125", "⅛"),
+            Map.entry("2", "⅕"),
+            Map.entry("25", "¼"),
+            Map.entry("375", "⅜"),
+            Map.entry("4", "⅖"),
+            Map.entry("5", "½"),
+            Map.entry("6", "⅗"),
+            Map.entry("625", "⅝"),
+            Map.entry("75", "¾"),
+            Map.entry("8", "⅘"),
+            Map.entry("875", "⅞"));
+
+    /**
+     * Matches a fractional part not in the direct lookup table against the thirds/sixths
+     * tolerance table (2-decimal rounding), as the reference's recursive fallback does.
+     * Returns null when nothing matches.
+     */
+    default String fractionRemainderWord(String postDotRaw, boolean asGlyph) {
+        double asNum = Double.parseDouble("0." + postDotRaw);
+        String rounded = String.format("%.2f", asNum);
+        if (rounded.equals(String.format("%.2f", 1.0 / 3))) {
+            return asGlyph ? "⅓" : "one-third";
+        }
+        if (rounded.equals(String.format("%.2f", 2.0 / 3))) {
+            return asGlyph ? "⅔" : "two-thirds";
+        }
+        if (rounded.equals(String.format("%.2f", 1.0 / 6))) {
+            return asGlyph ? "⅙" : "one-sixth";
+        }
+        if (rounded.equals(String.format("%.2f", 5.0 / 6))) {
+            return asGlyph ? "⅚" : "five-sixths";
+        }
+        return null;
+    }
+
+    default double roundValue(double value) {
+        return Math.round(value);
+    }
+
+    default double floorValue(double value) {
+        return Math.floor(value);
+    }
+
+    default double ceilingValue(double value) {
+        return Math.ceil(value);
+    }
+
+    /**
+     * Extended number-to-words conversion supporting hyphenated two-digit compounds (21 -> "twenty-one")
+     * and a decimal/fractional word form (e.g. 1.5 -> "one and one-half"). Magnitude >= 100 falls back
+     * to the plain numeral, matching the reference (`Parser.numberToText`). Does not replace or alter
+     * {@link #numberToText(int)}.
+     */
+    default String numberToText(double value) {
+        double abs = Math.abs(value);
+        if (abs >= 100) {
+            return isWholeNumber(value) ? String.valueOf((long) value) : String.valueOf(value);
+        }
+        String prefix = value < 0 ? "negative " : "";
+        if (isWholeNumber(abs)) {
+            return prefix + integerToTextWithCompounds((int) abs);
+        }
+
+        long wholePart = (long) abs;
+        String postDotRaw = stripTrailingZeros(abs);
+        String fractionWord = FRACTION_WORDS.get(postDotRaw);
+        if (fractionWord == null) {
+            fractionWord = fractionRemainderWord(postDotRaw, false);
+        }
+        if (fractionWord == null) {
+            // No recognized fraction: fall back to the plain decimal value
+            return prefix + abs;
+        }
+        return wholePart == 0
+                ? prefix + fractionWord
+                : prefix + integerToTextWithCompounds((int) wholePart) + " and " + fractionWord;
+    }
+
+    /** Like {@link #numberToText(int)}, but with hyphenated two-digit compounds (21 -> "twenty-one"). */
+    default String integerToTextWithCompounds(int abs) {
+        if (abs < 21 || abs % 10 == 0 || abs >= 100) {
+            return numberToText(abs);
+        }
+        int tens = (abs / 10) * 10;
+        int ones = abs % 10;
+        return numberToText(tens) + "-" + numberToText(ones);
+    }
+
+    /**
+     * Converts a decimal value to its vulgar-fraction display form, porting `Parser.numberToVulgar`.
+     * Integers pass through unchanged, as a plain string. A recognized fractional part (direct lookup
+     * or thirds/sixths tolerance match) renders as {@code <integer-part><glyph>} (empty integer part
+     * omitted, e.g. "½" not "0½"). An unrecognized fractional part falls back to the plain decimal value
+     * (the GCD-based arbitrary-fraction fallback is out of scope). Negative values prefix "-" to the
+     * integer part only (e.g. -0.5 -> "-½", -1.5 -> "-1½").
+     */
+    default String numberToVulgar(double value) {
+        if (isWholeNumber(value)) {
+            return String.valueOf((long) value);
+        }
+
+        boolean isNeg = value < 0;
+        double abs = Math.abs(value);
+        long wholePart = (long) abs;
+        String preDot = (isNeg ? "-" : "") + (wholePart == 0 ? "" : wholePart);
+
+        String postDotRaw = stripTrailingZeros(abs);
+        String glyph = FRACTION_GLYPHS.get(postDotRaw);
+        if (glyph == null) {
+            glyph = fractionRemainderWord(postDotRaw, true);
+        }
+        return glyph == null ? String.valueOf(value) : preDot + glyph;
+    }
+
+    /**
+     * Resolves a `{=key/modifiers}`-style placeholder body against a value lookup, applying each
+     * modifier character in literal left-to-right order as written (not reordered):
+     * <ul>
+     * <li>{@code r}/{@code f}/{@code c} — round/floor/ceiling the numeric value.</li>
+     * <li>{@code v} — convert to vulgar-fraction display form.</li>
+     * <li>{@code x} — convert to words.</li>
+     * <li>{@code l}/{@code t}/{@code u} — lowercase/title-case/uppercase the current (stringified) value.</li>
+     * <li>{@code a} — render "a"/"an" based on the current value's leading character.</li>
+     * </ul>
+     * A missing/null looked-up value for {@code key} throws {@link IllegalArgumentException}.
+     *
+     * @param key the value-lookup key (e.g. "amount1")
+     * @param modifiers the modifier characters, in the literal order to apply them (may be empty)
+     * @param valueLookup supplies the numeric value for a given key
+     */
+    default String resolveAmountModifiers(String key, String modifiers, Map<String, Double> valueLookup) {
+        Double looked = valueLookup.get(key);
+        if (looked == null) {
+            throw new IllegalArgumentException("Missing value for \"" + key + "\" while resolving modifiers");
+        }
+
+        double numeric = looked;
+        String text = null;
+        for (int i = 0; i < modifiers.length(); i++) {
+            char m = modifiers.charAt(i);
+            switch (m) {
+                case 'r' -> numeric = roundValue(numeric);
+                case 'f' -> numeric = floorValue(numeric);
+                case 'c' -> numeric = ceilingValue(numeric);
+                case 'v' -> text = numberToVulgar(numeric);
+                case 'x' -> text = numberToText(numeric);
+                case 'l' -> text = currentText(text, numeric).toLowerCase();
+                case 't' -> text = toTitleCase(currentText(text, numeric));
+                case 'u' -> text = currentText(text, numeric).toUpperCase();
+                case 'a' -> text = articleFor(currentText(text, numeric));
+                default -> throw new IllegalArgumentException("Unhandled modifier \"" + m + "\" for \"" + key + "\"");
+            }
+        }
+        return text != null ? text : currentText(null, numeric);
+    }
+
+    /**
+     * Resolves every {@code {=amountN}} or {@code {=amountN/modifiers}} placeholder in {@code text}
+     * against the numeric {@code amountN} fields of {@code sourceNode}, in the same syntax and literal
+     * left-to-right modifier order as {@link #resolveAmountModifiers(String, String, Map)}.
+     */
+    default String resolveAmountPlaceholders(String text, JsonNode sourceNode) {
+        if (!AMOUNT_PLACEHOLDER.matcher(text).find()) {
+            return text;
+        }
+        Map<String, Double> valueLookup = new HashMap<>();
+        sourceNode.fieldNames().forEachRemaining(name -> {
+            JsonNode value = sourceNode.get(name);
+            if (name.startsWith("amount") && value.isNumber()) {
+                valueLookup.put(name, value.asDouble());
+            }
+        });
+        return AMOUNT_PLACEHOLDER.matcher(text).replaceAll((match) -> {
+            String key = match.group(1);
+            String modifiers = match.group(2) == null ? "" : match.group(2);
+            return resolveAmountModifiers(key, modifiers, valueLookup);
+        });
+    }
+
+    /** The current stringified value: the prior text form if one exists, else the numeric value as text. */
+    private static String currentText(String text, double numeric) {
+        if (text != null) {
+            return text;
+        }
+        return isWholeNumber(numeric) ? String.valueOf((long) numeric) : String.valueOf(numeric);
+    }
+
+    private static boolean isWholeNumber(double value) {
+        return value == Math.floor(value) && !Double.isInfinite(value);
+    }
+
+    /** The digits after the decimal point, with no trailing zeros (e.g. 1.50 -> "5"). */
+    private static String stripTrailingZeros(double value) {
+        String s = String.valueOf(value);
+        int dot = s.indexOf('.');
+        String postDot = s.substring(dot + 1);
+        while (postDot.endsWith("0") && postDot.length() > 1) {
+            postDot = postDot.substring(0, postDot.length() - 1);
+        }
+        return postDot;
+    }
+
     default String damageTypeToFull(String dmgType) {
         if (!isPresent(dmgType)) {
             return "";
@@ -1716,6 +1967,7 @@ public interface JsonSource extends JsonTextReplacement {
         item,
         itemSpell,
         itemSub,
+        ingredient,
 
         // images
         image,

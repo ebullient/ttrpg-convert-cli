@@ -343,6 +343,15 @@ public class TextReplacementTest implements JsonSource {
         assertThat(result).isEqualTo("Bonus equals your spell attack modifier");
     }
 
+    @Test
+    public void testUnitSingularPlural() {
+        // {=amountN/...} tokens are resolved before {@unit} sees the text, so the tag's
+        // first segment is already plain text by the time replaceText processes it here.
+        assertThat(this.replaceText("{@unit 1|egg|eggs}")).isEqualTo("egg");
+        assertThat(this.replaceText("{@unit 6|egg|eggs}")).isEqualTo("eggs");
+        assertThat(this.replaceText("{@unit 0|egg|eggs}")).isEqualTo("eggs");
+    }
+
     @Override
     public Tools5eIndex index() {
         return index;
