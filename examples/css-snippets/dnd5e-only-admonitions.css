@@ -74,6 +74,7 @@ body {
 .json5e-object div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-psionic div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-race div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
+.json5e-recipe div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-reward div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-spell div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]),
 .json5e-vehicle div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]) {
@@ -91,6 +92,7 @@ body {
 .json5e-object div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-psionic div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-race div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
+.json5e-recipe div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-reward div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-spell div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after,
 .json5e-vehicle div:has(> .callout[data-callout=flowchart]):has(+ div > .callout[data-callout=flowchart]):after {
@@ -118,6 +120,7 @@ body {
 .json5e-object .callout[data-callout=gallery],
 .json5e-psionic .callout[data-callout=gallery],
 .json5e-race .callout[data-callout=gallery],
+.json5e-recipe .callout[data-callout=gallery],
 .json5e-reward .callout[data-callout=gallery],
 .json5e-spell .callout[data-callout=gallery],
 .json5e-vehicle .callout[data-callout=gallery] {
@@ -136,6 +139,7 @@ body {
 .json5e-object .callout[data-callout=gallery] .callout-content p,
 .json5e-psionic .callout[data-callout=gallery] .callout-content p,
 .json5e-race .callout[data-callout=gallery] .callout-content p,
+.json5e-recipe .callout[data-callout=gallery] .callout-content p,
 .json5e-reward .callout[data-callout=gallery] .callout-content p,
 .json5e-spell .callout[data-callout=gallery] .callout-content p,
 .json5e-vehicle .callout[data-callout=gallery] .callout-content p {
@@ -168,6 +172,8 @@ body {
 .json5e-psionic .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
 .json5e-race .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
 .json5e-race .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
+.json5e-recipe .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
+.json5e-recipe .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
 .json5e-reward .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
 .json5e-reward .callout[data-callout=gallery] .callout-content div[src$="#gallery"],
 .json5e-spell .callout[data-callout=gallery] .callout-content span[src$="#gallery"],
@@ -200,6 +206,8 @@ body {
 .json5e-psionic .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
 .json5e-race .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
 .json5e-race .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
+.json5e-recipe .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
+.json5e-recipe .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
 .json5e-reward .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
 .json5e-reward .callout[data-callout=gallery] .callout-content div[src$="#gallery"] img,
 .json5e-spell .callout[data-callout=gallery] .callout-content span[src$="#gallery"] img,
@@ -220,6 +228,7 @@ body {
 .json5e-object .callout[data-callout=gallery] .callout-title,
 .json5e-psionic .callout[data-callout=gallery] .callout-title,
 .json5e-race .callout[data-callout=gallery] .callout-title,
+.json5e-recipe .callout[data-callout=gallery] .callout-title,
 .json5e-reward .callout[data-callout=gallery] .callout-title,
 .json5e-spell .callout[data-callout=gallery] .callout-title,
 .json5e-vehicle .callout[data-callout=gallery] .callout-title {
