@@ -26,7 +26,7 @@ public class TemplateDocTest {
 
     // Use this test in IDEs
     @Test
-    @DisabledIfSystemProperty(named = "maven.home", matches = ".*")
+    @DisabledIfSystemProperty(named = "javadoc-plugin.version", matches = ".*")
     public void buildVerifyDocs() throws Exception {
         MarkdownDoclet.main(null);
         verifyDocs();
@@ -34,7 +34,7 @@ public class TemplateDocTest {
 
     // Use this test in maven builds
     @Test
-    @EnabledIfSystemProperty(named = "maven.home", matches = ".*")
+    @EnabledIfSystemProperty(named = "javadoc-plugin.version", matches = ".*")
     public void verifyDocs() throws Exception {
         TestUtils.assertMarkdownLinks(TestUtils.PROJECT_PATH.resolve("docs"), tui);
         TestUtils.assertMarkdownLinks(TestUtils.PROJECT_PATH.resolve("examples"), tui);
