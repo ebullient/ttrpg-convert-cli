@@ -37,7 +37,8 @@ public class FilterAllTest {
                             "XGE",
                             "XMM",
                             "FRAiF",
-                            "HF"
+                            "HF",
+                            "MOT"
                         ],
                         "adventure": [
                             "COA",
