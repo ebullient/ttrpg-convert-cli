@@ -36,10 +36,12 @@ public class QuteBastion extends Tools5eQuteBase {
     public final String type;
     /** Formatted text listing other prerequisite conditions (optional) */
     public final String prerequisite;
+    /** Formatted text listing other prerequisite conditions, 2024-style phrasing (optional) */
+    public final String prerequisite2024;
 
     public QuteBastion(Tools5eSources sources, String name, String source,
             List<Hireling> hirelings, String level, List<String> orders,
-            String prerequisite, List<Space> space, String type,
+            String prerequisite, String prerequisite2024, List<Space> space, String type,
             String text, List<ImageRef> images, Tags tags) {
         super(sources, name, source, images, text, tags);
 
@@ -47,6 +49,7 @@ public class QuteBastion extends Tools5eQuteBase {
         this.level = level; // optional
         this.orders = orders; // optional
         this.prerequisite = prerequisite; // optional
+        this.prerequisite2024 = prerequisite2024; // optional
         this.space = space; // optional
         this.type = type;
     }

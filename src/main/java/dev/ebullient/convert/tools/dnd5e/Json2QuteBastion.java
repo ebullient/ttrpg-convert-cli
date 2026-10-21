@@ -38,10 +38,13 @@ public class Json2QuteBastion extends Json2QuteCommon {
         String type = BastionFields.facilityType.getTextOrThrow(rootNode);
 
         String prereqs = "";
+        String prereqs2024 = "";
         if (BastionFields.prerequisite.existsIn(rootNode)) {
-            prereqs = listPrerequisites(rootNode);
+            prereqs = listPrerequisites(rootNode, false);
+            prereqs2024 = listPrerequisites(rootNode, true);
         } else if (!"basic".equals(type)) {
             prereqs = "None";
+            prereqs2024 = "None";
         }
 
         List<Hireling> hirelings = new ArrayList<>();
@@ -72,6 +75,7 @@ public class Json2QuteBastion extends Json2QuteCommon {
                 BastionFields.level.getTextOrEmpty(rootNode),
                 BastionFields.orders.getListOfStrings(rootNode, tui()),
                 prereqs,
+                prereqs2024,
                 spaces,
                 type,
                 String.join("\n", text),

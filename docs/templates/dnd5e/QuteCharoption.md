@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
 
 ## Attributes
 
-[books](#books), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [optionType](#optiontype), [prerequisite](#prerequisite), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
+[books](#books), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [labeledSource](#labeledsource), [name](#name), [optionType](#optiontype), [prerequisite](#prerequisite), [prerequisite2024](#prerequisite2024), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [tags](#tags), [text](#text), [vaultPath](#vaultpath)
 
 ### books
 
@@ -59,6 +59,10 @@ Comma-separated list of option type display names (e.g. "Supernatural Gift")
 ### prerequisite
 
 Formatted text listing prerequisite conditions (optional)
+
+### prerequisite2024
+
+Formatted text listing prerequisite conditions, 2024-style phrasing (optional)
 
 ### reprintOf
 

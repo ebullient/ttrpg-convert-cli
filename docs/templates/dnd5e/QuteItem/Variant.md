@@ -3,7 +3,7 @@
 
 ## Attributes
 
-[age](#age), [ammo](#ammo), [armorClass](#armorclass), [attunement](#attunement), [baseItem](#baseitem), [bonusAbilityCheck](#bonusabilitycheck), [bonusAc](#bonusac), [bonusProficiencyBonus](#bonusproficiencybonus), [bonusSavingThrow](#bonussavingthrow), [bonusSavingThrowConcentration](#bonussavingthrowconcentration), [bonusSpellAttack](#bonusspellattack), [bonusSpellDamage](#bonusspelldamage), [bonusSpellSaveDc](#bonusspellsavedc), [bonusWeapon](#bonusweapon), [bonusWeaponAttack](#bonusweaponattack), [bonusWeaponCritDamage](#bonusweaponcritdamage), [bonusWeaponDamage](#bonusweapondamage), [cost](#cost), [costCp](#costcp), [cursed](#cursed), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [firearm](#firearm), [focus](#focus), [focusType](#focustype), [mastery](#mastery), [masteryList](#masterylist), [name](#name), [poison](#poison), [poisonTypes](#poisontypes), [prerequisite](#prerequisite), [properties](#properties), [propertiesList](#propertieslist), [range](#range), [rarity](#rarity), [staff](#staff), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tattoo](#tattoo), [tier](#tier), [type](#type), [typeAlt](#typealt), [weaponCategory](#weaponcategory), [weight](#weight), [wondrous](#wondrous)
+[age](#age), [ammo](#ammo), [armorClass](#armorclass), [attunement](#attunement), [baseItem](#baseitem), [bonusAbilityCheck](#bonusabilitycheck), [bonusAc](#bonusac), [bonusProficiencyBonus](#bonusproficiencybonus), [bonusSavingThrow](#bonussavingthrow), [bonusSavingThrowConcentration](#bonussavingthrowconcentration), [bonusSpellAttack](#bonusspellattack), [bonusSpellDamage](#bonusspelldamage), [bonusSpellSaveDc](#bonusspellsavedc), [bonusWeapon](#bonusweapon), [bonusWeaponAttack](#bonusweaponattack), [bonusWeaponCritDamage](#bonusweaponcritdamage), [bonusWeaponDamage](#bonusweapondamage), [cost](#cost), [costCp](#costcp), [cursed](#cursed), [damage](#damage), [damage2h](#damage2h), [detail](#detail), [firearm](#firearm), [focus](#focus), [focusType](#focustype), [mastery](#mastery), [masteryList](#masterylist), [name](#name), [poison](#poison), [poisonTypes](#poisontypes), [prerequisite](#prerequisite), [prerequisite2024](#prerequisite2024), [properties](#properties), [propertiesList](#propertieslist), [range](#range), [rarity](#rarity), [staff](#staff), [stealthPenalty](#stealthpenalty), [strengthRequirement](#strengthrequirement), [subtypeString](#subtypestring), [tattoo](#tattoo), [tier](#tier), [type](#type), [typeAlt](#typealt), [weaponCategory](#weaponcategory), [weight](#weight), [wondrous](#wondrous)
 
 ### age
 
@@ -133,6 +133,10 @@ Poison type(s). Optional.
 ### prerequisite
 
 Formatted text listing other prerequisite conditions. Optional.
+
+### prerequisite2024
+
+Formatted text listing other prerequisite conditions, 2024-style phrasing. Optional.
 
 ### properties
 

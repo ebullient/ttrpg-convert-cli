@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -150,7 +151,7 @@ public class Json2QuteCommon implements JsonSource {
     }
 
     // {"ability":[{"dex":13}]}
-    private String abilityPrereq(JsonNode abilityPrereq) {
+    private String abilityPrereq(JsonNode abilityPrereq, boolean modern) {
         ArrayNode elements = ensureArray(abilityPrereq);
 
         boolean multipleInner = false;
@@ -204,9 +205,9 @@ public class Json2QuteCommon implements JsonSource {
                                     .sorted(SkillOrAbility.comparator)
                                     .map(x -> x.value())
                                     .toList();
-                            return String.format("%s %s or higher",
-                                    joinConjunct(" and ", abs),
-                                    e.getKey());
+                            return modern
+                                    ? String.format("%s %s+", joinConjunct(" and ", abs), e.getKey())
+                                    : String.format("%s %s or higher", joinConjunct(" and ", abs), e.getKey());
                         })
                         .toList();
 
@@ -223,7 +224,9 @@ public class Json2QuteCommon implements JsonSource {
                 abilityOptions);
 
         return joined + (allValuesEqual != null
-                ? " " + allValuesEqual.asText() + " or higher"
+                ? modern
+                        ? " " + allValuesEqual.asText() + "+"
+                        : " " + allValuesEqual.asText() + " or higher"
                 : "");
     }
 
@@ -319,12 +322,14 @@ public class Json2QuteCommon implements JsonSource {
 
     // "level":4
     // "level":{"level":1,"class":{"name":"Fighter","visible":true}}}
-    private String levelPrereq(JsonNode levelPrereq) {
+    private String levelPrereq(JsonNode levelPrereq, boolean modern) {
         if (levelPrereq.isArray())
             tui().errorf("levelPrereq: Array parameter");
 
         if (levelPrereq.isNumber()) {
-            return toOrdinal(levelPrereq.asInt());
+            return modern
+                    ? String.format("Level %d+", levelPrereq.asInt())
+                    : toOrdinal(levelPrereq.asInt()) + " level";
         }
 
         String level = Tools5eFields.level.getTextOrThrow(levelPrereq);
@@ -473,15 +478,16 @@ public class Json2QuteCommon implements JsonSource {
             JsonNode first = others.get(0);
             others.remove(0);
 
-            others.stream()
+            JsonNode intersection = others.stream()
                     .reduce(first,
                             (a, b) -> objectIntersect(a, b),
                             (a, b) -> ((ObjectNode) a).setAll((ObjectNode) b));
+            shared.setAll((ObjectNode) intersection);
         }
         return shared;
     }
 
-    String listPrerequisites(JsonNode variantNode) {
+    String listPrerequisites(JsonNode variantNode, boolean modern) {
         List<String> allValues = new ArrayList<>();
         boolean hasNote = false;
 
@@ -490,7 +496,9 @@ public class Json2QuteCommon implements JsonSource {
         // find shared/common prereqs
         ObjectNode prereqsShared = sharedPrerequisites(prerequisites);
         String sharedText = prereqsShared.size() > 0
-                ? listPrerequisites(prereqsShared)
+                ? listPrerequisites(mapper().createObjectNode()
+                        .set(PrereqFields.prerequisite.nodeName(), mapper().createArrayNode().add(prereqsShared)),
+                        modern)
                 : null;
 
         for (JsonNode prerequisite : prerequisites) {
@@ -516,7 +524,7 @@ public class Json2QuteCommon implements JsonSource {
                 JsonNode value = field.getFrom(prerequisite);
 
                 switch (field) {
-                    case ability -> values.add(abilityPrereq(value));
+                    case ability -> values.add(abilityPrereq(value, modern));
                     case alignment -> values.add(alignmentListToFull(value));
                     case background -> values.add(backgroundPrereq(value));
                     case campaign -> values.add(replaceConjoinOr(value, " Campaign"));
@@ -533,7 +541,7 @@ public class Json2QuteCommon implements JsonSource {
                     case item -> values.add(replaceConjoinOr(value, ""));
                     case itemProperty -> values.add(itemPropertyPrereq(value));
                     case itemType -> values.add(itemTypePrereq(value));
-                    case level -> values.add(levelPrereq(value));
+                    case level -> values.add(levelPrereq(value, modern));
                     case membership -> values.add("Membership in the " + replaceConjoinOr(value, ""));
                     case other -> values.add(replaceText(value));
                     case otherSummary -> values.add(SourceField.entry.replaceTextFrom(value, this));
@@ -572,15 +580,62 @@ public class Json2QuteCommon implements JsonSource {
             allValues.add(prereqs + (isPresent(note) ? ". " + note : ""));
         }
 
-        String joinedText = hasNote
-                ? String.join(" Or, ", allValues)
-                : joinConjunct(allValues.stream().anyMatch(x -> x.contains(" or ")) ? "; " : ", ",
-                        " or ", allValues);
+        String joinedText;
+        if (hasNote) {
+            joinedText = String.join(" Or, ", allValues);
+        } else {
+            String commonSuffix = findCommonSuffix(allValues);
+            List<String> values = allValues;
+            if (!commonSuffix.isEmpty()) {
+                values = allValues.stream()
+                        .map(x -> x.substring(0, x.length() - commonSuffix.length()).stripTrailing())
+                        .toList();
+            }
+            String joinedChoices = joinConjunct(values.stream().anyMatch(x -> x.contains(" or ")) ? "; " : ", ",
+                    " or ", values);
+            joinedText = commonSuffix.isEmpty()
+                    ? joinedChoices
+                    : joinedChoices + " " + commonSuffix;
+        }
 
-        return sharedText == null
-                ? joinedText
-                : sharedText + ", plus " + joinedText;
+        if (sharedText == null) {
+            return joinedText;
+        }
+        boolean hasComma = sharedText.contains(",") || joinedText.contains(",");
+        boolean hasSemicolon = sharedText.contains(";") || joinedText.contains(";");
+        String joiner = hasComma
+                ? (hasSemicolon ? "; plus " : "; ")
+                : ", ";
+        return sharedText + joiner + joinedText;
+    }
 
+    // Finds the longest trailing run of whole words shared by every string in `values`.
+    // Returns "" if there are fewer than 2 values or they share no common trailing word.
+    private String findCommonSuffix(List<String> values) {
+        if (values.size() < 2) {
+            return "";
+        }
+        List<String> commonWords = null;
+        for (String value : values) {
+            List<String> words = new ArrayList<>(List.of(value.split(" ")));
+            Collections.reverse(words);
+            if (commonWords == null) {
+                commonWords = words;
+                continue;
+            }
+            int minLen = Math.min(commonWords.size(), words.size());
+            int matched = 0;
+            while (matched < minLen && commonWords.get(matched).equals(words.get(matched))) {
+                matched++;
+            }
+            commonWords = commonWords.subList(0, matched);
+        }
+        if (commonWords.isEmpty()) {
+            return "";
+        }
+        List<String> ordered = new ArrayList<>(commonWords);
+        Collections.reverse(ordered);
+        return String.join(" ", ordered);
     }
 
     ImmuneResist immuneResist() {

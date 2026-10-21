@@ -6,7 +6,7 @@ Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 
 ## Attributes
 
-[books](#books), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hirelingDescription](#hirelingdescription), [hirelings](#hirelings), [labeledSource](#labeledsource), [level](#level), [name](#name), [orders](#orders), [prerequisite](#prerequisite), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [space](#space), [spaceDescription](#spacedescription), [tags](#tags), [text](#text), [type](#type), [vaultPath](#vaultpath)
+[books](#books), [fluffImages](#fluffimages), [getAliases](#getaliases), [hasImages](#hasimages), [hasMoreImages](#hasmoreimages), [hasSections](#hassections), [hirelingDescription](#hirelingdescription), [hirelings](#hirelings), [labeledSource](#labeledsource), [level](#level), [name](#name), [orders](#orders), [prerequisite](#prerequisite), [prerequisite2024](#prerequisite2024), [reprintOf](#reprintof), [showAllImages](#showallimages), [showMoreImages](#showmoreimages), [showPortraitImage](#showportraitimage), [source](#source), [sourceAndPage](#sourceandpage), [sourcesWithFootnote](#sourceswithfootnote), [space](#space), [spaceDescription](#spacedescription), [tags](#tags), [text](#text), [type](#type), [vaultPath](#vaultpath)
 
 ### books
 
@@ -72,6 +72,10 @@ Bastion orders (optional)
 ### prerequisite
 
 Formatted text listing other prerequisite conditions (optional)
+
+### prerequisite2024
+
+Formatted text listing other prerequisite conditions, 2024-style phrasing (optional)
 
 ### reprintOf
 

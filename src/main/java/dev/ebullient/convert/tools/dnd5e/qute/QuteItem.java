@@ -159,6 +159,7 @@ public class QuteItem extends Tools5eQuteBase {
      * @param strengthRequirement Strength requirement as a numerical value. Optional.
      * @param stealthPenalty True if the item imposes a stealth penalty. Optional.
      * @param prerequisite Formatted text listing other prerequisite conditions. Optional.
+     * @param prerequisite2024 Formatted text listing other prerequisite conditions, 2024-style phrasing. Optional.
      *
      * @param age Age/Era of item. Optional. Known values: futuristic, industrial, modern, renaissance, victorian.
      * @param cost Cost of the item (gp, sp, cp). Usually missing for magic items.
@@ -213,6 +214,7 @@ public class QuteItem extends Tools5eQuteBase {
             Integer strengthRequirement,
             boolean stealthPenalty,
             String prerequisite,
+            String prerequisite2024,
             // ---
             String age,
             String cost,

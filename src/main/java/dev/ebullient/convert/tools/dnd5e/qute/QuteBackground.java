@@ -17,14 +17,18 @@ public class QuteBackground extends Tools5eQuteBase {
     /** Formatted text listing other prerequisite conditions (optional) */
     public final String prerequisite;
 
+    /** Formatted text listing other prerequisite conditions, 2024-style phrasing (optional) */
+    public final String prerequisite2024;
+
     /** Formatted text listing ability score increase (optional) */
     public final String ability;
 
     public QuteBackground(Tools5eSources sources, String name, String source,
-            String prerequisite, String ability,
+            String prerequisite, String prerequisite2024, String ability,
             List<ImageRef> images, String text, Tags tags) {
         super(sources, name, source, images, text, tags);
         this.prerequisite = prerequisite; // optional
+        this.prerequisite2024 = prerequisite2024; // optional
         this.ability = ability; // optional
     }
 }

@@ -45,7 +45,8 @@ public class Json2QuteFeat extends Json2QuteCommon {
         return new QuteFeat(getSources(),
                 linkifier().decoratedName(type, rootNode),
                 getSourceText(getSources()),
-                listPrerequisites(rootNode),
+                listPrerequisites(rootNode, false),
+                listPrerequisites(rootNode, true),
                 null, // Level coming someday..
                 SkillOrAbility.getAbilityScoreIncreases(FeatFields.ability.getFrom(rootNode)),
                 category,
