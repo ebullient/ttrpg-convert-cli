@@ -31,7 +31,7 @@ jobs:
         uses: ./.github/actions/data-cache
 
       - name: Build with Maven
-        uses: ebullient/workflows/.github/actions/maven-build@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
+        uses: ebullient/workflows/.github/actions/maven-build@d5e66da3d233f1c67c2097134cde73152ff43e2b # 2.0.1
         with:
           artifact: ${{ needs.metadata.outputs.artifact }}
           version: ${{ needs.metadata.outputs.snapshot }}
