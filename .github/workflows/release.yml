@@ -125,7 +125,7 @@ jobs:
 
   release-prep-next:
     needs: [build_tag, release]
-    uses: ebullient/workflows/.github/workflows/java-release-prep-next.yml@81f65356aee1e9914a3b3eea640c35cb40d99bc2 # 0.2.2
+    uses: ebullient/workflows/.github/workflows/java-release-prep-next.yml@d5e66da3d233f1c67c2097134cde73152ff43e2b # 0.2.3
     permissions:
       contents: write
     with:
