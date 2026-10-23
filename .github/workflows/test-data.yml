@@ -16,7 +16,7 @@ permissions: read-all
 
 jobs:
   metadata:
-    uses: ebullient/workflows/.github/workflows/java-snap-metadata.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
+    uses: ebullient/workflows/.github/workflows/java-snap-metadata.yml@d5e66da3d233f1c67c2097134cde73152ff43e2b # 2.0.1
 
   build:
     runs-on: ubuntu-latest
