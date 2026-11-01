@@ -110,7 +110,7 @@ jobs:
   snap-release:
     needs: [main_root, metadata, build, native-build]
     if: needs.main_root.outputs.is_main
-    uses: ebullient/workflows/.github/workflows/java-snapshot.yml@65cfcd66420f2a8032c82e84bd6688a1a64713a9 # 2.0.1
+    uses: ebullient/workflows/.github/workflows/java-snapshot.yml@d5e66da3d233f1c67c2097134cde73152ff43e2b # 2.0.1
     permissions:
       contents: write
     with:
