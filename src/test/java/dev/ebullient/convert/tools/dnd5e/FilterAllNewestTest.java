@@ -244,7 +244,7 @@ public class FilterAllNewestTest {
             commonTests.assert_Present("trap|falling net|xdmg");
             commonTests.assert_MISSING("trap|pits|dmg");
             commonTests.assert_MISSING("trap|poison darts|dmg");
-            commonTests.assert_Present("trap|poison needle trap|xge");
+            commonTests.assert_MISSING("trap|poison needle trap|xge");
             commonTests.assert_MISSING("trap|poison needle|dmg");
             commonTests.assert_Present("trap|poisoned darts|xdmg");
             commonTests.assert_MISSING("trap|rolling sphere|dmg");
