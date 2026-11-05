@@ -209,7 +209,8 @@ public class ImageRef {
             sourceUrl = imageRoot.getFallbackPath(sourceUrl)
                     .replace('\\', '/');
 
-            sourceUrl = java.net.URLDecoder.decode(sourceUrl, StandardCharsets.UTF_8);
+            // URLDecoder treats '+' as an encoded space; escape literal '+' first so filenames like "+2 Armor.webp" survive
+            sourceUrl = java.net.URLDecoder.decode(sourceUrl.replace("+", "%2B"), StandardCharsets.UTF_8);
 
             boolean copyToVault = false;
 
