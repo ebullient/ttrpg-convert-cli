@@ -1,10 +1,12 @@
 package dev.ebullient.convert.tools;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -179,6 +181,7 @@ public class ParseState {
 
     private final Deque<ParseState.ParseStateInfo> stack = new ArrayDeque<>();
     private final Map<String, String> citations = new HashMap<>();
+    private final List<Object> deferredFeatures = new ArrayList<>();
 
     public boolean push(CompendiumSources sources, JsonNode rootNode) {
         if (rootNode != null && (rootNode.has("page") || rootNode.has("source"))) {
@@ -385,6 +388,20 @@ public class ParseState {
                     k, v));
         });
         citations.clear();
+    }
+
+    /** Stash a feature choice (e.g. a subclass feature option) to be rendered as its own section later. */
+    public void addDeferredFeature(Object feature) {
+        deferredFeatures.add(feature);
+    }
+
+    /** Pop all deferred features stashed since the last pop, in the order they were added. */
+    public <T> List<T> popDeferredFeatures(Class<T> type) {
+        List<T> popped = deferredFeatures.stream()
+                .map(type::cast)
+                .collect(Collectors.toList());
+        deferredFeatures.clear();
+        return popped;
     }
 
     public DiceFormulaState diceFormulaState() {

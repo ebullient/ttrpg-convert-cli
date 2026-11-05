@@ -86,6 +86,9 @@ public class Json2QuteClass extends Json2QuteCommon {
         text.add("## Class Features");
         for (ClassFeature cf : features) {
             cf.appendText(this, text, getSources().primarySource());
+            for (ClassFeature deferred : parseState().popDeferredFeatures(ClassFeature.class)) {
+                deferred.appendText(this, text, getSources().primarySource());
+            }
         }
 
         addOptionalFeatureText(rootNode, getSources().primarySource(), text);
@@ -156,6 +159,9 @@ public class Json2QuteClass extends Json2QuteCommon {
                         scf.appendIntroText(this, text, scSources.primarySource());
                     } else {
                         scf.appendText(this, text, scSources.primarySource());
+                    }
+                    for (ClassFeature deferred : parseState().popDeferredFeatures(ClassFeature.class)) {
+                        deferred.appendText(this, text, scSources.primarySource());
                     }
                 }
 

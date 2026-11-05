@@ -304,8 +304,10 @@ public interface JsonSource extends JsonTextReplacement {
             // this is within an existing feature description. Emit as a link
             cf.appendLink(this, text, parseState().getSource(featureType));
         } else if (parseState().inList()) {
-            // emit within an existing list item
-            cf.appendListItemText(this, text, parseState().getSource(featureType));
+            // emit a short link within the enclosing list item, and defer the full
+            // section to be rendered after the list (so the link has a real target)
+            cf.appendLink(this, text, parseState().getSource(featureType));
+            parseState().addDeferredFeature(cf);
         } else {
             // emit inline as proper section
             cf.appendText(this, text, parseState().getSource(featureType));
