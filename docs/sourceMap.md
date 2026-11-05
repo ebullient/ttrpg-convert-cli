@@ -101,6 +101,7 @@ _Support content creators. Only use or include sources that you own._
 | HoL | The House of Lament | adventure |
 | HotB | Heroes of the Borderlands | adventure |
 | HotDQ | Hoard of the Dragon Queen | adventure |
+| ICC | World of Warcraft: Icecrown Citadel | adventure |
 | IDRotF | Icewind Dale: Rime of the Frostmaiden | adventure |
 | IMR | Infernal Machine Rebuild | adventure |
 | JttRC | Journeys through the Radiant Citadel | adventure |
@@ -177,6 +178,7 @@ _Support content creators. Only use or include sources that you own._
 | SatO | Sigil and the Outlands | book |
 | ScoEE | Scions of Elemental Evil | adventure |
 | SjA | Spelljammer Academy | adventure |
+| SoS | Shadows of Sithicus | adventure |
 | TCE | Tasha's Cauldron of Everything | book |
 | TD | Tarot Deck | book |
 | TLK | The Lost Kenku | adventure |
@@ -205,6 +207,7 @@ _Support content creators. Only use or include sources that you own._
 | WBtW | The Wild Beyond the Witchlight | adventure |
 | WDH | Waterdeep: Dragon Heist | adventure |
 | WDMM | Waterdeep: Dungeon of the Mad Mage | adventure |
+| WoW | D&D: World of Warcraft | book |
 | WttHC | Stranger Things: Welcome to the Hellfire Club | adventure |
 | XDMG | Dungeon Master's Guide (2024) | book |
 | XGE | Xanathar's Guide to Everything | book |

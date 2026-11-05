@@ -253,6 +253,9 @@ config5e:
     HotDQ:
       name: "Hoard of the Dragon Queen"
       date: "2014-08-19"
+    ICC:
+      name: "World of Warcraft: Icecrown Citadel"
+      date: "2026-11-17"
     IDRotF:
       name: "Icewind Dale: Rime of the Frostmaiden"
       date: "2020-09-15"
@@ -481,6 +484,9 @@ config5e:
     SjA:
       name: "Spelljammer Academy"
       date: "2022-07-11"
+    SoS:
+      name: "Shadows of Sithicus"
+      date: "2026-05-29"
     TCE:
       name: "Tasha's Cauldron of Everything"
       date: "2020-11-17"
@@ -565,6 +571,9 @@ config5e:
     WDMM:
       name: "Waterdeep: Dungeon of the Mad Mage"
       date: "2018-11-20"
+    WoW:
+      name: "D&D: World of Warcraft"
+      date: "2026-11-17"
     WttHC:
       name: "Stranger Things: Welcome to the Hellfire Club"
       date: "2025-10-07"
