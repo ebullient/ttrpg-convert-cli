@@ -1,6 +1,6 @@
 # QuteBastion
 
-5eTools background attributes (`bastion2md.txt`).
+5eTools bastion attributes (`bastion2md.txt`).
 
 Extension of [Tools5eQuteBase](../Tools5eQuteBase.md).
 

@@ -12,7 +12,7 @@ import dev.ebullient.convert.tools.dnd5e.Tools5eSources;
 import io.quarkus.qute.TemplateData;
 
 /**
- * 5eTools background attributes ({@code bastion2md.txt}).
+ * 5eTools bastion attributes ({@code bastion2md.txt}).
  *
  * Extension of {@link dev.ebullient.convert.tools.dnd5e.qute.Tools5eQuteBase}.
  */
