@@ -47,6 +47,7 @@ _Support content creators. Only use or include sources that you own._
 | CoS | Curse of Strahd | adventure |
 | DC | Divine Contention | adventure |
 | DD | Dangerous Designs | adventure |
+| DDE | World of Warcraft: Deadmines Dungeon | adventure |
 | DIP | Dragon of Icespire Peak | adventure |
 | DMG | Dungeon Master's Guide | book |
 | DMTCRG | The Deck of Many Things: Card Reference Guide | book |

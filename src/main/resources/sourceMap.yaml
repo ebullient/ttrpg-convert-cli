@@ -93,6 +93,9 @@ config5e:
     DD:
       name: "Dangerous Designs"
       date: "2020-03-17"
+    DDE:
+      name: "World of Warcraft: Deadmines Dungeon"
+      date: "2026-11-03"
     DIP:
       name: "Dragon of Icespire Peak"
       date: "2019-06-24"
