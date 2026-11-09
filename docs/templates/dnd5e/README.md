@@ -16,7 +16,7 @@ Qute templates for generating content from 5eTools data.
     a marked up string based on the attributes that are present.
 
 - [QuteBackground](QuteBackground.md): 5eTools background attributes (`background2md.txt`).
-- [QuteBastion](QuteBastion/README.md): 5eTools background attributes (`bastion2md.txt`).
+- [QuteBastion](QuteBastion/README.md): 5eTools bastion attributes (`bastion2md.txt`).
 - [QuteCharoption](QuteCharoption.md): 5eTools character creation option attributes (`charoption2md.txt`)
 
     Extension of [Tools5eQuteBase](Tools5eQuteBase.md).
