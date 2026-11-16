@@ -69,6 +69,7 @@ public class Json2QuteBook extends Json2QuteCommon {
 
                     List<String> text = new ArrayList<>();
                     appendToText(text, SourceField.entries.getFrom(x), "##");
+                    appendCitations(text);
 
                     String content = String.join("\n", text);
 

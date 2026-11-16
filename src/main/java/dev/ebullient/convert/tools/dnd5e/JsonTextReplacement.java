@@ -1007,6 +1007,22 @@ public interface JsonTextReplacement extends JsonTextConverter<Tools5eIndexType>
         return "[%s](#%s)".formatted(annotation, blockRef);
     }
 
+    /**
+     * Append citations collected while rendering text (see {@link #handleCitation(String)})
+     * to the end of the provided text. Citation references are links to a block id
+     * defined in the citation text, so the citation text must be emitted into the same note.
+     *
+     * @param text Rendered (body) text of the note
+     */
+    default void appendCitations(List<String> text) {
+        List<String> citations = new ArrayList<>();
+        parseState().popCitations(citations);
+        for (String citation : citations) {
+            maybeAddBlankLine(text);
+            text.add(citation);
+        }
+    }
+
     default String decoratedUaName(String name, Tools5eSources sources) {
         Optional<String> uaSource = sources.uaSource();
         if (uaSource.isPresent() && !name.contains("(UA")) {

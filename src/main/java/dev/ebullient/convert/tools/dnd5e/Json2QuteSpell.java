@@ -99,6 +99,7 @@ public class Json2QuteSpell extends Json2QuteCommon {
             appendToText(text, SpellFields.entriesHigherLevel.getFrom(rootNode),
                     textContains(text, "## ") ? "##" : null);
         }
+        appendCitations(text);
         return new QuteSpell(getSources(),
                 decoratedName,
                 getSourceText(getSources()),

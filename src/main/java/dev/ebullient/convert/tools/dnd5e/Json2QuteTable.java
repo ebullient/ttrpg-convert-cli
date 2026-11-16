@@ -42,6 +42,7 @@ public class Json2QuteTable extends Json2QuteCommon {
             targetFile = linkifier().getTargetFileName(getName(), getSources());
             appendTable(text, rootNode);
         }
+        appendCitations(text);
 
         return new Tools5eQuteNote(getName(), getSourceText(sources), text, tags)
                 .withTargetPath(targetDir)
