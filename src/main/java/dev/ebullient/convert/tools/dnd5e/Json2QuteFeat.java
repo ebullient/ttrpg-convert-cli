@@ -40,6 +40,7 @@ public class Json2QuteFeat extends Json2QuteCommon {
         // Convert entries to text
         List<String> text = new ArrayList<>();
         appendToText(text, fullEntries, null);
+        appendCitations(text);
 
         // TODO: update w/ additionalSpells
         return new QuteFeat(getSources(),

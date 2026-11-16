@@ -396,6 +396,7 @@ public class Json2QuteItem extends Json2QuteCommon {
                 }
             }
         }
+        appendCitations(text);
 
         return text.isEmpty() ? null : String.join("\n", text);
     }

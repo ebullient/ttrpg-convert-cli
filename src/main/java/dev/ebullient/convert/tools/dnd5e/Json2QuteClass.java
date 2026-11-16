@@ -166,6 +166,7 @@ public class Json2QuteClass extends Json2QuteCommon {
                 }
 
                 addOptionalFeatureText(scNode, scSources.primarySource(), text);
+                appendCitations(text);
 
                 quteSc.add(new QuteSubclass(scSources,
                         scName,
